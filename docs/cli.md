@@ -28,7 +28,7 @@
         <li><a                  href="/pheniqs/workflow.html">Workflow</a></li>
         <li><a class="active"   href="/pheniqs/cli.html">Command line interface</a></li>
         <li><a                  href="/pheniqs/building.html">Building</a></li>
-        <li><a class="github"   href="https://github.com/GunsalusPiano/pheniqs">View on GitHub</a></li>
+        <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
@@ -46,7 +46,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
 # Global command line help
 
-    pheniqs version 0.3.1c5baa414a188de207fbee3f7e3c169d632b26f3
+    pheniqs version 0.9.d55d65203560ae3719fcbb79ac657189e463ffed
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2017
 
@@ -65,42 +65,43 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
 # Demux sub command help
 
-    pheniqs version 0.3.1c5baa414a188de207fbee3f7e3c169d632b26f3
+    pheniqs version 0.9.d55d65203560ae3719fcbb79ac657189e463ffed
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2017
 
     Demultiplex and report quality control
 
-    Usage : pheniqs demux [-h] [-V] -C PATH [-c FLOAT] [-f] [-q] [-n FLOAT] [-m INT]
-                          [-i STRING] [-o STRING] [-l INT] [-d pamld|mdd|benchmark]
+    Usage : pheniqs demux [-h] [-V] [-D] -C PATH [-c FLOAT] [-f] [-q] [-n FLOAT]
+                          [-m INT] [-i STRING] [-o STRING] [-l INT] [-d pamld|mdd|benchmark]
                           [-p CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-t INT]
                           [-T INT] [-L] [-B INT]
 
     Optional:
-      -h, --help                   Show this help
-      -V, --validate               Only validate configuration
-      -C, --config PATH            Path to configuration file
-      -c, --confidence FLOAT       Decoding confidence threshold
-      -f, --filtered               Include filtered reads
-      -q, --quality                Disable quality control
-      -n, --noise FLOAT            Noise prior probability
-      -m, --mask INT               Phred masking threshold
-      -i, --base-input STRING      Base input path
-      -o, --base-output STRING     Base output path
-      -l, --leading INT            Leading read segment
-      -d, --decoder STRING         Barcode decoder
-      -p, --platform STRING        Sequencing platform
-      -t, --threads INT            IO thread pool size
-      -T, --transforms INT         Number of transforming threads
-      -L, --long-read              Optimize threading for long read
-      -B, --buffer-capacity INT    Records per resolution in feed buffer
+      -h, --help                  Show this help
+      -V, --validate              Only validate configuration
+      -D, --distance              Display pairwise barcode distance
+      -C, --config PATH           Path to configuration file
+      -c, --confidence FLOAT      Decoding confidence threshold
+      -f, --filtered              Include filtered reads
+      -q, --quality               Disable quality control
+      -n, --noise FLOAT           Noise prior probability
+      -m, --mask INT              Phred masking threshold
+      -i, --base-input STRING     Base input path
+      -o, --base-output STRING    Base output path
+      -l, --leading INT           Leading read segment
+      -d, --decoder STRING        Barcode decoder
+      -p, --platform STRING       Sequencing platform
+      -t, --threads INT           IO thread pool size
+      -T, --transforms INT        Number of transforming threads
+      -L, --long                  Optimize threading for long read
+      -B, --buffer INT            Records per resolution in feed buffer
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.
 
 # Quality sub command
 
-    pheniqs version 0.3.1c5baa414a188de207fbee3f7e3c169d632b26f3
+    pheniqs version 0.9.d55d65203560ae3719fcbb79ac657189e463ffed
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2017
 
@@ -111,15 +112,15 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
                             [-T INT] [-B INT]
 
     Optional:
-      -h, --help                   Show this help
-      -V, --validate               Only validate configuration
-      -i, --input PATH             Path to input file
-      -f, --filtered               Include filtered reads
-      -L, --long-read              Optimize threading for long read
-      -p, --platform STRING        Sequencing platform
-      -t, --threads INT            IO thread pool size
-      -T, --transforms INT         Number of transforming threads
-      -B, --buffer-capacity INT    Records per resolution in feed buffer
+      -h, --help               Show this help
+      -V, --validate           Only validate configuration
+      -i, --input PATH         Path to input file
+      -f, --filtered           Include filtered reads
+      -L, --long               Optimize threading for long read
+      -p, --platform STRING    Sequencing platform
+      -t, --threads INT        IO thread pool size
+      -T, --transforms INT     Number of transforming threads
+      -B, --buffer INT         Records per resolution in feed buffer
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.

@@ -28,7 +28,7 @@
         <li><a                  href="/pheniqs/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/cli.html">Command line interface</a></li>
         <li><a                  href="/pheniqs/building.html">Building</a></li>
-        <li><a class="github"   href="https://github.com/GunsalusPiano/pheniqs">View on GitHub</a></li>
+        <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>

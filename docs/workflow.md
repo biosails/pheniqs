@@ -28,7 +28,7 @@
         <li><a class="active"   href="/pheniqs/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/cli.html">Command line interface</a></li>
         <li><a                  href="/pheniqs/building.html">Building</a></li>
-        <li><a class="github"   href="https://github.com/GunsalusPiano/pheniqs">View on GitHub</a></li>
+        <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
@@ -418,577 +418,573 @@ Which prints the following validation report to standard output
 ```
 Environment 
 
-    Version                                     : 0.3.2dfba8497f7ebbfe9c4e8d54733161d71b5f420c
-    Quality tracking                            : enabled
-    Reads not Passing vendor quality filter     : do not include
-    Barcode masking threshold                   : NONE
-    Undetermined reads                          : Channel No.0
-    Leading template segment                    : 0
-    Barcode decoder                             : phred adjusted maximum likelihood decoder
-    Prior noise probability                     : 0.010000
-    Platform                                    : ILLUMINA
-    Input Phred offset                          : 33
-    Output Phred offset                         : 33
-    Multiplex barcode decoding confidence       : 0.990000
-    Total barcoding cycles                      : 16
-    Minimum barcode distance                    : 5
-    Total correctable barcode decoding errors   : 2
-    Subset correctable barcode decoding errors  : 1 1 
-    Subset decoding error tolerance             : 1 1 
-    Random word probability                     : 0.0000000002328306437
-    Threads                                     : 1
-    Decoding threads                            : 1
-    Encoding threads                            : 1
-    Transforming threads                        : 1
-    Feed buffer capacity                        : 2048
+    Version                                     0.9.d55d65203560ae3719fcbb79ac657189e463ffed
+    Barcode decoder                             pamld
+    Platform                                    ILLUMINA
+    Long read                                   disabled
+    Quality tracking                            enabled
+    Leading template segment                    0
+    Input Phred offset                          33
+    Output Phred offset                         33
+    Include non PF reads                        disabled
+    Undetermined reads                          Channel No.0
+    Multiplex barcoding cycles                  16
+    Shortest multiplex distance                 5
+    Multiplex barcode length                    8 8 
+    Prior noise frequency                       0.010000
+    Multiplex confidence                        0.990000
+    Random word frequency                       0.0000000002328306437
+    Molecular barcode length                    6 
+    Feed buffer capacity                        2048
+    Transforming threads                        1
+    Threads                                     1
 
 Transformation 
 
-    Token No.0 : cycles 0 to end of input segment 0
-    Token No.1 : cycles 0 to end of input segment 3
-    Token No.2 : cycles 0 to 8 of input segment 1
-    Token No.3 : cycles 0 to 8 of input segment 2
-    Token No.4 : cycles -7 to -1 of input segment 0
+    Token No.0
+        Length        variable
+        Pattern       0::
+        Description   cycles 0 to end of input segment 0
 
-    Template transform No.0 : append token 0 of input segment 0 to output segment 0
-    Template transform No.1 : append token 1 of input segment 3 to output segment 1
+    Token No.1
+        Length        variable
+        Pattern       3::
+        Description   cycles 0 to end of input segment 3
 
-    Multiplex barcode transform No.0 : append reverse complemented token 2 of input segment 1 to output segment 0
-    Multiplex barcode transform No.1 : append token 3 of input segment 2 to output segment 1
+    Token No.2
+        Length        8
+        Pattern       1::8
+        Description   cycles 0 to 8 of input segment 1
 
-    Molecular barcode transform No.0 : append reverse complemented token 4 of input segment 0 to output segment 0
+    Token No.3
+        Length        8
+        Pattern       2::8
+        Description   cycles 0 to 8 of input segment 2
+
+    Token No.4
+        Length        6
+        Pattern       0:-7:-1
+        Description   cycles -7 to -1 of input segment 0
+
+    Template transform
+        Append token 0 of input segment 0 to output segment 0
+        Append token 1 of input segment 3 to output segment 1
+
+    Multiplex barcode transform
+        Append reverse complemented token 2 of input segment 1 to output segment 0
+        Append token 3 of input segment 2 to output segment 1
+
+    Molecular barcode transform
+        Append reverse complemented token 4 of input segment 0 to output segment 0
+
+Input 
 
     Input segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_1_interleaved.fastq.gz
     Input segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_1_interleaved.fastq.gz
     Input segment No.2 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_1_interleaved.fastq.gz
     Input segment No.3 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_1_interleaved.fastq.gz
 
-Input feed No.1
-    Kind : fastq
-    Platform : ILLUMINA
-    Extension : fastq
-    Compression : gz
-    Resolution : 4
-    Phred offset : 33
-    Buffer capacity : 8192
-    Referencing segments : 4
-    Coding threads : 1
-    Full path : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_1_interleaved.fastq.gz
-
-Channel No.0
-    RG index : 0
-    RG : HK5NHBGXX:1:undetermined
-    PI : 1500
-    LB : undetermined_library
-    SM : undetermined_sample
-    PU : HK5NHBGXX:1:undetermined
-    CN : CGSB
-    DS : undetermined description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    Undetermined : true
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.1
-    RG index : 1
-    RG : HK5NHBGXX:1:CGTACTAGTCTTACGC
-    PI : 1500
-    LB : ntr_2_library
-    SM : ntr_2_sample
-    PU : HK5NHBGXX:1:CGTACTAGTCTTACGC
-    CN : CGSB
-    DS : ntr_2 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : CGTACTAG
-    Multiplex barcode No.1 : TCTTACGC
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.2
-    RG index : 2
-    RG : HK5NHBGXX:1:CGAGGCTGTCTTACGC
-    PI : 1500
-    LB : ntr_10_library
-    SM : ntr_10_sample
-    PU : HK5NHBGXX:1:CGAGGCTGTCTTACGC
-    CN : CGSB
-    DS : ntr_10 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : CGAGGCTG
-    Multiplex barcode No.1 : TCTTACGC
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.3
-    RG index : 3
-    RG : HK5NHBGXX:1:AAGAGGCATCTTACGC
-    PI : 1500
-    LB : ntr_11_library
-    SM : ntr_11_sample
-    PU : HK5NHBGXX:1:AAGAGGCATCTTACGC
-    CN : CGSB
-    DS : ntr_11 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : AAGAGGCA
-    Multiplex barcode No.1 : TCTTACGC
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.4
-    RG index : 4
-    RG : HK5NHBGXX:1:GTAGAGGATCTTACGC
-    PI : 1500
-    LB : ntr_12_library
-    SM : ntr_12_sample
-    PU : HK5NHBGXX:1:GTAGAGGATCTTACGC
-    CN : CGSB
-    DS : ntr_12 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : GTAGAGGA
-    Multiplex barcode No.1 : TCTTACGC
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.5
-    RG index : 5
-    RG : HK5NHBGXX:1:TAAGGCGAATAGAGAG
-    PI : 1500
-    LB : ntr_13_library
-    SM : ntr_13_sample
-    PU : HK5NHBGXX:1:TAAGGCGAATAGAGAG
-    CN : CGSB
-    DS : ntr_13 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : TAAGGCGA
-    Multiplex barcode No.1 : ATAGAGAG
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.6
-    RG index : 6
-    RG : HK5NHBGXX:1:CGTACTAGATAGAGAG
-    PI : 1500
-    LB : ntr_14_library
-    SM : ntr_14_sample
-    PU : HK5NHBGXX:1:CGTACTAGATAGAGAG
-    CN : CGSB
-    DS : ntr_14 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : CGTACTAG
-    Multiplex barcode No.1 : ATAGAGAG
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.7
-    RG index : 7
-    RG : HK5NHBGXX:1:GTAGAGGAAGAGGATA
-    PI : 1500
-    LB : ntr_36_library
-    SM : ntr_36_sample
-    PU : HK5NHBGXX:1:GTAGAGGAAGAGGATA
-    CN : CGSB
-    DS : ntr_36 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : GTAGAGGA
-    Multiplex barcode No.1 : AGAGGATA
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.8
-    RG index : 8
-    RG : HK5NHBGXX:1:TAAGGCGATCTACTCT
-    PI : 1500
-    LB : ntr_37_library
-    SM : ntr_37_sample
-    PU : HK5NHBGXX:1:TAAGGCGATCTACTCT
-    CN : CGSB
-    DS : ntr_37 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : TAAGGCGA
-    Multiplex barcode No.1 : TCTACTCT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.9
-    RG index : 9
-    RG : HK5NHBGXX:1:CGAGGCTGCTCCTTAC
-    PI : 1500
-    LB : ntr_58_library
-    SM : ntr_58_sample
-    PU : HK5NHBGXX:1:CGAGGCTGCTCCTTAC
-    CN : CGSB
-    DS : ntr_58 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : CGAGGCTG
-    Multiplex barcode No.1 : CTCCTTAC
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.10
-    RG index : 10
-    RG : HK5NHBGXX:1:AAGAGGCACTCCTTAC
-    PI : 1500
-    LB : ntr_59_library
-    SM : ntr_59_sample
-    PU : HK5NHBGXX:1:AAGAGGCACTCCTTAC
-    CN : CGSB
-    DS : ntr_59 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : AAGAGGCA
-    Multiplex barcode No.1 : CTCCTTAC
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.11
-    RG index : 11
-    RG : HK5NHBGXX:1:CTCTCTACTATGCAGT
-    PI : 1500
-    LB : ntr_67_library
-    SM : ntr_67_sample
-    PU : HK5NHBGXX:1:CTCTCTACTATGCAGT
-    CN : CGSB
-    DS : ntr_67 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : CTCTCTAC
-    Multiplex barcode No.1 : TATGCAGT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.12
-    RG index : 12
-    RG : HK5NHBGXX:1:CAGAGAGGTATGCAGT
-    PI : 1500
-    LB : ntr_68_library
-    SM : ntr_68_sample
-    PU : HK5NHBGXX:1:CAGAGAGGTATGCAGT
-    CN : CGSB
-    DS : ntr_68 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : CAGAGAGG
-    Multiplex barcode No.1 : TATGCAGT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.13
-    RG index : 13
-    RG : HK5NHBGXX:1:GCTACGCTTATGCAGT
-    PI : 1500
-    LB : ntr_69_library
-    SM : ntr_69_sample
-    PU : HK5NHBGXX:1:GCTACGCTTATGCAGT
-    CN : CGSB
-    DS : ntr_69 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : GCTACGCT
-    Multiplex barcode No.1 : TATGCAGT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.14
-    RG index : 14
-    RG : HK5NHBGXX:1:TCCTGAGCTACTCCTT
-    PI : 1500
-    LB : ntr_76_library
-    SM : ntr_76_sample
-    PU : HK5NHBGXX:1:TCCTGAGCTACTCCTT
-    CN : CGSB
-    DS : ntr_76 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : TCCTGAGC
-    Multiplex barcode No.1 : TACTCCTT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.15
-    RG index : 15
-    RG : HK5NHBGXX:1:GGACTCCTTACTCCTT
-    PI : 1500
-    LB : ntr_77_library
-    SM : ntr_77_sample
-    PU : HK5NHBGXX:1:GGACTCCTTACTCCTT
-    CN : CGSB
-    DS : ntr_77 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : GGACTCCT
-    Multiplex barcode No.1 : TACTCCTT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.16
-    RG index : 16
-    RG : HK5NHBGXX:1:TAGGCATGTACTCCTT
-    PI : 1500
-    LB : ntr_78_library
-    SM : ntr_78_sample
-    PU : HK5NHBGXX:1:TAGGCATGTACTCCTT
-    CN : CGSB
-    DS : ntr_78 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : TAGGCATG
-    Multiplex barcode No.1 : TACTCCTT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.17
-    RG index : 17
-    RG : HK5NHBGXX:1:AAGAGGCATACTCCTT
-    PI : 1500
-    LB : ntr_83_library
-    SM : ntr_83_sample
-    PU : HK5NHBGXX:1:AAGAGGCATACTCCTT
-    CN : CGSB
-    DS : ntr_83 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : AAGAGGCA
-    Multiplex barcode No.1 : TACTCCTT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.18
-    RG index : 18
-    RG : HK5NHBGXX:1:GTAGAGGATACTCCTT
-    PI : 1500
-    LB : ntr_84_library
-    SM : ntr_84_sample
-    PU : HK5NHBGXX:1:GTAGAGGATACTCCTT
-    CN : CGSB
-    DS : ntr_84 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : GTAGAGGA
-    Multiplex barcode No.1 : TACTCCTT
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.19
-    RG index : 19
-    RG : HK5NHBGXX:1:AGGCAGAAAGGCTTAG
-    PI : 1500
-    LB : ntr_87_library
-    SM : ntr_87_sample
-    PU : HK5NHBGXX:1:AGGCAGAAAGGCTTAG
-    CN : CGSB
-    DS : ntr_87 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : AGGCAGAA
-    Multiplex barcode No.1 : AGGCTTAG
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.20
-    RG index : 20
-    RG : HK5NHBGXX:1:TCCTGAGCAGGCTTAG
-    PI : 1500
-    LB : ntr_88_library
-    SM : ntr_88_sample
-    PU : HK5NHBGXX:1:TCCTGAGCAGGCTTAG
-    CN : CGSB
-    DS : ntr_88 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : TCCTGAGC
-    Multiplex barcode No.1 : AGGCTTAG
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Channel No.21
-    RG index : 21
-    RG : HK5NHBGXX:1:GTAGAGGAAGGCTTAG
-    PI : 1500
-    LB : ntr_96_library
-    SM : ntr_96_sample
-    PU : HK5NHBGXX:1:GTAGAGGAAGGCTTAG
-    CN : CGSB
-    DS : ntr_96 description
-    DT : 2016-07-15T07:00:00+00:00
-    PL : ILLUMINA
-    PM : hiseq 2500
-    TC : 2
-    PC : 0.0471428571428571
-
-    Multiplex barcode No.0 : GTAGAGGA
-    Multiplex barcode No.1 : AGGCTTAG
-
-    Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-    Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
-
-Output feed No.0
-    Kind : hts
-    Platform : ILLUMINA
-    Extension : cram
-    Compression : 
-    Resolution : 2
-    Phred offset : 33
-    Buffer capacity : 4096
-    Referencing segments : 44
-    Coding threads : 1
-    Full path : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+Channel 
+
+    Channel No.0
+        RG : HK5NHBGXX:1:undetermined
+        PU : HK5NHBGXX:1:undetermined
+        LB : undetermined_library
+        SM : undetermined_sample
+        CN : CGSB
+        DS : undetermined description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        Undetermined : true
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.1
+        RG : HK5NHBGXX:1:CGTACTAGTCTTACGC
+        PU : HK5NHBGXX:1:CGTACTAGTCTTACGC
+        LB : ntr_2_library
+        SM : ntr_2_sample
+        CN : CGSB
+        DS : ntr_2 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : CGTACTAG
+        Multiplex barcode No.1 : TCTTACGC
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.2
+        RG : HK5NHBGXX:1:CGAGGCTGTCTTACGC
+        PU : HK5NHBGXX:1:CGAGGCTGTCTTACGC
+        LB : ntr_10_library
+        SM : ntr_10_sample
+        CN : CGSB
+        DS : ntr_10 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : CGAGGCTG
+        Multiplex barcode No.1 : TCTTACGC
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.3
+        RG : HK5NHBGXX:1:AAGAGGCATCTTACGC
+        PU : HK5NHBGXX:1:AAGAGGCATCTTACGC
+        LB : ntr_11_library
+        SM : ntr_11_sample
+        CN : CGSB
+        DS : ntr_11 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : AAGAGGCA
+        Multiplex barcode No.1 : TCTTACGC
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.4
+        RG : HK5NHBGXX:1:GTAGAGGATCTTACGC
+        PU : HK5NHBGXX:1:GTAGAGGATCTTACGC
+        LB : ntr_12_library
+        SM : ntr_12_sample
+        CN : CGSB
+        DS : ntr_12 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : GTAGAGGA
+        Multiplex barcode No.1 : TCTTACGC
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.5
+        RG : HK5NHBGXX:1:TAAGGCGAATAGAGAG
+        PU : HK5NHBGXX:1:TAAGGCGAATAGAGAG
+        LB : ntr_13_library
+        SM : ntr_13_sample
+        CN : CGSB
+        DS : ntr_13 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : TAAGGCGA
+        Multiplex barcode No.1 : ATAGAGAG
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.6
+        RG : HK5NHBGXX:1:CGTACTAGATAGAGAG
+        PU : HK5NHBGXX:1:CGTACTAGATAGAGAG
+        LB : ntr_14_library
+        SM : ntr_14_sample
+        CN : CGSB
+        DS : ntr_14 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : CGTACTAG
+        Multiplex barcode No.1 : ATAGAGAG
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.7
+        RG : HK5NHBGXX:1:GTAGAGGAAGAGGATA
+        PU : HK5NHBGXX:1:GTAGAGGAAGAGGATA
+        LB : ntr_36_library
+        SM : ntr_36_sample
+        CN : CGSB
+        DS : ntr_36 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : GTAGAGGA
+        Multiplex barcode No.1 : AGAGGATA
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.8
+        RG : HK5NHBGXX:1:TAAGGCGATCTACTCT
+        PU : HK5NHBGXX:1:TAAGGCGATCTACTCT
+        LB : ntr_37_library
+        SM : ntr_37_sample
+        CN : CGSB
+        DS : ntr_37 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : TAAGGCGA
+        Multiplex barcode No.1 : TCTACTCT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.9
+        RG : HK5NHBGXX:1:CGAGGCTGCTCCTTAC
+        PU : HK5NHBGXX:1:CGAGGCTGCTCCTTAC
+        LB : ntr_58_library
+        SM : ntr_58_sample
+        CN : CGSB
+        DS : ntr_58 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : CGAGGCTG
+        Multiplex barcode No.1 : CTCCTTAC
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.10
+        RG : HK5NHBGXX:1:AAGAGGCACTCCTTAC
+        PU : HK5NHBGXX:1:AAGAGGCACTCCTTAC
+        LB : ntr_59_library
+        SM : ntr_59_sample
+        CN : CGSB
+        DS : ntr_59 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : AAGAGGCA
+        Multiplex barcode No.1 : CTCCTTAC
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.11
+        RG : HK5NHBGXX:1:CTCTCTACTATGCAGT
+        PU : HK5NHBGXX:1:CTCTCTACTATGCAGT
+        LB : ntr_67_library
+        SM : ntr_67_sample
+        CN : CGSB
+        DS : ntr_67 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : CTCTCTAC
+        Multiplex barcode No.1 : TATGCAGT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.12
+        RG : HK5NHBGXX:1:CAGAGAGGTATGCAGT
+        PU : HK5NHBGXX:1:CAGAGAGGTATGCAGT
+        LB : ntr_68_library
+        SM : ntr_68_sample
+        CN : CGSB
+        DS : ntr_68 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : CAGAGAGG
+        Multiplex barcode No.1 : TATGCAGT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.13
+        RG : HK5NHBGXX:1:GCTACGCTTATGCAGT
+        PU : HK5NHBGXX:1:GCTACGCTTATGCAGT
+        LB : ntr_69_library
+        SM : ntr_69_sample
+        CN : CGSB
+        DS : ntr_69 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : GCTACGCT
+        Multiplex barcode No.1 : TATGCAGT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.14
+        RG : HK5NHBGXX:1:TCCTGAGCTACTCCTT
+        PU : HK5NHBGXX:1:TCCTGAGCTACTCCTT
+        LB : ntr_76_library
+        SM : ntr_76_sample
+        CN : CGSB
+        DS : ntr_76 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : TCCTGAGC
+        Multiplex barcode No.1 : TACTCCTT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.15
+        RG : HK5NHBGXX:1:GGACTCCTTACTCCTT
+        PU : HK5NHBGXX:1:GGACTCCTTACTCCTT
+        LB : ntr_77_library
+        SM : ntr_77_sample
+        CN : CGSB
+        DS : ntr_77 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : GGACTCCT
+        Multiplex barcode No.1 : TACTCCTT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.16
+        RG : HK5NHBGXX:1:TAGGCATGTACTCCTT
+        PU : HK5NHBGXX:1:TAGGCATGTACTCCTT
+        LB : ntr_78_library
+        SM : ntr_78_sample
+        CN : CGSB
+        DS : ntr_78 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : TAGGCATG
+        Multiplex barcode No.1 : TACTCCTT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.17
+        RG : HK5NHBGXX:1:AAGAGGCATACTCCTT
+        PU : HK5NHBGXX:1:AAGAGGCATACTCCTT
+        LB : ntr_83_library
+        SM : ntr_83_sample
+        CN : CGSB
+        DS : ntr_83 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : AAGAGGCA
+        Multiplex barcode No.1 : TACTCCTT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.18
+        RG : HK5NHBGXX:1:GTAGAGGATACTCCTT
+        PU : HK5NHBGXX:1:GTAGAGGATACTCCTT
+        LB : ntr_84_library
+        SM : ntr_84_sample
+        CN : CGSB
+        DS : ntr_84 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : GTAGAGGA
+        Multiplex barcode No.1 : TACTCCTT
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.19
+        RG : HK5NHBGXX:1:AGGCAGAAAGGCTTAG
+        PU : HK5NHBGXX:1:AGGCAGAAAGGCTTAG
+        LB : ntr_87_library
+        SM : ntr_87_sample
+        CN : CGSB
+        DS : ntr_87 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : AGGCAGAA
+        Multiplex barcode No.1 : AGGCTTAG
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.20
+        RG : HK5NHBGXX:1:TCCTGAGCAGGCTTAG
+        PU : HK5NHBGXX:1:TCCTGAGCAGGCTTAG
+        LB : ntr_88_library
+        SM : ntr_88_sample
+        CN : CGSB
+        DS : ntr_88 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : TCCTGAGC
+        Multiplex barcode No.1 : AGGCTTAG
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+    Channel No.21
+        RG : HK5NHBGXX:1:GTAGAGGAAGGCTTAG
+        PU : HK5NHBGXX:1:GTAGAGGAAGGCTTAG
+        LB : ntr_96_library
+        SM : ntr_96_sample
+        CN : CGSB
+        DS : ntr_96 description
+        DT : 2016-07-15T07:00:00+00:00
+        PL : ILLUMINA
+        PM : hiseq 2500
+        PI : 1500
+        TC : 2
+        PC : 0.0471428571428571
+
+        Multiplex barcode No.0 : GTAGAGGA
+        Multiplex barcode No.1 : AGGCTTAG
+
+        Output segment No.0 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+        Output segment No.1 : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
+
+Feed 
+
+    Input feed No.0
+        Type : fastq
+        Compression : gz
+        Resolution : 4
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 8192
+        URL : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_1_interleaved.fastq.gz
+
+    Output feed No.0
+        Type : cram
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/HK5NHBGXX/1/HK5NHBGXX_l01n01.cram
 
 Barcode distance distribution
 
-    0 4 4 7 7 8 5 7 6 5 6 7  AAGAGGCA
-    1 0 7 7 6 7 7 6 5 7 7 8  AGGCAGAA
-    1 3 0 5 5 7 7 8 7 5 4 5  CAGAGAGG
-    3 3 2 0 5 7 8 5 6 4 5 7  CGAGGCTG
-    3 2 2 2 0 4 5 7 8 8 6 8  CGTACTAG
-    3 3 3 3 1 0 7 8 7 8 7 5  CTCTCTAC
-    2 3 3 3 2 3 0 5 6 8 7 7  GCTACGCT
-    3 2 3 2 3 3 2 0 6 6 8 8  GGACTCCT
-    2 2 3 2 3 3 2 2 0 4 7 7  GTAGAGGA
-    2 3 2 1 3 3 3 2 1 0 5 5  TAAGGCGA
-    2 3 1 2 2 3 3 3 3 2 0 6  TAGGCATG
-    3 3 2 3 3 2 3 3 3 2 2 0  TCCTGAGC
+    0 4 4 7 7 8 5 7 6 5 6 7 AAGAGGCA 2 
+    1 0 7 7 6 7 7 6 5 7 7 8 AGGCAGAA 2 
+    1 3 0 5 5 7 7 8 7 5 4 5 CAGAGAGG 2 
+    3 3 2 0 5 7 8 5 6 4 5 7 CGAGGCTG 2 
+    3 2 2 2 0 4 5 7 8 8 6 8 CGTACTAG 2 
+    3 3 3 3 1 0 7 8 7 8 7 5 CTCTCTAC 3 
+    2 3 3 3 2 3 0 5 6 8 7 7 GCTACGCT 3 
+    3 2 3 2 3 3 2 0 6 6 8 8 GGACTCCT 3 
+    2 2 3 2 3 3 2 2 0 4 7 7 GTAGAGGA 2 
+    2 3 2 1 3 3 3 2 1 0 5 5 TAAGGCGA 2 
+    2 3 1 2 2 3 3 3 3 2 0 6 TAGGCATG 2 
+    3 3 2 3 3 2 3 3 3 2 2 0 TCCTGAGC 3 
 
-    0 6 5 8 7 6 8 8  AGAGGATA
-    2 0 5 4 8 8 7 8  AGGCTTAG
-    2 2 0 6 8 7 8 7  ATAGAGAG
-    3 1 2 0 7 8 7 7  CTCCTTAC
-    3 3 3 3 0 4 5 5  TACTCCTT
-    2 3 3 3 1 0 4 5  TATGCAGT
-    3 3 3 3 2 1 0 5  TCTACTCT
-    3 3 3 3 2 2 2 0  TCTTACGC
+    0 6 5 8 7 6 8 8 AGAGGATA 3 
+    2 0 5 4 8 8 7 8 AGGCTTAG 2 
+    2 2 0 6 8 7 8 7 ATAGAGAG 2 
+    3 1 2 0 7 8 7 7 CTCCTTAC 2 
+    3 3 3 3 0 4 5 5 TACTCCTT 2 
+    2 3 3 3 1 0 4 5 TATGCAGT 2 
+    3 3 3 3 2 1 0 5 TCTACTCT 2 
+    3 3 3 3 2 2 2 0 TCTTACGC 2 
 
-    0  7  7  8  12 7  14 13 14 16 13 14 14 10 13 13 11 12 13 11 14  AAGAGGCACTCCTTAC
-    3  0  5  12 8  14 12 15 12 12 9  7  13 14 6  11 13 10 6  15 7   AAGAGGCATACTCCTT
-    3  2  0  12 9  14 7  14 7  13 10 12 14 14 11 6  12 10 11 15 12  AAGAGGCATCTTACGC
-    3  5  5  0  15 11 15 11 14 15 15 14 11 5  13 13 12 14 15 8  16  AGGCAGAAAGGCTTAG
-    5  3  4  7  0  13 10 12 10 7  7  12 13 15 11 12 12 9  8  13 9   CAGAGAGGTATGCAGT
-    3  6  6  5  6  0  7  11 12 15 16 12 14 10 13 13 10 11 12 11 14  CGAGGCTGCTCCTTAC
-    6  5  3  7  4  3  0  12 5  12 13 10 14 14 11 6  11 9  10 15 12  CGAGGCTGTCTTACGC
-    6  7  6  5  5  5  5  0  7  11 12 15 13 13 16 15 8  16 14 13 16  CGTACTAGATAGAGAG
-    6  5  3  6  4  5  2  3  0  9  10 12 16 16 13 8  15 13 11 16 13  CGTACTAGTCTTACGC
-    7  5  6  7  3  7  5  5  4  0  7  12 13 15 11 12 15 12 11 13 9   CTCTCTACTATGCAGT
-    6  4  4  7  3  7  6  5  4  3  0  9  12 14 10 11 15 12 11 15 11  GCTACGCTTATGCAGT
-    6  3  5  6  5  5  4  7  5  5  4  0  13 14 6  11 14 11 8  16 8   GGACTCCTTACTCCTT
-    6  6  6  5  6  6  6  6  7  6  5  6  0  6  7  8  9  12 14 13 14  GTAGAGGAAGAGGATA
-    4  6  6  2  7  4  6  6  7  7  6  6  2  0  8  8  9  11 15 7  15  GTAGAGGAAGGCTTAG
-    6  2  5  6  5  6  5  7  6  5  4  2  3  3  0  5  12 9  7  15 7   GTAGAGGATACTCCTT
-    6  5  2  6  5  6  2  7  3  5  5  5  3  3  2  0  11 9  12 15 12  GTAGAGGATCTTACGC
-    5  6  5  5  5  4  5  3  7  7  7  6  4  4  5  5  0  8  13 10 13  TAAGGCGAATAGAGAG
-    5  4  4  6  4  5  4  7  6  5  5  5  5  5  4  4  3  0  10 12 10  TAAGGCGATCTACTCT
-    6  2  5  7  3  5  4  6  5  5  5  3  6  7  3  5  6  4  0  14 6   TAGGCATGTACTCCTT
-    5  7  7  3  6  5  7  6  7  6  7  7  6  3  7  7  4  5  6  0  8   TCCTGAGCAGGCTTAG
-    6  3  5  7  4  6  5  7  6  4  5  3  6  7  3  5  6  4  2  3  0   TCCTGAGCTACTCCTT
+    0  7  7  8  12 7  14 13 14 16 13 14 14 10 13 13 11 12 13 11 14 AAGAGGCACTCCTTAC 5  
+    3  0  5  12 8  14 12 15 12 12 9  7  13 14 6  11 13 10 6  15 7  AAGAGGCATACTCCTT 4  
+    3  2  0  12 9  14 7  14 7  13 10 12 14 14 11 6  12 10 11 15 12 AAGAGGCATCTTACGC 5  
+    3  5  5  0  15 11 15 11 14 15 15 14 11 5  13 13 12 14 15 8  16 AGGCAGAAAGGCTTAG 5  
+    5  3  4  7  0  13 10 12 10 7  7  12 13 15 11 12 12 9  8  13 9  CAGAGAGGTATGCAGT 5  
+    3  6  6  5  6  0  7  11 12 15 16 12 14 10 13 13 10 11 12 11 14 CGAGGCTGCTCCTTAC 5  
+    6  5  3  7  4  3  0  12 5  12 13 10 14 14 11 6  11 9  10 15 12 CGAGGCTGTCTTACGC 5  
+    6  7  6  5  5  5  5  0  7  11 12 15 13 13 16 15 8  16 14 13 16 CGTACTAGATAGAGAG 6  
+    6  5  3  6  4  5  2  3  0  9  10 12 16 16 13 8  15 13 11 16 13 CGTACTAGTCTTACGC 5  
+    7  5  6  7  3  7  5  5  4  0  7  12 13 15 11 12 15 12 11 13 9  CTCTCTACTATGCAGT 5  
+    6  4  4  7  3  7  6  5  4  3  0  9  12 14 10 11 15 12 11 15 11 GCTACGCTTATGCAGT 5  
+    6  3  5  6  5  5  4  7  5  5  4  0  13 14 6  11 14 11 8  16 8  GGACTCCTTACTCCTT 5  
+    6  6  6  5  6  6  6  6  7  6  5  6  0  6  7  8  9  12 14 13 14 GTAGAGGAAGAGGATA 5  
+    4  6  6  2  7  4  6  6  7  7  6  6  2  0  8  8  9  11 15 7  15 GTAGAGGAAGGCTTAG 5  
+    6  2  5  6  5  6  5  7  6  5  4  2  3  3  0  5  12 9  7  15 7  GTAGAGGATACTCCTT 4  
+    6  5  2  6  5  6  2  7  3  5  5  5  3  3  2  0  11 9  12 15 12 GTAGAGGATCTTACGC 5  
+    5  6  5  5  5  4  5  3  7  7  7  6  4  4  5  5  0  8  13 10 13 TAAGGCGAATAGAGAG 5  
+    5  4  4  6  4  5  4  7  6  5  5  5  5  5  4  4  3  0  10 12 10 TAAGGCGATCTACTCT 5  
+    6  2  5  7  3  5  4  6  5  5  5  3  6  7  3  5  6  4  0  14 6  TAGGCATGTACTCCTT 5  
+    5  7  7  3  6  5  7  6  7  6  7  7  6  3  7  7  4  5  6  0  8  TCCTGAGCAGGCTTAG 6  
+    6  3  5  7  4  6  5  7  6  4  5  3  6  7  3  5  6  4  2  3  0  TCCTGAGCTACTCCTT 5  
 ```

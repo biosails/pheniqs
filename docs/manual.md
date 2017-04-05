@@ -28,7 +28,7 @@
         <li><a                  href="/pheniqs/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/cli.html">Command line interface</a></li>
         <li><a                  href="/pheniqs/building.html">Building</a></li>
-        <li><a class="github"   href="https://github.com/GunsalusPiano/pheniqs">View on GitHub</a></li>
+        <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
@@ -552,16 +552,12 @@ The `--validate` flag makes Pheniqs evaluate the supplied configuration and emit
 
 # Performance tuning
 
-Pheniqs draws from 3 thread pools for input, output and processing. The degree to which Pheniqs efficiently utilizes multi core machines heavily depends on the way those pools are set up and to some degree on the buffer size used by input and output feeds. The `threads` parameter is a simplified parameter for a benchmark based heuristic algorithm that Pheniqs employs to pick optimal values for the `decoding threads`, `encoding threads`, `transforming threads`, `buffer capacity` properties but it is certainly possible that a more efficient configuration can be achieved in some scenarios. The validation mode reports the values Pheniqs heuristically picks for those parameters, and setting any of them explicitly, either in a configuration file or using a command line argument, will override the implicitly assigned value.
-
-Factors affecting the optimal configuration are the length and number of input and output segments, the number of multiplexed libraries, the file format of both input and output files, whether quality tracking has been enabled and the layout of both input and output reads. Reading and writing gzip compressed [FASTQ](glossary.html#fastq) files, for instance, is a bottleneck since gzip is a very old compression algorithm that scales poorly when parallelized. In some scenarios, depending on disk IO speed and space constraints it might be overall more efficient to base call to uncompressed FASTQ files and feed Pheniqs uncompressed FASTQ input. Binary [HTSlib](glossary.html#htslib) formats are generally much faster to encode and decode and should be preferred for both input and output where possible. If you assemble a pipeline that uses Pheniqs for a specific configuration it may be worth experimenting with different values to find out the best configuration for your own setup. Tuning the heuristic allocation of the above mentioned parameters is an ongoing effort and will adapt over time to changes in [HTSlib](glossay.html#htslib). 
+Pheniqs will initialize a thread pool used by [HTSlib](glossary.html#htslib) for IO and an equivalent number or processing threads. Factors affecting the optimal configuration are the length and number of input and output segments, the number of multiplexed libraries, the file format of both input and output files, whether quality tracking has been enabled and the layout of both input and output reads. Reading and writing gzip compressed [FASTQ](glossary.html#fastq) files, for instance, is a bottleneck since gzip is a very old compression algorithm that scales poorly when parallelized. In some scenarios, depending on disk IO speed and space constraints it might be overall more efficient to base call to uncompressed FASTQ files and feed Pheniqs uncompressed FASTQ input. Binary [HTSlib](glossary.html#htslib) formats are generally much faster to encode and decode and should be preferred for both input and output where possible.
 
 
 | Name                      | Description                                                   | Type    |
 | :------------------------ | :------------------------------------------------------------ | :------ |
-| `threads`                 | number of processor available for heuristic thread allocation | integer |
-| `transforming threads`    | number of parallel demultiplexing threads                     | integer |
-| `decoding threads`        | number of threads used for each input decoding                | integer |
-| `encoding threads`        | number of threads used for each output encoding               | integer |
+| `threads`                 | IO thread pool size                                           | integer |
+| `transforms`              | number of transforming threads                                | integer |
 | `buffer capacity`         | set feed buffer capacity                                      | integer |
 | `disable quality control` | do not track quality when processing reads                    | boolean |
