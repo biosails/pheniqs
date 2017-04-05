@@ -1,0 +1,120 @@
+#compdef pheniqs
+
+# Pheniqs : PHilology ENcoder wIth Quality Statistics
+# Copyright (C) 2017  Lior Galanti
+# NYU Center for Genetics and System Biology
+
+# Author: Lior Galanti <lior.galanti@nyu.edu>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+_pheniqs_list_aliases() {
+  local -a aliases
+  aliases=()
+  echo "${aliases}"
+};
+
+_pheniqs_commands() {
+  local -a commands
+  commands=(
+    'demux:demultiplex and report quality control'
+    'quality:report quality control'
+  )
+  _describe -t common-commands 'common commands' commands
+};
+
+_pheniqs_demux() {
+    _arguments \
+    '(-h --help)'{-h,--help}'[show this help]' \
+    '(-C --config)'{-C,--config}'[path to configuration file]: :_files -g "*.json"' \
+    '(-V --validate)'{-V,--validate}'[only validate configuration]' \
+    '(-D --distance)'{-D,--distance}'[display pairwise barcode distance]' \
+    '(-q --quality)'{-q,--quality}'[disable quality control]' \
+    '(-c --confidence)'{-c,--confidence}'[decoding confidence threshold]' \
+    '(-n --noise)'{-n,--noise}'[noise prior probability]:noise:' \
+    '(-m --mask)'{-m,--mask}'[quality masking threshold]:mask:' \
+    '(-i --base-input)'{-i,--base-input}'[base input path]: :_files -/' \
+    '(-o --base-output)'{-o,--base-output}'[base output path]: :_files -/' \
+    '(-l --leading)'{-l,--leading}'[leading read segment]:leading:' \
+    '(-t --threads)'{-t,--threads}'[thread pool size]:threads:' \
+    '(-T --transforms)'{-T,--transforms}'[number of transforming threads]:transforms' \
+    '(-L --long)'{-L,--long}'[optimize threading for long reads]' \
+    '(-B --buffer)'{-B,--buffer}'[number records in input feed cache]:buffer capacity' \
+    '(-d --decoder)'{-d,--decoder}'[barcode decoder]:decoder:((\
+        mdd\:"minimum distance decoder" \
+        pamld\:"phred adjusted maximum likelihood decoder" \
+        benchmark\:"benchmark meta decoder"))' \
+    '(-p --platform)'{-p,--platform}'[sequencing platform]:platform:(\
+        CAPILLARY \
+        LS454 \
+        ILLUMINA \
+        SOLID \
+        HELICOS \
+        IONTORRENT \
+        ONT \
+        PACBIO)' \
+};
+
+_pheniqs_quality() {
+    _arguments \
+    '(-h --help)'{-h,--help}'[show this help]' \
+    '(-V --validate)--validate[only validate configuration]' \
+    '(-i --input)'{-i,--input}'[path to input file]: :_files -g "*.(fq|fq.gz|fastq|fastq.gz|bam|cram|sam)"' \
+    '(-f --filtered)'{-f,--filtered}'[include filtered reads]' \
+    '(-p --platform)'{-p,--platform}'[sequencing platform]:platform:(\
+        CAPILLARY \
+        LS454 \
+        ILLUMINA \
+        SOLID \
+        HELICOS \
+        IONTORRENT \
+        ONT \
+        PACBIO)' \
+    '(-t --threads)'{-t,--threads}'[thread pool size]:threads:' \
+    '(-T --transforms)'{-T,--transforms}'[number of transforming threads]:transforms' \
+    '(-L --long)'{-L,--long}'[optimize threading for long reads]' \
+    '(-B --buffer)'{-B,--buffer}'[number records in input feed cache]:buffer capacity' \
+};
+
+_pheniqs(){
+    local context curcontext="$curcontext" state state_descr line expl
+    local ret=1
+
+    _arguments -C \
+        '(-h --help)'{-h,--help}'[show this help]' \
+        '(--version)--version[show program version]' \
+        '1:command:->command' \
+        '*::options:->options' && return 0
+
+    case "$state" in
+        command) _pheniqs_commands && return 0 ;;
+        options)
+            local command_or_alias command
+            local -A aliases
+
+            command_or_alias="${line[1]}"
+            aliases=($(_pheniqs_list_aliases))
+            command="${aliases[$command_or_alias]:-$command_or_alias}"
+
+            local completion_func="_pheniqs_${command//-/_}"
+            _call_function ret "${completion_func}" && return ret
+
+            _message "a completion function is not defined for command or alias: ${command_or_alias}"
+            return 1
+        ;;
+    esac
+};
+
+_pheniqs "$@"

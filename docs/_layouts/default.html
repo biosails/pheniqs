@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<!-- 
+    Pheniqs : PHilology ENcoder wIth Quality Statistics
+    Copyright (C) 2017  Lior Galanti
+    NYU Center for Genetics and System Biology
+
+    Author: Lior Galanti <lior.galanti@nyu.edu>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ page.title | default: site.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
+      <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
+      {% if site.github.is_project_page %}
+        <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+      {% endif %}
+      {% if site.show_downloads %}
+        <a href="{{ site.github.zip_url }}" class="btn">Download .zip</a>
+        <a href="{{ site.github.tar_url }}" class="btn">Download .tar.gz</a>
+      {% endif %}
+    </section>
+
+    <section class="main-content">
+      {{ content }}
+
+      <footer class="site-footer">
+        <span class="lab-footer">
+          <a class="pheniqs" href="https://github.com/GunsalusPiano/pheniqs">Pheniqs</a> 
+          is maintained at the 
+          <a href="http://gunsaluspiano.bio.nyu.edu">Gunsalus and Piano lab</a> 
+          by
+          <a href="mailto:lior.galanti@nyu.edu">Lior Galanti</a> 
+        </span>
+        <span class="lab-footer">
+          <a href="http://cgsb.as.nyu.edu/page/home">Center for Genomics and System Biology</a> 
+          <a href="http://www.nyu.edu">New York University</a> 
+          Department of <a href="http://biology.as.nyu.edu">Biology</a> 
+        </span>
+        <span class="lab-footer">
+          <a href="http://nyuad.nyu.edu/en/research/nyuad-institute/institute-research/genomics-systems-biology.html">
+              Center for Genomics and System Biology
+          </a>
+          New York University Abu Dhabi
+        </span>
+      </footer>
+    </section>
+
+    {% if site.google_analytics %}
+      <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+        try {
+          var pageTracker = _gat._getTracker("{{ site.google_analytics }}");
+        pageTracker._trackPageview();
+        } catch(err) {}
+      </script>
+    {% endif %}
+  </body>
+</html>

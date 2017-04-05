@@ -1,0 +1,326 @@
+{
+    "action": [
+        {
+            "description": "Demultiplex and report quality control", 
+            "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.", 
+            "name": "demux", 
+            "option": [
+                {
+                    "handle": [
+                        "-h", 
+                        "--help"
+                    ], 
+                    "help": "Show this help", 
+                    "name": "help", 
+                    "type": "boolean"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-V", 
+                        "--validate"
+                    ], 
+                    "help": "Only validate configuration", 
+                    "name": "validate", 
+                    "type": "boolean"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-D", 
+                        "--distance"
+                    ], 
+                    "help": "Display pairwise barcode distance", 
+                    "name": "display distance", 
+                    "type": "boolean"
+                }, 
+                {
+                    "handle": [
+                        "-C", 
+                        "--config"
+                    ], 
+                    "help": "Path to configuration file", 
+                    "mandatory": true, 
+                    "meta": "PATH", 
+                    "name": "configuration path", 
+                    "type": "string"
+                }, 
+                {
+                    "default": 0.99, 
+                    "handle": [
+                        "-c", 
+                        "--confidence"
+                    ], 
+                    "help": "Decoding confidence threshold", 
+                    "name": "confidence", 
+                    "type": "decimal"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-f", 
+                        "--filtered"
+                    ], 
+                    "help": "Include filtered reads", 
+                    "name": "filtered", 
+                    "type": "boolean"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-q", 
+                        "--quality"
+                    ], 
+                    "help": "Disable quality control", 
+                    "name": "quality", 
+                    "type": "boolean"
+                }, 
+                {
+                    "default": 0, 
+                    "handle": [
+                        "-n", 
+                        "--noise"
+                    ], 
+                    "help": "Noise prior probability", 
+                    "name": "noise", 
+                    "type": "decimal"
+                }, 
+                {
+                    "handle": [
+                        "-m", 
+                        "--mask"
+                    ], 
+                    "help": "Phred masking threshold", 
+                    "name": "masking threshold", 
+                    "type": "integer"
+                }, 
+                {
+                    "handle": [
+                        "-i", 
+                        "--base-input"
+                    ], 
+                    "help": "Base input path", 
+                    "name": "base input path", 
+                    "type": "string"
+                }, 
+                {
+                    "handle": [
+                        "-o", 
+                        "--base-output"
+                    ], 
+                    "help": "Base output path", 
+                    "name": "base output path", 
+                    "type": "string"
+                }, 
+                {
+                    "handle": [
+                        "-l", 
+                        "--leading"
+                    ], 
+                    "help": "Leading read segment", 
+                    "name": "leading segment index", 
+                    "type": "integer"
+                }, 
+                {
+                    "choice": [
+                        "pamld", 
+                        "mdd", 
+                        "benchmark"
+                    ], 
+                    "default": "pamld", 
+                    "handle": [
+                        "-d", 
+                        "--decoder"
+                    ], 
+                    "help": "Barcode decoder", 
+                    "name": "decoder", 
+                    "type": "string"
+                }, 
+                {
+                    "choice": [
+                        "CAPILLARY", 
+                        "LS454", 
+                        "ILLUMINA", 
+                        "SOLID", 
+                        "HELICOS", 
+                        "IONTORRENT", 
+                        "ONT", 
+                        "PACBIO"
+                    ], 
+                    "default": "ILLUMINA", 
+                    "handle": [
+                        "-p", 
+                        "--platform"
+                    ], 
+                    "help": "Sequencing platform", 
+                    "name": "platform", 
+                    "type": "string"
+                }, 
+                {
+                    "handle": [
+                        "-t", 
+                        "--threads"
+                    ], 
+                    "help": "IO thread pool size", 
+                    "name": "threads", 
+                    "type": "integer"
+                }, 
+                {
+                    "handle": [
+                        "-T", 
+                        "--transforms"
+                    ], 
+                    "help": "Number of transforming threads", 
+                    "name": "transforms", 
+                    "type": "integer"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-L", 
+                        "--long"
+                    ], 
+                    "help": "Optimize threading for long read", 
+                    "name": "long read", 
+                    "type": "boolean"
+                }, 
+                {
+                    "handle": [
+                        "-B", 
+                        "--buffer"
+                    ], 
+                    "help": "Records per resolution in feed buffer", 
+                    "name": "buffer capacity", 
+                    "type": "integer"
+                }
+            ]
+        }, 
+        {
+            "description": "Report quality control", 
+            "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.", 
+            "name": "quality", 
+            "option": [
+                {
+                    "handle": [
+                        "-h", 
+                        "--help"
+                    ], 
+                    "help": "Show this help", 
+                    "name": "help", 
+                    "type": "boolean"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-V", 
+                        "--validate"
+                    ], 
+                    "help": "Only validate configuration", 
+                    "name": "validate", 
+                    "type": "boolean"
+                }, 
+                {
+                    "handle": [
+                        "-i", 
+                        "--input"
+                    ], 
+                    "help": "Path to input file", 
+                    "mandatory": true, 
+                    "meta": "PATH", 
+                    "name": "input path", 
+                    "type": "string"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-f", 
+                        "--filtered"
+                    ], 
+                    "help": "Include filtered reads", 
+                    "name": "filtered", 
+                    "type": "boolean"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
+                        "-L", 
+                        "--long"
+                    ], 
+                    "help": "Optimize threading for long read", 
+                    "name": "long read", 
+                    "type": "boolean"
+                }, 
+                {
+                    "choice": [
+                        "CAPILLARY", 
+                        "LS454", 
+                        "ILLUMINA", 
+                        "SOLID", 
+                        "HELICOS", 
+                        "IONTORRENT", 
+                        "ONT", 
+                        "PACBIO"
+                    ], 
+                    "default": "ILLUMINA", 
+                    "handle": [
+                        "-p", 
+                        "--platform"
+                    ], 
+                    "help": "Sequencing platform", 
+                    "name": "platform", 
+                    "type": "string"
+                }, 
+                {
+                    "handle": [
+                        "-t", 
+                        "--threads"
+                    ], 
+                    "help": "IO thread pool size", 
+                    "name": "threads", 
+                    "type": "integer"
+                }, 
+                {
+                    "handle": [
+                        "-T", 
+                        "--transforms"
+                    ], 
+                    "help": "Number of transforming threads", 
+                    "name": "transforms", 
+                    "type": "integer"
+                }, 
+                {
+                    "handle": [
+                        "-B", 
+                        "--buffer"
+                    ], 
+                    "help": "Records per resolution in feed buffer", 
+                    "name": "buffer capacity", 
+                    "type": "integer"
+                }
+            ]
+        }
+    ], 
+    "comment": "main pheniqs command line configuration file", 
+    "description": "Lior Galanti < lior.galanti@nyu.edu >\nNYU Center for Genomics & Systems Biology 2017", 
+    "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.", 
+    "name": "pheniqs", 
+    "option": [
+        {
+            "handle": [
+                "-h", 
+                "--help"
+            ], 
+            "help": "Show this help", 
+            "name": "help", 
+            "type": "boolean"
+        }, 
+        {
+            "handle": [
+                "--version"
+            ], 
+            "help": "Show program version", 
+            "name": "version", 
+            "type": "boolean"
+        }
+    ]
+}

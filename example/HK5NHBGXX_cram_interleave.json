@@ -1,0 +1,40 @@
+{
+    "CN": "CGSB", 
+    "DT": "2016-07-15T07:00:00+00:00", 
+    "PI": "1500", 
+    "PL": "ILLUMINA", 
+    "PM": "hiseq 2500", 
+    "base input path": "~/HK5NHBGXX", 
+    "base output path": "~/HK5NHBGXX", 
+    "channel": [
+        {
+            "output": [
+                {
+                    "path": "/dev/stdout", 
+                    "type": "sam"
+                }
+            ]
+        }
+    ], 
+    "decoder": "benchmark", 
+    "include filtered": true, 
+    "input": [
+        "HK5NHBGXX_l01n01.33100000038104.fastq.gz", 
+        "HK5NHBGXX_l01n02.33200000038101.fastq.gz", 
+        "HK5NHBGXX_l01n03.3330000003810e.fastq.gz", 
+        "HK5NHBGXX_l01n04.3340000003810b.fastq.gz"
+    ], 
+    "template": [
+        "0", 
+        "1", 
+        "2", 
+        "3"
+    ], 
+    "threads": 4, 
+    "token": [
+        "0::", 
+        "1::", 
+        "2::", 
+        "3::"
+    ]
+}
