@@ -1,0 +1,171 @@
+{
+    "CN": "CGSB", 
+    "DT": "2016-07-15T07:00:00+00:00", 
+    "PI": "1500", 
+    "PL": "ILLUMINA", 
+    "PM": "nextseq 500", 
+    "channel": [
+        {
+            "DS": "undetermined description", 
+            "LB": "undetermined_library", 
+            "PU": "HK5NHBGXY:1:undetermined", 
+            "RG": "HK5NHBGXY:1:undetermined", 
+            "SM": "undetermined_sample", 
+            "output": [
+                "SK5NHBGXY.cram"
+            ], 
+            "undetermined": true
+        }, 
+        {
+            "DS": "CCGTCC description", 
+            "LB": "CCGTCC_library", 
+            "PU": "HK5NHBGXY:1:CCGTCC", 
+            "RG": "HK5NHBGXY:1:CCGTCC", 
+            "SM": "CCGTCC_sample", 
+            "barcode": [
+                "CCGTCC"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "ACAGTG_library description", 
+            "LB": "ACAGTG_library", 
+            "PU": "HK5NHBGXY:1:ACAGTG", 
+            "RG": "HK5NHBGXY:1:ACAGTG", 
+            "SM": "ACAGTG_sample", 
+            "barcode": [
+                "ACAGTG"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "AGTTCC_library description", 
+            "LB": "AGTTCC_library", 
+            "PU": "HK5NHBGXY:1:AGTTCC", 
+            "RG": "HK5NHBGXY:1:AGTTCC", 
+            "SM": "AGTTCC_sample", 
+            "barcode": [
+                "AGTTCC"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "AGTCAA_library description", 
+            "LB": "AGTCAA_library", 
+            "PU": "HK5NHBGXY:1:AGTCAA", 
+            "RG": "HK5NHBGXY:1:AGTCAA", 
+            "SM": "AGTCAA_sample", 
+            "barcode": [
+                "AGTCAA"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "TGACCA_library description", 
+            "LB": "TGACCA_library", 
+            "PU": "HK5NHBGXY:1:TGACCA", 
+            "RG": "HK5NHBGXY:1:TGACCA", 
+            "SM": "TGACCA_sample", 
+            "barcode": [
+                "TGACCA"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "ATGTCA_library description", 
+            "LB": "ATGTCA_library", 
+            "PU": "HK5NHBGXY:1:ATGTCA", 
+            "RG": "HK5NHBGXY:1:ATGTCA", 
+            "SM": "ATGTCA_sample", 
+            "barcode": [
+                "ATGTCA"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "GTGAAA_library description", 
+            "LB": "GTGAAA_library", 
+            "PU": "HK5NHBGXY:1:GTGAAA", 
+            "RG": "HK5NHBGXY:1:GTGAAA", 
+            "SM": "GTGAAA_sample", 
+            "barcode": [
+                "GTGAAA"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "GTCCGC_library description", 
+            "LB": "GTCCGC_library", 
+            "PU": "HK5NHBGXY:1:GTCCGC", 
+            "RG": "HK5NHBGXY:1:GTCCGC", 
+            "SM": "GTCCGC_sample", 
+            "barcode": [
+                "GTCCGC"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "CTTGTA_library description", 
+            "LB": "CTTGTA_library", 
+            "PU": "HK5NHBGXY:1:CTTGTA", 
+            "RG": "HK5NHBGXY:1:CTTGTA", 
+            "SM": "CTTGTA_sample", 
+            "barcode": [
+                "CTTGTA"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }, 
+        {
+            "DS": "CGATGT_library description", 
+            "LB": "CGATGT_library", 
+            "PU": "HK5NHBGXY:1:CGATGT", 
+            "RG": "HK5NHBGXY:1:CGATGT", 
+            "SM": "CGATGT_sample", 
+            "barcode": [
+                "CGATGT"
+            ], 
+            "output": [
+                "SK5NHBGXY.cram"
+            ]
+        }
+    ], 
+    "confidence": 0.99, 
+    "decoder": "benchmark", 
+    "include filtered": false, 
+    "input": [
+        {
+            "path": "/dev/stdin", 
+            "type": "fastq"
+        }
+    ], 
+    "multiplex barcode": [
+        "0"
+    ], 
+    "noise": 0.01, 
+    "template": [
+        "1"
+    ], 
+    "threads": 16, 
+    "token": [
+        "0::6", 
+        "0:6:"
+    ]
+}

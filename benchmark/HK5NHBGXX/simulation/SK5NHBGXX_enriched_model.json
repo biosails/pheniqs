@@ -1,0 +1,486 @@
+{
+    "barcode": [
+        "TAAGGCGATCTTACGC", 
+        "CGTACTAGTCTTACGC", 
+        "AGGCAGAATCTTACGC", 
+        "TCCTGAGCTCTTACGC", 
+        "GGACTCCTTCTTACGC", 
+        "TAGGCATGTCTTACGC", 
+        "CTCTCTACTCTTACGC", 
+        "CAGAGAGGTCTTACGC", 
+        "GCTACGCTTCTTACGC", 
+        "CGAGGCTGTCTTACGC", 
+        "AAGAGGCATCTTACGC", 
+        "GTAGAGGATCTTACGC", 
+        "TAAGGCGAATAGAGAG", 
+        "CGTACTAGATAGAGAG", 
+        "AGGCAGAAATAGAGAG", 
+        "TCCTGAGCATAGAGAG", 
+        "GGACTCCTATAGAGAG", 
+        "TAGGCATGATAGAGAG", 
+        "CTCTCTACATAGAGAG", 
+        "CAGAGAGGATAGAGAG", 
+        "GCTACGCTATAGAGAG", 
+        "CGAGGCTGATAGAGAG", 
+        "AAGAGGCAATAGAGAG", 
+        "GTAGAGGAATAGAGAG", 
+        "TAAGGCGAAGAGGATA", 
+        "CGTACTAGAGAGGATA", 
+        "AGGCAGAAAGAGGATA", 
+        "TCCTGAGCAGAGGATA", 
+        "GGACTCCTAGAGGATA", 
+        "TAGGCATGAGAGGATA", 
+        "CTCTCTACAGAGGATA", 
+        "CAGAGAGGAGAGGATA", 
+        "GCTACGCTAGAGGATA", 
+        "CGAGGCTGAGAGGATA", 
+        "AAGAGGCAAGAGGATA", 
+        "GTAGAGGAAGAGGATA", 
+        "TAAGGCGATCTACTCT", 
+        "CGTACTAGTCTACTCT", 
+        "AGGCAGAATCTACTCT", 
+        "TCCTGAGCTCTACTCT", 
+        "GGACTCCTTCTACTCT", 
+        "TAGGCATGTCTACTCT", 
+        "CTCTCTACTCTACTCT", 
+        "CAGAGAGGTCTACTCT", 
+        "GCTACGCTTCTACTCT", 
+        "CGAGGCTGTCTACTCT", 
+        "AAGAGGCATCTACTCT", 
+        "GTAGAGGATCTACTCT", 
+        "TAAGGCGACTCCTTAC", 
+        "CGTACTAGCTCCTTAC", 
+        "AGGCAGAACTCCTTAC", 
+        "TCCTGAGCCTCCTTAC", 
+        "GGACTCCTCTCCTTAC", 
+        "TAGGCATGCTCCTTAC", 
+        "CTCTCTACCTCCTTAC", 
+        "CAGAGAGGCTCCTTAC", 
+        "GCTACGCTCTCCTTAC", 
+        "CGAGGCTGCTCCTTAC", 
+        "AAGAGGCACTCCTTAC", 
+        "GTAGAGGACTCCTTAC", 
+        "TAAGGCGATATGCAGT", 
+        "CGTACTAGTATGCAGT", 
+        "AGGCAGAATATGCAGT", 
+        "TCCTGAGCTATGCAGT", 
+        "GGACTCCTTATGCAGT", 
+        "TAGGCATGTATGCAGT", 
+        "CTCTCTACTATGCAGT", 
+        "CAGAGAGGTATGCAGT", 
+        "GCTACGCTTATGCAGT", 
+        "CGAGGCTGTATGCAGT", 
+        "AAGAGGCATATGCAGT", 
+        "GTAGAGGATATGCAGT", 
+        "TAAGGCGATACTCCTT", 
+        "CGTACTAGTACTCCTT", 
+        "AGGCAGAATACTCCTT", 
+        "TCCTGAGCTACTCCTT", 
+        "GGACTCCTTACTCCTT", 
+        "TAGGCATGTACTCCTT", 
+        "CTCTCTACTACTCCTT", 
+        "CAGAGAGGTACTCCTT", 
+        "GCTACGCTTACTCCTT", 
+        "CGAGGCTGTACTCCTT", 
+        "AAGAGGCATACTCCTT", 
+        "GTAGAGGATACTCCTT", 
+        "TAAGGCGAAGGCTTAG", 
+        "CGTACTAGAGGCTTAG", 
+        "AGGCAGAAAGGCTTAG", 
+        "TCCTGAGCAGGCTTAG", 
+        "GGACTCCTAGGCTTAG", 
+        "TAGGCATGAGGCTTAG", 
+        "CTCTCTACAGGCTTAG", 
+        "CAGAGAGGAGGCTTAG", 
+        "GCTACGCTAGGCTTAG", 
+        "CGAGGCTGAGGCTTAG", 
+        "AAGAGGCAAGGCTTAG", 
+        "GTAGAGGAAGGCTTAG"
+    ], 
+    "nature": "enriched", 
+    "phix frequency": 100, 
+    "phix quality sample path": "HK5NHBGXX_phix_barcode_quality", 
+    "phix sample path": "HK5NHBGXX_phix", 
+    "population size": 1000, 
+    "quality": {
+        "#": {
+            "count": {
+                "A": {
+                    "conversion": {
+                        "N": 1.0
+                    }, 
+                    "count": {
+                        "N": 62443
+                    }, 
+                    "total": 62443
+                }, 
+                "C": {
+                    "conversion": {
+                        "N": 1.0
+                    }, 
+                    "count": {
+                        "N": 51523
+                    }, 
+                    "total": 51523
+                }, 
+                "G": {
+                    "conversion": {
+                        "N": 1.0
+                    }, 
+                    "count": {
+                        "N": 44638
+                    }, 
+                    "total": 44638
+                }, 
+                "T": {
+                    "conversion": {
+                        "N": 1.0
+                    }, 
+                    "count": {
+                        "N": 65068
+                    }, 
+                    "total": 65068
+                }
+            }, 
+            "score": 2, 
+            "total": 223672
+        }, 
+        "/": {
+            "count": {
+                "A": {
+                    "conversion": {
+                        "A": 0.8090059883358688, 
+                        "C": 0.0976814017371163, 
+                        "G": 0.028467494775813344, 
+                        "T": 0.06484511515120159
+                    }, 
+                    "count": {
+                        "A": 9194294, 
+                        "C": 1110142, 
+                        "G": 323531, 
+                        "T": 736960
+                    }, 
+                    "total": 11364927
+                }, 
+                "C": {
+                    "conversion": {
+                        "A": 0.15477357129224115, 
+                        "C": 0.826535750467242, 
+                        "G": 0.01657635651384266, 
+                        "T": 0.002114321726674204
+                    }, 
+                    "count": {
+                        "A": 1085007, 
+                        "C": 5794252, 
+                        "G": 116205, 
+                        "T": 14822
+                    }, 
+                    "total": 7010286
+                }, 
+                "G": {
+                    "conversion": {
+                        "A": 0.046802610512964554, 
+                        "C": 0.024460972690182086, 
+                        "G": 0.9188322408941284, 
+                        "T": 0.009904175902725005
+                    }, 
+                    "count": {
+                        "A": 610767, 
+                        "C": 319212, 
+                        "G": 11990622, 
+                        "T": 129248
+                    }, 
+                    "total": 13049849
+                }, 
+                "T": {
+                    "conversion": {
+                        "A": 0.5216634217447147, 
+                        "C": 0.0007206147683023791, 
+                        "G": 0.016876949501539215, 
+                        "T": 0.4607390139854437
+                    }, 
+                    "count": {
+                        "A": 8188196, 
+                        "C": 11311, 
+                        "G": 264906, 
+                        "T": 7231907
+                    }, 
+                    "total": 15696320
+                }
+            }, 
+            "score": 14, 
+            "total": 47121382
+        }, 
+        "6": {
+            "count": {
+                "A": {
+                    "conversion": {
+                        "A": 0.9532633541778873, 
+                        "C": 0.01594251170079882, 
+                        "G": 0.024204432129168597, 
+                        "T": 0.006589701992145205
+                    }, 
+                    "count": {
+                        "A": 2922123, 
+                        "C": 48870, 
+                        "G": 74196, 
+                        "T": 20200
+                    }, 
+                    "total": 3065389
+                }, 
+                "C": {
+                    "conversion": {
+                        "A": 0.13649932324161887, 
+                        "C": 0.8522439034132897, 
+                        "G": 0.010470166554769803, 
+                        "T": 0.0007866067903216638
+                    }, 
+                    "count": {
+                        "A": 88847, 
+                        "C": 554723, 
+                        "G": 6815, 
+                        "T": 512
+                    }, 
+                    "total": 650897
+                }, 
+                "G": {
+                    "conversion": {
+                        "A": 0.02498097183147155, 
+                        "C": 0.0010697378458374973, 
+                        "G": 0.9735543364989481, 
+                        "T": 0.0003949538237428799
+                    }, 
+                    "count": {
+                        "A": 87665, 
+                        "C": 3754, 
+                        "G": 3416466, 
+                        "T": 1386
+                    }, 
+                    "total": 3509271
+                }, 
+                "T": {
+                    "conversion": {
+                        "A": 0.4970807526924139, 
+                        "C": 0.0023012084631872393, 
+                        "G": 0.007740279037963365, 
+                        "T": 0.4928777598064355
+                    }, 
+                    "count": {
+                        "A": 302412, 
+                        "C": 1400, 
+                        "G": 4709, 
+                        "T": 299855
+                    }, 
+                    "total": 608376
+                }
+            }, 
+            "score": 21, 
+            "total": 7833933
+        }, 
+        "<": {
+            "count": {
+                "A": {
+                    "conversion": {
+                        "A": 0.9940979503483731, 
+                        "C": 0.00023675843874720962, 
+                        "G": 0.00495501589663803, 
+                        "T": 0.0007102753162416289
+                    }, 
+                    "count": {
+                        "A": 58783, 
+                        "C": 14, 
+                        "G": 293, 
+                        "T": 42
+                    }, 
+                    "total": 59132
+                }, 
+                "C": {
+                    "conversion": {
+                        "A": 0.15268225584594222, 
+                        "C": 0.8361760660247592, 
+                        "G": 0.010866574965612105, 
+                        "T": 0.0002751031636863824
+                    }, 
+                    "count": {
+                        "A": 1110, 
+                        "C": 6079, 
+                        "G": 79, 
+                        "T": 2
+                    }, 
+                    "total": 7270
+                }, 
+                "G": {
+                    "conversion": {
+                        "A": 0.02131426625808648, 
+                        "C": 0.00028941096356826693, 
+                        "G": 0.9783112019067075, 
+                        "T": 8.512087163772556e-05
+                    }, 
+                    "count": {
+                        "A": 1252, 
+                        "C": 17, 
+                        "G": 57466, 
+                        "T": 5
+                    }, 
+                    "total": 58740
+                }, 
+                "T": {
+                    "conversion": {
+                        "A": 0.7126037444508783, 
+                        "C": 0.0028951939779965257, 
+                        "G": 0.0028951939779965257, 
+                        "T": 0.2816058675931287
+                    }, 
+                    "count": {
+                        "A": 3692, 
+                        "C": 15, 
+                        "G": 15, 
+                        "T": 1459
+                    }, 
+                    "total": 5181
+                }
+            }, 
+            "score": 27, 
+            "total": 130323
+        }, 
+        "A": {
+            "count": {
+                "A": {
+                    "conversion": {
+                        "A": 0.9860935539904091, 
+                        "C": 0.0026290769211887786, 
+                        "G": 0.0041080936411769945, 
+                        "T": 0.007169275447225076
+                    }, 
+                    "count": {
+                        "A": 42503552, 
+                        "C": 113321, 
+                        "G": 177071, 
+                        "T": 309017
+                    }, 
+                    "total": 43102961
+                }, 
+                "C": {
+                    "conversion": {
+                        "A": 0.005841322097921755, 
+                        "C": 0.9879461325328129, 
+                        "G": 0.0020020679705800544, 
+                        "T": 0.004210477398685274
+                    }, 
+                    "count": {
+                        "A": 256423, 
+                        "C": 43368968, 
+                        "G": 87887, 
+                        "T": 184832
+                    }, 
+                    "total": 43898110
+                }, 
+                "G": {
+                    "conversion": {
+                        "A": 0.0066995408769708695, 
+                        "C": 0.0017807647163016489, 
+                        "G": 0.9888891509210272, 
+                        "T": 0.00263054348570018
+                    }, 
+                    "count": {
+                        "A": 261358, 
+                        "C": 69470, 
+                        "G": 38577881, 
+                        "T": 102621
+                    }, 
+                    "total": 39011330
+                }, 
+                "T": {
+                    "conversion": {
+                        "A": 0.04383927418910507, 
+                        "C": 0.0024875691271422696, 
+                        "G": 0.0010453050499842978, 
+                        "T": 0.9526278516337684
+                    }, 
+                    "count": {
+                        "A": 1791853, 
+                        "C": 101675, 
+                        "G": 42725, 
+                        "T": 38936983
+                    }, 
+                    "total": 40873236
+                }
+            }, 
+            "score": 32, 
+            "total": 166885637
+        }, 
+        "E": {
+            "count": {
+                "A": {
+                    "conversion": {
+                        "A": 0.9735880818157189, 
+                        "C": 0.0008878777152626515, 
+                        "G": 0.021792000428855342, 
+                        "T": 0.003732040040163144
+                    }, 
+                    "count": {
+                        "A": 18524845, 
+                        "C": 16894, 
+                        "G": 414645, 
+                        "T": 71011
+                    }, 
+                    "total": 19027395
+                }, 
+                "C": {
+                    "conversion": {
+                        "A": 0.008599235768246408, 
+                        "C": 0.9751966673550768, 
+                        "G": 0.010433635654755241, 
+                        "T": 0.0057704612219215525
+                    }, 
+                    "count": {
+                        "A": 142569, 
+                        "C": 16168043, 
+                        "G": 172982, 
+                        "T": 95670
+                    }, 
+                    "total": 16579264
+                }, 
+                "G": {
+                    "conversion": {
+                        "A": 0.020823293458590752, 
+                        "C": 0.002221763448042698, 
+                        "G": 0.9717356360311427, 
+                        "T": 0.005219307062223856
+                    }, 
+                    "count": {
+                        "A": 345158, 
+                        "C": 36827, 
+                        "G": 16107074, 
+                        "T": 86513
+                    }, 
+                    "total": 16575572
+                }, 
+                "T": {
+                    "conversion": {
+                        "A": 0.0221395940827653, 
+                        "C": 0.006647721271346454, 
+                        "G": 0.00792116170340405, 
+                        "T": 0.9632915229424842
+                    }, 
+                    "count": {
+                        "A": 334952, 
+                        "C": 100574, 
+                        "G": 119840, 
+                        "T": 14573728
+                    }, 
+                    "total": 15129094
+                }
+            }, 
+            "score": 36, 
+            "total": 67311325
+        }
+    }, 
+    "quality sample path": "HK5NHBGXX_barcode_quality", 
+    "tile end": 16380, 
+    "tile start": 1000, 
+    "x end": 16380, 
+    "x start": 1000, 
+    "y end": 16380, 
+    "y start": 1000
+}

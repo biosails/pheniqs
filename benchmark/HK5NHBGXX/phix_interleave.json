@@ -1,0 +1,26 @@
+{
+    "base input path": "~/Downloads/", 
+    "channel": [
+        {
+            "output": [
+                {
+                    "path": "/dev/stdout", 
+                    "type": "sam"
+                }
+            ]
+        }
+    ], 
+    "include filtered": true, 
+    "input": [
+        "phix1.fastq", 
+        "phix2.fastq"
+    ], 
+    "template": [
+        "0:1"
+    ], 
+    "threads": 4, 
+    "token": [
+        "0::", 
+        "1::"
+    ]
+}

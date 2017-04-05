@@ -1,0 +1,306 @@
+HCJFNBCXX benchmark pheniqs mdd split fastq
+  25934.07s user 1097.95s system 1976% cpu 22:47.65 total
+
+HCJFNBCXX benchmark pheniqs mdd split fastq quality
+  44566.10s user 934.21s system 2881% cpu 26:18.90 total
+
+HCJFNBCXX benchmark pheniqs mdd interleaved fastq
+  25893.04s user 1144.74s system 1971% cpu 22:51.37 total
+
+HCJFNBCXX benchmark pheniqs mdd interleaved fastq quality
+  44662.05s user 908.83s system 2840% cpu 26:44.14 total
+
+HCJFNBCXX benchmark pheniqs mdd interleaved cram
+  6809.53s user 910.86s system 996% cpu 12:54.43 total
+
+HCJFNBCXX benchmark pheniqs mdd interleaved cram quality
+  23667.23s user 735.58s system 1969% cpu 20:39.29 total
+
+HCJFNBCXX benchmark pheniqs mdd combined cram
+  6688.72s user 954.53s system 876% cpu 14:32.27 total
+
+HCJFNBCXX benchmark pheniqs mdd combined cram quality
+  24066.61s user 1096.50s system 1875% cpu 22:21.73 total
+
+HCJFNBCXX benchmark pheniqs pamld split fastq
+  26857.98s user 1085.77s system 2015% cpu 23:06.33 total
+
+HCJFNBCXX benchmark pheniqs pamld split fastq quality
+  46044.35s user 861.37s system 2911% cpu 26:51.19 total
+
+HCJFNBCXX benchmark pheniqs pamld interleaved fastq
+  27104.30s user 1267.85s system 2019% cpu 23:24.62 total
+
+HCJFNBCXX benchmark pheniqs pamld interleaved fastq quality
+  45959.32s user 898.93s system 2854% cpu 27:21.36 total
+
+HCJFNBCXX benchmark pheniqs pamld interleaved cram
+  7464.99s user 1192.92s system 1127% cpu 12:48.13 total
+
+HCJFNBCXX benchmark pheniqs pamld interleaved cram quality
+  24458.09s user 768.24s system 1962% cpu 21:25.49 total
+
+HCJFNBCXX benchmark pheniqs pamld combined cram
+  6977.14s user 848.54s system 869% cpu 15:00.30 total
+
+HCJFNBCXX benchmark pheniqs pamld combined cram quality
+  24710.90s user 986.19s system 1882% cpu 22:44.72 total
+
+
+HG7CVAFXX benchmark pheniqs mdd split fastq
+  2320.06s user 740.43s system 2167% cpu 2:21.19 total
+
+HG7CVAFXX benchmark pheniqs mdd split fastq quality
+  3196.02s user 292.82s system 2031% cpu 2:51.72 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved fastq
+  2299.70s user 475.09s system 1946% cpu 2:22.58 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved fastq quality
+  3192.28s user 274.75s system 1989% cpu 2:54.26 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved cram
+  971.99s user 709.73s system 1413% cpu 1:58.99 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved cram quality
+  1929.82s user 280.26s system 1489% cpu 2:28.35 total
+
+HG7CVAFXX benchmark pheniqs mdd combined cram
+  1011.60s user 353.58s system 1057% cpu 2:09.12 total
+
+HG7CVAFXX benchmark pheniqs mdd combined cram quality
+  2052.36s user 405.80s system 1327% cpu 3:05.18 total
+
+HG7CVAFXX benchmark pheniqs pamld split fastq
+  2704.98s user 356.33s system 2117% cpu 2:24.60 total
+
+HG7CVAFXX benchmark pheniqs pamld split fastq quality
+  3576.78s user 248.91s system 2129% cpu 2:59.64 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved fastq
+  2705.50s user 465.29s system 2206% cpu 2:23.68 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved fastq quality
+  3573.06s user 251.82s system 2138% cpu 2:58.90 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved cram
+  1379.91s user 439.61s system 1405% cpu 2:09.48 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved cram quality
+  2258.19s user 238.54s system 1622% cpu 2:33.91 total
+
+HG7CVAFXX benchmark pheniqs pamld combined cram
+  1607.61s user 418.61s system 1193% cpu 2:49.81 total
+
+HG7CVAFXX benchmark pheniqs pamld combined cram quality
+  2360.71s user 352.22s system 1496% cpu 3:01.31 total
+
+
+HG7CVAFXX benchmark pheniqs mdd split fastq
+  2240.60s user 772.51s system 2133% cpu 2:21.26 total
+
+HG7CVAFXX benchmark pheniqs mdd split fastq quality
+  3127.52s user 287.76s system 1941% cpu 2:55.88 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved fastq
+  2189.75s user 618.79s system 2251% cpu 2:04.74 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved fastq quality
+  3102.71s user 304.09s system 2077% cpu 2:44.02 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved cram
+  981.83s user 427.62s system 1099% cpu 2:08.22 total
+
+HG7CVAFXX benchmark pheniqs mdd interleaved cram quality
+  1943.82s user 278.76s system 1301% cpu 2:50.79 total
+
+HG7CVAFXX benchmark pheniqs mdd combined cram
+  1117.72s user 505.29s system 1014% cpu 2:40.04 total
+
+HG7CVAFXX benchmark pheniqs mdd combined cram quality
+  1986.34s user 415.44s system 1324% cpu 3:01.28 total
+
+HG7CVAFXX benchmark pheniqs pamld split fastq
+  2620.93s user 467.65s system 2216% cpu 2:19.33 total
+
+HG7CVAFXX benchmark pheniqs pamld split fastq quality
+  3528.76s user 254.91s system 2104% cpu 2:59.80 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved fastq
+  2607.94s user 429.50s system 2317% cpu 2:11.06 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved fastq quality
+  3516.57s user 250.31s system 2109% cpu 2:58.53 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved cram
+  1346.68s user 459.50s system 1373% cpu 2:11.48 total
+
+HG7CVAFXX benchmark pheniqs pamld interleaved cram quality
+  2347.26s user 242.12s system 1451% cpu 2:58.38 total
+
+HG7CVAFXX benchmark pheniqs pamld combined cram
+  1474.82s user 382.44s system 1208% cpu 2:33.65 total
+
+HG7CVAFXX benchmark pheniqs pamld combined cram quality
+  2284.24s user 342.34s system 1488% cpu 2:56.51 total
+
+HG7CVAFXX benchmark fastq-multx mdd split fastq
+  692.37s user 29.44s system 192% cpu 6:15.62 total
+
+
+HK5NHBGXX benchmark pheniqs mdd split fastq
+  3306.48s user 2275.99s system 1933% cpu 4:48.67 total
+
+HK5NHBGXX benchmark pheniqs mdd split fastq quality
+  4292.30s user 1134.48s system 1723% cpu 5:14.95 total
+
+HK5NHBGXX benchmark pheniqs pamld split fastq
+  5187.18s user 766.79s system 1960% cpu 5:03.71 total
+
+HK5NHBGXX benchmark pheniqs pamld split fastq quality
+  6056.22s user 537.80s system 2027% cpu 5:25.25 total
+
+HK5NHBGXX benchmark pheniqs mdd interleaved fastq
+  3322.55s user 2295.03s system 1946% cpu 4:48.63 total
+
+HK5NHBGXX benchmark pheniqs mdd interleaved fastq quality
+  4158.57s user 1424.90s system 1897% cpu 4:54.19 total
+
+HK5NHBGXX benchmark pheniqs pamld interleaved fastq
+  5133.15s user 827.12s system 2139% cpu 4:38.64 total
+
+HK5NHBGXX benchmark pheniqs pamld interleaved fastq quality
+  5911.73s user 535.13s system 2108% cpu 5:05.70 total
+
+HK5NHBGXX benchmark pheniqs mdd interleaved cram
+  1769.37s user 1319.88s system 1148% cpu 4:28.87 total
+
+HK5NHBGXX benchmark pheniqs mdd interleaved cram quality
+  2843.16s user 1045.34s system 1264% cpu 5:07.55 total
+
+HK5NHBGXX benchmark pheniqs pamld interleaved cram
+  3673.41s user 596.21s system 1484% cpu 4:47.66 total
+
+HK5NHBGXX benchmark pheniqs pamld interleaved cram quality
+  4563.25s user 505.26s system 1547% cpu 5:27.60 total
+
+HK5NHBGXX benchmark pheniqs mdd combined cram
+  1847.31s user 1151.07s system 939% cpu 5:19.05 total
+
+HK5NHBGXX benchmark pheniqs mdd combined cram quality
+  3107.00s user 1015.09s system 1181% cpu 5:48.82 total
+
+HK5NHBGXX benchmark pheniqs pamld combined cram
+  3970.44s user 743.27s system 1492% cpu 5:15.87 total
+
+HK5NHBGXX benchmark pheniqs pamld combined cram quality
+  4786.82s user 613.99s system 1590% cpu 5:39.54 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1345.91s user 86.61s system 390% cpu 6:07.27 total
+
+
+HCJFNBCXX benchmark fastq-multx mdd split fastq
+  8101.80s user 360.69s system 157% cpu 1:29:38.17 total
+
+HCJFNBCXX benchmark fastq-multx mdd split fastq
+  8114.07s user 365.54s system 157% cpu 1:29:45.29 total
+
+HCJFNBCXX benchmark fastq-multx mdd split fastq
+  8112.19s user 368.49s system 157% cpu 1:29:45.01 total
+
+HCJFNBCXX benchmark picard mdd split cram
+  18026.08s user 297.61s system 662% cpu 46:04.10 total
+
+HCJFNBCXX benchmark picard mdd split fastq
+  22004.76s user 1066.53s system 518% cpu 1:14:06.58 total
+
+HG7CVAFXX benchmark fastq-multx mdd split fastq
+  689.58s user 30.20s system 191% cpu 6:16.50 total
+
+HG7CVAFXX benchmark fastq-multx mdd split fastq
+  691.51s user 29.99s system 192% cpu 6:15.52 total
+
+HG7CVAFXX benchmark fastq-multx mdd split fastq
+  691.77s user 30.01s system 184% cpu 6:30.71 total
+
+HG7CVAFXX benchmark fastq-multx mdd split fastq
+  694.76s user 28.97s system 190% cpu 6:19.08 total
+
+HG7CVAFXX benchmark fastq-multx mdd split fastq
+  699.18s user 29.54s system 191% cpu 6:19.78 total
+
+HG7CVAFXX benchmark fastq-multx mdd split fastq
+  692.37s user 28.76s system 191% cpu 6:16.88 total
+
+HG7CVAFXX benchmark picard mdd split cram
+  2904.39s user 61.39s system 1766% cpu 2:47.93 total
+
+HG7CVAFXX benchmark picard mdd split cram
+  2996.52s user 55.87s system 1819% cpu 2:47.77 total
+
+HG7CVAFXX benchmark picard mdd split fastq
+  6245.23s user 293.82s system 1826% cpu 5:58.00 total
+
+HG7CVAFXX benchmark picard mdd split fastq
+  6335.69s user 434.70s system 1768% cpu 6:22.73 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1345.76s user 86.88s system 390% cpu 6:06.95 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1345.76s user 86.88s system 390% cpu 6:06.95 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1345.80s user 84.66s system 391% cpu 6:05.51 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1345.80s user 84.66s system 391% cpu 6:05.51 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1346.74s user 86.27s system 392% cpu 6:04.95 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1346.74s user 86.27s system 392% cpu 6:04.95 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1346.76s user 87.56s system 390% cpu 6:06.88 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1346.76s user 87.56s system 390% cpu 6:06.88 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1349.69s user 84.72s system 391% cpu 6:06.68 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1349.69s user 84.72s system 391% cpu 6:06.68 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1352.46s user 88.02s system 392% cpu 6:07.23 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1352.46s user 88.02s system 392% cpu 6:07.23 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1356.07s user 89.19s system 391% cpu 6:09.46 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1356.07s user 89.19s system 391% cpu 6:09.46 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1360.65s user 87.43s system 396% cpu 6:04.95 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1360.65s user 87.43s system 396% cpu 6:04.95 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1362.55s user 87.27s system 393% cpu 6:08.90 total
+
+HK5NHBGXX benchmark fastq-multx mdd split fastq
+  1362.55s user 87.27s system 393% cpu 6:08.90 total
+
+HK5NHBGXX benchmark picard mdd split cram
+  5328.51s user 74.52s system 1698% cpu 5:18.18 total
+
+HK5NHBGXX benchmark picard mdd split fastq
+  7220.78s user 369.61s system 1682% cpu 7:31.20 total
