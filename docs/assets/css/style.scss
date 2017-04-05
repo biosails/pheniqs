@@ -69,7 +69,7 @@ a {
 
 .page-header {
     padding: 0rem 0rem 1rem 0rem;
-    background-color: #B93A55;
+    background-color: #993830;
     background-image: none;
 }
 
@@ -107,7 +107,7 @@ a {
     margin-top: 2rem;
     margin-bottom: 2rem;
     font-weight: bold;
-    color: #A91A35;
+    color: rgba(165, 48, 75, 0.9);
 }
 
 .main-content h2 {
@@ -129,9 +129,9 @@ a {
     color: #516168;
     padding: 1.5rem;
     margin: 2rem 0rem;
-    background-color: rgba(239, 240, 241, 0.7);
+    background-color: rgba(239, 240, 241, 0.5);
     border-radius: 0rem 0.3rem 0.3rem 0rem;
-    border-color: rgba(152, 167, 37, 0.7);
+    border-color: rgba(36, 41, 36, 0.75);
 }
 
 .main-content .example code {
@@ -176,7 +176,7 @@ a {
 }
 
 .lab-footer a.pheniqs {
-    color: #A91A35;
+    color: rgba(165, 48, 75, 0.9);
 }
 
 .lab-footer a:hover {
@@ -184,8 +184,13 @@ a {
     color: rgba(120, 135, 37, 1);
 }
 
+.main-content code {
+    color: #464646;
+    background-color: #f0f0f0;
+}
+
 #navigation {
-    background-color:rgba(152,167,37,0.9);
+    background-color: rgba(36, 41, 36, 0.9);
     padding: 1.5rem 1rem 0rem 1rem;
     font-size: 0.8rem;
     border-bottom-right-radius: 0.3rem;
@@ -205,7 +210,7 @@ a {
 }
 
 #navigation a.github {
-    background-color: rgba(185, 58, 85, 0.9);
+    background-color: rgba(153,56,48, 0.85);
     float: right !important;
 }
 
@@ -223,7 +228,7 @@ a {
 }
 
 #navigation a.active {
-    background-color: rgba(255, 255, 155, 0.3);
+    background-color: rgba(120,135,37,0.6);
 }
 
 #navigation a:hover {
@@ -244,12 +249,12 @@ a {
     list-style-type: none;
     list-style-position: inside;
     border-radius: 0.3rem;
-    background-color:rgba(152,167,37,0.9);
+    background-color: rgba(36, 41, 36, 0.9);
 }
 
 #markdown-toc a {
     color: #FFF;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 0.8rem;
     transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 }
