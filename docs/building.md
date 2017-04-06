@@ -36,7 +36,7 @@
 # Building
 {:.page-title}
 
-Pheniqs is regularly tested to build with the supplied [Makefile]({{ site.github.repository_url }}/blob/master/Makefile) on MacOS and Ubuntu but should build on most POSIX systems that provide the dependencies. Pheniqs depends only on [HTSlib](https://github.com/samtools/htslib) and [RapidJSON](https://github.com/miloyip/rapidjson).
+Pheniqs is regularly tested to build with the supplied [Makefile]({{ site.github.repository_url }}/blob/master/Makefile) on MacOS and Ubuntu but should build on most POSIX systems that provide the dependencies. Pheniqs depends only on [HTSlib 1.4](https://github.com/samtools/htslib/releases/tag/1.4) and [RapidJSON 1.1.0](https://github.com/miloyip/rapidjson/releases/tag/v1.1.0).
 
 ## MacOS
 Pheniqs has been tested to build on MacOS 10.12 with dependencies installed from [homebrew](http://brew.sh)
