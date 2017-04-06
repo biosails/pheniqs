@@ -58,6 +58,7 @@ const char PATH_SEPARATOR = '/';
 const char EXTENSION_SEPARATOR = '.';
 const char LINE_BREAK = '\n';
 
+const size_t PEEK_BUFFER_CAPACITY = 4096;
 const size_t DEFAULT_FEED_CAPACITY = 60;
 const size_t DEFAULT_FEED_RESOLUTION = 60;
 const size_t DEFAULT_FEED_THREADS = 1;

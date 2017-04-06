@@ -1119,7 +1119,6 @@ class HtsFeed : public BufferedFeed<bam1_t> {
             return hts_file != NULL;
         };
         HtsHeader& get_header() {
-            acquire_pull_lock();
             return header;
         };
 

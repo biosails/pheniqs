@@ -153,10 +153,17 @@ class Environment {
             return multiplex_barcode_distance.minimum_distance();
         };
         void validate_urls();
+        ChannelSpecification* load_channel_from_rg(const HeadRGAtom& rg);
+        void load_input_specification();
+        void load_channels();
+        FeedSpecification* discover_feed(const URL& url, const IoDirection& direction);
 
-    private:
         vector< string > token_patterns;
         vector< string > template_patterns;
+
+        void load_transformation();
+
+    private:
         vector< string > multiplex_barcode_patterns;
         vector< string > molecular_barcode_patterns;
         vector< Distance > multiplex_barcode_set_distance;
@@ -172,7 +179,6 @@ class Environment {
 
         void load_defaults();
         void load_urls();
-        void load_transformation();
         void load_token(const string& pattern);
         void load_transform(const string& pattern, vector< Transform >& container, const size_t& index);
         void load_barcode_tolerance();
@@ -180,8 +186,6 @@ class Environment {
         void load_undetermined();
         void load_multiplex_barcodes();
         void load_prior();
-        void load_channels();
-        void load_input_specification();
         void load_output_specification();
         void validate_io();
         void probe();
@@ -378,6 +382,5 @@ class Environment {
                 decode_string_node(node, "KS", &rg.KS);
             }
         };
-        FeedSpecification* discover_feed(const URL& url, const IoDirection& direction);
 };
 #endif /* PHENIQS_ENVIRONMENT_H */

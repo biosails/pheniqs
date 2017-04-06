@@ -1086,7 +1086,6 @@ HeadRGAtom::HeadRGAtom() :
     FO({ 0, 0, NULL }),
     KS({ 0, 0, NULL }){
     ks_terminate(ID)
-    // cerr << "HeadRGAtom Constructor" << endl;
 };
 HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -1116,7 +1115,6 @@ HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     if(other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
     if(other.FO.l > 0) kputsn(other.FO.s, other.FO.l, &FO);
     if(other.KS.l > 0) kputsn(other.KS.s, other.KS.l, &KS);
-    // cerr << "HeadRGAtom Copy Constructor" << endl;
 };
 HeadRGAtom::~HeadRGAtom() {
     ks_free(ID);
@@ -1132,10 +1130,8 @@ HeadRGAtom::~HeadRGAtom() {
     ks_free(PG);
     ks_free(FO);
     ks_free(KS);
-    // cerr << "HeadRGAtom Destructor" << endl;
 };
 HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
-    // cerr << "HeadRGAtom Assignment" << endl;
     if(&other == this) {
         return *this;
     } else {
@@ -1463,7 +1459,7 @@ void FeedSpecification::probe() {
         case IoDirection::IN: {
             hfile = hopen(url.c_str(), "r");
             if(url.type() == FormatType::UNKNOWN) {
-                size_t buffer_capacity = 4096;
+                size_t buffer_capacity = PEEK_BUFFER_CAPACITY;
                 ssize_t buffer_length = 0;
                 unsigned char* buffer = (unsigned char*)malloc(buffer_capacity);;
 
@@ -1507,11 +1503,6 @@ void FeedSpecification::probe() {
                             url.set_type(FormatType::UNKNOWN);
                             break;
                     }
-                    cerr << "htsFormat category " << format.category << endl;
-                    cerr << "htsFormat format " << format.format << endl;
-                    cerr << "htsFormat version " << format.version.major << "." << format.version.minor << endl;
-                    cerr << "htsFormat compression " << format.compression << endl;
-                    cerr << "hts_format_description " << hts_format_description(&format) << endl;
                 }
 
                 if(url.type() == FormatType::SAM) {
@@ -1521,23 +1512,22 @@ void FeedSpecification::probe() {
                             case htsCompression::gzip:
                             case htsCompression::bgzf: {
                                 unsigned char* decompressed_buffer = (unsigned char*)malloc(buffer_capacity);;
-                                z_stream zs;
-                                zs.zalloc = NULL;
-                                zs.zfree = NULL;
-                                zs.next_in = buffer;
-                                zs.avail_in = buffer_length;
-                                zs.next_out = decompressed_buffer;
-                                zs.avail_out = buffer_capacity;
-                                if(inflateInit2(&zs, 31) == Z_OK) {
-                                    while(zs.total_out < buffer_capacity) {
-                                        if(inflate(&zs, Z_SYNC_FLUSH) != Z_OK) break;
+                                z_stream zstream;
+                                zstream.zalloc = NULL;
+                                zstream.zfree = NULL;
+                                zstream.next_in = buffer;
+                                zstream.avail_in = buffer_length;
+                                zstream.next_out = decompressed_buffer;
+                                zstream.avail_out = buffer_capacity;
+                                if(inflateInit2(&zstream, 31) == Z_OK) {
+                                    while(zstream.total_out < buffer_capacity) {
+                                        if(inflate(&zstream, Z_SYNC_FLUSH) != Z_OK) break;
                                     }
-                                    inflateEnd(&zs);
-                                    memcpy(buffer, decompressed_buffer, zs.total_out);
-                                    buffer_length = zs.total_out;
+                                    inflateEnd(&zstream);
+                                    memcpy(buffer, decompressed_buffer, zstream.total_out);
+                                    buffer_length = zstream.total_out;
                                 } else {
                                     buffer_length = 0;
-                                    cerr << "error decompressing" << endl;
                                 }
                                 free(decompressed_buffer);
                                 break;

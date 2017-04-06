@@ -173,12 +173,12 @@ void Environment::load(int argc, char** argv) {
         if(state == ProgramState::VALID) {
             load_defaults();
             load_urls();
+            load_thread_model();
 
             switch (action) {
                 case ProgramAction::DEMULTIPLEX: {
                     load_transformation();
                     load_barcode_tolerance();
-                    load_thread_model();
                     load_undetermined();
                     load_multiplex_barcodes();
                     load_prior();
@@ -192,15 +192,6 @@ void Environment::load(int argc, char** argv) {
                 };
 
                 case ProgramAction::QUALITY: {
-                    input_urls.push_back(input_url);
-                    load_transformation();
-                    load_barcode_tolerance();
-                    load_thread_model();
-                    load_channels();
-                    load_input_specification();
-                    load_output_specification();
-                    validate_io();
-                    probe();
                     break;
                 };
 
@@ -539,7 +530,7 @@ void Environment::load_read_group_node(const Value& node) {
         HeadRGAtom* rg = new HeadRGAtom();
         decode_read_group(*rg, node, "ID");
         if(rg->ID.l > 0) {
-            string id(rg->ID.s, rg->ID.l);
+            string id(*rg);
             auto record = read_group_by_id.find(id);
             if (record == read_group_by_id.end()) {
                 read_group_by_id.emplace(make_pair(id, rg));
@@ -615,6 +606,12 @@ void Environment::load_barcode_node(const Value& node, Barcode& barcode) {
     } else {
         throw ParsingError(" barcode element must be an array");
     }
+};
+ChannelSpecification* Environment::load_channel_from_rg(const HeadRGAtom& rg) {
+    ChannelSpecification* specification = new ChannelSpecification(channel_specifications.size());
+    specification->rg = rg;
+    channel_specifications.push_back(specification);
+    return specification;
 };
 /*  loading data structures
 */
@@ -1003,8 +1000,7 @@ void Environment::load_channels() {
 
     for(auto specifications : channel_specifications) {
         if(specifications->rg.ID.l > 0) {
-            string id(specifications->rg.ID.s, specifications->rg.ID.l);
-            auto record = read_group_by_id.find(id);
+            auto record = read_group_by_id.find(specifications->rg);
             if (record != read_group_by_id.end()) {
                 specifications->rg.expand(*record->second);
             }

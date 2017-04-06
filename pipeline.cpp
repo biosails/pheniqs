@@ -25,6 +25,7 @@
 
 Pivot::Pivot(Pipeline& pipeline) :
     index(pipeline.pivots.size()),
+    action(pipeline.environment.action),
     decoder(pipeline.environment.decoder),
     multiplex_barcode(pipeline.environment.total_multiplex_barcode_segments),
     molecular_barcode(pipeline.environment.total_molecular_barcode_segments),
@@ -63,9 +64,28 @@ Pivot::Pivot(Pipeline& pipeline) :
         are collected on the pivots and only at the end summed up
         on the channel. otherwise they are collected directly on the channel
     */
-    if(long_read) {
-        for(const auto specification : pipeline.environment.channel_specifications) {
-            channel_by_barcode.emplace(make_pair(string(specification->multiplex_barcode), ChannelAccumulator(*specification)));
+    if(!disable_quality_control && long_read) {
+        switch (action) {
+            case ProgramAction::DEMULTIPLEX: {
+                channel_by_barcode.reserve(pipeline.environment.channel_specifications.size());
+                for(const auto specification : pipeline.environment.channel_specifications) {
+                    if(!specification->multiplex_barcode.empty()) {
+                        channel_by_barcode.emplace(make_pair(specification->multiplex_barcode, *specification));
+                    }
+                }
+                break;
+            };
+            case ProgramAction::QUALITY: {
+                channel_by_read_group_id.reserve(pipeline.environment.channel_specifications.size());
+                for(const auto specification : pipeline.environment.channel_specifications) {
+                    if(specification->rg.ID.l > 0) {
+                        channel_by_read_group_id.emplace(make_pair(specification->rg, *specification));
+                    }
+                }
+                break;
+            };
+            default:
+                break;
         }
     }
     clear();
@@ -86,79 +106,66 @@ inline void Pivot::clear() {
     for(auto& segment : output) segment.clear();
 };
 void Pivot::run() {
-    switch (pipeline.environment.action) {
-    case ProgramAction::DEMULTIPLEX: {
-        switch(decoder) {
-        case(Decoder::PAMLD): {
+    switch (action) {
+        case ProgramAction::DEMULTIPLEX: {
+            switch(decoder) {
+            case(Decoder::PAMLD): {
+                while(pipeline.pull(*this)) {
+                    validate();
+                    transform();
+                    decode_with_pamld();
+                    encode_auxiliary();
+                    push();
+                    increment();
+                    clear();
+                }
+                break;
+            };
+            case(Decoder::MDD): {
+                while(pipeline.pull(*this)) {
+                    validate();
+                    transform();
+                    decode_with_mdd();
+                    encode_auxiliary();
+                    push();
+                    increment();
+                    clear();
+                }
+                break;
+            };
+            case(Decoder::BENCHMARK): {
+                while(pipeline.pull(*this)) {
+                    validate();
+                    transform();
+                    decode_with_mdd();
+                    encode_mmd_benchmark_auxiliary();
+                    decode_with_pamld();
+                    encode_pamld_benchmark_auxiliary();
+                    encode_auxiliary();
+                    push();
+                    increment();
+                    clear();
+                }
+                break;
+            };
+            default: break;
+            }
+            break;
+        };
+        case ProgramAction::QUALITY: {
             while(pipeline.pull(*this)) {
                 validate();
                 transform();
-                decode_with_pamld();
-                encode_auxiliary();
+                decode_tagged_channel();
+                copy_auxiliary();
                 push();
                 increment();
                 clear();
             }
             break;
         };
-        case(Decoder::MDD): {
-            while(pipeline.pull(*this)) {
-                validate();
-                transform();
-                decode_with_mdd();
-                encode_auxiliary();
-                push();
-                increment();
-                clear();
-            }
+        default:
             break;
-        };
-        case(Decoder::BENCHMARK): {
-            while(pipeline.pull(*this)) {
-                validate();
-                transform();
-                decode_with_mdd();
-                encode_mmd_benchmark_auxiliary();
-                decode_with_pamld();
-                encode_pamld_benchmark_auxiliary();
-                encode_auxiliary();
-                push();
-                increment();
-                clear();
-            }
-            break;
-        };
-        default: break;
-        }
-        break;
-    };
-    case ProgramAction::QUALITY: {
-        while(pipeline.pull(*this)) {
-            validate();
-            transform();
-            decode_tagged_channel();
-            copy_auxiliary();
-            push();
-            increment();
-            clear();
-        }
-        break;
-    };
-    default: break;
-    }
-};
-void Pivot::rotate() {
-    while(pipeline.pull(*this)) {
-        transform();
-        copy_auxiliary();
-        if(leading_segment->auxiliary.RG.l > 0) {
-            string rg(leading_segment->auxiliary.RG.s, leading_segment->auxiliary.RG.l);
-            auto record = pipeline.channel_by_read_group_id.find(rg);
-            if (record != pipeline.channel_by_read_group_id.end()) {
-                record->second->push(*this);
-            }
-        }
-        increment();
     }
 };
 inline void Pivot::validate() {
@@ -171,6 +178,35 @@ inline void Pivot::validate() {
                 throw SequenceError("read segments out of sync " + string(segment.name.s, segment.name.l) + " and " + string(baseline.s, baseline.l));
             }
         }
+    }
+};
+inline void Pivot::transform() {
+    // populate the output
+    for (auto& transform : pipeline.environment.template_transforms ) {
+        const Segment& from = input[transform.token.input_segment_index];
+        Segment& to = output[transform.output_segment_index];
+        to.sequence.append(from.sequence, transform);
+    }
+
+    // populate the multiplex barcode
+    for (auto& transform : pipeline.environment.multiplex_barcode_transforms) {
+        const Segment& from = input[transform.token.input_segment_index];
+        multiplex_barcode.append(transform.output_segment_index, from.sequence, transform);
+    }
+
+    // populate the molecular barcode
+    for (auto& transform : pipeline.environment.molecular_barcode_transforms) {
+        const Segment& from = input[transform.token.input_segment_index];
+        molecular_barcode.append(transform.output_segment_index, from.sequence, transform);
+    }
+
+    // assign the pivot qc_fail flag from the leader
+    filtered = leading_segment->get_qcfail();
+
+    for (auto& segment : output) {
+        kputsn(leading_segment->name.s, leading_segment->name.l, &segment.name);
+        segment.set_qcfail(leading_segment->get_qcfail());
+        segment.auxiliary.XI = leading_segment->auxiliary.XI;
     }
 };
 inline void Pivot::decode_with_pamld() {
@@ -228,7 +264,6 @@ inline void Pivot::decode_with_pamld() {
         conditioned_multiplex_probability = 0;
         multiplex_distance = 0;
         multiplex_probability = 1;
-        // multiplex_probability = 1.0 - sigma / (sigma + pipeline.environment.adjusted_noise_probability);
     }
 };
 inline void Pivot::decode_with_mdd() {
@@ -237,8 +272,7 @@ inline void Pivot::decode_with_mdd() {
     determined = false;
 
     /* First try a perfect match to the full barcode sequence */
-    const string code(multiplex_barcode);
-    auto record = pipeline.channel_by_barcode.find(code);
+    auto record = pipeline.channel_by_barcode.find(multiplex_barcode);
     if (record != pipeline.channel_by_barcode.end()) {
         decoded_multiplex_channel = record->second;
         multiplex_distance = 0;
@@ -256,35 +290,6 @@ inline void Pivot::decode_with_mdd() {
         if(!determined) {
             multiplex_distance = 0;
         }
-    }
-};
-inline void Pivot::transform() {
-    // populate the output
-    for (auto& transform : pipeline.environment.template_transforms ) {
-        const Segment& from = input[transform.token.input_segment_index];
-        Segment& to = output[transform.output_segment_index];
-        to.sequence.append(from.sequence, transform);
-    }
-
-    // populate the multiplex barcode
-    for (auto& transform : pipeline.environment.multiplex_barcode_transforms) {
-        const Segment& from = input[transform.token.input_segment_index];
-        multiplex_barcode.append(transform.output_segment_index, from.sequence, transform);
-    }
-
-    // populate the molecular barcode
-    for (auto& transform : pipeline.environment.molecular_barcode_transforms) {
-        const Segment& from = input[transform.token.input_segment_index];
-        molecular_barcode.append(transform.output_segment_index, from.sequence, transform);
-    }
-
-    // assign the pivot qc_fail flag from the leader
-    filtered = leading_segment->get_qcfail();
-
-    for (auto& segment : output) {
-        kputsn(leading_segment->name.s, leading_segment->name.l, &segment.name);
-        segment.set_qcfail(leading_segment->get_qcfail());
-        segment.auxiliary.XI = leading_segment->auxiliary.XI;
     }
 };
 inline void Pivot::decode_tagged_channel() {
@@ -337,9 +342,27 @@ inline void Pivot::increment() {
 
         // long read tracks channel quality on the pivot
         if(long_read) {
-            const auto& record = channel_by_barcode.find(decoded_multiplex_channel->key);
-            if (record != channel_by_barcode.end()) {
-                record->second.increment(*this);
+            switch (action) {
+                case ProgramAction::DEMULTIPLEX: {
+                    if(!decoded_multiplex_channel->barcode_key.empty()) {
+                        const auto& record = channel_by_barcode.find(decoded_multiplex_channel->barcode_key);
+                        if (record != channel_by_barcode.end()) {
+                            record->second.increment(*this);
+                        }
+                    }
+                    break;
+                };
+                case ProgramAction::QUALITY: {
+                    if(!decoded_multiplex_channel->rg_key.empty()) {
+                        const auto& record = channel_by_read_group_id.find(decoded_multiplex_channel->rg_key);
+                        if (record != channel_by_read_group_id.end()) {
+                            record->second.increment(*this);
+                        }
+                    }
+                    break;
+                };
+                default:
+                    break;
             }
         }
     }
@@ -366,28 +389,32 @@ inline void Pivot::encode_pamld_benchmark_auxiliary () {
 
 Channel::Channel(const Pipeline& pipeline, const ChannelSpecification& specification) :
     index(specification.index),
-    key(specification.multiplex_barcode),
+    barcode_key(specification.multiplex_barcode),
+    rg_key(specification.rg),
     concentration(specification.concentration),
     multiplex_barcode(specification.multiplex_barcode),
     disable_quality_control(specification.disable_quality_control),
     long_read(specification.long_read),
     include_filtered(specification.include_filtered),
     undetermined(specification.undetermined),
+    writable(specification.writable()),
     rg(specification.rg),
     channel_accumulator(specification) {
 
-    map< size_t, Feed* > feed_by_index;
-    output_feeds.reserve(specification.output_urls.size());
-    for(const auto& url : specification.output_urls) {
-        Feed* feed = pipeline.resolve_feed(url, IoDirection::OUT);
-        output_feeds.push_back(feed);
-        if (feed_by_index.find(feed->index()) == feed_by_index.end()) {
-            feed_by_index[feed->index()] = feed;
+    if(writable) {
+        map< size_t, Feed* > feed_by_index;
+        output_feeds.reserve(specification.output_urls.size());
+        for(const auto& url : specification.output_urls) {
+            Feed* feed = pipeline.resolve_feed(url, IoDirection::OUT);
+            output_feeds.push_back(feed);
+            if (feed_by_index.find(feed->index()) == feed_by_index.end()) {
+                feed_by_index[feed->index()] = feed;
+            }
         }
-    }
-    unique_output_feeds.reserve(feed_by_index.size());
-    for(const auto& record : feed_by_index) {
-        unique_output_feeds.push_back(record.second);
+        unique_output_feeds.reserve(feed_by_index.size());
+        for(const auto& record : feed_by_index) {
+            unique_output_feeds.push_back(record.second);
+        }
     }
 };
 Channel::~Channel() {
@@ -397,21 +424,23 @@ inline void Channel::increment(Pivot& pivot) {
     channel_accumulator.increment(pivot);
 };
 void Channel::push(Pivot& pivot) {
-    // acquire a push lock for all feeds in a fixed order
-    vector< unique_lock< mutex > > feed_locks;
-    feed_locks.reserve(unique_output_feeds.size());
-    for(const auto feed : unique_output_feeds) {
-        feed_locks.push_back(feed->acquire_push_lock());
-    }
+    if(writable) {
+        // acquire a push lock for all feeds in a fixed order
+        vector< unique_lock< mutex > > feed_locks;
+        feed_locks.reserve(unique_output_feeds.size());
+        for(const auto feed : unique_output_feeds) {
+            feed_locks.push_back(feed->acquire_push_lock());
+        }
 
-    // push the segments to the output feeds
-    for(size_t i = 0; i < output_feeds.size(); i++) {
-        output_feeds[i]->push(pivot.output[i]);
-    }
+        // push the segments to the output feeds
+        for(size_t i = 0; i < output_feeds.size(); i++) {
+            output_feeds[i]->push(pivot.output[i]);
+        }
 
-    // release the locks on the feeds in reverse order
-    for (auto feed_lock = feed_locks.rbegin(); feed_lock != feed_locks.rend(); ++feed_lock) {
-        feed_lock->unlock();
+        // release the locks on the feeds in reverse order
+        for (auto feed_lock = feed_locks.rbegin(); feed_lock != feed_locks.rend(); ++feed_lock) {
+            feed_lock->unlock();
+        }
     }
 
     // for short reads the channels track their own quality
@@ -455,16 +484,12 @@ Pipeline::Pipeline(Environment& environment) :
     end_of_input(false),
     thread_pool({NULL, 0}),
     undetermined(NULL),
-    input_accumulator(environment.total_input_segments) {
+    input_accumulator(NULL) {
 
     thread_pool.pool = hts_tpool_init(environment.threads);
     if (!thread_pool.pool) {
         throw InternalError("error creating thread pool");
     }
-
-    environment.validate_urls();
-    load_input_feeds();
-    load_output_feeds();
 };
 Pipeline::~Pipeline() {
     hts_tpool_destroy(thread_pool.pool);
@@ -489,6 +514,8 @@ Pipeline::~Pipeline() {
     channels.clear();
     channel_by_barcode.clear();
     channel_by_read_group_id.clear();
+
+    delete input_accumulator;
 };
 void Pipeline::initialize_channels() {
     channels.reserve(environment.channel_specifications.size());
@@ -504,13 +531,15 @@ void Pipeline::initialize_channels() {
         }
 
         // channel by read group id lookup
-        string id(channel->rg.ID.s, channel->rg.ID.l);
-        if (channel_by_read_group_id.find(id) == channel_by_read_group_id.end()) {
-            channel_by_read_group_id.emplace(make_pair(id, channel));
+        if(!channel->rg_key.empty()) {
+            if (channel_by_read_group_id.find(channel->rg_key) == channel_by_read_group_id.end()) {
+                channel_by_read_group_id[channel->rg_key] = channel;
+            }
         }
-
-        if (channel_by_barcode.find(channel->key) == channel_by_barcode.end()) {
-            channel_by_barcode[channel->key] = channel;
+        if(!channel->barcode_key.empty()) {
+            if (channel_by_barcode.find(channel->barcode_key) == channel_by_barcode.end()) {
+                channel_by_barcode[channel->barcode_key] = channel;
+            }
         }
     }
 };
@@ -522,22 +551,36 @@ void Pipeline::initialize_pivots() {
     }
 };
 void Pipeline::execute() {
-    // initialize differently if quality
-    // can already inspect the input
+    switch (environment.action) {
+        case ProgramAction::DEMULTIPLEX: {
+            environment.validate_urls();
+            load_input_feeds();
+            load_output_feeds();
+            break;
+        };
+        case ProgramAction::QUALITY: {
+            probe(environment.input_url);
+            environment.load_transformation();
+            environment.load_channels();
+            environment.load_input_specification();
+            load_input_feeds();
+            break;
+        };
+        default:
+            break;
+    }
+
     initialize_channels();
     initialize_pivots();
-
     start();
     for (auto pivot : pivots) {
         pivot->pivot_thread.join();
     }
     stop();
-
-    // consolidate accumulators from all pivots
-    finalize();
-
-    // write report to stdout
-    encode_report(cout);
+    if(!disable_quality_control) {
+        finalize();
+        encode_report(cout);
+    }
 };
 bool Pipeline::pull(Pivot& pivot) {
     vector< unique_lock< mutex > > feed_locks;
@@ -574,10 +617,11 @@ void Pipeline::encode_report(ostream& o) const {
         default:
             break;
     }
+    o << endl;
 };
 void Pipeline::encode_input_report(Document& document, Value& value) const {
     value.SetObject();
-    input_accumulator.encode(document, value, disable_quality_control);
+    input_accumulator->encode(document, value, disable_quality_control);
 };
 void Pipeline::encode_output_report(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
@@ -641,22 +685,22 @@ void Pipeline::encode_demultiplex_report(ostream& o) const {
 
     Value v;
 
-    v.SetUint64(input_accumulator.count);
+    v.SetUint64(input_accumulator->count);
     document.AddMember("read count", v, allocator);
 
-    v.SetUint64(input_accumulator.filtered_count);
+    v.SetUint64(input_accumulator->filtered_count);
     document.AddMember("filtered read count", v, allocator);
 
-    v.SetDouble(input_accumulator.count > 0 ? double(input_accumulator.filtered_count) / double(input_accumulator.count) : 0.0);
+    v.SetDouble(input_accumulator->count > 0 ? double(input_accumulator->filtered_count) / double(input_accumulator->count) : 0.0);
     document.AddMember("filtered read fraction", v, allocator);
 
-    v.SetUint64(input_accumulator.determined_count);
+    v.SetUint64(input_accumulator->determined_count);
     document.AddMember("determined read count", v, allocator);
 
-    v.SetUint64(input_accumulator.determined_filtered_count);
+    v.SetUint64(input_accumulator->determined_filtered_count);
     document.AddMember("determined filtered read count", v, allocator);
 
-    v.SetDouble(input_accumulator.count > 0 ? double(input_accumulator.determined_count) / double(input_accumulator.count) : 0.0);
+    v.SetDouble(input_accumulator->count > 0 ? double(input_accumulator->determined_count) / double(input_accumulator->count) : 0.0);
     document.AddMember("determined read fraction", v, allocator);
 
     Value output_report;
@@ -679,13 +723,13 @@ void Pipeline::encode_quality_report(ostream& o) const {
 
     Value v;
 
-    v.SetUint64(input_accumulator.count);
+    v.SetUint64(input_accumulator->count);
     document.AddMember("read count", v, allocator);
 
-    v.SetUint64(input_accumulator.filtered_count);
+    v.SetUint64(input_accumulator->filtered_count);
     document.AddMember("filtered read count", v, allocator);
 
-    v.SetDouble(input_accumulator.count > 0 ? double(input_accumulator.filtered_count) / double(input_accumulator.count) : 0.0);
+    v.SetDouble(input_accumulator->count > 0 ? double(input_accumulator->filtered_count) / double(input_accumulator->count) : 0.0);
     document.AddMember("filtered read fraction", v, allocator);
 
     Value output_report;
@@ -704,18 +748,34 @@ void Pipeline::encode_quality_report(ostream& o) const {
 void Pipeline::finalize() {
     // collect statistics from all parallel pivots
     for(const auto pivot : pivots) {
-        input_accumulator += pivot->accumulator;
+        *input_accumulator += pivot->accumulator;
 
         if(long_read) {
-            for(const auto& record : pivot->channel_by_barcode) {
-                const auto& channel = channel_by_barcode.find(record.first);
-                if (channel != channel_by_barcode.end()) {
-                    channel->second->channel_accumulator += record.second;
-                }
+            switch (environment.action) {
+                case ProgramAction::DEMULTIPLEX: {
+                    for(const auto& record : pivot->channel_by_barcode) {
+                        const auto& channel = channel_by_barcode.find(record.first);
+                        if (channel != channel_by_barcode.end()) {
+                            channel->second->channel_accumulator += record.second;
+                        }
+                    }
+                    break;
+                };
+                case ProgramAction::QUALITY: {
+                    for(const auto& record : pivot->channel_by_read_group_id) {
+                        const auto& channel = channel_by_read_group_id.find(record.first);
+                        if (channel != channel_by_read_group_id.end()) {
+                            channel->second->channel_accumulator += record.second;
+                        }
+                    }
+                    break;
+                };
+                default:
+                    break;
             }
         }
     }
-    input_accumulator.finalize();
+    input_accumulator->finalize();
 
     for(auto channel : channels) {
         channel->finalize();
@@ -741,28 +801,65 @@ Feed* Pipeline::resolve_feed(const URL& url, const IoDirection& direction) const
     }
     return feed;
 };
+Feed* Pipeline::load_feed(FeedSpecification* specification) {
+    Feed* feed = NULL;
+    switch(specification->direction) {
+        case IoDirection::IN: {
+            const auto& record = input_feed_by_url.find(specification->url);
+            if(record != input_feed_by_url.end()) {
+                feed = record->second;
+            } else {
+                switch(specification->url.kind()) {
+                    case FormatKind::FASTQ: {
+                        feed = new FastqFeed(specification);
+                        break;
+                    };
+                    case FormatKind::HTS: {
+                        feed = new HtsFeed(specification);
+                        break;
+                    };
+                    default:
+                        throw InternalError("unknown input format " + specification->url);
+                        break;
+                }
+                input_feed_by_url[specification->url] = feed;
+                feed->set_thread_pool(&thread_pool);
+            }
+            break;
+        };
+        case IoDirection::OUT: {
+            const auto& record = output_feed_by_url.find(specification->url);
+            if(record != output_feed_by_url.end()) {
+                feed = record->second;
+            } else {
+                switch(specification->url.kind()) {
+                    case FormatKind::FASTQ: {
+                        feed = new FastqFeed(specification);
+                        break;
+                    };
+                    case FormatKind::HTS: {
+                        feed = new HtsFeed(specification);
+                        break;
+                    };
+                    default:
+                        throw InternalError("unknown output format " + specification->url);
+                        break;
+                }
+                output_feed_by_url[specification->url] = feed;
+                feed->set_thread_pool(&thread_pool);
+            }
+            break;
+        };
+    }
+    return feed;
+};
 void Pipeline::load_input_feeds() {
     map< size_t, Feed* > feed_by_index;
 
     input_feed_by_url.reserve(environment.input_feed_specification_by_url.size());
     for(const auto& record : environment.input_feed_specification_by_url) {
         FeedSpecification* specification = record.second;
-        Feed* feed = NULL;
-
-        switch(specification->url.kind()) {
-            case FormatKind::FASTQ: {
-                feed = new FastqFeed(specification);
-                break;
-            };
-            case FormatKind::HTS: {
-                feed = new HtsFeed(specification);
-                break;
-            };
-            default:
-                throw InternalError("unknown input format " + specification->url);
-                break;
-        }
-        input_feed_by_url[specification->url] = feed;
+        Feed* feed = load_feed(specification);
         feed_by_index[feed->index()] = feed;
     }
 
@@ -776,8 +873,8 @@ void Pipeline::load_input_feeds() {
     for(const auto& record : feed_by_index) {
         unique_input_feeds.push_back(record.second);
     }
-    for(auto feed : unique_input_feeds) {
-        feed->set_thread_pool(&thread_pool);
+    if(!disable_quality_control) {
+        input_accumulator = new PivotAccumulator(environment.total_input_segments);
     }
 };
 void Pipeline::load_output_feeds() {
@@ -786,22 +883,7 @@ void Pipeline::load_output_feeds() {
     output_feed_by_url.reserve(environment.output_feed_specification_by_url.size());
     for(const auto& record : environment.output_feed_specification_by_url) {
         FeedSpecification* specification = record.second;
-        Feed* feed = NULL;
-
-        switch(specification->url.kind()) {
-            case FormatKind::FASTQ: {
-                feed = new FastqFeed(specification);
-                break;
-            };
-            case FormatKind::HTS: {
-                feed = new HtsFeed(specification);
-                break;
-            };
-            default:
-                throw InternalError("unknown output format " + specification->url);
-                break;
-        }
-        output_feed_by_url[specification->url] = feed;
+        Feed* feed = load_feed(specification);
         feed_by_index[feed->index()] = feed;
     }
 
@@ -809,8 +891,58 @@ void Pipeline::load_output_feeds() {
     for(const auto& record : feed_by_index) {
         unique_output_feeds.push_back(record.second);
     }
-    for(auto feed : unique_output_feeds) {
-        feed->set_thread_pool(&thread_pool);
+};
+void Pipeline::probe(const URL& url) {
+    if(!url.empty()) {
+        FeedSpecification* specification = environment.discover_feed(url, IoDirection::IN);
+        specification->set_resolution(1);
+        specification->set_capacity(environment.buffer_capacity);
+        specification->probe();
+
+        Feed* feed = load_feed(specification);
+        feed->open();
+        switch(feed->url.kind()) {
+            case FormatKind::FASTQ: {
+                feed->replenish();
+                Segment segment(specification->platform);
+                size_t count = 0;
+                if(feed->peek(segment, count)) {
+                    count++;
+                    string primary(segment.name.s, segment.name.l);
+                    while(feed->peek(segment, count) && primary.size() == segment.name.l && strncmp(primary.c_str(), segment.name.s, segment.name.l)) {
+                        count++;
+                    }
+                }
+                environment.total_output_segments = count;
+                environment.total_input_segments = count;
+                break;
+            };
+            case FormatKind::HTS:{
+                feed->replenish();
+                Segment segment(specification->platform);
+                feed->peek(segment, 0);
+                environment.total_input_segments = segment.get_total_segments();
+                environment.total_output_segments = segment.get_total_segments();
+
+                const HtsHeader& header = ((HtsFeed*)feed)->get_header();
+                for(const auto& record : header.read_group_by_id) {
+                    ChannelSpecification* channel = environment.load_channel_from_rg(record.second);
+                    channel->TC = environment.total_output_segments;
+                }
+                break;
+            };
+            default: break;
+        }
+
+        specification->set_resolution(environment.total_input_segments);
+        specification->set_capacity(environment.buffer_capacity * specification->resolution);
+        feed->calibrate(specification);
+
+        for(size_t i = 0; i < environment.total_input_segments; i++) {
+            environment.input_urls.push_back(url);
+            environment.token_patterns.emplace_back(to_string(i) + "::");
+            environment.template_patterns.emplace_back(to_string(i));
+        }
     }
 };
 void Pipeline::start() {
@@ -1356,4 +1488,3 @@ ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs
     }
     return *this;
 };
-

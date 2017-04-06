@@ -721,6 +721,9 @@ class ChannelSpecification {
         ~ChannelSpecification();
         string alias() const;
         void describe(ostream& o) const;
+        inline bool writable() const {
+            return output_urls.size() > 0;
+        };
 };
 
 /*  Barcode distance metric

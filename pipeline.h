@@ -213,6 +213,7 @@ class Pivot {
     public:
         thread pivot_thread;
         const size_t index;
+        const ProgramAction action;
         const Decoder decoder;
         bool determined;
         bool filtered;
@@ -226,6 +227,7 @@ class Pivot {
         Channel* decoded_multiplex_channel;
         PivotAccumulator accumulator;
         unordered_map< string, ChannelAccumulator > channel_by_barcode;
+        unordered_map< string, ChannelAccumulator > channel_by_read_group_id;
         Pivot(Pipeline& pipeline);
         void start();
         inline void clear();
@@ -236,7 +238,6 @@ class Pivot {
         const bool long_read;
         const Segment* leading_segment;
         void run();
-        void rotate();
         inline void validate();
         inline void decode_with_mdd();
         inline void decode_with_pamld();
@@ -256,13 +257,15 @@ class Channel {
     public:
         mutex channel_mutex;
         const size_t index;
-        const string key;
+        const string barcode_key;
+        const string rg_key;
         const double concentration;
         const Barcode multiplex_barcode;
         const bool disable_quality_control;
         const bool long_read;
         const bool include_filtered;
         const bool undetermined;
+        const bool writable;
         const HeadRGAtom rg;
         vector< Feed* > output_feeds;
         vector< Feed* > unique_output_feeds;
@@ -297,28 +300,25 @@ class Pipeline {
         bool end_of_input;
         htsThreadPool thread_pool;
 
-        unordered_map< URL, Feed* > input_feed_by_url;
-        unordered_map< URL, Feed* > output_feed_by_url;
+        vector< Feed* > input_feeds;
         vector< Feed* > unique_input_feeds;
         vector< Feed* > unique_output_feeds;
+        unordered_map< URL, Feed* > input_feed_by_url;
+        unordered_map< URL, Feed* > output_feed_by_url;
 
-        // input feeds
-        vector< Feed* > input_feeds;
-
-        // output channels
         Channel* undetermined;
         vector< Channel* > channels;
         unordered_map< string, Channel* > channel_by_barcode;
         unordered_map< string, Channel* > channel_by_read_group_id;
 
-        // transforming processors
         vector< Pivot* > pivots;
 
-        // accumulator to aggregate all pivot accumulators
-        PivotAccumulator input_accumulator;
+        PivotAccumulator* input_accumulator;
 
         void start();
         void stop();
+        void probe(const URL& url);
+        Feed* load_feed(FeedSpecification* specification);
         void load_input_feeds();
         void load_output_feeds();
         inline void initialize_channels();
