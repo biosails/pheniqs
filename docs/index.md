@@ -36,7 +36,7 @@
 # Pheniqs
 {:.page-title}
 
-Pheniqs is a generic high throughput sequencing demultiplexer and quality analyzer written in multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11). Pheniqs is pronounced  ***phoe·nix*** and stands for **PH**ilology **EN**coder w**I**th **Q**uality **S**tatistics.
+Pheniqs is a generic high throughput DNA sequence demultiplexer and quality analyzer written in multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11). Pheniqs is pronounced  ***phoe·nix*** and stands for **PH**ilology **EN**coder w**I**th **Q**uality **S**tatistics. 
 
 ## Pheniqs at a glance
 
@@ -44,9 +44,9 @@ Pheniqs is a generic high throughput sequencing demultiplexer and quality analyz
 
 **Quality aware barcode decoding:** In addition to the widespread [minimum distance decoder](glossary.html#minimum_distance_decoding) Pheniqs introduces the [Phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) that consults base calling quality scores and estimate the barcode decoding error probability for each read.
 
-**Standardized tags:** Pheniqs supports encoding the raw multiplex barcode sequence and quality in the corresponding [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) [SAM auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf), as well as classifying multiplexed read with the [RG](glossary.html#rg_auxiliary_tag) auxiliary tag.
+**Standardized tags:** Pheniqs encodes the raw multiplex barcode sequence and quality in the corresponding [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) [SAM auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf), as well as classifying multiplexed read with the [RG](glossary.html#rg_auxiliary_tag) auxiliary tag.
 
-**Community tags:** Pheniqs also supports encoding the raw molecular barcode sequence and quality in the corresponding community adopted [RX](glossary.html#rx_auxiliary_tag) and [QX](glossary.html#qx_auxiliary_tag) auxiliary tags.
+**Community tags:** Pheniqs also encodes the raw molecular barcode sequence and quality in the corresponding community adopted [RX](glossary.html#rx_auxiliary_tag) and [QX](glossary.html#qx_auxiliary_tag) auxiliary tags.
 
 **Proposed tags:** Pheniqs proposes to standardize three new auxiliary tags: [DQ](glossary.html#dq_auxiliary_tag), [PX](glossary.html#px_auxiliary_tag) and [EE](glossary.html#ee_auxiliary_tag) for encoding the multiplex barcode decoding error probability, molecular barcode decoding error probability and the expected number of errors, respectively.
 
@@ -56,7 +56,7 @@ Pheniqs is a generic high throughput sequencing demultiplexer and quality analyz
 
 **Few dependencies:** Pheniqs depends only on [HTSlib](https://github.com/samtools/htslib) and [RapidJSON](https://github.com/miloyip/rapidjson). Both are widely packaged, easy to install from source and maintained by a highly active community.
 
-**Open Source:** Pheniqs is released under the terms of the GNU General Public License. 
+**Open Source:** Pheniqs is released under the terms of the [AGPL 3.0 license agreement](http://opensource.org/licenses/AGPL-3.0). 
 
 ## Getting started
 
