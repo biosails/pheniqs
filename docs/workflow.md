@@ -392,7 +392,7 @@
         "3"
     ], 
     "noise": 0.01, 
-    "processors": 4, 
+    "threads": 4, 
     "template": [
         "0", 
         "1"

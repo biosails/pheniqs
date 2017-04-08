@@ -141,13 +141,21 @@ void URL::parse(const char* path, const size_t size, const IoDirection& directio
                 };
             }
         } else {
-            if(!strcmp(_path.s, "/dev/stdin") || !strcmp(_path.s, "/dev/fd/0") || !strcmp(_path.s, "/proc/self/fd/0")) {
+            if (!strcmp(_path.s, "/dev/stdin") || 
+                !strcmp(_path.s, "/dev/fd/0") || 
+                !strcmp(_path.s, "/proc/self/fd/0")) {
                 ks_clear(_path);
                 kputs(CANONICAL_STDIN_PATH, &_path);
-            } else if(!strcmp(_path.s, "/dev/stdout") || !strcmp(_path.s, "/dev/fd/1") || !strcmp(_path.s, "/proc/self/fd/1")) {
+
+            } else if(!strcmp(_path.s, "/dev/stdout") ||
+                !strcmp(_path.s, "/dev/fd/1") ||
+                !strcmp(_path.s, "/proc/self/fd/1")) {
                 ks_clear(_path);
                 kputs(CANONICAL_STDOUT_PATH, &_path);
-            } else if(!strcmp(_path.s, "/dev/stderr") || !strcmp(_path.s, "/dev/fd/2") || !strcmp(_path.s, "/proc/self/fd/2")) {
+
+            } else if(!strcmp(_path.s, "/dev/stderr") ||
+                !strcmp(_path.s, "/dev/fd/2") ||
+                !strcmp(_path.s, "/proc/self/fd/2")) {
                 ks_clear(_path);
                 kputs(CANONICAL_STDERR_PATH, &_path);
             }
@@ -188,7 +196,7 @@ void URL::parse(const char* path, const size_t size, const IoDirection& directio
                 // if there is a second extension 
                 // and the first is a compression marker
                 position = strrchr(_name.s, EXTENSION_SEPARATOR);
-                if( position != NULL && (
+                if  (position != NULL && (
                     !strcmp(_extension.s, "gz") || 
                     !strcmp(_extension.s, "bz2") || 
                     !strcmp(_extension.s, "xz"))) {
@@ -1622,17 +1630,11 @@ void ChannelSpecification::describe(ostream& o) const {
     if(rg.FO.l > 0) o << "        FO : " << rg.FO.s << endl;
     if(rg.KS.l > 0) o << "        KS : " << rg.KS.s << endl;
     if(rg.PI.l > 0) o << "        PI : " << rg.PI.s << endl;
-    if(TC) {
-        o << "        TC : " << TC << endl;
-    }
-    if(FS.l > 0) {
-        o << "        FS : " << FS.s << endl;
-    }
-    if(CO.l > 0) {
-        o << "        CO : " << CO.s << endl;
-    }
+    if(TC)          o << "        TC : " << TC      << endl;
+    if(FS.l > 0)    o << "        FS : " << FS.s    << endl;
+    if(CO.l > 0)    o << "        CO : " << CO.s    << endl;
     if(concentration > 0) {
-        o << "        PC : " << setprecision(numeric_limits<double>::digits10 + 1) << concentration << endl;
+                    o << "        PC : " << setprecision(numeric_limits<double>::digits10 + 1) << concentration << endl;
     }
     if(undetermined) {
         o << "        Undetermined : true" << endl;
@@ -1655,6 +1657,3 @@ ostream& operator<<(ostream& o, const ChannelSpecification& specification) {
     o << specification.alias();
     return o;
 };
-
-/*  Hamming Metric
-*/

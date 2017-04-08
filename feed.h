@@ -122,7 +122,6 @@ class HtsHeader {
     Benchmark mode user space tags
 
   * XI  i   Illumina control flags
-
   * XM  Z   MDD barcode
   * YD  i   MDD multiplex distance
   * XL  Z   PAMLD barcode
@@ -176,7 +175,7 @@ class Auxiliary {
             barcode.encode_iupac_ambiguity(&XL);
         };
         inline void clear() {
-            /* FI and TC don't change */
+            /* FI and TC don't change during demultiplexing */
             ks_clear(RG);
             ks_clear(BC);
             ks_clear(QT);
@@ -474,9 +473,7 @@ class FastqRecord {
                 char c = *(comment + position);
                 position++;
                 if (c == ':') {
-                    // Done parsing this token
                     break;
-
                 } else {
                     if (code >= -1) {
                         if (c >= '0' && c <= '9') {
@@ -503,9 +500,7 @@ class FastqRecord {
                 char c = *(comment + position);
                 position++;
                 if (c == ':') {
-                    // Done parsing this token
                     break;
-
                 } else {
                     if (code == -1) {
                         switch(c) {
@@ -649,45 +644,39 @@ template <class T> class CyclicBuffer {
         virtual ~CyclicBuffer() {
         };
         void increment() {
-            // add_cache_record
-            // if the cache is empty
-            // next record is the vacant record we just populated
-            if(_next < 0)
-                _next = _vacant;
+            /*  if the cache is empty then the next record 
+                is the vacant record we just populated  */
+            if(_next < 0) _next = _vacant;
 
-            // increment vacancy pointer on a circular buffer
+            /*  increment vacancy pointer on the circular buffer  */
             _vacant = (_vacant + 1) % _capacity;
 
-            // if the vacancy pointer is the next record there is no more space
-            // vacant becomes -1, or unavailable
-            if(_vacant == _next)
-                _vacant = -1;
+            /*  if the vacancy pointer is the next record there is 
+                no more space and vacant becomes -1, or unavailable */
+            if(_vacant == _next) _vacant = -1;
         };
         void decrement() {
-            // evacuate_cache_record
-            // if there is no vacant record, next becomes the first vacant record
-            if(_vacant < 0)
-                _vacant = _next;
+            /*  if there is no vacant record, next becomes the first vacant record  */
+            if(_vacant < 0) _vacant = _next;
 
-            // next record iterates on a circular buffer
+            /*  iterate next on a circular buffer   */
             _next = (_next + 1) % _capacity;
 
-            // if the next is the vacant record that means we have nothing in the buffer
-            // and so next record is -1, i.e. undefined.
-            if(_next == _vacant)
-                _next = -1;
+            /*  if next is the vacant record that means the buffer is empty
+                and so next becomes -1, or undefined    */
+            if(_next == _vacant) _next = -1;
         };
         void increment_front() {
-            // encode the segment in the front of the buffer
+            /*  encode the segment in the front of the buffer
+                This is not the usual policy and is used for calibration
+            */
             if(_next < 0) {
                 _next = _vacant;
                 _vacant = (_vacant + 1) % _capacity;
             } else {
                 _next = (_next - 1) % _capacity;
             }
-
-            if(_vacant == _next)
-                _vacant = -1;
+            if(_vacant == _next) _vacant = -1;
         };
         inline T* vacant() const {
             return cache[_vacant];
@@ -780,7 +769,8 @@ template <class T> class BufferedFeed : public Feed {
                 decode(queue->next(), segment);
                 queue->decrement();
 
-                // queue is one element smaller, if its empty notify the replenish thread
+                /*  queue is now one element smaller,
+                    if its empty notify the replenishing thread */
                 if(queue->is_empty()) {
                     replenishable.notify_one();
                 }
@@ -792,7 +782,8 @@ template <class T> class BufferedFeed : public Feed {
             encode(queue->vacant(), segment);
             queue->increment();
 
-            // queue is one element bigger, if its full notify the flush thread
+            /*  queue is one element bigger,
+                if its full notify the flushing thread */
             if(is_ready_to_flush()) {
                 flushable.notify_one();
             }
@@ -809,42 +800,40 @@ template <class T> class BufferedFeed : public Feed {
         inline void flush() {
             unique_lock<mutex> buffer_lock(buffer_mutex);
             if(buffer->is_not_empty()) {
-                // if(!opened()) open();
                 empty_buffer();
             }
 
-            // buffer is empty, wait for the queue to be full
-            // and switch between buffer and queue
+            /*  buffer is empty, wait for the queue to be full
+                and switch between buffer and queue     */
             unique_lock<mutex> queue_lock(queue_mutex);
             flushable.wait(queue_lock, [this](){ return is_ready_to_flush(); });
 
-            // buffer is empty and queue is full
-            // switch between buffer and queue
+            /*  buffer is empty and queue is full
+                switch between buffer and queue */
             switch_buffers();
 
-            // now queue is empty and buffer is full
-            // notify threads waiting for the queue to have available space
+            /*  now queue is empty and buffer is full
+                notify threads waiting for the queue to have available space */
             queue_not_full.notify_all();
         };
         inline void replenish() {
             unique_lock<mutex> buffer_lock(buffer_mutex);
             if(buffer->is_not_full()) {
-                // if(!opened()) open();
                 fill_buffer();
             }
 
             if(buffer->is_not_empty()) {
-                // the buffer is not empty, wait for the queue to be empty
-                // and switch between the buffer and the queue
+                /*  the buffer is not empty, wait for the queue to be empty
+                    and switch between the buffer and the queue */
                 unique_lock<mutex> queue_lock(queue_mutex);
                 replenishable.wait(queue_lock, [this](){ return is_ready_to_replenish(); });
 
-                // buffer is not empty and queue is empty
-                // switch between buffer and queue
+                /*  buffer is not empty and queue is empty
+                    switch between buffer and queue */
                 switch_buffers();
 
-                // now queue is not empty and buffer is empty
-                // notify threads waiting for the queue to be available
+                /*  now queue is not empty and buffer is empty
+                    notify threads waiting for the queue to be available */
                 queue_not_empty.notify_all();
             }
         };
@@ -860,14 +849,12 @@ template <class T> class BufferedFeed : public Feed {
                     buffer->calibrate(capacity, resolution);
 
                     /*  sync queue
-                        move elements from buffer to queue until queue is aligned
-                        with the new resolution
-                    */
+                        move elements from buffer to queue until 
+                        queue is aligned with the new resolution */
                     queue->sync(buffer);
 
                     /*  sync buffer
-                        now make sure the buffer is filled which will align it
-                    */
+                        now make sure the buffer is filled which will align it */
                     fill_buffer();
                 } else {
                     throw InternalError("can not reduce buffer size");
@@ -902,11 +889,9 @@ template <class T> class BufferedFeed : public Feed {
             queue = tmp;
         };
         inline bool is_ready_to_pull() {
-            // should have enough to pull all segments
             return queue->is_not_empty() || (end_of_file && queue->is_empty() && buffer->is_empty());
         };
         inline bool is_ready_to_push() {
-            // should have enough to push all segments
             return queue->is_not_full();
         };
         inline bool is_ready_to_flush() {
@@ -953,13 +938,6 @@ class FastqFeed : public BufferedFeed<FastqRecord> {
         };
         void open() {
             if(!opened()) {
-                // Enable multi-threading (when compiled with -DBGZF_MT) via a shared
-                // thread pool.  This means both encoder and decoder can balance
-                // usage across a single pool of worker jobs.
-                // @param fp          BGZF file handler; must be opened for writing
-                // @param pool        The thread pool (see hts_create_threads)
-                // int bgzf_thread_pool(BGZF *fp, struct hts_tpool *pool, int qsize);
-
                 switch(direction) {
                     case IoDirection::IN: {
                         bgzf_file = bgzf_hopen(hfile, "r");
@@ -1025,15 +1003,15 @@ class FastqFeed : public BufferedFeed<FastqRecord> {
             }
         };
         inline void empty_buffer() {
+            /*  encode all fastq records in the buffer to
+                a string buffer and write them together to the stream */
             ks_clear(kbuffer);
             while(buffer->is_not_empty()) {
-                // encode FastqRecord records to text
                 FastqRecord* record = buffer->next();
                 record->encode(kbuffer, phred_offset);
                 buffer->decrement();
             }
 
-            // write the text encoded fastq records to the stream
             if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
                 throw IOError("error writing to " + url);
             }
@@ -1152,7 +1130,6 @@ class HtsFeed : public BufferedFeed<bam1_t> {
             // encode the quality sequence
             memcpy(bam_get_qual(record), segment.sequence.quality, record->core.l_qseq);
 
-            // encode the auxiliary fields into the record
             segment.auxiliary.encode(record);
         };
         inline void decode(const bam1_t* record, Segment& segment) {
@@ -1173,10 +1150,7 @@ class HtsFeed : public BufferedFeed<bam1_t> {
             kbuffer.s[kbuffer.l] = '\0';
             segment.sequence.fill((uint8_t*)kbuffer.s, bam_get_qual(record), record->core.l_qseq);
 
-            // decode flag
             segment.flag = record->core.flag;
-
-            // decode auxiliary fields
             segment.auxiliary.decode(record);
         };
         inline void fill_buffer() {

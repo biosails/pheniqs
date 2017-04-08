@@ -210,4 +210,4 @@ The `noise` property can be used to provide a prior probability of observing an 
 
 # Performance Tuning
 
-Several parameters can help [improve performance](manual.html#performance-tuning) on multi core machines. Setting the `processor` property to the number of available cores will use a benchmark based heuristic algorithm to set the more low level properties and should be a good starting point.
+Several parameters can help [improve performance](manual.html#performance-tuning) on multi core machines. Setting the `threads` property to the number of available cores will use a benchmark based heuristic algorithm to set the more low level properties and should be a good starting point.

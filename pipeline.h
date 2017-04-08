@@ -312,7 +312,6 @@ class Pipeline {
         unordered_map< string, Channel* > channel_by_read_group_id;
 
         vector< Pivot* > pivots;
-
         PivotAccumulator* input_accumulator;
 
         void start();

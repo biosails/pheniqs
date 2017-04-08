@@ -36,9 +36,6 @@ CC = clang++
 CFLAGS = -c -std=c++11 -O3 -Wall -Wsign-compare 
 LDFLAGS = $(LIBS)
 
-# Debug flags
-# CFLAGS = -O0 -std=c++11 -Wall -Wsign-compare -g -Wconversion
-
 SOURCES = \
 	constant.cpp \
 	model.cpp \

@@ -340,7 +340,7 @@ inline void Pivot::increment() {
         // input quality tracking
         accumulator.increment(*this);
 
-        // long read tracks channel quality on the pivot
+        // long read track channel quality on the pivot
         if(long_read) {
             switch (action) {
                 case ProgramAction::DEMULTIPLEX: {
@@ -455,19 +455,19 @@ void Channel::encode(Document& document, Value& value, const bool disable_qualit
     v.SetUint64(index);
     value.AddMember("index", v, allocator);
 
-    // if (!multiplex_barcode.empty()) {
-    //     Value barcodes;
-    //     barcodes.SetArray();
-    //     for (auto& sequence : multiplex_barcode.fragments) {
-    //         Value barcode;
-    //         barcode.SetObject();
-    //         string code = sequence.to_iupac_ambiguity();
-    //         v.SetString(code.c_str(), code.size(), allocator);
-    //         barcode.AddMember("barcode sequence", v, allocator);
-    //         barcodes.PushBack(barcode, allocator);
-    //     }
-    //     value.AddMember("barcodes", barcodes, allocator);
-    // }
+    if (!multiplex_barcode.empty()) {
+        Value barcodes;
+        barcodes.SetArray();
+        for(size_t i = 0; i < multiplex_barcode.total_fragments(); i++ ) {
+            Value barcode;
+            barcode.SetObject();
+            string code = multiplex_barcode.iupac_ambiguity(i);
+            v.SetString(code.c_str(), code.size(), allocator);
+            barcode.AddMember("barcode sequence", v, allocator);
+            barcodes.PushBack(barcode, allocator);
+        }
+        value.AddMember("multiplex barcode", barcodes, allocator);
+    }
     channel_accumulator.encode(document, value, disable_quality_control);
 };
 void Channel::finalize() {
@@ -662,19 +662,6 @@ void Pipeline::encode_output_report(Document& document, Value& value) const {
         channel_report.SetObject();
         channel->encode(document, channel_report, disable_quality_control);
         channel_reports.PushBack(channel_report, allocator);
-
-        // Value segmentReports;
-        // segmentReports.SetArray();
-        // for (uint_fast32_t i = 0; i < channel->output_feeds.size(); i++) {
-        //     Value segmentReport;
-        //     segmentReport.SetObject();
-        //     v.SetString((char*)channel->output_feeds[i]->url.c_str(), allocator);
-        //     segmentReport.AddMember("path", v, allocator);
-        //     if (!disable_quality_control) {
-        //         channel->distribution.feed_statistics[i].encodeReport(document, &segmentReport);
-        //     }
-        //     segmentReports.PushBack(segmentReport, allocator);
-        // }
     }
     value.AddMember("library quality reports", channel_reports, allocator);
 };
@@ -1354,7 +1341,7 @@ void PivotAccumulator::encode(Document& document, Value& value, const bool disab
         }
         feed_reports.PushBack(feed_report, allocator);
     }
-    value.AddMember("fastq quality reports", feed_reports, allocator);
+    value.AddMember("segment quality reports", feed_reports, allocator);
 };
 PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
     count += rhs.count;
@@ -1449,7 +1436,7 @@ void ChannelAccumulator::encode(Document& document, Value& value, const bool dis
         v.SetDouble(count > 0 ? double(yield) / double(count) : 0.0);
         feed_report.AddMember("yield fraction", v, allocator);
 
-        // v.SetDouble(totalYield > 0 ? double(library.yield) / double(totalYield) : 0.0);
+        // v.SetDouble(totalYield > 0 ? double(yield) / double(totalYield) : 0.0);
         // feed_report.AddMember("effective yield fraction", v, allocator);
 
         v.SetDouble(yield > 0 ? double(perfect_yield) / double(yield) : 0.0);
@@ -1469,7 +1456,7 @@ void ChannelAccumulator::encode(Document& document, Value& value, const bool dis
         }
         feed_reports.PushBack(feed_report, allocator);
     }
-    value.AddMember("fastq quality reports", feed_reports, allocator);
+    value.AddMember("segment quality reports", feed_reports, allocator);
 };
 ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs) {
     count += rhs.count;
