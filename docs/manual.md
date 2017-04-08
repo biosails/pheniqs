@@ -41,10 +41,10 @@
 
 The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file. Some parameters are also exposed as command line arguments that override their corresponding configuration file values. The configuration file contains a number of separate sections specifying directives for input and output layout, parsing read segments and run parameters. The different sections of the configuration file are described bellow. The [workflow page](workflow.html) contains some annotated examples of complete configuration files. 
 
-Pheniqs achieves arbitrary read manipulation in two steps: [tokenization](#tokenization) and [construction](#construction). In the tokenization step you define token patterns that extract a token from an [input segment](glossary.html#input_segment). In the construction step you reference the tokens in [transform patterns](#transform-pattern) to construct either an [output segment](glossary.html#output_segment), a [multiplex barcode](glossary.html#multiplex_barcode) segment or a [molecular barcode](glossary.html#molecular_barcode) segment.
+Pheniqs achieves arbitrary read manipulation in two steps: [tokenization](#tokenization) and [construction](#construction). In the tokenization step you define token patterns that extract a token from an [input segment](glossary.html#input_segment). In the construction step you reference the tokens in [transform patterns](#transform-pattern) to construct either an [output](glossary.html#output_segment), a [multiplex barcode](glossary.html#multiplex_barcode) or a [molecular barcode](glossary.html#molecular_barcode) segment.
 
 # File Format
-Both input and output [FASTQ](glossary.html#fastq), [SAM, BAM and CRAM](glossary.html#htslib) encoded files are supported. FASTQ can be either uncompressed or gzip compressed. The configuration syntax is sufficiently flexible to easily manipulate [split](glossary.html#split_file_layout), [interleaved](glossary.html#interleaved_file_layout) and [combined](glossary.html#combined_file_layout) file layouts.
+Both input and output [FASTQ](glossary.html#fastq), [SAM, BAM and CRAM](glossary.html#htslib) encoded files are supported. FASTQ can be either uncompressed or gzip compressed. The configuration syntax is sufficiently flexible to manipulate [split](glossary.html#split_file_layout), [interleaved](glossary.html#interleaved_file_layout) and [combined](glossary.html#combined_file_layout) file layouts.
 
 # Layout
 
