@@ -170,8 +170,8 @@ void operator>>(const char* s, FormatKind& kind) {
     else                            kind = FormatKind::UNKNOWN;
 };
 
-ostream& operator<<(ostream& o, const FormatType& kind) {
-    switch (kind) {
+ostream& operator<<(ostream& o, const FormatType& type) {
+    switch (type) {
         case FormatType::FASTQ: o << "fastq";   break;
         case FormatType::SAM:   o << "sam";     break;
         case FormatType::BAM:   o << "bam";     break;
