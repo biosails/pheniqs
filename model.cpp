@@ -477,7 +477,7 @@ void URL::expand(kstring_t* path) {
             message += path->s;
             message += " at position ";
             message += to_string(position - variable.l);
-            throw ValidationError(message);
+            throw ConfigurationError(message);
         }
         ks_clear(*path);
         kputsn(resolved.s, resolved.l, path);

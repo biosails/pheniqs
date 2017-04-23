@@ -137,9 +137,8 @@ class Environment {
         double random_word_probability = 0;
         HeadPGAtom pg;
 
-        Environment();
+        Environment(int argc, char** argv);
         ~Environment();
-        void load(int argc, char** argv);
         void print_help(ostream& o);
         void print_version(ostream& o);
         void describe(ostream& o);
@@ -153,22 +152,22 @@ class Environment {
             return multiplex_barcode_distance.minimum_distance();
         };
         void validate_urls();
-        ChannelSpecification* load_channel_from_rg(const HeadRGAtom& rg);
         void load_input_specification();
+        void load_transformation();
         void load_channels();
+        void calibrate(const URL& url);
+        ChannelSpecification* load_channel_from_rg(const HeadRGAtom& rg);
         FeedSpecification* discover_feed(const URL& url, const IoDirection& direction);
 
+    private:
         vector< string > token_patterns;
         vector< string > template_patterns;
-
-        void load_transformation();
-
-    private:
         vector< string > multiplex_barcode_patterns;
         vector< string > molecular_barcode_patterns;
         vector< Distance > multiplex_barcode_set_distance;
         Distance multiplex_barcode_distance;
 
+        void load(int argc, char** argv);
         void load_configuration_file(const URL& url);
         void load_url_node(const Value& node, const IoDirection& direction, URL& url);
         void load_token_node(const Value& node);
@@ -245,7 +244,7 @@ class Environment {
             if(value!=NULL) {
                 value >> decoder;
                 if(decoder == Decoder::UNKNOWN) {
-                    throw ParsingError("bad decoder value " + string(value));
+                    throw ConfigurationError("bad decoder value " + string(value));
                 }
             }
         };
@@ -258,7 +257,7 @@ class Environment {
             if(value!=NULL) {
                 value >> platform;
                 if(platform == Platform::UNKNOWN) {
-                    throw ParsingError("bad platform value " + string(value));
+                    throw ConfigurationError("bad platform value " + string(value));
                 }
             }
         };
@@ -322,7 +321,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsString()) {
                     value.set_directory(element->value.GetString(), element->value.GetStringLength());
-               } else { throw ParsingError("bad " + string(name) + " value"); }
+               } else { throw ConfigurationError(string(name) + " element must be a string"); }
             }
         };
         inline void decode_string_node(const Value& node, const Value::Ch* name, string& value) {
@@ -330,7 +329,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsString()) {
                     value.assign(element->value.GetString(), element->value.GetStringLength());
-               } else { throw ParsingError("bad " + string(name) + " value"); }
+               } else { throw ConfigurationError(string(name) + " element must be a string"); }
             }
         };
         inline void decode_string_node(const Value& node, const Value::Ch* name, kstring_t* value) {
@@ -338,7 +337,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsString()) {
                     kputsn(element->value.GetString(), element->value.GetStringLength(), value);
-               } else { throw ParsingError("bad " + string(name) + " value"); }
+               } else { throw ConfigurationError(string(name) + " element must be a string"); }
             }
         };
         inline void decode_uint_node(const Value& node, const Value::Ch* name, uint32_t& value) {
@@ -346,7 +345,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsUint()) {
                     value = element->value.GetUint();
-               } else { throw ParsingError("bad " + string(name) + " value"); }
+               } else { throw ConfigurationError(string(name) + " element must be an unsigned integer"); }
             }
         };
         inline void decode_bool_node(const Value& node, const Value::Ch* name, bool& value) {
@@ -354,7 +353,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsBool()) {
                     value = element->value.GetBool();
-               } else { throw ParsingError("bad " + string(name) + " value"); }
+               } else { throw ConfigurationError(string(name) + " element must be a boolean"); }
             }
         };
         inline void decode_double_node(const Value& node, const Value::Ch* name, double& value) {
@@ -362,7 +361,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsNumber()) {
                     value = element->value.GetDouble();
-               } else { throw ParsingError("bad " + string(name) + " value"); }
+               } else { throw ConfigurationError(string(name) + " element must be numeric"); }
             }
         };
         inline void decode_read_group(HeadRGAtom& rg, const Value& node, const Value::Ch* key) {

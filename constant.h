@@ -979,20 +979,15 @@ enum class ParameterType : uint8_t {
 };
 
 enum class ProgramState : int8_t {
-    VALID,
-    UNKNOWN,
-    VERSION,
+    OK,
     HELP,
+    VERSION,
+    UNKNOWN_ERROR,
     INTERNAL_ERROR,
-    BAD_PATTERN,
-    BAD_CONFIGURATION_FILE,
-    INVALID_COMMAND_LINE_SYNTAX,
-    INVALID_BARCODE_CHARACTER,
-    INVALID_LAYOUT,
-    INVALID_REFERENCE,
-    INVALID_VALUE,
+    CONFIGURATION_ERROR,
+    COMMAND_LINE_ERROR,
     IO_ERROR,
-    INVALID_PHRED_VALUE,
+    SEQUENCE_ERROR,
 };
 
 enum class ProgramAction : uint8_t {

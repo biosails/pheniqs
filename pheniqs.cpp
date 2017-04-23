@@ -22,22 +22,14 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "constant.h"
 #include "pipeline.h"
 
 int main(int argc, char** argv) {
-    Environment environment;
     try {
-        environment.load(argc, argv);
+        Environment environment(argc, argv);
         switch(environment.state) {
-            case ProgramState::HELP:
-                environment.print_help(cerr);
-                break;
-
-            case ProgramState::VERSION:
-                environment.print_version(cerr);
-                break;
-
-            case ProgramState::VALID: {
+            case ProgramState::OK: {
                 if (environment.validate_only) {
                     environment.describe(cerr);
 
@@ -48,17 +40,42 @@ int main(int argc, char** argv) {
                 break;
             };
 
+            case ProgramState::HELP:
+                environment.print_help(cerr);
+                break;
+
+            case ProgramState::VERSION:
+                environment.print_version(cerr);
+                break;
+
             default:
+                return static_cast< int >(environment.state);
                 break;
         }
-    } catch (CommandLineError error) {
+
+    } catch (InternalError error) {
         cerr << endl << error.what() << endl;
-    } catch (SequenceError error) {
-        cerr << endl << error.what() << endl;
-    } catch (IOError error) {
-        cerr << endl << error.what() << endl;
+        return static_cast< int >(ProgramState::INTERNAL_ERROR);
+
     } catch (ConfigurationError error) {
         cerr << endl << error.what() << endl;
+        return static_cast< int >(ProgramState::CONFIGURATION_ERROR);
+
+    } catch (CommandLineError error) {
+        cerr << endl << error.what() << endl;
+        return static_cast< int >(ProgramState::COMMAND_LINE_ERROR);
+
+    } catch (IOError error) {
+        cerr << endl << error.what() << endl;
+        return static_cast< int >(ProgramState::IO_ERROR);
+
+    } catch (SequenceError error) {
+        cerr << endl << error.what() << endl;
+        return static_cast< int >(ProgramState::SEQUENCE_ERROR);
+
+    } catch (exception error) {
+        cerr << endl << error.what() << endl;
+        return static_cast< int >(ProgramState::UNKNOWN_ERROR);
     }
-    return static_cast< int >(environment.state);
-}
+    return static_cast< int >(ProgramState::OK);
+};

@@ -920,16 +920,10 @@ void Pipeline::probe(const URL& url) {
             };
             default: break;
         }
-
         specification->set_resolution(environment.total_input_segments);
         specification->set_capacity(environment.buffer_capacity * specification->resolution);
         feed->calibrate(specification);
-
-        for(size_t i = 0; i < environment.total_input_segments; i++) {
-            environment.input_urls.push_back(url);
-            environment.token_patterns.emplace_back(to_string(i) + "::");
-            environment.template_patterns.emplace_back(to_string(i));
-        }
+        environment.calibrate(url);
     }
 };
 void Pipeline::start() {

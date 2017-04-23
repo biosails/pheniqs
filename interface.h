@@ -376,7 +376,7 @@ class Action {
                         if(option_handle_lookup.count(handle) == 0) {
                             option_handle_lookup[handle] = prototype;
                         } else {
-                            throw ValidationError("redefining handle " + handle + " in option " + prototype->name);
+                            throw ConfigurationError("redefining handle " + handle + " in option " + prototype->name);
                         }
                     }
 
@@ -410,10 +410,10 @@ class Action {
                     }
                     max_option_handle = MAX(max_option_handle, prototype->handle_length());
                 } else {
-                    throw ValidationError("redefining " + prototype->name);
+                    throw ConfigurationError("redefining " + prototype->name);
                 }
             } else {
-                throw ValidationError("missing a name");
+                throw ConfigurationError("missing a name");
             }
         };
         ostream& print_usage(ostream& o, const string& application_name, const Dimension& dimension) const {
@@ -732,16 +732,16 @@ class CommandLine {
                             for (SizeType i = 0; i < element->value.Size(); i++) {
                                 try {
                                     add_action(load_action_node(element->value[i], false));
-                                } catch(ParsingError& e) {
+                                } catch(ConfigurationError& e) {
                                     e.message += " in action " + to_string(i);
                                     throw e;
                                 }
                             }
-                        } else { throw ParsingError("incorrect action syntax"); }
+                        } else { throw ConfigurationError("incorrect action syntax"); }
                     }
-                } else { throw ParsingError("incorrect action syntax"); }
+                } else { throw ConfigurationError("incorrect action syntax"); }
             } else {
-                throw ParsingError(string(GetParseError_En(document.GetParseError())) + " at position " + to_string(document.GetErrorOffset()));
+                throw ConfigurationError(string(GetParseError_En(document.GetParseError())) + " at position " + to_string(document.GetErrorOffset()));
             }
         };
         Action* load_action_node(const Value& node, bool root) {
@@ -753,19 +753,19 @@ class CommandLine {
                 if (element != node.MemberEnd()) {
                     if(element->value.IsString()) {
                         action->name.assign(element->value.GetString(), element->value.GetStringLength());
-                    } else { throw ParsingError("incorrect syntax"); }
+                    } else { throw ConfigurationError("incorrect syntax"); }
                 }
                 element = node.FindMember("description");
                 if (element != node.MemberEnd()) {
                     if(element->value.IsString()) {
                         action->description.assign(element->value.GetString(), element->value.GetStringLength());
-                    } else { throw ParsingError("incorrect syntax"); }
+                    } else { throw ConfigurationError("incorrect syntax"); }
                 }
                 element = node.FindMember("epilog");
                 if (element != node.MemberEnd()) {
                     if(element->value.IsString()) {
                         action->epilog.assign(element->value.GetString(), element->value.GetStringLength());
-                    } else { throw ParsingError("incorrect syntax"); }
+                    } else { throw ConfigurationError("incorrect syntax"); }
                 }
                 element = node.FindMember("option");
                 if (element != node.MemberEnd()) {
@@ -773,10 +773,10 @@ class CommandLine {
                         for (SizeType i = 0; i < element->value.Size(); i++) {
                             action->append_option(load_prototype_node(element->value[i]));
                         }
-                    } else { throw ParsingError("incorrect syntax"); }
+                    } else { throw ConfigurationError("incorrect syntax"); }
                 }
             } else {
-                throw ParsingError("incorrect action syntax");
+                throw ConfigurationError("incorrect action syntax");
             }
             return action;
         };
@@ -789,36 +789,36 @@ class CommandLine {
                 if (element != node.MemberEnd()) {
                     if(element->value.IsString()) {
                         prototype->name.assign(element->value.GetString(), element->value.GetStringLength());
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
                 element = node.FindMember("help");
                 if (element != node.MemberEnd()) {
                     if(element->value.IsString()) {
                         prototype->help.assign(element->value.GetString(), element->value.GetStringLength());
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
                 element = node.FindMember("meta");
                 if (element != node.MemberEnd()) {
                     if(element->value.IsString()) {
                         prototype->meta.assign(element->value.GetString(), element->value.GetStringLength());
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
                 element = node.FindMember("cardinality");
                 if (element != node.MemberEnd()) {
                     if(element->value.IsString()) {
                         if(element->value.GetStringLength() == 1 && *(element->value.GetString()) == '*') {
                             prototype->plural = true;
-                        } else { throw ParsingError("incorrect prototype syntax"); }
-                    } else if(element->value.IsUint64()) {
+                        } else { throw ConfigurationError("incorrect prototype syntax"); }
+                    } else if(element->value.IsUint()) {
                         prototype->plural = true;
                         prototype->cardinality = element->value.GetUint64();
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
                 element = node.FindMember("mandatory");
                 if (element != node.MemberEnd()) {
                     if(element->value.IsBool()) {
                         prototype->mandatory = element->value.GetBool();
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
                 element = node.FindMember("type");
                 if (element != node.MemberEnd()) {
@@ -833,9 +833,9 @@ class CommandLine {
                         } else if (!strcmp(value, "string")) {
                             prototype->type = ParameterType::string;
                         } else {
-                            throw ParsingError("unknown argument type " + string(value));
+                            throw ConfigurationError("unknown argument type " + string(value));
                         }
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
                 element = node.FindMember("handle");
                 if (element != node.MemberEnd()) {
@@ -850,10 +850,10 @@ class CommandLine {
                                 } else if(length > 3 && value[0] == '-' && value[1] == '-' && value[2] != '-') {
                                     // long
                                     prototype->handles.emplace_back(value, 2, length - 2);
-                                } else { throw ParsingError("incorrect option handle syntax " + string(value, length)); }
-                            } else { throw ParsingError("incorrect prototype syntax"); }
+                                } else { throw ConfigurationError("incorrect option handle syntax " + string(value, length)); }
+                            } else { throw ConfigurationError("incorrect prototype syntax"); }
                         }
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
                 element = node.FindMember("choice");
                 if (element != node.MemberEnd()) {
@@ -861,11 +861,11 @@ class CommandLine {
                         for (SizeType i = 0; i < element->value.Size(); i++) {
                             if(element->value[i].IsString()) {
                                 prototype->choices.emplace_back(element->value[i].GetString(), element->value[i].GetStringLength());
-                            } else { throw ParsingError("incorrect prototype syntax"); }
+                            } else { throw ConfigurationError("incorrect prototype syntax"); }
                         }
-                    } else { throw ParsingError("incorrect prototype syntax"); }
+                    } else { throw ConfigurationError("incorrect prototype syntax"); }
                 }
-            } else { throw ParsingError("incorrect prototype syntax"); }
+            } else { throw ConfigurationError("incorrect prototype syntax"); }
             return prototype;
         };
         inline void add_action(Action* action) {
@@ -874,8 +874,8 @@ class CommandLine {
                     action_order.push_back(action);
                     action_name_lookup[action->name] = action;
                     dimension.max_action_name = MAX(dimension.max_action_name, action->name.length());
-                } else { throw ValidationError("redefining " + action->name); }
-            } else { throw ValidationError("action missing a name"); }
+                } else { throw ConfigurationError("redefining " + action->name); }
+            } else { throw ConfigurationError("action missing a name"); }
         };
         inline Argument* parse_argument(const Prototype* prototype, size_t& index) {
             Argument* argument = NULL;

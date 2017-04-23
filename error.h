@@ -39,26 +39,6 @@ using std::exception;
 using std::to_string;
 using std::setprecision;
 
-class InternalError : public exception {
-    public:
-        string message;
-        InternalError(const string& error) {
-            message.assign(error);
-        };
-        virtual const char* what() const throw() {
-            return ("Internal error : " + message).c_str();
-        };
-};
-class IOError : public exception {
-    public:
-        string message;
-        IOError(const string& error) {
-            message.assign(error);
-        };
-        virtual const char* what() const throw() {
-            return ("IO error : " + message).c_str();
-        };
-};
 class CommandLineError : public exception {
     public:
         string message;
@@ -79,18 +59,6 @@ class ConfigurationError : public exception {
             return ("Configuration error: " + message).c_str();
         };
 };
-class ValidationError : public ConfigurationError {
-    public:
-        ValidationError(const string& error) :
-            ConfigurationError(error) {
-        };
-};
-class ParsingError : public ConfigurationError {
-    public:
-        ParsingError(const string& error) :
-            ConfigurationError(error) {
-        };
-};
 class SequenceError : public exception {
     public:
         string message;
@@ -99,6 +67,26 @@ class SequenceError : public exception {
         };
         virtual const char* what() const throw() {
             return ("Sequence error : " + message).c_str();
+        };
+};
+class IOError : public exception {
+    public:
+        string message;
+        IOError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("IO error : " + message).c_str();
+        };
+};
+class InternalError : public exception {
+    public:
+        string message;
+        InternalError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("Internal error : " + message).c_str();
         };
 };
 
