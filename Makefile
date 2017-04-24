@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-MAJOR_REVISON := 0
-MINOR_REVISON := 9
+MAJOR_REVISON := 1
+MINOR_REVISON := 0
 
 -include environment.mk
 
@@ -131,4 +131,5 @@ pipeline.o: \
 	pipeline.h
 
 pheniqs.o: \
+	constant.h \
 	pipeline.h

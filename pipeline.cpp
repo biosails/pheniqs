@@ -451,23 +451,9 @@ void Channel::push(Pivot& pivot) {
 void Channel::encode(Document& document, Value& value, const bool disable_quality_control) const {
     Document::AllocatorType& allocator = document.GetAllocator();
     Value v;
-
     v.SetUint64(index);
     value.AddMember("index", v, allocator);
-
-    if (!multiplex_barcode.empty()) {
-        Value barcodes;
-        barcodes.SetArray();
-        for(size_t i = 0; i < multiplex_barcode.total_fragments(); i++ ) {
-            Value barcode;
-            barcode.SetObject();
-            string code = multiplex_barcode.iupac_ambiguity(i);
-            v.SetString(code.c_str(), code.size(), allocator);
-            barcode.AddMember("barcode sequence", v, allocator);
-            barcodes.PushBack(barcode, allocator);
-        }
-        value.AddMember("multiplex barcode", barcodes, allocator);
-    }
+    multiplex_barcode.encode_report(document, value, "multiplex barcode");
     channel_accumulator.encode(document, value, disable_quality_control);
 };
 void Channel::finalize() {

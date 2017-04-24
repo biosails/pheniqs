@@ -1033,6 +1033,7 @@ enum class Decoder : uint8_t {
 };
 void operator>>(const char* s, Decoder& decoder);
 ostream& operator<<(ostream& o, const Decoder& decoder);
+string& operator<<(string& o, const Decoder& decoder);
 
 enum class IoDirection : uint8_t {
     IN,

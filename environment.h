@@ -32,7 +32,6 @@
 #include <rapidjson/error/en.h>
 
 #include "version.h"
-#include "constant.h"
 #include "error.h"
 #include "interface.h"
 #include "model.h"
@@ -62,6 +61,9 @@ using std::istreambuf_iterator;
 using rapidjson::Document;
 using rapidjson::Value;
 using rapidjson::SizeType;
+using rapidjson::StringBuffer;
+using rapidjson::PrettyWriter;
+
 
 /*  Environment
 */
@@ -79,6 +81,7 @@ class Environment {
         bool disable_quality_control;
         bool long_read;
         bool validate_only;
+        bool lint_only;
         bool display_distance;
         bool include_filtered;
         string facility;
@@ -139,8 +142,9 @@ class Environment {
 
         Environment(int argc, char** argv);
         ~Environment();
-        void print_help(ostream& o);
-        void print_version(ostream& o);
+        void print_help(ostream& o) const;
+        void print_version(ostream& o) const;
+        void print_configuration(ostream& o) const;
         void describe(ostream& o);
         inline size_t number_of_barcodes() const {
             return multiplex_barcode_distance.height();
@@ -156,6 +160,7 @@ class Environment {
         void load_transformation();
         void load_channels();
         void calibrate(const URL& url);
+        void encode(Document& document) const;
         ChannelSpecification* load_channel_from_rg(const HeadRGAtom& rg);
         FeedSpecification* discover_feed(const URL& url, const IoDirection& direction);
 
@@ -175,7 +180,6 @@ class Environment {
         void load_barcode_node(const Value& node, Barcode& barcode);
         void load_channel_node(const Value& node);
         void load_read_group_node(const Value& node);
-
         void load_defaults();
         void load_urls();
         void load_token(const string& pattern);
@@ -223,6 +227,11 @@ class Environment {
         inline void set_validate_only(const bool* value) {
             if(value!=NULL) {
                 validate_only = *value;
+            }
+        };
+        inline void set_lint_only(const bool* value) {
+            if(value!=NULL) {
+                lint_only = *value;
             }
         };
         inline void set_display_distance(const bool* value) {
@@ -379,6 +388,30 @@ class Environment {
                 decode_string_node(node, "PG", &rg.PG);
                 decode_string_node(node, "FO", &rg.FO);
                 decode_string_node(node, "KS", &rg.KS);
+            }
+        };
+        inline void encode_transform(Document& document, Value& node, const vector< Transform >& container, const string& key) const {
+            if(!container.empty()) {
+                Document::AllocatorType& allocator = document.GetAllocator();
+
+                Value collection;
+                collection.SetArray();
+
+                size_t index = 0;
+                string current;
+                for(auto& transform : container) {
+                    if(transform.output_segment_index != index) {
+                        collection.PushBack(Value(current.c_str(), current.size(), allocator).Move(), allocator);
+                        current.clear();
+                        index++;
+                    }
+                    if(current.size() > 0) {
+                        current.push_back(':');
+                    }
+                    current.append(string(transform));
+                }
+                collection.PushBack(Value(current.c_str(), current.size(), allocator).Move(), allocator);
+                node.AddMember(Value(key.c_str(), key.size(), allocator).Move(), collection, allocator);
             }
         };
 };

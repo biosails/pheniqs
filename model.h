@@ -28,6 +28,7 @@
 #include <htslib/hts.h>
 #include <htslib/hfile.h>
 #include <htslib/kstring.h>
+#include <rapidjson/document.h>
 
 #include "constant.h"
 #include "error.h"
@@ -52,6 +53,11 @@ using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
 
+using rapidjson::Document;
+using rapidjson::Value;
+using rapidjson::SizeType;
+using rapidjson::StringRef;
+
 #define tag_to_code(t) uint16_t(*(t))<<8 | uint8_t(*((t) + 1))
 
 /*  URL
@@ -68,13 +74,13 @@ class URL {
         URL(const URL& other);
         URL(const string& path, const IoDirection& direction);
         URL(const char* path, const size_t size, const IoDirection& direction);
-        void parse(const char* path, const size_t size, const IoDirection& direction);
-        void set_name(const char* name, const size_t size);
-        void set_directory(const char* directory, const size_t size);
-        void set_compression(const char* compression, const size_t size);
-        void set_type(const char* type);
-        void set_type(const FormatType type);
-        void relocate(const URL& base);
+        inline void clear() {
+            ks_clear(_path);
+            ks_clear(_name);
+            ks_clear(_directory);
+            ks_clear(_extension);
+            ks_clear(_compression);
+        };
         inline const char* const path() const {
             return _path.s;
         };
@@ -120,6 +126,13 @@ class URL {
         inline bool is_absolute() const {
             return _directory.l > 0 && _directory.s[0] == PATH_SEPARATOR;
         };
+        void parse(const char* path, const size_t size, const IoDirection& direction);
+        void set_name(const char* name, const size_t size);
+        void set_directory(const char* directory, const size_t size);
+        void set_compression(const char* compression, const size_t size);
+        void set_type(const char* type);
+        void set_type(const FormatType type);
+        void relocate(const URL& base);
         FormatKind kind() const;
         bool is_readable() const;
         bool is_writable() const;
@@ -128,13 +141,7 @@ class URL {
         bool operator==(const URL& other) const;
         URL& operator=(const URL& other);
         operator string() const;
-        inline void clear() {
-            ks_clear(_path);
-            ks_clear(_name);
-            ks_clear(_directory);
-            ks_clear(_extension);
-            ks_clear(_compression);
-        };
+        void encode(Document& document, Value& value) const;
 
     private:
         kstring_t _path;
@@ -144,9 +151,6 @@ class URL {
         kstring_t _compression;
         FormatType _type;
 
-        void refresh();
-        void expand(kstring_t* path);
-        void decode_extension(const FormatType& type);
         inline void initialize() {
             ks_terminate(_path);
             ks_terminate(_name);
@@ -154,6 +158,9 @@ class URL {
             ks_terminate(_extension);
             ks_terminate(_compression);
         };
+        void refresh();
+        void expand(kstring_t* path);
+        void decode_extension(const FormatType& type);
 };
 namespace std {
     template <> struct hash<URL> {
@@ -243,6 +250,7 @@ class Transform {
         Transform(const size_t& index, const Token& token, const size_t& output_segment_index, const LeftTokenOperator& left);
         Transform(const Transform& other);
         string description() const;
+        operator string() const;
 };
 /* DNA sequence
 */
@@ -329,6 +337,14 @@ class Sequence {
                     buffer.push_back(BamToAmbiguousAscii[uint8_t(code[i])]);
                 }
             }
+        };
+        inline void encode_iupac_ambiguity(Value& value) const {
+            char* buffer = (char*)malloc(length + 1);
+            for (size_t i = 0; i < length; i++) {
+                buffer[i] = BamToAmbiguousAscii[uint8_t(code[i])];
+            }
+            buffer[length] = '\0';
+            value.SetString(StringRef(buffer, length));
         };
         inline void encode_phred_quality(kstring_t* buffer, const uint8_t phred_offset) const {
             if(length > 0) {
@@ -487,7 +503,8 @@ class Barcode {
             distance = d;
             probability = pow(10.0, sigma * -0.1);
         };
-
+        void encode_configuration(Document& document, Value& node, const string& key) const;
+        void encode_report(Document& document, Value& node, const string& key) const;
     private:
         size_t length;
         uint8_t threshold;
@@ -645,6 +662,7 @@ class HeadRGAtom {
         operator string() const;
         void set_platform(const Platform& value);
         void expand(const HeadRGAtom& other);
+        void encode(Document& document, Value& node, const string& key) const;
 
     private:
         void encode(kstring_t* buffer) const;
@@ -719,11 +737,12 @@ class ChannelSpecification {
 
         ChannelSpecification(size_t index);
         ~ChannelSpecification();
-        string alias() const;
-        void describe(ostream& o) const;
         inline bool writable() const {
             return output_urls.size() > 0;
         };
+        string alias() const;
+        void describe(ostream& o) const;
+        void encode(Document& document, Value& node) const;
 };
 
 /*  Barcode distance metric

@@ -78,6 +78,7 @@ Environment::Environment(int argc, char** argv) :
     disable_quality_control(false),
     long_read(false),
     validate_only(false),
+    lint_only(false),
     display_distance(false),
     include_filtered(false),
     input_phred_offset(numeric_limits<uint32_t>::max()),
@@ -96,7 +97,6 @@ Environment::Environment(int argc, char** argv) :
     undetermined(NULL) {
 
     load(argc, argv);
-
 };
 Environment::~Environment() {
     for(const auto& record : input_feed_specification_by_url) {
@@ -154,6 +154,7 @@ void Environment::load(int argc, char** argv) {
             set_disable_quality_control(interface->get_boolean("quality"));
             set_long_read(interface->get_boolean("long read"));
             set_validate_only(interface->get_boolean("validate"));
+            set_lint_only(interface->get_boolean("lint"));
             set_display_distance(interface->get_boolean("display distance"));
             set_include_filtered(interface->get_boolean("filtered"));
             set_decoder(interface->get_string("decoder"));
@@ -212,11 +213,19 @@ void Environment::load(int argc, char** argv) {
         throw e;
     }
 };
-void Environment::print_help(ostream& o) {
+void Environment::print_help(ostream& o) const {
     interface->print_help(o);
 };
-void Environment::print_version(ostream& o) {
+void Environment::print_version(ostream& o) const {
     interface->print_version(o);
+};
+void Environment::print_configuration(ostream& o) const {
+    Document document;
+    encode(document);
+    StringBuffer buffer;
+    PrettyWriter< StringBuffer > writer(buffer);
+    document.Accept(writer);
+    o << buffer.GetString() << endl;
 };
 void Environment::describe(ostream& o) {
     o << fixed << setprecision(19);
@@ -338,6 +347,123 @@ void Environment::describe(ostream& o) {
         }
     }
 };
+void Environment::encode(Document& document) const {
+    document.SetObject();
+    Document::AllocatorType& allocator = document.GetAllocator();
+
+    Value v;
+    Value collection;
+
+    if(!facility.empty()) {
+        v.SetString(facility.c_str(), facility.size(), allocator);
+        document.AddMember("CN", v, allocator);
+    }
+    if(!platform_model.empty()) {
+        v.SetString(platform_model.c_str(), platform_model.size(), allocator);
+        document.AddMember("PM", v, allocator);
+    }
+    if(!production_date.empty()) {
+        v.SetString(production_date.c_str(), production_date.size(), allocator);
+        document.AddMember("DT", v, allocator);
+    }
+    if(!insert_size.empty()) {
+        v.SetString(insert_size.c_str(), insert_size.size(), allocator);
+        document.AddMember("PI", v, allocator);
+    }
+    if(!base_input_url.empty()) {
+        base_input_url.encode(document, v);
+        document.AddMember("base input path", v.Move(), allocator);
+    }
+    if(!base_output_url.empty()) {
+        base_output_url.encode(document, v);
+        document.AddMember("base output path", v.Move(), allocator);
+    }
+    if(platform != Platform::UNKNOWN) {
+        string buffer;
+        buffer << platform;
+        v.SetString(buffer.c_str(), buffer.size(), allocator);
+        document.AddMember("PL", v, allocator);
+    }
+    if(decoder != Decoder::UNKNOWN) {
+        string buffer;
+        buffer << decoder;
+        v.SetString(buffer.c_str(), allocator);
+        document.AddMember("decoder", v, allocator);
+    }
+
+    v.SetBool(disable_quality_control);
+    document.AddMember("disable quality control", v, allocator);
+
+    v.SetBool(long_read);
+    document.AddMember("long read", v, allocator);
+
+    v.SetBool(include_filtered);
+    document.AddMember("include filtered", v, allocator);
+
+    v.SetUint64(input_phred_offset);
+    document.AddMember("input phred offset", v, allocator);
+
+    v.SetUint64(output_phred_offset);
+    document.AddMember("output phred offset", v, allocator);
+
+    v.SetUint64(masking_threshold);
+    document.AddMember("decoder masking threshold", v, allocator);
+
+    v.SetUint64(leading_segment_index);
+    document.AddMember("leading segment", v, allocator);
+
+    v.SetUint64(threads);
+    document.AddMember("threads", v, allocator);
+
+    v.SetUint64(transforms);
+    document.AddMember("transforms", v, allocator);
+
+    v.SetUint64(buffer_capacity);
+    document.AddMember("buffer capacity", v, allocator);
+
+    v.SetDouble(confidence);
+    document.AddMember("confidence", v, allocator);
+
+    v.SetDouble(noise);
+    document.AddMember("noise", v, allocator);
+
+    if(!input_urls.empty()) {
+        collection.SetArray();
+        for(auto& url : input_urls) {
+            url.encode(document, v);
+            collection.PushBack(v, allocator);
+        }
+        document.AddMember("input", collection, allocator);
+    }
+    if(!multiplex_barcode_tolerance.empty()) {
+        collection.SetArray();
+        for(auto& tolerance : multiplex_barcode_tolerance) {
+            v.SetUint64(tolerance);
+            collection.PushBack(v, allocator);
+        }
+        document.AddMember("distance tolerance", collection, allocator);
+    }
+    if(!tokens.empty()) {
+        collection.SetArray();
+        for(auto& token : tokens) {
+            string buffer(token);
+            v.SetString(buffer.c_str(), buffer.size(), allocator);
+            collection.PushBack(v, allocator);
+        }
+        document.AddMember("token", collection, allocator);
+    }
+    encode_transform(document, document, template_transforms, "template");
+    encode_transform(document, document, multiplex_barcode_transforms, "multiplex barcode");
+    encode_transform(document, document, molecular_barcode_transforms, "molecular barcode");
+
+    if(!channel_specifications.empty()) {
+        collection.SetArray();
+        for(auto specification : channel_specifications) {
+            specification->encode(document, collection);
+        }
+        document.AddMember("channel", collection, allocator);
+    }
+};
 void Environment::validate_urls() {
     for (auto& url : input_urls) {
         if(!url.is_readable()) {
@@ -382,6 +508,7 @@ void Environment::load_configuration_file(const URL& url) {
                     decode_bool_node(document, "long read", long_read);
                     decode_bool_node(document, "include filtered", include_filtered);
                     decode_bool_node(document, "validate only", validate_only);
+                    decode_bool_node(document, "lint only", lint_only);
                     decode_bool_node(document, "display distance", display_distance);
                     decode_uint_node(document, "threads", threads);
                     decode_uint_node(document, "transforms", transforms);
@@ -488,18 +615,24 @@ void Environment::load_url_node(const Value& node, const IoDirection& direction,
                 url.parse(node.GetString(), node.GetStringLength(), direction);
 
             } else {
-                string value;
-                decode_string_node(node, "path", value);
-                if(!value.empty()) {
-                    url.parse(value.c_str(), value.size(), direction);
-
-                    value.clear();
-                    decode_string_node(node, "type", value);
-                    if(!value.empty()) {
-                        url.set_type(value.c_str());
-                    }
+                string buffer;
+                decode_string_node(node, "path", buffer);
+                if(!buffer.empty()) {
+                    url.parse(buffer.c_str(), buffer.size(), direction);
                 } else {
                     throw ConfigurationError("URL element must contain a non empty path element");
+                }
+
+                buffer.clear();
+                decode_string_node(node, "type", buffer);
+                if(!buffer.empty()) {
+                    url.set_type(buffer.c_str());
+                }
+
+                buffer.clear();
+                decode_string_node(node, "compression", buffer);
+                if(!buffer.empty()) {
+                    url.set_compression(buffer.c_str(), buffer.size());
                 }
             }
         } catch(ConfigurationError& e) {
@@ -1039,24 +1172,34 @@ void Environment::load_output_specification() {
 
     for(const auto& url_record : referenced_output) {
         const URL& url = url_record.first;
+        switch(url.type()) {
+            case FormatType::SAM:
+            case FormatType::BAM:
+            case FormatType::CRAM:
+            case FormatType::FASTQ: {
+                size_t resolution = 0;
+                for(const auto& channel_record : url_record.second) {
+                    if(resolution == 0) {
+                        resolution = channel_record.second;
+                    } else if(resolution != channel_record.second) {
+                        throw ConfigurationError("inconsistent resolution for " + url);
+                    }
+                }
 
-        size_t resolution = 0;
-        for(const auto& channel_record : url_record.second) {
-            if(resolution == 0) {
-                resolution = channel_record.second;
-            } else if(resolution != channel_record.second) {
-                throw ConfigurationError("inconsistent resolution for " + url);
-            }
-        }
+                FeedSpecification* feed = discover_feed(url, IoDirection::OUT);
+                feed->set_resolution(resolution);
+                feed->set_capacity(buffer_capacity * feed->resolution);
+                feed->register_pg(pg);
 
-        FeedSpecification* feed = discover_feed(url, IoDirection::OUT);
-        feed->set_resolution(resolution);
-        feed->set_capacity(buffer_capacity * feed->resolution);
-        feed->register_pg(pg);
-
-        for(const auto& channel_record : url_record.second) {
-            ChannelSpecification* channel = channel_record.first;
-            feed->register_rg(channel->rg);
+                for(const auto& channel_record : url_record.second) {
+                    ChannelSpecification* channel = channel_record.first;
+                    feed->register_rg(channel->rg);
+                }
+                break;
+            };
+            default:
+                throw ConfigurationError("unknown format for " + url);
+                break;
         }
     }
 };

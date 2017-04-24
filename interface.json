@@ -27,6 +27,16 @@
                 {
                     "default": false, 
                     "handle": [
+                        "-j", 
+                        "--lint"
+                    ], 
+                    "help": "Only lint configuration file", 
+                    "name": "lint", 
+                    "type": "boolean"
+                }, 
+                {
+                    "default": false, 
+                    "handle": [
                         "-D", 
                         "--distance"
                     ], 
@@ -322,5 +332,6 @@
             "name": "version", 
             "type": "boolean"
         }
-    ]
+    ], 
+    "version comment": "I’ll build my own theme park"
 }

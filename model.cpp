@@ -243,7 +243,7 @@ void URL::set_compression(const char* compression, const size_t size) {
 void URL::set_type(const char* type) {
     type >> _type;
     if(!is_standard_stream()) {
-        if(_type != FormatType::UNKNOWN && _extension.l == 0) {
+        if(_type != FormatType::UNKNOWN) {
             decode_extension(_type);
         }
         refresh();
@@ -252,7 +252,7 @@ void URL::set_type(const char* type) {
 void URL::set_type(const FormatType type) {
     _type = type;
     if(!is_standard_stream()) {
-        if(_type != FormatType::UNKNOWN && _extension.l == 0) {
+        if(_type != FormatType::UNKNOWN) {
             decode_extension(_type);
         }
         refresh();
@@ -352,8 +352,15 @@ void URL::refresh() {
             kputsn(_extension.s, _extension.l, &_path);
         }
         if(_compression.l > 0) {
-            kputc(EXTENSION_SEPARATOR, &_path);
-            kputsn(_compression.s, _compression.l, &_path);
+            switch(_type) {
+                case FormatType::SAM:
+                case FormatType::FASTQ:
+                    kputc(EXTENSION_SEPARATOR, &_path);
+                    kputsn(_compression.s, _compression.l, &_path);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 };
@@ -398,6 +405,30 @@ void URL::decode_extension(const FormatType& type) {
             break;
         default:
             break;
+    }
+};
+void URL::encode(Document& document, Value& value) const {
+    Document::AllocatorType& allocator = document.GetAllocator();
+    if(!is_standard_stream()) {
+        value.SetString(_path.s, _path.l, allocator);
+    } else {
+        value.SetObject();
+        Value v;
+
+        v.SetString(_path.s, _path.l, allocator);
+        value.AddMember("path", v, allocator);
+
+        if(_compression.l > 0) {
+            v.SetString(_compression.s, _compression.l, allocator);
+            value.AddMember("compression", v, allocator);
+        }
+
+        if(_type != FormatType::UNKNOWN) {
+            string type;
+            type << _type;
+            v.SetString(type.c_str(), type.size(), allocator);
+            value.AddMember("type", v, allocator);
+        }
     }
 };
 void URL::expand(kstring_t* path) {
@@ -585,6 +616,18 @@ string Transform::description() const {
     o.append(to_string(token.input_segment_index));
     o.append(" to output segment ");
     o.append(to_string(output_segment_index));
+    return o;
+};
+Transform::operator string() const {
+    string o;
+    switch (left) {
+        case LeftTokenOperator::NONE:
+            break;
+        case LeftTokenOperator::REVERSE_COMPLEMENT:
+            o.push_back('~');
+            break;
+    }
+    o.append(to_string(token.index));
     return o;
 };
 ostream& operator<<(ostream& o, const Transform& transform) {
@@ -844,6 +887,36 @@ string Barcode::iupac_ambiguity() const {
         }
     }
     return result;
+};
+void Barcode::encode_configuration(Document& document, Value& node, const string& key) const {
+    if(!empty()) {
+        Document::AllocatorType& allocator = document.GetAllocator();
+        Value code;
+        Value collection;
+        collection.SetArray();
+        for(auto& fragment : fragments) {
+            fragment.encode_iupac_ambiguity(code);
+            collection.PushBack(code, allocator);
+        }
+        node.AddMember(Value(key.c_str(), key.size(), allocator).Move(), collection, allocator);
+    }
+};
+void Barcode::encode_report(Document& document, Value& node, const string& key) const {
+    if(!empty()) {
+        Document::AllocatorType& allocator = document.GetAllocator();
+        Value code;
+        Value barcode;
+        Value collection;
+        collection.SetArray();
+
+        for(auto& fragment : fragments) {
+            barcode.SetObject();
+            fragment.encode_iupac_ambiguity(code);
+            barcode.AddMember("barcode sequence", code, allocator);
+            collection.PushBack(barcode, allocator);
+        }
+        node.AddMember(Value(key.c_str(), key.size(), allocator).Move(), collection, allocator);
+    }
 };
 ostream& operator<<(ostream& o, const Barcode& barcode) {
     o << barcode.iupac_ambiguity();
@@ -1315,6 +1388,62 @@ void HeadRGAtom::expand(const HeadRGAtom& other) {
         if(KS.l == 0 && other.KS.l > 0) kputsn(other.KS.s, other.KS.l, &KS);
     }
 };
+void HeadRGAtom::encode(Document& document, Value& node, const string& key) const {
+    Document::AllocatorType& allocator = document.GetAllocator();
+    Value v;
+
+    v.SetString(ID.s, ID.l, allocator);
+    node.AddMember(Value(key.c_str(), key.size(), allocator).Move(), v, allocator);
+
+    if(PI.l > 0) {
+        v.SetString(PI.s, PI.l, allocator);
+        node.AddMember("PI", v, allocator);
+    }
+    if(LB.l > 0) {
+        v.SetString(LB.s, LB.l, allocator);
+        node.AddMember("LB", v, allocator);
+    }
+    if(SM.l > 0) {
+        v.SetString(SM.s, SM.l, allocator);
+        node.AddMember("SM", v, allocator);
+    }
+    if(PU.l > 0) {
+        v.SetString(PU.s, PU.l, allocator);
+        node.AddMember("PU", v, allocator);
+    }
+    if(CN.l > 0) {
+        v.SetString(CN.s, CN.l, allocator);
+        node.AddMember("CN", v, allocator);
+    }
+    if(DS.l > 0) {
+        v.SetString(DS.s, DS.l, allocator);
+        node.AddMember("DS", v, allocator);
+    }
+    if(DT.l > 0) {
+        v.SetString(DT.s, DT.l, allocator);
+        node.AddMember("DT", v, allocator);
+    }
+    if(PL.l > 0) {
+        v.SetString(PL.s, PL.l, allocator);
+        node.AddMember("PL", v, allocator);
+    }
+    if(PM.l > 0) {
+        v.SetString(PM.s, PM.l, allocator);
+        node.AddMember("PM", v, allocator);
+    }
+    if(PG.l > 0) {
+        v.SetString(PG.s, PG.l, allocator);
+        node.AddMember("PG", v, allocator);
+    }
+    if(FO.l > 0) {
+        v.SetString(FO.s, FO.l, allocator);
+        node.AddMember("FO", v, allocator);
+    }
+    if(KS.l > 0) {
+        v.SetString(KS.s, KS.l, allocator);
+        node.AddMember("KS", v, allocator);
+    }
+};
 ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
     if(rg.ID.l > 0) o << "ID : " << rg.ID.s << endl;
     if(rg.PI.l > 0) o << "PI : " << rg.PI.s << endl;
@@ -1652,6 +1781,41 @@ void ChannelSpecification::describe(ostream& o) const {
         }
     }
     o << endl;
+};
+void ChannelSpecification::encode(Document& document, Value& node) const {
+    Document::AllocatorType& allocator = document.GetAllocator();
+
+    Value v;
+    Value channel;
+    channel.SetObject();
+
+    rg.encode(document, channel, "RG");
+    if(FS.l > 0) {
+        v.SetString(FS.s, FS.l, allocator);
+        channel.AddMember("FS", v, allocator);
+    }
+    if(CO.l > 0) {
+        v.SetString(CO.s, CO.l, allocator);
+        channel.AddMember("CO", v, allocator);
+    }
+    if(undetermined) {
+        v.SetBool(undetermined);
+        channel.AddMember("undetermined", v, allocator);
+    } else {
+        v.SetDouble(concentration);
+        channel.AddMember("concentration", v, allocator);
+        multiplex_barcode.encode_configuration(document, channel, "barcode");
+    }
+    if(!output_urls.empty()) {
+        Value collection;
+        collection.SetArray();
+        for(auto& url : output_urls) {
+            url.encode(document, v);
+            collection.PushBack(v, allocator);
+        }
+        channel.AddMember("output", collection, allocator);
+    }
+    node.PushBack(channel, allocator);
 };
 ostream& operator<<(ostream& o, const ChannelSpecification& specification) {
     o << specification.alias();

@@ -713,6 +713,7 @@ class CommandLine {
         char** argv;
         string full_command;
         string version;
+        string version_comment;
         Action* command;
         Action* selected;
         string application_name;
@@ -739,6 +740,14 @@ class CommandLine {
                             }
                         } else { throw ConfigurationError("incorrect action syntax"); }
                     }
+
+                    element = document.FindMember("version comment");
+                    if (element != document.MemberEnd()) {
+                        if(element->value.IsString()) {
+                            version_comment.assign(element->value.GetString(), element->value.GetStringLength());
+                        } else { throw ConfigurationError("incorrect syntax"); }
+                    }
+
                 } else { throw ConfigurationError("incorrect action syntax"); }
             } else {
                 throw ConfigurationError(string(GetParseError_En(document.GetParseError())) + " at position " + to_string(document.GetErrorOffset()));
@@ -1093,7 +1102,11 @@ class CommandLine {
             return argument;
         };
         ostream& print_version_element(ostream& o, const Dimension& dimension) {
-            o << name() << " version " << version << endl;
+            o << name() << " " << version;
+            if(!version_comment.empty()) {
+                o << " " << version_comment;
+            }
+            o << endl;
             return o;
         };
         ostream& print_action_element(ostream& o, const Dimension& dimension) {

@@ -40,6 +40,7 @@ _pheniqs_demux() {
     '(-h --help)'{-h,--help}'[show this help]' \
     '(-C --config)'{-C,--config}'[path to configuration file]: :_files -g "*.json"' \
     '(-V --validate)'{-V,--validate}'[only validate configuration]' \
+    '(-j --lint)'{-j,--lint}'[only lint configuration file]' \
     '(-D --distance)'{-D,--distance}'[display pairwise barcode distance]' \
     '(-q --quality)'{-q,--quality}'[disable quality control]' \
     '(-c --confidence)'{-c,--confidence}'[decoding confidence threshold]' \

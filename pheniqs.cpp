@@ -31,7 +31,10 @@ int main(int argc, char** argv) {
         switch(environment.state) {
             case ProgramState::OK: {
                 if (environment.validate_only) {
-                    environment.describe(cerr);
+                    environment.describe(cout);
+
+                } else if (environment.lint_only) {
+                    environment.print_configuration(cout);
 
                 } else {
                     Pipeline pipeline(environment);
