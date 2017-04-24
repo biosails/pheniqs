@@ -65,20 +65,21 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
 # Demux sub command help
 
-    pheniqs version 0.9.d55d65203560ae3719fcbb79ac657189e463ffed
+    pheniqs 1.0.2068ec583e9ad5ab75877cd47ee977565c945d60 I’ll build my own theme park
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2017
 
     Demultiplex and report quality control
 
-    Usage : pheniqs demux [-h] [-V] [-D] -C PATH [-c FLOAT] [-f] [-q] [-n FLOAT]
-                          [-m INT] [-i STRING] [-o STRING] [-l INT] [-d pamld|mdd|benchmark]
+    Usage : pheniqs demux [-h] [-V] [-j] [-D] -C PATH [-c FLOAT] [-f] [-q]
+                          [-n FLOAT] [-m INT] [-i STRING] [-o STRING] [-l INT] [-d pamld|mdd|benchmark]
                           [-p CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-t INT]
                           [-T INT] [-L] [-B INT]
 
     Optional:
       -h, --help                  Show this help
       -V, --validate              Only validate configuration
+      -j, --lint                  Only lint configuration file
       -D, --distance              Display pairwise barcode distance
       -C, --config PATH           Path to configuration file
       -c, --confidence FLOAT      Decoding confidence threshold
@@ -101,7 +102,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
 # Quality sub command
 
-    pheniqs version 0.9.d55d65203560ae3719fcbb79ac657189e463ffed
+    pheniqs 1.0.2068ec583e9ad5ab75877cd47ee977565c945d60 I’ll build my own theme park
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2017
 
