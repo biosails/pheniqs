@@ -132,22 +132,22 @@ JSON can be a little picky about syntax and a good JSON linter can make identify
 
 For **python 2** use:
 
-```python -c "import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')"```
+    python -c "import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')"
 
 or for **python 3**:
 
-```python3 -c "import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))"```
+    python3 -c "import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))"
 
 You may alternatively set it up as an alias in your shell's profile by adding to your `.zshrc` or `.bashrc`:
 
-```alias jsl="python -c \"import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')\""```
+    alias jsl="python -c \"import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')\""
 
 or 
 
-```alias jsl="python3 -c \"import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))\""```
+    alias jsl="python3 -c \"import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))\""
 
 and than invoke it simply by feeding it a JSON file on standard input:
 
-```cat configuration.json|jsl```
+    cat configuration.json|jsl
 
 This will print an easy to read tabulated JSON to standard output and assist you with resolving any syntactical JSON violations.
