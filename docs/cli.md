@@ -42,7 +42,7 @@ Command line parameters, if specified, override their corresponding values provi
 
 # zsh completion
 
-If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install the [bundled zsh command line completion script]({{ site.github.repository_url }}/blob/master/zsh/_pheniqs) for a more interactive command line experience.
+If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install the [bundled zsh command line completion script]({{ site.github.repository_url }}/blob/master/zsh/_pheniqs) for a more interactive command line experience. It will interactively complete the command line arguments for you and makes learning the interface more intuitive. It should be placed or symlinked in a folder that is in your **fpath**.
 
 # Global command line help
 
@@ -125,3 +125,29 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.
+
+# JSON validation
+
+JSON can be a little picky about syntax and a good JSON linter can make identifying offending syntax much easier. Plenty of tools for validating JSON syntax are out there but a simple good and readily available linter is available with the python programing language.
+
+For **python 2** use:
+
+```python -c "import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')"```
+
+or for **python 3**:
+
+```python3 -c "import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))"```
+
+You may alternatively set it up as an alias in your shell's profile by adding to your `.zshrc` or `.bashrc`:
+
+```alias jsl="python -c \"import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')\""```
+
+or 
+
+```alias jsl="python3 -c \"import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))\""```
+
+and than invoke it simply by feeding it a JSON file on standard input:
+
+```cat configuration.json|jsl```
+
+This will print an easy to read tabulated JSON to standard output and assist you with resolving any syntactical JSON violations.
