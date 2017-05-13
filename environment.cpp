@@ -497,6 +497,7 @@ void Environment::load_configuration_file(const URL& url) {
                     decode_string_node(document, "CN", facility);
                     decode_string_node(document, "PM", platform_model);
                     decode_string_node(document, "DT", production_date);
+                    decode_string_node(document, "PU", platform_unit);
                     decode_string_node(document, "PI", insert_size);
                     decode_directory_node(document, "base input path", base_input_url);
                     decode_directory_node(document, "base output path", base_output_url);
@@ -555,19 +556,6 @@ void Environment::load_configuration_file(const URL& url) {
                     if (element != document.MemberEnd()) {
                         load_transform_node(element->value, molecular_barcode_patterns);
                     }
-                    element = document.FindMember("channel");
-                    if (element != document.MemberEnd()) {
-                        if(element->value.IsArray()) {
-                            for (SizeType i = 0; i < element->value.Size(); i++) {
-                                try {
-                                    load_channel_node(element->value[i]);
-                                } catch(ConfigurationError& e) {
-                                    e.message = "channel in position " + to_string(i) + " " + e.message;
-                                    throw e;
-                                }
-                            }
-                        } else { throw ConfigurationError("channel element must be an array"); }
-                    }
                     element = document.FindMember("read group");
                     if (element != document.MemberEnd()) {
                         if(element->value.IsArray()) {
@@ -580,6 +568,19 @@ void Environment::load_configuration_file(const URL& url) {
                                 }
                             }
                         } else { throw ConfigurationError("read group element must be an array"); }
+                    }
+                    element = document.FindMember("channel");
+                    if (element != document.MemberEnd()) {
+                        if(element->value.IsArray()) {
+                            for (SizeType i = 0; i < element->value.Size(); i++) {
+                                try {
+                                    load_channel_node(element->value[i]);
+                                } catch(ConfigurationError& e) {
+                                    e.message = "channel in position " + to_string(i) + " " + e.message;
+                                    throw e;
+                                }
+                            }
+                        } else { throw ConfigurationError("channel element must be an array"); }
                     }
                     element = document.FindMember("distance tolerance");
                     if (element != document.MemberEnd()) {
