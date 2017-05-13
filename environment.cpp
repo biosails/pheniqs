@@ -497,7 +497,6 @@ void Environment::load_configuration_file(const URL& url) {
                     decode_string_node(document, "CN", facility);
                     decode_string_node(document, "PM", platform_model);
                     decode_string_node(document, "DT", production_date);
-                    decode_string_node(document, "PU", platform_unit);
                     decode_string_node(document, "PI", insert_size);
                     decode_directory_node(document, "base input path", base_input_url);
                     decode_directory_node(document, "base output path", base_output_url);
