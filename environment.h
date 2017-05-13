@@ -330,7 +330,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsString()) {
                     value.set_directory(element->value.GetString(), element->value.GetStringLength());
-               } else { throw ConfigurationError(string(name) + " element must be a string"); }
+                } else { throw ConfigurationError(string(name) + " element must be a string"); }
             }
         };
         inline void decode_string_node(const Value& node, const Value::Ch* name, string& value) {
@@ -338,7 +338,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsString()) {
                     value.assign(element->value.GetString(), element->value.GetStringLength());
-               } else { throw ConfigurationError(string(name) + " element must be a string"); }
+                } else { throw ConfigurationError(string(name) + " element must be a string"); }
             }
         };
         inline void decode_string_node(const Value& node, const Value::Ch* name, kstring_t* value) {
@@ -346,7 +346,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsString()) {
                     kputsn(element->value.GetString(), element->value.GetStringLength(), value);
-               } else { throw ConfigurationError(string(name) + " element must be a string"); }
+                } else { throw ConfigurationError(string(name) + " element must be a string"); }
             }
         };
         inline void decode_uint_node(const Value& node, const Value::Ch* name, uint32_t& value) {
@@ -354,7 +354,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsUint()) {
                     value = element->value.GetUint();
-               } else { throw ConfigurationError(string(name) + " element must be an unsigned integer"); }
+                } else { throw ConfigurationError(string(name) + " element must be an unsigned integer"); }
             }
         };
         inline void decode_bool_node(const Value& node, const Value::Ch* name, bool& value) {
@@ -362,7 +362,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsBool()) {
                     value = element->value.GetBool();
-               } else { throw ConfigurationError(string(name) + " element must be a boolean"); }
+                } else { throw ConfigurationError(string(name) + " element must be a boolean"); }
             }
         };
         inline void decode_double_node(const Value& node, const Value::Ch* name, double& value) {
@@ -370,7 +370,7 @@ class Environment {
             if (element != node.MemberEnd()) {
                 if(element->value.IsNumber()) {
                     value = element->value.GetDouble();
-               } else { throw ConfigurationError(string(name) + " element must be numeric"); }
+                } else { throw ConfigurationError(string(name) + " element must be numeric"); }
             }
         };
         inline void decode_read_group(HeadRGAtom& rg, const Value& node, const Value::Ch* key) {
