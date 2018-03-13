@@ -21,6 +21,115 @@
 
 #include "constant.h"
 
+ostream& operator<<(ostream& o, const ProgramAction& type) {
+    string string_value;
+    string_value << type;
+    o << string_value;
+    return o;
+};
+string& operator<<(string& o, const ProgramAction& type) {
+    switch (type) {
+        case ProgramAction::DEMULTIPLEX:    o.assign("demux");      break;
+        case ProgramAction::QUALITY:        o.assign("quality");    break;
+        default:                            o.assign("unknown");    break;
+    }
+    return o;
+};
+void operator>>(const string& s, ProgramAction& type) {
+    if(s == "demux")            type = ProgramAction::DEMULTIPLEX;
+    else if(s == "quality")     type = ProgramAction::QUALITY;
+    else                        type = ProgramAction::UNKNOWN;
+};
+void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document) {
+    string string_value;
+    string_value << value;
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+void decode_program_action_by_key(const Value::Ch* key, ProgramAction& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd()) {
+        if(element->value.IsString()) {
+            string string_value(element->value.GetString(), element->value.GetStringLength());
+            string_value >> value;
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+};
+
+ostream& operator<<(ostream& o, const FormatType& type) {
+    switch (type) {
+        case FormatType::FASTQ: o << "fastq";   break;
+        case FormatType::SAM:   o << "sam";     break;
+        case FormatType::BAM:   o << "bam";     break;
+        case FormatType::BAI:   o << "bai";     break;
+        case FormatType::CRAM:  o << "cram";    break;
+        case FormatType::CRAI:  o << "crai";    break;
+        case FormatType::VCF:   o << "vcf";     break;
+        case FormatType::BCF:   o << "bcf";     break;
+        case FormatType::CSI:   o << "csi";     break;
+        case FormatType::GZI:   o << "gzi";     break;
+        case FormatType::TBI:   o << "tbi";     break;
+        case FormatType::BED:   o << "bed";     break;
+        case FormatType::JSON:  o << "json";    break;
+        default:                o << "unknown"; break;
+    }
+    return o;
+};
+string& operator<<(string& o, const FormatType& type) {
+    switch (type) {
+        case FormatType::FASTQ: o.assign("fastq");  break;
+        case FormatType::SAM:   o.assign("sam");    break;
+        case FormatType::BAM:   o.assign("bam");    break;
+        case FormatType::BAI:   o.assign("bai");    break;
+        case FormatType::CRAM:  o.assign("cram");   break;
+        case FormatType::CRAI:  o.assign("crai");   break;
+        case FormatType::VCF:   o.assign("vcf");    break;
+        case FormatType::BCF:   o.assign("bcf");    break;
+        case FormatType::CSI:   o.assign("csi");    break;
+        case FormatType::GZI:   o.assign("gzi");    break;
+        case FormatType::TBI:   o.assign("tbi");    break;
+        case FormatType::BED:   o.assign("bed");    break;
+        case FormatType::JSON:  o.assign("json");   break;
+        default:                                    break;
+    }
+    return o;
+};
+void operator>>(const char* s, FormatType& type) {
+         if(s == NULL)              type = FormatType::UNKNOWN;
+    else if(!strcmp(s, "fastq"))    type = FormatType::FASTQ;
+    else if(!strcmp(s, "sam"))      type = FormatType::SAM;
+    else if(!strcmp(s, "bam"))      type = FormatType::BAM;
+    else if(!strcmp(s, "bai"))      type = FormatType::BAI;
+    else if(!strcmp(s, "cram"))     type = FormatType::CRAM;
+    else if(!strcmp(s, "crai"))     type = FormatType::CRAI;
+    else if(!strcmp(s, "vcf"))      type = FormatType::VCF;
+    else if(!strcmp(s, "bcf"))      type = FormatType::BCF;
+    else if(!strcmp(s, "csi"))      type = FormatType::CSI;
+    else if(!strcmp(s, "gzi"))      type = FormatType::GZI;
+    else if(!strcmp(s, "TBI"))      type = FormatType::TBI;
+    else if(!strcmp(s, "bed"))      type = FormatType::BED;
+    else if(!strcmp(s, "json"))     type = FormatType::JSON;
+    else                            type = FormatType::UNKNOWN;
+};
+void operator>>(const string& s, FormatType& type) {
+         if(s == "fastq")   type = FormatType::FASTQ;
+    else if(s == "sam")     type = FormatType::SAM;
+    else if(s == "bam")     type = FormatType::BAM;
+    else if(s == "bai")     type = FormatType::BAI;
+    else if(s == "cram")    type = FormatType::CRAM;
+    else if(s == "crai")    type = FormatType::CRAI;
+    else if(s == "vcf")     type = FormatType::VCF;
+    else if(s == "bcf")     type = FormatType::BCF;
+    else if(s == "csi")     type = FormatType::CSI;
+    else if(s == "gzi")     type = FormatType::GZI;
+    else if(s == "TBI")     type = FormatType::TBI;
+    else if(s == "bed")     type = FormatType::BED;
+    else if(s == "json")    type = FormatType::JSON;
+    else                    type = FormatType::UNKNOWN;
+}
+
+
 
 ostream& operator<<(ostream& o, const HtsSortOrder& order) {
     switch (order) {
@@ -88,7 +197,6 @@ void operator>>(const char* s, HtsGrouping& grouping) {
     else if(!strcmp(s, "query"))        grouping = HtsGrouping::QUERY;
     else if(!strcmp(s, "reference"))    grouping = HtsGrouping::REFERENCE;
     else                                grouping = HtsGrouping::NONE;
-    
 };
 
 ostream& operator<<(ostream& o, const Platform& platform) {
@@ -170,62 +278,6 @@ void operator>>(const char* s, FormatKind& kind) {
     else                            kind = FormatKind::UNKNOWN;
 };
 
-ostream& operator<<(ostream& o, const FormatType& type) {
-    switch (type) {
-        case FormatType::FASTQ: o << "fastq";   break;
-        case FormatType::SAM:   o << "sam";     break;
-        case FormatType::BAM:   o << "bam";     break;
-        case FormatType::BAI:   o << "bai";     break;
-        case FormatType::CRAM:  o << "cram";    break;
-        case FormatType::CRAI:  o << "crai";    break;
-        case FormatType::VCF:   o << "vcf";     break;
-        case FormatType::BCF:   o << "bcf";     break;
-        case FormatType::CSI:   o << "csi";     break;
-        case FormatType::GZI:   o << "gzi";     break;
-        case FormatType::TBI:   o << "tbi";     break;
-        case FormatType::BED:   o << "bed";     break;
-        case FormatType::JSON:  o << "json";    break;
-        default:                o << "unknown"; break;
-    }
-    return o;
-};
-string& operator<<(string& o, const FormatType& type) {
-    switch (type) {
-        case FormatType::FASTQ: o.assign("fastq");  break;
-        case FormatType::SAM:   o.assign("sam");    break;
-        case FormatType::BAM:   o.assign("bam");    break;
-        case FormatType::BAI:   o.assign("bai");    break;
-        case FormatType::CRAM:  o.assign("cram");   break;
-        case FormatType::CRAI:  o.assign("crai");   break;
-        case FormatType::VCF:   o.assign("vcf");    break;
-        case FormatType::BCF:   o.assign("bcf");    break;
-        case FormatType::CSI:   o.assign("csi");    break;
-        case FormatType::GZI:   o.assign("gzi");    break;
-        case FormatType::TBI:   o.assign("tbi");    break;
-        case FormatType::BED:   o.assign("bed");    break;
-        case FormatType::JSON:  o.assign("json");   break;
-        default:                                    break;
-    }
-    return o;
-};
-void operator>>(const char* s, FormatType& type) {
-    if(s == NULL)                   type = FormatType::UNKNOWN;
-    else if(!strcmp(s, "fastq"))    type = FormatType::FASTQ;
-    else if(!strcmp(s, "sam"))      type = FormatType::SAM;
-    else if(!strcmp(s, "bam"))      type = FormatType::BAM;
-    else if(!strcmp(s, "bai"))      type = FormatType::BAI;
-    else if(!strcmp(s, "cram"))     type = FormatType::CRAM;
-    else if(!strcmp(s, "crai"))     type = FormatType::CRAI;
-    else if(!strcmp(s, "vcf"))      type = FormatType::VCF;
-    else if(!strcmp(s, "bcf"))      type = FormatType::BCF;
-    else if(!strcmp(s, "csi"))      type = FormatType::CSI;
-    else if(!strcmp(s, "gzi"))      type = FormatType::GZI;
-    else if(!strcmp(s, "TBI"))      type = FormatType::TBI;
-    else if(!strcmp(s, "bed"))      type = FormatType::BED;
-    else if(!strcmp(s, "json"))     type = FormatType::JSON;
-    else                            type = FormatType::UNKNOWN;
-};
-
 ostream& operator<<(ostream& o, const Decoder& decoder) {
     switch (decoder) {
         case Decoder::UNKNOWN:      o << "unknown";     break;
@@ -252,14 +304,6 @@ void operator>>(const char* s, Decoder& decoder) {
     else if(!strcmp(s, "pamld"))        decoder = Decoder::PAMLD;
     else if(!strcmp(s, "benchmark"))    decoder = Decoder::BENCHMARK;
     else                                decoder = Decoder::UNKNOWN;
-};
-
-ostream& operator<<(ostream& o, const IoDirection& direction) {
-    switch (direction) {
-        case IoDirection::IN:   o << "in";  break;
-        case IoDirection::OUT:  o << "out"; break;
-    }
-    return o;
 };
 
 ostream& operator<<(ostream& o, const LeftTokenOperator& operation) {

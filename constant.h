@@ -32,6 +32,8 @@
 #include <htslib/hts.h>
 #include <htslib/kstring.h>
 
+#include "json.h"
+
 using std::setw;
 using std::endl;
 using std::cerr;
@@ -812,6 +814,68 @@ const double InverseQuality[128] = {
     0.0000000000008664
 };
 
+/*  Environment constants
+
+    ProgramAction enumerates the sub commands of the command line interface
+
+    ProgramState is the eventual return code of the program. 
+    0 means everything is ok (ProgramState::OK).
+    any other value represents a particular error code.
+
+    FormatType enumerates file formats for a URL
+*/
+
+enum class ProgramAction : uint8_t {
+    UNKNOWN,
+    DEMULTIPLEX,
+    QUALITY,
+};
+ostream& operator<<(ostream& o, const ProgramAction& type);
+string& operator<<(string& o, const ProgramAction& type);
+void operator>>(const string& s, ProgramAction& type);
+void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document);
+void decode_program_action_by_key(const Value::Ch* key, ProgramAction& value, const Value& container);
+
+enum class ProgramState : int8_t {
+    OK,
+    HELP,
+    VERSION,
+    UNKNOWN_ERROR,
+    INTERNAL_ERROR,
+    CONFIGURATION_ERROR,
+    COMMAND_LINE_ERROR,
+    IO_ERROR,
+    SEQUENCE_ERROR,
+};
+
+enum class FormatType : uint8_t {
+    UNKNOWN,
+    FASTQ,
+    SAM,
+    BAM,
+    BAI,
+    CRAM,
+    CRAI,
+    VCF,
+    BCF,
+    CSI,
+    GZI,
+    TBI,
+    BED,
+    JSON,
+};
+ostream& operator<<(ostream& o, const FormatType& kind);
+string& operator<<(string& o, const FormatType& type);
+void operator>>(const char* s, FormatType& type);
+void operator>>(const string& s, FormatType& type);
+
+enum class FormatKind : uint8_t {
+    UNKNOWN,
+    FASTQ,
+    HTS,
+};
+ostream& operator<<(ostream& o, const FormatKind& kind);
+
 /*  SAM format flags
 
     PAIRED          read is paired in sequencing, no matter whether it is mapped in a pair
@@ -903,6 +967,8 @@ void operator>>(const char* s, HtsGrouping& grouping);
     XP  f   Phred Adjusted Maximum Likelihood decoder conditioned error probability
 */
 enum class HtsAuxiliaryCode : uint16_t {
+    AH = 0x4148,
+    M5 = 0x4d35,
     SP = 0x5350,
     SO = 0x534f,
     FO = 0x464f,
@@ -930,7 +996,6 @@ enum class HtsAuxiliaryCode : uint16_t {
     VN = 0x564e,
     LN = 0x4c4e,
     FI = 0x4649,
-    M5 = 0x4d35,
     PU = 0x5055,
     QT = 0x5154,
     DS = 0x4453,
@@ -978,53 +1043,6 @@ enum class ParameterType : uint8_t {
     string
 };
 
-enum class ProgramState : int8_t {
-    OK,
-    HELP,
-    VERSION,
-    UNKNOWN_ERROR,
-    INTERNAL_ERROR,
-    CONFIGURATION_ERROR,
-    COMMAND_LINE_ERROR,
-    IO_ERROR,
-    SEQUENCE_ERROR,
-};
-
-enum class ProgramAction : uint8_t {
-    UNKNOWN,
-    DEMULTIPLEX,
-    QUALITY,
-};
-void operator>>(const char* s, ProgramAction& action);
-ostream& operator<<(ostream& o, const ProgramAction& action);
-
-enum class FormatType : uint8_t {
-    UNKNOWN,
-    FASTQ,
-    SAM,
-    BAM,
-    BAI,
-    CRAM,
-    CRAI,
-    VCF,
-    BCF,
-    CSI,
-    GZI,
-    TBI,
-    BED,
-    JSON,
-};
-ostream& operator<<(ostream& o, const FormatType& kind);
-string& operator<<(string& o, const FormatType& type);
-void operator>>(const char* s, FormatType& type);
-
-enum class FormatKind : uint8_t {
-    UNKNOWN,
-    FASTQ,
-    HTS,
-};
-ostream& operator<<(ostream& o, const FormatKind& kind);
-
 enum class Decoder : uint8_t {
     UNKNOWN,
     MDD,
@@ -1034,12 +1052,6 @@ enum class Decoder : uint8_t {
 void operator>>(const char* s, Decoder& decoder);
 ostream& operator<<(ostream& o, const Decoder& decoder);
 string& operator<<(string& o, const Decoder& decoder);
-
-enum class IoDirection : uint8_t {
-    IN,
-    OUT,
-};
-ostream& operator<<(ostream& o, const IoDirection& direction);
 
 enum class LeftTokenOperator : uint8_t {
     NONE,

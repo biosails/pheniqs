@@ -945,12 +945,12 @@ class FastqFeed : public BufferedFeed<FastqRecord> {
                             kseq = kseq_init(bgzf_file);
                             bgzf_thread_pool(bgzf_file, thread_pool->pool, thread_pool->qsize);
                         } else {
-                            throw IOError("failed to open " + url + " for reading");
+                            throw IOError("failed to open " + string(url) + " for reading");
                         }
                         break;
                     };
                     case IoDirection::OUT: {
-                        if(!strcmp(specification->url.compression(), "gz")) {
+                        if(specification->url.compression() == "gz") {
                             bgzf_file = bgzf_hopen(hfile, "wg");
                         } else {
                             bgzf_file = bgzf_hopen(hfile, "wu");
@@ -959,7 +959,7 @@ class FastqFeed : public BufferedFeed<FastqRecord> {
                             kseq = kseq_init(bgzf_file);
                             bgzf_thread_pool(bgzf_file, thread_pool->pool, thread_pool->qsize);
                         } else {
-                            throw IOError("failed to open " + url + " for writing");
+                            throw IOError("failed to open " + string(url) + " for writing");
                         }
                         break;
                     };
@@ -1013,7 +1013,7 @@ class FastqFeed : public BufferedFeed<FastqRecord> {
             }
 
             if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
-                throw IOError("error writing to " + url);
+                throw IOError("error writing to " + string(url));
             }
         };
 };
@@ -1044,7 +1044,7 @@ class HtsFeed : public BufferedFeed<bam1_t> {
                             hts_set_thread_pool(hts_file, thread_pool);
                             header.decode(hts_file);
                         } else {
-                            throw IOError("failed to open " + url + " for reading");
+                            throw IOError("failed to open " + string(url) + " for reading");
                         }
                         break;
                     };
@@ -1080,7 +1080,7 @@ class HtsFeed : public BufferedFeed<bam1_t> {
                             header.assemble();
                             header.encode(hts_file);
                         } else {
-                            throw IOError("failed to open " + url + " for writing");
+                            throw IOError("failed to open " + string(url) + " for writing");
                         }
                         break;
                     };
@@ -1167,7 +1167,7 @@ class HtsFeed : public BufferedFeed<bam1_t> {
         inline void empty_buffer() {
             while(buffer->is_not_empty()) {
                 if(sam_write1(hts_file, header.hdr, buffer->next()) < 0) {
-                    throw IOError("error writing to " + url);
+                    throw IOError("error writing to " + string(url));
                 }
                 buffer->decrement();
             }

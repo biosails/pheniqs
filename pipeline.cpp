@@ -60,7 +60,7 @@ Pivot::Pivot(Pipeline& pipeline) :
     leading_segment = &(input[pipeline.environment.leading_segment_index]);
 
     /*
-        in long read accumulation more channel statistics
+        in long read accumulation mode channel statistics
         are collected on the pivots and only at the end summed up
         on the channel. otherwise they are collected directly on the channel
     */
@@ -305,8 +305,9 @@ inline void Pivot::encode_auxiliary () {
     if (decoded_multiplex_channel != NULL) {
         for(auto& segment: output) {
 
-            if(decoder == Decoder::PAMLD) 
+            if(decoder == Decoder::PAMLD) {
                 segment.auxiliary.DQ = 1.0 - multiplex_probability;
+            }
 
             // sequence auxiliary tags
             segment.sequence.expected_error(segment.auxiliary.EE);
@@ -456,8 +457,8 @@ void Channel::encode(Document& document, Value& value, const bool disable_qualit
     multiplex_barcode.encode_report(document, value, "multiplex barcode");
     channel_accumulator.encode(document, value, disable_quality_control);
 };
-void Channel::finalize() {
-    channel_accumulator.finalize();
+void Channel::finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count) {
+    channel_accumulator.finalize(pool_count, pool_pf_count);
 };
 
 /*  Pipeline */
@@ -470,7 +471,8 @@ Pipeline::Pipeline(Environment& environment) :
     end_of_input(false),
     thread_pool({NULL, 0}),
     undetermined(NULL),
-    input_accumulator(NULL) {
+    input_accumulator(NULL),
+    output_accumulator(NULL) {
 
     thread_pool.pool = hts_tpool_init(environment.threads);
     if (!thread_pool.pool) {
@@ -502,6 +504,7 @@ Pipeline::~Pipeline() {
     channel_by_read_group_id.clear();
 
     delete input_accumulator;
+    delete output_accumulator;
 };
 void Pipeline::initialize_channels() {
     channels.reserve(environment.channel_specifications.size());
@@ -511,17 +514,19 @@ void Pipeline::initialize_channels() {
             channels.push_back(channel);
 
         } else {
-            // the undetermined channel is not present in the channels array
-            // and is referenced separately by the undetermined pointer
+            /*  the undetermined channel is not present in the channels array
+                and is referenced separately by the undetermined pointer */
             undetermined = channel;
         }
 
-        // channel by read group id lookup
+        /* channel by read group id lookup table */
         if(!channel->rg_key.empty()) {
             if (channel_by_read_group_id.find(channel->rg_key) == channel_by_read_group_id.end()) {
                 channel_by_read_group_id[channel->rg_key] = channel;
             }
         }
+
+        /* channel by concatenated barcode string lookup table */
         if(!channel->barcode_key.empty()) {
             if (channel_by_barcode.find(channel->barcode_key) == channel_by_barcode.end()) {
                 channel_by_barcode[channel->barcode_key] = channel;
@@ -605,76 +610,12 @@ void Pipeline::encode_report(ostream& o) const {
     }
     o << endl;
 };
-void Pipeline::encode_input_report(Document& document, Value& value) const {
-    value.SetObject();
-    input_accumulator->encode(document, value, disable_quality_control);
-};
-void Pipeline::encode_output_report(Document& document, Value& value) const {
-    Document::AllocatorType& allocator = document.GetAllocator();
-    value.SetObject();
-
-    uint64_t total_yield = 0;
-    uint64_t total_perfect_yield = 0;
-    uint64_t total_filtered_yield = 0;
-
-    for (auto channel : channels) {
-        total_yield += channel->channel_accumulator.yield;
-        total_perfect_yield += channel->channel_accumulator.perfect_yield;
-        total_filtered_yield += channel->channel_accumulator.filtered_yield;
-    }
-
-    Value v;
-    v.SetUint64(total_yield);
-    value.AddMember("yield", v, allocator);
-
-    v.SetUint64(total_perfect_yield);
-    value.AddMember("perfect yield", v, allocator);
-
-    v.SetUint64(total_filtered_yield);
-    value.AddMember("filtered yield", v, allocator);
-
-    v.SetDouble(total_yield > 0 ? double(total_perfect_yield) / double(total_yield) : 0.0);
-    value.AddMember("perfect yield fraction", v, allocator);
-
-    v.SetDouble(total_yield > 0 ? double(total_filtered_yield) / double(total_yield) : 0.0);
-    value.AddMember("filtered yield fraction", v, allocator);
-
-    Value channel_reports;
-    channel_reports.SetArray();
-    for (size_t i = 0; i < channels.size(); i++) {
-        Channel* channel = channels[i];
-
-        Value channel_report;
-        channel_report.SetObject();
-        channel->encode(document, channel_report, disable_quality_control);
-        channel_reports.PushBack(channel_report, allocator);
-    }
-    value.AddMember("library quality reports", channel_reports, allocator);
-};
 void Pipeline::encode_demultiplex_report(ostream& o) const {
     Document document;
     document.SetObject();
     Document::AllocatorType& allocator = document.GetAllocator();
 
     Value v;
-
-    v.SetUint64(input_accumulator->count);
-    document.AddMember("read count", v, allocator);
-
-    v.SetUint64(input_accumulator->filtered_count);
-    document.AddMember("filtered read count", v, allocator);
-
-    v.SetDouble(input_accumulator->count > 0 ? double(input_accumulator->filtered_count) / double(input_accumulator->count) : 0.0);
-    document.AddMember("filtered read fraction", v, allocator);
-
-    v.SetUint64(input_accumulator->determined_count);
-    document.AddMember("determined read count", v, allocator);
-
-    v.SetUint64(input_accumulator->determined_filtered_count);
-    document.AddMember("determined filtered read count", v, allocator);
-
-    v.SetDouble(input_accumulator->count > 0 ? double(input_accumulator->determined_count) / double(input_accumulator->count) : 0.0);
-    document.AddMember("determined read fraction", v, allocator);
 
     Value output_report;
     encode_output_report(document, output_report);
@@ -689,21 +630,42 @@ void Pipeline::encode_demultiplex_report(ostream& o) const {
     document.Accept(writer);
     o << buffer.GetString();
 };
+void Pipeline::encode_input_report(Document& document, Value& value) const {
+    value.SetObject();
+    input_accumulator->encode(document, value, disable_quality_control);
+};
+void Pipeline::encode_output_report(Document& document, Value& value) const {
+    Document::AllocatorType& allocator = document.GetAllocator();
+    value.SetObject();
+
+    output_accumulator->encode(document, value);
+
+    Value channel_reports;
+    channel_reports.SetArray();
+
+    /* encode the undetermined channel first */
+    if(undetermined != NULL) {
+        Value channel_report;
+        channel_report.SetObject();
+        undetermined->encode(document, channel_report, disable_quality_control);
+        channel_reports.PushBack(channel_report, allocator);
+    }
+
+    /* encode the classified channels */
+    for (auto channel : channels) {
+        Value channel_report;
+        channel_report.SetObject();
+        channel->encode(document, channel_report, disable_quality_control);
+        channel_reports.PushBack(channel_report, allocator);
+    }
+    value.AddMember("library quality reports", channel_reports, allocator);
+};
 void Pipeline::encode_quality_report(ostream& o) const {
     Document document;
     document.SetObject();
     Document::AllocatorType& allocator = document.GetAllocator();
 
     Value v;
-
-    v.SetUint64(input_accumulator->count);
-    document.AddMember("read count", v, allocator);
-
-    v.SetUint64(input_accumulator->filtered_count);
-    document.AddMember("filtered read count", v, allocator);
-
-    v.SetDouble(input_accumulator->count > 0 ? double(input_accumulator->filtered_count) / double(input_accumulator->count) : 0.0);
-    document.AddMember("filtered read fraction", v, allocator);
 
     Value output_report;
     encode_output_report(document, output_report);
@@ -719,11 +681,12 @@ void Pipeline::encode_quality_report(ostream& o) const {
     o << buffer.GetString();
 };
 void Pipeline::finalize() {
-    // collect statistics from all parallel pivots
+    /* collect statistics from all parallel pivots */
     for(const auto pivot : pivots) {
         *input_accumulator += pivot->accumulator;
 
         if(long_read) {
+            /* collect output statistics from pivots on the channel accumulators */
             switch (environment.action) {
                 case ProgramAction::DEMULTIPLEX: {
                     for(const auto& record : pivot->channel_by_barcode) {
@@ -750,8 +713,23 @@ void Pipeline::finalize() {
     }
     input_accumulator->finalize();
 
+    /* collect statistics from all output channels */
     for(auto channel : channels) {
-        channel->finalize();
+        output_accumulator->collect(*channel);
+    }
+    if (undetermined != NULL) {
+        output_accumulator->collect(*undetermined);
+    }
+
+    /* finalize the pipeline accumulator */
+    output_accumulator->finalize();
+
+    /* finalize the channel accumulators, now that we know the totals */
+    if (undetermined != NULL) {
+        undetermined->finalize(output_accumulator->count, output_accumulator->pf_count);
+    }
+    for(auto channel : channels) {
+        channel->finalize(output_accumulator->count, output_accumulator->pf_count);
     }
 };
 Feed* Pipeline::resolve_feed(const URL& url, const IoDirection& direction) const {
@@ -792,7 +770,7 @@ Feed* Pipeline::load_feed(FeedSpecification* specification) {
                         break;
                     };
                     default:
-                        throw InternalError("unknown input format " + specification->url);
+                        throw InternalError("unknown input format " + string(specification->url));
                         break;
                 }
                 input_feed_by_url[specification->url] = feed;
@@ -815,7 +793,7 @@ Feed* Pipeline::load_feed(FeedSpecification* specification) {
                         break;
                     };
                     default:
-                        throw InternalError("unknown output format " + specification->url);
+                        throw InternalError("unknown output format " + string(specification->url));
                         break;
                 }
                 output_feed_by_url[specification->url] = feed;
@@ -863,6 +841,10 @@ void Pipeline::load_output_feeds() {
     unique_output_feeds.reserve(feed_by_index.size());
     for(const auto& record : feed_by_index) {
         unique_output_feeds.push_back(record.second);
+    }
+
+    if(!disable_quality_control) {
+        output_accumulator = new PipelineAccumulator();
     }
 };
 void Pipeline::probe(const URL& url) {
@@ -1131,9 +1113,6 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
             Value cycle_quality_median;
             cycle_quality_median.SetArray();
 
-            Value cycle_quality_sum;
-            cycle_quality_sum.SetArray();
-
             for (size_t c = 0; c < cycles.size(); c++) {
                 v.SetUint64(cycles[c]->iupac_nucleic_acid[n].count);
                 cycle_count.PushBack(v, allocator);
@@ -1164,9 +1143,6 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
 
                 v.SetUint64(cycles[c]->iupac_nucleic_acid[n].median);
                 cycle_quality_median.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].sum);
-                cycle_quality_sum.PushBack(v, allocator);
             }
 
             cycle_quality_distribution.AddMember("cycle count", cycle_count, allocator);
@@ -1179,7 +1155,6 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
             cycle_quality_distribution.AddMember("cycle quality max", cycle_quality_max, allocator);
             cycle_quality_distribution.AddMember("cycle quality mean", cycle_quality_mean, allocator);
             cycle_quality_distribution.AddMember("cycle quality median", cycle_quality_median, allocator);
-            cycle_quality_distribution.AddMember("cycle quality sum", cycle_quality_sum, allocator);
 
             if (n > 0) {
                 Value cycle_nucleotide_quality_report;
@@ -1212,9 +1187,6 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
 
     v.SetDouble(average_phred.max);
     average_phred_report.AddMember("average phred score max", v, allocator);
-
-    v.SetDouble(average_phred.sum);
-    average_phred_report.AddMember("average phred score sum", v, allocator);
 
     v.SetDouble(average_phred.mean);
     average_phred_report.AddMember("average phred score mean", v, allocator);
@@ -1263,27 +1235,23 @@ FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
 
 PivotAccumulator::PivotAccumulator(const size_t total_input_segments) :
     count(0),
-    filtered_count(0),
-    determined_count(0),
-    determined_filtered_count(0),
+    pf_count(0),
+    pf_fraction(0),
     feed_accumulators(total_input_segments) {
 };
 void PivotAccumulator::increment(const Pivot& pivot) {
     count++;
-    if (pivot.filtered) {
-        filtered_count++;
-    }
-    if (pivot.determined) {
-        determined_count++;
-    }
-    if (pivot.determined && pivot.filtered) {
-        determined_filtered_count++;
+    if (!pivot.filtered) {
+        pf_count++;
     }
     for(size_t i = 0; i < feed_accumulators.size(); i++) {
         feed_accumulators[i].increment(pivot.input[i].sequence);
     }
 };
 void PivotAccumulator::finalize() {
+    if (count > 0) {
+        pf_fraction = double(pf_count) / double(count);
+    }
     for(auto& accumulator : feed_accumulators) {
         accumulator.finalize();
     }
@@ -1293,25 +1261,19 @@ void PivotAccumulator::encode(Document& document, Value& value, const bool disab
 
     Value v;
     v.SetUint64(count);
-    value.AddMember("read count", v, allocator);
+    value.AddMember("count", v, allocator);
 
-    v.SetUint64(filtered_count);
-    value.AddMember("filtered read count", v, allocator);
+    v.SetUint64(pf_count);
+    value.AddMember("pf count", v, allocator);
+
+    v.SetDouble(pf_fraction);
+    value.AddMember("pf fraction", v, allocator);
 
     Value feed_reports;
     feed_reports.SetArray();
     for (auto& accumulator : feed_accumulators) {
         Value feed_report;
         feed_report.SetObject();
-
-        v.SetUint64(count);
-        feed_report.AddMember("read count", v, allocator);
-
-        v.SetUint64(filtered_count);
-        feed_report.AddMember("filtered read count", v, allocator);
-
-        v.SetDouble(count > 0 ? double(filtered_count) / double(count) : 0.0);
-        feed_report.AddMember("filtered read fraction", v, allocator);
 
         // v.SetString((char*)lane.feeds[i].url.c_str(), allocator);
         // feed_report.AddMember("path", v, allocator);
@@ -1325,9 +1287,7 @@ void PivotAccumulator::encode(Document& document, Value& value, const bool disab
 };
 PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
     count += rhs.count;
-    filtered_count += rhs.filtered_count;
-    determined_count += rhs.determined_count;
-    determined_filtered_count += rhs.determined_filtered_count;
+    pf_count += rhs.pf_count;
     for(size_t i = 0; i < feed_accumulators.size(); i++) {
         feed_accumulators[i] += rhs.feed_accumulators[i];
     }
@@ -1338,40 +1298,58 @@ PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
 
 ChannelAccumulator::ChannelAccumulator(const ChannelSpecification& specification):
     count(0),
-    filtered_count(0),
-    perfect_count(0),
-    yield(0),
-    perfect_yield(0),
-    filtered_yield(0),
-    distance_sum(0),
-    probability_sum(0),
-    include_filtered(specification.include_filtered),
+    multiplex_distance(0),
+    multiplex_confidence(0),
+    pf_count(0),
+    pf_multiplex_distance(0),
+    pf_multiplex_confidence(0),
+    pf_fraction(0),
+    pooled_fraction(0),
+    pf_pooled_fraction(0),
+    accumulated_multiplex_distance(0),
+    accumulated_multiplex_confidence(0),
+    accumulated_pf_multiplex_distance(0),
+    accumulated_pf_multiplex_confidence(0),
     feed_accumulators(specification.TC) {
 };
 void ChannelAccumulator::increment(const Pivot& pivot) {
     count++;
-    if (pivot.filtered) {
-        filtered_count++;
+    if(pivot.multiplex_distance) {
+        accumulated_multiplex_distance += pivot.multiplex_distance;
     }
-    if (!pivot.multiplex_distance) {
-        perfect_count++;
+    if(pivot.decoder == Decoder::PAMLD) {
+        accumulated_multiplex_confidence += pivot.multiplex_probability; 
     }
-    if (include_filtered || !pivot.filtered) {
-        yield++;
-        if (!pivot.multiplex_distance) {
-            perfect_yield++;
+    if (!pivot.filtered) {
+        pf_count++;
+        if(pivot.multiplex_distance) {
+            accumulated_pf_multiplex_distance += pivot.multiplex_distance;
         }
-        if (pivot.filtered) {
-            filtered_yield++;
+        if(pivot.decoder == Decoder::PAMLD) {
+            accumulated_pf_multiplex_confidence += pivot.multiplex_probability;
         }
-        distance_sum += pivot.multiplex_distance;
-        probability_sum += pivot.multiplex_probability;
     }
+
     for(size_t i = 0; i < feed_accumulators.size(); i++) {
         feed_accumulators[i].increment(pivot.output[i].sequence);
     }
 };
-void ChannelAccumulator::finalize() {
+void ChannelAccumulator::finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count) {
+    if (count > 0) {
+        multiplex_distance = accumulated_multiplex_distance / double(count);
+        multiplex_confidence = accumulated_multiplex_confidence / double(count);
+        pf_fraction = double(pf_count) / double(count);
+    }
+    if (pf_count > 0) {
+        pf_multiplex_distance = accumulated_pf_multiplex_distance / double(pf_count);
+        pf_multiplex_confidence = accumulated_pf_multiplex_confidence / double(pf_count);
+    }
+    if (pool_count > 0) {
+        pooled_fraction = double(count) / double(pool_count);
+    }
+    if (pool_pf_count > 0) {
+        pf_pooled_fraction = double(pf_count) / double(pool_pf_count);
+    }
     for(auto& accumulator : feed_accumulators) {
         accumulator.finalize();
     }
@@ -1381,56 +1359,37 @@ void ChannelAccumulator::encode(Document& document, Value& value, const bool dis
     Value v;
 
     v.SetUint64(count);
-    value.AddMember("read count", v, allocator);
+    value.AddMember("count", v, allocator);
 
-    v.SetUint64(filtered_count);
-    value.AddMember("filtered read count", v, allocator);
+    v.SetDouble(multiplex_distance);
+    value.AddMember("multiplex distance", v, allocator);
+
+    v.SetDouble(multiplex_confidence);
+    value.AddMember("multiplex confidence", v, allocator);
+
+    v.SetUint64(pf_count);
+    value.AddMember("pf count", v, allocator);
+
+    v.SetDouble(pf_multiplex_distance);
+    value.AddMember("pf multiplex distance", v, allocator);
+
+    v.SetDouble(pf_multiplex_confidence);
+    value.AddMember("pf multiplex confidence", v, allocator);
+
+    v.SetDouble(pf_fraction);
+    value.AddMember("pf fraction", v, allocator);
+
+    v.SetDouble(pooled_fraction);
+    value.AddMember("pooled fraction", v, allocator);
+
+    v.SetDouble(pf_pooled_fraction);
+    value.AddMember("pf pooled fraction", v, allocator);
 
     Value feed_reports;
     feed_reports.SetArray();
     for (auto& accumulator : feed_accumulators) {
         Value feed_report;
         feed_report.SetObject();
-
-        v.SetUint64(count);
-        feed_report.AddMember("read count", v, allocator);
-
-        v.SetUint64(perfect_count);
-        feed_report.AddMember("perfect read count", v, allocator);
-
-        v.SetUint64(filtered_count);
-        feed_report.AddMember("filtered read count", v, allocator);
-
-        v.SetUint64(yield);
-        feed_report.AddMember("yield", v, allocator);
-
-        v.SetUint64(perfect_yield);
-        feed_report.AddMember("perfect yield", v, allocator);
-
-        v.SetUint64(filtered_yield);
-        feed_report.AddMember("filtered yield", v, allocator);
-
-        v.SetDouble(count > 0 ? double(filtered_count) / double(count) : 0.0);
-        feed_report.AddMember("filtered read fraction", v, allocator);
-
-        v.SetDouble(count > 0 ? double(yield) / double(count) : 0.0);
-        feed_report.AddMember("yield fraction", v, allocator);
-
-        // v.SetDouble(totalYield > 0 ? double(yield) / double(totalYield) : 0.0);
-        // feed_report.AddMember("effective yield fraction", v, allocator);
-
-        v.SetDouble(yield > 0 ? double(perfect_yield) / double(yield) : 0.0);
-        feed_report.AddMember("perfect yield fraction", v, allocator);
-
-        v.SetDouble(yield > 0 ? double(filtered_yield) / double(yield) : 0.0);
-        feed_report.AddMember("filtered yield fraction", v, allocator);
-
-        v.SetDouble(probability_sum > 0 ? probability_sum / double(yield) : 0.0);
-        feed_report.AddMember("expected confidence", v, allocator);
-
-        v.SetDouble(distance_sum > 0 ? double(distance_sum) / double(yield) : 0.0);
-        feed_report.AddMember("expected distance", v, allocator);
-
         if (!disable_quality_control) {
             accumulator.encode(document, feed_report);
         }
@@ -1440,18 +1399,108 @@ void ChannelAccumulator::encode(Document& document, Value& value, const bool dis
 };
 ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs) {
     count += rhs.count;
-    filtered_count += rhs.filtered_count;
-    perfect_count += rhs.perfect_count;
-    yield += rhs.yield;
-    perfect_yield += rhs.perfect_yield;
-    filtered_yield += rhs.filtered_yield;
-    distance_sum += rhs.distance_sum;
-    probability_sum += rhs.probability_sum;
-    distance_sum += rhs.distance_sum;
-    distance_sum += rhs.distance_sum;
+    pf_count += rhs.pf_count;
+    accumulated_multiplex_distance += rhs.accumulated_multiplex_distance;
+    accumulated_multiplex_confidence += rhs.accumulated_multiplex_confidence;
+    accumulated_pf_multiplex_distance += rhs.accumulated_pf_multiplex_distance;
+    accumulated_pf_multiplex_confidence += rhs.accumulated_pf_multiplex_confidence;
 
     for(size_t i = 0; i < feed_accumulators.size(); i++) {
         feed_accumulators[i] += rhs.feed_accumulators[i];
     }
     return *this;
+};
+
+/*  PipelineAccumulator */
+
+PipelineAccumulator::PipelineAccumulator():
+    count(0),
+    multiplex_count(0),
+    multiplex_fraction(0),
+    multiplex_distance(0),
+    multiplex_confidence(0),
+
+    pf_count(0),
+    pf_fraction(0),
+    pf_multiplex_count(0),
+    pf_multiplex_fraction(0),
+    pf_multiplex_distance(0),
+    pf_multiplex_confidence(0),
+    multiplex_pf_fraction(0),
+
+    accumulated_multiplex_distance(0),
+    accumulated_multiplex_confidence(0),
+    accumulated_pf_multiplex_distance(0),
+    accumulated_pf_multiplex_confidence(0) {
+};
+void PipelineAccumulator::collect(const Channel& channel) {
+    count += channel.channel_accumulator.count;
+    if (!channel.undetermined) {
+        multiplex_count += channel.channel_accumulator.count;
+        accumulated_multiplex_distance += channel.channel_accumulator.accumulated_multiplex_distance;
+        accumulated_multiplex_confidence += channel.channel_accumulator.accumulated_multiplex_confidence;
+    }
+
+    pf_count += channel.channel_accumulator.pf_count;
+    if (!channel.undetermined) {
+        pf_multiplex_count += channel.channel_accumulator.pf_count;
+        accumulated_pf_multiplex_distance += channel.channel_accumulator.accumulated_pf_multiplex_distance;
+        accumulated_pf_multiplex_confidence += channel.channel_accumulator.accumulated_pf_multiplex_confidence;
+    }
+};
+void PipelineAccumulator::finalize() {
+    if (count > 0) {
+        multiplex_fraction = double(multiplex_count) / double(count);
+        multiplex_distance = accumulated_multiplex_distance / double(count);
+        multiplex_confidence = accumulated_multiplex_confidence / double(count);
+        pf_fraction = double(pf_count) / double(count);
+    }
+    if (pf_count > 0) {
+        pf_multiplex_fraction = double(pf_multiplex_count) / double(pf_count);
+        pf_multiplex_distance = accumulated_pf_multiplex_distance / double(pf_count);
+        pf_multiplex_confidence = accumulated_pf_multiplex_confidence / double(pf_count);
+    }
+    if (multiplex_count > 0) {
+        multiplex_pf_fraction = double(pf_multiplex_count) / double(multiplex_count);
+    }
+};
+void PipelineAccumulator::encode(Document& document, Value& value) const {
+    Document::AllocatorType& allocator = document.GetAllocator();
+    Value v;
+
+    v.SetUint64(count);
+    value.AddMember("count", v, allocator);
+
+    v.SetUint64(multiplex_count);
+    value.AddMember("multiplex count", v, allocator);
+
+    v.SetDouble(multiplex_fraction);
+    value.AddMember("multiplex fraction", v, allocator);
+
+    v.SetDouble(multiplex_distance);
+    value.AddMember("multiplex distance", v, allocator);
+
+    v.SetDouble(multiplex_confidence);
+    value.AddMember("multiplex confidence", v, allocator);
+
+    v.SetUint64(pf_count);
+    value.AddMember("pf count", v, allocator);
+
+    v.SetDouble(pf_fraction);
+    value.AddMember("pf fraction", v, allocator);
+
+    v.SetUint64(pf_multiplex_count);
+    value.AddMember("pf multiplex count", v, allocator);
+
+    v.SetDouble(pf_multiplex_fraction);
+    value.AddMember("pf multiplex fraction", v, allocator);
+
+    v.SetDouble(pf_multiplex_distance);
+    value.AddMember("pf multiplex distance", v, allocator);
+
+    v.SetDouble(pf_multiplex_confidence);
+    value.AddMember("pf multiplex confidence", v, allocator);
+
+    v.SetDouble(multiplex_pf_fraction);
+    value.AddMember("multiplex pf fraction", v, allocator);
 };

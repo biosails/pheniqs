@@ -30,8 +30,10 @@
 #include <htslib/kstring.h>
 #include <rapidjson/document.h>
 
-#include "constant.h"
 #include "error.h"
+#include "json.h"
+#include "constant.h"
+#include "url.h"
 
 using std::set;
 using std::copy;
@@ -60,115 +62,6 @@ using rapidjson::StringRef;
 
 #define tag_to_code(t) uint16_t(*(t))<<8 | uint8_t(*((t) + 1))
 
-/*  URL
-*/
-class URL {
-    friend ostream& operator<<(ostream& o, const URL& url);
-    friend string operator+(const string& lhs, const URL& rhs);
-    friend string operator+(const URL& lhs, const string& rhs);
-    friend bool operator<(const URL& lhs, const URL& rhs);
-
-    public:
-        URL();
-        ~URL();
-        URL(const URL& other);
-        URL(const string& path, const IoDirection& direction);
-        URL(const char* path, const size_t size, const IoDirection& direction);
-        inline void clear() {
-            ks_clear(_path);
-            ks_clear(_name);
-            ks_clear(_directory);
-            ks_clear(_extension);
-            ks_clear(_compression);
-        };
-        inline const char* const path() const {
-            return _path.s;
-        };
-        inline const char* const name() const {
-            return _name.s;
-        };
-        inline const char* const directory() const {
-            return _directory.s;
-        };
-        inline const char* const extension() const {
-            return _extension.s;
-        };
-        inline const char* const compression() const {
-            return _compression.s;
-        };
-        inline const FormatType& type() const {
-            return _type;
-        };
-        inline bool empty() const {
-            return _path.l == 0;
-        };
-        inline bool is_file() const {
-            return _name.l > 0;
-        };
-        inline bool is_directory() const {
-            return _name.l == 0 && _directory.l > 0;
-        };
-        inline bool is_stdin() const {
-            return !strcmp(_path.s, CANONICAL_STDIN_PATH);
-        };
-        inline bool is_stdout() const {
-            return !strcmp(_path.s, CANONICAL_STDOUT_PATH);
-        };
-        inline bool is_stderr() const {
-            return !strcmp(_path.s, CANONICAL_STDERR_PATH);
-        };
-        inline bool is_null() const {
-            return !strcmp(_path.s, CANONICAL_NULL_DEVICE_PATH);
-        };
-        inline bool is_standard_stream() const {
-            return is_stdin() || is_stdout() || is_stderr() || is_null();
-        };
-        inline bool is_absolute() const {
-            return _directory.l > 0 && _directory.s[0] == PATH_SEPARATOR;
-        };
-        void parse(const char* path, const size_t size, const IoDirection& direction);
-        void set_name(const char* name, const size_t size);
-        void set_directory(const char* directory, const size_t size);
-        void set_compression(const char* compression, const size_t size);
-        void set_type(const char* type);
-        void set_type(const FormatType type);
-        void relocate(const URL& base);
-        FormatKind kind() const;
-        bool is_readable() const;
-        bool is_writable() const;
-        const char* const c_str() const;
-        void describe(ostream& o) const;
-        bool operator==(const URL& other) const;
-        URL& operator=(const URL& other);
-        operator string() const;
-        void encode(Document& document, Value& value) const;
-
-    private:
-        kstring_t _path;
-        kstring_t _name;
-        kstring_t _directory;
-        kstring_t _extension;
-        kstring_t _compression;
-        FormatType _type;
-
-        inline void initialize() {
-            ks_terminate(_path);
-            ks_terminate(_name);
-            ks_terminate(_directory);
-            ks_terminate(_extension);
-            ks_terminate(_compression);
-        };
-        void refresh();
-        void expand(kstring_t* path);
-        void decode_extension(const FormatType& type);
-};
-namespace std {
-    template <> struct hash<URL> {
-        size_t operator()(const URL& url) const {
-            return hash<string>()(url.path());
-        };
-    };
-};
 /* Transform
 */
 class Token {
@@ -541,6 +434,44 @@ class HeadHDAtom {
         void set_alignment_sort_order(const HtsSortOrder& order);
         void set_alignment_grouping(const HtsGrouping& grouping);
         void set_version(const htsFormat* format);
+
+    private:
+        void encode(kstring_t* buffer) const;
+        char* decode(char* position, const char* end);
+};
+/*  @SQ Sequence
+
+    SN  Reference sequence identifier.
+        The value of this field is used in the alignment records in RNAME and RNEXT fields.
+    LN  Reference sequence length. 32 bit signed.     
+    AH  Indicates that this sequence is an alternate locus.
+        The value is the locus in the primary assembly for which this sequence is an alternative, 
+        in the format ‘chr:start-end’, ‘chr’ (if known), or ‘*’ (if unknown), where ‘chr’ is a sequence in the primary assembly. 
+        Must not be present on sequences in the primary assembly.
+    AS  Genome assembly identifier.
+    M5  MD5 checksum of the sequence in the uppercase, excluding spaces but including pads (as ‘*’s).
+    SP  Species.
+    UR  URI of the sequence. This value may start with one of the standard protocols, e.g http: or ftp:.
+        If it does not start with one of these protocols, it is assumed to be a file-system path.
+*/
+class HeadSQAtom {
+    friend class HtsHeader;
+    friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
+
+    public:
+        kstring_t SN;
+        int32_t LN;
+        kstring_t AH;
+        kstring_t AS;
+        kstring_t M5;
+        kstring_t SP;
+        kstring_t UR;
+
+        HeadSQAtom();
+        ~HeadSQAtom();
+        HeadSQAtom(const HeadSQAtom& other);
+        HeadSQAtom& operator=(const HeadSQAtom& other);
+        operator string() const;
 
     private:
         void encode(kstring_t* buffer) const;

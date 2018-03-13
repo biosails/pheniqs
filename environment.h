@@ -272,17 +272,17 @@ class Environment {
         };
         inline void set_configuration_path(const string* value) {
             if(value!=NULL) {
-                configuration_url.parse(value->c_str(), value->size(), IoDirection::IN);
+                configuration_url.parse(*value, IoDirection::IN);
             }
         };
         inline void set_base_input_path(const string* value) {
             if(value!=NULL) {
-                base_input_url.set_directory(value->c_str(), value->size());
+                base_input_url.set_directory(*value);
             }
         };
         inline void set_base_output_path(const string* value) {
             if(value!=NULL) {
-                base_output_url.set_directory(value->c_str(), value->size());
+                base_output_url.set_directory(*value);
             }
         };
         inline void set_threads(const long* value) {
@@ -322,14 +322,14 @@ class Environment {
         };
         inline void set_input_path(const string* value) {
             if(value!=NULL) {
-                input_url.parse(value->c_str(), value->size(), IoDirection::IN);
+                input_url.parse(*value, IoDirection::IN);
             }
         };
         inline void decode_directory_node(const Value& node, const Value::Ch* name, URL& value) {
             Value::ConstMemberIterator element = node.FindMember(name);
             if (element != node.MemberEnd()) {
                 if(element->value.IsString()) {
-                    value.set_directory(element->value.GetString(), element->value.GetStringLength());
+                    value.set_directory(string(element->value.GetString(), element->value.GetStringLength()));
                 } else { throw ConfigurationError(string(name) + " element must be a string"); }
             }
         };

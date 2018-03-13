@@ -129,7 +129,7 @@ void Environment::load(int argc, char** argv) {
         }
 
         string cwd = getcwd();
-        working_directory.set_directory(cwd.c_str(), cwd.size());
+        working_directory.set_directory(string(cwd.c_str(), cwd.size()));
 
         interface->load(argc, argv);
 
@@ -371,11 +371,11 @@ void Environment::encode(Document& document) const {
         document.AddMember("PI", v, allocator);
     }
     if(!base_input_url.empty()) {
-        base_input_url.encode(document, v);
+        // base_input_url.encode(document, v);
         document.AddMember("base input path", v.Move(), allocator);
     }
     if(!base_output_url.empty()) {
-        base_output_url.encode(document, v);
+        // base_output_url.encode(document, v);
         document.AddMember("base output path", v.Move(), allocator);
     }
     if(platform != Platform::UNKNOWN) {
@@ -430,7 +430,7 @@ void Environment::encode(Document& document) const {
     if(!input_urls.empty()) {
         collection.SetArray();
         for(auto& url : input_urls) {
-            url.encode(document, v);
+            // url.encode(document, v);
             collection.PushBack(v, allocator);
         }
         document.AddMember("input", collection, allocator);
@@ -468,7 +468,7 @@ void Environment::validate_urls() {
     for (auto& url : input_urls) {
         if(!url.is_readable()) {
             set_state(ProgramState::IO_ERROR);
-            throw IOError("could not open " + url + " for reading");
+            throw IOError("could not open " + string(url) + " for reading");
         }
     }
 
@@ -476,7 +476,7 @@ void Environment::validate_urls() {
         for (const auto& url : specification->output_urls) {
             if(!url.is_writable()) {
                 set_state(ProgramState::IO_ERROR);
-                throw IOError("could not open " + url + " for writing");
+                throw IOError("could not open " + string(url) + " for writing");
             }
         }
     }
@@ -603,7 +603,7 @@ void Environment::load_configuration_file(const URL& url) {
                 throw ConfigurationError(message);
             }
         } else {
-            throw IOError("could not read configuration from " + url);
+            throw IOError("could not read configuration from " + string(url));
         }
     }
 };
@@ -612,13 +612,13 @@ void Environment::load_url_node(const Value& node, const IoDirection& direction,
     if(node.IsString() || node.IsObject()) {
         try {
             if (node.IsString()) {
-                url.parse(node.GetString(), node.GetStringLength(), direction);
+                url.parse(string(node.GetString(), node.GetStringLength()), direction);
 
             } else {
                 string buffer;
                 decode_string_node(node, "path", buffer);
                 if(!buffer.empty()) {
-                    url.parse(buffer.c_str(), buffer.size(), direction);
+                    url.parse(buffer, direction);
                 } else {
                     throw ConfigurationError("URL element must contain a non empty path element");
                 }
@@ -632,7 +632,7 @@ void Environment::load_url_node(const Value& node, const IoDirection& direction,
                 buffer.clear();
                 decode_string_node(node, "compression", buffer);
                 if(!buffer.empty()) {
-                    url.set_compression(buffer.c_str(), buffer.size());
+                    url.set_compression(buffer);
                 }
             }
         } catch(ConfigurationError& e) {
@@ -1018,8 +1018,8 @@ void Environment::load_thread_model() {
     }
 };
 void Environment::load_undetermined() {
-    // if we only have one channel and it has no barcode but its not marked undetermined
-    // we can mark it undetermined since logically all reads should go there
+    /*  if there is only one channel and it has no barcode but its not marked undetermined
+        we can logically mark it undetermined */
     if(channel_specifications.size() == 1) {
         ChannelSpecification* specification = channel_specifications[0];
         if(specification->multiplex_barcode.empty() && !specification->undetermined) {
@@ -1027,8 +1027,8 @@ void Environment::load_undetermined() {
         }
     }
 
-    // if at most one channel is marked undetermined, set the undetermined pointer
-    // otherwise throw a validation exception
+    /*  if at most one channel is marked undetermined, set the undetermined pointer
+        otherwise throw a validation exception */
     for(const auto specification : channel_specifications) {
         if(specification->undetermined) {
             if(undetermined == NULL) {
@@ -1040,16 +1040,13 @@ void Environment::load_undetermined() {
     }
 };
 void Environment::load_multiplex_barcodes() {
-    /*
-        compute a pairwise hamming distance metric for each barcode set
-        and validate all barcodes obey the length constrains imposed by the transforms
-    */
+    /*  compute a pairwise hamming distance metric for each barcode set
+        and validate all barcodes obey the length constrains imposed by the transforms */
     for(size_t i = 0; i < total_multiplex_barcode_segments; i++) {
         Distance metric;
         size_t size = multiplex_barcode_length[i];
         for(const auto specification : channel_specifications) {
             if(!specification->multiplex_barcode.empty()) {
-
                 if(specification->multiplex_barcode.size(i) == size) {
                     metric.add(specification->multiplex_barcode.iupac_ambiguity(i));
                 } else {
@@ -1069,7 +1066,7 @@ void Environment::load_multiplex_barcodes() {
         multiplex_barcode_set_distance.emplace_back(metric);
     }
 
-    // compute a pairwise hamming distance metric for the concatenated barcode
+    /*  compute a pairwise hamming distance metric for the concatenated barcode */
     for(const auto specification : channel_specifications){
         if(!specification->multiplex_barcode.empty()) {
             multiplex_barcode_distance.add(specification->multiplex_barcode.iupac_ambiguity());
@@ -1077,12 +1074,12 @@ void Environment::load_multiplex_barcodes() {
     }
     multiplex_barcode_distance.load();
 
-    // multiplex barcode tolerance can not be bigger than the number of correctable errors
+    /*  multiplex barcode tolerance can not be bigger than the number of correctable errors */
     for(size_t i = 0; i < total_multiplex_barcode_segments; i++) {
         multiplex_barcode_tolerance[i] = MIN(multiplex_barcode_tolerance[i], multiplex_barcode_set_distance[i].shannon_bound());
     }
 
-    // construct a null barcode for the undetermined channel
+    /*  construct a null barcode for the undetermined channel */
     if(undetermined != NULL && !multiplex_barcode_distance.empty()) {
         for(size_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
             Distance& metric = multiplex_barcode_set_distance[i];
@@ -1114,7 +1111,7 @@ void Environment::load_prior() {
             throw ConfigurationError("inconsistent channel concentration");
         }
     } else {
-        // if no concentrations were given assume a uniform distribution
+        /* if no concentrations were given assume a uniform distribution */
         double factor = (1.0 - noise) / count;
         for(auto specification : channel_specifications) {
             specification->concentration = factor;
@@ -1182,7 +1179,7 @@ void Environment::load_output_specification() {
                     if(resolution == 0) {
                         resolution = channel_record.second;
                     } else if(resolution != channel_record.second) {
-                        throw ConfigurationError("inconsistent resolution for " + url);
+                        throw ConfigurationError("inconsistent resolution for " + string(url));
                     }
                 }
 
@@ -1198,18 +1195,18 @@ void Environment::load_output_specification() {
                 break;
             };
             default:
-                throw ConfigurationError("unknown format for " + url);
+                throw ConfigurationError("unknown format for " + string(url));
                 break;
         }
     }
 };
 void Environment::validate_io() {
-    // verify no URL is used for both input and output
+    /*  verify no URL is used for both input and output */
     for(const auto& output_record : output_feed_specification_by_url) {
         const URL& url = output_record.first;
         auto input_record = input_feed_specification_by_url.find(url);
         if (input_record != input_feed_specification_by_url.end()) {
-            throw ConfigurationError("URL " + url + " is used for both input and output");
+            throw ConfigurationError("URL " + string(url) + " is used for both input and output");
         }
     }
 };
@@ -1231,7 +1228,7 @@ void Environment::calibrate(const URL& url) {
     }
 };
 void Environment::validate() {
-    // validate phred range
+    /* validate phred range */
     if(input_phred_offset > MAX_PHRED_VALUE || input_phred_offset < MIN_PHRED_VALUE) {
         throw ConfigurationError("input phred offset out of range " + to_string(input_phred_offset));
     }
@@ -1242,7 +1239,7 @@ void Environment::validate() {
     switch (action) {
         case ProgramAction::DEMULTIPLEX: {
 
-            // leading_segment_index must reference an input segment
+            /* leading_segment_index must reference an input segment */
             if (leading_segment_index >= total_input_segments) {
                 throw ConfigurationError("invalid leading segment index " + to_string(leading_segment_index));
             }

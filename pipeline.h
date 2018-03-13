@@ -175,9 +175,8 @@ class FeedAccumulator {
 class PivotAccumulator {
     public:
         uint64_t count;
-        uint64_t filtered_count;
-        uint64_t determined_count;
-        uint64_t determined_filtered_count;
+        uint64_t pf_count;
+        double pf_fraction;
         vector< FeedAccumulator > feed_accumulators;
         PivotAccumulator(const size_t total_input_segments);
         inline void increment(const Pivot& pivot);
@@ -188,20 +187,48 @@ class PivotAccumulator {
 class ChannelAccumulator {
     public:
         uint64_t count;
-        uint64_t filtered_count;
-        uint64_t perfect_count;
-        uint64_t yield;
-        uint64_t perfect_yield;
-        uint64_t filtered_yield;
-        uint64_t distance_sum;
-        double probability_sum;
-        const bool include_filtered;
+        double multiplex_distance;
+        double multiplex_confidence;
+        uint64_t pf_count;
+        double pf_multiplex_distance;
+        double pf_multiplex_confidence;
+        double pf_fraction;
+        double pooled_fraction;
+        double pf_pooled_fraction;
+        uint64_t accumulated_multiplex_distance;
+        uint64_t accumulated_multiplex_confidence;
+        uint64_t accumulated_pf_multiplex_distance;
+        uint64_t accumulated_pf_multiplex_confidence;
         vector< FeedAccumulator > feed_accumulators;
         ChannelAccumulator(const ChannelSpecification& specification);
         inline void increment(const Pivot& pivot);
         void encode(Document& document, Value& value, const bool disable_quality_control) const;
-        void finalize();
+        void finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count);
         ChannelAccumulator& operator+=(const ChannelAccumulator& rhs);
+};
+class PipelineAccumulator {
+    public:
+        uint64_t count;
+        uint64_t multiplex_count;
+        double multiplex_fraction;
+        double multiplex_distance;
+        double multiplex_confidence;
+        uint64_t pf_count;
+        double pf_fraction;
+        uint64_t pf_multiplex_count;
+        double pf_multiplex_fraction;
+        double pf_multiplex_distance;
+        double pf_multiplex_confidence;
+        double multiplex_pf_fraction;
+        uint64_t accumulated_multiplex_distance;
+        uint64_t accumulated_multiplex_confidence;
+        uint64_t accumulated_pf_multiplex_distance;
+        uint64_t accumulated_pf_multiplex_confidence;
+
+        PipelineAccumulator();
+        inline void collect(const Channel& channel);
+        void encode(Document& document, Value& value) const;
+        void finalize();
 };
 
 /*  Pivot */
@@ -274,7 +301,7 @@ class Channel {
         ~Channel();
         inline void increment(Pivot& pivot);
         void push(Pivot& pivot);
-        void finalize();
+        void finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count);
         void encode(Document& document, Value& value, const bool disable_quality_control) const;
 };
 
@@ -313,6 +340,7 @@ class Pipeline {
 
         vector< Pivot* > pivots;
         PivotAccumulator* input_accumulator;
+        PipelineAccumulator* output_accumulator;
 
         void start();
         void stop();

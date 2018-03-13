@@ -22,6 +22,10 @@
 #ifndef PHENIQS_ERROR_H
 #define PHENIQS_ERROR_H
 
+#include <stdio.h>
+#include <unistd.h>
+#include <iostream>
+#include <iomanip>
 #include <exception>
 #include <vector>
 #include <string>

@@ -31,13 +31,15 @@ else
 	PACKAGE_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
 endif
 
-LIBS = -lhts -lz
+LIBS = -lhts -lz -lpthread
 CC = clang++
 CFLAGS = -c -std=c++11 -O3 -Wall -Wsign-compare 
 LDFLAGS = $(LIBS)
 
 SOURCES = \
+	json.cpp \
 	constant.cpp \
+	url.cpp \
 	model.cpp \
 	feed.cpp \
 	environment.cpp \
@@ -45,7 +47,9 @@ SOURCES = \
 	pheniqs.cpp
 
 OBJECTS = \
+	json.o \
 	constant.o \
+	url.o \
 	model.o \
 	feed.o \
 	environment.o \
@@ -54,22 +58,9 @@ OBJECTS = \
 
 EXECUTABLE = pheniqs
 
-# OS detection
-# PLATFORM := $(shell uname -s)
-# ifeq ($(PLATFORM),Linux)
-# 	# CFLAGS += 
-# endif
-# ifeq ($(PLATFORM),Darwin)
-# 	# CFLAGS += -stdlib=libc++
-# endif
-
-ifdef HTSLIB
-	CFLAGS += -I$(HTSLIB)/include
-	LDFLAGS += -L$(HTSLIB)/lib
-endif
-
-ifdef RAPIDJSON
-	CFLAGS += -I$(RAPIDJSON)/include
+ifdef PREFIX
+	CFLAGS += -I$(PREFIX)/include
+	LDFLAGS += -L$(PREFIX)/lib
 endif
 
 all: $(SOURCES) configuration.h version.h $(EXECUTABLE)
@@ -99,14 +90,32 @@ clean-configuration:
 clean: clean-version clean-configuration
 	-@rm -f $(EXECUTABLE) $(OBJECTS)
 
+install: pheniqs
+	if ( test ! -d $(PREFIX)/bin ) ; then mkdir -p $(PREFIX)/bin ; fi
+	cp -f pheniqs $(PREFIX)/bin/pheniqs
+	chmod a+x $(PREFIX)/bin/pheniqs
+
 # Dependencies
 # Regenerate modules when header files they import change
+json.o: \
+	error.h \
+	json.h
+
 constant.o: \
+	json.h \
 	constant.h
+
+url.o: \
+	constant.h \
+	error.h \
+	json.h \
+	url.h
 
 model.o: \
 	constant.h \
 	error.h \
+	json.h \
+	url.h \
 	model.h
 
 feed.o: \

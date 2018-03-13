@@ -57,6 +57,7 @@ static inline char* skip_to_tab(char* source, const char* end) {
 
 /* URL
 */
+/*
 URL::URL() :
     _path({ 0, 0, NULL }),
     _name({ 0, 0, NULL }),
@@ -122,11 +123,11 @@ void URL::parse(const char* path, const size_t size, const IoDirection& directio
         // first resolve any environment variables in the path
         expand(&_path);
 
-        /*  standard stream handling 
-            first allow - as an alias for stdin and stdout according to IO direction
-            otherwise check for non canonical paths to standard streams and replace with
-            the canonical one
-        */
+        // standard stream handling 
+        // first allow - as an alias for stdin and stdout according to IO direction
+        // otherwise check for non canonical paths to standard streams and replace with
+        // the canonical one
+
         if(!strcmp(_path.s, "-")) {
             switch(direction) {
                 case IoDirection::IN: {
@@ -533,6 +534,7 @@ ostream& operator<<(ostream& o, const URL& url) {
     o << url._path.s;
     return o;
 };
+*/
 
 /*  Token
 */
@@ -856,9 +858,12 @@ Barcode& Barcode::operator=(const Barcode& other) {
     return *this;
 };
 Barcode::operator string() const {
+    /* NOTICE barcode is converted to the BAM encoding string, not iupac */
     string key;
     for(const auto& sequence : fragments) {
-        key.append((char*)sequence.code, 0, sequence.length);
+        for(size_t i = 0; i < sequence.length; i++) {
+            key.push_back(sequence.code[i]);
+        }
     }
     return key;
 };
@@ -1015,6 +1020,152 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
     if(hd.VN.l > 0) o << "VN : " << hd.VN.s << endl;
     if(hd.SO.l > 0) o << "SO : " << hd.SO.s << endl;
     if(hd.GO.l > 0) o << "GO : " << hd.GO.s << endl;
+    return o;
+};
+
+/* @SQ reference sequence dictionary
+*/
+HeadSQAtom::HeadSQAtom() :
+    SN({ 0, 0, NULL }),
+    LN(0),
+    AH({ 0, 0, NULL }),
+    AS({ 0, 0, NULL }),
+    M5({ 0, 0, NULL }),
+    SP({ 0, 0, NULL }),
+    UR({ 0, 0, NULL }){
+    ks_terminate(SN)
+};
+HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
+    SN({ 0, 0, NULL }),
+    LN(0),
+    AH({ 0, 0, NULL }),
+    AS({ 0, 0, NULL }),
+    M5({ 0, 0, NULL }),
+    SP({ 0, 0, NULL }),
+    UR({ 0, 0, NULL }){
+    ks_terminate(SN)
+    if(other.SN.l > 0) kputsn(other.SN.s, other.SN.l, &SN);
+    if(other.LN > 0)   LN = other.LN;
+    if(other.AH.l > 0) kputsn(other.AH.s, other.AH.l, &AH);
+    if(other.AS.l > 0) kputsn(other.AS.s, other.AS.l, &AS);
+    if(other.M5.l > 0) kputsn(other.M5.s, other.M5.l, &M5);
+    if(other.SP.l > 0) kputsn(other.SP.s, other.SP.l, &SP);
+    if(other.UR.l > 0) kputsn(other.UR.s, other.UR.l, &UR);
+};
+HeadSQAtom::~HeadSQAtom() {
+    ks_free(SN);
+    ks_free(AH);
+    ks_free(AS);
+    ks_free(M5);
+    ks_free(SP);
+    ks_free(UR);
+};
+HeadSQAtom& HeadSQAtom::operator=(const HeadSQAtom& other) {
+    if(&other == this) {
+        return *this;
+    } else {
+        ks_clear(SN);
+        LN = 0;
+        ks_clear(AH);
+        ks_clear(AS);
+        ks_clear(M5);
+        ks_clear(SP);
+        ks_clear(UR);
+        if(other.SN.l > 0) kputsn(other.SN.s, other.SN.l, &SN);
+        if(other.LN > 0)   LN = other.LN;
+        if(other.AH.l > 0) kputsn(other.AH.s, other.AH.l, &AH);
+        if(other.AS.l > 0) kputsn(other.AS.s, other.AS.l, &AS);
+        if(other.M5.l > 0) kputsn(other.M5.s, other.M5.l, &M5);
+        if(other.SP.l > 0) kputsn(other.SP.s, other.SP.l, &SP);
+        if(other.UR.l > 0) kputsn(other.UR.s, other.UR.l, &UR);
+    }
+    return *this;
+};
+HeadSQAtom::operator string() const {
+    return string(SN.s, SN.l);
+};
+void HeadSQAtom::encode(kstring_t* buffer) const {
+    kputsn_("@SQ", 3, buffer);
+    if(SN.l > 0) {
+        kputsn_("\tSN:", 4, buffer);
+        kputsn_(SN.s, SN.l, buffer);
+    }
+    if(LN > 0) {
+        kputsn_("\tLN:", 4, buffer);
+        kputw(LN, buffer);
+    }
+    if(AH.l > 0) {
+        kputsn_("\tAH:", 4, buffer);
+        kputsn_(AH.s, AH.l, buffer);
+    }
+    if(AS.l > 0) {
+        kputsn_("\tAS:", 4, buffer);
+        kputsn_(AS.s, AS.l, buffer);
+    }
+    if(M5.l > 0) {
+        kputsn_("\tM5:", 4, buffer);
+        kputsn_(M5.s, M5.l, buffer);
+    }
+    if(SP.l > 0) {
+        kputsn_("\tSP:", 4, buffer);
+        kputsn_(SP.s, SP.l, buffer);
+    }
+    if(UR.l > 0) {
+        kputsn_("\tUR:", 4, buffer);
+        kputsn_(UR.s, UR.l, buffer);
+    }
+    kputc(LINE_BREAK, buffer);
+};
+char* HeadSQAtom::decode(char* position, const char* end) {
+    while(*position == '\t' && position <= end) {
+        position++;
+        uint16_t tag = tag_to_code(position);
+        position += 3;
+        switch (tag) {
+            case uint16_t(HtsAuxiliaryCode::SN): {
+                position = copy_until_tag_end(position, end, &SN);
+                break;
+            };
+            case uint16_t(HtsAuxiliaryCode::LN): {
+                LN = strtol(position, &position, 10);
+                break;
+            };
+            case uint16_t(HtsAuxiliaryCode::AH): {
+                position = copy_until_tag_end(position, end, &AH);
+                break;
+            };
+            case uint16_t(HtsAuxiliaryCode::AS): {
+                position = copy_until_tag_end(position, end, &AS);
+                break;
+            };
+            case uint16_t(HtsAuxiliaryCode::M5): {
+                position = copy_until_tag_end(position, end, &M5);
+                break;
+            };
+            case uint16_t(HtsAuxiliaryCode::SP): {
+                position = copy_until_tag_end(position, end, &SP);
+                break;
+            };
+            case uint16_t(HtsAuxiliaryCode::UR): {
+                position = copy_until_tag_end(position, end, &UR);
+                break;
+            };
+            default: {
+                position = skip_to_tab(position, end);
+                break;
+            }
+        }
+    }
+    return ++position;
+};
+ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
+    if(sq.SN.l > 0) o << "SN : " << sq.SN.s << endl;
+    if(sq.LN   > 0) o << "LN : " << sq.LN   << endl;
+    if(sq.AH.l > 0) o << "AH : " << sq.AH.s << endl;
+    if(sq.AS.l > 0) o << "AS : " << sq.AS.s << endl;
+    if(sq.M5.l > 0) o << "M5 : " << sq.M5.s << endl;
+    if(sq.SP.l > 0) o << "SP : " << sq.SP.s << endl;
+    if(sq.UR.l > 0) o << "UR : " << sq.UR.s << endl;
     return o;
 };
 
@@ -1564,7 +1715,7 @@ void FeedSpecification::describe(ostream& o) const {
     }
     o << " feed No." << index << endl;
     o << "        Type : " << url.type() << endl;
-    if(strlen(url.compression()) > 0) o << "        Compression : " << url.compression() << endl;
+    // if(strlen(url.compression()) > 0) o << "        Compression : " << url.compression() << endl;
     o << "        Resolution : " << resolution << endl;
     o << "        Phred offset : " << to_string(phred_offset) << endl;
     o << "        Platform : " << platform << endl;
@@ -1806,15 +1957,15 @@ void ChannelSpecification::encode(Document& document, Value& node) const {
         channel.AddMember("concentration", v, allocator);
         multiplex_barcode.encode_configuration(document, channel, "barcode");
     }
-    if(!output_urls.empty()) {
-        Value collection;
-        collection.SetArray();
-        for(auto& url : output_urls) {
-            url.encode(document, v);
-            collection.PushBack(v, allocator);
-        }
-        channel.AddMember("output", collection, allocator);
-    }
+    // if(!output_urls.empty()) {
+    //     Value collection;
+    //     collection.SetArray();
+    //     for(auto& url : output_urls) {
+    //         url.encode(document, v);
+    //         collection.PushBack(v, allocator);
+    //     }
+    //     channel.AddMember("output", collection, allocator);
+    // }
     node.PushBack(channel, allocator);
 };
 ostream& operator<<(ostream& o, const ChannelSpecification& specification) {
