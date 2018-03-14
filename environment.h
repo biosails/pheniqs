@@ -26,16 +26,17 @@
 #include <unordered_map>
 
 #include <htslib/kstring.h>
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/error/en.h>
 
 #include "version.h"
-#include "error.h"
 #include "interface.h"
+#include "error.h"
+#include "json.h"
+#include "constant.h"
+#include "url.h"
+#include "nucleotide.h"
+#include "phred.h"
+#include "atom.h"
 #include "model.h"
-#include "feed.h"
 
 using std::set;
 using std::hash;
@@ -57,12 +58,6 @@ using std::setprecision;
 using std::unordered_map;
 using std::numeric_limits;
 using std::istreambuf_iterator;
-
-using rapidjson::Document;
-using rapidjson::Value;
-using rapidjson::SizeType;
-using rapidjson::StringBuffer;
-using rapidjson::PrettyWriter;
 
 
 /*  Environment

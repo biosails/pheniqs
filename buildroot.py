@@ -68,6 +68,17 @@ base_configuration = {
                     'nargs': '*'
                 }
             }, 
+            'force': {
+                'flag': [
+                    '-F',
+                    '--force'
+                ], 
+                'parameter': {
+                    'help': 'list of packages to force', 
+                    'metavar': 'PACKAGE',
+                    'nargs': '*'
+                }
+            }, 
             'verbosity': {
                 'flag': [
                     '-v', 
@@ -449,6 +460,10 @@ class Pipeline(object):
     @property
     def filter(self):
         return self.ontology['filter']
+
+    @property
+    def force(self):
+        return self.ontology['force']
 
     def execute(self):
         if self.action == 'clean':

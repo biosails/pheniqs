@@ -53,6 +53,7 @@ using rapidjson::Value;
 using rapidjson::SizeType;
 using rapidjson::StringBuffer;
 using rapidjson::PrettyWriter;
+using rapidjson::StringRef;
 
 void merge_json_value(const Value& node, const Value& other, Value& container, Document& document);
 void merge_json_value(const Value& node, const Value& other, Document& document);

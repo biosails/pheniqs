@@ -21,6 +21,8 @@
 
 #include "constant.h"
 
+/*  Environment constants */
+
 ostream& operator<<(ostream& o, const ProgramAction& type) {
     string string_value;
     string_value << type;
@@ -128,8 +130,6 @@ void operator>>(const string& s, FormatType& type) {
     else if(s == "json")    type = FormatType::JSON;
     else                    type = FormatType::UNKNOWN;
 }
-
-
 
 ostream& operator<<(ostream& o, const HtsSortOrder& order) {
     switch (order) {

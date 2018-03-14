@@ -31,13 +31,9 @@
 #include <vector>
 #include <unordered_map>
 
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/error/en.h>
-
 #include "constant.h"
 #include "error.h"
+#include "json.h"
 
 using std::setw;
 using std::endl;
@@ -55,10 +51,6 @@ using std::setprecision;
 using std::unordered_map;
 using std::invalid_argument;
 using std::out_of_range;
-
-using rapidjson::Document;
-using rapidjson::Value;
-using rapidjson::SizeType;
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))

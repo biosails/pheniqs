@@ -32,13 +32,18 @@
 
 #include <htslib/thread_pool.h>
 
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/error/en.h>
-
-#include "feed.h"
+#include "error.h"
+#include "json.h"
+#include "constant.h"
+#include "url.h"
+#include "nucleotide.h"
+#include "phred.h"
+#include "atom.h"
+#include "accumulate.h"
 #include "environment.h"
+#include "feed.h"
+#include "fastq.h"
+#include "hts.h"
 
 using std::set;
 using std::setw;
@@ -61,175 +66,9 @@ using std::condition_variable;
 using std::unique_lock;
 using std::thread;
 
-using rapidjson::Document;
-using rapidjson::Value;
-using rapidjson::SizeType;
-using rapidjson::StringBuffer;
-using rapidjson::PrettyWriter;
-
-
 class Pivot;
 class Channel;
 class Pipeline;
-
-/*  Quality */
-
-class NucleicAcidAccumulator {
-    NucleicAcidAccumulator(NucleicAcidAccumulator const &) = delete;
-    void operator=(NucleicAcidAccumulator const &) = delete;
-
-    public:
-        uint64_t count;
-        uint64_t min;
-        uint64_t max;
-        uint64_t sum;
-        double mean;
-        uint64_t Q1;
-        uint64_t Q3;
-        uint64_t IQR;
-        uint64_t LW;
-        uint64_t RW;
-        uint64_t median;
-        uint64_t distribution[EFFECTIVE_PHRED_RANGE];
-        NucleicAcidAccumulator();
-        inline void increment(const uint8_t phred) {
-            distribution[phred]++;
-        };
-        inline size_t quantile(const double portion);
-        void finalize();
-        NucleicAcidAccumulator& operator+=(const NucleicAcidAccumulator& rhs);
-};
-class CycleAccumulator {
-    CycleAccumulator(CycleAccumulator const &) = delete;
-    void operator=(CycleAccumulator const &) = delete;
-
-    public:
-        vector<NucleicAcidAccumulator> iupac_nucleic_acid;
-        CycleAccumulator();
-        inline void increment(const uint8_t nucleotide, const uint8_t phred) {
-            iupac_nucleic_acid[nucleotide].increment(phred);
-        };
-        void finalize();
-        CycleAccumulator& operator+=(const CycleAccumulator& rhs);
-};
-class SegmentAccumulator {
-    SegmentAccumulator(SegmentAccumulator const &) = delete;
-    void operator=(SegmentAccumulator const &) = delete;
-
-    public:
-        uint64_t count;
-        double min;
-        double max;
-        double sum;
-        double mean;
-        uint64_t distribution[EFFECTIVE_PHRED_RANGE];
-        SegmentAccumulator();
-        inline void increment(const Sequence& sequence) {
-            count++;
-            double value = 0.0;
-            for (size_t i = 0; i < sequence.length; i++) {
-                value += sequence.quality[i];
-            }
-            value /= double(sequence.length);
-            sum += value;
-            min = MIN(min, value);
-            max = MAX(max, value);
-            distribution[(uint8_t)value]++;
-        };
-        void finalize();
-        SegmentAccumulator& operator+=(const SegmentAccumulator& rhs);
-};
-class FeedAccumulator {
-    FeedAccumulator(FeedAccumulator const &) = delete;
-    void operator=(FeedAccumulator const &) = delete;
-
-    public:
-        uint64_t length;
-        uint64_t shortest;
-        uint64_t iupac_nucleic_acid_count[IUPAC_CODE_SIZE];
-        SegmentAccumulator average_phred;
-        vector< CycleAccumulator* > cycles;
-        FeedAccumulator();
-        ~FeedAccumulator();
-        inline void increment(const Sequence& sequence) {
-            if(sequence.length > length) {
-                for(size_t i = length; i < sequence.length; i++) {
-                    cycles.push_back(new CycleAccumulator());
-                }
-                length = sequence.length;
-            }
-            if(sequence.length < shortest) {
-                shortest = sequence.length;
-            }
-            for(size_t i = 0; i < sequence.length; i++) {
-                iupac_nucleic_acid_count[NO_NUCLEOTIDE]++;
-                iupac_nucleic_acid_count[sequence.code[i]]++;
-                cycles[i]->increment(sequence.code[i], sequence.quality[i]);
-            }
-            average_phred.increment(sequence);
-        };
-        void encode(Document& document, Value& value) const;
-        void finalize();
-        FeedAccumulator& operator+=(const FeedAccumulator& rhs);
-};
-class PivotAccumulator {
-    public:
-        uint64_t count;
-        uint64_t pf_count;
-        double pf_fraction;
-        vector< FeedAccumulator > feed_accumulators;
-        PivotAccumulator(const size_t total_input_segments);
-        inline void increment(const Pivot& pivot);
-        void encode(Document& document, Value& value, const bool disable_quality_control) const;
-        void finalize();
-        PivotAccumulator& operator+=(const PivotAccumulator& rhs);
-};
-class ChannelAccumulator {
-    public:
-        uint64_t count;
-        double multiplex_distance;
-        double multiplex_confidence;
-        uint64_t pf_count;
-        double pf_multiplex_distance;
-        double pf_multiplex_confidence;
-        double pf_fraction;
-        double pooled_fraction;
-        double pf_pooled_fraction;
-        uint64_t accumulated_multiplex_distance;
-        uint64_t accumulated_multiplex_confidence;
-        uint64_t accumulated_pf_multiplex_distance;
-        uint64_t accumulated_pf_multiplex_confidence;
-        vector< FeedAccumulator > feed_accumulators;
-        ChannelAccumulator(const ChannelSpecification& specification);
-        inline void increment(const Pivot& pivot);
-        void encode(Document& document, Value& value, const bool disable_quality_control) const;
-        void finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count);
-        ChannelAccumulator& operator+=(const ChannelAccumulator& rhs);
-};
-class PipelineAccumulator {
-    public:
-        uint64_t count;
-        uint64_t multiplex_count;
-        double multiplex_fraction;
-        double multiplex_distance;
-        double multiplex_confidence;
-        uint64_t pf_count;
-        double pf_fraction;
-        uint64_t pf_multiplex_count;
-        double pf_multiplex_fraction;
-        double pf_multiplex_distance;
-        double pf_multiplex_confidence;
-        double multiplex_pf_fraction;
-        uint64_t accumulated_multiplex_distance;
-        uint64_t accumulated_multiplex_confidence;
-        uint64_t accumulated_pf_multiplex_distance;
-        uint64_t accumulated_pf_multiplex_confidence;
-
-        PipelineAccumulator();
-        inline void collect(const Channel& channel);
-        void encode(Document& document, Value& value) const;
-        void finalize();
-};
 
 /*  Pivot */
 

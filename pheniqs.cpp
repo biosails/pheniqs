@@ -22,7 +22,10 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "error.h"
+#include "json.h"
 #include "constant.h"
+#include "environment.h"
 #include "pipeline.h"
 
 int main(int argc, char** argv) {

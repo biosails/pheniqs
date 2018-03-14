@@ -19,9 +19,7 @@
 
 
 MAJOR_REVISON := 1
-MINOR_REVISON := 0
-
--include environment.mk
+MINOR_REVISON := 1
 
 # Construct version variable
 GIT_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
@@ -40,9 +38,17 @@ SOURCES = \
 	json.cpp \
 	constant.cpp \
 	url.cpp \
+	atom.cpp \
+	transform.cpp \
+	auxiliary.cpp \
+	sequence.cpp \
+	segment.cpp \
 	model.cpp \
 	feed.cpp \
+	fastq.cpp \
+	hts.cpp \
 	environment.cpp \
+	accumulate.cpp \
 	pipeline.cpp \
 	pheniqs.cpp
 
@@ -50,9 +56,17 @@ OBJECTS = \
 	json.o \
 	constant.o \
 	url.o \
+	atom.o \
+	transform.o \
+	auxiliary.o \
+	sequence.o \
+	segment.o \
 	model.o \
 	feed.o \
+	fastq.o \
+	hts.o \
 	environment.o \
+	accumulate.o \
 	pipeline.o \
 	pheniqs.o
 
@@ -102,43 +116,139 @@ json.o: \
 	json.h
 
 constant.o: \
+	error.h \
 	json.h \
 	constant.h
 
 url.o: \
-	constant.h \
 	error.h \
 	json.h \
+	constant.h \
 	url.h
 
-model.o: \
-	constant.h \
+atom.o: \
 	error.h \
 	json.h \
+	constant.h \
+	atom.h
+
+transform.o: \
+	error.h \
+	json.h \
+	constant.h \
+	transform.h
+
+sequence.o: \
+	error.h \
+	json.h \
+	constant.h \
+	nucleotide.h \
+	phred.h \
+	transform.h \
+	sequence.h
+
+auxiliary.o: \
+	error.h \
+	json.h \
+	constant.h \
+	sequence.h \
+	auxiliary.h
+
+segment.o: \
+	error.h \
+	json.h \
+	constant.h \
+	nucleotide.h \
+	sequence.h \
+	auxiliary.h \
+	segment.h
+
+model.o: \
+	error.h \
+	json.h \
+	constant.h \
 	url.h \
+	atom.h \
+	sequence.h \
 	model.h
 
-feed.o: \
-	constant.h \
+accumulate.o: \
 	error.h \
+	json.h \
+	constant.h \
+	nucleotide.h \
+	phred.h \
+	sequence.h \
+	segment.h \
+	model.h \
+	accumulate.h
+
+environment.o: \
+	version.h \
+	configuration.h \
+	interface.h \
+	error.h \
+	json.h \
+	constant.h \
+	url.h \
+	nucleotide.h \
+	phred.h \
+	atom.h \
+	model.h \
+	environment.h
+
+feed.o: \
+	error.h \
+	json.h \
+	constant.h \
+	url.h \
+	sequence.h \
 	model.h \
 	feed.h
 
-environment.o: \
-	constant.h \
+fastq.o: \
 	error.h \
+	json.h \
+	constant.h \
+	nucleotide.h \
+	phred.h \
+	sequence.h \
+	segment.h \
 	model.h \
 	feed.h \
-	interface.h \
-	configuration.h \
-	version.h \
-	environment.h
+	fastq.h
+
+hts.o: \
+	error.h \
+	json.h \
+	constant.h \
+	nucleotide.h \
+	phred.h \
+	atom.h \
+	sequence.h \
+	segment.h \
+	model.h \
+	feed.h \
+	hts.h
 
 pipeline.o: \
-	feed.h \
+	error.h \
+	json.h \
+	constant.h \
+	url.h \
+	nucleotide.h \
+	phred.h \
+	atom.h \
+	accumulate.h \
 	environment.h \
+	feed.h \
+	fastq.h \
+	hts.h \
 	pipeline.h
 
 pheniqs.o: \
+	error.h \
+	json.h \
 	constant.h \
+	environment.h \
 	pipeline.h

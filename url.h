@@ -29,8 +29,8 @@
 #include <stdlib.h>
 
 #include "error.h"
-#include "constant.h"
 #include "json.h"
+#include "constant.h"
 
 using std::hash;
 using std::setw;

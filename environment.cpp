@@ -427,14 +427,14 @@ void Environment::encode(Document& document) const {
     v.SetDouble(noise);
     document.AddMember("noise", v, allocator);
 
-    if(!input_urls.empty()) {
-        collection.SetArray();
-        for(auto& url : input_urls) {
-            // url.encode(document, v);
-            collection.PushBack(v, allocator);
-        }
-        document.AddMember("input", collection, allocator);
-    }
+    // if(!input_urls.empty()) {
+    //     collection.SetArray();
+    //     for(auto& url : input_urls) {
+    //         url.encode(document, v);
+    //         collection.PushBack(v, allocator);
+    //     }
+    //     document.AddMember("input", collection, allocator);
+    // }
     if(!multiplex_barcode_tolerance.empty()) {
         collection.SetArray();
         for(auto& tolerance : multiplex_barcode_tolerance) {
@@ -1161,9 +1161,9 @@ void Environment::load_input_specification() {
 void Environment::load_output_specification() {
     unordered_map< URL, unordered_map< ChannelSpecification*, size_t > > referenced_output;
 
-    for(const auto specifications : channel_specifications) {
-        for(auto& url : specifications->output_urls) {
-            referenced_output[url][specifications]++;
+    for(const auto specification : channel_specifications) {
+        for(const auto& url : specification->output_urls) {
+            referenced_output[url][specification]++;
         }
     }
 
@@ -1199,6 +1199,20 @@ void Environment::load_output_specification() {
                 break;
         }
     }
+
+    for(auto specification : channel_specifications) {
+        specification->output_specification.reserve(specification->output_urls.size());
+
+        for(const auto& url : specification->output_urls) {
+            auto record = output_feed_specification_by_url.find(url);
+            if (record != output_feed_specification_by_url.end()) {
+                specification->output_specification.push_back(record->second);
+            } else {
+                throw InternalError("reference to undiscovered feed " + string(url));
+            }
+        }
+    }
+
 };
 void Environment::validate_io() {
     /*  verify no URL is used for both input and output */
