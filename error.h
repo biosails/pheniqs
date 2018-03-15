@@ -44,54 +44,54 @@ using std::to_string;
 using std::setprecision;
 
 class CommandLineError : public exception {
-    public:
-        string message;
-        CommandLineError(const string error) {
-            message = error;
-        };
-        virtual const char* what() const throw() {
-            return ("Command line error: " + message).c_str();
-        };
+public:
+    string message;
+    CommandLineError(const string error) {
+        message = error;
+    };
+    virtual const char* what() const throw() {
+        return ("Command line error: " + message).c_str();
+    };
 };
 class ConfigurationError : public exception {
-    public:
-        string message;
-        ConfigurationError(const string& error) {
-            message.assign(error);
-        };
-        virtual const char* what() const throw() {
-            return ("Configuration error: " + message).c_str();
-        };
+public:
+    string message;
+    ConfigurationError(const string& error) {
+        message.assign(error);
+    };
+    virtual const char* what() const throw() {
+        return ("Configuration error: " + message).c_str();
+    };
 };
 class SequenceError : public exception {
-    public:
-        string message;
-        SequenceError(const string& error) {
-            message.assign(error);
-        };
-        virtual const char* what() const throw() {
-            return ("Sequence error : " + message).c_str();
-        };
+public:
+    string message;
+    SequenceError(const string& error) {
+        message.assign(error);
+    };
+    virtual const char* what() const throw() {
+        return ("Sequence error : " + message).c_str();
+    };
 };
 class IOError : public exception {
-    public:
-        string message;
-        IOError(const string& error) {
-            message.assign(error);
-        };
-        virtual const char* what() const throw() {
-            return ("IO error : " + message).c_str();
-        };
+public:
+    string message;
+    IOError(const string& error) {
+        message.assign(error);
+    };
+    virtual const char* what() const throw() {
+        return ("IO error : " + message).c_str();
+    };
 };
 class InternalError : public exception {
-    public:
-        string message;
-        InternalError(const string& error) {
-            message.assign(error);
-        };
-        virtual const char* what() const throw() {
-            return ("Internal error : " + message).c_str();
-        };
+public:
+    string message;
+    InternalError(const string& error) {
+        message.assign(error);
+    };
+    virtual const char* what() const throw() {
+        return ("Internal error : " + message).c_str();
+    };
 };
 
 #endif /* PHENIQS_ERROR_H */

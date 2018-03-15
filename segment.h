@@ -70,63 +70,63 @@ using std::lock_guard;
 using std::thread;
 
 class Segment {
-    friend ostream& operator<<(ostream& o, const Segment& segment);
-    void operator=(Segment const &) = delete;
+friend ostream& operator<<(ostream& o, const Segment& segment);
+void operator=(Segment const &) = delete;
 
-    public:
-        const size_t index;
-        const Platform platform;
-        kstring_t name;
-        uint16_t flag;
-        Sequence sequence;
-        Auxiliary auxiliary;
-        Segment(const Platform& platform);
-        Segment(const size_t& index, const int32_t& FI, const int32_t& TC, const Platform& platform);
-        Segment(const Segment& other);
-        ~Segment();
-        inline int32_t get_segment_index() const {
-            if(!auxiliary.FI) {
-                if(flag & uint16_t(HtsFlag::PAIRED)) {
-                    if(flag & uint16_t(HtsFlag::READ1)) {
-                        return 1;
-                    } else if(flag & uint16_t(HtsFlag::READ2)) {
-                        return 2;
-                    } else {
-                        throw SequenceError("inconsistent SAM flags");
-                    }
-                } else {
+public:
+    const size_t index;
+    const Platform platform;
+    kstring_t name;
+    uint16_t flag;
+    Sequence sequence;
+    Auxiliary auxiliary;
+    Segment(const Platform& platform);
+    Segment(const size_t& index, const int32_t& FI, const int32_t& TC, const Platform& platform);
+    Segment(const Segment& other);
+    ~Segment();
+    inline int32_t get_segment_index() const {
+        if(!auxiliary.FI) {
+            if(flag & uint16_t(HtsFlag::PAIRED)) {
+                if(flag & uint16_t(HtsFlag::READ1)) {
                     return 1;
-                }
-            } else {
-                return auxiliary.FI;
-            }
-        };
-        inline int32_t get_total_segments() const {
-            if(!auxiliary.TC) {
-                if(flag & uint16_t(HtsFlag::PAIRED)) {
+                } else if(flag & uint16_t(HtsFlag::READ2)) {
                     return 2;
                 } else {
-                    return 1;
+                    throw SequenceError("inconsistent SAM flags");
                 }
             } else {
-                return auxiliary.TC;
+                return 1;
             }
-        };
-        inline void set_qcfail(const bool value) {
-            if (value) {
-                flag |= uint16_t(HtsFlag::QCFAIL);
+        } else {
+            return auxiliary.FI;
+        }
+    };
+    inline int32_t get_total_segments() const {
+        if(!auxiliary.TC) {
+            if(flag & uint16_t(HtsFlag::PAIRED)) {
+                return 2;
             } else {
-                flag &= ~uint16_t(HtsFlag::QCFAIL);
+                return 1;
             }
-        };
-        inline bool get_qcfail() const {
-            return flag & uint16_t(HtsFlag::QCFAIL);
-        };
-        inline void clear() {
-            ks_clear(name);
-            set_qcfail(false);
-            sequence.clear();
-            auxiliary.clear();
-        };
+        } else {
+            return auxiliary.TC;
+        }
+    };
+    inline void set_qcfail(const bool value) {
+        if (value) {
+            flag |= uint16_t(HtsFlag::QCFAIL);
+        } else {
+            flag &= ~uint16_t(HtsFlag::QCFAIL);
+        }
+    };
+    inline bool get_qcfail() const {
+        return flag & uint16_t(HtsFlag::QCFAIL);
+    };
+    inline void clear() {
+        ks_clear(name);
+        set_qcfail(false);
+        sequence.clear();
+        auxiliary.clear();
+    };
 };
 #endif /* PHENIQS_SEGMENT_H */

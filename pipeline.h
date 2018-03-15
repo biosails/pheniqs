@@ -73,126 +73,126 @@ class Pipeline;
 /*  Pivot */
 
 class Pivot {
-    Pivot(Pivot const &) = delete;
-    void operator=(Pivot const &) = delete;
+Pivot(Pivot const &) = delete;
+void operator=(Pivot const &) = delete;
 
-    public:
-        thread pivot_thread;
-        const size_t index;
-        const ProgramAction action;
-        const Decoder decoder;
-        bool determined;
-        bool filtered;
-        double multiplex_probability;
-        double conditioned_multiplex_probability;
-        size_t multiplex_distance;
-        Barcode multiplex_barcode;
-        Barcode molecular_barcode;
-        vector< Segment > input;
-        vector< Segment > output;
-        Channel* decoded_multiplex_channel;
-        PivotAccumulator accumulator;
-        unordered_map< string, ChannelAccumulator > channel_by_barcode;
-        unordered_map< string, ChannelAccumulator > channel_by_read_group_id;
-        Pivot(Pipeline& pipeline);
-        void start();
-        inline void clear();
+public:
+    thread pivot_thread;
+    const size_t index;
+    const ProgramAction action;
+    const Decoder decoder;
+    bool determined;
+    bool filtered;
+    double multiplex_probability;
+    double conditioned_multiplex_probability;
+    size_t multiplex_distance;
+    Barcode multiplex_barcode;
+    Barcode molecular_barcode;
+    vector< Segment > input;
+    vector< Segment > output;
+    Channel* decoded_multiplex_channel;
+    PivotAccumulator accumulator;
+    unordered_map< string, ChannelAccumulator > channel_by_barcode;
+    unordered_map< string, ChannelAccumulator > channel_by_read_group_id;
+    Pivot(Pipeline& pipeline);
+    void start();
+    inline void clear();
 
-    private:
-        Pipeline& pipeline;
-        const bool disable_quality_control;
-        const bool long_read;
-        const Segment* leading_segment;
-        void run();
-        inline void validate();
-        inline void decode_with_mdd();
-        inline void decode_with_pamld();
-        inline void transform();
-        inline void decode_tagged_channel();
-        inline void encode_auxiliary();
-        inline void copy_auxiliary();
-        inline void push();
-        inline void increment();
-        inline void encode_mmd_benchmark_auxiliary();
-        inline void encode_pamld_benchmark_auxiliary();
+private:
+    Pipeline& pipeline;
+    const bool disable_quality_control;
+    const bool long_read;
+    const Segment* leading_segment;
+    void run();
+    inline void validate();
+    inline void decode_with_mdd();
+    inline void decode_with_pamld();
+    inline void transform();
+    inline void decode_tagged_channel();
+    inline void encode_auxiliary();
+    inline void copy_auxiliary();
+    inline void push();
+    inline void increment();
+    inline void encode_mmd_benchmark_auxiliary();
+    inline void encode_pamld_benchmark_auxiliary();
 };
 
 /*  Channel */
 
 class Channel {
-    public:
-        mutex channel_mutex;
-        const size_t index;
-        const string barcode_key;
-        const string rg_key;
-        const double concentration;
-        const Barcode multiplex_barcode;
-        const bool disable_quality_control;
-        const bool long_read;
-        const bool include_filtered;
-        const bool undetermined;
-        const bool writable;
-        const HeadRGAtom rg;
-        vector< Feed* > output_feeds;
-        vector< Feed* > unique_output_feeds;
-        ChannelAccumulator channel_accumulator;
-        Channel(const Pipeline& pipeline, const ChannelSpecification& specification);
-        ~Channel();
-        inline void increment(Pivot& pivot);
-        void push(Pivot& pivot);
-        void finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count);
-        void encode(Document& document, Value& value, const bool disable_quality_control) const;
+public:
+    mutex channel_mutex;
+    const size_t index;
+    const string barcode_key;
+    const string rg_key;
+    const double concentration;
+    const Barcode multiplex_barcode;
+    const bool disable_quality_control;
+    const bool long_read;
+    const bool include_filtered;
+    const bool undetermined;
+    const bool writable;
+    const HeadRGAtom rg;
+    vector< Feed* > output_feeds;
+    vector< Feed* > unique_output_feeds;
+    ChannelAccumulator channel_accumulator;
+    Channel(const Pipeline& pipeline, const ChannelSpecification& specification);
+    ~Channel();
+    inline void increment(Pivot& pivot);
+    void push(Pivot& pivot);
+    void finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count);
+    void encode(Document& document, Value& value, const bool disable_quality_control) const;
 };
 
 /*  Pipeline */
 
 class Pipeline {
-    friend class Pivot;
+friend class Pivot;
 
-    public:
-        Environment& environment;
-        Pipeline(Environment& environment);
-        ~Pipeline();
-        void execute();
-        bool pull(Pivot& pivot);
-        void finalize();
-        void encode_report(ostream& o) const;
-        Feed* resolve_feed(const URL& url, const IoDirection& direction) const;
+public:
+    Environment& environment;
+    Pipeline(Environment& environment);
+    ~Pipeline();
+    void execute();
+    bool pull(Pivot& pivot);
+    void finalize();
+    void encode_report(ostream& o) const;
+    Feed* resolve_feed(const URL& url, const IoDirection& direction) const;
 
-    private:
-        const double conditioned_probability_threshold;
-        const bool disable_quality_control;
-        const bool long_read;
-        bool end_of_input;
-        htsThreadPool thread_pool;
+private:
+    const double conditioned_probability_threshold;
+    const bool disable_quality_control;
+    const bool long_read;
+    bool end_of_input;
+    htsThreadPool thread_pool;
 
-        vector< Feed* > input_feeds;
-        vector< Feed* > unique_input_feeds;
-        vector< Feed* > unique_output_feeds;
-        unordered_map< URL, Feed* > input_feed_by_url;
-        unordered_map< URL, Feed* > output_feed_by_url;
+    vector< Feed* > input_feeds;
+    vector< Feed* > unique_input_feeds;
+    vector< Feed* > unique_output_feeds;
+    unordered_map< URL, Feed* > input_feed_by_url;
+    unordered_map< URL, Feed* > output_feed_by_url;
 
-        Channel* undetermined;
-        vector< Channel* > channels;
-        unordered_map< string, Channel* > channel_by_barcode;
-        unordered_map< string, Channel* > channel_by_read_group_id;
+    Channel* undetermined;
+    vector< Channel* > channels;
+    unordered_map< string, Channel* > channel_by_barcode;
+    unordered_map< string, Channel* > channel_by_read_group_id;
 
-        vector< Pivot* > pivots;
-        PivotAccumulator* input_accumulator;
-        PipelineAccumulator* output_accumulator;
+    vector< Pivot* > pivots;
+    PivotAccumulator* input_accumulator;
+    PipelineAccumulator* output_accumulator;
 
-        void start();
-        void stop();
-        void probe(const URL& url);
-        Feed* load_feed(FeedSpecification* specification);
-        void load_input_feeds();
-        void load_output_feeds();
-        inline void initialize_channels();
-        inline void initialize_pivots();
-        void encode_quality_report(ostream& o) const;
-        void encode_demultiplex_report(ostream& o) const;
-        void encode_input_report(Document& document, Value& value) const;
-        void encode_output_report(Document& document, Value& value) const;
+    void start();
+    void stop();
+    void probe(const URL& url);
+    Feed* load_feed(FeedSpecification* specification);
+    void load_input_feeds();
+    void load_output_feeds();
+    inline void initialize_channels();
+    inline void initialize_pivots();
+    void encode_quality_report(ostream& o) const;
+    void encode_demultiplex_report(ostream& o) const;
+    void encode_input_report(Document& document, Value& value) const;
+    void encode_output_report(Document& document, Value& value) const;
 };
 
 #endif /* PHENIQS_PIPELINE_H */

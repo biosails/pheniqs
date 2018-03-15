@@ -56,85 +56,85 @@ using std::unordered_map;
 /* Transform
 */
 class Token {
-    friend ostream& operator<<(ostream& o, const Token& token);
-    void operator=(Token const &) = delete;
+friend ostream& operator<<(ostream& o, const Token& token);
+void operator=(Token const &) = delete;
 
-    public:
-        const size_t index;
-        const size_t input_segment_index;
+public:
+    const size_t index;
+    const size_t input_segment_index;
 
-        Token(
-            const size_t& index,
-            const size_t& input_segment_index,
-            const int32_t& start,
-            const int32_t& end,
-            const bool& end_terminated);
-        Token(const Token& other);
-        string description() const;
-        inline size_t decode_end(const size_t& length) const {
-            size_t value;
-            if(end_terminated) {
-                int32_t v = (end < 0 ? length + end : end);
-                value = v < 0 ? 0 : v;
-                if(value > length) {
-                    value = length;
-                }
-            } else {
-                value = length;
-            }
-            return value;
-        };
-        inline size_t decode_start(const size_t& length) const {
-            size_t value;
-            int32_t v = start < 0 ? length + start : start;
+    Token(
+        const size_t& index,
+        const size_t& input_segment_index,
+        const int32_t& start,
+        const int32_t& end,
+        const bool& end_terminated);
+    Token(const Token& other);
+    string description() const;
+    inline size_t decode_end(const size_t& length) const {
+        size_t value;
+        if(end_terminated) {
+            int32_t v = (end < 0 ? length + end : end);
             value = v < 0 ? 0 : v;
             if(value > length) {
                 value = length;
             }
-            return value;
-        };
-        inline bool empty() const {
-            return (end_terminated && start >= end) && ((start >= 0 && end >= 0) || (start < 0 && end < 0));
-        };
-        inline bool constant() const {
+        } else {
+            value = length;
+        }
+        return value;
+    };
+    inline size_t decode_start(const size_t& length) const {
+        size_t value;
+        int32_t v = start < 0 ? length + start : start;
+        value = v < 0 ? 0 : v;
+        if(value > length) {
+            value = length;
+        }
+        return value;
+    };
+    inline bool empty() const {
+        return (end_terminated && start >= end) && ((start >= 0 && end >= 0) || (start < 0 && end < 0));
+    };
+    inline bool constant() const {
+        if(end_terminated) {
+           return (start >= 0 && end >= 0) || (start < 0 && end < 0);
+        } else {
+            return start < 0;
+        }
+    };
+    int32_t length() const {
+        if(constant()) {
             if(end_terminated) {
-               return (start >= 0 && end >= 0) || (start < 0 && end < 0);
+                return empty() ? 0 : end - start;
             } else {
-                return start < 0;
+                return -start;
             }
-        };
-        int32_t length() const {
-            if(constant()) {
-                if(end_terminated) {
-                    return empty() ? 0 : end - start;
-                } else {
-                    return -start;
-                }
-            } else {
-                return -1;
-            }
-        };
-        operator string() const;
+        } else {
+            return -1;
+        }
+    };
+    operator string() const;
 
-    private:
-        const int32_t start;
-        const int32_t end;
-        const bool end_terminated;
+private:
+    const int32_t start;
+    const int32_t end;
+    const bool end_terminated;
 };
 class Transform {
-    friend ostream& operator<<(ostream& o, const Transform& transform);
-    void operator=(Transform const &) = delete;
+friend ostream& operator<<(ostream& o, const Transform& transform);
+void operator=(Transform const &) = delete;
 
-    public:
-        const size_t index;
-        const size_t output_segment_index;
-        const Token token;
-        const LeftTokenOperator left;
+public:
+    const size_t index;
+    const size_t output_segment_index;
+    const Token token;
+    const LeftTokenOperator left;
 
-        Transform(const size_t& index, const Token& token, const size_t& output_segment_index, const LeftTokenOperator& left);
-        Transform(const Transform& other);
-        string description() const;
-        operator string() const;
+    Transform(const size_t& index, const Token& token, const size_t& output_segment_index, const LeftTokenOperator& left);
+    Transform(const Transform& other);
+    string description() const;
+    operator string() const;
 };
 
 #endif /* PHENIQS_TRANSFORM_H */

@@ -69,25 +69,25 @@ using std::unordered_map;
             reference   grouped by RNAME/POS
 */
 class HeadHDAtom {
-    friend class HtsHeader;
-    friend ostream& operator<<(ostream& o, const HeadHDAtom& hd);
+friend class HtsHeader;
+friend ostream& operator<<(ostream& o, const HeadHDAtom& hd);
 
-    public:
-        kstring_t VN;
-        kstring_t SO;
-        kstring_t GO;
+public:
+    kstring_t VN;
+    kstring_t SO;
+    kstring_t GO;
 
-        HeadHDAtom();
-        ~HeadHDAtom();
-        HeadHDAtom(const HeadHDAtom& other);
-        HeadHDAtom& operator=(const HeadHDAtom& other);
-        void set_alignment_sort_order(const HtsSortOrder& order);
-        void set_alignment_grouping(const HtsGrouping& grouping);
-        void set_version(const htsFormat* format);
+    HeadHDAtom();
+    ~HeadHDAtom();
+    HeadHDAtom(const HeadHDAtom& other);
+    HeadHDAtom& operator=(const HeadHDAtom& other);
+    void set_alignment_sort_order(const HtsSortOrder& order);
+    void set_alignment_grouping(const HtsGrouping& grouping);
+    void set_version(const htsFormat* format);
 
-    private:
-        void encode(kstring_t* buffer) const;
-        char* decode(char* position, const char* end);
+private:
+    void encode(kstring_t* buffer) const;
+    char* decode(char* position, const char* end);
 };
 /*  @SQ Sequence
 
@@ -105,27 +105,27 @@ class HeadHDAtom {
         If it does not start with one of these protocols, it is assumed to be a file-system path.
 */
 class HeadSQAtom {
-    friend class HtsHeader;
-    friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
+friend class HtsHeader;
+friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
 
-    public:
-        kstring_t SN;
-        int32_t LN;
-        kstring_t AH;
-        kstring_t AS;
-        kstring_t M5;
-        kstring_t SP;
-        kstring_t UR;
+public:
+    kstring_t SN;
+    int32_t LN;
+    kstring_t AH;
+    kstring_t AS;
+    kstring_t M5;
+    kstring_t SP;
+    kstring_t UR;
 
-        HeadSQAtom();
-        ~HeadSQAtom();
-        HeadSQAtom(const HeadSQAtom& other);
-        HeadSQAtom& operator=(const HeadSQAtom& other);
-        operator string() const;
+    HeadSQAtom();
+    ~HeadSQAtom();
+    HeadSQAtom(const HeadSQAtom& other);
+    HeadSQAtom& operator=(const HeadSQAtom& other);
+    operator string() const;
 
-    private:
-        void encode(kstring_t* buffer) const;
-        char* decode(char* position, const char* end);
+private:
+    void encode(kstring_t* buffer) const;
+    char* decode(char* position, const char* end);
 };
 /*  @PG Program
 
@@ -140,26 +140,26 @@ class HeadSQAtom {
     VN  Program version
 */
 class HeadPGAtom {
-    friend class HtsHeader;
-    friend ostream& operator<<(ostream& o, const HeadPGAtom& program);
+friend class HtsHeader;
+friend ostream& operator<<(ostream& o, const HeadPGAtom& program);
 
-    public:
-        kstring_t ID;
-        kstring_t PN;
-        kstring_t CL;
-        kstring_t PP;
-        kstring_t DS;
-        kstring_t VN;
+public:
+    kstring_t ID;
+    kstring_t PN;
+    kstring_t CL;
+    kstring_t PP;
+    kstring_t DS;
+    kstring_t VN;
 
-        HeadPGAtom();
-        ~HeadPGAtom();
-        HeadPGAtom(const HeadPGAtom& other);
-        HeadPGAtom& operator=(const HeadPGAtom& other);
-        operator string() const;
+    HeadPGAtom();
+    ~HeadPGAtom();
+    HeadPGAtom(const HeadPGAtom& other);
+    HeadPGAtom& operator=(const HeadPGAtom& other);
+    operator string() const;
 
-    private:
-        void encode(kstring_t* buffer) const;
-        char* decode(char* position, const char* end);
+private:
+    void encode(kstring_t* buffer) const;
+    char* decode(char* position, const char* end);
 };
 /*  @RG Read Group
 
@@ -218,54 +218,54 @@ class HeadPGAtom {
     also informative: http://gatkforums.broadinstitute.org/gatk/discussion/6472/read-groups
 */
 class HeadRGAtom {
-    friend class HtsHeader;
-    friend ostream& operator<<(ostream& o, const HeadRGAtom& read_group);
+friend class HtsHeader;
+friend ostream& operator<<(ostream& o, const HeadRGAtom& read_group);
 
-    public:
-        kstring_t ID;
-        kstring_t PI;
-        kstring_t LB;
-        kstring_t SM;
-        kstring_t PU;
-        kstring_t CN;
-        kstring_t DS;
-        kstring_t DT;
-        kstring_t PL;
-        kstring_t PM;
-        kstring_t PG;
-        kstring_t FO;
-        kstring_t KS;
+public:
+    kstring_t ID;
+    kstring_t PI;
+    kstring_t LB;
+    kstring_t SM;
+    kstring_t PU;
+    kstring_t CN;
+    kstring_t DS;
+    kstring_t DT;
+    kstring_t PL;
+    kstring_t PM;
+    kstring_t PG;
+    kstring_t FO;
+    kstring_t KS;
 
-        HeadRGAtom();
-        ~HeadRGAtom();
-        HeadRGAtom(const HeadRGAtom& other);
-        HeadRGAtom& operator=(const HeadRGAtom& other);
-        operator string() const;
-        void set_platform(const Platform& value);
-        void expand(const HeadRGAtom& other);
-        void encode(Document& document, Value& node, const string& key) const;
+    HeadRGAtom();
+    ~HeadRGAtom();
+    HeadRGAtom(const HeadRGAtom& other);
+    HeadRGAtom& operator=(const HeadRGAtom& other);
+    operator string() const;
+    void set_platform(const Platform& value);
+    void expand(const HeadRGAtom& other);
+    void encode(Document& document, Value& node, const string& key) const;
 
-    private:
-        void encode(kstring_t* buffer) const;
-        char* decode(char* position, const char* end);
+private:
+    void encode(kstring_t* buffer) const;
+    char* decode(char* position, const char* end);
 };
 /*  @CO free text comment
 */
 class HeadCOAtom {
-    friend class HtsHeader;
-    friend ostream& operator<<(ostream& o, const HeadCOAtom& co);
+friend class HtsHeader;
+friend ostream& operator<<(ostream& o, const HeadCOAtom& co);
 
-    public:
-        kstring_t CO;
+public:
+    kstring_t CO;
 
-        HeadCOAtom();
-        ~HeadCOAtom();
-        HeadCOAtom(const HeadCOAtom& other);
-        HeadCOAtom& operator=(const HeadCOAtom& other);
+    HeadCOAtom();
+    ~HeadCOAtom();
+    HeadCOAtom(const HeadCOAtom& other);
+    HeadCOAtom& operator=(const HeadCOAtom& other);
 
-    private:
-        void encode(kstring_t* buffer) const;
-        char* decode(char* position, const char* end);
+private:
+    void encode(kstring_t* buffer) const;
+    char* decode(char* position, const char* end);
 };
 
 #endif /* PHENIQS_ATOM_H */

@@ -98,98 +98,98 @@ using std::thread;
   * XP  f   PAMLD conditioned probability
 */
 class Auxiliary {
-    friend ostream& operator<<(ostream& o, const Auxiliary& auxiliary);
-    void operator=(Auxiliary const &) = delete;
+friend ostream& operator<<(ostream& o, const Auxiliary& auxiliary);
+void operator=(Auxiliary const &) = delete;
 
-    public:
-        int32_t FI;
-        int32_t TC;
-        kstring_t RG;
-        kstring_t BC;
-        kstring_t QT;
-        kstring_t FS;
-        kstring_t LB;
-        kstring_t PG;
-        kstring_t PU;
-        kstring_t CO;
-        kstring_t RX;
-        kstring_t QX;
-        kstring_t BX;
-        float PX;
-        float DQ;
-        float EE;
-        int32_t XI;
-        int32_t YD;
-        int32_t XD;
-        kstring_t XM;
-        kstring_t XL;
-        float XP;
-        Auxiliary(const int32_t& FI, const int32_t& TC);
-        Auxiliary(const Auxiliary& other);
-        ~Auxiliary();
-        void decode(const bam1_t* bam1);
-        void encode(bam1_t* bam1) const;
-        inline void set_multiplex_barcode(const Barcode& barcode) {
-            barcode.encode_iupac_ambiguity(&BC);
-            barcode.encode_phred_quality(&QT, SAM_PHRED_DECODING_OFFSET);
-        };
-        inline void set_molecular_barcode(const Barcode& barcode) {
-            barcode.encode_iupac_ambiguity(&RX);
-            barcode.encode_phred_quality(&QX, SAM_PHRED_DECODING_OFFSET);
-        };
-        inline void set_mdd_barcode(const Barcode& barcode) {
-            barcode.encode_iupac_ambiguity(&XM);
-        };
-        inline void set_pamld_barcode(const Barcode& barcode) {
-            barcode.encode_iupac_ambiguity(&XL);
-        };
-        inline void clear() {
-            /* FI and TC don't change during demultiplexing */
-            ks_clear(RG);
-            ks_clear(BC);
-            ks_clear(QT);
-            ks_clear(FS);
-            ks_clear(LB);
-            ks_clear(PG);
-            ks_clear(PU);
-            ks_clear(CO);
-            ks_clear(RX);
-            ks_clear(QX);
-            ks_clear(BX);
-            PX = 0;
-            DQ = 0;
-            EE = 0;
-            XI = 0;
-            YD = 0;
-            XD = 0;
-            ks_clear(XM);
-            ks_clear(XL);
-            XP = 0;
-        };
-        void imitate(const Auxiliary& other) {
-            ks_clear(RG);
-            ks_clear(BC);
-            ks_clear(QT);
-            ks_clear(FS);
-            ks_clear(LB);
-            ks_clear(PG);
-            ks_clear(PU);
-            ks_clear(CO);
-            ks_clear(RX);
-            ks_clear(QX);
-            ks_clear(BX);
-            if(other.RG.l > 0) kputsn(other.RG.s, other.RG.l, &RG);
-            if(other.BC.l > 0) kputsn(other.BC.s, other.BC.l, &BC);
-            if(other.QT.l > 0) kputsn(other.QT.s, other.QT.l, &QT);
-            if(other.FS.l > 0) kputsn(other.FS.s, other.FS.l, &FS);
-            if(other.LB.l > 0) kputsn(other.LB.s, other.LB.l, &LB);
-            if(other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
-            if(other.PU.l > 0) kputsn(other.PU.s, other.PU.l, &PU);
-            if(other.CO.l > 0) kputsn(other.CO.s, other.CO.l, &CO);
-            if(other.RX.l > 0) kputsn(other.RX.s, other.RX.l, &RX);
-            if(other.QX.l > 0) kputsn(other.QX.s, other.QX.l, &QX);
-            if(other.BX.l > 0) kputsn(other.BX.s, other.BX.l, &BX);
-            DQ = other.DQ;
-        };
+public:
+    int32_t FI;
+    int32_t TC;
+    kstring_t RG;
+    kstring_t BC;
+    kstring_t QT;
+    kstring_t FS;
+    kstring_t LB;
+    kstring_t PG;
+    kstring_t PU;
+    kstring_t CO;
+    kstring_t RX;
+    kstring_t QX;
+    kstring_t BX;
+    float PX;
+    float DQ;
+    float EE;
+    int32_t XI;
+    int32_t YD;
+    int32_t XD;
+    kstring_t XM;
+    kstring_t XL;
+    float XP;
+    Auxiliary(const int32_t& FI, const int32_t& TC);
+    Auxiliary(const Auxiliary& other);
+    ~Auxiliary();
+    void decode(const bam1_t* bam1);
+    void encode(bam1_t* bam1) const;
+    inline void set_multiplex_barcode(const Barcode& barcode) {
+        barcode.encode_iupac_ambiguity(&BC);
+        barcode.encode_phred_quality(&QT, SAM_PHRED_DECODING_OFFSET);
+    };
+    inline void set_molecular_barcode(const Barcode& barcode) {
+        barcode.encode_iupac_ambiguity(&RX);
+        barcode.encode_phred_quality(&QX, SAM_PHRED_DECODING_OFFSET);
+    };
+    inline void set_mdd_barcode(const Barcode& barcode) {
+        barcode.encode_iupac_ambiguity(&XM);
+    };
+    inline void set_pamld_barcode(const Barcode& barcode) {
+        barcode.encode_iupac_ambiguity(&XL);
+    };
+    inline void clear() {
+        /* FI and TC don't change during demultiplexing */
+        ks_clear(RG);
+        ks_clear(BC);
+        ks_clear(QT);
+        ks_clear(FS);
+        ks_clear(LB);
+        ks_clear(PG);
+        ks_clear(PU);
+        ks_clear(CO);
+        ks_clear(RX);
+        ks_clear(QX);
+        ks_clear(BX);
+        PX = 0;
+        DQ = 0;
+        EE = 0;
+        XI = 0;
+        YD = 0;
+        XD = 0;
+        ks_clear(XM);
+        ks_clear(XL);
+        XP = 0;
+    };
+    void imitate(const Auxiliary& other) {
+        ks_clear(RG);
+        ks_clear(BC);
+        ks_clear(QT);
+        ks_clear(FS);
+        ks_clear(LB);
+        ks_clear(PG);
+        ks_clear(PU);
+        ks_clear(CO);
+        ks_clear(RX);
+        ks_clear(QX);
+        ks_clear(BX);
+        if(other.RG.l > 0) kputsn(other.RG.s, other.RG.l, &RG);
+        if(other.BC.l > 0) kputsn(other.BC.s, other.BC.l, &BC);
+        if(other.QT.l > 0) kputsn(other.QT.s, other.QT.l, &QT);
+        if(other.FS.l > 0) kputsn(other.FS.s, other.FS.l, &FS);
+        if(other.LB.l > 0) kputsn(other.LB.s, other.LB.l, &LB);
+        if(other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
+        if(other.PU.l > 0) kputsn(other.PU.s, other.PU.l, &PU);
+        if(other.CO.l > 0) kputsn(other.CO.s, other.CO.l, &CO);
+        if(other.RX.l > 0) kputsn(other.RX.s, other.RX.l, &RX);
+        if(other.QX.l > 0) kputsn(other.QX.s, other.QX.l, &QX);
+        if(other.BX.l > 0) kputsn(other.BX.s, other.BX.l, &BX);
+        DQ = other.DQ;
+    };
 };
 #endif /* PHENIQS_AUXILIARY_H */

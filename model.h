@@ -59,61 +59,61 @@ using std::unordered_map;
 /*  Feed specification
 */
 class FeedSpecification {
-    friend ostream& operator<<(ostream& o, const FeedSpecification& specification);
+friend ostream& operator<<(ostream& o, const FeedSpecification& specification);
 
-    public:
-        const IoDirection direction;
-        const size_t index;
-        URL url;
-        Platform platform;
-        size_t capacity;
-        size_t resolution;
-        uint8_t phred_offset;
-        unordered_map< string, const HeadPGAtom > program_by_id;
-        unordered_map< string, const HeadRGAtom > read_group_by_id;
-        hFILE* hfile;
+public:
+    const IoDirection direction;
+    const size_t index;
+    URL url;
+    Platform platform;
+    size_t capacity;
+    size_t resolution;
+    uint8_t phred_offset;
+    unordered_map< string, const HeadPGAtom > program_by_id;
+    unordered_map< string, const HeadRGAtom > read_group_by_id;
+    hFILE* hfile;
 
-        FeedSpecification (
-            const IoDirection& direction,
-            const size_t& index,
-            const URL& url,
-            const Platform& platform,
-            const uint8_t& phred_offset);
-        void set_capacity(const size_t& capacity);
-        void set_resolution(const size_t& resolution);
-        void register_rg(const HeadRGAtom& rg);
-        void register_pg(const HeadPGAtom& pg);
-        void describe(ostream& o) const;
-        void probe();
+    FeedSpecification (
+        const IoDirection& direction,
+        const size_t& index,
+        const URL& url,
+        const Platform& platform,
+        const uint8_t& phred_offset);
+    void set_capacity(const size_t& capacity);
+    void set_resolution(const size_t& resolution);
+    void register_rg(const HeadRGAtom& rg);
+    void register_pg(const HeadPGAtom& pg);
+    void describe(ostream& o) const;
+    void probe();
 };
 /*  Channel specification
 */
 class ChannelSpecification {
-    friend ostream& operator<<(ostream& o, const ChannelSpecification& channel);
+friend ostream& operator<<(ostream& o, const ChannelSpecification& channel);
 
-    public:
-        size_t index;
-        size_t TC;
-        kstring_t FS;
-        kstring_t CO;
-        bool disable_quality_control;
-        bool long_read;
-        bool include_filtered;
-        bool undetermined;
-        double concentration;
-        Barcode multiplex_barcode;
-        vector< URL > output_urls;
-        HeadRGAtom rg;
-        vector< FeedSpecification* > output_specification;
+public:
+    size_t index;
+    size_t TC;
+    kstring_t FS;
+    kstring_t CO;
+    bool disable_quality_control;
+    bool long_read;
+    bool include_filtered;
+    bool undetermined;
+    double concentration;
+    Barcode multiplex_barcode;
+    vector< URL > output_urls;
+    HeadRGAtom rg;
+    vector< FeedSpecification* > output_specification;
 
-        ChannelSpecification(size_t index);
-        ~ChannelSpecification();
-        inline bool writable() const {
-            return output_urls.size() > 0;
-        };
-        string alias() const;
-        void describe(ostream& o) const;
-        void encode(Document& document, Value& node) const;
+    ChannelSpecification(size_t index);
+    ~ChannelSpecification();
+    inline bool writable() const {
+        return output_urls.size() > 0;
+    };
+    string alias() const;
+    void describe(ostream& o) const;
+    void encode(Document& document, Value& node) const;
 };
 
 #endif /* PHENIQS_MODEL_H */
