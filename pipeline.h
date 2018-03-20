@@ -140,8 +140,8 @@ public:
     ~Channel();
     inline void increment(Pivot& pivot);
     void push(Pivot& pivot);
-    void finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count);
-    void encode(Document& document, Value& value, const bool disable_quality_control) const;
+    void finalize(const PipelineAccumulator& pipeline_accumulator);
+    void encode(Document& document, Value& value) const;
 };
 
 /*  Pipeline */

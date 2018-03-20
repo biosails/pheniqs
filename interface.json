@@ -311,7 +311,7 @@
         }
     ], 
     "comment": "main pheniqs command line configuration file", 
-    "description": "Lior Galanti < lior.galanti@nyu.edu >\nNYU Center for Genomics & Systems Biology 2017", 
+    "description": "Lior Galanti < lior.galanti@nyu.edu >\nNYU Center for Genomics & Systems Biology 2017\nSee manual at https://biosails.github.io/pheniqs", 
     "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.", 
     "name": "pheniqs", 
     "option": [
@@ -333,5 +333,5 @@
             "type": "boolean"
         }
     ], 
-    "version comment": "I’ll build my own theme park"
+    "version comment": "Now with flavor!"
 }

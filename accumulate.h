@@ -57,6 +57,14 @@ using std::setprecision;
 using std::unordered_map;
 using std::numeric_limits;
 
+class NucleicAcidAccumulator;
+class CycleAccumulator;
+class SegmentAccumulator;
+class FeedAccumulator;
+class PivotAccumulator;
+class ChannelAccumulator;
+class PipelineAccumulator;
+
 class NucleicAcidAccumulator {
 NucleicAcidAccumulator(NucleicAcidAccumulator const &) = delete;
 void operator=(NucleicAcidAccumulator const &) = delete;
@@ -82,6 +90,7 @@ public:
     void finalize();
     NucleicAcidAccumulator& operator+=(const NucleicAcidAccumulator& rhs);
 };
+
 class CycleAccumulator {
 CycleAccumulator(CycleAccumulator const &) = delete;
 void operator=(CycleAccumulator const &) = delete;
@@ -95,6 +104,7 @@ public:
     void finalize();
     CycleAccumulator& operator+=(const CycleAccumulator& rhs);
 };
+
 class SegmentAccumulator {
 SegmentAccumulator(SegmentAccumulator const &) = delete;
 void operator=(SegmentAccumulator const &) = delete;
@@ -122,17 +132,19 @@ public:
     void finalize();
     SegmentAccumulator& operator+=(const SegmentAccumulator& rhs);
 };
+
 class FeedAccumulator {
 FeedAccumulator(FeedAccumulator const &) = delete;
 void operator=(FeedAccumulator const &) = delete;
 
 public:
+    const URL url;
     uint64_t length;
     uint64_t shortest;
     uint64_t iupac_nucleic_acid_count[IUPAC_CODE_SIZE];
     SegmentAccumulator average_phred;
     vector< CycleAccumulator* > cycles;
-    FeedAccumulator();
+    FeedAccumulator(const FeedSpecification& specification);
     ~FeedAccumulator();
     inline void increment(const Sequence& sequence) {
         if(sequence.length > length) {
@@ -155,29 +167,40 @@ public:
     void finalize();
     FeedAccumulator& operator+=(const FeedAccumulator& rhs);
 };
+
 class PivotAccumulator {
 public:
+    const bool disable_quality_control;
     uint64_t count;
     uint64_t pf_count;
     double pf_fraction;
-    vector< FeedAccumulator > feed_accumulators;
-    PivotAccumulator(const size_t total_input_segments);
-    inline void increment(const bool& filtered, const vector< Segment >& input) {
+    vector< FeedAccumulator* > feed_accumulators;
+
+    PivotAccumulator(const InputSpecification& input_specification);
+    ~PivotAccumulator();
+    inline void increment(const bool filtered, const vector< Segment >& input) {
         count++;
         if (!filtered) {
             pf_count++;
         }
         for(size_t i = 0; i < feed_accumulators.size(); i++) {
-            feed_accumulators[i].increment(input[i].sequence);
+            feed_accumulators[i]->increment(input[i].sequence);
         }
     };
-    void encode(Document& document, Value& value, const bool disable_quality_control) const;
+    void encode(Document& document, Value& value) const;
     void finalize();
     PivotAccumulator& operator+=(const PivotAccumulator& rhs);
 };
+
 class ChannelAccumulator {
 public:
+    const size_t index;
+    const Decoder decoder;
+    const bool disable_quality_control;
     const bool undetermined;
+    const double concentration;
+    const Barcode multiplex_barcode;
+    const HeadRGAtom rg;
     uint64_t count;
     double multiplex_distance;
     double multiplex_confidence;
@@ -187,44 +210,48 @@ public:
     double pf_fraction;
     double pooled_fraction;
     double pf_pooled_fraction;
+    double pooled_multiplex_fraction;
+    double pf_pooled_multiplex_fraction;
     uint64_t accumulated_multiplex_distance;
-    uint64_t accumulated_multiplex_confidence;
+    double accumulated_multiplex_confidence;
     uint64_t accumulated_pf_multiplex_distance;
-    uint64_t accumulated_pf_multiplex_confidence;
-    vector< FeedAccumulator > feed_accumulators;
+    double accumulated_pf_multiplex_confidence;
+    vector< FeedAccumulator* > feed_accumulators;
+
     ChannelAccumulator(const ChannelSpecification& specification);
+    ~ChannelAccumulator();
     inline void increment (
-        const Decoder& decoder,
-        const bool& filtered,
-        const double& multiplex_probability,
-        const size_t& multiplex_distance,
+        const bool filtered,
+        const double pivot_multiplex_confidence,
+        const size_t pivot_multiplex_distance,
         const vector< Segment >& output) {
 
         count++;
-        if(multiplex_distance) {
-            accumulated_multiplex_distance += multiplex_distance;
+        if(pivot_multiplex_distance) {
+            accumulated_multiplex_distance += uint64_t(pivot_multiplex_distance);
         }
         if(decoder == Decoder::PAMLD) {
-            accumulated_multiplex_confidence += multiplex_probability; 
+            accumulated_multiplex_confidence += pivot_multiplex_confidence; 
         }
         if (!filtered) {
             pf_count++;
-            if(multiplex_distance) {
-                accumulated_pf_multiplex_distance += multiplex_distance;
+            if(pivot_multiplex_distance) {
+                accumulated_pf_multiplex_distance += uint64_t(pivot_multiplex_distance);
             }
             if(decoder == Decoder::PAMLD) {
-                accumulated_pf_multiplex_confidence += multiplex_probability;
+                accumulated_pf_multiplex_confidence += pivot_multiplex_confidence;
             }
         }
 
         for(size_t i = 0; i < feed_accumulators.size(); i++) {
-            feed_accumulators[i].increment(output[i].sequence);
+            feed_accumulators[i]->increment(output[i].sequence);
         }
     };
-    void encode(Document& document, Value& value, const bool disable_quality_control) const;
-    void finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count);
+    void encode(Document& document, Value& value) const;
+    void finalize(const PipelineAccumulator& pipeline_accumulator);
     ChannelAccumulator& operator+=(const ChannelAccumulator& rhs);
 };
+
 class PipelineAccumulator {
 public:
     uint64_t count;
@@ -240,9 +267,9 @@ public:
     double pf_multiplex_confidence;
     double multiplex_pf_fraction;
     uint64_t accumulated_multiplex_distance;
-    uint64_t accumulated_multiplex_confidence;
+    double accumulated_multiplex_confidence;
     uint64_t accumulated_pf_multiplex_distance;
-    uint64_t accumulated_pf_multiplex_confidence;
+    double accumulated_pf_multiplex_confidence;
 
     PipelineAccumulator();
     void collect(const ChannelAccumulator& channel_accumulator);

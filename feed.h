@@ -131,6 +131,7 @@ protected:
     uint8_t phred_offset;
     bool end_of_file;
 };
+
 template <class T> class CyclicBuffer {
 template <typename U> friend ostream& operator<<(ostream& o, const CyclicBuffer<U>& buffer);
 
@@ -242,6 +243,7 @@ private:
     vector< T* > cache;
     int index;
 };
+
 template <class T> class BufferedFeed : public Feed {
 public:
     BufferedFeed(FeedSpecification const * specification) :

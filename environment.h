@@ -100,8 +100,8 @@ public:
     double confidence;
     double noise;
 
-    // input channel specification
-    vector< URL > input_urls;
+    // input specification
+    InputSpecification* input_specification;
     URL input_url;
 
     // token specification

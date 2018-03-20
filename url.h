@@ -183,5 +183,6 @@ namespace std {
 void decode_directory_by_key(const Value::Ch* key, URL& value, const Value& container);
 void decode_url_by_key(const Value::Ch* key, URL& value, const IoDirection& direction, const Value& container);
 void encode_key_value(const string& key, const URL& value, Value& node, Document& document);
+void encode_element(const URL& value, Value& container, Document& document);
 
 #endif /* PHENIQS_URL_H */

@@ -244,12 +244,19 @@ ostream& operator<<(ostream& o, const FeedSpecification& specification) {
     return o;
 };
 
+InputSpecification::InputSpecification() :
+    decoder(Decoder::UNKNOWN),
+    disable_quality_control(false),
+    include_filtered(true) {
+};
+
 /*  Channel specification */
 ChannelSpecification::ChannelSpecification(size_t index) :
     index(index),
     TC(numeric_limits<size_t>::max()),
     FS({ 0, 0, NULL }),
     CO({ 0, 0, NULL }),
+    decoder(Decoder::UNKNOWN),
     disable_quality_control(false),
     long_read(false),
     include_filtered(true),
@@ -328,15 +335,14 @@ void ChannelSpecification::encode(Document& document, Value& node) const {
         channel.AddMember("concentration", v, allocator);
         multiplex_barcode.encode_configuration(document, channel, "barcode");
     }
-    // if(!output_urls.empty()) {
-    //     Value collection;
-    //     collection.SetArray();
-    //     for(auto& url : output_urls) {
-    //         url.encode(document, v);
-    //         collection.PushBack(v, allocator);
-    //     }
-    //     channel.AddMember("output", collection, allocator);
-    // }
+    if(!output_urls.empty()) {
+        Value collection;
+        collection.SetArray();
+        for(auto& url : output_urls) {
+            encode_element(url, collection, document);
+        }
+        channel.AddMember("output", collection, allocator);
+    }
     node.PushBack(channel, allocator);
 };
 ostream& operator<<(ostream& o, const ChannelSpecification& specification) {

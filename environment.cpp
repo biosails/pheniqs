@@ -94,6 +94,7 @@ Environment::Environment(int argc, char** argv) :
     total_input_segments(0),
     confidence(0),
     noise(0),
+    input_specification(NULL),
     undetermined(NULL) {
 
     load(argc, argv);
@@ -315,9 +316,9 @@ void Environment::describe(ostream& o) {
     }
 
     o << "Input " << endl << endl;
-    if (!input_urls.empty()) {
-        for (size_t i = 0; i < input_urls.size(); i++) {
-            o << "    Input segment No." << i << " : " << input_urls[i] << endl;
+    if (input_specification != NULL && !input_specification->input_urls.empty()) {
+        for (size_t i = 0; i < input_specification->input_urls.size(); i++) {
+            o << "    Input segment No." << i << " : " << input_specification->input_urls[i] << endl;
         }
         o << endl;
     }
@@ -371,12 +372,10 @@ void Environment::encode(Document& document) const {
         document.AddMember("PI", v, allocator);
     }
     if(!base_input_url.empty()) {
-        // base_input_url.encode(document, v);
-        document.AddMember("base input path", v.Move(), allocator);
+        encode_key_value("base input path", base_input_url, document, document);
     }
     if(!base_output_url.empty()) {
-        // base_output_url.encode(document, v);
-        document.AddMember("base output path", v.Move(), allocator);
+        encode_key_value("base output path", base_output_url, document, document);
     }
     if(platform != Platform::UNKNOWN) {
         string buffer;
@@ -427,14 +426,13 @@ void Environment::encode(Document& document) const {
     v.SetDouble(noise);
     document.AddMember("noise", v, allocator);
 
-    // if(!input_urls.empty()) {
-    //     collection.SetArray();
-    //     for(auto& url : input_urls) {
-    //         url.encode(document, v);
-    //         collection.PushBack(v, allocator);
-    //     }
-    //     document.AddMember("input", collection, allocator);
-    // }
+    if(input_specification != NULL && !input_specification->input_urls.empty()) {
+        collection.SetArray();
+        for(auto& url : input_specification->input_urls) {
+            encode_element(url, collection, document);
+        }
+        document.AddMember("input", collection, allocator);
+    }
     if(!multiplex_barcode_tolerance.empty()) {
         collection.SetArray();
         for(auto& tolerance : multiplex_barcode_tolerance) {
@@ -465,10 +463,12 @@ void Environment::encode(Document& document) const {
     }
 };
 void Environment::validate_urls() {
-    for (auto& url : input_urls) {
-        if(!url.is_readable()) {
-            set_state(ProgramState::IO_ERROR);
-            throw IOError("could not open " + string(url) + " for reading");
+    if (input_specification != NULL) {
+        for (auto& url : input_specification->input_urls) {
+            if(!url.is_readable()) {
+                set_state(ProgramState::IO_ERROR);
+                throw IOError("could not open " + string(url) + " for reading");
+            }
         }
     }
 
@@ -531,10 +531,12 @@ void Environment::load_configuration_file(const URL& url) {
                     element = document.FindMember("input");
                     if (element != document.MemberEnd()) {
                         if(element->value.IsArray()) {
+                            input_specification = new InputSpecification();
+                            input_specification->input_urls.reserve(element->value.Size());
                             for (SizeType i = 0; i < element->value.Size(); i++) {
                                 URL url;
                                 load_url_node(element->value[i], IoDirection::IN, url);
-                                input_urls.push_back(url);
+                                input_specification->input_urls.push_back(url);
                             }
                         } else { throw ConfigurationError("input element must be an array"); }
                     }
@@ -708,6 +710,7 @@ void Environment::load_channel_node(const Value& node) {
         element = node.FindMember("output");
         if (element != node.MemberEnd()) {
             if(element->value.IsArray()) {
+                specification->output_urls.reserve(element->value.Size());
                 for (SizeType i = 0; i < element->value.Size(); i++) {
                     URL url;
                     try {
@@ -788,8 +791,10 @@ void Environment::load_urls() {
     if(base_input_url.empty()) {
         base_input_url = working_directory;
     }
-    for(auto& url : input_urls) {
-        url.relocate(base_input_url);
+    if(input_specification != NULL) {
+        for(auto& url : input_specification->input_urls) {
+            url.relocate(base_input_url);
+        }
     }
 
     if(base_output_url.empty()) {
@@ -802,7 +807,11 @@ void Environment::load_urls() {
     }
 };
 void Environment::load_transformation() {
-    total_input_segments = input_urls.size();
+    if(input_specification != NULL) {
+        total_input_segments = input_specification->input_urls.size();
+    } else {
+        total_input_segments = 0;
+    }
 
     tokens.reserve(token_patterns.size());
     for(const auto& pattern : token_patterns) {
@@ -1128,34 +1137,54 @@ void Environment::load_channels() {
     if(!production_date.empty())        kputsn(production_date.c_str(), production_date.size(), &default_rg.DT);
     if(!insert_size.empty())            kputsn(insert_size.c_str(), insert_size.size(), &default_rg.PI);
 
-    for(auto specifications : channel_specifications) {
-        if(specifications->rg.ID.l > 0) {
-            auto record = read_group_by_id.find(specifications->rg);
+    for(auto specification : channel_specifications) {
+        if(specification->rg.ID.l > 0) {
+            auto record = read_group_by_id.find(specification->rg);
             if (record != read_group_by_id.end()) {
-                specifications->rg.expand(*record->second);
+                specification->rg.expand(*record->second);
             }
-            specifications->rg.expand(default_rg);
-            specifications->TC = total_output_segments;
-            specifications->disable_quality_control = disable_quality_control;
-            specifications->long_read = long_read;
-            specifications->include_filtered = include_filtered;
-            specifications->multiplex_barcode.set_threshold(masking_threshold);
-            specifications->multiplex_barcode.set_tolerance(multiplex_barcode_tolerance);
+            specification->decoder = decoder;
+            specification->rg.expand(default_rg);
+            specification->TC = total_output_segments;
+            specification->disable_quality_control = disable_quality_control;
+            specification->long_read = long_read;
+            specification->include_filtered = include_filtered;
+            specification->multiplex_barcode.set_threshold(masking_threshold);
+            specification->multiplex_barcode.set_tolerance(multiplex_barcode_tolerance);
         }
     }
 };
 void Environment::load_input_specification() {
-    unordered_map< URL, size_t > referenced_input;
+    if(input_specification != NULL) {
+        input_specification->decoder = decoder;
+        input_specification->disable_quality_control = disable_quality_control;
+        input_specification->long_read = long_read;
+        input_specification->include_filtered = include_filtered;
 
-    for(const auto& url : input_urls) {
-        referenced_input[url]++;
-    }
+        /* count how many times every URL is referenced as input */
+        unordered_map< URL, size_t > referenced_input;
+        for(const auto& url : input_specification->input_urls) {
+            referenced_input[url]++;
+        }
 
-    for(const auto& record : referenced_input) {
-        const URL& url = record.first;
-        FeedSpecification* feed = discover_feed(url, IoDirection::IN);
-        feed->set_resolution(record.second);
-        feed->set_capacity(buffer_capacity * feed->resolution);
+        /* discover the input feeds and set their resolution to the reference cardinality */
+        for(const auto& record : referenced_input) {
+            const URL& url = record.first;
+            FeedSpecification* feed = discover_feed(url, IoDirection::IN);
+            feed->set_resolution(record.second);
+            feed->set_capacity(buffer_capacity * feed->resolution);
+        }
+
+        /* populate the feed specification array */
+        input_specification->feed_specifications.reserve(input_specification->input_urls.size());
+        for(const auto& url : input_specification->input_urls) {
+            auto record = input_feed_specification_by_url.find(url);
+            if (record != input_feed_specification_by_url.end()) {
+                input_specification->feed_specifications.push_back(record->second);
+            } else {
+                throw InternalError("reference to undiscovered feed " + string(url));
+            }
+        }
     }
 };
 void Environment::load_output_specification() {
@@ -1201,12 +1230,12 @@ void Environment::load_output_specification() {
     }
 
     for(auto specification : channel_specifications) {
-        specification->output_specification.reserve(specification->output_urls.size());
-
+        /* populate the feed specification array */
+        specification->feed_specification.reserve(specification->output_urls.size());
         for(const auto& url : specification->output_urls) {
             auto record = output_feed_specification_by_url.find(url);
             if (record != output_feed_specification_by_url.end()) {
-                specification->output_specification.push_back(record->second);
+                specification->feed_specification.push_back(record->second);
             } else {
                 throw InternalError("reference to undiscovered feed " + string(url));
             }
@@ -1235,8 +1264,15 @@ void Environment::probe() {
     }
 };
 void Environment::calibrate(const URL& url) {
+    input_specification = new InputSpecification();
+    input_specification->decoder = decoder;
+    input_specification->disable_quality_control = disable_quality_control;
+    input_specification->long_read = long_read;
+    input_specification->include_filtered = include_filtered;
+
+    input_specification->input_urls.reserve(total_input_segments);
     for(size_t i = 0; i < total_input_segments; i++) {
-        input_urls.push_back(url);
+        input_specification->input_urls.push_back(url);
         token_patterns.emplace_back(to_string(i) + "::");
         template_patterns.emplace_back(to_string(i));
     }

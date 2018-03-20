@@ -383,3 +383,7 @@ void encode_key_value(const string& key, const URL& value, Value& node, Document
         node.AddMember(k.Move(), v.Move(), document.GetAllocator());
     }
 };
+void encode_element(const URL& value, Value& container, Document& document) {
+    Value v(value.c_str(), value.size(), document.GetAllocator());
+    container.PushBack(v.Move(), document.GetAllocator());
+};

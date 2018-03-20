@@ -142,7 +142,9 @@ SegmentAccumulator& SegmentAccumulator::operator+=(const SegmentAccumulator& rhs
 
 /*  FeedAccumulator */
 
-FeedAccumulator::FeedAccumulator() :
+FeedAccumulator::FeedAccumulator(const FeedSpecification& specification) :
+    // specification(specification),
+    url(specification.url),
     length(0),
     shortest(numeric_limits<uint64_t>::max()) {
     for(size_t i = 0; i < IUPAC_CODE_SIZE; i++) {
@@ -158,6 +160,8 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
 
     Value v;
+
+    encode_key_value("url", url, value, document);
 
     v.SetUint64(shortest);
     value.AddMember("min sequence length", v, allocator);
@@ -326,21 +330,32 @@ FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
 
 /*  PivotAccumulator */
 
-PivotAccumulator::PivotAccumulator(const size_t total_input_segments) :
+PivotAccumulator::PivotAccumulator(const InputSpecification& specification) :
+    // specification(specification),
+    disable_quality_control(specification.disable_quality_control),
     count(0),
     pf_count(0),
-    pf_fraction(0),
-    feed_accumulators(total_input_segments) {
+    pf_fraction(0) {
+
+    feed_accumulators.reserve(specification.feed_specifications.size());
+    for(auto feed_specification : specification.feed_specifications) {
+        feed_accumulators.emplace_back(new FeedAccumulator(*feed_specification));
+    }
+};
+PivotAccumulator::~PivotAccumulator() {
+    for(auto feed_accumulator : feed_accumulators) {
+        delete feed_accumulator;
+    }
 };
 void PivotAccumulator::finalize() {
     if (count > 0) {
         pf_fraction = double(pf_count) / double(count);
     }
     for(auto& accumulator : feed_accumulators) {
-        accumulator.finalize();
+        accumulator->finalize();
     }
 };
-void PivotAccumulator::encode(Document& document, Value& value, const bool disable_quality_control) const {
+void PivotAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
 
     Value v;
@@ -358,12 +373,8 @@ void PivotAccumulator::encode(Document& document, Value& value, const bool disab
     for (auto& accumulator : feed_accumulators) {
         Value feed_report;
         feed_report.SetObject();
-
-        // v.SetString((char*)lane.feeds[i].url.c_str(), allocator);
-        // feed_report.AddMember("path", v, allocator);
-
         if (!disable_quality_control) {
-            accumulator.encode(document, feed_report);
+            accumulator->encode(document, feed_report);
         }
         feed_reports.PushBack(feed_report, allocator);
     }
@@ -373,7 +384,7 @@ PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
     count += rhs.count;
     pf_count += rhs.pf_count;
     for(size_t i = 0; i < feed_accumulators.size(); i++) {
-        feed_accumulators[i] += rhs.feed_accumulators[i];
+        *(feed_accumulators[i]) += *(rhs.feed_accumulators[i]);
     }
     return *this;
 };
@@ -381,7 +392,14 @@ PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
 /*  ChannelAccumulator */
 
 ChannelAccumulator::ChannelAccumulator(const ChannelSpecification& specification):
+    // specification(specification),
+    index(specification.index),
+    decoder(specification.decoder),
+    disable_quality_control(specification.disable_quality_control),
     undetermined(specification.undetermined),
+    concentration(specification.concentration),
+    multiplex_barcode(specification.multiplex_barcode),
+    rg(specification.rg),
     count(0),
     multiplex_distance(0),
     multiplex_confidence(0),
@@ -391,13 +409,24 @@ ChannelAccumulator::ChannelAccumulator(const ChannelSpecification& specification
     pf_fraction(0),
     pooled_fraction(0),
     pf_pooled_fraction(0),
+    pooled_multiplex_fraction(0),
+    pf_pooled_multiplex_fraction(0),
     accumulated_multiplex_distance(0),
     accumulated_multiplex_confidence(0),
     accumulated_pf_multiplex_distance(0),
-    accumulated_pf_multiplex_confidence(0),
-    feed_accumulators(specification.TC) {
+    accumulated_pf_multiplex_confidence(0) {
+
+    feed_accumulators.reserve(specification.feed_specification.size());
+    for(auto feed_specification : specification.feed_specification) {
+        feed_accumulators.emplace_back(new FeedAccumulator(*feed_specification));
+    }
 };
-void ChannelAccumulator::finalize(const uint64_t& pool_count, const uint64_t& pool_pf_count) {
+ChannelAccumulator::~ChannelAccumulator() {
+    for(auto feed_accumulator : feed_accumulators) {
+        delete feed_accumulator;
+    }
+};
+void ChannelAccumulator::finalize(const PipelineAccumulator& pipeline_accumulator) {
     if (count > 0) {
         multiplex_distance = accumulated_multiplex_distance / double(count);
         multiplex_confidence = accumulated_multiplex_confidence / double(count);
@@ -407,37 +436,66 @@ void ChannelAccumulator::finalize(const uint64_t& pool_count, const uint64_t& po
         pf_multiplex_distance = accumulated_pf_multiplex_distance / double(pf_count);
         pf_multiplex_confidence = accumulated_pf_multiplex_confidence / double(pf_count);
     }
-    if (pool_count > 0) {
-        pooled_fraction = double(count) / double(pool_count);
+    if (pipeline_accumulator.count > 0) {
+        pooled_fraction = double(count) / double(pipeline_accumulator.count);
     }
-    if (pool_pf_count > 0) {
-        pf_pooled_fraction = double(pf_count) / double(pool_pf_count);
+    if (pipeline_accumulator.pf_count > 0) {
+        pf_pooled_fraction = double(pf_count) / double(pipeline_accumulator.pf_count);
     }
-    for(auto& accumulator : feed_accumulators) {
-        accumulator.finalize();
+    if (pipeline_accumulator.multiplex_count > 0) {
+        pooled_multiplex_fraction = double(count) / double(pipeline_accumulator.multiplex_count);
+    }
+    if (pipeline_accumulator.pf_multiplex_count > 0) {
+        pf_pooled_multiplex_fraction = double(pf_count) / double(pipeline_accumulator.pf_multiplex_count);
+    }
+    for(auto accumulator : feed_accumulators) {
+        accumulator->finalize();
     }
 };
-void ChannelAccumulator::encode(Document& document, Value& value, const bool disable_quality_control) const {
+void ChannelAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
     Value v;
+
+    v.SetUint64(index);
+    value.AddMember("index", v, allocator);
+
+    if(!undetermined) {
+        v.SetDouble(concentration);
+        value.AddMember("concentration", v, allocator);
+
+        multiplex_barcode.encode_report(document, value, "multiplex barcode");
+    } else {
+        v.SetBool(undetermined);
+        value.AddMember("undetermined", v, allocator);
+    }
+
+    rg.encode(document, value, "RG");
 
     v.SetUint64(count);
     value.AddMember("count", v, allocator);
 
-    v.SetDouble(multiplex_distance);
-    value.AddMember("multiplex distance", v, allocator);
+    if(!undetermined) {
+        v.SetDouble(multiplex_distance);
+        value.AddMember("multiplex distance", v, allocator);
 
-    v.SetDouble(multiplex_confidence);
-    value.AddMember("multiplex confidence", v, allocator);
+        if(decoder == Decoder::PAMLD) {
+            v.SetDouble(multiplex_confidence);
+            value.AddMember("multiplex confidence", v, allocator);
+        }
+    }
 
     v.SetUint64(pf_count);
     value.AddMember("pf count", v, allocator);
 
-    v.SetDouble(pf_multiplex_distance);
-    value.AddMember("pf multiplex distance", v, allocator);
+    if(!undetermined) {
+        v.SetDouble(pf_multiplex_distance);
+        value.AddMember("pf multiplex distance", v, allocator);
 
-    v.SetDouble(pf_multiplex_confidence);
-    value.AddMember("pf multiplex confidence", v, allocator);
+        if(decoder == Decoder::PAMLD) {
+            v.SetDouble(pf_multiplex_confidence);
+            value.AddMember("pf multiplex confidence", v, allocator);
+        }
+    }
 
     v.SetDouble(pf_fraction);
     value.AddMember("pf fraction", v, allocator);
@@ -448,13 +506,21 @@ void ChannelAccumulator::encode(Document& document, Value& value, const bool dis
     v.SetDouble(pf_pooled_fraction);
     value.AddMember("pf pooled fraction", v, allocator);
 
+    if(!undetermined) {
+        v.SetDouble(pooled_multiplex_fraction);
+        value.AddMember("pooled multiplex fraction", v, allocator);
+
+        v.SetDouble(pf_pooled_multiplex_fraction);
+        value.AddMember("pf pooled multiplex fraction", v, allocator);
+    }
+
     Value feed_reports;
     feed_reports.SetArray();
-    for (auto& accumulator : feed_accumulators) {
+    for (auto accumulator : feed_accumulators) {
         Value feed_report;
         feed_report.SetObject();
         if (!disable_quality_control) {
-            accumulator.encode(document, feed_report);
+            accumulator->encode(document, feed_report);
         }
         feed_reports.PushBack(feed_report, allocator);
     }
@@ -469,7 +535,7 @@ ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs
     accumulated_pf_multiplex_confidence += rhs.accumulated_pf_multiplex_confidence;
 
     for(size_t i = 0; i < feed_accumulators.size(); i++) {
-        feed_accumulators[i] += rhs.feed_accumulators[i];
+        *(feed_accumulators[i]) += *(rhs.feed_accumulators[i]);
     }
     return *this;
 };
@@ -482,7 +548,6 @@ PipelineAccumulator::PipelineAccumulator():
     multiplex_fraction(0),
     multiplex_distance(0),
     multiplex_confidence(0),
-
     pf_count(0),
     pf_fraction(0),
     pf_multiplex_count(0),
@@ -490,7 +555,6 @@ PipelineAccumulator::PipelineAccumulator():
     pf_multiplex_distance(0),
     pf_multiplex_confidence(0),
     multiplex_pf_fraction(0),
-
     accumulated_multiplex_distance(0),
     accumulated_multiplex_confidence(0),
     accumulated_pf_multiplex_distance(0),

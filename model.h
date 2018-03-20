@@ -56,8 +56,6 @@ using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
 
-/*  Feed specification
-*/
 class FeedSpecification {
 friend ostream& operator<<(ostream& o, const FeedSpecification& specification);
 
@@ -86,8 +84,22 @@ public:
     void describe(ostream& o) const;
     void probe();
 };
-/*  Channel specification
-*/
+
+class InputSpecification {
+friend ostream& operator<<(ostream& o, const InputSpecification& specification);
+
+public:
+    Decoder decoder;
+    bool disable_quality_control;
+    bool long_read;
+    bool include_filtered;
+    vector< URL > input_urls;
+    vector< FeedSpecification* > feed_specifications;
+
+    InputSpecification();
+    void encode(Document& document, Value& node) const;
+};
+
 class ChannelSpecification {
 friend ostream& operator<<(ostream& o, const ChannelSpecification& channel);
 
@@ -96,6 +108,7 @@ public:
     size_t TC;
     kstring_t FS;
     kstring_t CO;
+    Decoder decoder;
     bool disable_quality_control;
     bool long_read;
     bool include_filtered;
@@ -104,7 +117,7 @@ public:
     Barcode multiplex_barcode;
     vector< URL > output_urls;
     HeadRGAtom rg;
-    vector< FeedSpecification* > output_specification;
+    vector< FeedSpecification* > feed_specification;
 
     ChannelSpecification(size_t index);
     ~ChannelSpecification();
