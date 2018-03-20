@@ -984,6 +984,9 @@ def main():
         except ValueError as e:
             logging.getLogger('main').critical(e)
             sys.exit(1)
+        except CommandFailedError as e:
+            logging.getLogger('main').critical(e)
+            sys.exit(1)
         except(KeyboardInterrupt, SystemExit) as e:
             pipeline.close()
             sys.exit(1)
