@@ -231,10 +231,9 @@ protected:
         segment.flag = record->core.flag;
         segment.auxiliary.decode(record);
     };
-    inline void fill_buffer() {
-        while(buffer->is_not_full()) {
+    inline void replenish_buffer() {
+        while(opened() && buffer->is_not_full()) {
             if(sam_read1(hts_file, header.hdr, buffer->vacant()) < 0) {
-                end_of_file = true;
                 close();
                 break;
             } else {
@@ -242,7 +241,7 @@ protected:
             }
         }
     };
-    inline void empty_buffer() {
+    inline void flush_buffer() {
         while(buffer->is_not_empty()) {
             if(sam_write1(hts_file, header.hdr, buffer->next()) < 0) {
                 throw IOError("error writing to " + string(url));

@@ -419,13 +419,13 @@ protected:
     inline void decode(const FastqRecord* record, Segment& segment) {
         record->encode(segment);
     };
-    inline void fill_buffer() {
-        while(buffer->is_not_full()) {
+    inline void replenish_buffer() {
+        while(opened() && buffer->is_not_full()) {
          /* >=0  length of the sequence (normal)
             -1   end-of-file
             -2   truncated quality string */
             if(kseq_read(kseq) < 0) {
-                end_of_file = true;
+                close();
                 break;
             } else {
                 buffer->vacant()->decode(kseq, phred_offset);
@@ -433,18 +433,20 @@ protected:
             }
         }
     };
-    inline void empty_buffer() {
+    inline void flush_buffer() {
         /*  encode all fastq records in the buffer to
             a string buffer and write them together to the stream */
-        ks_clear(kbuffer);
-        while(buffer->is_not_empty()) {
-            FastqRecord* record = buffer->next();
-            record->encode(kbuffer, phred_offset);
-            buffer->decrement();
-        }
+        if(buffer->is_not_empty()) {
+            ks_clear(kbuffer);
+            while(buffer->is_not_empty()) {
+                FastqRecord* record = buffer->next();
+                record->encode(kbuffer, phred_offset);
+                buffer->decrement();
+            }
 
-        if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
-            throw IOError("error writing to " + string(url));
+            if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
+                throw IOError("error writing to " + string(url));
+            }
         }
     };
 };

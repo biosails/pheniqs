@@ -96,7 +96,7 @@ public:
         capacity(specification->capacity),
         resolution(specification->resolution),
         phred_offset(specification->phred_offset),
-        end_of_file(false) {
+        exhausted(false) {
         hfile = specification->hfile;
     };
     virtual ~Feed() {
@@ -109,13 +109,12 @@ public:
     virtual bool pull(Segment& segment) = 0;
     virtual void push(Segment& segment) = 0;
     virtual bool peek(Segment& segment, const size_t& position) = 0;
-    virtual inline void flush() = 0;
-    virtual inline void replenish() = 0;
+    virtual inline bool flush() = 0;
+    virtual inline bool replenish() = 0;
     virtual void calibrate(FeedSpecification const * specification) = 0;
     virtual unique_lock<mutex> acquire_pull_lock() = 0;
     virtual unique_lock<mutex> acquire_push_lock() = 0;
     virtual inline bool opened() = 0;
-    virtual inline bool exhausted() = 0;
     void set_thread_pool(htsThreadPool* pool) {
         thread_pool = pool;
     };
@@ -129,7 +128,7 @@ protected:
     size_t capacity;
     size_t resolution;
     uint8_t phred_offset;
-    bool end_of_file;
+    bool exhausted;
 };
 
 template <class T> class CyclicBuffer {
@@ -245,6 +244,16 @@ private:
 };
 
 template <class T> class BufferedFeed : public Feed {
+private:
+    inline void switch_buffer_and_queue() {
+        CyclicBuffer<T>* tmp = buffer;
+        buffer = queue;
+        queue = tmp;
+    };
+    inline bool is_ready_to_flush() {
+        return queue->is_full() || exhausted;
+    };
+
 public:
     BufferedFeed(FeedSpecification const * specification) :
         Feed(specification),
@@ -270,17 +279,17 @@ public:
     };
     void stop() {
         lock_guard<mutex> feed_lock(queue_mutex);
-        end_of_file = true;
+        exhausted = true;
         flushable.notify_one();
     };
     bool pull(Segment& segment) {
+        /*  called in a safe context after acquire_pull_lock */
         if(queue->is_not_empty()) {
             decode(queue->next(), segment);
             queue->decrement();
 
-            /*  queue is now one element smaller,
-                if its empty notify the replenishing thread */
             if(queue->is_empty()) {
+                /* wake up the replenishing thread */
                 replenishable.notify_one();
             }
             return true;
@@ -291,8 +300,6 @@ public:
         encode(queue->vacant(), segment);
         queue->increment();
 
-        /*  queue is one element bigger,
-            if its full notify the flushing thread */
         if(is_ready_to_flush()) {
             flushable.notify_one();
         }
@@ -306,45 +313,39 @@ public:
         }
         return false;
     };
-    inline void flush() {
+    inline bool flush() {
+        /*  used by the consumer to empty the buffer into output */
         unique_lock<mutex> buffer_lock(buffer_mutex);
-        if(buffer->is_not_empty()) {
-            empty_buffer();
-        }
+        flush_buffer();
 
-        /*  buffer is empty, wait for the queue to be full
-            and switch between buffer and queue     */
         unique_lock<mutex> queue_lock(queue_mutex);
         flushable.wait(queue_lock, [this](){ return is_ready_to_flush(); });
 
-        /*  buffer is empty and queue is full
-            switch between buffer and queue */
-        switch_buffers();
-
-        /*  now queue is empty and buffer is full
-            notify threads waiting for the queue to have available space */
-        queue_not_full.notify_all();
-    };
-    inline void replenish() {
-        unique_lock<mutex> buffer_lock(buffer_mutex);
-        if(buffer->is_not_full()) {
-            fill_buffer();
+        if(queue->is_not_empty()) {
+            switch_buffer_and_queue();
+            queue_not_full.notify_all();
+            return true;
+        } else {
+            close();
+            return false;
         }
+    };
+    inline bool replenish() {
+        /*  used by the producer to fill the buffer from the input */
+        unique_lock<mutex> buffer_lock(buffer_mutex);
+        replenish_buffer();
+
+        unique_lock<mutex> queue_lock(queue_mutex);
+        replenishable.wait(queue_lock, [this](){ return queue->is_empty(); });
 
         if(buffer->is_not_empty()) {
-            /*  the buffer is not empty, wait for the queue to be empty
-                and switch between the buffer and the queue */
-            unique_lock<mutex> queue_lock(queue_mutex);
-            replenishable.wait(queue_lock, [this](){ return is_ready_to_replenish(); });
-
-            /*  buffer is not empty and queue is empty
-                switch between buffer and queue */
-            switch_buffers();
-
-            /*  now queue is not empty and buffer is empty
-                notify threads waiting for the queue to be available */
-            queue_not_empty.notify_all();
+            switch_buffer_and_queue();
+        } else {
+            exhausted = true;
         }
+
+        queue_not_empty.notify_all();
+        return !exhausted;
     };
     void calibrate(FeedSpecification const * specification) {
         unique_lock<mutex> buffer_lock(buffer_mutex);
@@ -364,7 +365,7 @@ public:
 
                 /*  sync buffer
                     now make sure the buffer is filled which will align it */
-                fill_buffer();
+                replenish_buffer();
             } else {
                 throw InternalError("can not reduce buffer size");
             }
@@ -372,16 +373,13 @@ public:
     };
     unique_lock<mutex> acquire_pull_lock() {
         unique_lock<mutex> queue_lock(queue_mutex);
-        queue_not_empty.wait(queue_lock, [this]() { return is_ready_to_pull(); });
+        queue_not_empty.wait(queue_lock, [this]() { return queue->is_not_empty() || exhausted; });
         return queue_lock;
     };
     unique_lock<mutex> acquire_push_lock() {
         unique_lock<mutex> queue_lock(queue_mutex);
-        queue_not_full.wait(queue_lock, [this]() { return is_ready_to_push(); });
+        queue_not_full.wait(queue_lock, [this]() { return queue->is_not_full(); });
         return queue_lock;
-    };
-    inline bool exhausted() {
-        return queue->is_empty() && buffer->is_empty() && end_of_file;
     };
 
 protected:
@@ -390,25 +388,8 @@ protected:
     CyclicBuffer<T>* queue;
     virtual inline void encode(T* record, const Segment& segment) const = 0;
     virtual inline void decode(const T* record, Segment& segment) = 0;
-    virtual inline void fill_buffer() = 0;
-    virtual inline void empty_buffer() = 0;
-    inline void switch_buffers() {
-        CyclicBuffer<T>* tmp = buffer;
-        buffer = queue;
-        queue = tmp;
-    };
-    inline bool is_ready_to_pull() {
-        return queue->is_not_empty() || (end_of_file && queue->is_empty() && buffer->is_empty());
-    };
-    inline bool is_ready_to_push() {
-        return queue->is_not_full();
-    };
-    inline bool is_ready_to_flush() {
-        return queue->is_full() || end_of_file;
-    };
-    inline bool is_ready_to_replenish() {
-        return queue->is_empty();
-    };
+    virtual inline void replenish_buffer() = 0;
+    virtual inline void flush_buffer() = 0;
 
 private:
     bool started;
@@ -422,19 +403,14 @@ private:
     void run() {
         switch(direction) {
             case IoDirection::IN: {
-                do {
-                    replenish();
-                } while(!end_of_file);
+                while(replenish());
                 break;
             };
             case IoDirection::OUT: {
-                while(!exhausted()) {
-                    flush();
-                }
+                while(flush());
                 break;
             };
         }
-        close();
     };
 };
 #endif /* PHENIQS_FEED_H */
