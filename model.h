@@ -25,7 +25,6 @@
 #include <set>
 #include <unordered_map>
 
-#include <htslib/hts.h>
 #include <htslib/hfile.h>
 #include <htslib/kstring.h>
 
@@ -84,6 +83,7 @@ public:
     void describe(ostream& o) const;
     void probe();
 };
+ostream& operator<<(ostream& o, const FeedSpecification& specification);
 
 class InputSpecification {
 friend ostream& operator<<(ostream& o, const InputSpecification& specification);
@@ -128,5 +128,6 @@ public:
     void describe(ostream& o) const;
     void encode(Document& document, Value& node) const;
 };
+ostream& operator<<(ostream& o, const ChannelSpecification& specification);
 
 #endif /* PHENIQS_MODEL_H */

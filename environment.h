@@ -1,5 +1,4 @@
-/*
-    Pheniqs : PHilology ENcoder wIth Quality Statistics
+/* Pheniqs : PHilology ENcoder wIth Quality Statistics
     Copyright (C) 2017  Lior Galanti
     NYU Center for Genetics and System Biology
 
@@ -24,8 +23,6 @@
 
 #include <set>
 #include <unordered_map>
-
-#include <htslib/kstring.h>
 
 #include "version.h"
 #include "interface.h"
@@ -318,71 +315,6 @@ private:
     inline void set_input_path(const string* value) {
         if(value!=NULL) {
             input_url.parse(*value, IoDirection::IN);
-        }
-    };
-    inline void decode_directory_node(const Value& node, const Value::Ch* name, URL& value) {
-        Value::ConstMemberIterator element = node.FindMember(name);
-        if (element != node.MemberEnd()) {
-            if(element->value.IsString()) {
-                value.set_directory(string(element->value.GetString(), element->value.GetStringLength()));
-            } else { throw ConfigurationError(string(name) + " element must be a string"); }
-        }
-    };
-    inline void decode_string_node(const Value& node, const Value::Ch* name, string& value) {
-        Value::ConstMemberIterator element = node.FindMember(name);
-        if (element != node.MemberEnd()) {
-            if(element->value.IsString()) {
-                value.assign(element->value.GetString(), element->value.GetStringLength());
-            } else { throw ConfigurationError(string(name) + " element must be a string"); }
-        }
-    };
-    inline void decode_string_node(const Value& node, const Value::Ch* name, kstring_t* value) {
-        Value::ConstMemberIterator element = node.FindMember(name);
-        if (element != node.MemberEnd()) {
-            if(element->value.IsString()) {
-                kputsn(element->value.GetString(), element->value.GetStringLength(), value);
-            } else { throw ConfigurationError(string(name) + " element must be a string"); }
-        }
-    };
-    inline void decode_uint_node(const Value& node, const Value::Ch* name, uint32_t& value) {
-        Value::ConstMemberIterator element = node.FindMember(name);
-        if (element != node.MemberEnd()) {
-            if(element->value.IsUint()) {
-                value = element->value.GetUint();
-            } else { throw ConfigurationError(string(name) + " element must be an unsigned integer"); }
-        }
-    };
-    inline void decode_bool_node(const Value& node, const Value::Ch* name, bool& value) {
-        Value::ConstMemberIterator element = node.FindMember(name);
-        if (element != node.MemberEnd()) {
-            if(element->value.IsBool()) {
-                value = element->value.GetBool();
-            } else { throw ConfigurationError(string(name) + " element must be a boolean"); }
-        }
-    };
-    inline void decode_double_node(const Value& node, const Value::Ch* name, double& value) {
-        Value::ConstMemberIterator element = node.FindMember(name);
-        if (element != node.MemberEnd()) {
-            if(element->value.IsNumber()) {
-                value = element->value.GetDouble();
-            } else { throw ConfigurationError(string(name) + " element must be numeric"); }
-        }
-    };
-    inline void decode_read_group(HeadRGAtom& rg, const Value& node, const Value::Ch* key) {
-        if (node.IsObject()) {
-            decode_string_node(node, key, &rg.ID);
-            decode_string_node(node, "PI", &rg.PI);
-            decode_string_node(node, "LB", &rg.LB);
-            decode_string_node(node, "SM", &rg.SM);
-            decode_string_node(node, "PU", &rg.PU);
-            decode_string_node(node, "CN", &rg.CN);
-            decode_string_node(node, "DS", &rg.DS);
-            decode_string_node(node, "DT", &rg.DT);
-            decode_string_node(node, "PL", &rg.PL);
-            decode_string_node(node, "PM", &rg.PM);
-            decode_string_node(node, "PG", &rg.PG);
-            decode_string_node(node, "FO", &rg.FO);
-            decode_string_node(node, "KS", &rg.KS);
         }
     };
     inline void encode_transform(Document& document, Value& node, const vector< Transform >& container, const string& key) const {

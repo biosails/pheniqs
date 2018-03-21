@@ -25,10 +25,6 @@
 #include <set>
 #include <unordered_map>
 
-#include <htslib/hts.h>
-#include <htslib/hfile.h>
-#include <htslib/kstring.h>
-
 #include "error.h"
 #include "json.h"
 #include "constant.h"
@@ -121,6 +117,8 @@ private:
     const int32_t end;
     const bool end_terminated;
 };
+ostream& operator<<(ostream& o, const Token& token);
+
 class Transform {
 friend ostream& operator<<(ostream& o, const Transform& transform);
 void operator=(Transform const &) = delete;
@@ -136,5 +134,6 @@ public:
     string description() const;
     operator string() const;
 };
+ostream& operator<<(ostream& o, const Transform& transform);
 
 #endif /* PHENIQS_TRANSFORM_H */

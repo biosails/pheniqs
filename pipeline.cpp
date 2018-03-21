@@ -671,7 +671,7 @@ void Pipeline::encode_output_report(Document& document, Value& value) const {
         channel->encode(document, channel_report);
         channel_reports.PushBack(channel_report, allocator);
     }
-    value.AddMember("library quality reports", channel_reports, allocator);
+    value.AddMember("read group quality reports", channel_reports, allocator);
 };
 void Pipeline::encode_quality_report(ostream& o) const {
     Document document;
@@ -775,11 +775,11 @@ Feed* Pipeline::load_feed(FeedSpecification* specification) {
             } else {
                 switch(specification->url.kind()) {
                     case FormatKind::FASTQ: {
-                        feed = new FastqFeed(specification);
+                        feed = new FastqFeed(*specification);
                         break;
                     };
                     case FormatKind::HTS: {
-                        feed = new HtsFeed(specification);
+                        feed = new HtsFeed(*specification);
                         break;
                     };
                     default:
@@ -798,11 +798,11 @@ Feed* Pipeline::load_feed(FeedSpecification* specification) {
             } else {
                 switch(specification->url.kind()) {
                     case FormatKind::FASTQ: {
-                        feed = new FastqFeed(specification);
+                        feed = new FastqFeed(*specification);
                         break;
                     };
                     case FormatKind::HTS: {
-                        feed = new HtsFeed(specification);
+                        feed = new HtsFeed(*specification);
                         break;
                     };
                     default:
@@ -869,7 +869,7 @@ void Pipeline::probe(const URL& url) {
 
         Feed* feed = load_feed(specification);
         feed->open();
-        switch(feed->url.kind()) {
+        switch(feed->specification.url.kind()) {
             case FormatKind::FASTQ: {
                 feed->replenish();
                 Segment segment(specification->platform);

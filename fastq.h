@@ -32,14 +32,9 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <htslib/sam.h>
-#include <htslib/cram.h>
 #include <htslib/bgzf.h>
 #include <htslib/kseq.h>
-#include <htslib/hts.h>
 #include <htslib/kstring.h>
-#include <htslib/hfile.h>
-#include <htslib/thread_pool.h>
 
 #include "error.h"
 #include "json.h"
@@ -363,25 +358,25 @@ class FastqFeed : public BufferedFeed<FastqRecord> {
 friend class Channel;
 
 public:
-    FastqFeed(FeedSpecification const * specification) :
+    FastqFeed(const FeedSpecification& specification) :
         BufferedFeed<FastqRecord>(specification),
         bgzf_file(NULL) {
     };
     void open() {
         if(!opened()) {
-            switch(direction) {
+            switch(specification.direction) {
                 case IoDirection::IN: {
                     bgzf_file = bgzf_hopen(hfile, "r");
                     if(bgzf_file != NULL) {
                         kseq = kseq_init(bgzf_file);
                         bgzf_thread_pool(bgzf_file, thread_pool->pool, thread_pool->qsize);
                     } else {
-                        throw IOError("failed to open " + string(url) + " for reading");
+                        throw IOError("failed to open " + string(specification.url) + " for reading");
                     }
                     break;
                 };
                 case IoDirection::OUT: {
-                    if(specification->url.compression() == "gz") {
+                    if(specification.url.compression() == "gz") {
                         bgzf_file = bgzf_hopen(hfile, "wg");
                     } else {
                         bgzf_file = bgzf_hopen(hfile, "wu");
@@ -390,7 +385,7 @@ public:
                         kseq = kseq_init(bgzf_file);
                         bgzf_thread_pool(bgzf_file, thread_pool->pool, thread_pool->qsize);
                     } else {
-                        throw IOError("failed to open " + string(url) + " for writing");
+                        throw IOError("failed to open " + string(specification.url) + " for writing");
                     }
                     break;
                 };
@@ -445,7 +440,7 @@ protected:
             }
 
             if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
-                throw IOError("error writing to " + string(url));
+                throw IOError("error writing to " + string(specification.url));
             }
         }
     };

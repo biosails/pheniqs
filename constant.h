@@ -203,6 +203,13 @@ void operator>>(const char* s, HtsGrouping& grouping);
     RG  Z   Read group. Value matches the header RG-ID tag if @RG is present in the header.
     BC  Z   Multiplex barcode sequence, with any quality scores stored in the QT tag.
     QT  Z   Phred encoded quality of the multiplex barcode sequence in the BC tag.
+
+    RX  Z   Corrected sequence bases of the molecular barcode
+    QX  Z   Corrected sequence quality of the molecular barcode in RX
+    OX  Z   Raw sequence quality of the molecular barcode
+    BZ  Z   Raw sequence quality of the molecular barcode OX
+    MI  Z   Molecular Identifier
+
     FS  Z   Segment suffix.
     LB  Z   Library. Value to be consistent with the header RG-LB tag if @RG is present.
     PG  Z   Program. Value matches the header PG-ID tag if @PG is present.
@@ -213,8 +220,6 @@ void operator>>(const char* s, HtsGrouping& grouping);
 
     DQ  f   The probability that the demultiplexing decision was incorrect
     EE  f   Expected number of errors in the segment sequence
-    RX  Z   Raw sequence bases of the molecular barcode
-    QX  Z   Raw sequence quality of the molecular barcode
     BX  Z   Corrected sequence bases of the molecular barcode
     PX  f   Molecular barcode correction error probability
 
@@ -228,15 +233,29 @@ void operator>>(const char* s, HtsGrouping& grouping);
     XP  f   Phred Adjusted Maximum Likelihood decoder conditioned error probability
 */
 enum class HtsAuxiliaryCode : uint16_t {
+    FI = 0x4649,
+    TC = 0x5443,
+    RG = 0x5247,
+    BC = 0x4243,
+    QT = 0x5154,
+    RX = 0x5258,
+    QX = 0x5158,
+    OX = 0x4f58,
+    BZ = 0x425a,
+    MI = 0x4d49,
+    FS = 0x4653,
+    LB = 0x4c42,
+    PG = 0x5047,
+    PU = 0x5055,
+    CO = 0x434f,
+
     AH = 0x4148,
     M5 = 0x4d35,
     SP = 0x5350,
     SO = 0x534f,
     FO = 0x464f,
     PM = 0x504d,
-    CO = 0x434f,
     CL = 0x434c,
-    FS = 0x4653,
     KS = 0x4b53,
     PP = 0x5050,
     GO = 0x474f,
@@ -244,21 +263,13 @@ enum class HtsAuxiliaryCode : uint16_t {
     SQ = 0x5351,
     PL = 0x504c,
     ID = 0x4944,
-    BC = 0x4243,
     UR = 0x5552,
     PI = 0x5049,
     CN = 0x434e,
-    LB = 0x4c42,
     HD = 0x4844,
-    TC = 0x5443,
     PN = 0x504e,
-    RG = 0x5247,
-    PG = 0x5047,
     VN = 0x564e,
     LN = 0x4c4e,
-    FI = 0x4649,
-    PU = 0x5055,
-    QT = 0x5154,
     DS = 0x4453,
     SN = 0x534e,
     SM = 0x534d,
@@ -266,8 +277,6 @@ enum class HtsAuxiliaryCode : uint16_t {
 
     DQ = 0x4451,
     EE = 0x4545,
-    RX = 0x5258,
-    QX = 0x5158,
     BX = 0x4258,
     PX = 0x5058,
 

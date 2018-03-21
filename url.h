@@ -173,6 +173,8 @@ private:
     void expand(string& path);
     void decode_extension(const FormatType& type);
 };
+bool operator<(const URL& lhs, const URL& rhs);
+
 namespace std {
     template <> struct hash< URL > {
         size_t operator()(const URL& url) const {

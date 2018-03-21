@@ -25,8 +25,6 @@
 #include <set>
 #include <unordered_map>
 
-#include <htslib/hts.h>
-#include <htslib/hfile.h>
 #include <htslib/kstring.h>
 
 #include "error.h"
@@ -175,6 +173,8 @@ private:
         quality[length] = '\0';
     };
 };
+ostream& operator<<(ostream& o, const Sequence& sequence);
+
 class Barcode {
 friend ostream& operator<<(ostream& o, const Barcode& barcode);
 
@@ -315,6 +315,10 @@ private:
     vector< uint8_t > tolerance;
     vector< Sequence > fragments;
 };
+ostream& operator<<(ostream& o, const Barcode& barcode);
+bool operator<(const Sequence& left, const Sequence& right);
+bool operator>(const Sequence& left, const Sequence& right);
+
 /*  Barcode distance metric
 */
 class Distance {

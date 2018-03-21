@@ -33,13 +33,8 @@
 #include <condition_variable>
 
 #include <htslib/sam.h>
-#include <htslib/cram.h>
-#include <htslib/bgzf.h>
-#include <htslib/kseq.h>
 #include <htslib/hts.h>
 #include <htslib/kstring.h>
-#include <htslib/hfile.h>
-#include <htslib/thread_pool.h>
 
 #include "error.h"
 #include "json.h"
@@ -192,4 +187,5 @@ public:
         DQ = other.DQ;
     };
 };
+ostream& operator<<(ostream& o, const Auxiliary& auxiliary);
 #endif /* PHENIQS_AUXILIARY_H */

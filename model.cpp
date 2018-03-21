@@ -314,27 +314,20 @@ void ChannelSpecification::describe(ostream& o) const {
 void ChannelSpecification::encode(Document& document, Value& node) const {
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value v;
     Value channel;
     channel.SetObject();
 
-    rg.encode(document, channel, "RG");
-    if(FS.l > 0) {
-        v.SetString(FS.s, FS.l, allocator);
-        channel.AddMember("FS", v, allocator);
-    }
-    if(CO.l > 0) {
-        v.SetString(CO.s, CO.l, allocator);
-        channel.AddMember("CO", v, allocator);
-    }
+    encode_value_with_key_ID(rg, "RG", channel, document);
+    encode_key_value("FS", FS, channel, document);
+    encode_key_value("CO", CO, channel, document);
+
     if(undetermined) {
-        v.SetBool(undetermined);
-        channel.AddMember("undetermined", v, allocator);
+        encode_key_value("undetermined", undetermined, channel, document);
     } else {
-        v.SetDouble(concentration);
-        channel.AddMember("concentration", v, allocator);
+        encode_key_value("concentration", concentration, channel, document);
         multiplex_barcode.encode_configuration(document, channel, "barcode");
     }
+
     if(!output_urls.empty()) {
         Value collection;
         collection.SetArray();

@@ -33,11 +33,7 @@
 #include <condition_variable>
 
 #include <htslib/sam.h>
-#include <htslib/cram.h>
-#include <htslib/bgzf.h>
-#include <htslib/kseq.h>
 #include <htslib/hts.h>
-#include <htslib/kstring.h>
 #include <htslib/hfile.h>
 #include <htslib/thread_pool.h>
 
@@ -95,55 +91,56 @@ public:
     void add_program(const HeadPGAtom& program);
     void add_comment(const HeadCOAtom& co);
 };
+ostream& operator<<(ostream& o, const HtsHeader& header);
 
 class HtsFeed : public BufferedFeed<bam1_t> {
 friend class Channel;
 
 public:
-    HtsFeed(FeedSpecification const * specification) :
+    HtsFeed(const FeedSpecification& specification) :
         BufferedFeed<bam1_t>(specification),
         hts_file(NULL) {
 
         header.hd.set_alignment_sort_order(HtsSortOrder::UNKNOWN);
         header.hd.set_alignment_grouping(HtsGrouping::QUERY);
-        for(const auto& record : specification->program_by_id) {
+        for(const auto& record : specification.program_by_id) {
             header.add_program(record.second);
         }
-        for(const auto& record : specification->read_group_by_id) {
+        for(const auto& record : specification.read_group_by_id) {
             header.add_read_group(record.second);
         }
     };
     void open() {
         if(!opened()) {
-            switch(direction) {
+            switch(specification.direction) {
                 case IoDirection::IN: {
-                    hts_file = hts_hopen(hfile, url.c_str(), "r");
+                    hts_file = hts_hopen(hfile, specification.url.c_str(), "r");
                     if(hts_file != NULL) {
                         hts_set_thread_pool(hts_file, thread_pool);
                         header.decode(hts_file);
                     } else {
-                        throw IOError("failed to open " + string(url) + " for reading");
+                        throw IOError("failed to open " + string(specification.url) + " for reading");
                     }
                     break;
                 };
                 case IoDirection::OUT: {
-                    switch(url.type()) {
+                    switch(specification.url.type()) {
                         case FormatType::SAM:
-                            hts_file = hts_hopen(hfile, url.c_str(), "w");
+                            hts_file = hts_hopen(hfile, specification.url.c_str(), "w");
                             if(hts_file) {
                                 hts_file->format.version.major = 1;
                                 hts_file->format.version.minor = 0;
                             }
                             break;
                         case FormatType::BAM:
-                            hts_file = hts_hopen(hfile, url.c_str(), "wb");
+                            hts_file = hts_hopen(hfile, specification.url.c_str(), "wb");
                             if(hts_file) {
                                 hts_file->format.version.major = 1;
                                 hts_file->format.version.minor = 0;
                             }
                             break;
                         case FormatType::CRAM:
-                            hts_file = hts_hopen(hfile, url.c_str(), "wc");
+                            hts_file = hts_hopen(hfile, specification.url.c_str(), "wc");
                             if(hts_file) {
                                 hts_file->format.version.major = 3;
                                 hts_file->format.version.minor = 0;
@@ -158,7 +155,7 @@ public:
                         header.assemble();
                         header.encode(hts_file);
                     } else {
-                        throw IOError("failed to open " + string(url) + " for writing");
+                        throw IOError("failed to open " + string(specification.url) + " for writing");
                     }
                     break;
                 };
@@ -244,7 +241,7 @@ protected:
     inline void flush_buffer() {
         while(buffer->is_not_empty()) {
             if(sam_write1(hts_file, header.hdr, buffer->next()) < 0) {
-                throw IOError("error writing to " + string(url));
+                throw IOError("error writing to " + string(specification.url));
             }
             buffer->decrement();
         }

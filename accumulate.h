@@ -30,8 +30,6 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <htslib/thread_pool.h>
-
 #include "error.h"
 #include "json.h"
 #include "constant.h"

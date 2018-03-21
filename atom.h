@@ -26,7 +26,6 @@
 #include <unordered_map>
 
 #include <htslib/hts.h>
-#include <htslib/hfile.h>
 #include <htslib/kstring.h>
 
 #include "error.h"
@@ -89,6 +88,8 @@ private:
     void encode(kstring_t* buffer) const;
     char* decode(char* position, const char* end);
 };
+ostream& operator<<(ostream& o, const HeadHDAtom& hd);
+
 /*  @SQ Sequence
 
     SN  Reference sequence identifier.
@@ -127,6 +128,8 @@ private:
     void encode(kstring_t* buffer) const;
     char* decode(char* position, const char* end);
 };
+ostream& operator<<(ostream& o, const HeadSQAtom& sq);
+
 /*  @PG Program
 
     ID  Program record identifier.
@@ -161,6 +164,8 @@ private:
     void encode(kstring_t* buffer) const;
     char* decode(char* position, const char* end);
 };
+ostream& operator<<(ostream& o, const HeadPGAtom& pg);
+
 /*  @RG Read Group
 
     ID  Read group identifier
@@ -243,12 +248,15 @@ public:
     operator string() const;
     void set_platform(const Platform& value);
     void expand(const HeadRGAtom& other);
-    void encode(Document& document, Value& node, const string& key) const;
 
 private:
     void encode(kstring_t* buffer) const;
     char* decode(char* position, const char* end);
 };
+ostream& operator<<(ostream& o, const HeadRGAtom& rg);
+void decode_HeadRGAtom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key);
+void encode_value_with_key_ID(const HeadRGAtom& value, const string& key, Value& container, Document& document);
+
 /*  @CO free text comment
 */
 class HeadCOAtom {
@@ -267,5 +275,6 @@ private:
     void encode(kstring_t* buffer) const;
     char* decode(char* position, const char* end);
 };
+ostream& operator<<(ostream& o, const HeadCOAtom& co);
 
 #endif /* PHENIQS_ATOM_H */

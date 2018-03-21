@@ -143,7 +143,6 @@ SegmentAccumulator& SegmentAccumulator::operator+=(const SegmentAccumulator& rhs
 /*  FeedAccumulator */
 
 FeedAccumulator::FeedAccumulator(const FeedSpecification& specification) :
-    // specification(specification),
     url(specification.url),
     length(0),
     shortest(numeric_limits<uint64_t>::max()) {
@@ -162,12 +161,8 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
     Value v;
 
     encode_key_value("url", url, value, document);
-
-    v.SetUint64(shortest);
-    value.AddMember("min sequence length", v, allocator);
-
-    v.SetUint64(length);
-    value.AddMember("max sequence length", v, allocator);
+    encode_key_value("min sequence length", shortest, value, document);
+    encode_key_value("max sequence length", length, value, document);
 
     Value cycle_quality_report;
     cycle_quality_report.SetObject();
@@ -257,13 +252,8 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
                 Value cycle_nucleotide_quality_report;
                 cycle_nucleotide_quality_report.SetObject();
 
-                Value nucleotide_count;
-                nucleotide_count.SetUint64(iupac_nucleic_acid_count[n]);
-                cycle_nucleotide_quality_report.AddMember("nucleotide count", nucleotide_count, allocator);
-
-                Value nucleotide;
-                nucleotide.SetString(string(1, BamToAmbiguousAscii[n]).c_str(), allocator);
-                cycle_nucleotide_quality_report.AddMember("nucleotide", nucleotide, allocator);
+                encode_key_value("nucleotide count", iupac_nucleic_acid_count[n], cycle_nucleotide_quality_report, document);
+                encode_key_value("nucleotide", string(1, BamToAmbiguousAscii[n]), cycle_nucleotide_quality_report, document);
 
                 cycle_nucleotide_quality_report.AddMember("cycle quality distribution", cycle_quality_distribution, allocator);
                 cycle_nucleotide_quality_reports.PushBack(cycle_nucleotide_quality_report, allocator);
@@ -278,15 +268,9 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
 
     Value average_phred_report;
     average_phred_report.SetObject();
-
-    v.SetDouble(average_phred.min);
-    average_phred_report.AddMember("average phred score min", v, allocator);
-
-    v.SetDouble(average_phred.max);
-    average_phred_report.AddMember("average phred score max", v, allocator);
-
-    v.SetDouble(average_phred.mean);
-    average_phred_report.AddMember("average phred score mean", v, allocator);
+    encode_key_value("average phred score min", average_phred.min, average_phred_report, document);
+    encode_key_value("average phred score max", average_phred.max, average_phred_report, document);
+    encode_key_value("average phred score mean", average_phred.mean, average_phred_report, document);
 
     Value SegmentAccumulator;
     SegmentAccumulator.SetArray();
@@ -331,7 +315,6 @@ FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
 /*  PivotAccumulator */
 
 PivotAccumulator::PivotAccumulator(const InputSpecification& specification) :
-    // specification(specification),
     disable_quality_control(specification.disable_quality_control),
     count(0),
     pf_count(0),
@@ -358,15 +341,9 @@ void PivotAccumulator::finalize() {
 void PivotAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value v;
-    v.SetUint64(count);
-    value.AddMember("count", v, allocator);
-
-    v.SetUint64(pf_count);
-    value.AddMember("pf count", v, allocator);
-
-    v.SetDouble(pf_fraction);
-    value.AddMember("pf fraction", v, allocator);
+    encode_key_value("count", count, value, document);
+    encode_key_value("pf count", pf_count, value, document);
+    encode_key_value("pf fraction", pf_fraction, value, document);
 
     Value feed_reports;
     feed_reports.SetArray();
@@ -392,7 +369,6 @@ PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
 /*  ChannelAccumulator */
 
 ChannelAccumulator::ChannelAccumulator(const ChannelSpecification& specification):
-    // specification(specification),
     index(specification.index),
     decoder(specification.decoder),
     disable_quality_control(specification.disable_quality_control),
@@ -454,64 +430,39 @@ void ChannelAccumulator::finalize(const PipelineAccumulator& pipeline_accumulato
 };
 void ChannelAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
-    Value v;
 
-    v.SetUint64(index);
-    value.AddMember("index", v, allocator);
+    encode_key_value("index", uint64_t(index), value, document);
+    encode_value_with_key_ID(rg, "RG", value, document);
 
     if(!undetermined) {
-        v.SetDouble(concentration);
-        value.AddMember("concentration", v, allocator);
-
+        encode_key_value("concentration", concentration, value, document);
         multiplex_barcode.encode_report(document, value, "multiplex barcode");
     } else {
-        v.SetBool(undetermined);
-        value.AddMember("undetermined", v, allocator);
+        encode_key_value("undetermined", undetermined, value, document);
     }
 
-    rg.encode(document, value, "RG");
-
-    v.SetUint64(count);
-    value.AddMember("count", v, allocator);
-
+    encode_key_value("count", count, value, document);
     if(!undetermined) {
-        v.SetDouble(multiplex_distance);
-        value.AddMember("multiplex distance", v, allocator);
-
+        encode_key_value("multiplex distance", multiplex_distance, value, document);
         if(decoder == Decoder::PAMLD) {
-            v.SetDouble(multiplex_confidence);
-            value.AddMember("multiplex confidence", v, allocator);
+            encode_key_value("multiplex confidence", multiplex_confidence, value, document);
         }
     }
 
-    v.SetUint64(pf_count);
-    value.AddMember("pf count", v, allocator);
-
+    encode_key_value("pf count", pf_count, value, document);
     if(!undetermined) {
-        v.SetDouble(pf_multiplex_distance);
-        value.AddMember("pf multiplex distance", v, allocator);
-
+        encode_key_value("pf multiplex distance", pf_multiplex_distance, value, document);
         if(decoder == Decoder::PAMLD) {
-            v.SetDouble(pf_multiplex_confidence);
-            value.AddMember("pf multiplex confidence", v, allocator);
+            encode_key_value("pf multiplex confidence", pf_multiplex_confidence, value, document);
         }
     }
-
-    v.SetDouble(pf_fraction);
-    value.AddMember("pf fraction", v, allocator);
-
-    v.SetDouble(pooled_fraction);
-    value.AddMember("pooled fraction", v, allocator);
-
-    v.SetDouble(pf_pooled_fraction);
-    value.AddMember("pf pooled fraction", v, allocator);
+    encode_key_value("pf fraction", pf_fraction, value, document);
+    encode_key_value("pooled fraction", pooled_fraction, value, document);
+    encode_key_value("pf pooled fraction", pf_pooled_fraction, value, document);
 
     if(!undetermined) {
-        v.SetDouble(pooled_multiplex_fraction);
-        value.AddMember("pooled multiplex fraction", v, allocator);
-
-        v.SetDouble(pf_pooled_multiplex_fraction);
-        value.AddMember("pf pooled multiplex fraction", v, allocator);
+        encode_key_value("pooled multiplex fraction", pooled_multiplex_fraction, value, document);
+        encode_key_value("pf pooled multiplex fraction", pf_pooled_multiplex_fraction, value, document);
     }
 
     Value feed_reports;
@@ -592,42 +543,16 @@ void PipelineAccumulator::finalize() {
     }
 };
 void PipelineAccumulator::encode(Document& document, Value& value) const {
-    Document::AllocatorType& allocator = document.GetAllocator();
-    Value v;
-
-    v.SetUint64(count);
-    value.AddMember("count", v, allocator);
-
-    v.SetUint64(multiplex_count);
-    value.AddMember("multiplex count", v, allocator);
-
-    v.SetDouble(multiplex_fraction);
-    value.AddMember("multiplex fraction", v, allocator);
-
-    v.SetDouble(multiplex_distance);
-    value.AddMember("multiplex distance", v, allocator);
-
-    v.SetDouble(multiplex_confidence);
-    value.AddMember("multiplex confidence", v, allocator);
-
-    v.SetUint64(pf_count);
-    value.AddMember("pf count", v, allocator);
-
-    v.SetDouble(pf_fraction);
-    value.AddMember("pf fraction", v, allocator);
-
-    v.SetUint64(pf_multiplex_count);
-    value.AddMember("pf multiplex count", v, allocator);
-
-    v.SetDouble(pf_multiplex_fraction);
-    value.AddMember("pf multiplex fraction", v, allocator);
-
-    v.SetDouble(pf_multiplex_distance);
-    value.AddMember("pf multiplex distance", v, allocator);
-
-    v.SetDouble(pf_multiplex_confidence);
-    value.AddMember("pf multiplex confidence", v, allocator);
-
-    v.SetDouble(multiplex_pf_fraction);
-    value.AddMember("multiplex pf fraction", v, allocator);
+    encode_key_value("count", count, value, document);
+    encode_key_value("multiplex count", multiplex_count, value, document);
+    encode_key_value("multiplex fraction", multiplex_fraction, value, document);
+    encode_key_value("multiplex distance", multiplex_distance, value, document);
+    encode_key_value("multiplex confidence", multiplex_confidence, value, document);
+    encode_key_value("pf count", pf_count, value, document);
+    encode_key_value("pf fraction", pf_fraction, value, document);
+    encode_key_value("pf multiplex count", pf_multiplex_count, value, document);
+    encode_key_value("pf multiplex fraction", pf_multiplex_fraction, value, document);
+    encode_key_value("pf multiplex distance", pf_multiplex_distance, value, document);
+    encode_key_value("pf multiplex confidence", pf_multiplex_confidence, value, document);
+    encode_key_value("multiplex pf fraction", multiplex_pf_fraction, value, document);
 };

@@ -350,81 +350,40 @@ void Environment::describe(ostream& o) {
 };
 void Environment::encode(Document& document) const {
     document.SetObject();
-    Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value v;
-    Value collection;
+    encode_key_value("CN", facility, document, document);
+    encode_key_value("PM", platform_model, document, document);
+    encode_key_value("DT", production_date, document, document);
+    encode_key_value("PI", insert_size, document, document);
+    encode_key_value("base input path", base_input_url, document, document);
+    encode_key_value("base output path", base_output_url, document, document);
 
-    if(!facility.empty()) {
-        v.SetString(facility.c_str(), facility.size(), allocator);
-        document.AddMember("CN", v, allocator);
-    }
-    if(!platform_model.empty()) {
-        v.SetString(platform_model.c_str(), platform_model.size(), allocator);
-        document.AddMember("PM", v, allocator);
-    }
-    if(!production_date.empty()) {
-        v.SetString(production_date.c_str(), production_date.size(), allocator);
-        document.AddMember("DT", v, allocator);
-    }
-    if(!insert_size.empty()) {
-        v.SetString(insert_size.c_str(), insert_size.size(), allocator);
-        document.AddMember("PI", v, allocator);
-    }
-    if(!base_input_url.empty()) {
-        encode_key_value("base input path", base_input_url, document, document);
-    }
-    if(!base_output_url.empty()) {
-        encode_key_value("base output path", base_output_url, document, document);
-    }
     if(platform != Platform::UNKNOWN) {
         string buffer;
         buffer << platform;
-        v.SetString(buffer.c_str(), buffer.size(), allocator);
-        document.AddMember("PL", v, allocator);
+        encode_key_value("PL", buffer, document, document);
     }
     if(decoder != Decoder::UNKNOWN) {
         string buffer;
         buffer << decoder;
-        v.SetString(buffer.c_str(), allocator);
-        document.AddMember("decoder", v, allocator);
+        encode_key_value("decoder", buffer, document, document);
     }
 
-    v.SetBool(disable_quality_control);
-    document.AddMember("disable quality control", v, allocator);
+    encode_key_value("disable quality control", disable_quality_control, document, document);
+    encode_key_value("long read", long_read, document, document);
+    encode_key_value("include filtered", include_filtered, document, document);
+    encode_key_value("input phred offset", input_phred_offset, document, document);
+    encode_key_value("output phred offset", output_phred_offset, document, document);
+    encode_key_value("masking threshold", masking_threshold, document, document);
+    encode_key_value("leading segment index", leading_segment_index, document, document);
+    encode_key_value("threads", threads, document, document);
+    encode_key_value("transforms", transforms, document, document);
+    encode_key_value("buffer capacity", buffer_capacity, document, document);
+    encode_key_value("confidence", confidence, document, document);
+    encode_key_value("noise", noise, document, document);
 
-    v.SetBool(long_read);
-    document.AddMember("long read", v, allocator);
-
-    v.SetBool(include_filtered);
-    document.AddMember("include filtered", v, allocator);
-
-    v.SetUint64(input_phred_offset);
-    document.AddMember("input phred offset", v, allocator);
-
-    v.SetUint64(output_phred_offset);
-    document.AddMember("output phred offset", v, allocator);
-
-    v.SetUint64(masking_threshold);
-    document.AddMember("decoder masking threshold", v, allocator);
-
-    v.SetUint64(leading_segment_index);
-    document.AddMember("leading segment", v, allocator);
-
-    v.SetUint64(threads);
-    document.AddMember("threads", v, allocator);
-
-    v.SetUint64(transforms);
-    document.AddMember("transforms", v, allocator);
-
-    v.SetUint64(buffer_capacity);
-    document.AddMember("buffer capacity", v, allocator);
-
-    v.SetDouble(confidence);
-    document.AddMember("confidence", v, allocator);
-
-    v.SetDouble(noise);
-    document.AddMember("noise", v, allocator);
+    Document::AllocatorType& allocator = document.GetAllocator();
+    Value collection;
 
     if(input_specification != NULL && !input_specification->input_urls.empty()) {
         collection.SetArray();
@@ -434,6 +393,7 @@ void Environment::encode(Document& document) const {
         document.AddMember("input", collection, allocator);
     }
     if(!multiplex_barcode_tolerance.empty()) {
+        Value v;
         collection.SetArray();
         for(auto& tolerance : multiplex_barcode_tolerance) {
             v.SetUint64(tolerance);
@@ -442,6 +402,7 @@ void Environment::encode(Document& document) const {
         document.AddMember("distance tolerance", collection, allocator);
     }
     if(!tokens.empty()) {
+        Value v;
         collection.SetArray();
         for(auto& token : tokens) {
             string buffer(token);
@@ -494,27 +455,27 @@ void Environment::load_configuration_file(const URL& url) {
             if (!document.Parse(content.c_str()).HasParseError()) {
                 if (document.IsObject()) {
                     Value::ConstMemberIterator element;
-                    decode_string_node(document, "CN", facility);
-                    decode_string_node(document, "PM", platform_model);
-                    decode_string_node(document, "DT", production_date);
-                    decode_string_node(document, "PI", insert_size);
-                    decode_directory_node(document, "base input path", base_input_url);
-                    decode_directory_node(document, "base output path", base_output_url);
-                    decode_uint_node(document, "input phred offset", input_phred_offset);
-                    decode_uint_node(document, "output phred offset", output_phred_offset);
-                    decode_uint_node(document, "decoder masking threshold", masking_threshold);
-                    decode_uint_node(document, "leading segment", leading_segment_index);
-                    decode_bool_node(document, "disable quality control", disable_quality_control);
-                    decode_bool_node(document, "long read", long_read);
-                    decode_bool_node(document, "include filtered", include_filtered);
-                    decode_bool_node(document, "validate only", validate_only);
-                    decode_bool_node(document, "lint only", lint_only);
-                    decode_bool_node(document, "display distance", display_distance);
-                    decode_uint_node(document, "threads", threads);
-                    decode_uint_node(document, "transforms", transforms);
-                    decode_uint_node(document, "buffer capacity", buffer_capacity);
-                    decode_double_node(document, "confidence", confidence);
-                    decode_double_node(document, "noise", noise);
+                    decode_string_by_key("CN", facility, document);
+                    decode_string_by_key("PM", platform_model, document);
+                    decode_string_by_key("DT", production_date, document);
+                    decode_string_by_key("PI", insert_size, document);
+                    decode_directory_by_key("base input path", base_input_url, document);
+                    decode_directory_by_key("base output path", base_output_url, document);
+                    decode_uint32_by_key("input phred offset", input_phred_offset, document);
+                    decode_uint32_by_key("output phred offset", output_phred_offset, document);
+                    decode_uint32_by_key("decoder masking threshold", masking_threshold, document);
+                    decode_uint32_by_key("leading segment", leading_segment_index, document);
+                    decode_bool_by_key("disable quality control", disable_quality_control, document);
+                    decode_bool_by_key("long read", long_read, document);
+                    decode_bool_by_key("include filtered", include_filtered, document);
+                    decode_bool_by_key("validate only", validate_only, document);
+                    decode_bool_by_key("lint only", lint_only, document);
+                    decode_bool_by_key("display distance", display_distance, document);
+                    decode_uint32_by_key("threads", threads, document);
+                    decode_uint32_by_key("transforms", transforms, document);
+                    decode_uint32_by_key("buffer capacity", buffer_capacity, document);
+                    decode_double_by_key("confidence", confidence, document);
+                    decode_double_by_key("noise", noise, document);
 
                     element = document.FindMember("decoder");
                     if (element != document.MemberEnd()) {
@@ -618,7 +579,7 @@ void Environment::load_url_node(const Value& node, const IoDirection& direction,
 
             } else {
                 string buffer;
-                decode_string_node(node, "path", buffer);
+                decode_string_by_key("path", buffer, node);
                 if(!buffer.empty()) {
                     url.parse(buffer, direction);
                 } else {
@@ -626,13 +587,13 @@ void Environment::load_url_node(const Value& node, const IoDirection& direction,
                 }
 
                 buffer.clear();
-                decode_string_node(node, "type", buffer);
+                decode_string_by_key("type", buffer, node);
                 if(!buffer.empty()) {
                     url.set_type(buffer.c_str());
                 }
 
                 buffer.clear();
-                decode_string_node(node, "compression", buffer);
+                decode_string_by_key("compression", buffer, node);
                 if(!buffer.empty()) {
                     url.set_compression(buffer);
                 }
@@ -670,7 +631,7 @@ void Environment::load_transform_node(const Value& node, vector< string >& conta
 void Environment::load_read_group_node(const Value& node) {
     if (node.IsObject()) {
         HeadRGAtom* rg = new HeadRGAtom();
-        decode_read_group(*rg, node, "ID");
+        decode_HeadRGAtom_with_key_ID(node, *rg, "ID");
         if(rg->ID.l > 0) {
             string id(*rg);
             auto record = read_group_by_id.find(id);
@@ -691,11 +652,11 @@ void Environment::load_read_group_node(const Value& node) {
 void Environment::load_channel_node(const Value& node) {
     if (node.IsObject()) {
         ChannelSpecification* specification = new ChannelSpecification(channel_specifications.size());
-        decode_read_group(specification->rg, node, "RG");
-        decode_bool_node(node, "undetermined", specification->undetermined);
-        decode_string_node(node, "FS", &specification->FS);
-        decode_string_node(node, "CO", &specification->CO);
-        decode_double_node(node, "concentration", specification->concentration);
+        decode_HeadRGAtom_with_key_ID(node, specification->rg, "RG");
+        decode_bool_by_key("undetermined", specification->undetermined, node);
+        decode_kstring_by_key("FS", specification->FS, node);
+        decode_kstring_by_key("CO", specification->CO, node);
+        decode_double_by_key("concentration", specification->concentration, node);
 
         Value::ConstMemberIterator element;
         element = node.FindMember("barcode");

@@ -33,9 +33,6 @@
 #include <condition_variable>
 
 #include <htslib/sam.h>
-#include <htslib/cram.h>
-#include <htslib/bgzf.h>
-#include <htslib/kseq.h>
 #include <htslib/hts.h>
 #include <htslib/kstring.h>
 #include <htslib/hfile.h>
@@ -72,32 +69,18 @@ using std::unique_lock;
 using std::lock_guard;
 using std::thread;
 
-static inline size_t align_capacity(const size_t& capacity, const size_t& resolution) {
-    size_t aligned = size_t(capacity / resolution) * resolution;
-    if(aligned < capacity) {
-        aligned += resolution;
-    }
-    return aligned;
-};
-
 /* IO feed
 */
 class Feed {
 public:
-    FeedSpecification const * specification;
-    const IoDirection direction;
-    const URL url;
-    const Platform platform;
-    Feed(FeedSpecification const * specification) :
+    const FeedSpecification& specification;
+    Feed(const FeedSpecification& specification) :
         specification(specification),
-        direction(specification->direction),
-        url(specification->url),
-        platform(specification->platform),
-        capacity(specification->capacity),
-        resolution(specification->resolution),
-        phred_offset(specification->phred_offset),
+        capacity(specification.capacity),
+        resolution(specification.resolution),
+        phred_offset(specification.phred_offset),
         exhausted(false) {
-        hfile = specification->hfile;
+        hfile = specification.hfile;
     };
     virtual ~Feed() {
     };
@@ -119,7 +102,7 @@ public:
         thread_pool = pool;
     };
     const size_t& index() const {
-        return specification->index;
+        return specification.index;
     };
 
 protected:
@@ -241,6 +224,13 @@ private:
     int _vacant;
     vector< T* > cache;
     int index;
+    inline size_t align_capacity(const size_t& capacity, const size_t& resolution) {
+        size_t aligned = size_t(capacity / resolution) * resolution;
+        if(aligned < capacity) {
+            aligned += resolution;
+        }
+        return aligned;
+    };
 };
 
 template <class T> class BufferedFeed : public Feed {
@@ -255,11 +245,11 @@ private:
     };
 
 public:
-    BufferedFeed(FeedSpecification const * specification) :
+    BufferedFeed(const FeedSpecification& specification) :
         Feed(specification),
         kbuffer({ 0, 0, NULL }),
-        buffer(new CyclicBuffer<T>(direction, capacity, resolution)),
-        queue(new CyclicBuffer<T>(direction, capacity, resolution)),
+        buffer(new CyclicBuffer<T>(specification.direction, capacity, resolution)),
+        queue(new CyclicBuffer<T>(specification.direction, capacity, resolution)),
         started(false) {
         ks_terminate(kbuffer);
     };
@@ -401,7 +391,7 @@ private:
     condition_variable queue_not_full;
     condition_variable flushable;
     void run() {
-        switch(direction) {
+        switch(specification.direction) {
             case IoDirection::IN: {
                 while(replenish());
                 break;
@@ -413,4 +403,6 @@ private:
         }
     };
 };
+
+template<typename T> ostream& operator<<(ostream& o, const CyclicBuffer<T>& buffer);
 #endif /* PHENIQS_FEED_H */

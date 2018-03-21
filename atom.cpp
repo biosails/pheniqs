@@ -664,62 +664,6 @@ void HeadRGAtom::expand(const HeadRGAtom& other) {
         if(KS.l == 0 && other.KS.l > 0) kputsn(other.KS.s, other.KS.l, &KS);
     }
 };
-void HeadRGAtom::encode(Document& document, Value& node, const string& key) const {
-    Document::AllocatorType& allocator = document.GetAllocator();
-    Value v;
-
-    v.SetString(ID.s, ID.l, allocator);
-    node.AddMember(Value(key.c_str(), key.size(), allocator).Move(), v, allocator);
-
-    if(PI.l > 0) {
-        v.SetString(PI.s, PI.l, allocator);
-        node.AddMember("PI", v, allocator);
-    }
-    if(LB.l > 0) {
-        v.SetString(LB.s, LB.l, allocator);
-        node.AddMember("LB", v, allocator);
-    }
-    if(SM.l > 0) {
-        v.SetString(SM.s, SM.l, allocator);
-        node.AddMember("SM", v, allocator);
-    }
-    if(PU.l > 0) {
-        v.SetString(PU.s, PU.l, allocator);
-        node.AddMember("PU", v, allocator);
-    }
-    if(CN.l > 0) {
-        v.SetString(CN.s, CN.l, allocator);
-        node.AddMember("CN", v, allocator);
-    }
-    if(DS.l > 0) {
-        v.SetString(DS.s, DS.l, allocator);
-        node.AddMember("DS", v, allocator);
-    }
-    if(DT.l > 0) {
-        v.SetString(DT.s, DT.l, allocator);
-        node.AddMember("DT", v, allocator);
-    }
-    if(PL.l > 0) {
-        v.SetString(PL.s, PL.l, allocator);
-        node.AddMember("PL", v, allocator);
-    }
-    if(PM.l > 0) {
-        v.SetString(PM.s, PM.l, allocator);
-        node.AddMember("PM", v, allocator);
-    }
-    if(PG.l > 0) {
-        v.SetString(PG.s, PG.l, allocator);
-        node.AddMember("PG", v, allocator);
-    }
-    if(FO.l > 0) {
-        v.SetString(FO.s, FO.l, allocator);
-        node.AddMember("FO", v, allocator);
-    }
-    if(KS.l > 0) {
-        v.SetString(KS.s, KS.l, allocator);
-        node.AddMember("KS", v, allocator);
-    }
-};
 ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
     if(rg.ID.l > 0) o << "ID : " << rg.ID.s << endl;
     if(rg.PI.l > 0) o << "PI : " << rg.PI.s << endl;
@@ -736,6 +680,39 @@ ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
     if(rg.KS.l > 0) o << "KS : " << rg.KS.s << endl;
     return o;
 };
+void decode_HeadRGAtom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key) {
+    if (node.IsObject()) {
+        decode_kstring_by_key(key,  value.ID, node);
+        decode_kstring_by_key("PI", value.PI, node);
+        decode_kstring_by_key("LB", value.LB, node);
+        decode_kstring_by_key("SM", value.SM, node);
+        decode_kstring_by_key("PU", value.PU, node);
+        decode_kstring_by_key("CN", value.CN, node);
+        decode_kstring_by_key("DS", value.DS, node);
+        decode_kstring_by_key("DT", value.DT, node);
+        decode_kstring_by_key("PL", value.PL, node);
+        decode_kstring_by_key("PM", value.PM, node);
+        decode_kstring_by_key("PG", value.PG, node);
+        decode_kstring_by_key("PG", value.FO, node);
+        decode_kstring_by_key("PG", value.KS, node);
+    } else { throw ConfigurationError("Read Group node must be a dictionary"); }
+};
+void encode_value_with_key_ID(const HeadRGAtom& value, const string& key, Value& container, Document& document) {
+    encode_key_value(key,  value.ID, container, document);
+    encode_key_value("PI", value.PI, container, document);
+    encode_key_value("LB", value.LB, container, document);
+    encode_key_value("SM", value.SM, container, document);
+    encode_key_value("PU", value.PU, container, document);
+    encode_key_value("CN", value.CN, container, document);
+    encode_key_value("DS", value.DS, container, document);
+    encode_key_value("DT", value.DT, container, document);
+    encode_key_value("PL", value.PL, container, document);
+    encode_key_value("PM", value.PM, container, document);
+    encode_key_value("PG", value.PG, container, document);
+    encode_key_value("FO", value.FO, container, document);
+    encode_key_value("KS", value.KS, container, document);
+};
+
 
 /* @CO free text comment
 */

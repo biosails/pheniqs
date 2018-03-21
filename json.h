@@ -32,6 +32,8 @@
 
 #include "error.h"
 
+#include <htslib/kstring.h>
+
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
@@ -77,6 +79,14 @@ inline void decode_string_by_key(const Value::Ch* key, string& value, const Valu
     if(element != container.MemberEnd()) {
         if(element->value.IsString()) {
             value.assign(element->value.GetString(), element->value.GetStringLength());
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+};
+inline void decode_kstring_by_key(const Value::Ch* key, kstring_t& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd()) {
+        if(element->value.IsString()) {
+            kputsn(element->value.GetString(), element->value.GetStringLength(), &value);
         } else { throw ConfigurationError(string(key) + " element must be a string"); }
     }
 };
@@ -206,6 +216,11 @@ inline void encode_key_value(const string& key, const int64_t& value, Value& con
         container.AddMember(k.Move(), v.Move(), document.GetAllocator());
     }
 };
+inline void encode_key_value(const string& key, const uint64_t& value, Value& container, Document& document) {
+    Value v(value);
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
 inline void encode_key_value(const string& key, const int32_t& value, Value& container, Document& document) {
     if(value < numeric_limits< int32_t >::max()) {
         Value v(value);
@@ -213,17 +228,16 @@ inline void encode_key_value(const string& key, const int32_t& value, Value& con
         container.AddMember(k.Move(), v.Move(), document.GetAllocator());
     }
 };
-inline void encode_key_value(const string& key, const size_t& value, Value& container, Document& document) {
-    if(value < numeric_limits< size_t >::max()) {
-        Value v;
-        v.SetUint64(value);
+inline void encode_key_value(const string& key, const string& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value v(value.c_str(), value.length(), document.GetAllocator());
         Value k(key.c_str(), key.size(), document.GetAllocator());
         container.AddMember(k.Move(), v.Move(), document.GetAllocator());
     }
 };
-inline void encode_key_value(const string& key, const string& value, Value& container, Document& document) {
-    if(!value.empty()) {
-        Value v(value.c_str(), value.length(), document.GetAllocator());
+inline void encode_key_value(const string& key, const kstring_t& value, Value& container, Document& document) {
+    if(value.l > 0) {
+        Value v(value.s, value.l, document.GetAllocator());
         Value k(key.c_str(), key.size(), document.GetAllocator());
         container.AddMember(k.Move(), v.Move(), document.GetAllocator());
     }
@@ -242,6 +256,17 @@ inline void encode_key_value(const string& key, const vector< double >& value, V
         }
         Value k(key.c_str(), key.size(), document.GetAllocator());
         container.AddMember(k.Move(), double_array.Move(), document.GetAllocator());
+    }
+};
+inline void encode_key_value(const string& key, const vector< uint64_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array;
+        array.SetArray();
+        for(auto& v : value) {
+            array.PushBack(v, document.GetAllocator());
+        }
+        Value k(key.c_str(), key.size(), document.GetAllocator());
+        container.AddMember(k.Move(), array.Move(), document.GetAllocator());
     }
 };
 

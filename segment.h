@@ -32,14 +32,7 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <htslib/sam.h>
-#include <htslib/cram.h>
-#include <htslib/bgzf.h>
-#include <htslib/kseq.h>
-#include <htslib/hts.h>
 #include <htslib/kstring.h>
-#include <htslib/hfile.h>
-#include <htslib/thread_pool.h>
 
 #include "error.h"
 #include "json.h"
@@ -129,4 +122,6 @@ public:
         auxiliary.clear();
     };
 };
+ostream& operator<<(ostream& o, const Segment& segment);
+
 #endif /* PHENIQS_SEGMENT_H */
