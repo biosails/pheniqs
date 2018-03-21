@@ -550,10 +550,67 @@ The following tags are allowed globally in the root element:
 
 The `--validate` flag makes Pheniqs evaluate the supplied configuration and emit an exhaustive report without actually executing. It is sometimes useful to inspect the report before executing to make sure all implicit parameters are allocated the desired values. The validation report also prints a pairwise Hamming distance matrix for each [multiplex barcode](glossary.html#multiplex barcode) set and one for the concatenated barcode sequences. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate. For each barcode set [minimum distance decoder](glossary.html#minimum_distance_decoding) is limited by the smallest value in the bottom half of the matrix.
 
+
+# Demultiplexing report
+
+Pheniqs emits a comprehensive demultiplexing report with statistics about both inputs and outputs.
+
+## Input statistics
+
+A quality statistics report for every segment in the input is provided in the `demultiplex input report` element.
+
+| JSON field                                      | Description
+| :---------------------------------------------- | :----------------------------------------------------------------------
+| **count**                                       | Number of input reads
+| **pf count**                                    | Number of input reads that [passed vendor quality control](#pass-filter-reads)
+| **pf fraction**                                 | **pf count** / **count** 
+
+## Output statistics
+
+A quality statistics report for every segment in every output read group is provided in the `demultiplex output report` element as well as global statistics for the entire pipeline.
+
+### Read Group statistics
+
+Counters in each element of the `read group quality reports` array apply only to reads that were classified to the respective read group.
+
+| JSON field                                      | Description
+| :---------------------------------------------- | :---------------------------------------------------------------------
+| **count**                                       | Number of reads
+| **multiplex distance**                          | Average multiplex distance
+| **multiplex confidence**                        | Average multiplex confidence **([pamld](glossary.html#phred_adjusted_maximum_likelihood_decoding) only)**
+| **pf count**                                    | Number of reads that [passed vendor quality control](#pass-filter-reads)
+| **pf multiplex distance**                       | Average multiplex distance in reads that [passed vendor quality control](#pass-filter-reads)
+| **pf multiplex confidence**                     | average multiplex confidence in reads that [passed vendor quality control](#pass-filter-reads) **([pamld](glossary.html#phred_adjusted_maximum_likelihood_decoding) only)**
+| **pf fraction**                                 | **pf count** / **count** 
+| **pooled fraction**                             | **count** / **pipeline :: count**
+| **pf pooled fraction**                          | **pf count** / **pipeline :: pf count**
+| **pooled multiplex fraction**                   | **count** / **pipeline :: multiplex count**
+| **pf pooled multiplex fraction**                | **pf count** / **pipeline :: pf multiplex count**
+
+
+### Pipeline statistics
+
+Counters found directly in the `demultiplex output report` element are for the output of the entire pipeline.
+
+| JSON field                                      | Counter incrementing criteria 
+| :---------------------------------------------- | :---------------------------------------------------------------------
+| **count**                                       | Sum of **count** in all read groups, including undetermined
+| **multiplex count**                             | Sum of **count** in all read groups, excluding undetermined
+| **multiplex fraction**                          | **multiplex count** / **count**
+| **multiplex distance**                          | Average multiplex distance, excluding undetermined
+| **multiplex confidence**                        | Average multiplex confidence, excluding undetermined **([pamld](glossary.html#phred_adjusted_maximum_likelihood_decoding) only)**
+| **pf count**                                    | Sum of **pf count** in all read groups
+| **pf fraction**                                 | **pf count** / **count** 
+| **pf multiplex count**                          | Sum of **pf count** in read groups, excluding undetermined
+| **pf multiplex fraction**                       | **pf multiplex count** / **pf count**
+| **pf multiplex distance**                       | Average multiplex distance in pf reads, excluding undetermined
+| **pf multiplex confidence**                     | Average multiplex confidence in pf reads, excluding undetermined **([pamld](glossary.html#phred_adjusted_maximum_likelihood_decoding) only)**
+| **multiplex pf fraction**                       | **pf multiplex count** / **multiplex count** 
+
+
 # Performance tuning
 
 Pheniqs will initialize a thread pool used by [HTSlib](glossary.html#htslib) for IO and an equivalent number or processing threads. Factors affecting the optimal configuration are the length and number of input and output segments, the number of multiplexed libraries, the file format of both input and output files, whether quality tracking has been enabled and the layout of both input and output reads. Reading and writing gzip compressed [FASTQ](glossary.html#fastq) files, for instance, is a bottleneck since gzip is a very old compression algorithm that scales poorly when parallelized. In some scenarios, depending on disk IO speed and space constraints it might be overall more efficient to base call to uncompressed FASTQ files and feed Pheniqs uncompressed FASTQ input. Binary [HTSlib](glossary.html#htslib) formats are generally much faster to encode and decode and should be preferred for both input and output where possible.
-
 
 | Name                      | Description                                                   | Type    |
 | :------------------------ | :------------------------------------------------------------ | :------ |
