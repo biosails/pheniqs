@@ -21,7 +21,7 @@
 
 #include "auxiliary.h"
 
-static inline size_t aux_type2size(const uint8_t type) {
+static inline uint64_t aux_type2size(const uint8_t type) {
     switch (type) {
         case 'A':
         case 'c':
@@ -45,7 +45,7 @@ static inline size_t aux_type2size(const uint8_t type) {
     }
 };
 static inline uint8_t* skip_aux(uint8_t* buffer) {
-    size_t size = aux_type2size(*buffer);
+    uint64_t size = aux_type2size(*buffer);
     ++buffer;
     switch (size) {
         case 'Z':
@@ -58,7 +58,7 @@ static inline uint8_t* skip_aux(uint8_t* buffer) {
         case 'B':
             size = aux_type2size(*buffer);
             buffer++;
-            size_t count;
+            uint64_t count;
             memcpy(&count, buffer, 4);
             buffer += 4;
             return buffer + size * count;
@@ -152,8 +152,8 @@ Auxiliary::~Auxiliary() {
 };
 void Auxiliary::decode(const bam1_t* bam1) {
     if(bam1 != NULL) {
-        size_t aux_length = bam_get_l_aux(bam1);
-        if (aux_length > 0) {
+        uint64_t aux_length = bam_get_l_aux(bam1);
+        if(aux_length > 0) {
             char* value;
             uint8_t* position = bam_get_aux(bam1);
             const uint8_t* end = position + aux_length;
@@ -169,27 +169,27 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         break;
                     case uint16_t(HtsAuxiliaryCode::RG):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &RG); }
+                        if(value) { kputs(value, &RG); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::BC):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &BC); }
+                        if(value) { kputs(value, &BC); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::QT):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &QT); }
+                        if(value) { kputs(value, &QT); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::RX):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &RX); }
+                        if(value) { kputs(value, &RX); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::QX):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &QX); }
+                        if(value) { kputs(value, &QX); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::BX):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &BX); }
+                        if(value) { kputs(value, &BX); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::PX):
                         PX = bam_aux2f(position);
@@ -202,23 +202,23 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         break;
                     case uint16_t(HtsAuxiliaryCode::FS):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &FS); }
+                        if(value) { kputs(value, &FS); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::LB):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &LB); }
+                        if(value) { kputs(value, &LB); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::PG):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &PG); }
+                        if(value) { kputs(value, &PG); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::PU):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &PU); }
+                        if(value) { kputs(value, &PU); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::CO):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &CO); }
+                        if(value) { kputs(value, &CO); }
                         break;
 
                     /* user space auxiliary tags */
@@ -233,11 +233,11 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         break;
                    case uint16_t(HtsAuxiliaryCode::XM):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &XM); }
+                        if(value) { kputs(value, &XM); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::XL):
                         value = bam_aux2Z(position);
-                        if (value) { kputs(value, &XL); }
+                        if(value) { kputs(value, &XL); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::XP):
                         XP = bam_aux2f(position);

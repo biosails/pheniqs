@@ -23,295 +23,284 @@
 
 /*  Environment constants */
 
-ostream& operator<<(ostream& o, const ProgramAction& type) {
+void to_string(const FormatKind& value, string& result) {
+    switch(value) {
+        case FormatKind::FASTQ: result.assign("FASTQ");      break;
+        case FormatKind::HTS:   result.assign("HTS");        break;
+        default:                result.assign("UNKNOWN");    break;
+    }
+};
+bool from_string(const char* value, FormatKind& result) {
+         if(value == NULL)              result = FormatKind::UNKNOWN;
+    else if(!strcmp(value, "FASTQ"))    result = FormatKind::FASTQ;
+    else if(!strcmp(value, "HTS"))      result = FormatKind::HTS;
+    else                                result = FormatKind::UNKNOWN;
+
+    return (result == FormatKind::UNKNOWN ? false : true);
+};
+void to_kstring(const FormatKind& value, kstring_t& result) {
+    ks_clear(result);
     string string_value;
-    string_value << type;
+    to_string(value, string_value);
+    kputs(string_value.c_str(), &result);
+};
+bool from_string(const string& value, FormatKind& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const FormatKind& value) {
+    string string_value;
+    to_string(value, string_value);
     o << string_value;
     return o;
 };
-string& operator<<(string& o, const ProgramAction& type) {
-    switch (type) {
-        case ProgramAction::DEMULTIPLEX:    o.assign("demux");      break;
-        case ProgramAction::QUALITY:        o.assign("quality");    break;
-        default:                            o.assign("unknown");    break;
-    }
-    return o;
-};
-void operator>>(const string& s, ProgramAction& type) {
-    if(s == "demux")            type = ProgramAction::DEMULTIPLEX;
-    else if(s == "quality")     type = ProgramAction::QUALITY;
-    else                        type = ProgramAction::UNKNOWN;
-};
-void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document) {
+void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document) {
     string string_value;
-    string_value << value;
+    to_string(value, string_value);
     Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
     Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
     container.AddMember(k.Move(), v.Move(), document.GetAllocator());
 };
-void decode_program_action_by_key(const Value::Ch* key, ProgramAction& value, const Value& container) {
+template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKind& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
         if(element->value.IsString()) {
-            string string_value(element->value.GetString(), element->value.GetStringLength());
-            string_value >> value;
+            return from_string(element->value.GetString(), value);
         } else { throw ConfigurationError(string(key) + " element must be a string"); }
     }
+    return false;
 };
 
-ostream& operator<<(ostream& o, const FormatType& type) {
-    switch (type) {
-        case FormatType::FASTQ: o << "fastq";   break;
-        case FormatType::SAM:   o << "sam";     break;
-        case FormatType::BAM:   o << "bam";     break;
-        case FormatType::BAI:   o << "bai";     break;
-        case FormatType::CRAM:  o << "cram";    break;
-        case FormatType::CRAI:  o << "crai";    break;
-        case FormatType::VCF:   o << "vcf";     break;
-        case FormatType::BCF:   o << "bcf";     break;
-        case FormatType::CSI:   o << "csi";     break;
-        case FormatType::GZI:   o << "gzi";     break;
-        case FormatType::TBI:   o << "tbi";     break;
-        case FormatType::BED:   o << "bed";     break;
-        case FormatType::JSON:  o << "json";    break;
-        default:                o << "unknown"; break;
+void to_string(const Decoder& value, string& result) {
+    switch(value) {
+        case Decoder::UNKNOWN:      result.assign("unknown");    break;
+        case Decoder::MDD:          result.assign("mdd");        break;
+        case Decoder::PAMLD:        result.assign("pamld");      break;
+        case Decoder::BENCHMARK:    result.assign("benchmark");  break;
+        default:                                                 break;
     }
-    return o;
 };
-string& operator<<(string& o, const FormatType& type) {
-    switch (type) {
-        case FormatType::FASTQ: o.assign("fastq");  break;
-        case FormatType::SAM:   o.assign("sam");    break;
-        case FormatType::BAM:   o.assign("bam");    break;
-        case FormatType::BAI:   o.assign("bai");    break;
-        case FormatType::CRAM:  o.assign("cram");   break;
-        case FormatType::CRAI:  o.assign("crai");   break;
-        case FormatType::VCF:   o.assign("vcf");    break;
-        case FormatType::BCF:   o.assign("bcf");    break;
-        case FormatType::CSI:   o.assign("csi");    break;
-        case FormatType::GZI:   o.assign("gzi");    break;
-        case FormatType::TBI:   o.assign("tbi");    break;
-        case FormatType::BED:   o.assign("bed");    break;
-        case FormatType::JSON:  o.assign("json");   break;
-        default:                                    break;
-    }
-    return o;
-};
-void operator>>(const char* s, FormatType& type) {
-         if(s == NULL)              type = FormatType::UNKNOWN;
-    else if(!strcmp(s, "fastq"))    type = FormatType::FASTQ;
-    else if(!strcmp(s, "sam"))      type = FormatType::SAM;
-    else if(!strcmp(s, "bam"))      type = FormatType::BAM;
-    else if(!strcmp(s, "bai"))      type = FormatType::BAI;
-    else if(!strcmp(s, "cram"))     type = FormatType::CRAM;
-    else if(!strcmp(s, "crai"))     type = FormatType::CRAI;
-    else if(!strcmp(s, "vcf"))      type = FormatType::VCF;
-    else if(!strcmp(s, "bcf"))      type = FormatType::BCF;
-    else if(!strcmp(s, "csi"))      type = FormatType::CSI;
-    else if(!strcmp(s, "gzi"))      type = FormatType::GZI;
-    else if(!strcmp(s, "TBI"))      type = FormatType::TBI;
-    else if(!strcmp(s, "bed"))      type = FormatType::BED;
-    else if(!strcmp(s, "json"))     type = FormatType::JSON;
-    else                            type = FormatType::UNKNOWN;
-};
-void operator>>(const string& s, FormatType& type) {
-         if(s == "fastq")   type = FormatType::FASTQ;
-    else if(s == "sam")     type = FormatType::SAM;
-    else if(s == "bam")     type = FormatType::BAM;
-    else if(s == "bai")     type = FormatType::BAI;
-    else if(s == "cram")    type = FormatType::CRAM;
-    else if(s == "crai")    type = FormatType::CRAI;
-    else if(s == "vcf")     type = FormatType::VCF;
-    else if(s == "bcf")     type = FormatType::BCF;
-    else if(s == "csi")     type = FormatType::CSI;
-    else if(s == "gzi")     type = FormatType::GZI;
-    else if(s == "TBI")     type = FormatType::TBI;
-    else if(s == "bed")     type = FormatType::BED;
-    else if(s == "json")    type = FormatType::JSON;
-    else                    type = FormatType::UNKNOWN;
-}
+bool from_string(const char* value, Decoder& result) {
+         if(value == NULL)                  result = Decoder::UNKNOWN;
+    else if(!strcmp(value, "mdd"))          result = Decoder::MDD;
+    else if(!strcmp(value, "pamld"))        result = Decoder::PAMLD;
+    else if(!strcmp(value, "benchmark"))    result = Decoder::BENCHMARK;
+    else                                    result = Decoder::UNKNOWN;
 
-ostream& operator<<(ostream& o, const HtsSortOrder& order) {
-    switch (order) {
-        case HtsSortOrder::UNSORTED:    o << "unsorted";    break;
-        case HtsSortOrder::QUERYNAME:   o << "queryname";   break;
-        case HtsSortOrder::COORDINATE:  o << "coordinate";  break;
-        default:                        o << "unknown";     break;
-    }
+    return (result == Decoder::UNKNOWN ? false : true);
+};
+void to_kstring(const Decoder& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    kputs(string_value.c_str(), &result);
+};
+bool from_string(const string& value, Decoder& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const Decoder& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
     return o;
 };
-string& operator<<(string& o, const HtsSortOrder& order) {
-    switch (order) {
-        case HtsSortOrder::UNSORTED:    o.assign("unsorted");   break;
-        case HtsSortOrder::QUERYNAME:   o.assign("queryname");  break;
-        case HtsSortOrder::COORDINATE:  o.assign("coordinate"); break;
-        default:                        o.assign("unknown");    break;
+bool encode_key_value(const string& key, const Decoder& value, Value& container, Document& document) {
+    if(value != Decoder::UNKNOWN) {
+        string string_value;
+        to_string(value, string_value);
+        Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+        Value k(key.c_str(), key.size(), document.GetAllocator());
+        container.RemoveMember(key.c_str());
+        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+        return true;
     }
-    return o;
+    return false;
 };
-kstring_t& operator<<(kstring_t& o, const HtsSortOrder& order) {
-    ks_clear(o);
-    switch (order) {
-        case HtsSortOrder::UNSORTED:    kputs("unsorted", &o);   break;
-        case HtsSortOrder::QUERYNAME:   kputs("queryname", &o);  break;
-        case HtsSortOrder::COORDINATE:  kputs("coordinate", &o); break;
-        default:                        kputs("unknown", &o);    break;
+template<> bool decode_value_by_key< Decoder >(const Value::Ch* key, Decoder& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
     }
-    return o;
-};
-void operator>>(const char* s, HtsSortOrder& order) {
-    if(s == NULL)                       order = HtsSortOrder::UNKNOWN;
-    else if(!strcmp(s, "unsorted"))     order = HtsSortOrder::UNSORTED;
-    else if(!strcmp(s, "queryname"))    order = HtsSortOrder::QUERYNAME;
-    else if(!strcmp(s, "coordinate"))   order = HtsSortOrder::COORDINATE;
-    else                                order = HtsSortOrder::UNKNOWN;
+    return false;
 };
 
-ostream& operator<<(ostream& o, const HtsGrouping& grouping) {
-    switch (grouping) {
-        case HtsGrouping::QUERY:        o << "query";       break;
-        case HtsGrouping::REFERENCE:    o << "reference";   break;
-        default:                        o << "none";
-    }
-    return o;
-};
-string& operator<<(string& o, const HtsGrouping& grouping) {
-    switch (grouping) {
-        case HtsGrouping::QUERY:        o.assign("query");      break;
-        case HtsGrouping::REFERENCE:    o.assign("reference");  break;
-        default:                        o.assign("none");       break;
-    }
-    return o;
-};
-kstring_t& operator<<(kstring_t& o, const HtsGrouping& grouping) {
-    ks_clear(o);
-    switch (grouping) {
-        case HtsGrouping::QUERY:        kputs("query", &o);      break;
-        case HtsGrouping::REFERENCE:    kputs("reference", &o);  break;
-        default:                        kputs("unknown", &o);    break;
-    }
-    return o;
-};
-void operator>>(const char* s, HtsGrouping& grouping) {
-    if(s == NULL)                       grouping = HtsGrouping::NONE;
-    else if(!strcmp(s, "query"))        grouping = HtsGrouping::QUERY;
-    else if(!strcmp(s, "reference"))    grouping = HtsGrouping::REFERENCE;
-    else                                grouping = HtsGrouping::NONE;
+template <> Decoder decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Decoder value(Decoder::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
 };
 
-ostream& operator<<(ostream& o, const Platform& platform) {
-    switch (platform) {
-        case Platform::CAPILLARY:   o << "CAPILLARY";   break;
-        case Platform::LS454:       o << "LS454";       break;
-        case Platform::ILLUMINA:    o << "ILLUMINA";    break;
-        case Platform::SOLID:       o << "SOLID";       break;
-        case Platform::HELICOS:     o << "HELICOS";     break;
-        case Platform::IONTORRENT:  o << "IONTORRENT";  break;
-        case Platform::ONT:         o << "ONT";         break;
-        case Platform::PACBIO:      o << "PACBIO";      break;
-        default:                    o << "UNKNOWN";     break;
-    }
-    return o;
-};
-string& operator<<(string& o, const Platform& platform) {
-    switch (platform) {
-        case Platform::CAPILLARY:   o.assign("CAPILLARY");  break;
-        case Platform::LS454:       o.assign("LS454");      break;
-        case Platform::ILLUMINA:    o.assign("ILLUMINA");   break;
-        case Platform::SOLID:       o.assign("SOLID");      break;
-        case Platform::HELICOS:     o.assign("HELICOS");    break;
-        case Platform::IONTORRENT:  o.assign("IONTORRENT"); break;
-        case Platform::ONT:         o.assign("ONT");        break;
-        case Platform::PACBIO:      o.assign("PACBIO");     break;
-        default:                    o.assign("UNKNOWN");    break;
-    }
-    return o;
-};
-kstring_t& operator<<(kstring_t& o, const Platform& platform) {
-    ks_clear(o);
-    switch (platform) {
-        case Platform::CAPILLARY:   kputs("CAPILLARY", &o);  break;
-        case Platform::LS454:       kputs("LS454", &o);      break;
-        case Platform::ILLUMINA:    kputs("ILLUMINA", &o);   break;
-        case Platform::SOLID:       kputs("SOLID", &o);      break;
-        case Platform::HELICOS:     kputs("HELICOS", &o);    break;
-        case Platform::IONTORRENT:  kputs("IONTORRENT", &o); break;
-        case Platform::ONT:         kputs("ONT", &o);        break;
-        case Platform::PACBIO:      kputs("PACBIO", &o);     break;
-        default:                    kputs("UNKNOWN", &o);    break;
-    }
-    return o;
-};
-void operator>>(const char* s, Platform& platform) {
-    if(s == NULL)                       platform = Platform::UNKNOWN;
-    else if(!strcmp(s, "CAPILLARY"))    platform = Platform::CAPILLARY;
-    else if(!strcmp(s, "LS454"))        platform = Platform::LS454;
-    else if(!strcmp(s, "ILLUMINA"))     platform = Platform::ILLUMINA;
-    else if(!strcmp(s, "SOLID"))        platform = Platform::SOLID;
-    else if(!strcmp(s, "HELICOS"))      platform = Platform::HELICOS;
-    else if(!strcmp(s, "IONTORRENT"))   platform = Platform::IONTORRENT;
-    else if(!strcmp(s, "ONT"))          platform = Platform::ONT;
-    else if(!strcmp(s, "PACBIO"))       platform = Platform::PACBIO;
-    else                                platform = Platform::UNKNOWN;
-};
-
-ostream& operator<<(ostream& o, const FormatKind& kind) {
-    switch (kind) {
-        case FormatKind::FASTQ: o << "FASTQ";   break;
-        case FormatKind::HTS:   o << "HTS";     break;
-        default:                o << "UNKNOWN"; break;
-    }
-    return o;
-};
-string& operator<<(string& o, const FormatKind& kind) {
-    switch (kind) {
-        case FormatKind::FASTQ: o.assign("FASTQ");      break;
-        case FormatKind::HTS:   o.assign("HTS");        break;
-        default:                o.assign("UNKNOWN");    break;
-    }
-    return o;
-};
-void operator>>(const char* s, FormatKind& kind) {
-    if(s == NULL)                   kind = FormatKind::UNKNOWN;
-    else if(!strcmp(s, "FASTQ"))    kind = FormatKind::FASTQ;
-    else if(!strcmp(s, "HTS"))      kind = FormatKind::HTS;
-    else                            kind = FormatKind::UNKNOWN;
-};
-
-ostream& operator<<(ostream& o, const Decoder& decoder) {
-    switch (decoder) {
-        case Decoder::UNKNOWN:      o << "unknown";     break;
-        case Decoder::MDD:          o << "mdd";         break;
-        case Decoder::PAMLD:        o << "pamld";       break;
-        case Decoder::BENCHMARK:    o << "benchmark";   break;
-        default:                    o.setstate(ios_base::failbit);
-    }
-    return o;
-};
-string& operator<<(string& o, const Decoder& decoder) {
-    switch (decoder) {
-        case Decoder::UNKNOWN:      o.assign("unknown");    break;
-        case Decoder::MDD:          o.assign("mdd");        break;
-        case Decoder::PAMLD:        o.assign("pamld");      break;
-        case Decoder::BENCHMARK:    o.assign("benchmark");  break;
-        default:                                            break;
-    }
-    return o;
-};
-void operator>>(const char* s, Decoder& decoder) {
-    if(s == NULL)                       decoder = Decoder::UNKNOWN;
-    else if(!strcmp(s, "mdd"))          decoder = Decoder::MDD;
-    else if(!strcmp(s, "pamld"))        decoder = Decoder::PAMLD;
-    else if(!strcmp(s, "benchmark"))    decoder = Decoder::BENCHMARK;
-    else                                decoder = Decoder::UNKNOWN;
-};
-
-ostream& operator<<(ostream& o, const LeftTokenOperator& operation) {
-    switch (operation) {
+ostream& operator<<(ostream& o, const LeftTokenOperator& value) {
+    switch (value) {
         case LeftTokenOperator::NONE:               o << "none";                break;
         case LeftTokenOperator::REVERSE_COMPLEMENT: o << "reverse complement";  break;
     }
     return o;
+};
+
+void to_string(const Platform& value, string& result) {
+    switch(value) {
+        case Platform::CAPILLARY:   result.assign("CAPILLARY");  break;
+        case Platform::LS454:       result.assign("LS454");      break;
+        case Platform::ILLUMINA:    result.assign("ILLUMINA");   break;
+        case Platform::SOLID:       result.assign("SOLID");      break;
+        case Platform::HELICOS:     result.assign("HELICOS");    break;
+        case Platform::IONTORRENT:  result.assign("IONTORRENT"); break;
+        case Platform::ONT:         result.assign("ONT");        break;
+        case Platform::PACBIO:      result.assign("PACBIO");     break;
+        default:                    result.assign("UNKNOWN");    break;
+    }
+};
+bool from_string(const char* value, Platform& result) {
+         if(value == NULL)                  result = Platform::UNKNOWN;
+    else if(!strcmp(value, "CAPILLARY"))    result = Platform::CAPILLARY;
+    else if(!strcmp(value, "LS454"))        result = Platform::LS454;
+    else if(!strcmp(value, "ILLUMINA"))     result = Platform::ILLUMINA;
+    else if(!strcmp(value, "SOLID"))        result = Platform::SOLID;
+    else if(!strcmp(value, "HELICOS"))      result = Platform::HELICOS;
+    else if(!strcmp(value, "IONTORRENT"))   result = Platform::IONTORRENT;
+    else if(!strcmp(value, "ONT"))          result = Platform::ONT;
+    else if(!strcmp(value, "PACBIO"))       result = Platform::PACBIO;
+    else                                    result = Platform::UNKNOWN;
+
+    return (result == Platform::UNKNOWN ? false : true);
+};
+void to_kstring(const Platform& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    kputs(string_value.c_str(), &result);
+};
+bool from_string(const string& value, Platform& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const Platform& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const Platform& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< Platform >(const Value::Ch* key, Platform& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> Platform decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Platform value(Platform::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
+};
+
+void to_string(const HtsSortOrder& value, string& result) {
+    switch(value) {
+        case HtsSortOrder::UNSORTED:    result.assign("unsorted");   break;
+        case HtsSortOrder::QUERYNAME:   result.assign("queryname");  break;
+        case HtsSortOrder::COORDINATE:  result.assign("coordinate"); break;
+        default:                        result.assign("unknown");    break;
+    }
+};
+bool from_string(const char* value, HtsSortOrder& result) {
+         if(value == NULL)                  result = HtsSortOrder::UNKNOWN;
+    else if(!strcmp(value, "unsorted"))     result = HtsSortOrder::UNSORTED;
+    else if(!strcmp(value, "queryname"))    result = HtsSortOrder::QUERYNAME;
+    else if(!strcmp(value, "coordinate"))   result = HtsSortOrder::COORDINATE;
+    else                                    result = HtsSortOrder::UNKNOWN;
+
+    return (result == HtsSortOrder::UNKNOWN ? false : true);
+};
+void to_kstring(const HtsSortOrder& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    kputs(string_value.c_str(), &result);
+};
+bool from_string(const string& value, HtsSortOrder& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const HtsSortOrder& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const HtsSortOrder& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< HtsSortOrder >(const Value::Ch* key, HtsSortOrder& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+
+void to_string(const HtsGrouping& value, string& result) {
+    switch(value) {
+        case HtsGrouping::QUERY:        result.assign("query");      break;
+        case HtsGrouping::REFERENCE:    result.assign("reference");  break;
+        default:                        result.assign("none");       break;
+    }
+};
+bool from_string(const char* value, HtsGrouping& result) {
+         if(value == NULL)                  result = HtsGrouping::NONE;
+    else if(!strcmp(value, "query"))        result = HtsGrouping::QUERY;
+    else if(!strcmp(value, "reference"))    result = HtsGrouping::REFERENCE;
+    else                                    result = HtsGrouping::NONE;
+
+    return (result == HtsGrouping::UNKNOWN ? false : true);
+};
+void to_kstring(const HtsGrouping& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    kputs(string_value.c_str(), &result);
+};
+bool from_string(const string& value, HtsGrouping& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const HtsGrouping& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const HtsGrouping& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< HtsGrouping >(const Value::Ch* key, HtsGrouping& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
 };
 
 ostream& operator<<(ostream& o, const htsFormatCategory& hts_format_category) {
@@ -325,8 +314,8 @@ ostream& operator<<(ostream& o, const htsFormatCategory& hts_format_category) {
     return o;
 };
 
-ostream& operator<<(ostream& o, const htsExactFormat& hts_exact_format) {
-    switch (hts_exact_format) {
+ostream& operator<<(ostream& o, const htsExactFormat& value) {
+    switch (value) {
         case htsExactFormat::binary_format: o << "binary format";   break;
         case htsExactFormat::text_format:   o << "text format";     break;
         case htsExactFormat::sam:           o << "sam";             break;
@@ -345,8 +334,8 @@ ostream& operator<<(ostream& o, const htsExactFormat& hts_exact_format) {
     return o;
 };
 
-ostream& operator<<(ostream& o, const htsCompression& hts_compression) {
-    switch (hts_compression) {
+ostream& operator<<(ostream& o, const htsCompression& value) {
+    switch (value) {
         case htsCompression::gzip:      o << "gzip";            break;
         case htsCompression::bgzf:      o << "bgzf";            break;
         case htsCompression::custom:    o << "custom";          break;

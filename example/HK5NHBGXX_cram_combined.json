@@ -4,15 +4,20 @@
     "PI": "1500", 
     "PL": "ILLUMINA", 
     "PM": "hiseq 2500", 
-    "base input path": "~/HK5NHBGXX", 
-    "base output path": "~/HK5NHBGXX", 
-    "channel": [
+    "base input url": "~/HK5NHBGXX", 
+    "base output url": "~/HK5NHBGXX", 
+    "read group": [
         {
             "DS": "undetermined description", 
             "LB": "undetermined_library", 
             "PU": "HK5NHBGXX:1:undetermined", 
+            "ID": "HK5NHBGXX:1:undetermined", 
+            "SM": "undetermined_sample"
+        }
+    ],
+    "channel": [
+        {
             "RG": "HK5NHBGXX:1:undetermined", 
-            "SM": "undetermined_sample", 
             "output": [
                 "HK5NHBGXX_l01n01.cram"
             ], 

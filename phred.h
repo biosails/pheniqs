@@ -26,13 +26,13 @@
 
 using std::numeric_limits;
 
-const size_t DEFAULT_PHRED_OFFSET = 33;
-const size_t SAM_PHRED_DECODING_OFFSET = 33;
-const size_t MIN_PHRED_VALUE = 2;
-const size_t MAX_PHRED_VALUE = 104;
-const size_t MAX_VALID_PHRED_VALUE = 40;
-const size_t PHRED_RANGE = 128;
-const size_t EFFECTIVE_PHRED_RANGE = 128;
+const uint64_t DEFAULT_PHRED_OFFSET = 33;
+const uint64_t SAM_PHRED_DECODING_OFFSET = 33;
+const uint64_t MIN_PHRED_VALUE = 2;
+const uint64_t MAX_PHRED_VALUE = 104;
+const uint64_t MAX_VALID_PHRED_VALUE = 40;
+const uint64_t PHRED_RANGE = 128;
+const uint64_t EFFECTIVE_PHRED_RANGE = 128;
 const double UNIFORM_BASE_PROBABILITY = 0.25;
 const double UNIFORM_BASE_PHRED = 6.02059991327962329421552567509934;
 
@@ -584,7 +584,7 @@ const double InverseQuality[128] = {
 
     double* make_phred_64bit_scale(ostream& o) {
         double* scale = new double[PHRED_RANGE * 4];
-        for (uint16_t i = 0; i < PHRED_RANGE; i++) {
+        for(uint16_t i = 0; i < PHRED_RANGE; i++) {
             scale[i] = pow(10.0, double(i) / -10.0);
             scale[PHRED_RANGE + i] = 1.0 - scale[i];
             scale[PHRED_RANGE * 2 + i] = scale[i] / 3.0;
@@ -592,7 +592,7 @@ const double InverseQuality[128] = {
         }
         o << fixed << setprecision(numeric_limits<double>::digits10 + 1);
         o << "Q" << '\t' << "P" << '\t' << "1-P" << '\t' << "P/3" << '\t' << "inverse Q" << endl;
-        for (uint16_t i = 0; i < PHRED_RANGE; i++) {
+        for(uint16_t i = 0; i < PHRED_RANGE; i++) {
             o << i << ",\t";
             o << scale[i] << ",\t";
             o << scale[PHRED_RANGE + i] << ",\t";

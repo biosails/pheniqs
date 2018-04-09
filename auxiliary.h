@@ -68,11 +68,16 @@ using std::thread;
     FI  i   The index of segment in the template.
     TC  i   The number of segments in the template.
     RG  Z   Read group. Value matches the header RG-ID tag if @RG is present in the header.
+
     BC  Z   Multiplex barcode sequence, with any quality scores stored in the QT tag.
     QT  Z   Phred encoded quality of the multiplex barcode sequence in the BC tag.
-  * RX  Z   Raw sequence bases of the molecular barcode
-  * QX  Z   Raw sequence quality of the molecular barcode
-  * BX  Z   Corrected sequence bases of the molecular barcode
+
+    OX  Z   Raw, uncorrected, unique molecular barcode bases.
+    BZ  Z   Phred quality of the uncorrected unique molecular identifier sequence in the OX tag.
+  * RX  Z   Corrected sequence bases of the molecular barcode.
+  * QX  Z   Phred quality of the unique molecular identifier sequence in the RX tag.
+    MI  Z   Molecular Identifier. A unique ID within the SAM file for the source molecule from which this read is derived.
+
   * PX  f   Molecular barcode correction error probability
   * DQ  f   The probability that the demultiplexing decision was incorrect
   * EE  f   The expected number of errors in the segment

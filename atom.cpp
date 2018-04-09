@@ -28,7 +28,7 @@ static inline char* copy_until_tag_end(char* source, const char* end, kstring_t*
     }
     uint32_t length = position - source;
     ks_clear(*target);
-    if (length > 0) {
+    if(length > 0) {
         kputsn(source, length, target);
     }
     return position;
@@ -40,7 +40,7 @@ static inline char* copy_until_linebreak(char* source, const char* end, kstring_
     }
     uint32_t length = position - source;
     ks_clear(*target);
-    if (length > 0) {
+    if(length > 0) {
         kputsn(source, length, target);
     }
     return position;
@@ -128,10 +128,10 @@ char* HeadHDAtom::decode(char* position, const char* end) {
     return ++position;
 };
 void HeadHDAtom::set_alignment_sort_order(const HtsSortOrder& order) {
-    SO << order;
+    to_kstring(order, SO);
 };
 void HeadHDAtom::set_alignment_grouping(const HtsGrouping& grouping) {
-    GO << grouping;
+    to_kstring(grouping, GO);
 };
 void HeadHDAtom::set_version(const htsFormat* format) {
     ks_clear(VN);
@@ -646,7 +646,7 @@ char* HeadRGAtom::decode(char* position, const char* end) {
     return ++position;
 };
 void HeadRGAtom::set_platform(const Platform& value) {
-    PL << value;
+    to_kstring(value, PL);
 };
 void HeadRGAtom::expand(const HeadRGAtom& other) {
     if(&other != this) {
@@ -680,21 +680,23 @@ ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
     if(rg.KS.l > 0) o << "KS : " << rg.KS.s << endl;
     return o;
 };
-void decode_HeadRGAtom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key) {
-    if (node.IsObject()) {
-        decode_kstring_by_key(key,  value.ID, node);
-        decode_kstring_by_key("PI", value.PI, node);
-        decode_kstring_by_key("LB", value.LB, node);
-        decode_kstring_by_key("SM", value.SM, node);
-        decode_kstring_by_key("PU", value.PU, node);
-        decode_kstring_by_key("CN", value.CN, node);
-        decode_kstring_by_key("DS", value.DS, node);
-        decode_kstring_by_key("DT", value.DT, node);
-        decode_kstring_by_key("PL", value.PL, node);
-        decode_kstring_by_key("PM", value.PM, node);
-        decode_kstring_by_key("PG", value.PG, node);
-        decode_kstring_by_key("PG", value.FO, node);
-        decode_kstring_by_key("PG", value.KS, node);
+void decode_head_RG_atom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key) {
+    if(node.IsObject()) {
+        if(key != NULL) { 
+            decode_value_by_key< kstring_t >(key,  value.ID, node);
+        }
+        decode_value_by_key< kstring_t >("PI", value.PI, node);
+        decode_value_by_key< kstring_t >("LB", value.LB, node);
+        decode_value_by_key< kstring_t >("SM", value.SM, node);
+        decode_value_by_key< kstring_t >("PU", value.PU, node);
+        decode_value_by_key< kstring_t >("CN", value.CN, node);
+        decode_value_by_key< kstring_t >("DS", value.DS, node);
+        decode_value_by_key< kstring_t >("DT", value.DT, node);
+        decode_value_by_key< kstring_t >("PL", value.PL, node);
+        decode_value_by_key< kstring_t >("PM", value.PM, node);
+        decode_value_by_key< kstring_t >("PG", value.PG, node);
+        decode_value_by_key< kstring_t >("FO", value.FO, node);
+        decode_value_by_key< kstring_t >("KS", value.KS, node);
     } else { throw ConfigurationError("Read Group node must be a dictionary"); }
 };
 void encode_value_with_key_ID(const HeadRGAtom& value, const string& key, Value& container, Document& document) {
@@ -711,6 +713,23 @@ void encode_value_with_key_ID(const HeadRGAtom& value, const string& key, Value&
     encode_key_value("PG", value.PG, container, document);
     encode_key_value("FO", value.FO, container, document);
     encode_key_value("KS", value.KS, container, document);
+};
+void transcode_head_RG_atom(const Value& from, Value& to, Document& document) {
+    if(from.IsObject()) {
+        to.SetObject();
+        // transcode_string_by_key("ID", from, to, document);
+        transcode_value_by_key< string >("LB", from, to, document);
+        transcode_value_by_key< string >("SM", from, to, document);
+        transcode_value_by_key< string >("PU", from, to, document);
+        transcode_value_by_key< string >("CN", from, to, document);
+        transcode_value_by_key< string >("DS", from, to, document);
+        transcode_value_by_key< string >("DT", from, to, document);
+        transcode_value_by_key< string >("PL", from, to, document);
+        transcode_value_by_key< string >("PM", from, to, document);
+        transcode_value_by_key< string >("PG", from, to, document);
+        transcode_value_by_key< string >("FO", from, to, document);
+        transcode_value_by_key< string >("KS", from, to, document);
+    } else { throw ConfigurationError("Read Group node must be a dictionary"); }
 };
 
 

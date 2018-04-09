@@ -62,12 +62,26 @@ static inline bool is_iupac_unambiguous(char& c) {
     }
 };
 
-static inline bool is_iupac_strict(char& c) {
+static inline bool is_iupac_strict_nucleotide(char& c) {
     switch(c) {
         case 'A':
         case 'C':
         case 'G':
         case 'T':
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+};
+
+static inline bool is_iupac_strict_bam_nucleotide(uint8_t& c) {
+    switch(c) {
+        case 0x1:
+        case 0x2:
+        case 0x4:
+        case 0x8:
             return true;
             break;
         default:

@@ -42,7 +42,7 @@ using std::endl;
 using std::cerr;
 using std::cout;
 using std::fixed;
-using std::size_t;
+using std::uint64_t;
 using std::string;
 using std::vector;
 using std::ostream;
@@ -64,8 +64,8 @@ friend bool operator>(const Sequence& left, const Sequence& right);
 public:
     uint8_t* code;
     uint8_t* quality;
-    size_t capacity;
-    size_t length;
+    uint64_t capacity;
+    uint64_t length;
 
     Sequence();
     Sequence(const Sequence& other);
@@ -73,41 +73,47 @@ public:
     ~Sequence();
     void expected_error(float& error) const;
     void mask(const uint8_t& threshold);
-    void fill(const char* code, const size_t& size);
-    void fill(const uint8_t* code, const uint8_t* quality, const size_t& size);
-    void append(const uint8_t* code, const uint8_t* quality, const size_t& size);
-    void append(const Sequence& other, const size_t& start, const size_t& size);
-    size_t append(const Sequence& other, const Transform& transform);
+    void fill(const char* code, const uint64_t& size);
+    void fill(const uint8_t* code, const uint8_t* quality, const uint64_t& size);
+    void append(const uint8_t* code, const uint8_t* quality, const uint64_t& size);
+    void append(const Sequence& other, const uint64_t& start, const uint64_t& size);
+    uint64_t append(const Sequence& other, const Transform& transform);
     inline void clear() {
         length = 0;
         code[length] = '\0';
         quality[length] = '\0';
     };
-    inline size_t distance_from(const Sequence& other, const uint8_t threshold) const {
-        size_t distance = 0;
+    inline uint64_t size() const {
+        return length;
+    };
+    inline bool empty() const {
+        return length == 0;
+    };
+    inline uint64_t distance_from(const Sequence& other, const uint8_t threshold) const {
+        uint64_t distance = 0;
         if(threshold > 0) {
-            for (size_t i = 0; i < length; i++) {
+            for(uint64_t i = 0; i < length; i++) {
                 if(other.quality[i] < threshold) {
                     // if quality is bellow threshold always count a miss
                     distance++;
-                } else if (code[i] != other.code[i]) {
+                } else if(code[i] != other.code[i]) {
                     distance++;
                 }
             }
 
         } else {
-            for (size_t i = 0; i < length; i++) {
-                if (code[i] != other.code[i]) {
+            for(uint64_t i = 0; i < length; i++) {
+                if(code[i] != other.code[i]) {
                     distance++;
                 }
             }
         }
         return distance;
     };
-    inline size_t distance_from(const Sequence& other) const {
-        size_t distance = 0;
-        for (size_t i = 0; i < length; i++) {
-            if (code[i] != other.code[i]) {
+    inline uint64_t distance_from(const Sequence& other) const {
+        uint64_t distance = 0;
+        for(uint64_t i = 0; i < length; i++) {
+            if(code[i] != other.code[i]) {
                 distance++;
             }
         }
@@ -116,7 +122,7 @@ public:
     inline string iupac_ambiguity() const {
         string result;
         result.reserve(length);
-        for (size_t i = 0; i < length; i++) {
+        for(uint64_t i = 0; i < length; i++) {
             result.push_back(BamToAmbiguousAscii[uint8_t(code[i])]);
         }
         return result;
@@ -124,7 +130,7 @@ public:
     inline void encode_iupac_ambiguity(kstring_t* buffer) const {
         if(length > 0) {
             ks_resize(buffer, buffer->l + length + 1);
-            for (size_t i = 0; i < length; i++) {
+            for(uint64_t i = 0; i < length; i++) {
                 buffer->s[buffer->l + i] = BamToAmbiguousAscii[uint8_t(code[i])];
                 // kputc(BamToAmbiguousAscii[uint8_t(code[i])], buffer);
             }
@@ -135,14 +141,17 @@ public:
     inline void encode_iupac_ambiguity(string& buffer) const {
         if(length > 0) {
             buffer.reserve(buffer.size() + length + 1);
-            for (size_t i = 0; i < length; i++) {
+            for(uint64_t i = 0; i < length; i++) {
                 buffer.push_back(BamToAmbiguousAscii[uint8_t(code[i])]);
             }
         }
     };
     inline void encode_iupac_ambiguity(Value& value) const {
-        char* buffer = (char*)malloc(length + 1);
-        for (size_t i = 0; i < length; i++) {
+        char* buffer = NULL;
+        if((buffer = static_cast< char* >(malloc(length + 1))) == NULL) {
+            throw InternalError("out of memory");
+        }
+        for(uint64_t i = 0; i < length; i++) {
             buffer[i] = BamToAmbiguousAscii[uint8_t(code[i])];
         }
         buffer[length] = '\0';
@@ -151,7 +160,7 @@ public:
     inline void encode_phred_quality(kstring_t* buffer, const uint8_t phred_offset) const {
         if(length > 0) {
             ks_resize(buffer, buffer->l + length + 1);
-            for (size_t i = 0; i < length; i++) {
+            for(uint64_t i = 0; i < length; i++) {
                 buffer->s[buffer->l + i] = quality[i] + phred_offset;
                 // kputc(quality[i] + phred_offset, buffer);
             }
@@ -162,10 +171,18 @@ public:
     inline void encode_phred_quality(string& buffer, const uint8_t phred_offset) const {
         if(length > 0) {
             buffer.reserve(buffer.size() + length + 1);
-            for (size_t i = 0; i < length; i++) {
+            for(uint64_t i = 0; i < length; i++) {
                 buffer.push_back(quality[i] + phred_offset);
             }
         }
+    };
+    inline bool is_iupac_strict() const {
+        for(uint64_t i = 0; i < length; i++) {
+            if(!is_iupac_strict_bam_nucleotide(code[i])) {
+                return false;
+            }
+        }
+        return true;
     };
 private:
     inline void terminate() {
@@ -174,20 +191,24 @@ private:
     };
 };
 ostream& operator<<(ostream& o, const Sequence& sequence);
+bool operator<(const Sequence& left, const Sequence& right);
+bool operator>(const Sequence& left, const Sequence& right);
+void encode_element(const Sequence& value, Value& container, Document& document);
 
 class Barcode {
 friend ostream& operator<<(ostream& o, const Barcode& barcode);
+friend bool encode_key_value(const string& key, const Barcode& value, Value& node, Document& document);
 
 public:
     Barcode();
-    Barcode(const size_t& width);
+    Barcode(const uint64_t& width);
     Barcode(const Barcode& other);
     Barcode& operator=(const Barcode& other);
     operator string() const;
     string iupac_ambiguity() const;
-    string iupac_ambiguity(const size_t position) const;
-    void append(const size_t& position, const Sequence& sequence, const Transform& transform);
-    void fill(const size_t& position, const char* code, const size_t& size);
+    string iupac_ambiguity(const uint64_t position) const;
+    void append(const uint64_t& position, const Sequence& sequence, const Transform& transform);
+    void fill(const uint64_t& position, const char* code, const uint64_t& size);
     void set_tolerance(const vector<uint8_t>& tolerance);
     void set_threshold(const uint8_t& threshold);
     inline void clear() {
@@ -199,22 +220,22 @@ public:
     inline bool empty() const {
         return length == 0;
     };
-    inline size_t size(const size_t& position) {
+    inline uint64_t size(const uint64_t& position) const {
         return position < fragments.size() ? fragments[position].length : 0;
     };
-    inline void resize(const size_t& width) {
+    inline void resize(const uint64_t& width) {
         fragments.resize(width);
         tolerance.resize(width);
     };
-    inline size_t total_fragments() const {
+    inline uint64_t total_fragments() const {
         return fragments.size();
     };
-    inline bool corrected_match(const Barcode& other, size_t& distance) const {
+    inline bool corrected_match(const Barcode& other, uint64_t& distance) const {
         bool result = true;
         distance = 0;
-        for (size_t i = 0; i < fragments.size(); i++) {
-            size_t error = fragments[i].distance_from(other.fragments[i], threshold);
-            if (error > tolerance[i]) {
+        for(uint64_t i = 0; i < fragments.size(); i++) {
+            uint64_t error = fragments[i].distance_from(other.fragments[i], threshold);
+            if(error > tolerance[i]) {
                 result = false;
             }
             distance += error;
@@ -231,18 +252,18 @@ public:
             sequence.encode_phred_quality(buffer, phred_offset);
         }
     };
-    inline void decoding_probability(const Barcode& observed, double& probability, size_t& distance) const {
+    inline void decoding_probability(const Barcode& observed, double& probability, uint64_t& distance) const {
         double p = 1;
-        size_t d = 0;
-        for(size_t i = 0; i < fragments.size(); i++) {
+        uint64_t d = 0;
+        for(uint64_t i = 0; i < fragments.size(); i++) {
             const Sequence& reference = fragments[i];
             const Sequence& o = observed.fragments[i];
-            for(size_t j = 0; j < reference.length; j++) {
-                if (o.code[j] == reference.code[j]) {
+            for(uint64_t j = 0; j < reference.length; j++) {
+                if(o.code[j] == reference.code[j]) {
                     p *= quality_to_inverse_probability(o.quality[j]);
                 } else {
                     d += 1;
-                    if (o.code[j] != ANY_NUCLEOTIDE) {
+                    if(o.code[j] != ANY_NUCLEOTIDE) {
                         p *= quality_to_third_probability(o.quality[j]);
                     } else {
                         p *= UNIFORM_BASE_PROBABILITY;
@@ -253,18 +274,18 @@ public:
         distance = d;
         probability = p;
     };
-    inline void accurate_decoding_probability(const Barcode& observed, double& probability, size_t& distance) const {
+    inline void accurate_decoding_probability(const Barcode& observed, double& probability, uint64_t& distance) const {
         double q = 0;
-        size_t d = 0;
-        for(size_t i = 0; i < fragments.size(); i++) {
+        uint64_t d = 0;
+        for(uint64_t i = 0; i < fragments.size(); i++) {
             const Sequence& reference = fragments[i];
             const Sequence& o = observed.fragments[i];
-            for(size_t j = 0; j < reference.length; j++) {
-                if (o.code[j] == reference.code[j]) {
+            for(uint64_t j = 0; j < reference.length; j++) {
+                if(o.code[j] == reference.code[j]) {
                     q += quality_to_inverse_quality(o.quality[j]);
                 } else {
                     d += 1;
-                    if (o.code[j] != ANY_NUCLEOTIDE) {
+                    if(o.code[j] != ANY_NUCLEOTIDE) {
                         q += double(o.quality[j]);
                     } else {
                         q += UNIFORM_BASE_PHRED;
@@ -275,7 +296,7 @@ public:
         distance = d;
         probability = pow(10.0, q * -0.1);
     };
-    inline void compensated_decoding_probability(const Barcode& observed, double& probability, size_t& distance) const {
+    inline void compensated_decoding_probability(const Barcode& observed, double& probability, uint64_t& distance) const {
         // use the Kahan summation algorithm to minimize floating point drift
         // see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
         double sigma = 0;
@@ -283,16 +304,16 @@ public:
         double y = 0;
         double t = 0;
         double q = 0;
-        size_t d = 0;
-        for(size_t i = 0; i < fragments.size(); i++) {
+        uint64_t d = 0;
+        for(uint64_t i = 0; i < fragments.size(); i++) {
             const Sequence& reference = fragments[i];
             const Sequence& o = observed.fragments[i];
-            for(size_t j = 0; j < reference.length; j++) {
-                if (o.code[j] == reference.code[j]) {
+            for(uint64_t j = 0; j < reference.length; j++) {
+                if(o.code[j] == reference.code[j]) {
                     q = quality_to_inverse_quality(o.quality[j]);
                 } else {
                     d += 1;
-                    if (o.code[j] != ANY_NUCLEOTIDE) {
+                    if(o.code[j] != ANY_NUCLEOTIDE) {
                         q = double(o.quality[j]);
                     } else {
                         q = UNIFORM_BASE_PHRED;
@@ -307,23 +328,31 @@ public:
         distance = d;
         probability = pow(10.0, sigma * -0.1);
     };
+    inline bool is_iupac_strict() const {
+        for(const auto& sequence : fragments) {
+            if(!sequence.is_iupac_strict()) {
+                return false;
+            }
+        }
+        return true;
+    };
     void encode_configuration(Document& document, Value& node, const string& key) const;
     void encode_report(Document& document, Value& node, const string& key) const;
 private:
-    size_t length;
+    uint64_t length;
     uint8_t threshold;
     vector< uint8_t > tolerance;
     vector< Sequence > fragments;
 };
 ostream& operator<<(ostream& o, const Barcode& barcode);
-bool operator<(const Sequence& left, const Sequence& right);
-bool operator>(const Sequence& left, const Sequence& right);
+template<> bool decode_value_by_key< Barcode >(const Value::Ch* key, Barcode& value, const Value& container);
+bool encode_key_value(const string& key, const Barcode& value, Value& container, Document& document);
 
 /*  Barcode distance metric
 */
-class Distance {
+class BarcodeDistanceMetric {
 public:
-    Distance() :
+    BarcodeDistanceMetric() :
         _min_word_length(0),
         _max_word_length(0),
         _min_distance(0),
@@ -335,10 +364,10 @@ public:
     void load() {
         _words.clear();
         _cumulative.clear();
-        if (!_index.empty()) {
+        if(!_index.empty()) {
 
             _max_word_length = 0;
-            _min_word_length = numeric_limits<size_t>::max();
+            _min_word_length = numeric_limits< uint64_t >::max();
             for(const auto& word : _index) {
                 _min_word_length = MIN(_min_word_length, word.size());
                 _max_word_length = MAX(_max_word_length, word.size());
@@ -346,19 +375,19 @@ public:
             }
 
             _max_distance = 0;
-            _min_distance = numeric_limits<size_t>::max();
+            _min_distance = numeric_limits< uint64_t >::max();
             _matrix.resize(height());
             _cumulative.resize(height());
-            for(size_t i = 0; i < height(); i++) {
+            for(uint64_t i = 0; i < height(); i++) {
                 const string& row = word(i);
                 _matrix[i].resize(height());
-                for(size_t j = 0; j < height(); j++) {
+                for(uint64_t j = 0; j < height(); j++) {
                     const string& column = word(j);
                     if(i == j) {
                         _matrix[i][j] = 0;
 
                     } else if(i < j) {
-                        size_t distance = hamming_distance(row, column);
+                        uint64_t distance = hamming_distance(row, column);
                         _min_distance = MIN(_min_distance, distance);
                         _max_distance = MAX(_max_distance, distance);
                         _matrix[i][j] = distance;
@@ -372,12 +401,12 @@ public:
             }
             _shannon_bound = ((_min_distance - 1) / 2);
 
-            for(size_t i = 0; i < _cumulative.size(); i++) {
+            for(uint64_t i = 0; i < _cumulative.size(); i++) {
                 _cumulative[i] /= (height() * 2);
             }
             // We want to know how many digits are in the biggest value to be able to align the matrix
             _padding = _spacing;
-            size_t digit = _max_distance;
+            uint64_t digit = _max_distance;
             do {
                 digit /= 10;
                 _padding++;
@@ -387,25 +416,25 @@ public:
     void add(const string& word) {
         _index.insert(word);
     };
-    inline size_t width() const {
+    inline uint64_t width() const {
         return _max_word_length;
     };
-    inline size_t height() const {
+    inline uint64_t height() const {
         return _words.size();
     };
-    inline size_t value(size_t i, size_t j) const {
+    inline uint64_t value(uint64_t i, uint64_t j) const {
         return _matrix[i][j];
     };
-    inline const string& word(size_t i) const {
+    inline const string& word(uint64_t i) const {
         return _words[i];
     };
-    inline size_t cumulative(size_t i) const {
+    inline uint64_t cumulative(uint64_t i) const {
         return _cumulative[i];
     };
-    inline size_t minimum_distance() const {
+    inline uint64_t minimum_distance() const {
         return _min_distance;
     };
-    inline size_t shannon_bound() const {
+    inline uint64_t shannon_bound() const {
         return _shannon_bound;
     };
     inline bool empty() const {
@@ -414,9 +443,9 @@ public:
     void describe(ostream& o) const {
         o << std::left;
         if(!empty()) {
-            for(size_t i = 0; i < height(); i++) {
+            for(uint64_t i = 0; i < height(); i++) {
                 o << '\t';
-                for(size_t j = 0; j < height(); j++) {
+                for(uint64_t j = 0; j < height(); j++) {
                     o << setw(_padding)<< value(i, j);
                 }
                 o << word(i) << ' ' << setw(_padding) << cumulative(i) << endl;
@@ -426,29 +455,29 @@ public:
     };
 
 private:
-    size_t _min_word_length;
-    size_t _max_word_length;
-    size_t _min_distance;
-    size_t _max_distance;
-    size_t _shannon_bound;
-    size_t _padding;
-    size_t _spacing;
+    uint64_t _min_word_length;
+    uint64_t _max_word_length;
+    uint64_t _min_distance;
+    uint64_t _max_distance;
+    uint64_t _shannon_bound;
+    uint64_t _padding;
+    uint64_t _spacing;
     set< string > _index;
     vector < string > _words;
-    vector < size_t > _cumulative;
-    vector< vector< size_t > > _matrix;
+    vector < uint64_t > _cumulative;
+    vector< vector< uint64_t > > _matrix;
 
-    inline size_t hamming_distance(const string& left, const string& right) const {
-        size_t result = 0;
-        for (size_t i = 0; i < left.length(); i++) {
-            if (left[i] != right[i]) {
+    inline uint64_t hamming_distance(const string& left, const string& right) const {
+        uint64_t result = 0;
+        for(uint64_t i = 0; i < left.length(); i++) {
+            if(left[i] != right[i]) {
                 result++;
             }
         }
         return result;
     };
-    inline size_t shannon_bound(const string& left, const string& right) const {
-        size_t result = hamming_distance(left, right);
+    inline uint64_t shannon_bound(const string& left, const string& right) const {
+        uint64_t result = hamming_distance(left, right);
         result = ((result - 1) / 2);
         return result;
     };

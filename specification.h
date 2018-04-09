@@ -23,6 +23,7 @@
 #define PHENIQS_MODEL_H
 
 #include <set>
+#include <list>
 #include <unordered_map>
 
 #include <htslib/hfile.h>
@@ -38,12 +39,13 @@
 using std::set;
 using std::copy;
 using std::hash;
+using std::list;
 using std::setw;
 using std::endl;
 using std::cerr;
 using std::cout;
 using std::fixed;
-using std::size_t;
+using std::uint64_t;
 using std::string;
 using std::vector;
 using std::ostream;
@@ -60,11 +62,11 @@ friend ostream& operator<<(ostream& o, const FeedSpecification& specification);
 
 public:
     const IoDirection direction;
-    const size_t index;
+    const uint64_t index;
     URL url;
     Platform platform;
-    size_t capacity;
-    size_t resolution;
+    uint64_t capacity;
+    uint64_t resolution;
     uint8_t phred_offset;
     unordered_map< string, const HeadPGAtom > program_by_id;
     unordered_map< string, const HeadRGAtom > read_group_by_id;
@@ -72,12 +74,12 @@ public:
 
     FeedSpecification (
         const IoDirection& direction,
-        const size_t& index,
+        const uint64_t& index,
         const URL& url,
         const Platform& platform,
         const uint8_t& phred_offset);
-    void set_capacity(const size_t& capacity);
-    void set_resolution(const size_t& resolution);
+    void set_capacity(const uint64_t& capacity);
+    void set_resolution(const uint64_t& resolution);
     void register_rg(const HeadRGAtom& rg);
     void register_pg(const HeadPGAtom& pg);
     void describe(ostream& o) const;
@@ -93,8 +95,8 @@ public:
     bool disable_quality_control;
     bool long_read;
     bool include_filtered;
-    vector< URL > input_urls;
-    vector< FeedSpecification* > feed_specifications;
+    list< URL > url_by_segment;
+    vector< FeedSpecification* > feed_specification_by_segment;
 
     InputSpecification();
     void encode(Document& document, Value& node) const;
@@ -104,8 +106,8 @@ class ChannelSpecification {
 friend ostream& operator<<(ostream& o, const ChannelSpecification& channel);
 
 public:
-    size_t index;
-    size_t TC;
+    uint64_t index;
+    int64_t TC;
     kstring_t FS;
     kstring_t CO;
     Decoder decoder;
@@ -115,19 +117,20 @@ public:
     bool undetermined;
     double concentration;
     Barcode multiplex_barcode;
-    vector< URL > output_urls;
     HeadRGAtom rg;
-    vector< FeedSpecification* > feed_specification;
+    list< URL > url_by_segment;
+    vector< FeedSpecification* > feed_specification_by_segment;
 
-    ChannelSpecification(size_t index);
+    ChannelSpecification();
     ~ChannelSpecification();
-    inline bool writable() const {
-        return output_urls.size() > 0;
+    inline bool empty() const {
+        return url_by_segment.empty();
     };
     string alias() const;
     void describe(ostream& o) const;
     void encode(Document& document, Value& node) const;
 };
 ostream& operator<<(ostream& o, const ChannelSpecification& specification);
+void transcode_channel_specification(const Value& from, Value& to, Document& document);
 
 #endif /* PHENIQS_MODEL_H */

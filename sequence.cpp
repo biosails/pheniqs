@@ -28,15 +28,23 @@ Sequence::Sequence() :
     quality(NULL),
     capacity(INITIAL_SEQUENCE_CAPACITY),
     length(0) {
-    code = (uint8_t*)malloc(capacity);
-    quality = (uint8_t*)malloc(capacity);
+    if((code = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
+        throw InternalError("out of memory");
+    }
+    if((quality = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
+        throw InternalError("out of memory");
+    }
     terminate();
 };
 Sequence::Sequence(const Sequence& other) :
     capacity(other.capacity),
     length(other.length) {
-    code = (uint8_t*)malloc(capacity);
-    quality = (uint8_t*)malloc(capacity);
+    if((code = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
+        throw InternalError("out of memory");
+    }
+    if((quality = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
+        throw InternalError("out of memory");
+    }
     memcpy(code, other.code, length);
     memcpy(quality, other.quality, length);
     terminate();
@@ -56,9 +64,9 @@ Sequence::~Sequence() {
     quality = NULL;
 };
 void Sequence::mask(const uint8_t& threshold) {
-    if (threshold > 0) {
-        for (size_t i = 0; i < length; i++) {
-            if (quality[i] < threshold) {
+    if(threshold > 0) {
+        for(uint64_t i = 0; i < length; i++) {
+            if(quality[i] < threshold) {
                 code[i] = ANY_NUCLEOTIDE;
                 // TODO do we also set the quality value to 2?
             }
@@ -67,18 +75,24 @@ void Sequence::mask(const uint8_t& threshold) {
 };
 void Sequence::expected_error(float& error) const {
     double value = 0.0;
-    for (uint8_t* q = quality; *q; ++q) {
+    for(uint8_t* q = quality; *q; ++q) {
         value += quality_to_probability(uint8_t(*q));
     }
     error = float(value);
 };
-void Sequence::fill(const uint8_t* code, const uint8_t* quality, const size_t& size) {
+void Sequence::fill(const uint8_t* code, const uint8_t* quality, const uint64_t& size) {
     if(size > 0) {
         if(size >= capacity) {
             capacity = size + 1;
             kroundup32(capacity);
-            this->code = (uint8_t*)realloc(this->code, capacity);
-            this->quality = (uint8_t*)realloc(this->quality, capacity);
+            if((this->code = static_cast< uint8_t* >(realloc(this->code, capacity))) == NULL) {
+                free(this->code);
+                throw InternalError("out of memory");
+            }
+            if((this->quality = static_cast< uint8_t* >(realloc(this->quality, capacity))) == NULL) {
+                free(this->quality);
+                throw InternalError("out of memory");
+            }
         }
         memcpy(this->code, code, size);
         memcpy(this->quality, quality, size);
@@ -86,30 +100,42 @@ void Sequence::fill(const uint8_t* code, const uint8_t* quality, const size_t& s
     length = size;
     terminate();
 };
-void Sequence::fill(const char* code, const size_t& size) {
+void Sequence::fill(const char* code, const uint64_t& size) {
     if(size > 0) {
         if(size >= capacity) {
             capacity = size + 1;
             kroundup32(capacity);
-            this->code = (uint8_t*)realloc(this->code, capacity);
-            this->quality = (uint8_t*)realloc(this->quality, capacity);
+            if((this->code = static_cast< uint8_t* >(realloc(this->code, capacity))) == NULL) {
+                free(this->code);
+                throw InternalError("out of memory");
+            }
+            if((this->quality = static_cast< uint8_t* >(realloc(this->quality, capacity))) == NULL) {
+                free(this->quality);
+                throw InternalError("out of memory");
+            }
         }
 
-        for(size_t i = 0; i < size; i++) {
-            *(this->code + i) = AsciiToAmbiguousBam[size_t(code[i])];
+        for(uint64_t i = 0; i < size; i++) {
+            *(this->code + i) = AsciiToAmbiguousBam[uint64_t(code[i])];
             *(this->quality + i) = MAX_VALID_PHRED_VALUE;
         }
     }
     length = size;
     terminate();
 };
-void Sequence::append(const uint8_t* code, const uint8_t* quality, const size_t& size) {
+void Sequence::append(const uint8_t* code, const uint8_t* quality, const uint64_t& size) {
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length+ size + 1;
             kroundup32(capacity);
-            this->code = (uint8_t*)realloc(this->code, capacity);
-            this->quality = (uint8_t*)realloc(this->quality, capacity);
+            if((this->code = static_cast< uint8_t* >(realloc(this->code, capacity))) == NULL) {
+                free(this->code);
+                throw InternalError("out of memory");
+            }
+            if((this->quality = static_cast< uint8_t* >(realloc(this->quality, capacity))) == NULL) {
+                free(this->quality);
+                throw InternalError("out of memory");
+            }
         }
         memcpy(this->code + length, code, size);
         memcpy(this->quality + length, quality, size);
@@ -117,13 +143,19 @@ void Sequence::append(const uint8_t* code, const uint8_t* quality, const size_t&
         terminate();
     }
 };
-void Sequence::append(const Sequence& other, const size_t& start, const size_t& size) {
+void Sequence::append(const Sequence& other, const uint64_t& start, const uint64_t& size) {
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length + size + 1;
             kroundup32(capacity);
-            code = (uint8_t*)realloc(code, capacity);
-            quality = (uint8_t*)realloc(quality, capacity);
+            if((code = static_cast< uint8_t* >(realloc(code, capacity))) == NULL) {
+                free(code);
+                throw InternalError("out of memory");
+            }
+            if((quality = static_cast< uint8_t* >(realloc(quality, capacity))) == NULL) {
+                free(quality);
+                throw InternalError("out of memory");
+            }
         }
         memcpy(code + length, other.code + start, size);
         memcpy(quality + length, other.quality + start, size);
@@ -131,17 +163,23 @@ void Sequence::append(const Sequence& other, const size_t& start, const size_t& 
         terminate();
     }
 };
-size_t Sequence::append(const Sequence& other, const Transform& transform) {
-    const size_t start = transform.token.decode_start(other.length);
-    const size_t end = transform.token.decode_end(other.length);
-    const size_t size = end - start;
+uint64_t Sequence::append(const Sequence& other, const Transform& transform) {
+    const uint64_t start = transform.token.decode_start(other.length);
+    const uint64_t end = transform.token.decode_end(other.length);
+    const uint64_t size = end - start;
 
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length + size + 1;
             kroundup32(capacity);
-            code = (uint8_t*)realloc(code, capacity);
-            quality = (uint8_t*)realloc(quality, capacity);
+            if((code = static_cast< uint8_t* >(realloc(code, capacity))) == NULL) {
+                free(code);
+                throw InternalError("out of memory");
+            }
+            if((quality = static_cast< uint8_t* >(realloc(quality, capacity))) == NULL) {
+                free(quality);
+                throw InternalError("out of memory");
+            }
         }
         switch (transform.left) {
 
@@ -152,7 +190,7 @@ size_t Sequence::append(const Sequence& other, const Transform& transform) {
             };
 
             case LeftTokenOperator::REVERSE_COMPLEMENT: {
-                for(size_t i = 0; i < size; i++) {
+                for(uint64_t i = 0; i < size; i++) {
                     code[length + i] = BamToReverseComplementBam[other.code[end - i - 1]];
                     quality[length + i] = other.quality[end - i - 1];
                 }
@@ -176,7 +214,7 @@ ostream& operator<<(ostream& o, const Sequence& sequence) {
     return o;
 };
 bool operator<(const Sequence& left, const Sequence& right) {
-    size_t position = 0;
+    uint64_t position = 0;
     while(position < left.length && position < right.length) {
         if(left.code[position] == right.code[position]) {
             position++;
@@ -191,7 +229,7 @@ bool operator<(const Sequence& left, const Sequence& right) {
     return false;
 };
 bool operator>(const Sequence& left, const Sequence& right) {
-    size_t position = 0;
+    uint64_t position = 0;
     while(position < left.length && position < right.length) {
         if(left.code[position] == right.code[position]) {
             position++;
@@ -205,6 +243,13 @@ bool operator>(const Sequence& left, const Sequence& right) {
     }
     return false;
 };
+void encode_element(const Sequence& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        string buffer;
+        value.encode_iupac_ambiguity(buffer);
+        container.PushBack(Value(buffer.c_str(), buffer.size(), document.GetAllocator()).Move(), document.GetAllocator());
+    }
+};
 
 /*  Barcode
 */
@@ -212,7 +257,7 @@ Barcode::Barcode() :
     length(0),
     threshold(0) {
 };
-Barcode::Barcode(const size_t& width) : 
+Barcode::Barcode(const uint64_t& width) : 
     length(0),
     tolerance(width),
     fragments(width) {
@@ -238,7 +283,7 @@ Barcode::operator string() const {
     /* NOTICE barcode is converted to the BAM encoding string, not iupac */
     string key;
     for(const auto& sequence : fragments) {
-        for(size_t i = 0; i < sequence.length; i++) {
+        for(uint64_t i = 0; i < sequence.length; i++) {
             key.push_back(sequence.code[i]);
         }
     }
@@ -250,21 +295,21 @@ void Barcode::set_tolerance(const vector<uint8_t>& tolerance) {
 void Barcode::set_threshold(const uint8_t& threshold) {
     this->threshold = threshold;
 };
-void Barcode::fill(const size_t& position, const char* code, const size_t& size) {
+void Barcode::fill(const uint64_t& position, const char* code, const uint64_t& size) {
     resize(position + 1);
     length += size;
     fragments[position].fill(code, size);
 };
-void Barcode::append(const size_t& position, const Sequence& sequence, const Transform& transform) {
+void Barcode::append(const uint64_t& position, const Sequence& sequence, const Transform& transform) {
     length += fragments[transform.output_segment_index].append(sequence, transform);
 };
-string Barcode::iupac_ambiguity(const size_t position) const {
+string Barcode::iupac_ambiguity(const uint64_t position) const {
     return fragments[position].iupac_ambiguity();
 };
 string Barcode::iupac_ambiguity() const {
     string result;
     for(const auto& sequence : fragments) {
-        for(size_t i = 0; i < sequence.length; i++) {
+        for(uint64_t i = 0; i < sequence.length; i++) {
             result.push_back(BamToAmbiguousAscii[uint8_t(sequence.code[i])]);
         }
     }
@@ -272,35 +317,62 @@ string Barcode::iupac_ambiguity() const {
 };
 void Barcode::encode_configuration(Document& document, Value& node, const string& key) const {
     if(!empty()) {
-        Document::AllocatorType& allocator = document.GetAllocator();
-        Value code;
-        Value collection;
-        collection.SetArray();
+        Value collection(kArrayType);
         for(auto& fragment : fragments) {
+            Value code;
             fragment.encode_iupac_ambiguity(code);
-            collection.PushBack(code, allocator);
+            collection.PushBack(code, document.GetAllocator());
         }
-        node.AddMember(Value(key.c_str(), key.size(), allocator).Move(), collection, allocator);
+        node.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), collection, document.GetAllocator());
     }
 };
 void Barcode::encode_report(Document& document, Value& node, const string& key) const {
     if(!empty()) {
-        Document::AllocatorType& allocator = document.GetAllocator();
-        Value code;
-        Value barcode;
-        Value collection;
-        collection.SetArray();
-
+        Value collection(kArrayType);
         for(auto& fragment : fragments) {
-            barcode.SetObject();
+            Value code;
+            Value barcode(kObjectType);
             fragment.encode_iupac_ambiguity(code);
-            barcode.AddMember("barcode sequence", code, allocator);
-            collection.PushBack(barcode, allocator);
+            barcode.AddMember("barcode sequence", code, document.GetAllocator());
+            collection.PushBack(barcode, document.GetAllocator());
         }
-        node.AddMember(Value(key.c_str(), key.size(), allocator).Move(), collection, allocator);
+        node.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), collection.Move(), document.GetAllocator());
     }
 };
 ostream& operator<<(ostream& o, const Barcode& barcode) {
     o << barcode.iupac_ambiguity();
     return o;
+};
+template<> bool decode_value_by_key< Barcode >(const Value::Ch* key, Barcode& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsArray()) {
+            if(!element->value.Empty()) {
+                uint64_t index(0);
+                value.clear();
+                value.resize(element->value.Size());
+                for(auto& e : element->value.GetArray()) {
+                    if(e.IsString()) {
+                        value.fill(index, e.GetString(), e.GetStringLength());
+                    } else { throw ConfigurationError(string(key) + " element member must be a string"); }
+                    index++;
+                }
+                return true;
+            }
+        } else { throw ConfigurationError(string(key) + " element must be an array"); }
+    }
+    return false;
+};
+bool encode_key_value(const string& key, const Barcode& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& fragment : value.fragments) {
+            encode_element(fragment, array, document);
+        }
+        Value k(key.c_str(), key.size(), document.GetAllocator());
+        container.RemoveMember(key.c_str());
+        container.AddMember(k.Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
 };

@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "model.h"
+#include "specification.h"
 
 #include <zlib.h>
 
@@ -27,7 +27,7 @@
 */
 FeedSpecification::FeedSpecification (
     const IoDirection& direction,
-    const size_t& index,
+    const uint64_t& index,
     const URL& url,
     const Platform& platform,
     const uint8_t& phred_offset) :
@@ -41,18 +41,18 @@ FeedSpecification::FeedSpecification (
     phred_offset(phred_offset),
     hfile(NULL) {
 };
-void FeedSpecification::set_capacity(const size_t& capacity) {
+void FeedSpecification::set_capacity(const uint64_t& capacity) {
     if(capacity != this->capacity) {
-        size_t aligned = size_t(capacity / resolution) * resolution;
+        uint64_t aligned = uint64_t(capacity / resolution) * resolution;
         if(aligned < capacity) {
             aligned += resolution;
         }
         this->capacity = aligned;
     }
 };
-void FeedSpecification::set_resolution(const size_t& resolution) {
+void FeedSpecification::set_resolution(const uint64_t& resolution) {
     if(resolution != this->resolution) {
-        size_t aligned = size_t(capacity / resolution) * resolution;
+        uint64_t aligned = uint64_t(capacity / resolution) * resolution;
         if(aligned < capacity) {
             aligned += resolution;
         }
@@ -63,14 +63,14 @@ void FeedSpecification::set_resolution(const size_t& resolution) {
 void FeedSpecification::register_rg(const HeadRGAtom& rg) {
     string key(rg);
     auto record = read_group_by_id.find(key);
-    if (record == read_group_by_id.end()) {
+    if(record == read_group_by_id.end()) {
         read_group_by_id.emplace(make_pair(key, HeadRGAtom(rg)));
     }
 };
 void FeedSpecification::register_pg(const HeadPGAtom& pg) {
     string key(pg);
     auto record = program_by_id.find(key);
-    if (record == program_by_id.end()) {
+    if(record == program_by_id.end()) {
         program_by_id.emplace(make_pair(key, HeadPGAtom(pg)));
     }
 };
@@ -82,6 +82,8 @@ void FeedSpecification::describe(ostream& o) const {
             break;
         case IoDirection::OUT:
             o << "Output";
+            break;
+        default:
             break;
     }
     o << " feed No." << index << endl;
@@ -118,10 +120,12 @@ void FeedSpecification::probe() {
         case IoDirection::IN: {
             hfile = hopen(url.c_str(), "r");
             if(url.type() == FormatType::UNKNOWN) {
-                size_t buffer_capacity = PEEK_BUFFER_CAPACITY;
+                uint64_t buffer_capacity = PEEK_BUFFER_CAPACITY;
                 ssize_t buffer_length = 0;
-                unsigned char* buffer = (unsigned char*)malloc(buffer_capacity);;
-
+                unsigned char* buffer = NULL;
+                if((buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
+                    throw InternalError("out of memory");
+                }
                 htsFormat format;
                 if(!hts_detect_format(hfile, &format)) {
                     switch (format.format) {
@@ -170,7 +174,10 @@ void FeedSpecification::probe() {
                         switch (format.compression) {
                             case htsCompression::gzip:
                             case htsCompression::bgzf: {
-                                unsigned char* decompressed_buffer = (unsigned char*)malloc(buffer_capacity);;
+                                unsigned char* decompressed_buffer = NULL;
+                                if((decompressed_buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
+                                    throw InternalError("out of memory");
+                                }
                                 z_stream zstream;
                                 zstream.zalloc = NULL;
                                 zstream.zfree = NULL;
@@ -199,7 +206,7 @@ void FeedSpecification::probe() {
                         }
                     }
                     if(buffer_length > 0) { 
-                        size_t state = 0;
+                        uint64_t state = 0;
                         char* position = (char*)buffer;
                         char* end = position + buffer_length;
                         while(position < end && position != NULL) {
@@ -237,23 +244,69 @@ void FeedSpecification::probe() {
             hfile = hopen(url.c_str(), "w");
             break;
         };
+        default:
+            break;
     }
 };
 ostream& operator<<(ostream& o, const FeedSpecification& specification) {
     o << specification.url;
     return o;
 };
+template<> bool decode_value_by_key< list< FeedSpecification* > >(const Value::Ch* key, list< FeedSpecification* >& value, const Value& container) {
+    Value::ConstMemberIterator collection = container.FindMember(key);
+    if(collection != container.MemberEnd()) {
+        if(!collection->value.IsNull()) {
+            if(collection->value.IsArray() && !collection->value.Empty()) {
+                for(const auto& element : collection->value.GetArray()) {
+                    if(element.IsObject()) {
+                        IoDirection direction(IoDirection::UNKNOWN);
+                        decode_value_by_key< IoDirection >("direction", direction, element);
+
+                        uint64_t index;
+                        decode_value_by_key< uint64_t >("index", index, element);
+
+                        URL url;
+                        decode_file_url_by_key("url", url, direction, element);
+
+                        Platform platform;
+                        decode_value_by_key< Platform >("platform", platform, element);
+
+                        uint8_t phred_offset;
+                        decode_value_by_key< uint8_t >("phred offset", phred_offset, element);
+
+                        value.push_back(new FeedSpecification(direction, index, url, platform, phred_offset));
+
+                    } else { throw ConfigurationError("feed node must be a dictionary"); }
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
+
 
 InputSpecification::InputSpecification() :
     decoder(Decoder::UNKNOWN),
     disable_quality_control(false),
     include_filtered(true) {
 };
+template<> bool decode_value_by_key< InputSpecification >(const Value::Ch* key, InputSpecification& value, const Value& container) {
+    if(decode_file_url_list_by_key("input", value.url_by_segment, container, IoDirection::IN)) {
+        decode_value_by_key< Decoder >("decoder", value.decoder, container);
+        decode_value_by_key< bool >("disable quality control", value.disable_quality_control, container);
+        decode_value_by_key< bool >("long read", value.long_read, container);
+        decode_value_by_key< bool >("include filtered", value.include_filtered, container);
+        return true;
+    }
+    return false;
+};
 
 /*  Channel specification */
-ChannelSpecification::ChannelSpecification(size_t index) :
-    index(index),
-    TC(numeric_limits<size_t>::max()),
+ChannelSpecification::ChannelSpecification() :
+    index(0),
+    TC(numeric_limits< int32_t >::max()),
     FS({ 0, 0, NULL }),
     CO({ 0, 0, NULL }),
     decoder(Decoder::UNKNOWN),
@@ -299,14 +352,16 @@ void ChannelSpecification::describe(ostream& o) const {
     }
     if(!undetermined) {
         o << endl;
-        for(size_t i = 0; i < multiplex_barcode.total_fragments(); i++) {
+        for(uint64_t i = 0; i < multiplex_barcode.total_fragments(); i++) {
             o << "        Multiplex barcode No." << i << " : " << multiplex_barcode.iupac_ambiguity(i) << endl;
         }
     }
-    if (!output_urls.empty()) {
+    if(!url_by_segment.empty()) {
         o << endl;
-        for (size_t i = 0; i < output_urls.size(); i++) {
-            o << "        Output segment No." << i << " : " << output_urls[i] << endl;
+        uint64_t i(0);
+        for(auto& url : url_by_segment) {
+            o << "        Output segment No." << i << " : " << url << endl;
+            i++;
         }
     }
     o << endl;
@@ -314,9 +369,7 @@ void ChannelSpecification::describe(ostream& o) const {
 void ChannelSpecification::encode(Document& document, Value& node) const {
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value channel;
-    channel.SetObject();
-
+    Value channel(kObjectType);
     encode_value_with_key_ID(rg, "RG", channel, document);
     encode_key_value("FS", FS, channel, document);
     encode_key_value("CO", CO, channel, document);
@@ -328,17 +381,81 @@ void ChannelSpecification::encode(Document& document, Value& node) const {
         multiplex_barcode.encode_configuration(document, channel, "barcode");
     }
 
-    if(!output_urls.empty()) {
-        Value collection;
-        collection.SetArray();
-        for(auto& url : output_urls) {
+    if(!url_by_segment.empty()) {
+        Value collection(kArrayType);
+        for(auto& url : url_by_segment) {
             encode_element(url, collection, document);
         }
-        channel.AddMember("output", collection, allocator);
+        channel.AddMember("output", collection.Move(), allocator);
     }
     node.PushBack(channel, allocator);
 };
 ostream& operator<<(ostream& o, const ChannelSpecification& specification) {
     o << specification.alias();
     return o;
+};
+void transcode_channel_specification(const Value& from, Value& to, Document& document) {
+    if(from.IsObject()) {
+        to.SetObject();
+        transcode_value_by_key< string >("RG", from, to, document);
+        transcode_value_by_key< string >("LB", from, to, document);
+        transcode_value_by_key< string >("SM", from, to, document);
+        transcode_value_by_key< string >("PU", from, to, document);
+        transcode_value_by_key< string >("CN", from, to, document);
+        transcode_value_by_key< string >("DS", from, to, document);
+        transcode_value_by_key< string >("DT", from, to, document);
+        transcode_value_by_key< string >("PL", from, to, document);
+        transcode_value_by_key< string >("PM", from, to, document);
+        transcode_value_by_key< string >("PG", from, to, document);
+        transcode_value_by_key< string >("FO", from, to, document);
+        transcode_value_by_key< string >("KS", from, to, document);
+        transcode_value_by_key< int32_t >("TC", from, to, document);
+        transcode_value_by_key< Decoder >("decoder", from, to, document);
+        transcode_value_by_key< bool >("disable quality control", from, to, document);
+        transcode_value_by_key< bool >("long read", from, to, document);
+        transcode_value_by_key< bool >("include filtered", from, to, document);
+        transcode_value_by_key< bool >("undetermined", from, to, document);
+        transcode_value_by_key< double >("concentration", from, to, document);
+        transcode_value_by_key< uint8_t >("masking threshold", from, to, document);
+        transcode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", from, to, document);
+    } else { throw ConfigurationError("channel node must be a dictionary"); }
+};
+template<> bool decode_value_by_key< list< ChannelSpecification > >(const Value::Ch* key, list< ChannelSpecification >& value, const Value& container) {
+    Value::ConstMemberIterator collection = container.FindMember(key);
+    if(collection != container.MemberEnd()) {
+        if(!collection->value.IsNull()) {
+            if(collection->value.IsArray() && !collection->value.Empty()) {
+                for(const auto& element : collection->value.GetArray()) {
+                    if(element.IsObject()) {
+                        ChannelSpecification specification;
+                        decode_value_by_key< uint64_t >("index", specification.index, element);
+                        decode_value_by_key< int64_t >("TC", specification.TC, element);
+                        decode_value_by_key< kstring_t >("FS", specification.FS, element);
+                        decode_value_by_key< kstring_t >("CO", specification.CO, element);
+                        decode_value_by_key< Decoder >("decoder", specification.decoder, element);
+                        decode_value_by_key< bool >("disable quality control", specification.disable_quality_control, element);
+                        decode_value_by_key< bool >("long read", specification.long_read, element);
+                        decode_value_by_key< bool >("include filtered", specification.include_filtered, element);
+                        decode_value_by_key< bool >("undetermined", specification.undetermined, element);
+                        decode_value_by_key< double >("concentration", specification.concentration, element);
+                        decode_value_by_key< Barcode >("barcode", specification.multiplex_barcode, element);
+                        decode_file_url_list_by_key("output", specification.url_by_segment, element, IoDirection::OUT);
+                        decode_head_RG_atom_with_key_ID(element, specification.rg, "RG");
+
+                        uint8_t masking_threshold;
+                        decode_value_by_key< uint8_t >("masking threshold", masking_threshold, element);
+                        specification.multiplex_barcode.set_threshold(masking_threshold);
+
+                        vector< uint8_t> multiplex_barcode_tolerance;
+                        decode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", multiplex_barcode_tolerance, element);
+                        specification.multiplex_barcode.set_tolerance(multiplex_barcode_tolerance);
+
+                        value.emplace_back(specification);
+                    } else { throw ConfigurationError("channel node must be a dictionary"); }
+                }
+                return true;
+            }
+        }
+    }
+    return false;
 };

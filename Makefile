@@ -38,12 +38,13 @@ SOURCES = \
 	json.cpp \
 	constant.cpp \
 	url.cpp \
+	interface.cpp \
 	atom.cpp \
 	transform.cpp \
 	auxiliary.cpp \
 	sequence.cpp \
 	segment.cpp \
-	model.cpp \
+	specification.cpp \
 	feed.cpp \
 	fastq.cpp \
 	hts.cpp \
@@ -56,12 +57,13 @@ OBJECTS = \
 	json.o \
 	constant.o \
 	url.o \
+	interface.o \
 	atom.o \
 	transform.o \
 	auxiliary.o \
 	sequence.o \
 	segment.o \
-	model.o \
+	specification.o \
 	feed.o \
 	fastq.o \
 	hts.o \
@@ -105,7 +107,7 @@ clean: clean-version clean-configuration
 	-@rm -f $(EXECUTABLE) $(OBJECTS)
 
 install: pheniqs
-	if ( test ! -d $(PREFIX)/bin ) ; then mkdir -p $(PREFIX)/bin ; fi
+	if( test ! -d $(PREFIX)/bin ) ; then mkdir -p $(PREFIX)/bin ; fi
 	cp -f pheniqs $(PREFIX)/bin/pheniqs
 	chmod a+x $(PREFIX)/bin/pheniqs
 
@@ -125,6 +127,12 @@ url.o: \
 	json.h \
 	constant.h \
 	url.h
+
+interface.o: \
+	error.h \
+	json.h \
+	constant.h \
+	interface.h
 
 atom.o: \
 	error.h \
@@ -163,14 +171,14 @@ segment.o: \
 	auxiliary.h \
 	segment.h
 
-model.o: \
+specification.o: \
 	error.h \
 	json.h \
 	constant.h \
 	url.h \
 	atom.h \
 	sequence.h \
-	model.h
+	specification.h
 
 accumulate.o: \
 	error.h \
@@ -180,7 +188,7 @@ accumulate.o: \
 	phred.h \
 	sequence.h \
 	segment.h \
-	model.h \
+	specification.h \
 	accumulate.h
 
 environment.o: \
@@ -194,7 +202,7 @@ environment.o: \
 	nucleotide.h \
 	phred.h \
 	atom.h \
-	model.h \
+	specification.h \
 	environment.h
 
 feed.o: \
@@ -203,7 +211,7 @@ feed.o: \
 	constant.h \
 	url.h \
 	sequence.h \
-	model.h \
+	specification.h \
 	feed.h
 
 fastq.o: \
@@ -214,7 +222,7 @@ fastq.o: \
 	phred.h \
 	sequence.h \
 	segment.h \
-	model.h \
+	specification.h \
 	feed.h \
 	fastq.h
 
@@ -227,7 +235,7 @@ hts.o: \
 	atom.h \
 	sequence.h \
 	segment.h \
-	model.h \
+	specification.h \
 	feed.h \
 	hts.h
 

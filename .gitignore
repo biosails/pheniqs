@@ -3,7 +3,6 @@
 /**.DS_Store
 /configuration.h
 /version.h
-/build
 /environment.mk
 /*.sublime-workspace
 /*.sublime-project

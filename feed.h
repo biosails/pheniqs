@@ -44,7 +44,7 @@
 #include "url.h"
 #include "sequence.h"
 #include "auxiliary.h"
-#include "model.h"
+#include "specification.h"
 #include "segment.h"
 
 using std::map;
@@ -91,7 +91,7 @@ public:
     virtual void close() = 0;
     virtual bool pull(Segment& segment) = 0;
     virtual void push(Segment& segment) = 0;
-    virtual bool peek(Segment& segment, const size_t& position) = 0;
+    virtual bool peek(Segment& segment, const uint64_t& position) = 0;
     virtual inline bool flush() = 0;
     virtual inline bool replenish() = 0;
     virtual void calibrate(FeedSpecification const * specification) = 0;
@@ -101,15 +101,15 @@ public:
     void set_thread_pool(htsThreadPool* pool) {
         thread_pool = pool;
     };
-    const size_t& index() const {
+    const uint64_t& index() const {
         return specification.index;
     };
 
 protected:
     hFILE* hfile;
     htsThreadPool* thread_pool;
-    size_t capacity;
-    size_t resolution;
+    uint64_t capacity;
+    uint64_t resolution;
     uint8_t phred_offset;
     bool exhausted;
 };
@@ -120,8 +120,8 @@ template <typename U> friend ostream& operator<<(ostream& o, const CyclicBuffer<
 public:
     CyclicBuffer (
         const IoDirection& direction,
-        const size_t& capacity,
-        const size_t& resolution) :
+        const uint64_t& capacity,
+        const uint64_t& resolution) :
 
         _direction(direction),
         _capacity(0),
@@ -174,20 +174,20 @@ public:
     inline T* next() const {
         return cache[_next];
     };
-    inline size_t size() const {
+    inline uint64_t size() const {
         if(_next < 0) return 0;
         if(_vacant < 0) return _capacity;
         return (_vacant - _next) % _capacity;
     };
-    inline size_t available() const {
+    inline uint64_t available() const {
         if(_next < 0) return _capacity;
         if(_vacant < 0) return 0;
         return (_next - _vacant) % _capacity;
     };
-    const inline size_t& capacity() const {
+    const inline uint64_t& capacity() const {
         return _capacity;
     };
-    const inline size_t& resolution() const {
+    const inline uint64_t& resolution() const {
         return _resolution;
     };
     const inline IoDirection& direction() const {
@@ -214,18 +214,18 @@ public:
             increment();
         }
     };
-    virtual void calibrate(const size_t& capacity, const size_t& resolution);
+    virtual void calibrate(const uint64_t& capacity, const uint64_t& resolution);
 
 private:
     const IoDirection _direction;
-    size_t _capacity;
-    size_t _resolution;
+    uint64_t _capacity;
+    uint64_t _resolution;
     int _next;
     int _vacant;
     vector< T* > cache;
     int index;
-    inline size_t align_capacity(const size_t& capacity, const size_t& resolution) {
-        size_t aligned = size_t(capacity / resolution) * resolution;
+    inline uint64_t align_capacity(const uint64_t& capacity, const uint64_t& resolution) {
+        uint64_t aligned = uint64_t(capacity / resolution) * resolution;
         if(aligned < capacity) {
             aligned += resolution;
         }
@@ -294,7 +294,7 @@ public:
             flushable.notify_one();
         }
     };
-    bool peek(Segment& segment, const size_t& position) {
+    bool peek(Segment& segment, const uint64_t& position) {
         if(queue->size() > position) {
             decode(queue->next() + position, segment);
             return true;
@@ -400,6 +400,8 @@ private:
                 while(flush());
                 break;
             };
+            default:
+                break;
         }
     };
 };

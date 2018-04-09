@@ -29,1236 +29,189 @@
 #include <errno.h>
 
 #include "environment.h"
-#include "configuration.h"
 
-static inline string getcwd() {
-    char* buffer;
-    char* temp;
-    string cwd;
-    size_t size = 128;
+/*  Environment */
+Environment::Environment(const int argc, const char** argv) :
+    interface(argc, argv),
+    _program_action(interface.get_selected_action()),
+    _help_only(interface.help_triggered()),
+    _version_only(interface.version_triggered()),
+    _validate_only(false),
+    _lint_only(false),
+    _display_distance(false),
+    _instruction(kObjectType) {
 
-    if((buffer = (char*)malloc(size)) == NULL) {
-        throw InternalError("out of memory");
-    }
-    while(getcwd(buffer, size) == NULL) {
-        switch(errno) {
-            case EACCES:
-                free(buffer);
-                throw IOError("insufficient permission to probe working directory");
-                break;
-
-            case ERANGE:
-                size *= 2;
-                if((temp = (char*)realloc(buffer, size)) == NULL) {
-                    free(buffer);
-                    throw InternalError("out of memory");
-                } else {
-                    buffer = temp;
-                }
-                break;
-
-            default:
-                throw InternalError("error " + to_string(errno) + " when probing working directory");
-                break;
-        }
-    }
-    cwd.assign(buffer);
-    free(buffer);
-    return cwd;
-}
-
-/*  Environment
-*/
-Environment::Environment(int argc, char** argv) :
-    state(ProgramState::OK),
-    decoder(Decoder::UNKNOWN),
-    platform(Platform::UNKNOWN),
-    help_only(false),
-    version_only(false),
-    disable_quality_control(false),
-    long_read(false),
-    validate_only(false),
-    lint_only(false),
-    display_distance(false),
-    include_filtered(false),
-    input_phred_offset(numeric_limits<uint32_t>::max()),
-    output_phred_offset(numeric_limits<uint32_t>::max()),
-    masking_threshold(0),
-    leading_segment_index(0),
-    threads(1),
-    transforms(numeric_limits<uint32_t>::max()),
-    buffer_capacity(numeric_limits<uint32_t>::max()),
-    total_multiplex_barcode_segments(0),
-    total_molecular_barcode_segments(0),
-    total_output_segments(0),
-    total_input_segments(0),
-    confidence(0),
-    noise(0),
-    input_specification(NULL),
-    undetermined(NULL) {
-
-    load(argc, argv);
-};
-Environment::~Environment() {
-    for(const auto& record : input_feed_specification_by_url) {
-        delete record.second;
-    }
-    input_feed_specification_by_url.clear();
-
-    for(const auto& record : output_feed_specification_by_url) {
-        delete record.second;
-    }
-    output_feed_specification_by_url.clear();
-
-    for(auto specification : channel_specifications) {
-        delete specification;
-    }
-    channel_specifications.clear();
-
-    delete interface;
-};
-void Environment::load(int argc, char** argv) {
-    try {
-        version = PHENIQS_VERSION;
-        const string content(reinterpret_cast<const char *>(interface_json), interface_json_len);
-
-        try {
-            interface = new CommandLine(content.c_str(), version);
-        } catch(ConfigurationError& e) {
-            set_state(ProgramState::INTERNAL_ERROR);
-            throw e;
-        }
-
-        string cwd = getcwd();
-        working_directory.set_directory(string(cwd.c_str(), cwd.size()));
-
-        interface->load(argc, argv);
-
-        if(interface->help_triggered()) {
-            set_state(ProgramState::HELP);
-
-        } else if(interface->version_triggered()) {
-            set_state(ProgramState::VERSION);
-
-        } else {
-
-            // set the selected action
-            set_selected_action(interface->get_selected_action());
-
-            // first get the configuration file URL and load it
-            set_configuration_path(interface->get_string("configuration path"));
-            load_configuration_file(configuration_url);
-
-            // then decode the rest of the parameters to override whatever came from the configuration file
-            set_help_only(interface->get_boolean("help"));
-            set_version_only(interface->get_boolean("version"));
-            set_disable_quality_control(interface->get_boolean("quality"));
-            set_long_read(interface->get_boolean("long read"));
-            set_validate_only(interface->get_boolean("validate"));
-            set_lint_only(interface->get_boolean("lint"));
-            set_display_distance(interface->get_boolean("display distance"));
-            set_include_filtered(interface->get_boolean("filtered"));
-            set_decoder(interface->get_string("decoder"));
-            set_platform(interface->get_string("platform"));
-            set_base_input_path(interface->get_string("base input path"));
-            set_base_output_path(interface->get_string("base output path"));
-            set_threads(interface->get_integer("threads"));
-            set_pivot_threads(interface->get_integer("transforms"));
-            set_buffer_capacity(interface->get_integer("buffer capacity"));
-            set_confidence(interface->get_decimal("confidence"));
-            set_noise(interface->get_decimal("noise"));
-            set_leading_segment_index(interface->get_integer("leading segment index"));
-            set_decoder_masking_threshold(interface->get_integer("masking threshold"));
-            set_input_path(interface->get_string("input path"));
-
-            if(state == ProgramState::OK) {
-                load_defaults();
-                load_urls();
-                load_thread_model();
-
-                switch (action) {
-                    case ProgramAction::DEMULTIPLEX: {
-                        load_transformation();
-                        load_barcode_tolerance();
-                        load_undetermined();
-                        load_multiplex_barcodes();
-                        load_prior();
-                        validate();
-                        load_channels();
-                        load_input_specification();
-                        load_output_specification();
-                        validate_io();
-                        probe();
-                        break;
-                    };
-
-                    case ProgramAction::QUALITY: {
-                        break;
-                    };
-
-                    default: break;
-                }
-            }
-        }
-
-    } catch(IOError& e) {
-        set_state(ProgramState::IO_ERROR);
-        throw e;
-
-    } catch(CommandLineError& e) {
-        set_state(ProgramState::COMMAND_LINE_ERROR);
-        throw e;
-
-    } catch(ConfigurationError& e) {
-        set_state(ProgramState::CONFIGURATION_ERROR);
-        throw e;
-    }
-};
-void Environment::print_help(ostream& o) const {
-    interface->print_help(o);
-};
-void Environment::print_version(ostream& o) const {
-    interface->print_version(o);
-};
-void Environment::print_configuration(ostream& o) const {
-    Document document;
-    encode(document);
-    StringBuffer buffer;
-    PrettyWriter< StringBuffer > writer(buffer);
-    document.Accept(writer);
-    o << buffer.GetString() << endl;
-};
-void Environment::describe(ostream& o) {
-    o << fixed << setprecision(19);
-    o << "Environment " << endl << endl;
-    {
-        o << "    Version                                     " << version << endl;
-        o << "    Barcode decoder                             " << decoder << endl;
-        o << "    Platform                                    " << platform << endl;
-        o << "    Long read                                   " << (long_read ? "enabled" : "disabled") << endl;
-        o << "    Quality tracking                            " << (disable_quality_control ? "disabled" : "enabled") << endl;
-        o << "    Leading template segment                    " << to_string(leading_segment_index) << endl;
-        o << "    Input Phred offset                          " << to_string(input_phred_offset) << endl;
-        o << "    Output Phred offset                         " << to_string(output_phred_offset) << endl;
-        o << "    Include non PF reads                        " << (include_filtered ? "enabled" : "disabled") << endl;
-        o << "    Undetermined reads                          " << (undetermined != NULL ? undetermined->alias() : "ignored") << endl;
-    }
-    if (total_multiplex_barcode_segments > 0) {
-        o << "    Multiplex barcoding cycles                  " << multiplex_barcode_width() << endl;
-        o << "    Shortest multiplex distance                 " << minimum_barcode_distance() << endl;
-        o << "    Multiplex barcode length                    ";
-            for(const auto& length : multiplex_barcode_length) {
-                o << size_t(length) << ' ';
-            } o << endl;
-
-        if(decoder == Decoder::MDD || decoder == Decoder::BENCHMARK) {
-        o << "    Tolerable shannon distance                  ";
-            for(const auto metric : multiplex_barcode_set_distance) {
-                o << metric.shannon_bound() << ' ';
-            } o << endl;
-        o << "    Barcode distance tolerance                  ";
-            for(const auto& tolerance : multiplex_barcode_tolerance) {
-                o << size_t(tolerance) << ' ';
-            } o << endl;
-        o << "    Multiplex masking threshold                 " << (masking_threshold > 0 ? to_string(masking_threshold) : "NONE") << endl;
-        }
-
-        if(decoder == Decoder::PAMLD || decoder == Decoder::BENCHMARK) {
-        o << "    Prior noise frequency                       " << to_string(noise) << endl;
-        o << "    Multiplex confidence                        " << to_string(confidence) << endl;
-        o << "    Random word frequency                       " << random_word_probability << endl;
-        }
-    }
-    if (total_molecular_barcode_segments > 0) {
-        o << "    Molecular barcode length                    ";
-            for(const auto& length : molecular_barcode_length) {
-                o << size_t(length) << ' ';
-            } o << endl;
-    }
-    {
-        o << "    Feed buffer capacity                        " << to_string(buffer_capacity) << endl;
-        o << "    Transforming threads                        " << to_string(transforms) << endl;
-        o << "    Threads                                     " << to_string(threads) << endl;
-    }
-    o << endl;
-
-    o << "Transformation " << endl << endl;
-    if (!tokens.empty()) {
-        for(const auto& token: tokens) {
-            o << "    Token No." << token.index << endl;
-            o << "        Length        " << (token.constant() ? to_string(token.length()) : "variable") << endl;
-            o << "        Pattern       " << string(token) << endl;
-            o << "        Description   ";
-            o << token.description() << endl;
-            o << endl;
-        }
-    }
-    if (!template_transforms.empty()) {
-        o << "    Template transform" << endl;
-        for(const auto& transform : template_transforms) {
-            o << "        " << transform.description() << endl;
-        }
-        o << endl;
-    }
-    if (!multiplex_barcode_transforms.empty()) {
-        o << "    Multiplex barcode transform" << endl;
-        for(const auto& transform : multiplex_barcode_transforms) {
-            o << "        " << transform.description() << endl;
-        }
-        o << endl;
-    }
-    if (!molecular_barcode_transforms.empty()) {
-        o << "    Molecular barcode transform" << endl;
-        for(const auto& transform : molecular_barcode_transforms) {
-            o << "        " << transform.description() << endl;
-        }
-        o << endl;
-    }
-
-    o << "Input " << endl << endl;
-    if (input_specification != NULL && !input_specification->input_urls.empty()) {
-        for (size_t i = 0; i < input_specification->input_urls.size(); i++) {
-            o << "    Input segment No." << i << " : " << input_specification->input_urls[i] << endl;
-        }
-        o << endl;
-    }
-
-    o << "Channel " << endl << endl;
-    if(!channel_specifications.empty()) {
-        for(const auto specification : channel_specifications) {
-            specification->describe(o);
-        }
-    }
-
-    o << "Feed " << endl << endl;
-    for(const auto& item : input_feed_specification_by_url) {
-        item.second->describe(o);
-    }
-    for(const auto& item : output_feed_specification_by_url) {
-        item.second->describe(o);
-    }
-    if(display_distance && !multiplex_barcode_distance.empty()) {
-        o << "Barcode distance distribution" << endl << endl;
-        for(const auto metric : multiplex_barcode_set_distance) {
-            metric.describe(o);
-        }
-
-        if(multiplex_barcode_set_distance.size() > 1) {
-            multiplex_barcode_distance.describe(o);
-        }
-    }
-};
-void Environment::encode(Document& document) const {
-    document.SetObject();
-
-    encode_key_value("CN", facility, document, document);
-    encode_key_value("PM", platform_model, document, document);
-    encode_key_value("DT", production_date, document, document);
-    encode_key_value("PI", insert_size, document, document);
-    encode_key_value("base input path", base_input_url, document, document);
-    encode_key_value("base output path", base_output_url, document, document);
-
-    if(platform != Platform::UNKNOWN) {
-        string buffer;
-        buffer << platform;
-        encode_key_value("PL", buffer, document, document);
-    }
-    if(decoder != Decoder::UNKNOWN) {
-        string buffer;
-        buffer << decoder;
-        encode_key_value("decoder", buffer, document, document);
-    }
-
-    encode_key_value("disable quality control", disable_quality_control, document, document);
-    encode_key_value("long read", long_read, document, document);
-    encode_key_value("include filtered", include_filtered, document, document);
-    encode_key_value("input phred offset", input_phred_offset, document, document);
-    encode_key_value("output phred offset", output_phred_offset, document, document);
-    encode_key_value("masking threshold", masking_threshold, document, document);
-    encode_key_value("leading segment index", leading_segment_index, document, document);
-    encode_key_value("threads", threads, document, document);
-    encode_key_value("transforms", transforms, document, document);
-    encode_key_value("buffer capacity", buffer_capacity, document, document);
-    encode_key_value("confidence", confidence, document, document);
-    encode_key_value("noise", noise, document, document);
-
-    Document::AllocatorType& allocator = document.GetAllocator();
-    Value collection;
-
-    if(input_specification != NULL && !input_specification->input_urls.empty()) {
-        collection.SetArray();
-        for(auto& url : input_specification->input_urls) {
-            encode_element(url, collection, document);
-        }
-        document.AddMember("input", collection, allocator);
-    }
-    if(!multiplex_barcode_tolerance.empty()) {
-        Value v;
-        collection.SetArray();
-        for(auto& tolerance : multiplex_barcode_tolerance) {
-            v.SetUint64(tolerance);
-            collection.PushBack(v, allocator);
-        }
-        document.AddMember("distance tolerance", collection, allocator);
-    }
-    if(!tokens.empty()) {
-        Value v;
-        collection.SetArray();
-        for(auto& token : tokens) {
-            string buffer(token);
-            v.SetString(buffer.c_str(), buffer.size(), allocator);
-            collection.PushBack(v, allocator);
-        }
-        document.AddMember("token", collection, allocator);
-    }
-    encode_transform(document, document, template_transforms, "template");
-    encode_transform(document, document, multiplex_barcode_transforms, "multiplex barcode");
-    encode_transform(document, document, molecular_barcode_transforms, "molecular barcode");
-
-    if(!channel_specifications.empty()) {
-        collection.SetArray();
-        for(auto specification : channel_specifications) {
-            specification->encode(document, collection);
-        }
-        document.AddMember("channel", collection, allocator);
-    }
-};
-void Environment::validate_urls() {
-    if (input_specification != NULL) {
-        for (auto& url : input_specification->input_urls) {
-            if(!url.is_readable()) {
-                set_state(ProgramState::IO_ERROR);
-                throw IOError("could not open " + string(url) + " for reading");
-            }
-        }
-    }
-
-    for(const auto specification : channel_specifications) {
-        for (const auto& url : specification->output_urls) {
-            if(!url.is_writable()) {
-                set_state(ProgramState::IO_ERROR);
-                throw IOError("could not open " + string(url) + " for writing");
-            }
-        }
-    }
-};
-
-/*  configuration file parsing
-*/
-void Environment::load_configuration_file(const URL& url) {
-    Document document;
-    if (!url.empty()) {
-        if(url.is_readable()) {
-            ifstream file(url.path());
-            string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
-            file.close();
-            if (!document.Parse(content.c_str()).HasParseError()) {
-                if (document.IsObject()) {
-                    Value::ConstMemberIterator element;
-                    decode_string_by_key("CN", facility, document);
-                    decode_string_by_key("PM", platform_model, document);
-                    decode_string_by_key("DT", production_date, document);
-                    decode_string_by_key("PI", insert_size, document);
-                    decode_directory_by_key("base input path", base_input_url, document);
-                    decode_directory_by_key("base output path", base_output_url, document);
-                    decode_uint32_by_key("input phred offset", input_phred_offset, document);
-                    decode_uint32_by_key("output phred offset", output_phred_offset, document);
-                    decode_uint32_by_key("decoder masking threshold", masking_threshold, document);
-                    decode_uint32_by_key("leading segment", leading_segment_index, document);
-                    decode_bool_by_key("disable quality control", disable_quality_control, document);
-                    decode_bool_by_key("long read", long_read, document);
-                    decode_bool_by_key("include filtered", include_filtered, document);
-                    decode_bool_by_key("validate only", validate_only, document);
-                    decode_bool_by_key("lint only", lint_only, document);
-                    decode_bool_by_key("display distance", display_distance, document);
-                    decode_uint32_by_key("threads", threads, document);
-                    decode_uint32_by_key("transforms", transforms, document);
-                    decode_uint32_by_key("buffer capacity", buffer_capacity, document);
-                    decode_double_by_key("confidence", confidence, document);
-                    decode_double_by_key("noise", noise, document);
-
-                    element = document.FindMember("decoder");
-                    if (element != document.MemberEnd()) {
-                        if(element->value.IsString()) {
-                            set_decoder(element->value.GetString());
-                        } else { throw ConfigurationError("decoder element must be a string"); }
-                    }
-                    element = document.FindMember("PL");
-                    if (element != document.MemberEnd()) {
-                        if(element->value.IsString()) {
-                            set_platform(element->value.GetString());
-                        } else { throw ConfigurationError("platform element must be a string"); }
-                    }
-                    element = document.FindMember("input");
-                    if (element != document.MemberEnd()) {
-                        if(element->value.IsArray()) {
-                            input_specification = new InputSpecification();
-                            input_specification->input_urls.reserve(element->value.Size());
-                            for (SizeType i = 0; i < element->value.Size(); i++) {
-                                URL url;
-                                load_url_node(element->value[i], IoDirection::IN, url);
-                                input_specification->input_urls.push_back(url);
-                            }
-                        } else { throw ConfigurationError("input element must be an array"); }
-                    }
-
-                    element = document.FindMember("token");
-                    if (element != document.MemberEnd()) {
-                        load_token_node(element->value);
-                    }
-                    element = document.FindMember("template");
-                    if (element != document.MemberEnd()) {
-                        load_transform_node(element->value, template_patterns);
-                    }
-                    element = document.FindMember("multiplex barcode");
-                    if (element != document.MemberEnd()) {
-                        load_transform_node(element->value, multiplex_barcode_patterns);
-                    }
-                    element = document.FindMember("molecular barcode");
-                    if (element != document.MemberEnd()) {
-                        load_transform_node(element->value, molecular_barcode_patterns);
-                    }
-                    element = document.FindMember("read group");
-                    if (element != document.MemberEnd()) {
-                        if(element->value.IsArray()) {
-                            for (SizeType i = 0; i < element->value.Size(); i++) {
-                                try {
-                                    load_read_group_node(element->value[i]);
-                                } catch(ConfigurationError& e) {
-                                    e.message = "read group in position " + to_string(i) + " " + e.message;
-                                    throw e;
-                                }
-                            }
-                        } else { throw ConfigurationError("read group element must be an array"); }
-                    }
-                    element = document.FindMember("channel");
-                    if (element != document.MemberEnd()) {
-                        if(element->value.IsArray()) {
-                            for (SizeType i = 0; i < element->value.Size(); i++) {
-                                try {
-                                    load_channel_node(element->value[i]);
-                                } catch(ConfigurationError& e) {
-                                    e.message = "channel in position " + to_string(i) + " " + e.message;
-                                    throw e;
-                                }
-                            }
-                        } else { throw ConfigurationError("channel element must be an array"); }
-                    }
-                    element = document.FindMember("distance tolerance");
-                    if (element != document.MemberEnd()) {
-                        if(element->value.IsArray()) {
-                            for (SizeType i = 0; i < element->value.Size(); i++) {
-                                if (element->value[i].IsUint()) {
-                                    multiplex_barcode_tolerance.push_back(element->value[i].GetUint());
-                                } else {
-                                    throw ConfigurationError("distance tolerance at position " + to_string(i) + " must be a positive integer");
-                                }
-                            }
-                        } else { throw ConfigurationError("distance tolerance element must be an array"); }
-                    }
-                } else {
-                    throw ConfigurationError("configuration root node must be a dictionary");
-                }
-            } else {
-                string message(GetParseError_En(document.GetParseError()));
-                message += " at position ";
-                message += to_string(document.GetErrorOffset());
-                throw ConfigurationError(message);
-            }
-        } else {
-            throw IOError("could not read configuration from " + string(url));
-        }
-    }
-};
-void Environment::load_url_node(const Value& node, const IoDirection& direction, URL& url) {
-    url.clear();
-    if(node.IsString() || node.IsObject()) {
-        try {
-            if (node.IsString()) {
-                url.parse(string(node.GetString(), node.GetStringLength()), direction);
-
-            } else {
-                string buffer;
-                decode_string_by_key("path", buffer, node);
-                if(!buffer.empty()) {
-                    url.parse(buffer, direction);
-                } else {
-                    throw ConfigurationError("URL element must contain a non empty path element");
-                }
-
-                buffer.clear();
-                decode_string_by_key("type", buffer, node);
-                if(!buffer.empty()) {
-                    url.set_type(buffer.c_str());
-                }
-
-                buffer.clear();
-                decode_string_by_key("compression", buffer, node);
-                if(!buffer.empty()) {
-                    url.set_compression(buffer);
-                }
-            }
-        } catch(ConfigurationError& e) {
-            url.clear();
-            throw e;
-        }
-    } else {
-        throw ConfigurationError("URL element must be either a string or a dictionary");
-    }
-};
-void Environment::load_token_node(const Value& node) {
-    if (node.IsArray()) {
-        for (SizeType i = 0; i < node.Size(); i++) {
-            if (node[i].IsString()) {
-                token_patterns.emplace_back(node[i].GetString(), node[i].GetStringLength());
-            } else {
-                throw ConfigurationError("token array element at position " + to_string(i) + " must be a string");
-            }
-        }
-    } else { throw ConfigurationError("token element must be an array"); }
-};
-void Environment::load_transform_node(const Value& node, vector< string >& container) {
-    if (node.IsArray()) {
-        for (SizeType i = 0; i < node.Size(); i++) {
-            if (node[i].IsString()) {
-                container.emplace_back(node[i].GetString(), node[i].GetStringLength());
-            } else {
-                throw ConfigurationError("transform at position " + to_string(i) + " must be a string");
-            }
-        }
-    } else { throw ConfigurationError("transform element must be an array"); }
-};
-void Environment::load_read_group_node(const Value& node) {
-    if (node.IsObject()) {
-        HeadRGAtom* rg = new HeadRGAtom();
-        decode_HeadRGAtom_with_key_ID(node, *rg, "ID");
-        if(rg->ID.l > 0) {
-            string id(*rg);
-            auto record = read_group_by_id.find(id);
-            if (record == read_group_by_id.end()) {
-                read_group_by_id.emplace(make_pair(id, rg));
-            } else {
-                record->second->expand(*rg);
-                delete rg;
-            }
-        } else {
-            delete rg;
-            throw ConfigurationError("is missing an ID");
-        }
-    } else {
-        throw ConfigurationError("must be a dictionary");
-    }
-};
-void Environment::load_channel_node(const Value& node) {
-    if (node.IsObject()) {
-        ChannelSpecification* specification = new ChannelSpecification(channel_specifications.size());
-        decode_HeadRGAtom_with_key_ID(node, specification->rg, "RG");
-        decode_bool_by_key("undetermined", specification->undetermined, node);
-        decode_kstring_by_key("FS", specification->FS, node);
-        decode_kstring_by_key("CO", specification->CO, node);
-        decode_double_by_key("concentration", specification->concentration, node);
-
-        Value::ConstMemberIterator element;
-        element = node.FindMember("barcode");
-        if (element != node.MemberEnd()) {
-            try {
-                load_barcode_node(element->value, specification->multiplex_barcode);
-            } catch(ConfigurationError& e) {
-                delete specification;
-                throw e;
-            }
-        }
-        element = node.FindMember("output");
-        if (element != node.MemberEnd()) {
-            if(element->value.IsArray()) {
-                specification->output_urls.reserve(element->value.Size());
-                for (SizeType i = 0; i < element->value.Size(); i++) {
-                    URL url;
-                    try {
-                        load_url_node(element->value[i], IoDirection::OUT, url);
-                    } catch(ConfigurationError& e) {
-                        delete specification;
-                        throw e;
-                    }
-                    specification->output_urls.emplace_back(url);
-                }
-            } else { 
-                delete specification;
-                throw ConfigurationError("output element must be an array");
-            }
-        }
-        channel_specifications.push_back(specification);
-    } else {
-        throw ConfigurationError("must be a dictionary");
-    }
-};
-void Environment::load_barcode_node(const Value& node, Barcode& barcode) {
-    if(node.IsArray()) {
-        for (SizeType i = 0; i < node.Size(); i++) {
-            if (node[i].IsString()) {
-                string buffer(node[i].GetString(), node[i].GetStringLength());
-                for(auto& c : buffer) {
-                    if(!is_iupac_strict(c)) {
-                        throw ConfigurationError("contains an ambiguous nucleotide in barcode " + buffer);
-                    }
-                }
-                barcode.fill(i, buffer.c_str(), buffer.size());
-            } else {
-                throw ConfigurationError("barcode segment " + to_string(i) + " must be a string");
-            }
-        }
-    } else {
-        throw ConfigurationError("barcode element must be an array");
-    }
-};
-ChannelSpecification* Environment::load_channel_from_rg(const HeadRGAtom& rg) {
-    ChannelSpecification* specification = new ChannelSpecification(channel_specifications.size());
-    specification->rg = rg;
-    channel_specifications.push_back(specification);
-    return specification;
-};
-/*  loading data structures
-*/
-void Environment::load_defaults() {
-    kputsn(interface->name().c_str(), interface->name().size(), &pg.ID);
-    kputsn(interface->name().c_str(), interface->name().size(), &pg.PN);
-    kputsn(interface->get_full_command().c_str(), interface->get_full_command().size(), &pg.CL);
-    kputsn(version.c_str(), version.size(), &pg.VN);
-
-    // Default decoder
-    if(decoder == Decoder::UNKNOWN) {
-        decoder = Decoder::PAMLD;
-    }
-    // Default platform
-    if(platform == Platform::UNKNOWN) {
-        platform = Platform::ILLUMINA;
-    }
-
-    // Default IO feeds cache capacity
-    if(buffer_capacity == numeric_limits<uint32_t>::max()) {
-        buffer_capacity = DEFAULT_BUFFER_CAPACITY;
-    }
-
-    // Default Phred decoding offset
-    if(input_phred_offset == numeric_limits<uint32_t>::max()) {
-        input_phred_offset = DEFAULT_PHRED_OFFSET;
-    }
-
-    if(output_phred_offset == numeric_limits<uint32_t>::max()) {
-        output_phred_offset = DEFAULT_PHRED_OFFSET;
-    }
-};
-void Environment::load_urls() {
-    if(base_input_url.empty()) {
-        base_input_url = working_directory;
-    }
-    if(input_specification != NULL) {
-        for(auto& url : input_specification->input_urls) {
-            url.relocate(base_input_url);
-        }
-    }
-
-    if(base_output_url.empty()) {
-        base_output_url = working_directory;
-    }
-    for(auto specification : channel_specifications) {
-        for(auto& url : specification->output_urls) {
-            url.relocate(base_output_url);
-        }
-    }
-};
-void Environment::load_transformation() {
-    if(input_specification != NULL) {
-        total_input_segments = input_specification->input_urls.size();
-    } else {
-        total_input_segments = 0;
-    }
-
-    tokens.reserve(token_patterns.size());
-    for(const auto& pattern : token_patterns) {
-        load_token(pattern);
-    }
-
-    for(size_t i = 0; i < template_patterns.size(); i++) {
-        load_transform(template_patterns[i], template_transforms, i);
-    }
-    total_output_segments = template_patterns.size();
-
-
-    // multiplex barcode
-    total_multiplex_barcode_segments = multiplex_barcode_patterns.size();
-    for(size_t i = 0; i < total_multiplex_barcode_segments; i++) {
-        load_transform(multiplex_barcode_patterns[i], multiplex_barcode_transforms, i);
-    }
-    multiplex_barcode_length.resize(total_multiplex_barcode_segments);
-    for(auto& transform : multiplex_barcode_transforms) {
-        if(transform.token.constant()) {
-            if(!transform.token.empty()) {
-                multiplex_barcode_length[transform.output_segment_index] += transform.token.length();
-            } else {
-                throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty");
-            }
-        } else {
-            throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is not fixed width");
-        }
-    }
-
-    // molecular barcode
-    total_molecular_barcode_segments = molecular_barcode_patterns.size();
-    for(size_t i = 0; i < total_molecular_barcode_segments; i++) {
-        load_transform(molecular_barcode_patterns[i], molecular_barcode_transforms, i);
-    }
-    molecular_barcode_length.resize(total_molecular_barcode_segments);
-    for(auto& transform : molecular_barcode_transforms) {
-        if(transform.token.constant()) {
-            if(!transform.token.empty()) {
-                molecular_barcode_length[transform.output_segment_index] += transform.token.length();
-            } else {
-                throw ConfigurationError("molecular barcode token " + string(transform.token) + " is empty");
-            }
-        } else {
-            throw ConfigurationError("molecular barcode token " + string(transform.token) + " is not fixed width");
-        }
-    }
-
-    for(auto specification : channel_specifications) {
-        if(!specification->output_urls.empty() && specification->output_urls.size() != total_output_segments) {
-            if(specification->output_urls.size() == 1) {
-                while(specification->output_urls.size() < total_output_segments) {
-                    specification->output_urls.push_back(specification->output_urls[0]);
-                }
-            } else {
-                throw ConfigurationError("incorrect number of output paths in channel " + to_string(specification->index));
-            }
-        }
-    }
-};
-void Environment::load_token(const string& pattern) {
-    size_t input_segment_index = numeric_limits<size_t>::max();
-    int32_t start = numeric_limits<int32_t>::max();
-    int32_t end = numeric_limits<int32_t>::max();
-    bool end_terminated = true;
-
-    bool sign = true;
-    uint8_t literal = 0;
-    size_t position = 0;
-    int32_t value = numeric_limits<int32_t>::max();
-    while(true) {
-        const char& c = pattern[position];
-        switch(c) {
-            case ':':
-            case '\0':
-                switch(literal) {
-                    case 0: {
-                        if(value == numeric_limits<int32_t>::max()) {
-                            throw ConfigurationError("token must explicitly specify an input segment reference");
-                        } else if(value < 0) {
-                            throw ConfigurationError("input segment reference must be a positive number");
-                        } else {
-                            input_segment_index = size_t(value);
-                        }
-                        break;
-                    };
-                    case 1:{
-                        if(value == numeric_limits<int32_t>::max()) {
-                            start = 0;
-                        } else {
-                            start = sign ? value : -value;
-                        }
-                        break;
-                    };
-                    case 2: {
-                        if(value == numeric_limits<int32_t>::max()) {
-                            end = 0;
-                            end_terminated = false;
-                        } else {
-                            end = sign ? value : -value;
-                        }
-                        break;
-                    };
-                    default:
-                        throw ConfigurationError("illegal token syntax " + pattern);
-                        break;
-                }
-                value = numeric_limits<int32_t>::max();
-                sign = true;
-                literal++;
-                break;
-            case '-':
-                sign = false;
-                break;
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9': {
-                if(value == numeric_limits<int32_t>::max()) {
-                    value = c - '0';
-                } else {
-                    value = value * 10 + (c - '0');
-                }
+    if(!_help_only && !_version_only) {
+        switch (_program_action) {
+            case ProgramAction::DEMULTIPLEX: {
+                load_interface_instruction();
+                decode_value_by_key< bool >("validate only", _validate_only, _instruction);
+                decode_value_by_key< bool >("lint only", _lint_only, _instruction);
+                decode_value_by_key< bool >("display distance", _display_distance, _instruction);
                 break;
             };
-            default:
-                throw ConfigurationError("illegal character " + to_string(c) + " in token");
-                break;
-        }
-        if(c == '\0') { break; }
-        position++;
-    }
-    if(input_segment_index < total_input_segments) {
-        tokens.emplace_back(tokens.size(), input_segment_index, start, end, end_terminated);
-    } else {
-        throw ConfigurationError("invalid input segment reference " + to_string(input_segment_index) + " in token " + pattern);
-    } 
-};
-void Environment::load_transform(const string& pattern, vector< Transform >& container, const size_t& index) {
-    size_t position = 0;
-    size_t v = numeric_limits<size_t>::max();
-    LeftTokenOperator left = LeftTokenOperator::NONE;
-    while(true) {
-        const char& c = pattern[position];
-        switch(c) {
-            case ':':
-            case '\0':
-                if(v == numeric_limits<size_t>::max()) {
-                    throw ConfigurationError("transform must explicitly specify a token reference");
-                } else if(!(v < tokens.size())) {
-                    throw ConfigurationError("invalid token reference " + to_string(v) + " in transform");
-                } else {
-                    const Token& token = tokens[v];
-                    container.emplace_back(container.size(), token, index, left);
-                    v = numeric_limits<size_t>::max();
-                    left = LeftTokenOperator::NONE;
-                }
-                break;
-            case '~':
-                if(v == numeric_limits<size_t>::max()) {
-                    // the reverse complement operator is specified before the token
-                    left = LeftTokenOperator::REVERSE_COMPLEMENT;
-                } else {
-                    throw ConfigurationError(string("illegal right hand side operator in transform ") + c);
-                }
-                break;
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9': {
-                if(v == numeric_limits<size_t>::max()) {
-                    v = c - '0';
-                } else {
-                    v = v * 10 + (c - '0');
-                }
+
+            case ProgramAction::QUALITY: {
                 break;
             };
-            default:
-                throw ConfigurationError(string("illegal character in transform ") + c);
-        }
-        if(c == '\0') { break; }
-        position++;
-    }
-};
-void Environment::load_barcode_tolerance() {
-    // multiplex barcode tolerance should have exactly the same number of elements
-    // as the total number of multiplex barcode segments
-    vector<uint8_t> provided(multiplex_barcode_tolerance);
-    multiplex_barcode_tolerance.clear();
-    for(size_t i = 0; i < total_multiplex_barcode_segments; i++) {
-        if(i < provided.size()) {
-            multiplex_barcode_tolerance.push_back(provided[i]);
-        } else {
-            multiplex_barcode_tolerance.push_back(numeric_limits<uint8_t>::max());
-        }
-    }
-};
-void Environment::load_thread_model() {
-    if(transforms == numeric_limits<uint32_t>::max()) {
-        transforms = threads;
-    }
-};
-void Environment::load_undetermined() {
-    /*  if there is only one channel and it has no barcode but its not marked undetermined
-        we can logically mark it undetermined */
-    if(channel_specifications.size() == 1) {
-        ChannelSpecification* specification = channel_specifications[0];
-        if(specification->multiplex_barcode.empty() && !specification->undetermined) {
-            specification->undetermined = true;
-        }
-    }
 
-    /*  if at most one channel is marked undetermined, set the undetermined pointer
-        otherwise throw a validation exception */
-    for(const auto specification : channel_specifications) {
-        if(specification->undetermined) {
-            if(undetermined == NULL) {
-                undetermined = specification;
-            } else {
-                throw ConfigurationError("only one channel can accept undetermined reads");
+            default: break;
+        }
+    }
+};
+void Environment::load_interface_instruction() {
+    const Document& original = interface.instruction();
+    Value::ConstMemberIterator collection;
+    Document base;
+
+    /*  extract a base read group from the root element */
+    transcode_head_RG_atom(original, base, base);
+
+    /*  overlay any explicitly defined read groups on top of the default */
+    map< string, Value* > read_group_node_by_id;
+    collection = original.FindMember("read group");
+    if(collection != original.MemberEnd()) {
+        if(collection->value.IsArray() && !collection->value.Empty()) {
+            for(auto& element : collection->value.GetArray()) {
+                string key;
+                decode_value_by_key< string >("ID", key, element);
+                if(!key.empty()) {
+                    Value* implicit_read_group = new Value();
+                    auto record = read_group_node_by_id.find(key);
+                    if(record == read_group_node_by_id.end()) {
+                        merge_json_value(base, element, *implicit_read_group, _instruction);
+                        read_group_node_by_id.emplace(make_pair(key, implicit_read_group));
+                    } else {
+                        merge_json_value(*record->second, element, *implicit_read_group, _instruction);
+                        delete record->second;
+                        read_group_node_by_id[key] = implicit_read_group;
+                    }
+                } else { throw ConfigurationError("read group is missing an ID"); }
             }
-        }
+        } else { throw ConfigurationError("read group element must be an array"); }
     }
-};
-void Environment::load_multiplex_barcodes() {
-    /*  compute a pairwise hamming distance metric for each barcode set
-        and validate all barcodes obey the length constrains imposed by the transforms */
-    for(size_t i = 0; i < total_multiplex_barcode_segments; i++) {
-        Distance metric;
-        size_t size = multiplex_barcode_length[i];
-        for(const auto specification : channel_specifications) {
-            if(!specification->multiplex_barcode.empty()) {
-                if(specification->multiplex_barcode.size(i) == size) {
-                    metric.add(specification->multiplex_barcode.iupac_ambiguity(i));
-                } else {
-                    string message("barcode ");
-                    message.append(to_string(i));
-                    message.append(" in channel ");
-                    message.append(to_string(specification->index));
-                    message.append(" is ");
-                    message.append(to_string(specification->multiplex_barcode.size(i)));
-                    message.append(" nucleotides long, expected ");
-                    message.append(to_string(size));
-                    throw ConfigurationError(message);
-                }
+
+    /*  extract a base channel from the root element */
+    transcode_channel_specification(original, base, base);
+
+    /*  if a matching read group has been defined overlay the read group 
+        on top of the default channel and than the channel on top of that.
+        otherwise overlay every channel on top of the default 
+
+        also make sure there are no two channels with the same read group ID */
+    collection = original.FindMember("channel");
+    if(collection != original.MemberEnd()) {
+        set< string > unique_channel_id;
+        if(collection->value.IsArray() && !collection->value.Empty()) {
+            uint64_t channel_index(0);
+            uint64_t undetermined_count(0);
+            bool undetermined(false);
+            Value channel_array(kArrayType);
+            for(auto& element : collection->value.GetArray()) {
+                string key;
+                decode_value_by_key< string >("RG", key, element);
+                if(!key.empty()) {
+                    if(!unique_channel_id.count(key)) {
+                        unique_channel_id.emplace(key);
+
+                        Value implicit_channel;
+                        auto record = read_group_node_by_id.find(key);
+                        if(record == read_group_node_by_id.end()) {
+                            merge_json_value(base, element, implicit_channel, _instruction);
+                        } else {
+                            Value annotated_channel;
+                            merge_json_value(base, *record->second, annotated_channel, _instruction);
+                            merge_json_value(annotated_channel, element, implicit_channel, _instruction);
+                            annotated_channel.SetNull();
+                        }
+
+                        /* remove any barcode and concentration declared on the undetermined channel */
+                        if(decode_value_by_key< bool >("undetermined", undetermined, implicit_channel)) {
+                            if(undetermined) {
+                                implicit_channel.RemoveMember("barcode");
+                                implicit_channel.RemoveMember("concentration");
+                                undetermined_count++;
+                            }
+                        }
+
+                        encode_key_value("index", channel_index++, implicit_channel, _instruction);
+                        channel_array.PushBack(implicit_channel.Move(), _instruction.GetAllocator());
+                    } else { throw ConfigurationError("channel " + key + " at position " + to_string(channel_index) + " is already defined"); }
+                } else { throw ConfigurationError("channel is missing a read group ID"); }
             }
-        }
-        metric.load();
-        multiplex_barcode_set_distance.emplace_back(metric);
-    }
 
-    /*  compute a pairwise hamming distance metric for the concatenated barcode */
-    for(const auto specification : channel_specifications){
-        if(!specification->multiplex_barcode.empty()) {
-            multiplex_barcode_distance.add(specification->multiplex_barcode.iupac_ambiguity());
-        }
-    }
-    multiplex_barcode_distance.load();
+            if(undetermined_count > 1) {
+                throw ConfigurationError("only one undetermined channel can be declared");
 
-    /*  multiplex barcode tolerance can not be bigger than the number of correctable errors */
-    for(size_t i = 0; i < total_multiplex_barcode_segments; i++) {
-        multiplex_barcode_tolerance[i] = MIN(multiplex_barcode_tolerance[i], multiplex_barcode_set_distance[i].shannon_bound());
-    }
-
-    /*  construct a null barcode for the undetermined channel */
-    if(undetermined != NULL && !multiplex_barcode_distance.empty()) {
-        for(size_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
-            Distance& metric = multiplex_barcode_set_distance[i];
-            string pattern(metric.width(), '=');
-            undetermined->multiplex_barcode.fill(i, pattern.c_str(), pattern.length());
-        }
-    }
-};
-void Environment::load_prior() {
-    double total = 0;
-    double count = 0;
-    double specified = 0;
-    for(const auto specification : channel_specifications) {
-        if(!specification->undetermined) {
-            count++;
-            if(specification->concentration > 0) {
-                total += specification->concentration;
-                specified++;
-            }
-        }
-    }
-    if(specified > 0) {
-        if(specified == count) {
-            double factor = (1.0 - noise) / total;
-            for(auto specification : channel_specifications) {
-                specification->concentration *= factor;
-            }
-        } else {
-            throw ConfigurationError("inconsistent channel concentration");
-        }
-    } else {
-        /* if no concentrations were given assume a uniform distribution */
-        double factor = (1.0 - noise) / count;
-        for(auto specification : channel_specifications) {
-            specification->concentration = factor;
-        }
-    }
-    random_word_probability =  1.0 / double(pow(4, (multiplex_barcode_width())));;
-    adjusted_noise_probability  = noise * random_word_probability;;
-};
-void Environment::load_channels() {
-    HeadRGAtom default_rg;
-    if(platform != Platform::UNKNOWN)   default_rg.set_platform(platform);
-    if(!facility.empty())               kputsn(facility.c_str(), facility.size(), &default_rg.CN);
-    if(!platform_model.empty())         kputsn(platform_model.c_str(), platform_model.size(), &default_rg.PM);
-    if(!production_date.empty())        kputsn(production_date.c_str(), production_date.size(), &default_rg.DT);
-    if(!insert_size.empty())            kputsn(insert_size.c_str(), insert_size.size(), &default_rg.PI);
-
-    for(auto specification : channel_specifications) {
-        if(specification->rg.ID.l > 0) {
-            auto record = read_group_by_id.find(specification->rg);
-            if (record != read_group_by_id.end()) {
-                specification->rg.expand(*record->second);
-            }
-            specification->decoder = decoder;
-            specification->rg.expand(default_rg);
-            specification->TC = total_output_segments;
-            specification->disable_quality_control = disable_quality_control;
-            specification->long_read = long_read;
-            specification->include_filtered = include_filtered;
-            specification->multiplex_barcode.set_threshold(masking_threshold);
-            specification->multiplex_barcode.set_tolerance(multiplex_barcode_tolerance);
-        }
-    }
-};
-void Environment::load_input_specification() {
-    if(input_specification != NULL) {
-        input_specification->decoder = decoder;
-        input_specification->disable_quality_control = disable_quality_control;
-        input_specification->long_read = long_read;
-        input_specification->include_filtered = include_filtered;
-
-        /* count how many times every URL is referenced as input */
-        unordered_map< URL, size_t > referenced_input;
-        for(const auto& url : input_specification->input_urls) {
-            referenced_input[url]++;
-        }
-
-        /* discover the input feeds and set their resolution to the reference cardinality */
-        for(const auto& record : referenced_input) {
-            const URL& url = record.first;
-            FeedSpecification* feed = discover_feed(url, IoDirection::IN);
-            feed->set_resolution(record.second);
-            feed->set_capacity(buffer_capacity * feed->resolution);
-        }
-
-        /* populate the feed specification array */
-        input_specification->feed_specifications.reserve(input_specification->input_urls.size());
-        for(const auto& url : input_specification->input_urls) {
-            auto record = input_feed_specification_by_url.find(url);
-            if (record != input_feed_specification_by_url.end()) {
-                input_specification->feed_specifications.push_back(record->second);
-            } else {
-                throw InternalError("reference to undiscovered feed " + string(url));
-            }
-        }
-    }
-};
-void Environment::load_output_specification() {
-    unordered_map< URL, unordered_map< ChannelSpecification*, size_t > > referenced_output;
-
-    for(const auto specification : channel_specifications) {
-        for(const auto& url : specification->output_urls) {
-            referenced_output[url][specification]++;
-        }
-    }
-
-    for(const auto& url_record : referenced_output) {
-        const URL& url = url_record.first;
-        switch(url.type()) {
-            case FormatType::SAM:
-            case FormatType::BAM:
-            case FormatType::CRAM:
-            case FormatType::FASTQ: {
-                size_t resolution = 0;
-                for(const auto& channel_record : url_record.second) {
-                    if(resolution == 0) {
-                        resolution = channel_record.second;
-                    } else if(resolution != channel_record.second) {
-                        throw ConfigurationError("inconsistent resolution for " + string(url));
+            } else if(channel_index == 1 && undetermined_count == 0) {
+                /*  if only one channel is defined and it has no barcode defined, mark it as undetermined */
+                for(auto& element : channel_array.GetArray()) {
+                    Barcode barcode;
+                    if(!decode_value_by_key< Barcode >("barcode", barcode, element)) {
+                        encode_key_value("undetermined", true, element, _instruction);
                     }
                 }
-
-                FeedSpecification* feed = discover_feed(url, IoDirection::OUT);
-                feed->set_resolution(resolution);
-                feed->set_capacity(buffer_capacity * feed->resolution);
-                feed->register_pg(pg);
-
-                for(const auto& channel_record : url_record.second) {
-                    ChannelSpecification* channel = channel_record.first;
-                    feed->register_rg(channel->rg);
-                }
-                break;
-            };
-            default:
-                throw ConfigurationError("unknown format for " + string(url));
-                break;
-        }
-    }
-
-    for(auto specification : channel_specifications) {
-        /* populate the feed specification array */
-        specification->feed_specification.reserve(specification->output_urls.size());
-        for(const auto& url : specification->output_urls) {
-            auto record = output_feed_specification_by_url.find(url);
-            if (record != output_feed_specification_by_url.end()) {
-                specification->feed_specification.push_back(record->second);
-            } else {
-                throw InternalError("reference to undiscovered feed " + string(url));
             }
+            _instruction.AddMember("channel", channel_array.Move(), _instruction.GetAllocator());
+        } else { throw ConfigurationError("channel element must be an array"); }
+    }
+    base.SetNull();
+
+    /*  encode the read group array */
+    if(!read_group_node_by_id.empty()) {
+        Value read_group_array(kArrayType);
+        for(const auto& record : read_group_node_by_id) {
+            read_group_array.PushBack(record.second->Move(), _instruction.GetAllocator());
+        }
+        _instruction.AddMember("read group", read_group_array.Move(), _instruction.GetAllocator());
+    }
+
+    /*  copy everything except the read group and channel arrays */
+    for(auto& record : original.GetObject()) {
+        string key(record.name.GetString(), record.name.GetStringLength());
+        if(key != "read group" && key != "channel") {
+            Value value;
+            value.CopyFrom(record.value, _instruction.GetAllocator());
+            Value name(record.name, _instruction.GetAllocator());
+            _instruction.AddMember(name.Move(), value.Move(), _instruction.GetAllocator());
+        }
+    }
+    validate_global_parameters();
+    apply_url_base();
+    load_concentration_prior();
+    load_input_feed_array();
+    load_transformation_array();
+    cross_validate_io();
+    load_pheniqs_pg();
+};
+void Environment::validate_global_parameters() {
+    uint8_t input_phred_offset(numeric_limits< uint8_t >::max());
+    if(decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, _instruction)) {
+        if(input_phred_offset > MAX_PHRED_VALUE || input_phred_offset < MIN_PHRED_VALUE) {
+            throw ConfigurationError("input phred offset out of range " + to_string(input_phred_offset));
         }
     }
 
-};
-void Environment::validate_io() {
-    /*  verify no URL is used for both input and output */
-    for(const auto& output_record : output_feed_specification_by_url) {
-        const URL& url = output_record.first;
-        auto input_record = input_feed_specification_by_url.find(url);
-        if (input_record != input_feed_specification_by_url.end()) {
-            throw ConfigurationError("URL " + string(url) + " is used for both input and output");
+    uint8_t output_phred_offset(numeric_limits< uint8_t >::max());
+    if(decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, _instruction)) {
+        if(output_phred_offset > MAX_PHRED_VALUE || output_phred_offset < MIN_PHRED_VALUE) {
+            throw ConfigurationError("output phred offset out of range " + to_string(output_phred_offset));
         }
     }
-};
-void Environment::probe() {
-    for(const auto& record : input_feed_specification_by_url) {
-        FeedSpecification* feed = record.second;
-        feed->probe();
-    }
-    for(const auto& record : output_feed_specification_by_url) {
-        FeedSpecification* feed = record.second;
-        feed->probe();
-    }
-};
-void Environment::calibrate(const URL& url) {
-    input_specification = new InputSpecification();
-    input_specification->decoder = decoder;
-    input_specification->disable_quality_control = disable_quality_control;
-    input_specification->long_read = long_read;
-    input_specification->include_filtered = include_filtered;
 
-    input_specification->input_urls.reserve(total_input_segments);
-    for(size_t i = 0; i < total_input_segments; i++) {
-        input_specification->input_urls.push_back(url);
-        token_patterns.emplace_back(to_string(i) + "::");
-        template_patterns.emplace_back(to_string(i));
-    }
-};
-void Environment::validate() {
-    /* validate phred range */
-    if(input_phred_offset > MAX_PHRED_VALUE || input_phred_offset < MIN_PHRED_VALUE) {
-        throw ConfigurationError("input phred offset out of range " + to_string(input_phred_offset));
-    }
-    if(output_phred_offset > MAX_PHRED_VALUE || output_phred_offset < MIN_PHRED_VALUE) {
-        throw ConfigurationError("output phred offset out of range " + to_string(output_phred_offset));
-    }
-
-    switch (action) {
+    switch (_program_action) {
         case ProgramAction::DEMULTIPLEX: {
-
-            /* leading_segment_index must reference an input segment */
-            if (leading_segment_index >= total_input_segments) {
-                throw ConfigurationError("invalid leading segment index " + to_string(leading_segment_index));
+            double multiplex_confidence(numeric_limits< double >::infinity());
+            if(decode_value_by_key< double >("multiplex confidence", multiplex_confidence, _instruction)) {
+                if(multiplex_confidence < 0 || multiplex_confidence > 1) {
+                    throw ConfigurationError("multiplex confidence value " + to_string(multiplex_confidence) + " not between 0 and 1");
+                }
             }
-            if (confidence < 0 || confidence > 1) {
-                throw ConfigurationError("confidence value " + to_string(confidence) + " not between 0 and 1");
-            }
-            if (noise < 0 || noise > 1) {
-                throw ConfigurationError("noise value " + to_string(noise) + " not between 0 and 1");
+            double multiplex_noise(numeric_limits< double >::infinity());
+            if(decode_value_by_key< double >("multiplex noise", multiplex_noise, _instruction)) {
+                if(multiplex_noise < 0 || multiplex_noise > 1) {
+                    throw ConfigurationError("multiplex noise value " + to_string(multiplex_noise) + " not between 0 and 1");
+                }
             }
             break;
         };
@@ -1268,39 +221,631 @@ void Environment::validate() {
         default: break;
     }
 };
-FeedSpecification* Environment::discover_feed(const URL& url, const IoDirection& direction) {
-    FeedSpecification* specification = NULL;
-    switch(direction) {
-        case IoDirection::IN: {
-            auto record = input_feed_specification_by_url.find(url);
-            if (record != input_feed_specification_by_url.end()) {
-                specification = record->second;
-            } else {
-                specification = new FeedSpecification (
-                    direction,
-                    input_feed_specification_by_url.size(),
-                    url,
-                    platform,
-                    input_phred_offset);
-                input_feed_specification_by_url.emplace(make_pair(URL(url), specification));
+void Environment::apply_url_base() {
+    URL base_input_url;
+    if(decode_directory_url_by_key("base input url", base_input_url, _instruction)) {
+        list< URL > input;
+        if(decode_file_url_list_by_key("input", input, _instruction, IoDirection::IN)) {
+            for(auto& url : input) {
+                url.relocate(base_input_url);
             }
-            break;
-        };
-        case IoDirection::OUT: {
-            auto record = output_feed_specification_by_url.find(url);
-            if (record != output_feed_specification_by_url.end()) {
-                specification = record->second;
-            } else {
-                specification = new FeedSpecification (
-                    direction,
-                    output_feed_specification_by_url.size(),
-                    url,
-                    platform,
-                    output_phred_offset);
-                output_feed_specification_by_url.emplace(make_pair(URL(url), specification));
-            }
-            break;
-        };
+            encode_key_value("input", input, _instruction, _instruction);
+        }
     }
-    return specification;
+
+    URL base_output_url;
+    if(decode_directory_url_by_key("base output url", base_output_url, _instruction)) {
+        Value::MemberIterator collection = _instruction.FindMember("channel");
+        if(collection != _instruction.MemberEnd()) {
+            if(!collection->value.IsNull() && !collection->value.Empty()) {
+                for(auto& element : collection->value.GetArray()) {
+                    list< URL > output;
+                    if(decode_file_url_list_by_key("output", output, element, IoDirection::OUT)) {
+                        for(auto& url : output) {
+                            url.relocate(base_output_url);
+                        }
+                        encode_key_value("output", output, element, _instruction);
+                    }
+                }
+            }
+        }
+    }
+};
+void Environment::load_concentration_prior() {
+    Value::MemberIterator collection = _instruction.FindMember("channel");
+    if(collection != _instruction.MemberEnd()) {
+        if(!collection->value.IsNull() && !collection->value.Empty()) {
+            double total_concentration(0);
+            uint64_t concentration_count(0);
+            uint64_t concentration_specified(0);
+
+            for(auto& element : collection->value.GetArray()) {
+                bool undetermined(false);
+                decode_value_by_key< bool >("undetermined", undetermined, element);
+                if(!undetermined) {
+                    concentration_count++;
+                    double concentration(0);
+                    if(decode_value_by_key< double >("concentration", concentration, element)) {
+                        if(concentration >= 0) {
+                            concentration_specified++;
+                            total_concentration += concentration;
+                        } else { throw ConfigurationError("channel concentration must be a positive number");  }
+                    }
+                } else { element.RemoveMember("concentration"); }
+            }
+
+            double multiplex_noise(0);
+            decode_value_by_key< double >("multiplex noise", multiplex_noise, _instruction);
+            if(concentration_specified > 0) {
+                if(concentration_specified == concentration_count) {
+                    const double factor((1.0 - multiplex_noise) / total_concentration);
+                    for(auto& element : collection->value.GetArray()) {
+                        bool undetermined(false);
+                        decode_value_by_key< bool >("undetermined", undetermined, element);
+                        if(!undetermined) {
+                            double concentration(0);
+                            if(decode_value_by_key< double >("concentration", concentration, element)) {
+                                encode_key_value("concentration", concentration * factor, element, _instruction);
+                            }
+                        }
+                    }
+                } else { throw ConfigurationError("inconsistent channel concentration specification"); }
+            } else {
+                /* if no concentrations were given assume a uniform distribution */
+                const double factor((1.0 - multiplex_noise) / concentration_count);
+                for(auto& element : collection->value.GetArray()) {
+                    bool undetermined(false);
+                    decode_value_by_key< bool >("undetermined", undetermined, element);
+                    if(!undetermined) {
+                        encode_key_value("concentration", factor, element, _instruction);
+                    }
+                }
+            }
+        }
+    }
+};
+bool Environment::load_input_feed_array() {
+    list< URL > input_url_array;
+    if(decode_file_url_list_by_key("input", input_url_array, _instruction, IoDirection::IN)) {
+        uint64_t input_segment_cardinality = input_url_array.size();
+        encode_key_value("input segment cardinality", input_segment_cardinality, _instruction, _instruction);
+
+        /*  validate leading_segment_index */
+        uint64_t leading_segment_index(numeric_limits< uint64_t >::max());
+        if(decode_value_by_key< uint64_t >("leading segment index", leading_segment_index, _instruction)) {
+            if(leading_segment_index >= input_segment_cardinality) {
+                throw ConfigurationError("invalid leading segment index " + to_string(leading_segment_index));
+            }
+        }
+
+        map< URL, uint64_t > reference;
+        for(const auto& url : input_url_array) {
+            reference[url]++;
+        }
+
+        Platform platform(Platform::UNKNOWN);
+        decode_value_by_key< Platform >("platform", platform, _instruction);
+
+        uint64_t buffer_capacity(numeric_limits< uint64_t >::max());
+        decode_value_by_key< uint64_t >("buffer capacity", buffer_capacity, _instruction);
+
+        uint8_t input_phred_offset(numeric_limits< uint8_t >::max());
+        decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, _instruction);
+
+        uint64_t feed_index(0);
+        Value feed_array(kArrayType);
+        for(const auto& record : reference) {
+            uint64_t resolution(record.second);
+            Value specification(kObjectType);
+            encode_key_value("index", feed_index++, specification, _instruction);
+            encode_key_value("url", record.first, specification, _instruction);
+            encode_key_value("direction", IoDirection::IN, specification, _instruction);
+            encode_key_value("platform", platform, specification, _instruction);
+            encode_key_value("capacity", buffer_capacity * resolution, specification, _instruction);
+            encode_key_value("resolution", resolution, specification, _instruction);
+            encode_key_value("phred offset", input_phred_offset, specification, _instruction);
+            feed_array.PushBack(specification.Move(), _instruction.GetAllocator());
+        }
+        _instruction.AddMember("input feed", feed_array.Move(), _instruction.GetAllocator());
+        return true;
+    }
+    return false;
+};
+void Environment::load_transformation_array() {
+    uint64_t input_segment_cardinality(numeric_limits< uint64_t >::max());
+    if(decode_value_by_key< uint64_t >("input segment cardinality", input_segment_cardinality, _instruction)) {
+        vector< Token > token_array;
+        if(decode_value_by_key< vector< Token > >("token", token_array, _instruction)) {
+            for(auto& token : token_array) {
+                if(!(token.input_segment_index < input_segment_cardinality)) {
+                    throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
+                }
+            }
+
+            list< Transform > template_transform_array;
+            if(decode_transform_array_by_key("template", template_transform_array, _instruction, token_array)) {
+                uint64_t output_segment_cardinality(template_transform_array.size());
+                encode_key_value("output segment cardinality", output_segment_cardinality, _instruction, _instruction);
+                pad_output_url_array(output_segment_cardinality);
+                load_output_feed_array();
+            }
+
+            // load multiplex barcode transform array
+            list< Transform > multiplex_barcode_transform_array;
+            if(decode_transform_array_by_key("multiplex barcode", multiplex_barcode_transform_array, _instruction, token_array)) {
+                uint64_t multiplex_segment_cardinality(multiplex_barcode_transform_array.size());
+                uint64_t concatenated_multiplex_barcode_length(0);
+                vector< uint64_t > multiplex_barcode_length(multiplex_segment_cardinality, 0);
+
+                for(auto& transform : multiplex_barcode_transform_array) {
+                    if(transform.token.constant()) {
+                        if(!transform.token.empty()) {
+                            multiplex_barcode_length[transform.output_segment_index] += transform.token.length();
+                            concatenated_multiplex_barcode_length += transform.token.length();
+                        } else {
+                            throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty");
+                        }
+                    } else {
+                        throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is not fixed width");
+                    }
+                }
+
+                double multiplex_noise(0);
+                decode_value_by_key< double >("multiplex noise", multiplex_noise, _instruction);
+                double random_multiplex_barcode_probability(1.0 / double(pow(4, (concatenated_multiplex_barcode_length))));
+                double adjusted_multiplex_noise_probability(multiplex_noise * random_multiplex_barcode_probability);
+
+                encode_key_value("multiplex segment cardinality", multiplex_segment_cardinality, _instruction, _instruction);
+                encode_key_value("concatenated multiplex barcode length", concatenated_multiplex_barcode_length, _instruction, _instruction);
+                encode_key_value("multiplex barcode length", multiplex_barcode_length, _instruction, _instruction);
+                encode_key_value("random multiplex barcode probability", random_multiplex_barcode_probability, _instruction, _instruction);
+                encode_key_value("adjusted multiplex noise probability", adjusted_multiplex_noise_probability, _instruction, _instruction);
+
+                load_undetermined_barcode(multiplex_barcode_length);
+                load_multiplex_barcode_distance_metric(multiplex_barcode_length);
+            }
+
+            // load molecular barcode transform array
+            list< Transform > molecular_barcode_transform_array;
+            if(decode_transform_array_by_key("molecular barcode", molecular_barcode_transform_array, _instruction, token_array)) {
+                uint64_t molecular_segment_cardinality(molecular_barcode_transform_array.size());
+                uint64_t concatenated_molecular_barcode_length(0);
+                vector< uint64_t > molecular_barcode_length(molecular_segment_cardinality, 0);
+
+                for(auto& transform : molecular_barcode_transform_array) {
+                    if(transform.token.constant()) {
+                        if(!transform.token.empty()) {
+                            molecular_barcode_length[transform.output_segment_index] += transform.token.length();
+                            concatenated_molecular_barcode_length += transform.token.length();
+                        } else {
+                            throw ConfigurationError("molecular barcode token " + string(transform.token) + " is empty");
+                        }
+                    } else {
+                        throw ConfigurationError("molecular barcode token " + string(transform.token) + " is not fixed width");
+                    }
+                }
+
+                encode_key_value("molecular segment cardinality", molecular_segment_cardinality, _instruction, _instruction);
+                encode_key_value("concatenated molecular barcode length", concatenated_molecular_barcode_length, _instruction, _instruction);
+                encode_key_value("molecular barcode length", molecular_barcode_length, _instruction, _instruction);
+            }
+
+
+        }
+    }
+};
+void Environment::pad_output_url_array(const uint64_t& output_segment_cardinality) {
+    Value::MemberIterator collection = _instruction.FindMember("channel");
+    if(collection != _instruction.MemberEnd()) {
+        if(!collection->value.IsNull() && !collection->value.Empty()) {
+            for(auto& element : collection->value.GetArray()) {
+                list< URL > array;
+                if(decode_file_url_list_by_key("output", array, element, IoDirection::OUT)) {
+                    if(!array.empty()) {
+                        if(array.size() != output_segment_cardinality) {
+                            if(array.size() == 1) {
+                                while(array.size() < output_segment_cardinality) {
+                                    array.push_back(array.front());
+                                }
+                            } else { 
+                                uint64_t channel_index;
+                                decode_value_by_key< uint64_t >("index", channel_index, element);
+                                throw ConfigurationError("incorrect number of output URLs in channel " + to_string(channel_index)); 
+                            }
+                        }
+                        encode_key_value("output", array, element, _instruction);
+                        encode_key_value("TC", output_segment_cardinality, element, _instruction);
+                    }
+                }
+            }
+        }
+    }
+};
+bool Environment::load_output_feed_array() {
+    Value::MemberIterator collection = _instruction.FindMember("channel");
+    if(collection != _instruction.MemberEnd()) {
+        if(!collection->value.IsNull() && !collection->value.Empty()) {
+            unordered_map< URL, unordered_map< uint64_t, uint64_t > > reference;
+            for(auto& element : collection->value.GetArray()) {
+                uint64_t channel_index;
+                if(decode_value_by_key< uint64_t >("index", channel_index, element)) {
+                    list< URL > output;
+                    if(decode_file_url_list_by_key("output", output, element, IoDirection::OUT)) {
+                        for(auto& url : output) {
+                            reference[url][channel_index]++;
+                        }
+                    }
+                }
+            }
+
+            Platform platform(Platform::UNKNOWN);
+            decode_value_by_key< Platform >("platform", platform, _instruction);
+
+            uint64_t buffer_capacity(numeric_limits< uint64_t >::max());
+            decode_value_by_key< uint64_t >("buffer capacity", buffer_capacity, _instruction);
+
+            uint8_t output_phred_offset(numeric_limits< uint8_t >::max());
+            decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, _instruction);
+
+            uint64_t feed_index(0);
+            Value feed_array(kArrayType);
+            for(const auto& url_record : reference) {
+                const URL& url = url_record.first;
+                uint64_t resolution(0);
+                for(const auto& channel_record : url_record.second) {
+                    if(resolution == 0) {
+                        resolution = channel_record.second;
+                    } else if(resolution != channel_record.second) {
+                        throw ConfigurationError("inconsistent resolution for " + string(url));
+                    }
+                }
+                Value specification(kObjectType);
+                encode_key_value("index", feed_index++, specification, _instruction);
+                encode_key_value("url", url, specification, _instruction);
+                encode_key_value("direction", IoDirection::OUT, specification, _instruction);
+                encode_key_value("platform", platform, specification, _instruction);
+                encode_key_value("capacity", buffer_capacity * resolution, specification, _instruction);
+                encode_key_value("resolution", resolution, specification, _instruction);
+                encode_key_value("phred offset", output_phred_offset, specification, _instruction);
+                feed_array.PushBack(specification.Move(), _instruction.GetAllocator());
+            }
+            _instruction.AddMember("output feed", feed_array.Move(), _instruction.GetAllocator());
+            return true;
+        }
+    }
+    return false;
+};
+void Environment::load_undetermined_barcode(const vector< uint64_t >& multiplex_barcode_length) {
+    Value::MemberIterator collection = _instruction.FindMember("channel");
+    if(collection != _instruction.MemberEnd()) {
+        if(!collection->value.IsNull() && !collection->value.Empty()) {
+            for(auto& element : collection->value.GetArray()) {
+                bool undetermined(false);
+                if(decode_value_by_key< bool >("undetermined", undetermined, element) && undetermined) {
+                    Barcode barcode(multiplex_barcode_length.size());
+                    for(uint64_t i = 0; i < multiplex_barcode_length.size(); i++) {
+                        string pattern(multiplex_barcode_length[i], '=');
+                        barcode.fill(i, pattern.c_str(), pattern.length());
+                    }
+                    encode_key_value("barcode", barcode, element, _instruction);
+                    break;
+                }
+            }
+        }
+    }
+};
+void Environment::load_multiplex_barcode_distance_metric(const vector< uint64_t >& multiplex_barcode_length) {
+    Value::MemberIterator collection = _instruction.FindMember("channel");
+    if(collection != _instruction.MemberEnd()) {
+        if(!collection->value.IsNull() && !collection->value.Empty()) {
+            _multiplex_barcode_set_distance.resize(multiplex_barcode_length.size());
+            for(auto& element : collection->value.GetArray()) {
+                bool undetermined(false);
+                decode_value_by_key< bool >("undetermined", undetermined, element);
+                if(!undetermined) {
+                    Barcode multiplex_barcode;
+                    if(decode_value_by_key< Barcode >("barcode", multiplex_barcode, element)) {
+                        if(!multiplex_barcode.empty()) {
+                            for(uint64_t i = 0; i < multiplex_barcode_length.size(); i++) {
+                                if(multiplex_barcode.size(i) == multiplex_barcode_length[i]) {
+                                    _multiplex_barcode_set_distance[i].add(multiplex_barcode.iupac_ambiguity(i));
+                                } else {
+                                    uint64_t channel_index;
+                                    decode_value_by_key< uint64_t >("index", channel_index, element);
+                                    string message("multiplex barcode ");
+                                    message.append(to_string(i));
+                                    message.append(" in channel ");
+                                    message.append(to_string(channel_index));
+                                    message.append(" is ");
+                                    message.append(to_string(multiplex_barcode.size(i)));
+                                    message.append(" nucleotides long, expected ");
+                                    message.append(to_string(multiplex_barcode_length[i]));
+                                    throw ConfigurationError(message);
+                                }
+                            }
+                            _multiplex_barcode_distance.add(multiplex_barcode.iupac_ambiguity());
+                        }
+                    }
+                }
+            }
+
+            for(auto& metric : _multiplex_barcode_set_distance) {
+                metric.load();
+            }
+            load_barcode_tolerance(_multiplex_barcode_set_distance);
+
+            _multiplex_barcode_distance.load();
+        }
+    }
+};
+void Environment::load_barcode_tolerance(const vector< BarcodeDistanceMetric >& multiplex_barcode_set_distance) {
+    vector< uint8_t > multiplex_barcode_tolerance;
+    if(decode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", multiplex_barcode_tolerance, _instruction)) {
+        if(multiplex_barcode_tolerance.size() == multiplex_barcode_set_distance.size()) {
+            for(uint64_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
+                if(multiplex_barcode_tolerance[i] > multiplex_barcode_set_distance[i].shannon_bound()) {
+                    throw ConfigurationError(
+                        "multiplex barcode tolerance for segment " + 
+                        to_string(i) + 
+                        " is higher than the shannon bound " + 
+                        to_string(multiplex_barcode_set_distance[i].shannon_bound())
+                    );
+                }
+            }
+        } else { throw ConfigurationError("inconsistent multiplex barcode tolerance specification"); }
+    } else {
+        multiplex_barcode_tolerance.resize(multiplex_barcode_set_distance.size());
+        for(uint64_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
+            multiplex_barcode_tolerance[i] = multiplex_barcode_set_distance[i].shannon_bound();
+        }
+    }
+    encode_key_value("multiplex barcode tolerance", multiplex_barcode_tolerance, _instruction, _instruction);
+
+    Value::MemberIterator collection = _instruction.FindMember("channel");
+    if(collection != _instruction.MemberEnd()) {
+        if(!collection->value.IsNull() && !collection->value.Empty()) {
+            for(auto& element : collection->value.GetArray()) {
+                encode_key_value("multiplex barcode tolerance", multiplex_barcode_tolerance, element, _instruction);
+            }
+        }
+    }
+};
+void Environment::cross_validate_io() {
+    /*  verify no URL is used for both input and output */
+    URL url;
+    Value::ConstMemberIterator collection;
+    
+    collection = _instruction.FindMember("input feed");
+    if(collection != _instruction.MemberEnd()) {
+        if(!collection->value.IsNull() && !collection->value.Empty()) {
+            set< URL > input_feed_url;
+            for(auto& element : collection->value.GetArray()) {
+                if(decode_file_url_by_key("url", url, IoDirection::IN, element)) {
+                    input_feed_url.emplace(url);
+                }
+            }
+
+            collection = _instruction.FindMember("output feed");
+            if(collection != _instruction.MemberEnd()) {
+                if(!collection->value.IsNull() && !collection->value.Empty()) {
+                    for(auto& element : collection->value.GetArray()) {
+                        if(decode_file_url_by_key("url", url, IoDirection::IN, element)) {
+                            if(input_feed_url.count(url) > 0) {
+                                throw ConfigurationError("URL " + string(url) + " is used for both input and output");
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+};
+void Environment::load_pheniqs_pg() {
+    // kputsn(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.ID);
+    // kputsn(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.PN);
+    // kputsn(interface.application_version.c_str(), interface.application_version.size(), &_pheniqs_pg.VN);
+    // kputsn(interface.full_command.c_str(), interface.full_command.size(), &_pheniqs_pg.CL);
+};
+void Environment::print_help(ostream& o) const {
+    interface.print_help(o);
+};
+void Environment::print_version(ostream& o) const {
+    interface.print_version(o);
+};
+void Environment::print_linted_instruction(ostream& o) const {
+    StringBuffer buffer;
+    PrettyWriter< StringBuffer > writer(buffer);
+    _instruction.Accept(writer);
+    o << buffer.GetString() << endl;
+};
+void Environment::print_instruction_validation(ostream& o) const {
+    o << fixed << setprecision(19);
+    o << "Environment " << endl << endl;
+    o << "    Version                                     " << interface.application_version << endl;
+
+    Decoder decoder;
+    decode_value_by_key< Decoder >("decoder", decoder, _instruction);
+    o << "    Multiplex barcode decoder                   " << decoder << endl;
+
+    Platform platform;
+    decode_value_by_key< Platform >("platform", platform, _instruction);
+    o << "    Platform                                    " << platform << endl;
+
+    bool long_read;
+    decode_value_by_key< bool >("long read", long_read, _instruction);
+    o << "    Long read                                   " << (long_read ? "enabled" : "disabled") << endl;
+
+    bool disable_quality_control;
+    decode_value_by_key< bool >("disable quality control", disable_quality_control, _instruction);
+    o << "    Quality tracking                            " << (disable_quality_control ? "disabled" : "enabled") << endl;
+
+    bool include_filtered;
+    decode_value_by_key< bool >("include filtered", include_filtered, _instruction);
+    o << "    Include non PF reads                        " << (include_filtered ? "enabled" : "disabled") << endl;
+
+    uint8_t input_phred_offset;
+    decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, _instruction);
+    o << "    Input Phred offset                          " << to_string(input_phred_offset) << endl;
+
+    uint8_t output_phred_offset;
+    decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, _instruction);
+    o << "    Output Phred offset                         " << to_string(output_phred_offset) << endl;
+
+    uint64_t leading_segment_index;
+    decode_value_by_key< uint64_t >("leading segment index", leading_segment_index, _instruction);
+    o << "    Leading template segment                    " << to_string(leading_segment_index) << endl;
+
+    // o << "    Undetermined reads                          " << (undetermined != NULL ? undetermined->alias() : "ignored") << endl;
+
+    uint64_t multiplex_segment_cardinality;
+    if(decode_value_by_key< uint64_t >("multiplex segment cardinality", multiplex_segment_cardinality, _instruction)) {
+        if(multiplex_segment_cardinality) {
+            uint64_t concatenated_multiplex_barcode_length;
+            decode_value_by_key< uint64_t >("concatenated multiplex barcode length", concatenated_multiplex_barcode_length, _instruction);
+            o << "    Multiplex barcoding cycles                  " << concatenated_multiplex_barcode_length << endl;
+
+            vector< uint64_t > multiplex_barcode_length;
+            decode_value_by_key< vector< uint64_t > >("multiplex barcode length", multiplex_barcode_length, _instruction);
+            o << "    Multiplex barcode length                    ";
+            for(const auto& value : multiplex_barcode_length) {
+                o << value << ' ';
+            } o << endl;
+
+            o << "    Shortest multiplex distance                 " << _multiplex_barcode_distance.minimum_distance() << endl;
+
+            if(decoder == Decoder::MDD || decoder == Decoder::BENCHMARK) {
+                o << "    Tolerable multiplex shannon distance        ";
+                for(const auto& value : _multiplex_barcode_set_distance) {
+                    o << value.shannon_bound() << ' ';
+                } o << endl;
+
+                vector< uint8_t > multiplex_barcode_tolerance;
+                decode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", multiplex_barcode_tolerance, _instruction);
+
+                o << "    Multiplex barcode tolerance                 ";
+                for(const auto& value : multiplex_barcode_tolerance) {
+                    o << uint64_t(value) << ' ';
+                } o << endl;
+
+                uint8_t masking_threshold;
+                if(decode_value_by_key< uint8_t >("masking_threshold", masking_threshold, _instruction)) {
+                    o << "    Multiplex masking threshold                 " << (masking_threshold > 0 ? to_string(masking_threshold) : "NONE") << endl;
+                }
+            }
+
+            if(decoder == Decoder::PAMLD || decoder == Decoder::BENCHMARK) {
+                double multiplex_noise;
+                decode_value_by_key< double >("multiplex noise", multiplex_noise, _instruction);
+                o << "    Prior multiplex noise                       " << to_string(multiplex_noise) << endl;
+
+                double multiplex_confidence;
+                decode_value_by_key< double >("multiplex confidence", multiplex_confidence, _instruction);
+                o << "    Multiplex confidence                        " << to_string(multiplex_confidence) << endl;
+
+                double random_multiplex_barcode_probability;
+                decode_value_by_key< double >("random multiplex barcode probability", random_multiplex_barcode_probability, _instruction);
+                o << "    Random word frequency                       " << random_multiplex_barcode_probability << endl;
+
+                double adjusted_multiplex_noise_probability;
+                decode_value_by_key< double >("adjusted multiplex noise probability", adjusted_multiplex_noise_probability, _instruction);
+                o << "    Adjusted multiplex noise probability        " << adjusted_multiplex_noise_probability << endl;
+            }
+        }
+    }
+
+    uint64_t molecular_segment_cardinality;
+    if(decode_value_by_key< uint64_t >("molecular segment cardinality", molecular_segment_cardinality, _instruction)) {
+        if(molecular_segment_cardinality) {
+            uint64_t concatenated_molecular_barcode_length;
+            decode_value_by_key< uint64_t >("concatenated molecular barcode length", concatenated_molecular_barcode_length, _instruction);
+            o << "    Molecular barcoding cycles                  " << concatenated_molecular_barcode_length << endl;
+
+            vector< uint64_t > molecular_barcode_length;
+            decode_value_by_key< vector< uint64_t > >("molecular barcode length", molecular_barcode_length, _instruction);
+            o << "    Molecular barcode length                    ";
+            for(const auto& value : molecular_barcode_length) {
+                o << value << ' ';
+            } o << endl;
+        }
+    }
+
+    uint64_t buffer_capacity;
+    decode_value_by_key< uint64_t >("buffer capacity", buffer_capacity, _instruction);
+    o << "    Feed buffer capacity                        " << to_string(buffer_capacity) << endl;
+
+    uint64_t threads;
+    decode_value_by_key< uint64_t >("threads", threads, _instruction);
+    o << "    Threads                                     " << to_string(threads) << endl;
+    o << endl;
+
+    o << "Transformation " << endl << endl;
+    vector< Token > token_array;
+    if(decode_value_by_key< vector< Token > >("token", token_array, _instruction)) {
+        for(auto& token : token_array) {
+            o << "    Token No." << token.index << endl;
+            o << "        Length        " << (token.constant() ? to_string(token.length()) : "variable") << endl;
+            o << "        Pattern       " << string(token) << endl;
+            o << "        Description   ";
+            o << token.description() << endl;
+            o << endl;
+        }
+    }
+
+    list< Transform > template_transforms;
+    if(decode_transform_array_by_key("template", template_transforms, _instruction, token_array)) {
+        o << "    Template transform" << endl;
+        for(const auto& transform : template_transforms) {
+            o << "        " << transform.description() << endl;
+        }
+        o << endl;
+    }
+
+    list< Transform > multiplex_barcode_transforms;
+    if(decode_transform_array_by_key("template", multiplex_barcode_transforms, _instruction, token_array)) {
+        o << "    Multiplex barcode transform" << endl;
+        for(const auto& transform : multiplex_barcode_transforms) {
+            o << "        " << transform.description() << endl;
+        }
+        o << endl;
+    }
+
+    list< Transform > molecular_barcode_transforms;
+    if(decode_transform_array_by_key("template", molecular_barcode_transforms, _instruction, token_array)) {
+        o << "    Molecular barcode transform" << endl;
+        for(const auto& transform : molecular_barcode_transforms) {
+            o << "        " << transform.description() << endl;
+        }
+        o << endl;
+    }
+
+    list< URL > input_url_array;
+    if(decode_file_url_list_by_key("input", input_url_array, _instruction, IoDirection::IN)) {
+        o << "Input " << endl << endl;
+        uint64_t url_index(0);
+        for(auto& url : input_url_array) {
+            o << "    Input segment No." << url_index << " : " << url << endl;
+            url_index++;
+        }
+        o << endl;
+    }
+
+    list< ChannelSpecification > channel_specifications;
+    if(decode_value_by_key< list< ChannelSpecification > >("channel", channel_specifications, _instruction)) {
+        o << "Channel " << endl << endl;
+        for(const auto& specification : channel_specifications) {
+            specification.describe(o);
+        }
+    }
+
+    if(_display_distance && !_multiplex_barcode_distance.empty()) {
+        o << "Barcode distance distribution" << endl << endl;
+        for(const auto metric : _multiplex_barcode_set_distance) {
+            metric.describe(o);
+        }
+
+        if(_multiplex_barcode_set_distance.size() > 1) {
+            _multiplex_barcode_distance.describe(o);
+        }
+    }
 };

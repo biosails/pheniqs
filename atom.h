@@ -40,7 +40,7 @@ using std::endl;
 using std::cerr;
 using std::cout;
 using std::fixed;
-using std::size_t;
+using std::uint64_t;
 using std::string;
 using std::vector;
 using std::ostream;
@@ -254,8 +254,9 @@ private:
     char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg);
-void decode_HeadRGAtom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key);
+void decode_head_RG_atom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key);
 void encode_value_with_key_ID(const HeadRGAtom& value, const string& key, Value& container, Document& document);
+void transcode_head_RG_atom(const Value& from, Value& to, Document& document);
 
 /*  @CO free text comment
 */

@@ -51,22 +51,15 @@ using std::numeric_limits;
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-#define STANDARD_STREAM_ALIAS "-"
-#define CANONICAL_STDIN_PATH "/dev/stdin"
-#define CANONICAL_STDOUT_PATH "/dev/stdout"
-#define CANONICAL_STDERR_PATH "/dev/stderr"
-#define CANONICAL_NULL_DEVICE_PATH "/dev/null"
-
-const char PATH_SEPARATOR = '/';
 const char EXTENSION_SEPARATOR = '.';
 const char LINE_BREAK = '\n';
 
-const size_t PEEK_BUFFER_CAPACITY = 4096;
-const size_t DEFAULT_FEED_CAPACITY = 60;
-const size_t DEFAULT_FEED_RESOLUTION = 60;
-const size_t DEFAULT_FEED_THREADS = 1;
-const size_t DEFAULT_BUFFER_CAPACITY = 2048;
-const size_t INITIAL_SEQUENCE_CAPACITY = 64;
+const uint64_t PEEK_BUFFER_CAPACITY = 4096;
+const uint64_t DEFAULT_FEED_CAPACITY = 60;
+const uint64_t DEFAULT_FEED_RESOLUTION = 60;
+const uint64_t DEFAULT_FEED_THREADS = 1;
+const uint64_t DEFAULT_BUFFER_CAPACITY = 2048;
+const uint64_t INITIAL_SEQUENCE_CAPACITY = 64;
 
 #define ks_free(x) if((x).s != NULL) { free((x).s); (x).s = NULL; (x).l = 0; (x).m = 0; }
 #define ks_clear(x) (x).l = 0; if((x).s != NULL) { (x).s[0] = '\0'; }
@@ -75,67 +68,36 @@ const size_t INITIAL_SEQUENCE_CAPACITY = 64;
 
 #define tag_to_code(t) uint16_t(*(t))<<8 | uint8_t(*((t) + 1))
 
-/*  Environment constants
-
-    ProgramAction enumerates the sub commands of the command line interface
-
-    ProgramState is the eventual return code of the program. 
-    0 means everything is ok (ProgramState::OK).
-    any other value represents a particular error code.
-
-    FormatType enumerates file formats for a URL
-*/
-
-enum class ProgramAction : uint8_t {
-    UNKNOWN,
-    DEMULTIPLEX,
-    QUALITY,
-};
-ostream& operator<<(ostream& o, const ProgramAction& type);
-string& operator<<(string& o, const ProgramAction& type);
-void operator>>(const string& s, ProgramAction& type);
-void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document);
-void decode_program_action_by_key(const Value::Ch* key, ProgramAction& value, const Value& container);
-
-enum class ProgramState : int8_t {
-    OK,
-    HELP,
-    VERSION,
-    UNKNOWN_ERROR,
-    INTERNAL_ERROR,
-    CONFIGURATION_ERROR,
-    COMMAND_LINE_ERROR,
-    IO_ERROR,
-    SEQUENCE_ERROR,
-};
-
-enum class FormatType : uint8_t {
-    UNKNOWN,
-    FASTQ,
-    SAM,
-    BAM,
-    BAI,
-    CRAM,
-    CRAI,
-    VCF,
-    BCF,
-    CSI,
-    GZI,
-    TBI,
-    BED,
-    JSON,
-};
-ostream& operator<<(ostream& o, const FormatType& kind);
-string& operator<<(string& o, const FormatType& type);
-void operator>>(const char* s, FormatType& type);
-void operator>>(const string& s, FormatType& type);
-
 enum class FormatKind : uint8_t {
     UNKNOWN,
     FASTQ,
     HTS,
 };
-ostream& operator<<(ostream& o, const FormatKind& kind);
+void to_string(const FormatKind& value, string& result);
+bool from_string(const char* value, FormatKind& result);
+void to_kstring(const FormatKind& value, kstring_t& result);
+bool from_string(const string& value, FormatKind& result);
+ostream& operator<<(ostream& o, const FormatKind& value);
+void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document);
+
+enum class Decoder : uint8_t {
+    UNKNOWN,
+    MDD,
+    PAMLD,
+    BENCHMARK,
+};
+void to_string(const Decoder& value, string& result);
+bool from_string(const char* value, Decoder& result);
+void to_kstring(const Decoder& value, kstring_t& result);
+bool from_string(const string& value, Decoder& result);
+ostream& operator<<(ostream& o, const Decoder& value);
+bool encode_key_value(const string& key, const Decoder& value, Value& container, Document& document);
+
+enum class LeftTokenOperator : uint8_t {
+    NONE,
+    REVERSE_COMPLEMENT,
+};
+ostream& operator<<(ostream& o, const LeftTokenOperator& operation);
 
 /*  SAM format flags
 
@@ -152,6 +114,24 @@ ostream& operator<<(ostream& o, const FormatKind& kind);
     DUP             optical or PCR duplicate
     SUPPLEMENTARY   supplementary alignment
 */
+enum class Platform : uint8_t {
+    UNKNOWN,
+    CAPILLARY,
+    LS454,
+    ILLUMINA,
+    SOLID,
+    HELICOS,
+    IONTORRENT,
+    ONT,
+    PACBIO,
+};
+void to_string(const Platform& value, string& result);
+bool from_string(const char* value, Platform& result);
+void to_kstring(const Platform& value, kstring_t& result);
+bool from_string(const string& value, Platform& result);
+ostream& operator<<(ostream& o, const Platform& value);
+void encode_key_value(const string& key, const Platform& value, Value& container, Document& document);
+
 enum class HtsFlag : uint16_t {
     PAIRED         = 0x1,
     PROPER_PAIR    = 0x2,
@@ -173,20 +153,31 @@ enum class HtsSortOrder : uint8_t {
     QUERYNAME,
     COORDINATE
 };
-ostream& operator<<(ostream& o, const HtsSortOrder& order);
-string& operator<<(string& o, const HtsSortOrder& order);
-kstring_t& operator<<(kstring_t& o, const HtsSortOrder& order);
-void operator>>(const char* s, HtsSortOrder& order);
+void to_string(const HtsSortOrder& value, string& result);
+bool from_string(const char* value, HtsSortOrder& result);
+void to_kstring(const HtsSortOrder& value, kstring_t& result);
+bool from_string(const string& value, HtsSortOrder& result);
+ostream& operator<<(ostream& o, const HtsSortOrder& value);
+void encode_key_value(const string& key, const HtsSortOrder& value, Value& container, Document& document);
 
 enum class HtsGrouping : uint8_t {
+    UNKNOWN,
     NONE,
     QUERY,
     REFERENCE
 };
-ostream& operator<<(ostream& o, const HtsGrouping& grouping);
-string& operator<<(string& o, const HtsGrouping& grouping);
-kstring_t& operator<<(kstring_t& o, const HtsGrouping& grouping);
-void operator>>(const char* s, HtsGrouping& grouping);
+void to_string(const HtsGrouping& value, string& result);
+bool from_string(const char* value, HtsGrouping& result);
+void to_kstring(const HtsGrouping& value, kstring_t& result);
+bool from_string(const string& value, HtsGrouping& result);
+ostream& operator<<(ostream& o, const HtsGrouping& value);
+void encode_key_value(const string& key, const HtsGrouping& value, Value& container, Document& document);
+
+ostream& operator<<(ostream& o, const htsFormatCategory& hts_format_category);
+
+ostream& operator<<(ostream& o, const htsExactFormat& hts_exact_format);
+
+ostream& operator<<(ostream& o, const htsCompression& hts_compression);
 
 /*  2 ASCII code SAM tag names
 
@@ -287,52 +278,4 @@ enum class HtsAuxiliaryCode : uint16_t {
     XL = 0x584c,
     XP = 0x5850,
 };
-
-enum class Platform : uint8_t {
-    UNKNOWN,
-    CAPILLARY,
-    LS454,
-    ILLUMINA,
-    SOLID,
-    HELICOS,
-    IONTORRENT,
-    ONT,
-    PACBIO,
-};
-ostream& operator<<(ostream& o, const Platform& platform);
-string& operator<<(string& o, const Platform& platform);
-kstring_t& operator<<(kstring_t& o, const Platform& platform);
-void operator>>(const char* s, Platform& platform);
-
-/*  Program
-*/
-enum class ParameterType : uint8_t {
-    boolean,
-    integer,
-    decimal,
-    string
-};
-
-enum class Decoder : uint8_t {
-    UNKNOWN,
-    MDD,
-    PAMLD,
-    BENCHMARK,
-};
-void operator>>(const char* s, Decoder& decoder);
-ostream& operator<<(ostream& o, const Decoder& decoder);
-string& operator<<(string& o, const Decoder& decoder);
-
-enum class LeftTokenOperator : uint8_t {
-    NONE,
-    REVERSE_COMPLEMENT,
-};
-ostream& operator<<(ostream& o, const LeftTokenOperator& operation);
-
-ostream& operator<<(ostream& o, const htsFormatCategory& hts_format_category);
-
-ostream& operator<<(ostream& o, const htsExactFormat& hts_exact_format);
-
-ostream& operator<<(ostream& o, const htsCompression& hts_compression);
-
 #endif /* PHENIQS_CONSTANT_H */

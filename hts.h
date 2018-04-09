@@ -43,7 +43,7 @@
 #include "auxiliary.h"
 #include "sequence.h"
 #include "feed.h"
-#include "model.h"
+#include "specification.h"
 
 using std::map;
 using std::setw;
@@ -149,7 +149,7 @@ public:
                         default:
                             break;
                     }
-                    if (hts_file != NULL) {
+                    if(hts_file != NULL) {
                         hts_set_thread_pool(hts_file, thread_pool);
                         header.hd.set_version(&(hts_file->format));
                         header.assemble();
@@ -159,6 +159,8 @@ public:
                     }
                     break;
                 };
+                default:
+                    break;
             }
         }
     };
@@ -183,14 +185,17 @@ protected:
         record->core.l_qseq = segment.sequence.length;
         record->core.flag = segment.flag;
 
-        size_t l_data = record->core.l_qname + ((record->core.l_qseq + 1)>>1) + record->core.l_qseq;
+        uint64_t l_data = record->core.l_qname + ((record->core.l_qseq + 1)>>1) + record->core.l_qseq;
         record->l_data = l_data;
 
         // increase allocated space if necessary
         if(record->m_data < l_data) {
             record->m_data = l_data;
             kroundup32(record->m_data);
-            record->data = (uint8_t*)realloc(record->data, record->m_data);
+            if((record->data = static_cast< uint8_t* >(realloc(record->data, record->m_data))) == NULL) {
+                free(record->data);
+                throw InternalError("out of memory");
+            }
         }
 
         // write identifier to data block
@@ -198,7 +203,7 @@ protected:
 
         // encode nucleotide byte BAM numeric encoding into nybble BAM numeric encoding
         uint8_t *bam_seq = bam_get_seq(record);
-        for (int i = 0; i < record->core.l_qseq; i++) {
+        for(int i = 0; i < record->core.l_qseq; i++) {
             bam1_seq_seti(bam_seq, i, segment.sequence.code[i]);
         }
 

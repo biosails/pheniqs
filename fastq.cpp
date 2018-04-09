@@ -23,12 +23,12 @@
 
 /*  FastqRecord CyclicBuffer
 */
-template<> void CyclicBuffer<FastqRecord>::calibrate(const size_t& capacity, const size_t& resolution) {
+template<> void CyclicBuffer<FastqRecord>::calibrate(const uint64_t& capacity, const uint64_t& resolution) {
     if(_capacity != capacity || _resolution != resolution) {
         if(capacity > _capacity) {
             if(align_capacity(capacity, resolution) == capacity) {
                 cache.resize(capacity);
-                for(size_t i = _capacity; i < capacity; i++) {
+                for(uint64_t i = _capacity; i < capacity; i++) {
                     cache[i] = new FastqRecord();
                 }
                 if(_vacant < 0) {
@@ -46,8 +46,8 @@ template<> void CyclicBuffer<FastqRecord>::calibrate(const size_t& capacity, con
 };
 template<> CyclicBuffer<FastqRecord>::CyclicBuffer (
     const IoDirection& direction,
-    const size_t& capacity,
-    const size_t& resolution) :
+    const uint64_t& capacity,
+    const uint64_t& resolution) :
 
     _direction(direction),
     _capacity(0),

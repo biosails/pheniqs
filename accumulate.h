@@ -37,7 +37,7 @@
 #include "phred.h"
 #include "sequence.h"
 #include "segment.h"
-#include "model.h"
+#include "specification.h"
 
 using std::set;
 using std::setw;
@@ -84,7 +84,7 @@ public:
     inline void increment(const uint8_t phred) {
         distribution[phred]++;
     };
-    size_t quantile(const double portion);
+    uint64_t quantile(const double portion);
     void finalize();
     NucleicAcidAccumulator& operator+=(const NucleicAcidAccumulator& rhs);
 };
@@ -118,7 +118,7 @@ public:
     inline void increment(const Sequence& sequence) {
         count++;
         double value = 0.0;
-        for (size_t i = 0; i < sequence.length; i++) {
+        for(uint64_t i = 0; i < sequence.length; i++) {
             value += sequence.quality[i];
         }
         value /= double(sequence.length);
@@ -146,7 +146,7 @@ public:
     ~FeedAccumulator();
     inline void increment(const Sequence& sequence) {
         if(sequence.length > length) {
-            for(size_t i = length; i < sequence.length; i++) {
+            for(uint64_t i = length; i < sequence.length; i++) {
                 cycles.push_back(new CycleAccumulator());
             }
             length = sequence.length;
@@ -154,7 +154,7 @@ public:
         if(sequence.length < shortest) {
             shortest = sequence.length;
         }
-        for(size_t i = 0; i < sequence.length; i++) {
+        for(uint64_t i = 0; i < sequence.length; i++) {
             iupac_nucleic_acid_count[NO_NUCLEOTIDE]++;
             iupac_nucleic_acid_count[sequence.code[i]]++;
             cycles[i]->increment(sequence.code[i], sequence.quality[i]);
@@ -178,10 +178,10 @@ public:
     ~PivotAccumulator();
     inline void increment(const bool filtered, const vector< Segment >& input) {
         count++;
-        if (!filtered) {
+        if(!filtered) {
             pf_count++;
         }
-        for(size_t i = 0; i < feed_accumulators.size(); i++) {
+        for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
             feed_accumulators[i]->increment(input[i].sequence);
         }
     };
@@ -192,7 +192,7 @@ public:
 
 class ChannelAccumulator {
 public:
-    const size_t index;
+    const uint64_t index;
     const Decoder decoder;
     const bool disable_quality_control;
     const bool undetermined;
@@ -221,7 +221,7 @@ public:
     inline void increment (
         const bool filtered,
         const double pivot_multiplex_confidence,
-        const size_t pivot_multiplex_distance,
+        const uint64_t pivot_multiplex_distance,
         const vector< Segment >& output) {
 
         count++;
@@ -231,7 +231,7 @@ public:
         if(decoder == Decoder::PAMLD) {
             accumulated_multiplex_confidence += pivot_multiplex_confidence; 
         }
-        if (!filtered) {
+        if(!filtered) {
             pf_count++;
             if(pivot_multiplex_distance) {
                 accumulated_pf_multiplex_distance += uint64_t(pivot_multiplex_distance);
@@ -241,7 +241,7 @@ public:
             }
         }
 
-        for(size_t i = 0; i < feed_accumulators.size(); i++) {
+        for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
             feed_accumulators[i]->increment(output[i].sequence);
         }
     };
@@ -252,6 +252,7 @@ public:
 
 class PipelineAccumulator {
 public:
+    const Decoder decoder;
     uint64_t count;
     uint64_t multiplex_count;
     double multiplex_fraction;
@@ -269,7 +270,7 @@ public:
     uint64_t accumulated_pf_multiplex_distance;
     double accumulated_pf_multiplex_confidence;
 
-    PipelineAccumulator();
+    PipelineAccumulator(const Decoder& decoder);
     void collect(const ChannelAccumulator& channel_accumulator);
     void encode(Document& document, Value& value) const;
     void finalize();

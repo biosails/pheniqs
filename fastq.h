@@ -42,7 +42,7 @@
 #include "auxiliary.h"
 #include "sequence.h"
 #include "feed.h"
-#include "model.h"
+#include "specification.h"
 
 using std::map;
 using std::setw;
@@ -106,7 +106,7 @@ public:
 
         // decode sequence
         ks_resize(&sequence, kseq->seq.l + 1);
-        for(size_t i = 0; i < kseq->seq.l; i++) {
+        for(uint64_t i = 0; i < kseq->seq.l; i++) {
             sequence.s[i] = AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])];
             // kputc(AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])], &sequence);
         }
@@ -116,7 +116,7 @@ public:
 
         // decode quality
         ks_resize(&quality, kseq->qual.l + 1);
-        for(size_t i = 0; i < kseq->qual.l; i++) {
+        for(uint64_t i = 0; i < kseq->qual.l; i++) {
             quality.s[i] = kseq->qual.s[i] - phred_offset;
             // kputc(kseq->qual.s[i] - phred_offset, &quality);
         }
@@ -160,7 +160,7 @@ public:
                     9   control number  0               uint16_t
                     10  Barcode         CGATGT          char*
                 */
-                size_t offset = 0;
+                uint64_t offset = 0;
                 parse_illumina_segment_index(segment, offset);
                 parse_illumina_filtered(segment, offset);
                 parse_illumina_control(segment, offset);
@@ -189,7 +189,7 @@ public:
 
         // encode sequence
         ks_resize(&buffer, buffer.l + sequence.l + 1);
-        for (size_t i = 0; i < sequence.l; i++) {
+        for(uint64_t i = 0; i < sequence.l; i++) {
             buffer.s[buffer.l + i] = BamToAmbiguousAscii[uint8_t(sequence.s[i])];
             // kputc(BamToAmbiguousAscii[uint8_t(sequence.s[i])], &buffer);
         }
@@ -202,7 +202,7 @@ public:
 
         // encode quality
         ks_resize(&buffer, buffer.l + quality.l + 1);
-        for (size_t i = 0; i < quality.l; i++) {
+        for(uint64_t i = 0; i < quality.l; i++) {
             buffer.s[buffer.l + i] = quality.s[i] + phred_offset;
             // kputc(quality.s[i] + phred_offset, &buffer);
         }
@@ -247,19 +247,19 @@ private:
                 break;
         };
     };
-    inline void parse_illumina_segment_index(Segment& segment, size_t& offset) const {
+    inline void parse_illumina_segment_index(Segment& segment, uint64_t& offset) const {
         int8_t code = -1;
-        size_t value = 0;
-        size_t position = offset;
+        uint64_t value = 0;
+        uint64_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
             position++;
-            if (c == ':') {
+            if(c == ':') {
                 break;
             } else {
-                if (code >= -1) {
-                    if (c >= '0' && c <= '9') {
+                if(code >= -1) {
+                    if(c >= '0' && c <= '9') {
                         value *= 10;
                         value += c - '0';
                         code = 0;
@@ -269,23 +269,23 @@ private:
                 }
             }
         }
-        if (code < 0) {
+        if(code < 0) {
             value = 1;
         }
         segment.auxiliary.FI = value;
         offset = position;
     };
-    inline void parse_illumina_filtered(Segment& segment, size_t& offset) const {
+    inline void parse_illumina_filtered(Segment& segment, uint64_t& offset) const {
         int8_t code = -1;
-        size_t position = offset;
+        uint64_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
             position++;
-            if (c == ':') {
+            if(c == ':') {
                 break;
             } else {
-                if (code == -1) {
+                if(code == -1) {
                     switch(c) {
                         case 'Y':
                             segment.set_qcfail(true);
@@ -308,20 +308,20 @@ private:
         }
         offset = position;
     };
-    inline void parse_illumina_control(Segment& segment, size_t& offset) const {
+    inline void parse_illumina_control(Segment& segment, uint64_t& offset) const {
         int8_t code = -1;
         uint16_t value = 0;
-        size_t position = offset;
+        uint64_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
             position++;
-            if (c == ':') {
+            if(c == ':') {
                 break;
 
             } else {
-                if (code >= -1) {
-                    if (c >= '0' && c <= '9') {
+                if(code >= -1) {
+                    if(c >= '0' && c <= '9') {
                         value *= 10;
                         value += c - '0';
                         code = 0;
@@ -331,23 +331,23 @@ private:
                 }
             }
         }
-        if (code < 0) {
+        if(code < 0) {
             value = 0;
         }
         segment.auxiliary.XI = value;
         offset = position;
     };
-    inline void parse_illumina_barcode(Segment& segment, size_t& offset) const {
-        size_t position = offset;
+    inline void parse_illumina_barcode(Segment& segment, uint64_t& offset) const {
+        uint64_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
             position++;
-            if (c == ' ') {
+            if(c == ' ') {
                 break;
             }
         }
-        size_t length = position - offset;
+        uint64_t length = position - offset;
         if(length > 0) {
             kputsn(comment + offset, length, &(segment.auxiliary.BC));
         }
@@ -389,6 +389,9 @@ public:
                     }
                     break;
                 };
+                default: {
+                    break;
+                }
             }
         }
     };

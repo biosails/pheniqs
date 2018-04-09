@@ -23,65 +23,59 @@
 #include <iostream>
 
 #include "error.h"
-#include "json.h"
-#include "constant.h"
 #include "environment.h"
 #include "pipeline.h"
 
+using std::endl;
+using std::cerr;
+using std::cout;
+
 int main(int argc, char** argv) {
     try {
-        Environment environment(argc, argv);
-        switch(environment.state) {
-            case ProgramState::OK: {
-                if (environment.validate_only) {
-                    environment.describe(cout);
+        Environment environment(argc, (const char**)argv);
 
-                } else if (environment.lint_only) {
-                    environment.print_configuration(cout);
+        if(environment.is_help_only()) {
+            environment.print_help(cerr);
 
-                } else {
-                    Pipeline pipeline(environment);
-                    pipeline.execute();
-                }
-                break;
-            };
+        } else if(environment.is_version_only()) {
+            environment.print_version(cerr);
 
-            case ProgramState::HELP:
-                environment.print_help(cerr);
-                break;
+        } else if(environment.is_validate_only()) {
+            environment.print_instruction_validation(cerr);
 
-            case ProgramState::VERSION:
-                environment.print_version(cerr);
-                break;
+        } else if(environment.is_lint_only()) {
+            environment.print_linted_instruction(cout);
 
-            default:
-                return static_cast< int >(environment.state);
-                break;
+        } else {
+            Pipeline pipeline(environment);
+            pipeline.execute();
         }
 
-    } catch (InternalError error) {
-        cerr << endl << error.what() << endl;
+    } catch(InternalError& error) {
+        cerr << error.what() << endl;
         return static_cast< int >(ProgramState::INTERNAL_ERROR);
 
-    } catch (ConfigurationError error) {
-        cerr << endl << error.what() << endl;
+    } catch(ConfigurationError& error) {
+        cerr << error.what() << endl;
         return static_cast< int >(ProgramState::CONFIGURATION_ERROR);
 
-    } catch (CommandLineError error) {
-        cerr << endl << error.what() << endl;
+    } catch(CommandLineError& error) {
+        cerr << error.what() << endl;
         return static_cast< int >(ProgramState::COMMAND_LINE_ERROR);
 
-    } catch (IOError error) {
-        cerr << endl << error.what() << endl;
+    } catch(IOError& error) {
+        cerr << error.what() << endl;
         return static_cast< int >(ProgramState::IO_ERROR);
 
-    } catch (SequenceError error) {
-        cerr << endl << error.what() << endl;
+    } catch(SequenceError& error) {
+        cerr << error.what() << endl;
         return static_cast< int >(ProgramState::SEQUENCE_ERROR);
 
-    } catch (exception error) {
-        cerr << endl << error.what() << endl;
+    } catch(exception& error) {
+        cerr << error.what() << endl;
         return static_cast< int >(ProgramState::UNKNOWN_ERROR);
+
     }
+
     return static_cast< int >(ProgramState::OK);
 };

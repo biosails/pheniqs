@@ -27,6 +27,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <list>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -39,9 +40,10 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/error/en.h>
 
-using std::size_t;
+using std::uint64_t;
 using std::string;
 using std::vector;
+using std::list;
 using std::ostream;
 using std::ifstream;
 using std::ios_base;
@@ -56,218 +58,239 @@ using rapidjson::SizeType;
 using rapidjson::StringBuffer;
 using rapidjson::PrettyWriter;
 using rapidjson::StringRef;
+using rapidjson::kNullType;
+using rapidjson::kStringType;
+using rapidjson::kArrayType;
+using rapidjson::kObjectType;
 
+
+void print_json(const Value& node, ostream& o);
 void merge_json_value(const Value& node, const Value& other, Value& container, Document& document);
 void merge_json_value(const Value& node, const Value& other, Document& document);
 
-/*
-    JSON decoding
-*/
-inline string* decode_string_by_key(const Value::Ch* key, const Value& container) {
-    string* value = NULL;
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsString()) {
-            value = new string();
-            value->assign(element->value.GetString(), element->value.GetStringLength());
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
+template < typename T > bool decode_value_by_key(const Value::Ch* key, T& value, const Value& container);
+template < typename T > T decode_value_by_key(const Value::Ch* key, const Value& container) {
+    T value;
+    decode_value_by_key(key, value, container);
     return value;
 };
-inline void decode_string_by_key(const Value::Ch* key, string& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsString()) {
-            value.assign(element->value.GetString(), element->value.GetStringLength());
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
+
+inline bool encode_key_value(const string& key, const bool& value, Value& container, Document& document) {
+    container.RemoveMember(key.c_str());
+    container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(value).Move(), document.GetAllocator());
+    return true;
 };
-inline void decode_kstring_by_key(const Value::Ch* key, kstring_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsString()) {
-            kputsn(element->value.GetString(), element->value.GetStringLength(), &value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+inline bool encode_key_value(const string& key, const uint8_t& value, Value& container, Document& document) {
+    if(value < numeric_limits< uint8_t >::max()) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(static_cast< unsigned>(value)).Move(), document.GetAllocator());
+        return true;
     }
+    return false;
 };
-inline void decode_uint8_by_key(const Value::Ch* key, uint8_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsUint()) {
-            uint32_t v = element->value.GetUint();
-            if(v < numeric_limits< uint8_t >::max()) {
-                value = v;
-            } else { throw ConfigurationError(string(key) + " element must be an integer smaller than " + to_string(numeric_limits< uint8_t >::max())); }
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned 32 bit integer"); }
-    }
-};
-inline void decode_uint32_by_key(const Value::Ch* key, int64_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsUint()) {
-            value = element->value.GetUint();
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned 32 bit integer"); }
-    }
-};
-inline void decode_uint32_by_key(const Value::Ch* key, uint32_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsUint()) {
-            value = element->value.GetUint();
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned 32 bit integer"); }
-    }
-};
-inline void decode_uint32_by_key(const Value::Ch* key, int32_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsUint()) {
-            uint32_t v = element->value.GetUint();
-            if(v < numeric_limits< int32_t >::max()) {
-                value = v;
-            } else { throw ConfigurationError(string(key) + " element must be an integer smaller than " + to_string(numeric_limits< int32_t >::max())); }
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned 32 bit integer"); }
-    }
-};
-inline void decode_int32_by_key(const Value::Ch* key, int32_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsInt()) {
-            value = element->value.GetInt();
-        } else { throw ConfigurationError(string(key) + " element must be a 32 bit integer"); }
-    }
-};
-inline void decode_int32_by_key(const Value::Ch* key, int64_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsInt()) {
-            value = element->value.GetInt();
-        } else { throw ConfigurationError(string(key) + " element must be a 32 bit integer"); }
-    }
-};
-inline void decode_int64_by_key(const Value::Ch* key, int64_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsInt64()) {
-            value = element->value.GetInt64();
-        } else { throw ConfigurationError(string(key) + " element must be a 64 bit integer"); }
-    }
-};
-inline void decode_bool_by_key(const Value::Ch* key, bool& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsBool()) {
-            value = element->value.GetBool();
-        } else { throw ConfigurationError(string(key) + " element must be a boolean"); }
-    }
-};
-inline void decode_double_by_key(const Value::Ch* key, double& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsNumber()) {
-            value = element->value.GetDouble();
-        } else { throw ConfigurationError(string(key) + " element must be numeric"); }
-    }
-};
-inline void decode_double_vector_by_key(const Value::Ch* key, vector< double >& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsArray()) {
-            for(const auto& v : element->value.GetArray()) {
-                if(v.IsNumber()) {
-                    value.push_back(v.GetDouble());
-                } else { throw ConfigurationError(string(key) + " element must be numeric"); }
-            }
+inline bool encode_key_value(const string& key, const vector< uint8_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(static_cast< unsigned>(v)).Move(), document.GetAllocator());
         }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
     }
+    return false;
 };
-inline void decode_size_t_by_key(const Value::Ch* key, size_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsUint64()) {
-            uint64_t v = element->value.GetUint64();
-            if(v < numeric_limits< size_t >::max()) {
-                value = v;
-            } else { throw ConfigurationError(string(key) + " element must be an integer smaller than " + to_string(numeric_limits< size_t >::max())); }
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned 64 bit integer"); }
+inline bool encode_key_value(const string& key, const list< uint8_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(static_cast< unsigned>(v)).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
     }
+    return false;
+};
+inline bool encode_key_value(const string& key, const int32_t& value, Value& container, Document& document) {
+    if(value < numeric_limits< int32_t >::max()) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(static_cast< int >(value)).Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const uint32_t& value, Value& container, Document& document) {
+    if(value < numeric_limits< uint32_t >::max()) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(static_cast< unsigned>(value)).Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const vector< uint32_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(static_cast< unsigned>(v)).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const int64_t& value, Value& container, Document& document) {
+    if(value < numeric_limits< int64_t >::max()) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(value).Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const vector< int64_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const list< int64_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const uint64_t& value, Value& container, Document& document) {
+    if(value < numeric_limits< uint64_t >::max()) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(value).Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const vector< uint64_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const list< uint64_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const double& value, Value& container, Document& document) {
+    if(value != numeric_limits< double >::infinity()) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(value).Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const vector< double >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const list< double >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const string& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(
+            Value(key.c_str(), key.size(), document.GetAllocator()).Move(),
+            Value(value.c_str(),value.length(), document.GetAllocator()).Move(),
+            document.GetAllocator()
+        );
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const vector< string >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v.c_str(), v.length(), document.GetAllocator()).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const list< string >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v.c_str(), v.length(), document.GetAllocator()).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const kstring_t& value, Value& container, Document& document) {
+    if(value.l > 0) {
+        container.RemoveMember(key.c_str());
+        container.AddMember(
+            Value(key.c_str(), key.size(), document.GetAllocator()).Move(),
+            Value(value.s, value.l, document.GetAllocator()).Move(),
+            document.GetAllocator()
+        );
+        return true;
+    }
+    return false;
 };
 
-/*
-    JSON encoding
-*/
-inline void encode_key_value(const string& key, const double& value, Value& container, Document& document) {
-    if(value != numeric_limits< double >::infinity()) {
-        Value v(value);
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+template < typename T > bool transcode_value_by_key(const Value::Ch* key, const Value& from, Value& to, Document& document) {
+    T buffer;
+    if(decode_value_by_key< T >(key, buffer, from)) {
+        return encode_key_value(key, buffer, to, document);
     }
-};
-inline void encode_key_value(const string& key, const uint32_t& value, Value& container, Document& document) {
-    if(value < numeric_limits< int32_t >::max()) {
-        Value v(value);
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-    }
-};
-inline void encode_key_value(const string& key, const int64_t& value, Value& container, Document& document) {
-    if(value < numeric_limits< int64_t >::max()) {
-        Value v(value);
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-    }
-};
-inline void encode_key_value(const string& key, const uint64_t& value, Value& container, Document& document) {
-    Value v(value);
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-inline void encode_key_value(const string& key, const int32_t& value, Value& container, Document& document) {
-    if(value < numeric_limits< int32_t >::max()) {
-        Value v(value);
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-    }
-};
-inline void encode_key_value(const string& key, const string& value, Value& container, Document& document) {
-    if(!value.empty()) {
-        Value v(value.c_str(), value.length(), document.GetAllocator());
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-    }
-};
-inline void encode_key_value(const string& key, const kstring_t& value, Value& container, Document& document) {
-    if(value.l > 0) {
-        Value v(value.s, value.l, document.GetAllocator());
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-    }
-};
-inline void encode_key_value(const string& key, const bool& value, Value& container, Document& document) {
-    Value v(value);
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-inline void encode_key_value(const string& key, const vector< double >& value, Value& container, Document& document) {
-    if(!value.empty()) {
-        Value double_array;
-        double_array.SetArray();
-        for(auto& v : value) {
-            double_array.PushBack(v, document.GetAllocator());
-        }
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), double_array.Move(), document.GetAllocator());
-    }
-};
-inline void encode_key_value(const string& key, const vector< uint64_t >& value, Value& container, Document& document) {
-    if(!value.empty()) {
-        Value array;
-        array.SetArray();
-        for(auto& v : value) {
-            array.PushBack(v, document.GetAllocator());
-        }
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.AddMember(k.Move(), array.Move(), document.GetAllocator());
-    }
+    return false;
 };
 
 #endif /* PHENIQS_JSON_H */

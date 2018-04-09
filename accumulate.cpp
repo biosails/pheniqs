@@ -35,15 +35,15 @@ NucleicAcidAccumulator::NucleicAcidAccumulator() :
     LW(0),
     RW(0),
     median(0) {
-    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] = 0;
     }
 };
-inline size_t NucleicAcidAccumulator::quantile(const double portion) {
-    size_t position = portion * count;
-    size_t cell = 0;
+inline uint64_t NucleicAcidAccumulator::quantile(const double portion) {
+    uint64_t position = portion * count;
+    uint64_t cell = 0;
     while (position > 0) {
-        if (distribution[cell] >= position) {
+        if(distribution[cell] >= position) {
             break;
         }
         position -= distribution[cell];
@@ -55,11 +55,11 @@ inline size_t NucleicAcidAccumulator::quantile(const double portion) {
     return cell;
 };
 void NucleicAcidAccumulator::finalize() {
-    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         count += distribution[i];
     }
-    if (count > 0) {
-        for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    if(count > 0) {
+        for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
             const uint64_t value = distribution[i];
             sum += (value * i);
             if(value != 0) {
@@ -83,7 +83,7 @@ void NucleicAcidAccumulator::finalize() {
     }
 };
 NucleicAcidAccumulator& NucleicAcidAccumulator::operator+=(const NucleicAcidAccumulator& rhs) {
-    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] += rhs.distribution[i];
     }
     return *this;
@@ -106,7 +106,7 @@ void CycleAccumulator::finalize() {
     }
 };
 CycleAccumulator& CycleAccumulator::operator+=(const CycleAccumulator& rhs) {
-    for(size_t i = 0; i < iupac_nucleic_acid.size(); i++) {
+    for(uint64_t i = 0; i < iupac_nucleic_acid.size(); i++) {
         iupac_nucleic_acid[i] += rhs.iupac_nucleic_acid[i];
     }
     return *this;
@@ -120,7 +120,7 @@ SegmentAccumulator::SegmentAccumulator() :
     max(0),
     sum(0),
     mean(0) {
-    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] = 0;
     }
 };
@@ -134,7 +134,7 @@ SegmentAccumulator& SegmentAccumulator::operator+=(const SegmentAccumulator& rhs
     sum += rhs.sum;
     min = MIN(min, rhs.min);
     max = MAX(max, rhs.max);
-    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] += rhs.distribution[i];
     }
     return *this;
@@ -146,7 +146,7 @@ FeedAccumulator::FeedAccumulator(const FeedSpecification& specification) :
     url(specification.url),
     length(0),
     shortest(numeric_limits<uint64_t>::max()) {
-    for(size_t i = 0; i < IUPAC_CODE_SIZE; i++) {
+    for(uint64_t i = 0; i < IUPAC_CODE_SIZE; i++) {
         iupac_nucleic_acid_count[i] = 0;
     }
 };
@@ -164,48 +164,25 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
     encode_key_value("min sequence length", shortest, value, document);
     encode_key_value("max sequence length", length, value, document);
 
-    Value cycle_quality_report;
-    cycle_quality_report.SetObject();
+    Value cycle_quality_report(kObjectType);
+    Value cycle_nucleotide_quality_reports(kArrayType);
 
-    Value cycle_nucleotide_quality_reports;
-    cycle_nucleotide_quality_reports.SetArray();
-
-    for (uint8_t n = 0; n < IUPAC_CODE_SIZE; n++) {
+    for(uint8_t n = 0; n < IUPAC_CODE_SIZE; n++) {
         if(iupac_nucleic_acid_count[n] > 0) {
-            Value cycle_quality_distribution;
-            cycle_quality_distribution.SetObject();
+            Value cycle_quality_distribution(kObjectType);
 
-            Value cycle_count;
-            cycle_count.SetArray();
+            Value cycle_count(kArrayType);
+            Value cycle_quality_first_quartile(kArrayType);
+            Value cycle_quality_third_quartile(kArrayType);
+            Value cycle_quality_interquartile_range(kArrayType);
+            Value cycle_quality_left_whisker(kArrayType);
+            Value cycle_quality_right_whisker(kArrayType);
+            Value cycle_quality_min(kArrayType);
+            Value cycle_quality_max(kArrayType);
+            Value cycle_quality_mean(kArrayType);
+            Value cycle_quality_median(kArrayType);
 
-            Value cycle_quality_first_quartile;
-            cycle_quality_first_quartile.SetArray();
-
-            Value cycle_quality_third_quartile;
-            cycle_quality_third_quartile.SetArray();
-
-            Value cycle_quality_interquartile_range;
-            cycle_quality_interquartile_range.SetArray();
-
-            Value cycle_quality_left_whisker;
-            cycle_quality_left_whisker.SetArray();
-
-            Value cycle_quality_right_whisker;
-            cycle_quality_right_whisker.SetArray();
-
-            Value cycle_quality_min;
-            cycle_quality_min.SetArray();
-
-            Value cycle_quality_max;
-            cycle_quality_max.SetArray();
-
-            Value cycle_quality_mean;
-            cycle_quality_mean.SetArray();
-
-            Value cycle_quality_median;
-            cycle_quality_median.SetArray();
-
-            for (size_t c = 0; c < cycles.size(); c++) {
+            for(uint64_t c = 0; c < cycles.size(); c++) {
                 v.SetUint64(cycles[c]->iupac_nucleic_acid[n].count);
                 cycle_count.PushBack(v, allocator);
 
@@ -248,9 +225,8 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
             cycle_quality_distribution.AddMember("cycle quality mean", cycle_quality_mean, allocator);
             cycle_quality_distribution.AddMember("cycle quality median", cycle_quality_median, allocator);
 
-            if (n > 0) {
-                Value cycle_nucleotide_quality_report;
-                cycle_nucleotide_quality_report.SetObject();
+            if(n > 0) {
+                Value cycle_nucleotide_quality_report(kObjectType);
 
                 encode_key_value("nucleotide count", iupac_nucleic_acid_count[n], cycle_nucleotide_quality_report, document);
                 encode_key_value("nucleotide", string(1, BamToAmbiguousAscii[n]), cycle_nucleotide_quality_report, document);
@@ -266,16 +242,13 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
     value.AddMember("cycle nucleotide quality reports", cycle_nucleotide_quality_reports, allocator);
     value.AddMember("cycle nucleotide quality report", cycle_quality_report, allocator);
 
-    Value average_phred_report;
-    average_phred_report.SetObject();
+    Value average_phred_report(kObjectType);
     encode_key_value("average phred score min", average_phred.min, average_phred_report, document);
     encode_key_value("average phred score max", average_phred.max, average_phred_report, document);
     encode_key_value("average phred score mean", average_phred.mean, average_phred_report, document);
 
-    Value SegmentAccumulator;
-    SegmentAccumulator.SetArray();
-
-    for (size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    Value SegmentAccumulator(kArrayType);
+    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         v.SetUint64(average_phred.distribution[i]);
         SegmentAccumulator.PushBack(v, allocator);
     }
@@ -293,7 +266,7 @@ void FeedAccumulator::finalize() {
 };
 FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
     if(rhs.length > length) {
-        for(size_t i = length; i < rhs.length; i++) {
+        for(uint64_t i = length; i < rhs.length; i++) {
             cycles.push_back(new CycleAccumulator());
         }
         length = rhs.length;
@@ -301,11 +274,11 @@ FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
 
     shortest = MIN(shortest, rhs.shortest);
 
-    for(size_t code = 0; code < IUPAC_CODE_SIZE; code++) {
+    for(uint64_t code = 0; code < IUPAC_CODE_SIZE; code++) {
         iupac_nucleic_acid_count[code] += rhs.iupac_nucleic_acid_count[code];
     }
 
-    for(size_t i = 0; i < rhs.length; i++) {
+    for(uint64_t i = 0; i < rhs.length; i++) {
         *cycles[i] += *rhs.cycles[i];
     }
     average_phred += rhs.average_phred;
@@ -320,8 +293,8 @@ PivotAccumulator::PivotAccumulator(const InputSpecification& specification) :
     pf_count(0),
     pf_fraction(0) {
 
-    feed_accumulators.reserve(specification.feed_specifications.size());
-    for(auto feed_specification : specification.feed_specifications) {
+    feed_accumulators.reserve(specification.feed_specification_by_segment.size());
+    for(auto feed_specification : specification.feed_specification_by_segment) {
         feed_accumulators.emplace_back(new FeedAccumulator(*feed_specification));
     }
 };
@@ -331,7 +304,7 @@ PivotAccumulator::~PivotAccumulator() {
     }
 };
 void PivotAccumulator::finalize() {
-    if (count > 0) {
+    if(count > 0) {
         pf_fraction = double(pf_count) / double(count);
     }
     for(auto& accumulator : feed_accumulators) {
@@ -345,12 +318,10 @@ void PivotAccumulator::encode(Document& document, Value& value) const {
     encode_key_value("pf count", pf_count, value, document);
     encode_key_value("pf fraction", pf_fraction, value, document);
 
-    Value feed_reports;
-    feed_reports.SetArray();
-    for (auto& accumulator : feed_accumulators) {
-        Value feed_report;
-        feed_report.SetObject();
-        if (!disable_quality_control) {
+    Value feed_reports(kArrayType);
+    for(auto& accumulator : feed_accumulators) {
+        Value feed_report(kObjectType);
+        if(!disable_quality_control) {
             accumulator->encode(document, feed_report);
         }
         feed_reports.PushBack(feed_report, allocator);
@@ -360,7 +331,7 @@ void PivotAccumulator::encode(Document& document, Value& value) const {
 PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
     count += rhs.count;
     pf_count += rhs.pf_count;
-    for(size_t i = 0; i < feed_accumulators.size(); i++) {
+    for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
         *(feed_accumulators[i]) += *(rhs.feed_accumulators[i]);
     }
     return *this;
@@ -392,8 +363,8 @@ ChannelAccumulator::ChannelAccumulator(const ChannelSpecification& specification
     accumulated_pf_multiplex_distance(0),
     accumulated_pf_multiplex_confidence(0) {
 
-    feed_accumulators.reserve(specification.feed_specification.size());
-    for(auto feed_specification : specification.feed_specification) {
+    feed_accumulators.reserve(specification.feed_specification_by_segment.size());
+    for(auto feed_specification : specification.feed_specification_by_segment) {
         feed_accumulators.emplace_back(new FeedAccumulator(*feed_specification));
     }
 };
@@ -403,25 +374,25 @@ ChannelAccumulator::~ChannelAccumulator() {
     }
 };
 void ChannelAccumulator::finalize(const PipelineAccumulator& pipeline_accumulator) {
-    if (count > 0) {
+    if(count > 0) {
         multiplex_distance = accumulated_multiplex_distance / double(count);
         multiplex_confidence = accumulated_multiplex_confidence / double(count);
         pf_fraction = double(pf_count) / double(count);
     }
-    if (pf_count > 0) {
+    if(pf_count > 0) {
         pf_multiplex_distance = accumulated_pf_multiplex_distance / double(pf_count);
         pf_multiplex_confidence = accumulated_pf_multiplex_confidence / double(pf_count);
     }
-    if (pipeline_accumulator.count > 0) {
+    if(pipeline_accumulator.count > 0) {
         pooled_fraction = double(count) / double(pipeline_accumulator.count);
     }
-    if (pipeline_accumulator.pf_count > 0) {
+    if(pipeline_accumulator.pf_count > 0) {
         pf_pooled_fraction = double(pf_count) / double(pipeline_accumulator.pf_count);
     }
-    if (pipeline_accumulator.multiplex_count > 0) {
+    if(pipeline_accumulator.multiplex_count > 0) {
         pooled_multiplex_fraction = double(count) / double(pipeline_accumulator.multiplex_count);
     }
-    if (pipeline_accumulator.pf_multiplex_count > 0) {
+    if(pipeline_accumulator.pf_multiplex_count > 0) {
         pf_pooled_multiplex_fraction = double(pf_count) / double(pipeline_accumulator.pf_multiplex_count);
     }
     for(auto accumulator : feed_accumulators) {
@@ -433,14 +404,12 @@ void ChannelAccumulator::encode(Document& document, Value& value) const {
 
     encode_key_value("index", uint64_t(index), value, document);
     encode_value_with_key_ID(rg, "RG", value, document);
-
     if(!undetermined) {
         encode_key_value("concentration", concentration, value, document);
         multiplex_barcode.encode_report(document, value, "multiplex barcode");
     } else {
         encode_key_value("undetermined", undetermined, value, document);
     }
-
     encode_key_value("count", count, value, document);
     if(!undetermined) {
         encode_key_value("multiplex distance", multiplex_distance, value, document);
@@ -448,7 +417,6 @@ void ChannelAccumulator::encode(Document& document, Value& value) const {
             encode_key_value("multiplex confidence", multiplex_confidence, value, document);
         }
     }
-
     encode_key_value("pf count", pf_count, value, document);
     if(!undetermined) {
         encode_key_value("pf multiplex distance", pf_multiplex_distance, value, document);
@@ -459,18 +427,15 @@ void ChannelAccumulator::encode(Document& document, Value& value) const {
     encode_key_value("pf fraction", pf_fraction, value, document);
     encode_key_value("pooled fraction", pooled_fraction, value, document);
     encode_key_value("pf pooled fraction", pf_pooled_fraction, value, document);
-
     if(!undetermined) {
         encode_key_value("pooled multiplex fraction", pooled_multiplex_fraction, value, document);
         encode_key_value("pf pooled multiplex fraction", pf_pooled_multiplex_fraction, value, document);
     }
 
-    Value feed_reports;
-    feed_reports.SetArray();
-    for (auto accumulator : feed_accumulators) {
-        Value feed_report;
-        feed_report.SetObject();
-        if (!disable_quality_control) {
+    Value feed_reports(kArrayType);
+    for(auto accumulator : feed_accumulators) {
+        Value feed_report(kObjectType);
+        if(!disable_quality_control) {
             accumulator->encode(document, feed_report);
         }
         feed_reports.PushBack(feed_report, allocator);
@@ -484,8 +449,7 @@ ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs
     accumulated_multiplex_confidence += rhs.accumulated_multiplex_confidence;
     accumulated_pf_multiplex_distance += rhs.accumulated_pf_multiplex_distance;
     accumulated_pf_multiplex_confidence += rhs.accumulated_pf_multiplex_confidence;
-
-    for(size_t i = 0; i < feed_accumulators.size(); i++) {
+    for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
         *(feed_accumulators[i]) += *(rhs.feed_accumulators[i]);
     }
     return *this;
@@ -493,7 +457,8 @@ ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs
 
 /*  PipelineAccumulator */
 
-PipelineAccumulator::PipelineAccumulator():
+PipelineAccumulator::PipelineAccumulator(const Decoder& decoder):
+    decoder(decoder),
     count(0),
     multiplex_count(0),
     multiplex_fraction(0),
@@ -513,32 +478,39 @@ PipelineAccumulator::PipelineAccumulator():
 };
 void PipelineAccumulator::collect(const ChannelAccumulator& channel_accumulator) {
     count += channel_accumulator.count;
-    if (!channel_accumulator.undetermined) {
+    if(!channel_accumulator.undetermined) {
         multiplex_count += channel_accumulator.count;
         accumulated_multiplex_distance += channel_accumulator.accumulated_multiplex_distance;
-        accumulated_multiplex_confidence += channel_accumulator.accumulated_multiplex_confidence;
+        if(decoder == Decoder::PAMLD) {
+            accumulated_multiplex_confidence += channel_accumulator.accumulated_multiplex_confidence;
+        }
     }
-
     pf_count += channel_accumulator.pf_count;
-    if (!channel_accumulator.undetermined) {
+    if(!channel_accumulator.undetermined) {
         pf_multiplex_count += channel_accumulator.pf_count;
         accumulated_pf_multiplex_distance += channel_accumulator.accumulated_pf_multiplex_distance;
-        accumulated_pf_multiplex_confidence += channel_accumulator.accumulated_pf_multiplex_confidence;
+        if(decoder == Decoder::PAMLD) {
+            accumulated_pf_multiplex_confidence += channel_accumulator.accumulated_pf_multiplex_confidence;
+        }
     }
 };
 void PipelineAccumulator::finalize() {
-    if (count > 0) {
+    if(count > 0) {
         multiplex_fraction = double(multiplex_count) / double(count);
         multiplex_distance = accumulated_multiplex_distance / double(count);
-        multiplex_confidence = accumulated_multiplex_confidence / double(count);
+        if(decoder == Decoder::PAMLD) {
+            multiplex_confidence = accumulated_multiplex_confidence / double(count);
+        }
         pf_fraction = double(pf_count) / double(count);
     }
-    if (pf_count > 0) {
+    if(pf_count > 0) {
         pf_multiplex_fraction = double(pf_multiplex_count) / double(pf_count);
         pf_multiplex_distance = accumulated_pf_multiplex_distance / double(pf_count);
-        pf_multiplex_confidence = accumulated_pf_multiplex_confidence / double(pf_count);
+        if(decoder == Decoder::PAMLD) {
+            pf_multiplex_confidence = accumulated_pf_multiplex_confidence / double(pf_count);
+        }
     }
-    if (multiplex_count > 0) {
+    if(multiplex_count > 0) {
         multiplex_pf_fraction = double(pf_multiplex_count) / double(multiplex_count);
     }
 };
@@ -547,12 +519,16 @@ void PipelineAccumulator::encode(Document& document, Value& value) const {
     encode_key_value("multiplex count", multiplex_count, value, document);
     encode_key_value("multiplex fraction", multiplex_fraction, value, document);
     encode_key_value("multiplex distance", multiplex_distance, value, document);
-    encode_key_value("multiplex confidence", multiplex_confidence, value, document);
+    if(decoder == Decoder::PAMLD) {
+        encode_key_value("multiplex confidence", multiplex_confidence, value, document);
+    }
     encode_key_value("pf count", pf_count, value, document);
     encode_key_value("pf fraction", pf_fraction, value, document);
     encode_key_value("pf multiplex count", pf_multiplex_count, value, document);
     encode_key_value("pf multiplex fraction", pf_multiplex_fraction, value, document);
     encode_key_value("pf multiplex distance", pf_multiplex_distance, value, document);
-    encode_key_value("pf multiplex confidence", pf_multiplex_confidence, value, document);
+    if(decoder == Decoder::PAMLD) {
+        encode_key_value("pf multiplex confidence", pf_multiplex_confidence, value, document);
+    }
     encode_key_value("multiplex pf fraction", multiplex_pf_fraction, value, document);
 };

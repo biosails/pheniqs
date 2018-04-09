@@ -45,7 +45,7 @@ void HtsHeader::decode(htsFile* hts_file) {
             char* position = hdr->text;
             char* end = position + hdr->l_text;
             while(position < end) {
-                if (*position == '@') {
+                if(*position == '@') {
                     position++;
                     uint16_t code = tag_to_code(position);
                     position += 2;
@@ -127,24 +127,26 @@ void HtsHeader::assemble() {
     }
     hdr->n_targets = 0;
     hdr->l_text = buffer.l;
-    hdr->text = (char*)malloc(hdr->l_text + 1);
+    if((hdr->text = static_cast< char* >(malloc(hdr->l_text + 1))) == NULL) {
+        throw InternalError("out of memory");
+    }
     memcpy(hdr->text, buffer.s, hdr->l_text + 1);
     ks_free(buffer);
 };
 void HtsHeader::encode(htsFile* hts_file) const {
-    if (sam_hdr_write(hts_file, hdr) < 0) {
+    if(sam_hdr_write(hts_file, hdr) < 0) {
         throw IOError("failed to write SAM header");
     }
 };
 void HtsHeader::add_read_group(const HeadRGAtom& rg) {
     string key(rg);
-    if (read_group_by_id.count(key) == 0) {
+    if(read_group_by_id.count(key) == 0) {
         read_group_by_id.emplace(make_pair(key, HeadRGAtom(rg)));
     }
 };
 void HtsHeader::add_program(const HeadPGAtom& pg) {
     string key(pg);
-    if (program_by_id.count(key) == 0) {
+    if(program_by_id.count(key) == 0) {
         program_by_id.emplace(make_pair(key, HeadPGAtom(pg)));
     }
 };
@@ -167,12 +169,12 @@ ostream& operator<<(ostream& o, const HtsHeader& header) {
 
 /*  bam1_t CyclicBuffer
 */
-template<> void CyclicBuffer<bam1_t>::calibrate(const size_t& capacity, const size_t& resolution) {
+template<> void CyclicBuffer<bam1_t>::calibrate(const uint64_t& capacity, const uint64_t& resolution) {
     if(_capacity != capacity || _resolution != resolution) {
         if(capacity > _capacity) {
             if(align_capacity(capacity, resolution) == capacity) {
                 cache.resize(capacity);
-                for(size_t i = _capacity; i < capacity; i++) {
+                for(uint64_t i = _capacity; i < capacity; i++) {
                     bam1_t* allocated = bam_init1();
                     if(_direction == IoDirection::OUT) {
                         allocated->core.tid = -1;
@@ -199,7 +201,7 @@ template<> void CyclicBuffer<bam1_t>::calibrate(const size_t& capacity, const si
         }
     }
 };
-template<> CyclicBuffer<bam1_t>::CyclicBuffer(const IoDirection& direction, const size_t& capacity, const size_t& resolution) :
+template<> CyclicBuffer<bam1_t>::CyclicBuffer(const IoDirection& direction, const uint64_t& capacity, const uint64_t& resolution) :
     _direction(direction),
     _capacity(0),
     _resolution(0),

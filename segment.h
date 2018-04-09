@@ -67,14 +67,14 @@ friend ostream& operator<<(ostream& o, const Segment& segment);
 void operator=(Segment const &) = delete;
 
 public:
-    const size_t index;
+    const uint64_t index;
     const Platform platform;
     kstring_t name;
     uint16_t flag;
     Sequence sequence;
     Auxiliary auxiliary;
     Segment(const Platform& platform);
-    Segment(const size_t& index, const int32_t& FI, const int32_t& TC, const Platform& platform);
+    Segment(const uint64_t& index, const int32_t& FI, const int32_t& TC, const Platform& platform);
     Segment(const Segment& other);
     ~Segment();
     inline int32_t get_segment_index() const {
@@ -106,7 +106,7 @@ public:
         }
     };
     inline void set_qcfail(const bool value) {
-        if (value) {
+        if(value) {
             flag |= uint16_t(HtsFlag::QCFAIL);
         } else {
             flag &= ~uint16_t(HtsFlag::QCFAIL);
