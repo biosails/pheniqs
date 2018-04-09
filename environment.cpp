@@ -840,7 +840,7 @@ void Environment::print_instruction_validation(ostream& o) const {
 
     if(_display_distance && !_multiplex_barcode_distance.empty()) {
         o << "Barcode distance distribution" << endl << endl;
-        for(const auto metric : _multiplex_barcode_set_distance) {
+        for(const auto& metric : _multiplex_barcode_set_distance) {
             metric.describe(o);
         }
 

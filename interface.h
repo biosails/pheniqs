@@ -69,30 +69,28 @@ bool from_string(const char* value, ProgramAction& result);
 bool from_string(const string& value, ProgramAction& result);
 ostream& operator<<(ostream& o, const ProgramAction& value);
 void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document);
-template<> bool decode_value_by_key< ProgramAction >(const Value::Ch* key, ProgramAction& value, const Value& container);
 
 enum class ParameterType : uint8_t {
-    boolean,
-    integer,
-    decimal,
-    string,
-    url,
-    unknown
+    BOOLEAN,
+    INTEGER,
+    DECIMAL,
+    STRING,
+    URL,
+    UNKNOWN
 };
 void to_string(const ParameterType& value, string& result);
 bool from_string(const char* value, ParameterType& result);
 bool from_string(const string& value, ParameterType& result);
 ostream& operator<<(ostream& o, const ParameterType& value);
 void encode_key_value(const string& key, const ParameterType& value, Value& container, Document& document);
-template<> bool decode_value_by_key< ParameterType >(const Value::Ch* key, ParameterType& value, const Value& container);
 
 class Layout {
 public:
-    const uint64_t max_line_width;
-    const uint64_t option_indent;
-    uint64_t max_action_name;
-    const uint64_t option_handle_spacing;
-    const uint64_t option_choice_indent;
+    const size_t max_line_width;
+    const size_t option_indent;
+    size_t max_action_name;
+    const size_t option_handle_spacing;
+    const size_t option_choice_indent;
     Layout() :
         max_line_width(80),
         option_indent(2),
@@ -100,13 +98,13 @@ public:
         option_handle_spacing(4),
         option_choice_indent(0) {
     };
-    uint64_t complement_handle(const uint64_t& max_option_handle, const uint64_t& handle_length) const {
+    size_t complement_handle(const size_t& max_option_handle, const size_t& handle_length) const {
         return max_option_handle - handle_length + option_handle_spacing;
     };
-    uint64_t complement_action(const uint64_t& action_name_length) const {
+    size_t complement_action(const size_t& action_name_length) const {
         return max_action_name - action_name_length + option_handle_spacing;
     };
-    uint64_t indent_choice(const uint64_t& max_option_handle) const {
+    size_t indent_choice(const size_t& max_option_handle) const {
         return max_option_handle + option_handle_spacing + option_indent + option_choice_indent;
     };
 };
@@ -124,8 +122,8 @@ public:
     vector< string > choices;
     Prototype(const Value& node);
     Prototype();
-    ostream& print_help(ostream& o, const uint64_t& max_option_handle, const Layout& layout) const;
-    uint64_t handle_length() const;
+    ostream& print_help(ostream& o, const size_t& max_option_handle, const Layout& layout) const;
+    size_t handle_length() const;
     bool is_choice() const;
 };
 class Argument {
@@ -154,7 +152,7 @@ public:
 
 private:
     bool assigned;
-    const Prototype* prototype;
+    const Prototype prototype;
     union {
         bool* boolean_value;
         int64_t* integer_value;
@@ -185,7 +183,7 @@ public:
 
 private:
     const bool root;
-    uint64_t max_option_handle;
+    size_t max_option_handle;
     const Value* default_value_node;
     vector< Prototype* > optional_order;
     vector< Prototype* > positional_order;
@@ -194,7 +192,7 @@ private:
 };
 class CommandLine {
 public:
-    const uint64_t argc;
+    const size_t argc;
     const char** argv;
     const string application_name;
     const string application_version;
@@ -234,12 +232,12 @@ private:
     vector< Argument* > argument_order;
     unordered_map< string, Argument* > argument_name_lookup;
 
-    Argument* parse_argument(const Prototype* prototype, uint64_t& index);
-    Argument* decode_optional(Action* action, uint64_t& index, const string& handle, bool& positional, bool composite=false);
-    Argument* decode_positional(Action* action, uint64_t& index, const uint64_t& position);
+    Argument* parse_argument(const Prototype* prototype, size_t& index);
+    Argument* decode_optional(Action* action, size_t& index, const string& handle, bool& positional, bool composite=false);
+    Argument* decode_positional(Action* action, size_t& index, const size_t& position);
     void decode();
     void validate();
-    void load_action(uint64_t& position);
+    void load_action(size_t& position);
     Argument* get_argument(const Prototype* prototype);
     ostream& print_version_element(ostream& o, const Layout& layout) const;
     ostream& print_action_element(ostream& o, const Layout& layout) const;

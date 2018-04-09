@@ -7,7 +7,7 @@ static inline string get_cwd() {
     char* buffer = NULL;
     char* temp = NULL;
     string directory;
-    uint64_t size = 128;
+    size_t size = 128;
 
     if((buffer = static_cast< char* >(malloc(size))) == NULL) {
         throw InternalError("out of memory");
@@ -48,6 +48,94 @@ static inline string assemble_full_command(const int argc, const char** argv) {
     return value;
 };
 
+void to_string(const ProgramAction& value, string& result) {
+    switch(value) {
+        case ProgramAction::DEMULTIPLEX:    result.assign("demux");      break;
+        case ProgramAction::QUALITY:        result.assign("quality");    break;
+        default:                            result.assign("unknown");    break;
+    }
+};
+bool from_string(const char* value, ProgramAction& result) {
+         if(value == NULL)              result = ProgramAction::UNKNOWN;
+    else if(!strcmp(value, "demux"))    result = ProgramAction::DEMULTIPLEX;
+    else if(!strcmp(value, "quality"))  result = ProgramAction::QUALITY;
+    else                                result = ProgramAction::UNKNOWN;
+    return (result == ProgramAction::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, ProgramAction& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const ProgramAction& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< ProgramAction >(const Value::Ch* key, ProgramAction& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+
+void to_string(const ParameterType& value, string& result) {
+    switch(value) {
+        case ParameterType::BOOLEAN:    result.assign("boolean");   break;
+        case ParameterType::INTEGER:    result.assign("integer");   break;
+        case ParameterType::DECIMAL:    result.assign("decimal");   break;
+        case ParameterType::STRING:     result.assign("string");    break;
+        case ParameterType::URL:        result.assign("url");       break;
+        default:                        result.assign("unknown");   break;
+    }
+};
+bool from_string(const char* value, ParameterType& result) {
+         if(value == NULL)              result = ParameterType::UNKNOWN;
+    else if(!strcmp(value, "boolean"))  result = ParameterType::BOOLEAN;
+    else if(!strcmp(value, "integer"))  result = ParameterType::INTEGER;
+    else if(!strcmp(value, "decimal"))  result = ParameterType::DECIMAL;
+    else if(!strcmp(value, "string"))   result = ParameterType::STRING;
+    else if(!strcmp(value, "url"))      result = ParameterType::URL;
+    else                                result = ParameterType::UNKNOWN;
+    return (result == ParameterType::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, ParameterType& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const ParameterType& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const ParameterType& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< ParameterType >(const Value::Ch* key, ParameterType& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+
 Prototype::Prototype(const Value& node) :
     cardinality(0),
     plural(false),
@@ -61,19 +149,19 @@ Prototype::Prototype(const Value& node) :
         decode_value_by_key< string >("meta", meta, node);
         if(meta.empty()) {
             switch(type) {
-                case ParameterType::boolean:
+                case ParameterType::BOOLEAN:
                     meta.clear();
                     break;
-                case ParameterType::integer:
+                case ParameterType::INTEGER:
                     meta.assign("INT");
                     break;
-                case ParameterType::decimal:
+                case ParameterType::DECIMAL:
                     meta.assign("FLOAT");
                     break;
-                case ParameterType::string:
+                case ParameterType::STRING:
                     meta.assign("STRING");
                     break;
-                case ParameterType::url:
+                case ParameterType::URL:
                     meta.assign("URL");
                     break;
                 default:
@@ -134,10 +222,10 @@ Prototype::Prototype() :
     mandatory(false),
     positional(false) {
 };
-ostream& Prototype::print_help(ostream& o, const uint64_t& max_option_handle, const Layout& layout) const {
+ostream& Prototype::print_help(ostream& o, const size_t& max_option_handle, const Layout& layout) const {
     o << setw(layout.option_indent) << ' ';
     if(!positional) {
-        for(uint64_t i = 0; i < handles.size(); i++) {
+        for(size_t i = 0; i < handles.size(); i++) {
             if(i > 0) {
                 o << ", ";
             }
@@ -157,8 +245,8 @@ ostream& Prototype::print_help(ostream& o, const uint64_t& max_option_handle, co
     o << help << endl;
     return o;
 };
-uint64_t Prototype::handle_length() const {
-    uint64_t length = 0;
+size_t Prototype::handle_length() const {
+    size_t length = 0;
     if(!positional) {
         for(const auto& handle : handles) {
             length += handle.length();
@@ -178,22 +266,22 @@ bool Prototype::is_choice() const {
 
 Argument::Argument(const Prototype* prototype) :
     assigned(false),
-    prototype(prototype) {
+    prototype(*prototype) {
     if(prototype->plural) {
         switch(prototype->type) {
-            case ParameterType::integer: {
+            case ParameterType::INTEGER: {
                 integer_array_value = new list< int64_t >();
                 break;
             };
-            case ParameterType::decimal: {
+            case ParameterType::DECIMAL: {
                 decimal_array_value = new list< double >();
                 break;
             };
-            case ParameterType::string: {
+            case ParameterType::STRING: {
                 string_array_value = new list< string >();
                 break;
             };
-            case ParameterType::url: {
+            case ParameterType::URL: {
                 url_array_value = new list< URL >();
                 break;
             };
@@ -203,23 +291,23 @@ Argument::Argument(const Prototype* prototype) :
         };
     } else {
         switch(prototype->type) {
-            case ParameterType::boolean: {
+            case ParameterType::BOOLEAN: {
                 boolean_value = new bool(false);
                 break;
             };
-            case ParameterType::integer: {
+            case ParameterType::INTEGER: {
                 integer_value = new int64_t(0);
                 break;
             };
-            case ParameterType::decimal: {
+            case ParameterType::DECIMAL: {
                 decimal_value = new double(0);
                 break;
             };
-            case ParameterType::string: {
+            case ParameterType::STRING: {
                 string_value = new string();
                 break;
             };
-            case ParameterType::url: {
+            case ParameterType::URL: {
                 url_value = new URL();
                 break;
             };
@@ -230,21 +318,21 @@ Argument::Argument(const Prototype* prototype) :
     }
 };
 Argument::~Argument() {
-    if(prototype->plural) {
-        switch(prototype->type) {
-            case ParameterType::integer: {
+    if(prototype.plural) {
+        switch(prototype.type) {
+            case ParameterType::INTEGER: {
                 delete integer_array_value;
                 break;
             };
-            case ParameterType::decimal: {
+            case ParameterType::DECIMAL: {
                 delete decimal_array_value;
                 break;
             };
-            case ParameterType::string: {
+            case ParameterType::STRING: {
                 delete string_array_value;
                 break;
             };
-            case ParameterType::url: {
+            case ParameterType::URL: {
                 delete url_array_value;
                 break;
             };
@@ -253,24 +341,24 @@ Argument::~Argument() {
             };
         };
     } else {
-        switch(prototype->type) {
-            case ParameterType::boolean: {
+        switch(prototype.type) {
+            case ParameterType::BOOLEAN: {
                 delete boolean_value;
                 break;
             };
-            case ParameterType::integer: {
+            case ParameterType::INTEGER: {
                 delete integer_value;
                 break;
             };
-            case ParameterType::decimal: {
+            case ParameterType::DECIMAL: {
                 delete decimal_value;
                 break;
             };
-            case ParameterType::string: {
+            case ParameterType::STRING: {
                 delete string_value;
                 break;
             };
-            case ParameterType::url: {
+            case ParameterType::URL: {
                 delete url_value;
                 break;
             };
@@ -286,7 +374,7 @@ void Argument::set_value(const bool value) {
 };
 void Argument::set_value(const int64_t value) {
     assigned = true;
-    if(!prototype->plural) {
+    if(!prototype.plural) {
         *integer_value = value;
     } else {
         integer_array_value->push_back(value);
@@ -294,7 +382,7 @@ void Argument::set_value(const int64_t value) {
 };
 void Argument::set_value(const double value) {
     assigned = true;
-    if(!prototype->plural) {
+    if(!prototype.plural) {
         *decimal_value = value;
     } else {
         decimal_array_value->push_back(value);
@@ -302,7 +390,7 @@ void Argument::set_value(const double value) {
 };
 void Argument::set_value(const char* value) {
     assigned = true;
-    if(!prototype->plural) {
+    if(!prototype.plural) {
         string_value->assign(value);
     } else {
         string_array_value->emplace_back(value);
@@ -310,7 +398,7 @@ void Argument::set_value(const char* value) {
 };
 void Argument::set_value(const URL value) {
     assigned = true;
-    if(!prototype->plural) {
+    if(!prototype.plural) {
         *url_value = value;
     } else {
         url_array_value->emplace_back(value);
@@ -318,86 +406,86 @@ void Argument::set_value(const URL value) {
 };
 bool* Argument::get_boolean() const {
     bool* value = NULL;
-    if(prototype->type == ParameterType::boolean) {
+    if(prototype.type == ParameterType::BOOLEAN) {
         value = boolean_value;
     }
     return value;
 };
 int64_t* Argument::get_integer() const {
     int64_t* value = NULL;
-    if(prototype->type == ParameterType::integer) {
+    if(prototype.type == ParameterType::INTEGER) {
         value = integer_value;
     }
     return value;
 };
 double* Argument::get_decimal() const {
     double* value = NULL;
-    if(prototype->type == ParameterType::decimal) {
+    if(prototype.type == ParameterType::DECIMAL) {
         value = decimal_value;
     }
     return value;
 };
 string* Argument::get_string() const {
     string* value = NULL;
-    if(prototype->type == ParameterType::string) {
+    if(prototype.type == ParameterType::STRING) {
         value = string_value;
     }
     return value;
 };
 URL* Argument::get_url() const {
     URL* value = NULL;
-    if(prototype->type == ParameterType::url) {
+    if(prototype.type == ParameterType::URL) {
         value = url_value;
     }
     return value;
 };
 list< int64_t >* Argument::get_integer_array() const {
     list< int64_t >* value = NULL;
-    if(prototype->type == ParameterType::integer && prototype->plural) {
+    if(prototype.type == ParameterType::INTEGER && prototype.plural) {
         value = integer_array_value;
     }
     return value;
 };
 list< double >* Argument::get_decimal_array() const {
     list< double >* value = NULL;
-    if(prototype->type == ParameterType::decimal && prototype->plural) {
+    if(prototype.type == ParameterType::DECIMAL && prototype.plural) {
         value = decimal_array_value;
     }
     return value;
 };
 list< string >* Argument::get_string_array() const {
     list< string >* value = NULL;
-    if(prototype->type == ParameterType::string && prototype->plural) {
+    if(prototype.type == ParameterType::STRING && prototype.plural) {
         value = string_array_value;
     }
     return value;
 };
 list< URL >* Argument::get_url_array() const {
     list< URL >* value = NULL;
-    if(prototype->type == ParameterType::url && prototype->plural) {
+    if(prototype.type == ParameterType::URL && prototype.plural) {
         value = url_array_value;
     }
     return value;
 };
 uint64_t Argument::cardinality() const {
     uint64_t value = 0;
-    if(!prototype->plural) {
+    if(!prototype.plural) {
         value = assigned ? 1 : 0;
     } else {
-        switch(prototype->type) {
-            case ParameterType::boolean:
+        switch(prototype.type) {
+            case ParameterType::BOOLEAN:
                 // does not make sense
                 break;
-            case ParameterType::integer:
+            case ParameterType::INTEGER:
                 value = integer_array_value->size();
                 break;
-            case ParameterType::decimal:
+            case ParameterType::DECIMAL:
                 value = decimal_array_value->size();
                 break;
-            case ParameterType::string:
+            case ParameterType::STRING:
                 value = string_array_value->size();
                 break;
-            case ParameterType::url:
+            case ParameterType::URL:
                 value = url_array_value->size();
                 break;
             default:
@@ -408,8 +496,8 @@ uint64_t Argument::cardinality() const {
 };
 bool Argument::satisfied() const {
     bool value = true;
-    if(prototype->plural) {
-        if(prototype->cardinality == 0 || prototype->cardinality > cardinality()) {
+    if(prototype.plural) {
+        if(prototype.cardinality == 0 || prototype.cardinality > cardinality()) {
             value = false;
         }
     } else {
@@ -480,7 +568,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
         buffer.append(" ");
         buffer.append(name);
     }
-    uint64_t indent = buffer.length();
+    size_t indent = buffer.length();
     for(const auto prototype : optional_order) {
         block.append(" ");
         if(!prototype->mandatory) {
@@ -492,24 +580,24 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
             block.append("--");
         }
         switch(prototype->type) {
-            case ParameterType::boolean:
+            case ParameterType::BOOLEAN:
                 block.append(prototype->handles[0]);
                 break;
-            case ParameterType::integer:
-                block.append(prototype->handles[0]);
-                block.append(" ");
-                block.append(prototype->meta);
-                break;
-            case ParameterType::decimal:
+            case ParameterType::INTEGER:
                 block.append(prototype->handles[0]);
                 block.append(" ");
                 block.append(prototype->meta);
                 break;
-            case ParameterType::string:
+            case ParameterType::DECIMAL:
+                block.append(prototype->handles[0]);
+                block.append(" ");
+                block.append(prototype->meta);
+                break;
+            case ParameterType::STRING:
                 block.append(prototype->handles[0]);
                 block.append(" ");
                 if(prototype->is_choice()) {
-                    for(uint64_t i = 0; i < prototype->choices.size(); i++) {
+                    for(size_t i = 0; i < prototype->choices.size(); i++) {
                         if(i > 0) {
                             block.append("|");
                         }
@@ -519,7 +607,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
                     block.append(prototype->meta);
                 }
                 break;
-            case ParameterType::url:
+            case ParameterType::URL:
                 block.append(prototype->handles[0]);
                 block.append(" ");
                 block.append(prototype->meta);
@@ -543,16 +631,16 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
             block.append("[");
         }
         switch(prototype->type) {
-            case ParameterType::boolean:
+            case ParameterType::BOOLEAN:
                 break;
-            case ParameterType::integer:
-            case ParameterType::decimal:
-            case ParameterType::url:
+            case ParameterType::INTEGER:
+            case ParameterType::DECIMAL:
+            case ParameterType::URL:
                 block.append(prototype->meta);
                 break;
-            case ParameterType::string: {
+            case ParameterType::STRING: {
                 if(prototype->is_choice()) {
-                    for(uint64_t i = 0; i < prototype->choices.size(); i++) {
+                    for(size_t i = 0; i < prototype->choices.size(); i++) {
                         if(i > 0) { block.append("|"); }
                         block.append(prototype->choices[i]);
                     }
@@ -713,28 +801,28 @@ Document* CommandLine::load_instruction_from_command_line(const Value& base) {
         string key(record.name.GetString(), record.name.GetStringLength());
         Argument* argument = get(key);
         if(argument != NULL) {
-            if(argument->prototype->plural) {
-                switch(argument->prototype->type) {
-                    case ParameterType::boolean: {
+            if(argument->prototype.plural) {
+                switch(argument->prototype.type) {
+                    case ParameterType::BOOLEAN: {
                         /* impossible */
                         break;
                     };
-                    case ParameterType::integer: {
+                    case ParameterType::INTEGER: {
                         list< int64_t >* value = get_integer_plural(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::decimal: {
+                    case ParameterType::DECIMAL: {
                         list< double >* value = get_decimal_plural(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::string: {
+                    case ParameterType::STRING: {
                         list< string >* value = get_string_plural(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::url: {
+                    case ParameterType::URL: {
                         list< URL >* value = get_url_plural(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
@@ -743,28 +831,28 @@ Document* CommandLine::load_instruction_from_command_line(const Value& base) {
                         break;
                 }
             } else {
-                switch(argument->prototype->type) {
-                    case ParameterType::boolean: {
+                switch(argument->prototype.type) {
+                    case ParameterType::BOOLEAN: {
                         bool* value = get_boolean(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::integer: {
+                    case ParameterType::INTEGER: {
                         int64_t* value = get_integer(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::decimal: {
+                    case ParameterType::DECIMAL: {
                         double* value = get_decimal(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::string: {
+                    case ParameterType::STRING: {
                         string* value = get_string(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::url: {
+                    case ParameterType::URL: {
                         URL* value = get_url(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
@@ -937,33 +1025,33 @@ ostream& CommandLine::print_version(ostream& o) const {
     print_version_element(o, layout);
     return o;
 };
-Argument* CommandLine::parse_argument(const Prototype* prototype, uint64_t& index) {
+Argument* CommandLine::parse_argument(const Prototype* prototype, size_t& index) {
     Argument* argument = NULL;
     try {
         switch(prototype->type) {
-            case ParameterType::boolean: {
+            case ParameterType::BOOLEAN: {
                 argument = get_argument(prototype);
                 argument->set_value(true);
                 break;
             };
-            case ParameterType::integer: {
+            case ParameterType::INTEGER: {
                 string raw(argv[index]);
                 argument = get_argument(prototype);
                 argument->set_value(static_cast < int64_t>(stoll(raw)));
                 break;
             };
-            case ParameterType::decimal: {
+            case ParameterType::DECIMAL: {
                 string raw(argv[index]);
                 argument = get_argument(prototype);
                 argument->set_value(stod(raw));
                 break;
             };
-            case ParameterType::string: {
+            case ParameterType::STRING: {
                 argument = get_argument(prototype);
                 argument->set_value(argv[index]);
                 break;
             };
-            case ParameterType::url: {
+            case ParameterType::URL: {
                 argument = get_argument(prototype);
                 argument->set_value(argv[index]);
                 break;
@@ -978,13 +1066,13 @@ Argument* CommandLine::parse_argument(const Prototype* prototype, uint64_t& inde
     }
     return argument;
 };
-Argument* CommandLine::decode_optional(Action* action, uint64_t& index, const string& handle, bool& positional, bool composite) {
+Argument* CommandLine::decode_optional(Action* action, size_t& index, const string& handle, bool& positional, bool composite) {
     Argument* argument = NULL;
     auto record = action->option_handle_lookup.find(handle);
     if(record != action->option_handle_lookup.end()) {
         Prototype* prototype = record->second;
         // if the option is not a boolean flag
-        if(prototype->type != ParameterType::boolean) {
+        if(prototype->type != ParameterType::BOOLEAN) {
             if(composite) {
                 // if the handle was grouped and not the last in the group it must be a boolean option
                 throw CommandLineError("argument " + prototype->name + " requires a value");
@@ -1002,7 +1090,7 @@ Argument* CommandLine::decode_optional(Action* action, uint64_t& index, const st
     }
     return argument;
 };
-Argument* CommandLine::decode_positional(Action* action, uint64_t& index, const uint64_t& position) {
+Argument* CommandLine::decode_positional(Action* action, size_t& index, const size_t& position) {
     Argument* argument = NULL;
     if(position < action->positional_order.size()) {
         Prototype* prototype = action->positional_order[position];
@@ -1013,8 +1101,8 @@ Argument* CommandLine::decode_positional(Action* action, uint64_t& index, const 
     return argument;
 };
 void CommandLine::decode() {
-    uint64_t index = 1;
-    uint64_t position = 0;
+    size_t index = 1;
+    size_t position = 0;
     bool positional = false;
     load_action(index);
     while(index < argc) {
@@ -1030,7 +1118,7 @@ void CommandLine::decode() {
         } else {
             if(!positional) {
                 const char* key = argv[index];
-                uint64_t length = strlen(key);
+                size_t length = strlen(key);
                 if(key[0] == '-' && length > 1) {
                     key++;
                     if(*key == '-') {
@@ -1088,16 +1176,16 @@ void CommandLine::validate() {
                 throw CommandLineError("argument " + prototype->name + " requires exactly " + to_string(prototype->cardinality) + " values");
             } else if(argument != NULL && prototype->is_choice()) {
                 switch(prototype->type) {
-                    case ParameterType::boolean: {
+                    case ParameterType::BOOLEAN: {
                         break;
                     };
-                    case ParameterType::integer: {
+                    case ParameterType::INTEGER: {
                         break;
                     };
-                    case ParameterType::decimal: {
+                    case ParameterType::DECIMAL: {
                         break;
                     };
-                    case ParameterType::string: {
+                    case ParameterType::STRING: {
                         bool found = false;
                         string* value = argument->get_string();
                         if(value != NULL) {
@@ -1113,7 +1201,7 @@ void CommandLine::validate() {
                         }
                         break;
                     };
-                    case ParameterType::url: {
+                    case ParameterType::URL: {
                         break;
                     };
                     default:
@@ -1124,9 +1212,9 @@ void CommandLine::validate() {
         }
     }
 };
-void CommandLine::load_action(uint64_t& position) {
+void CommandLine::load_action(size_t& position) {
     if(argc > 1) {
-        for(uint64_t i = 1; i < argc; i++) {
+        for(size_t i = 1; i < argc; i++) {
             if(argv[i][0] != '-') {
                 string name(argv[i]);
                 position = i + 1;
@@ -1172,90 +1260,3 @@ ostream& CommandLine::print_action_element(ostream& o, const Layout& layout) con
     return o;
 };
 
-void to_string(const ProgramAction& value, string& result) {
-    switch(value) {
-        case ProgramAction::DEMULTIPLEX:    result.assign("demux");      break;
-        case ProgramAction::QUALITY:        result.assign("quality");    break;
-        default:                            result.assign("unknown");    break;
-    }
-};
-bool from_string(const char* value, ProgramAction& result) {
-         if(value == NULL)              result = ProgramAction::UNKNOWN;
-    else if(!strcmp(value, "demux"))    result = ProgramAction::DEMULTIPLEX;
-    else if(!strcmp(value, "quality"))  result = ProgramAction::QUALITY;
-    else                                result = ProgramAction::UNKNOWN;
-    return (result == ProgramAction::UNKNOWN ? false : true);
-};
-bool from_string(const string& value, ProgramAction& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const ProgramAction& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
-    return o;
-};
-void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-template<> bool decode_value_by_key< ProgramAction >(const Value::Ch* key, ProgramAction& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-
-void to_string(const ParameterType& value, string& result) {
-    switch(value) {
-        case ParameterType::boolean:    result.assign("boolean");   break;
-        case ParameterType::integer:    result.assign("integer");   break;
-        case ParameterType::decimal:    result.assign("decimal");   break;
-        case ParameterType::string:     result.assign("string");    break;
-        case ParameterType::url:        result.assign("url");       break;
-        default:                        result.assign("unknown");   break;
-    }
-};
-bool from_string(const char* value, ParameterType& result) {
-         if(value == NULL)              result = ParameterType::unknown;
-    else if(!strcmp(value, "boolean"))  result = ParameterType::boolean;
-    else if(!strcmp(value, "integer"))  result = ParameterType::integer;
-    else if(!strcmp(value, "decimal"))  result = ParameterType::decimal;
-    else if(!strcmp(value, "string"))   result = ParameterType::string;
-    else if(!strcmp(value, "url"))      result = ParameterType::url;
-    else                                result = ParameterType::unknown;
-    return (result == ParameterType::unknown ? false : true);
-};
-bool from_string(const string& value, ParameterType& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const ParameterType& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
-    return o;
-};
-void encode_key_value(const string& key, const ParameterType& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-template<> bool decode_value_by_key< ParameterType >(const Value::Ch* key, ParameterType& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
