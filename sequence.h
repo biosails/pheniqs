@@ -23,18 +23,20 @@
 #define PHENIQS_SEQUENCE_H
 
 #include <set>
+#include <algorithm>
 #include <unordered_map>
-
-#include <htslib/kstring.h>
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
+#include "kstring.h"
 #include "nucleotide.h"
 #include "phred.h"
 #include "transform.h"
 
 using std::set;
+using std::min;
+using std::max;
+using std::abs;
 using std::copy;
 using std::hash;
 using std::setw;
@@ -53,6 +55,8 @@ using std::to_string;
 using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
+
+const uint64_t INITIAL_SEQUENCE_CAPACITY = 64;
 
 /* DNA sequence
 */
@@ -132,7 +136,7 @@ public:
             ks_resize(buffer, buffer->l + length + 1);
             for(uint64_t i = 0; i < length; i++) {
                 buffer->s[buffer->l + i] = BamToAmbiguousAscii[uint8_t(code[i])];
-                // kputc(BamToAmbiguousAscii[uint8_t(code[i])], buffer);
+                // ks_put_character(BamToAmbiguousAscii[uint8_t(code[i])], buffer);
             }
             buffer->l += length;
             ks_terminate(*buffer);
@@ -162,7 +166,7 @@ public:
             ks_resize(buffer, buffer->l + length + 1);
             for(uint64_t i = 0; i < length; i++) {
                 buffer->s[buffer->l + i] = quality[i] + phred_offset;
-                // kputc(quality[i] + phred_offset, buffer);
+                // ks_put_character(quality[i] + phred_offset, buffer);
             }
             buffer->l += length;
             ks_terminate(*buffer);
@@ -233,7 +237,7 @@ public:
     inline bool corrected_match(const Barcode& other, uint64_t& distance) const {
         bool result = true;
         distance = 0;
-        for(uint64_t i = 0; i < fragments.size(); i++) {
+        for(size_t i = 0; i < fragments.size(); i++) {
             uint64_t error = fragments[i].distance_from(other.fragments[i], threshold);
             if(error > tolerance[i]) {
                 result = false;
@@ -255,7 +259,7 @@ public:
     inline void decoding_probability(const Barcode& observed, double& probability, uint64_t& distance) const {
         double p = 1;
         uint64_t d = 0;
-        for(uint64_t i = 0; i < fragments.size(); i++) {
+        for(size_t i = 0; i < fragments.size(); i++) {
             const Sequence& reference = fragments[i];
             const Sequence& o = observed.fragments[i];
             for(uint64_t j = 0; j < reference.length; j++) {
@@ -277,7 +281,7 @@ public:
     inline void accurate_decoding_probability(const Barcode& observed, double& probability, uint64_t& distance) const {
         double q = 0;
         uint64_t d = 0;
-        for(uint64_t i = 0; i < fragments.size(); i++) {
+        for(size_t i = 0; i < fragments.size(); i++) {
             const Sequence& reference = fragments[i];
             const Sequence& o = observed.fragments[i];
             for(uint64_t j = 0; j < reference.length; j++) {
@@ -305,7 +309,7 @@ public:
         double t = 0;
         double q = 0;
         uint64_t d = 0;
-        for(uint64_t i = 0; i < fragments.size(); i++) {
+        for(size_t i = 0; i < fragments.size(); i++) {
             const Sequence& reference = fragments[i];
             const Sequence& o = observed.fragments[i];
             for(uint64_t j = 0; j < reference.length; j++) {
@@ -369,8 +373,8 @@ public:
             _max_word_length = 0;
             _min_word_length = numeric_limits< uint64_t >::max();
             for(const auto& word : _index) {
-                _min_word_length = MIN(_min_word_length, word.size());
-                _max_word_length = MAX(_max_word_length, word.size());
+                _min_word_length = min(_min_word_length, word.size());
+                _max_word_length = max(_max_word_length, word.size());
                 _words.push_back(word);
             }
 
@@ -378,18 +382,18 @@ public:
             _min_distance = numeric_limits< uint64_t >::max();
             _matrix.resize(height());
             _cumulative.resize(height());
-            for(uint64_t i = 0; i < height(); i++) {
+            for(size_t i = 0; i < height(); i++) {
                 const string& row = word(i);
                 _matrix[i].resize(height());
-                for(uint64_t j = 0; j < height(); j++) {
+                for(size_t j = 0; j < height(); j++) {
                     const string& column = word(j);
                     if(i == j) {
                         _matrix[i][j] = 0;
 
                     } else if(i < j) {
-                        uint64_t distance = hamming_distance(row, column);
-                        _min_distance = MIN(_min_distance, distance);
-                        _max_distance = MAX(_max_distance, distance);
+                        size_t distance = hamming_distance(row, column);
+                        _min_distance = min(_min_distance, distance);
+                        _max_distance = max(_max_distance, distance);
                         _matrix[i][j] = distance;
                         _cumulative[i] += distance;
                         _cumulative[j] += distance;
@@ -401,7 +405,7 @@ public:
             }
             _shannon_bound = ((_min_distance - 1) / 2);
 
-            for(uint64_t i = 0; i < _cumulative.size(); i++) {
+            for(size_t i = 0; i < _cumulative.size(); i++) {
                 _cumulative[i] /= (height() * 2);
             }
             // We want to know how many digits are in the biggest value to be able to align the matrix
@@ -416,22 +420,22 @@ public:
     void add(const string& word) {
         _index.insert(word);
     };
-    inline uint64_t width() const {
+    inline size_t width() const {
         return _max_word_length;
     };
-    inline uint64_t height() const {
+    inline size_t height() const {
         return _words.size();
     };
     inline uint64_t value(uint64_t i, uint64_t j) const {
         return _matrix[i][j];
     };
-    inline const string& word(uint64_t i) const {
+    inline const string& word(size_t i) const {
         return _words[i];
     };
-    inline uint64_t cumulative(uint64_t i) const {
+    inline uint64_t cumulative(size_t i) const {
         return _cumulative[i];
     };
-    inline uint64_t minimum_distance() const {
+    inline size_t minimum_distance() const {
         return _min_distance;
     };
     inline uint64_t shannon_bound() const {
@@ -443,9 +447,9 @@ public:
     void describe(ostream& o) const {
         o << std::left;
         if(!empty()) {
-            for(uint64_t i = 0; i < height(); i++) {
+            for(size_t i = 0; i < height(); i++) {
                 o << '\t';
-                for(uint64_t j = 0; j < height(); j++) {
+                for(size_t j = 0; j < height(); j++) {
                     o << setw(_padding)<< value(i, j);
                 }
                 o << word(i) << ' ' << setw(_padding) << cumulative(i) << endl;
@@ -455,29 +459,29 @@ public:
     };
 
 private:
-    uint64_t _min_word_length;
-    uint64_t _max_word_length;
-    uint64_t _min_distance;
-    uint64_t _max_distance;
-    uint64_t _shannon_bound;
-    uint64_t _padding;
-    uint64_t _spacing;
+    size_t _min_word_length;
+    size_t _max_word_length;
+    size_t _min_distance;
+    size_t _max_distance;
+    size_t _shannon_bound;
+    int _padding;
+    int _spacing;
     set< string > _index;
     vector < string > _words;
     vector < uint64_t > _cumulative;
     vector< vector< uint64_t > > _matrix;
 
-    inline uint64_t hamming_distance(const string& left, const string& right) const {
-        uint64_t result = 0;
-        for(uint64_t i = 0; i < left.length(); i++) {
+    inline size_t hamming_distance(const string& left, const string& right) const {
+        size_t result = 0;
+        for(size_t i = 0; i < left.length(); i++) {
             if(left[i] != right[i]) {
                 result++;
             }
         }
         return result;
     };
-    inline uint64_t shannon_bound(const string& left, const string& right) const {
-        uint64_t result = hamming_distance(left, right);
+    inline size_t shannon_bound(const string& left, const string& right) const {
+        size_t result = hamming_distance(left, right);
         result = ((result - 1) / 2);
         return result;
     };

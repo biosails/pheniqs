@@ -31,17 +31,15 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "error.h"
-
-#include <htslib/kstring.h>
-
 #define RAPIDJSON_NO_SIZETYPEDEFINE
 namespace rapidjson { typedef ::std::size_t SizeType; }
-
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/error/en.h>
+
+#include "error.h"
+#include "kstring.h"
 
 using std::uint64_t;
 using std::string;
@@ -65,7 +63,6 @@ using rapidjson::kNullType;
 using rapidjson::kStringType;
 using rapidjson::kArrayType;
 using rapidjson::kObjectType;
-
 
 void print_json(const Value& node, ostream& o);
 void merge_json_value(const Value& node, const Value& other, Value& container, Document& document);

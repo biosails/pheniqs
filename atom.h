@@ -26,11 +26,10 @@
 #include <unordered_map>
 
 #include <htslib/hts.h>
-#include <htslib/kstring.h>
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
+#include "kstring.h"
 
 using std::set;
 using std::copy;
@@ -52,6 +51,105 @@ using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
 
+/*  defined in htslib/hts.h */
+void to_string(const htsFormatCategory& value, string& result);
+bool from_string(const char* value, htsFormatCategory& result);
+ostream& operator<<(ostream& o, const htsFormatCategory& hts_format_category);
+
+void to_string(const htsExactFormat& value, string& result);
+bool from_string(const char* value, htsExactFormat& result);
+ostream& operator<<(ostream& o, const htsExactFormat& hts_exact_format);
+
+void to_string(const htsCompression& value, string& result);
+bool from_string(const char* value, htsCompression& result);
+ostream& operator<<(ostream& o, const htsCompression& hts_compression);
+
+/*  SAM format flags
+
+    PAIRED          read is paired in sequencing, no matter whether it is mapped in a pair
+    PROPER_PAIR     read is mapped in a proper pair
+    UNMAP           read itself is unmapped; conflictive with PROPER_PAIR
+    MUNMAP          mate is unmapped
+    REVERSE         read is mapped to the reverse strand
+    MREVERSE        mate is mapped to the reverse strand
+    READ1           the first segment in the template
+    READ2           the last segment in the template
+    SECONDARY       not primary alignment
+    QCFAIL          QC failure
+    DUP             optical or PCR duplicate
+    SUPPLEMENTARY   supplementary alignment
+*/
+enum class HtsFlag : uint16_t {
+    PAIRED         = 0x1,
+    PROPER_PAIR    = 0x2,
+    UNMAP          = 0x4,
+    MUNMAP         = 0x8,
+    REVERSE        = 0x10,
+    MREVERSE       = 0x20,
+    READ1          = 0x40,
+    READ2          = 0x80,
+    SECONDARY      = 0x100,
+    QCFAIL         = 0x200,
+    DUP            = 0x400,
+    SUPPLEMENTARY  = 0x800,
+};
+
+enum class HtsSortOrder : int8_t {
+    UNKNOWN    = -1,
+    UNSORTED   =  0,
+    QUERYNAME  =  1,
+    COORDINATE =  2,
+};
+void to_string(const HtsSortOrder& value, string& result);
+bool from_string(const char* value, HtsSortOrder& result);
+void to_kstring(const HtsSortOrder& value, kstring_t& result);
+bool from_string(const string& value, HtsSortOrder& result);
+ostream& operator<<(ostream& o, const HtsSortOrder& value);
+void encode_key_value(const string& key, const HtsSortOrder& value, Value& container, Document& document);
+
+enum class HtsGrouping : int8_t {
+    UNKNOWN   = -1,
+    NONE      =  0,
+    QUERY     =  1,
+    REFERENCE =  2,
+};
+void to_string(const HtsGrouping& value, string& result);
+bool from_string(const char* value, HtsGrouping& result);
+bool from_string(const string& value, HtsGrouping& result);
+void to_kstring(const HtsGrouping& value, kstring_t& result);
+ostream& operator<<(ostream& o, const HtsGrouping& value);
+void encode_key_value(const string& key, const HtsGrouping& value, Value& container, Document& document);
+
+enum class Platform : uint8_t {
+    UNKNOWN,
+    CAPILLARY,
+    LS454,
+    ILLUMINA,
+    SOLID,
+    HELICOS,
+    IONTORRENT,
+    ONT,
+    PACBIO,
+};
+void to_string(const Platform& value, string& result);
+bool from_string(const char* value, Platform& result);
+void to_kstring(const Platform& value, kstring_t& result);
+bool from_string(const string& value, Platform& result);
+ostream& operator<<(ostream& o, const Platform& value);
+void encode_key_value(const string& key, const Platform& value, Value& container, Document& document);
+
+enum class Decoder : uint8_t {
+    UNKNOWN,
+    MDD,
+    PAMLD,
+    BENCHMARK,
+};
+void to_string(const Decoder& value, string& result);
+bool from_string(const char* value, Decoder& result);
+void to_kstring(const Decoder& value, kstring_t& result);
+bool from_string(const string& value, Decoder& result);
+ostream& operator<<(ostream& o, const Decoder& value);
+bool encode_key_value(const string& key, const Decoder& value, Value& container, Document& document);
 
 /*  @HD The header line
 
@@ -85,7 +183,7 @@ public:
     void set_version(const htsFormat* format);
 
 private:
-    void encode(kstring_t* buffer) const;
+    void encode(kstring_t& buffer) const;
     char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadHDAtom& hd);
@@ -111,7 +209,7 @@ friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
 
 public:
     kstring_t SN;
-    int32_t LN;
+    int64_t LN;
     kstring_t AH;
     kstring_t AS;
     kstring_t M5;
@@ -125,7 +223,7 @@ public:
     operator string() const;
 
 private:
-    void encode(kstring_t* buffer) const;
+    void encode(kstring_t& buffer) const;
     char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadSQAtom& sq);
@@ -161,7 +259,7 @@ public:
     operator string() const;
 
 private:
-    void encode(kstring_t* buffer) const;
+    void encode(kstring_t& buffer) const;
     char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadPGAtom& pg);
@@ -250,7 +348,7 @@ public:
     void expand(const HeadRGAtom& other);
 
 private:
-    void encode(kstring_t* buffer) const;
+    void encode(kstring_t& buffer) const;
     char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg);
@@ -273,7 +371,7 @@ public:
     HeadCOAtom& operator=(const HeadCOAtom& other);
 
 private:
-    void encode(kstring_t* buffer) const;
+    void encode(kstring_t& buffer) const;
     char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadCOAtom& co);

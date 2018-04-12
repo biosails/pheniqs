@@ -27,11 +27,9 @@
 #include <unordered_map>
 
 #include <htslib/hfile.h>
-#include <htslib/kstring.h>
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
 #include "url.h"
 #include "atom.h"
 #include "sequence.h"
@@ -57,6 +55,10 @@ using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
 
+const uint64_t PEEK_BUFFER_CAPACITY = 4096;
+const uint64_t DEFAULT_FEED_CAPACITY = 60;
+const uint64_t DEFAULT_FEED_RESOLUTION = 60;
+
 class FeedSpecification {
 friend ostream& operator<<(ostream& o, const FeedSpecification& specification);
 
@@ -65,8 +67,8 @@ public:
     const uint64_t index;
     URL url;
     Platform platform;
-    uint64_t capacity;
-    uint64_t resolution;
+    int capacity;
+    int resolution;
     uint8_t phred_offset;
     unordered_map< string, const HeadPGAtom > program_by_id;
     unordered_map< string, const HeadRGAtom > read_group_by_id;
@@ -78,8 +80,8 @@ public:
         const URL& url,
         const Platform& platform,
         const uint8_t& phred_offset);
-    void set_capacity(const uint64_t& capacity);
-    void set_resolution(const uint64_t& resolution);
+    void set_capacity(const int& capacity);
+    void set_resolution(const int& resolution);
     void register_rg(const HeadRGAtom& rg);
     void register_pg(const HeadPGAtom& pg);
     void describe(ostream& o) const;

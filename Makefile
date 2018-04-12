@@ -36,7 +36,6 @@ LDFLAGS = $(LIBS)
 
 SOURCES = \
 	json.cpp \
-	constant.cpp \
 	url.cpp \
 	interface.cpp \
 	atom.cpp \
@@ -55,7 +54,6 @@ SOURCES = \
 
 OBJECTS = \
 	json.o \
-	constant.o \
 	url.o \
 	interface.o \
 	atom.o \
@@ -117,39 +115,29 @@ json.o: \
 	error.h \
 	json.h
 
-constant.o: \
-	error.h \
-	json.h \
-	constant.h
-
 url.o: \
 	error.h \
 	json.h \
-	constant.h \
 	url.h
 
 interface.o: \
 	error.h \
 	json.h \
-	constant.h \
 	interface.h
 
 atom.o: \
 	error.h \
 	json.h \
-	constant.h \
 	atom.h
 
 transform.o: \
 	error.h \
 	json.h \
-	constant.h \
 	transform.h
 
 sequence.o: \
 	error.h \
 	json.h \
-	constant.h \
 	nucleotide.h \
 	phred.h \
 	transform.h \
@@ -158,14 +146,12 @@ sequence.o: \
 auxiliary.o: \
 	error.h \
 	json.h \
-	constant.h \
 	sequence.h \
 	auxiliary.h
 
 segment.o: \
 	error.h \
 	json.h \
-	constant.h \
 	nucleotide.h \
 	sequence.h \
 	auxiliary.h \
@@ -174,7 +160,6 @@ segment.o: \
 specification.o: \
 	error.h \
 	json.h \
-	constant.h \
 	url.h \
 	atom.h \
 	sequence.h \
@@ -183,7 +168,6 @@ specification.o: \
 accumulate.o: \
 	error.h \
 	json.h \
-	constant.h \
 	nucleotide.h \
 	phred.h \
 	sequence.h \
@@ -197,7 +181,6 @@ environment.o: \
 	interface.h \
 	error.h \
 	json.h \
-	constant.h \
 	url.h \
 	nucleotide.h \
 	phred.h \
@@ -208,7 +191,6 @@ environment.o: \
 feed.o: \
 	error.h \
 	json.h \
-	constant.h \
 	url.h \
 	sequence.h \
 	specification.h \
@@ -217,7 +199,6 @@ feed.o: \
 fastq.o: \
 	error.h \
 	json.h \
-	constant.h \
 	nucleotide.h \
 	phred.h \
 	sequence.h \
@@ -229,7 +210,6 @@ fastq.o: \
 hts.o: \
 	error.h \
 	json.h \
-	constant.h \
 	nucleotide.h \
 	phred.h \
 	atom.h \
@@ -242,7 +222,6 @@ hts.o: \
 pipeline.o: \
 	error.h \
 	json.h \
-	constant.h \
 	url.h \
 	nucleotide.h \
 	phred.h \
@@ -257,6 +236,5 @@ pipeline.o: \
 pheniqs.o: \
 	error.h \
 	json.h \
-	constant.h \
 	environment.h \
 	pipeline.h

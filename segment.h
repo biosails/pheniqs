@@ -32,11 +32,9 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <htslib/kstring.h>
-
 #include "error.h"
 #include "json.h"
-#include "constant.h"
+#include "atom.h"
 #include "sequence.h"
 #include "auxiliary.h"
 
@@ -74,10 +72,10 @@ public:
     Sequence sequence;
     Auxiliary auxiliary;
     Segment(const Platform& platform);
-    Segment(const uint64_t& index, const int32_t& FI, const int32_t& TC, const Platform& platform);
+    Segment(const uint64_t& index, const int64_t& FI, const int64_t& TC, const Platform& platform);
     Segment(const Segment& other);
     ~Segment();
-    inline int32_t get_segment_index() const {
+    inline int64_t get_segment_index() const {
         if(!auxiliary.FI) {
             if(flag & uint16_t(HtsFlag::PAIRED)) {
                 if(flag & uint16_t(HtsFlag::READ1)) {
@@ -94,7 +92,7 @@ public:
             return auxiliary.FI;
         }
     };
-    inline int32_t get_total_segments() const {
+    inline int64_t get_total_segments() const {
         if(!auxiliary.TC) {
             if(flag & uint16_t(HtsFlag::PAIRED)) {
                 return 2;

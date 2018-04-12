@@ -32,7 +32,6 @@
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
 
 using std::hash;
 using std::setw;
@@ -58,6 +57,7 @@ using std::numeric_limits;
 #define CANONICAL_STDERR_PATH "/dev/stderr"
 #define CANONICAL_NULL_DEVICE_PATH "/dev/null"
 const char PATH_SEPARATOR = '/';
+const char EXTENSION_SEPARATOR = '.';
 
 enum class FormatType : uint8_t {
     UNKNOWN,
@@ -128,29 +128,6 @@ public:
     inline const FormatType& type() const {
         return _type;
     };
-    inline const FormatKind kind() const {
-        switch(_type) {
-            case FormatType::SAM:
-            case FormatType::BAM:
-            case FormatType::BAI:
-            case FormatType::CRAM:
-            case FormatType::CRAI:
-            case FormatType::VCF:
-            case FormatType::BCF:
-            case FormatType::CSI:
-            case FormatType::GZI:
-            case FormatType::TBI:
-            case FormatType::BED:
-                return FormatKind::HTS;
-                break;
-            case FormatType::FASTQ:
-                return FormatKind::FASTQ;
-                break;
-            default:
-                return FormatKind::UNKNOWN;
-                break;
-        }
-    };
     inline bool empty() const {
         return _path.empty();
     };
@@ -217,10 +194,8 @@ namespace std {
 };
 bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& container);
 bool decode_file_url_by_key(const Value::Ch* key, URL& value, const IoDirection& direction, const Value& container);
-// bool decode_file_url_vector_by_key(const Value::Ch* key, vector< URL >& value, const Value& container, const IoDirection& direction);
 bool decode_file_url_list_by_key(const Value::Ch* key, list< URL >& value, const Value& container, const IoDirection& direction);
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document);
-// bool encode_key_value(const string& key, const vector< URL >& value, Value& node, Document& document);
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document);
 void encode_element(const URL& value, Value& container, Document& document);
 

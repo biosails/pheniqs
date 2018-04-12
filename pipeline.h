@@ -34,7 +34,6 @@
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
 #include "url.h"
 #include "nucleotide.h"
 #include "phred.h"
@@ -65,6 +64,42 @@ using std::mutex;
 using std::condition_variable;
 using std::unique_lock;
 using std::thread;
+
+enum class FormatKind : uint8_t {
+    UNKNOWN,
+    FASTQ,
+    HTS,
+};
+void to_string(const FormatKind& value, string& result);
+bool from_string(const char* value, FormatKind& result);
+void to_kstring(const FormatKind& value, kstring_t& result);
+bool from_string(const string& value, FormatKind& result);
+ostream& operator<<(ostream& o, const FormatKind& value);
+void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document);
+
+static inline FormatKind format_kind_from_type(const FormatType& type) {
+    switch(type) {
+        case FormatType::SAM:
+        case FormatType::BAM:
+        case FormatType::BAI:
+        case FormatType::CRAM:
+        case FormatType::CRAI:
+        case FormatType::VCF:
+        case FormatType::BCF:
+        case FormatType::CSI:
+        case FormatType::GZI:
+        case FormatType::TBI:
+        case FormatType::BED:
+            return FormatKind::HTS;
+            break;
+        case FormatType::FASTQ:
+            return FormatKind::FASTQ;
+            break;
+        default:
+            return FormatKind::UNKNOWN;
+            break;
+    }
+};
 
 class Pivot;
 class Channel;
@@ -162,7 +197,7 @@ public:
     const double adjusted_multiplex_noise_probability;
     const double random_multiplex_barcode_probability;
     const double multiplex_confidence;
-    const uint64_t threads;
+    const int threads;
     const uint64_t input_segment_cardinality;
     const uint64_t output_segment_cardinality;
     const uint64_t multiplex_segment_cardinality;

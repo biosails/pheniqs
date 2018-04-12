@@ -32,12 +32,6 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <htslib/sam.h>
-#include <htslib/hts.h>
-#include <htslib/hfile.h>
-#include <htslib/thread_pool.h>
-
-#include "constant.h"
 #include "error.h"
 #include "atom.h"
 #include "auxiliary.h"
@@ -214,7 +208,7 @@ protected:
     };
     inline void decode(const bam1_t* record, Segment& segment) {
         // decode identifier and write to segment
-        kputsn(bam_get_qname(record), record->core.l_qname, &segment.name);
+        ks_put_string(bam_get_qname(record), record->core.l_qname, segment.name);
 
         // decode nucleotide sequence to buffer
         ks_clear(kbuffer);
@@ -224,7 +218,7 @@ protected:
         for(int32_t i = 0; i < record->core.l_qseq; i++) {
             // convert from 4bit BAM numeric encoding to 8bit BAM numeric encoding
             kbuffer.s[i] = bam_seqi(position, i);
-            // kputc(bam_seqi(position, i), &kbuffer);
+            // ks_put_character(bam_seqi(position, i), &kbuffer);
         }
         kbuffer.l = record->core.l_qseq;
         kbuffer.s[kbuffer.l] = '\0';

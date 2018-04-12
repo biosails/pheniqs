@@ -21,13 +21,21 @@
 
 #include "transform.h"
 
+ostream& operator<<(ostream& o, const LeftTokenOperator& value) {
+    switch (value) {
+        case LeftTokenOperator::NONE:               o << "none";                break;
+        case LeftTokenOperator::REVERSE_COMPLEMENT: o << "reverse complement";  break;
+    }
+    return o;
+};
+
 /*  Token
 */
 Token::Token(
-    const uint32_t& index,
-    const uint32_t& input_segment_index,
-    const int32_t& start,
-    const int32_t& end,
+    const uint64_t& index,
+    const uint64_t& input_segment_index,
+    const int64_t& start,
+    const int64_t& end,
     const bool& end_terminated) :
 
     index(index),
@@ -76,18 +84,18 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
             value.clear();
             value.reserve(array->value.Size());
             if(array->value.IsArray()) {
-                uint32_t token_index = 0;
+                uint64_t token_index = 0;
                 for(auto& element : array->value.GetArray()) {
                     if(!element.IsNull()) {
                         if(element.IsString()) {
                             string pattern(element.GetString(), element.GetStringLength());
-                            uint32_t input_segment_index = numeric_limits< uint32_t >::max();
-                            int32_t start = numeric_limits< int32_t >::max();
-                            int32_t end = numeric_limits< int32_t >::max();
+                            uint64_t input_segment_index = numeric_limits< uint64_t >::max();
+                            int64_t start = numeric_limits< int64_t >::max();
+                            int64_t end = numeric_limits< int64_t >::max();
                             bool end_terminated = true;
-                            int32_t literal_value = numeric_limits<int32_t>::max();
-                            uint32_t literal_position = 0;
-                            uint32_t position = 0;
+                            int64_t literal_value = numeric_limits< int64_t >::max();
+                            uint64_t literal_position = 0;
+                            uint64_t position = 0;
                             bool sign = true;
                             while(true) {
                                 const char& c = pattern[position];
@@ -96,17 +104,17 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
                                     case '\0':
                                         switch(literal_position) {
                                             case 0: {
-                                                if(literal_value == numeric_limits< int32_t >::max()) {
+                                                if(literal_value == numeric_limits< int64_t >::max()) {
                                                     throw ConfigurationError("token must explicitly specify an input segment reference");
                                                 } else if(literal_value < 0) {
                                                     throw ConfigurationError("input segment reference must be a positive number");
                                                 } else {
-                                                    input_segment_index = uint32_t(literal_value);
+                                                    input_segment_index = uint64_t(literal_value);
                                                 }
                                                 break;
                                             };
                                             case 1:{
-                                                if(literal_value == numeric_limits< int32_t >::max()) {
+                                                if(literal_value == numeric_limits< int64_t >::max()) {
                                                     start = 0;
                                                 } else {
                                                     start = sign ? literal_value : -literal_value;
@@ -114,7 +122,7 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
                                                 break;
                                             };
                                             case 2: {
-                                                if(literal_value == numeric_limits< int32_t >::max()) {
+                                                if(literal_value == numeric_limits< int64_t >::max()) {
                                                     end = 0;
                                                     end_terminated = false;
                                                 } else {
@@ -126,7 +134,7 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
                                                 throw ConfigurationError("illegal token syntax " + pattern);
                                                 break;
                                         }
-                                        literal_value = numeric_limits< int32_t >::max();
+                                        literal_value = numeric_limits< int64_t >::max();
                                         sign = true;
                                         literal_position++;
                                         break;
@@ -143,7 +151,7 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
                                     case '7':
                                     case '8':
                                     case '9': {
-                                        if(literal_value == numeric_limits< int32_t >::max()) {
+                                        if(literal_value == numeric_limits< int64_t >::max()) {
                                             literal_value = c - '0';
                                         } else {
                                             literal_value = literal_value * 10 + (c - '0');
@@ -172,9 +180,9 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
 /*  Transform
 */
 Transform::Transform (
-    const uint32_t& index,
+    const uint64_t& index,
     const Token& token,
-    const uint32_t& output_segment_index,
+    const uint64_t& output_segment_index,
     const LeftTokenOperator& left) :
 
     index(index),
@@ -234,33 +242,33 @@ bool decode_transform_array_by_key(const Value::Ch* key, list< Transform >& valu
         if(!array->value.IsNull()) {
             value.clear();
             if(array->value.IsArray()) {
-                uint32_t transform_index = 0;
-                uint32_t output_segment_index = 0;
+                uint64_t transform_index = 0;
+                uint64_t output_segment_index = 0;
                 for(auto& element : array->value.GetArray()) {
                     if(!element.IsNull()) {
                         if(element.IsString()) {
                             string pattern(element.GetString(), element.GetStringLength());
-                            uint32_t token_reference = numeric_limits< uint32_t >::max();
+                            uint64_t token_reference = numeric_limits< uint64_t >::max();
                             LeftTokenOperator left = LeftTokenOperator::NONE;
-                            uint32_t position = 0;
+                            uint64_t position = 0;
                             while(true) {
                                 const char& c = pattern[position];
                                 switch(c) {
                                     case ':':
                                     case '\0':
-                                        if(token_reference == numeric_limits< uint32_t >::max()) {
+                                        if(token_reference == numeric_limits< uint64_t >::max()) {
                                             throw ConfigurationError("transform must explicitly specify a token reference");
                                         } else if(!(token_reference < tokens.size())) {
                                             throw ConfigurationError("invalid token reference " + to_string(token_reference) + " in transform");
                                         } else {
                                             value.emplace_back(transform_index, tokens[token_reference], output_segment_index, left);
                                             transform_index++;
-                                            token_reference = numeric_limits< uint32_t >::max();
+                                            token_reference = numeric_limits< uint64_t >::max();
                                             left = LeftTokenOperator::NONE;
                                         }
                                         break;
                                     case '~':
-                                        if(token_reference == numeric_limits< uint32_t >::max()) {
+                                        if(token_reference == numeric_limits< uint64_t >::max()) {
                                             left = LeftTokenOperator::REVERSE_COMPLEMENT;
                                         } else {
                                             throw ConfigurationError(string("illegal right hand side operator in transform ") + c);
@@ -276,7 +284,7 @@ bool decode_transform_array_by_key(const Value::Ch* key, list< Transform >& valu
                                     case '7':
                                     case '8':
                                     case '9': {
-                                        if(token_reference == numeric_limits< uint32_t >::max()) {
+                                        if(token_reference == numeric_limits< uint64_t >::max()) {
                                             token_reference = c - '0';
                                         } else {
                                             token_reference = token_reference * 10 + (c - '0');

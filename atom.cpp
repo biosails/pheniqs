@@ -21,27 +21,31 @@
 
 #include "atom.h"
 
-static inline char* copy_until_tag_end(char* source, const char* end, kstring_t* target) {
+static inline char* copy_until_tag_end(char* source, const char* end, kstring_t& target) {
+    ks_clear(target);
     char* position = source;
-    while ((*position != '\t' && *position != LINE_BREAK) && position < end) {
-        position++;
-    }
-    uint32_t length = position - source;
-    ks_clear(*target);
-    if(length > 0) {
-        kputsn(source, length, target);
+    if(source < end) {
+        while ((*position != '\t' && *position != LINE_BREAK) && position < end) {
+            position++;
+        }
+        size_t length = position - source;
+        if(length > 0) {
+            ks_put_string(source, length, target);
+        }
     }
     return position;
 };
-static inline char* copy_until_linebreak(char* source, const char* end, kstring_t* target) {
+static inline char* copy_until_linebreak(char* source, const char* end, kstring_t& target) {
+    ks_clear(target);
     char* position = source;
-    while (*position != LINE_BREAK && position < end) {
-        position++;
-    }
-    uint32_t length = position - source;
-    ks_clear(*target);
-    if(length > 0) {
-        kputsn(source, length, target);
+    if(source < end) {
+        while (*position != LINE_BREAK && position < end) {
+            position++;
+        }
+        size_t length = position - source;
+        if(length > 0) {
+            ks_put_string(source, length, target);
+        }
     }
     return position;
 };
@@ -51,6 +55,322 @@ static inline char* skip_to_tab(char* source, const char* end) {
         position++;
     }
     return position;
+};
+
+void to_string(const HtsSortOrder& value, string& result) {
+    switch(value) {
+        case HtsSortOrder::UNSORTED:    result.assign("unsorted");   break;
+        case HtsSortOrder::QUERYNAME:   result.assign("queryname");  break;
+        case HtsSortOrder::COORDINATE:  result.assign("coordinate"); break;
+        default:                        result.assign("unknown");    break;
+    }
+};
+bool from_string(const char* value, HtsSortOrder& result) {
+         if(value == NULL)                  result = HtsSortOrder::UNKNOWN;
+    else if(!strcmp(value, "unsorted"))     result = HtsSortOrder::UNSORTED;
+    else if(!strcmp(value, "queryname"))    result = HtsSortOrder::QUERYNAME;
+    else if(!strcmp(value, "coordinate"))   result = HtsSortOrder::COORDINATE;
+    else                                    result = HtsSortOrder::UNKNOWN;
+
+    return (result == HtsSortOrder::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, HtsSortOrder& result) {
+    return from_string(value.c_str(), result);
+};
+void to_kstring(const HtsSortOrder& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    ks_put_string(string_value.c_str(), string_value.size(), result);
+};
+ostream& operator<<(ostream& o, const HtsSortOrder& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const HtsSortOrder& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< HtsSortOrder >(const Value::Ch* key, HtsSortOrder& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+
+void to_string(const HtsGrouping& value, string& result) {
+    switch(value) {
+        case HtsGrouping::QUERY:        result.assign("query");      break;
+        case HtsGrouping::REFERENCE:    result.assign("reference");  break;
+        default:                        result.assign("none");       break;
+    }
+};
+bool from_string(const char* value, HtsGrouping& result) {
+         if(value == NULL)                  result = HtsGrouping::NONE;
+    else if(!strcmp(value, "query"))        result = HtsGrouping::QUERY;
+    else if(!strcmp(value, "reference"))    result = HtsGrouping::REFERENCE;
+    else                                    result = HtsGrouping::NONE;
+
+    return (result == HtsGrouping::UNKNOWN ? false : true);
+};
+void to_kstring(const HtsGrouping& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    ks_put_string(string_value.c_str(), string_value.size(), result);
+};
+bool from_string(const string& value, HtsGrouping& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const HtsGrouping& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const HtsGrouping& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< HtsGrouping >(const Value::Ch* key, HtsGrouping& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+
+void to_string(const htsFormatCategory& value, string& result) {
+    switch(value) {
+        case htsFormatCategory::sequence_data:  result.assign("sequence data"); break;
+        case htsFormatCategory::variant_data:   result.assign("variant data");  break;
+        case htsFormatCategory::index_file:     result.assign("index file");    break;
+        case htsFormatCategory::region_list:    result.assign("region list");   break;
+        default:                                result.assign("unknown");       break;
+    }
+};
+bool from_string(const char* value, htsFormatCategory& result) {
+         if(value == NULL)                      result = htsFormatCategory::unknown_category;
+    else if(!strcmp(value, "sequence data"))    result = htsFormatCategory::sequence_data;
+    else if(!strcmp(value, "variant data"))     result = htsFormatCategory::variant_data;
+    else if(!strcmp(value, "index file"))       result = htsFormatCategory::index_file;
+    else if(!strcmp(value, "region list"))      result = htsFormatCategory::region_list;
+    else                                        result = htsFormatCategory::unknown_category;
+    return (result == htsFormatCategory::unknown_category ? false : true);
+};
+ostream& operator<<(ostream& o, const htsFormatCategory& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+
+void to_string(const htsExactFormat& value, string& result) {
+    switch(value) {
+        case htsExactFormat::binary_format: result.assign("binary format"); break;
+        case htsExactFormat::text_format:   result.assign("text format");   break;
+        case htsExactFormat::sam:           result.assign("sam");           break;
+        case htsExactFormat::bam:           result.assign("bam");           break;
+        case htsExactFormat::bai:           result.assign("bai");           break;
+        case htsExactFormat::cram:          result.assign("cram");          break;
+        case htsExactFormat::crai:          result.assign("crai");          break;
+        case htsExactFormat::vcf:           result.assign("vcf");           break;
+        case htsExactFormat::bcf:           result.assign("bcf");           break;
+        case htsExactFormat::csi:           result.assign("csi");           break;
+        case htsExactFormat::gzi:           result.assign("gzi");           break;
+        case htsExactFormat::tbi:           result.assign("tbi");           break;
+        case htsExactFormat::bed:           result.assign("bed");           break;
+        case htsExactFormat::htsget:        result.assign("htsget");        break;
+        default:                            result.assign("unknown");       break;
+    }
+};
+bool from_string(const char* value, htsExactFormat& result) {
+         if(value == NULL)                      result = htsExactFormat::unknown_format;
+    else if(!strcmp(value, "binary format"))    result = htsExactFormat::binary_format;
+    else if(!strcmp(value, "text format"))      result = htsExactFormat::text_format;
+    else if(!strcmp(value, "sam"))              result = htsExactFormat::sam;
+    else if(!strcmp(value, "bam"))              result = htsExactFormat::bam;
+    else if(!strcmp(value, "bai"))              result = htsExactFormat::bai;
+    else if(!strcmp(value, "cram"))             result = htsExactFormat::cram;
+    else if(!strcmp(value, "crai"))             result = htsExactFormat::crai;
+    else if(!strcmp(value, "vcf"))              result = htsExactFormat::vcf;
+    else if(!strcmp(value, "bcf"))              result = htsExactFormat::bcf;
+    else if(!strcmp(value, "csi"))              result = htsExactFormat::csi;
+    else if(!strcmp(value, "gzi"))              result = htsExactFormat::gzi;
+    else if(!strcmp(value, "tbi"))              result = htsExactFormat::tbi;
+    else if(!strcmp(value, "bed"))              result = htsExactFormat::bed;
+    else if(!strcmp(value, "htsget"))           result = htsExactFormat::htsget;
+    else                                        result = htsExactFormat::unknown_format;
+    return (result == htsExactFormat::unknown_format ? false : true);
+};
+ostream& operator<<(ostream& o, const htsExactFormat& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+
+void to_string(const htsCompression& value, string& result) {
+    switch(value) {
+        case htsCompression::gzip:      result.assign("gzip");              break;
+        case htsCompression::bgzf:      result.assign("bgzf");              break;
+        case htsCompression::custom:    result.assign("custom");            break;
+        default:                        result.assign("no compression");    break;
+    }
+};
+bool from_string(const char* value, htsCompression& result) {
+         if(value == NULL)              result = htsCompression::no_compression;
+    else if(!strcmp(value, "gzip"))     result = htsCompression::gzip;
+    else if(!strcmp(value, "bgzf"))     result = htsCompression::bgzf;
+    else if(!strcmp(value, "custom"))   result = htsCompression::custom;
+    else                                result = htsCompression::no_compression;
+    return (result == htsCompression::no_compression ? false : true);
+};
+ostream& operator<<(ostream& o, const htsCompression& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+
+void to_string(const Platform& value, string& result) {
+    switch(value) {
+        case Platform::CAPILLARY:   result.assign("CAPILLARY");  break;
+        case Platform::LS454:       result.assign("LS454");      break;
+        case Platform::ILLUMINA:    result.assign("ILLUMINA");   break;
+        case Platform::SOLID:       result.assign("SOLID");      break;
+        case Platform::HELICOS:     result.assign("HELICOS");    break;
+        case Platform::IONTORRENT:  result.assign("IONTORRENT"); break;
+        case Platform::ONT:         result.assign("ONT");        break;
+        case Platform::PACBIO:      result.assign("PACBIO");     break;
+        default:                    result.assign("UNKNOWN");    break;
+    }
+};
+bool from_string(const char* value, Platform& result) {
+         if(value == NULL)                  result = Platform::UNKNOWN;
+    else if(!strcmp(value, "CAPILLARY"))    result = Platform::CAPILLARY;
+    else if(!strcmp(value, "LS454"))        result = Platform::LS454;
+    else if(!strcmp(value, "ILLUMINA"))     result = Platform::ILLUMINA;
+    else if(!strcmp(value, "SOLID"))        result = Platform::SOLID;
+    else if(!strcmp(value, "HELICOS"))      result = Platform::HELICOS;
+    else if(!strcmp(value, "IONTORRENT"))   result = Platform::IONTORRENT;
+    else if(!strcmp(value, "ONT"))          result = Platform::ONT;
+    else if(!strcmp(value, "PACBIO"))       result = Platform::PACBIO;
+    else                                    result = Platform::UNKNOWN;
+
+    return (result == Platform::UNKNOWN ? false : true);
+};
+void to_kstring(const Platform& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    ks_put_string(string_value.c_str(), string_value.size(), result);
+};
+bool from_string(const string& value, Platform& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const Platform& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const Platform& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< Platform >(const Value::Ch* key, Platform& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> Platform decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Platform value(Platform::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
+};
+
+void to_string(const Decoder& value, string& result) {
+    switch(value) {
+        case Decoder::UNKNOWN:      result.assign("unknown");    break;
+        case Decoder::MDD:          result.assign("mdd");        break;
+        case Decoder::PAMLD:        result.assign("pamld");      break;
+        case Decoder::BENCHMARK:    result.assign("benchmark");  break;
+        default:                                                 break;
+    }
+};
+bool from_string(const char* value, Decoder& result) {
+         if(value == NULL)                  result = Decoder::UNKNOWN;
+    else if(!strcmp(value, "mdd"))          result = Decoder::MDD;
+    else if(!strcmp(value, "pamld"))        result = Decoder::PAMLD;
+    else if(!strcmp(value, "benchmark"))    result = Decoder::BENCHMARK;
+    else                                    result = Decoder::UNKNOWN;
+
+    return (result == Decoder::UNKNOWN ? false : true);
+};
+void to_kstring(const Decoder& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    ks_put_string(string_value.c_str(), string_value.size(), result);
+};
+bool from_string(const string& value, Decoder& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const Decoder& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+bool encode_key_value(const string& key, const Decoder& value, Value& container, Document& document) {
+    if(value != Decoder::UNKNOWN) {
+        string string_value;
+        to_string(value, string_value);
+        Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+        Value k(key.c_str(), key.size(), document.GetAllocator());
+        container.RemoveMember(key.c_str());
+        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+template<> bool decode_value_by_key< Decoder >(const Value::Ch* key, Decoder& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> Decoder decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Decoder value(Decoder::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
 };
 
 /* @HD The header line
@@ -64,9 +384,9 @@ HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }){
-    if(other.VN.l > 0) kputsn(other.VN.s, other.VN.l, &VN);
-    if(other.SO.l > 0) kputsn(other.SO.s, other.SO.l, &SO);
-    if(other.GO.l > 0) kputsn(other.GO.s, other.GO.l, &GO);
+    if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l, VN);
+    if(other.SO.l > 0) ks_put_string(other.SO.s, other.SO.l, SO);
+    if(other.GO.l > 0) ks_put_string(other.GO.s, other.GO.l, GO);
 };
 HeadHDAtom::~HeadHDAtom() {
     ks_free(VN);
@@ -80,27 +400,27 @@ HeadHDAtom& HeadHDAtom::operator=(const HeadHDAtom& other) {
         ks_clear(VN);
         ks_clear(SO);
         ks_clear(GO);
-        if(other.VN.l > 0) kputsn(other.VN.s, other.VN.l, &VN);
-        if(other.SO.l > 0) kputsn(other.SO.s, other.SO.l, &SO);
-        if(other.GO.l > 0) kputsn(other.GO.s, other.GO.l, &GO);
+        if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l, VN);
+        if(other.SO.l > 0) ks_put_string(other.SO.s, other.SO.l, SO);
+        if(other.GO.l > 0) ks_put_string(other.GO.s, other.GO.l, GO);
     }
     return *this;
 };
-void HeadHDAtom::encode(kstring_t* buffer) const {
-    kputsn_("@HD", 3, buffer);
+void HeadHDAtom::encode(kstring_t& buffer) const {
+    ks_put_string_("@HD", 3, buffer);
     if(VN.l > 0) {
-        kputsn_("\tVN:", 4, buffer);
-        kputsn_(VN.s, VN.l, buffer);
+        ks_put_string_("\tVN:", 4, buffer);
+        ks_put_string_(VN.s, VN.l, buffer);
     }
     if(SO.l > 0) {
-        kputsn_("\tSO:", 4, buffer);
-        kputsn_(SO.s, SO.l, buffer);
+        ks_put_string_("\tSO:", 4, buffer);
+        ks_put_string_(SO.s, SO.l, buffer);
     }
     if(GO.l > 0) {
-        kputsn_("\tGO:", 4, buffer);
-        kputsn_(GO.s, GO.l, buffer);
+        ks_put_string_("\tGO:", 4, buffer);
+        ks_put_string_(GO.s, GO.l, buffer);
     }
-    kputc(LINE_BREAK, buffer);
+    ks_put_character(LINE_BREAK, buffer);
 };
 char* HeadHDAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
@@ -109,15 +429,15 @@ char* HeadHDAtom::decode(char* position, const char* end) {
         position += 3;
         switch (tag) {
             case uint16_t(HtsAuxiliaryCode::VN): {
-                position = copy_until_tag_end(position, end, &VN);
+                position = copy_until_tag_end(position, end, VN);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::SO): {
-                position = copy_until_tag_end(position, end, &SO);
+                position = copy_until_tag_end(position, end, SO);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::GO): {
-                position = copy_until_tag_end(position, end, &GO);
+                position = copy_until_tag_end(position, end, GO);
                 break;
             };
             default:
@@ -136,9 +456,9 @@ void HeadHDAtom::set_alignment_grouping(const HtsGrouping& grouping) {
 void HeadHDAtom::set_version(const htsFormat* format) {
     ks_clear(VN);
     if(format != NULL) {
-        kputw(format->version.major, &VN);
-        kputc('.', &VN);
-        kputw(format->version.minor, &VN);
+        ks_put_int32(format->version.major, VN);
+        ks_put_character('.', VN);
+        ks_put_int32(format->version.minor, VN);
     }
 };
 ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
@@ -158,7 +478,7 @@ HeadSQAtom::HeadSQAtom() :
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
-    ks_terminate(SN)
+    ks_terminate(SN);
 };
 HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     SN({ 0, 0, NULL }),
@@ -168,14 +488,14 @@ HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
-    ks_terminate(SN)
-    if(other.SN.l > 0) kputsn(other.SN.s, other.SN.l, &SN);
+    ks_terminate(SN);
+    if(other.SN.l > 0) ks_put_string(other.SN.s, other.SN.l, SN);
     if(other.LN > 0)   LN = other.LN;
-    if(other.AH.l > 0) kputsn(other.AH.s, other.AH.l, &AH);
-    if(other.AS.l > 0) kputsn(other.AS.s, other.AS.l, &AS);
-    if(other.M5.l > 0) kputsn(other.M5.s, other.M5.l, &M5);
-    if(other.SP.l > 0) kputsn(other.SP.s, other.SP.l, &SP);
-    if(other.UR.l > 0) kputsn(other.UR.s, other.UR.l, &UR);
+    if(other.AH.l > 0) ks_put_string(other.AH.s, other.AH.l, AH);
+    if(other.AS.l > 0) ks_put_string(other.AS.s, other.AS.l, AS);
+    if(other.M5.l > 0) ks_put_string(other.M5.s, other.M5.l, M5);
+    if(other.SP.l > 0) ks_put_string(other.SP.s, other.SP.l, SP);
+    if(other.UR.l > 0) ks_put_string(other.UR.s, other.UR.l, UR);
 };
 HeadSQAtom::~HeadSQAtom() {
     ks_free(SN);
@@ -196,50 +516,50 @@ HeadSQAtom& HeadSQAtom::operator=(const HeadSQAtom& other) {
         ks_clear(M5);
         ks_clear(SP);
         ks_clear(UR);
-        if(other.SN.l > 0) kputsn(other.SN.s, other.SN.l, &SN);
+        if(other.SN.l > 0) ks_put_string(other.SN.s, other.SN.l, SN);
         if(other.LN > 0)   LN = other.LN;
-        if(other.AH.l > 0) kputsn(other.AH.s, other.AH.l, &AH);
-        if(other.AS.l > 0) kputsn(other.AS.s, other.AS.l, &AS);
-        if(other.M5.l > 0) kputsn(other.M5.s, other.M5.l, &M5);
-        if(other.SP.l > 0) kputsn(other.SP.s, other.SP.l, &SP);
-        if(other.UR.l > 0) kputsn(other.UR.s, other.UR.l, &UR);
+        if(other.AH.l > 0) ks_put_string(other.AH.s, other.AH.l, AH);
+        if(other.AS.l > 0) ks_put_string(other.AS.s, other.AS.l, AS);
+        if(other.M5.l > 0) ks_put_string(other.M5.s, other.M5.l, M5);
+        if(other.SP.l > 0) ks_put_string(other.SP.s, other.SP.l, SP);
+        if(other.UR.l > 0) ks_put_string(other.UR.s, other.UR.l, UR);
     }
     return *this;
 };
 HeadSQAtom::operator string() const {
     return string(SN.s, SN.l);
 };
-void HeadSQAtom::encode(kstring_t* buffer) const {
-    kputsn_("@SQ", 3, buffer);
+void HeadSQAtom::encode(kstring_t& buffer) const {
+    ks_put_string_("@SQ", 3, buffer);
     if(SN.l > 0) {
-        kputsn_("\tSN:", 4, buffer);
-        kputsn_(SN.s, SN.l, buffer);
+        ks_put_string_("\tSN:", 4, buffer);
+        ks_put_string_(SN.s, SN.l, buffer);
     }
     if(LN > 0) {
-        kputsn_("\tLN:", 4, buffer);
-        kputw(LN, buffer);
+        ks_put_string_("\tLN:", 4, buffer);
+        ks_put_int64(LN, buffer);
     }
     if(AH.l > 0) {
-        kputsn_("\tAH:", 4, buffer);
-        kputsn_(AH.s, AH.l, buffer);
+        ks_put_string_("\tAH:", 4, buffer);
+        ks_put_string_(AH.s, AH.l, buffer);
     }
     if(AS.l > 0) {
-        kputsn_("\tAS:", 4, buffer);
-        kputsn_(AS.s, AS.l, buffer);
+        ks_put_string_("\tAS:", 4, buffer);
+        ks_put_string_(AS.s, AS.l, buffer);
     }
     if(M5.l > 0) {
-        kputsn_("\tM5:", 4, buffer);
-        kputsn_(M5.s, M5.l, buffer);
+        ks_put_string_("\tM5:", 4, buffer);
+        ks_put_string_(M5.s, M5.l, buffer);
     }
     if(SP.l > 0) {
-        kputsn_("\tSP:", 4, buffer);
-        kputsn_(SP.s, SP.l, buffer);
+        ks_put_string_("\tSP:", 4, buffer);
+        ks_put_string_(SP.s, SP.l, buffer);
     }
     if(UR.l > 0) {
-        kputsn_("\tUR:", 4, buffer);
-        kputsn_(UR.s, UR.l, buffer);
+        ks_put_string_("\tUR:", 4, buffer);
+        ks_put_string_(UR.s, UR.l, buffer);
     }
-    kputc(LINE_BREAK, buffer);
+    ks_put_character(LINE_BREAK, buffer);
 };
 char* HeadSQAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
@@ -248,7 +568,7 @@ char* HeadSQAtom::decode(char* position, const char* end) {
         position += 3;
         switch (tag) {
             case uint16_t(HtsAuxiliaryCode::SN): {
-                position = copy_until_tag_end(position, end, &SN);
+                position = copy_until_tag_end(position, end, SN);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::LN): {
@@ -256,23 +576,23 @@ char* HeadSQAtom::decode(char* position, const char* end) {
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::AH): {
-                position = copy_until_tag_end(position, end, &AH);
+                position = copy_until_tag_end(position, end, AH);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::AS): {
-                position = copy_until_tag_end(position, end, &AS);
+                position = copy_until_tag_end(position, end, AS);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::M5): {
-                position = copy_until_tag_end(position, end, &M5);
+                position = copy_until_tag_end(position, end, M5);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::SP): {
-                position = copy_until_tag_end(position, end, &SP);
+                position = copy_until_tag_end(position, end, SP);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::UR): {
-                position = copy_until_tag_end(position, end, &UR);
+                position = copy_until_tag_end(position, end, UR);
                 break;
             };
             default: {
@@ -303,7 +623,7 @@ HeadPGAtom::HeadPGAtom() :
     PP({ 0, 0, NULL }),
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
-    ks_terminate(ID)
+    ks_terminate(ID);
 };
 HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -312,13 +632,13 @@ HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     PP({ 0, 0, NULL }),
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
-    ks_terminate(ID)
-    if(other.ID.l > 0) kputsn(other.ID.s, other.ID.l, &ID);
-    if(other.PN.l > 0) kputsn(other.PN.s, other.PN.l, &PN);
-    if(other.CL.l > 0) kputsn(other.CL.s, other.CL.l, &CL);
-    if(other.PP.l > 0) kputsn(other.PP.s, other.PP.l, &PP);
-    if(other.DS.l > 0) kputsn(other.DS.s, other.DS.l, &DS);
-    if(other.VN.l > 0) kputsn(other.VN.s, other.VN.l, &VN);
+    ks_terminate(ID);
+    if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
+    if(other.PN.l > 0) ks_put_string(other.PN.s, other.PN.l, PN);
+    if(other.CL.l > 0) ks_put_string(other.CL.s, other.CL.l, CL);
+    if(other.PP.l > 0) ks_put_string(other.PP.s, other.PP.l, PP);
+    if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
+    if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l, VN);
 };
 HeadPGAtom::~HeadPGAtom() {
     ks_free(ID);
@@ -338,45 +658,45 @@ HeadPGAtom& HeadPGAtom::operator=(const HeadPGAtom& other) {
         ks_clear(PP);
         ks_clear(DS);
         ks_clear(VN);
-        if(other.ID.l > 0) kputsn(other.ID.s, other.ID.l, &ID);
-        if(other.PN.l > 0) kputsn(other.PN.s, other.PN.l, &PN);
-        if(other.CL.l > 0) kputsn(other.CL.s, other.CL.l, &CL);
-        if(other.PP.l > 0) kputsn(other.PP.s, other.PP.l, &PP);
-        if(other.DS.l > 0) kputsn(other.DS.s, other.DS.l, &DS);
-        if(other.VN.l > 0) kputsn(other.VN.s, other.VN.l, &VN);
+        if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
+        if(other.PN.l > 0) ks_put_string(other.PN.s, other.PN.l, PN);
+        if(other.CL.l > 0) ks_put_string(other.CL.s, other.CL.l, CL);
+        if(other.PP.l > 0) ks_put_string(other.PP.s, other.PP.l, PP);
+        if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
+        if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l,    VN);
     }
     return *this;
 };
 HeadPGAtom::operator string() const {
     return string(ID.s, ID.l);
 };
-void HeadPGAtom::encode(kstring_t* buffer) const {
-    kputsn_("@PG", 3, buffer);
+void HeadPGAtom::encode(kstring_t& buffer) const {
+    ks_put_string_("@PG", 3, buffer);
     if(ID.l > 0) {
-        kputsn_("\tID:", 4, buffer);
-        kputsn_(ID.s, ID.l, buffer);
+        ks_put_string_("\tID:", 4, buffer);
+        ks_put_string_(ID.s, ID.l, buffer);
     }
     if(PN.l > 0) {
-        kputsn_("\tPN:", 4, buffer);
-        kputsn_(PN.s, PN.l, buffer);
+        ks_put_string_("\tPN:", 4, buffer);
+        ks_put_string_(PN.s, PN.l, buffer);
     }
     if(CL.l > 0) {
-        kputsn_("\tCL:", 4, buffer);
-        kputsn_(CL.s, CL.l, buffer);
+        ks_put_string_("\tCL:", 4, buffer);
+        ks_put_string_(CL.s, CL.l, buffer);
     }
     if(PP.l > 0) {
-        kputsn_("\tPP:", 4, buffer);
-        kputsn_(PP.s, PP.l, buffer);
+        ks_put_string_("\tPP:", 4, buffer);
+        ks_put_string_(PP.s, PP.l, buffer);
     }
     if(DS.l > 0) {
-        kputsn_("\tDS:", 4, buffer);
-        kputsn_(DS.s, DS.l, buffer);
+        ks_put_string_("\tDS:", 4, buffer);
+        ks_put_string_(DS.s, DS.l, buffer);
     }
     if(VN.l > 0) {
-        kputsn_("\tVN:", 4, buffer);
-        kputsn_(VN.s, VN.l, buffer);
+        ks_put_string_("\tVN:", 4, buffer);
+        ks_put_string_(VN.s, VN.l, buffer);
     }
-    kputc(LINE_BREAK, buffer);
+    ks_put_character(LINE_BREAK, buffer);
 };
 char* HeadPGAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
@@ -385,27 +705,27 @@ char* HeadPGAtom::decode(char* position, const char* end) {
         position += 3;
         switch (tag) {
             case uint16_t(HtsAuxiliaryCode::ID): {
-                position = copy_until_tag_end(position, end, &ID);
+                position = copy_until_tag_end(position, end, ID);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::PN): {
-                position = copy_until_tag_end(position, end, &PN);
+                position = copy_until_tag_end(position, end, PN);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::CL): {
-                position = copy_until_tag_end(position, end, &CL);
+                position = copy_until_tag_end(position, end, CL);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::PP): {
-                position = copy_until_tag_end(position, end, &PP);
+                position = copy_until_tag_end(position, end, PP);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::DS): {
-                position = copy_until_tag_end(position, end, &DS);
+                position = copy_until_tag_end(position, end, DS);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::VN): {
-                position = copy_until_tag_end(position, end, &VN);
+                position = copy_until_tag_end(position, end, VN);
                 break;
             };
             default: {
@@ -442,7 +762,7 @@ HeadRGAtom::HeadRGAtom() :
     PG({ 0, 0, NULL }),
     FO({ 0, 0, NULL }),
     KS({ 0, 0, NULL }){
-    ks_terminate(ID)
+    ks_terminate(ID);
 };
 HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -458,20 +778,20 @@ HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     PG({ 0, 0, NULL }),
     FO({ 0, 0, NULL }),
     KS({ 0, 0, NULL }){
-    ks_terminate(ID)
-    if(other.ID.l > 0) kputsn(other.ID.s, other.ID.l, &ID);
-    if(other.PI.l > 0) kputsn(other.PI.s, other.PI.l, &PI);
-    if(other.LB.l > 0) kputsn(other.LB.s, other.LB.l, &LB);
-    if(other.SM.l > 0) kputsn(other.SM.s, other.SM.l, &SM);
-    if(other.PU.l > 0) kputsn(other.PU.s, other.PU.l, &PU);
-    if(other.CN.l > 0) kputsn(other.CN.s, other.CN.l, &CN);
-    if(other.DS.l > 0) kputsn(other.DS.s, other.DS.l, &DS);
-    if(other.DT.l > 0) kputsn(other.DT.s, other.DT.l, &DT);
-    if(other.PL.l > 0) kputsn(other.PL.s, other.PL.l, &PL);
-    if(other.PM.l > 0) kputsn(other.PM.s, other.PM.l, &PM);
-    if(other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
-    if(other.FO.l > 0) kputsn(other.FO.s, other.FO.l, &FO);
-    if(other.KS.l > 0) kputsn(other.KS.s, other.KS.l, &KS);
+    ks_terminate(ID);
+    if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
+    if(other.PI.l > 0) ks_put_string(other.PI.s, other.PI.l, PI);
+    if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
+    if(other.SM.l > 0) ks_put_string(other.SM.s, other.SM.l, SM);
+    if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
+    if(other.CN.l > 0) ks_put_string(other.CN.s, other.CN.l, CN);
+    if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
+    if(other.DT.l > 0) ks_put_string(other.DT.s, other.DT.l, DT);
+    if(other.PL.l > 0) ks_put_string(other.PL.s, other.PL.l, PL);
+    if(other.PM.l > 0) ks_put_string(other.PM.s, other.PM.l, PM);
+    if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
+    if(other.FO.l > 0) ks_put_string(other.FO.s, other.FO.l, FO);
+    if(other.KS.l > 0) ks_put_string(other.KS.s, other.KS.l, KS);
 };
 HeadRGAtom::~HeadRGAtom() {
     ks_free(ID);
@@ -505,80 +825,80 @@ HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
         ks_clear(PG);
         ks_clear(FO);
         ks_clear(KS);
-        if(other.ID.l > 0) kputsn(other.ID.s, other.ID.l, &ID);
-        if(other.PI.l > 0) kputsn(other.PI.s, other.PI.l, &PI);
-        if(other.LB.l > 0) kputsn(other.LB.s, other.LB.l, &LB);
-        if(other.SM.l > 0) kputsn(other.SM.s, other.SM.l, &SM);
-        if(other.PU.l > 0) kputsn(other.PU.s, other.PU.l, &PU);
-        if(other.CN.l > 0) kputsn(other.CN.s, other.CN.l, &CN);
-        if(other.DS.l > 0) kputsn(other.DS.s, other.DS.l, &DS);
-        if(other.DT.l > 0) kputsn(other.DT.s, other.DT.l, &DT);
-        if(other.PL.l > 0) kputsn(other.PL.s, other.PL.l, &PL);
-        if(other.PM.l > 0) kputsn(other.PM.s, other.PM.l, &PM);
-        if(other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
-        if(other.FO.l > 0) kputsn(other.FO.s, other.FO.l, &FO);
-        if(other.KS.l > 0) kputsn(other.KS.s, other.KS.l, &KS);
+        if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
+        if(other.PI.l > 0) ks_put_string(other.PI.s, other.PI.l, PI);
+        if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
+        if(other.SM.l > 0) ks_put_string(other.SM.s, other.SM.l, SM);
+        if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
+        if(other.CN.l > 0) ks_put_string(other.CN.s, other.CN.l, CN);
+        if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
+        if(other.DT.l > 0) ks_put_string(other.DT.s, other.DT.l, DT);
+        if(other.PL.l > 0) ks_put_string(other.PL.s, other.PL.l, PL);
+        if(other.PM.l > 0) ks_put_string(other.PM.s, other.PM.l, PM);
+        if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
+        if(other.FO.l > 0) ks_put_string(other.FO.s, other.FO.l, FO);
+        if(other.KS.l > 0) ks_put_string(other.KS.s, other.KS.l, KS);
     }
     return *this;
 };
 HeadRGAtom::operator string() const {
     return string(ID.s, ID.l);
 };
-void HeadRGAtom::encode(kstring_t* buffer) const {
-    kputsn_("@RG", 3, buffer);
+void HeadRGAtom::encode(kstring_t& buffer) const {
+    ks_put_string_("@RG", 3, buffer);
     if(ID.l > 0) {
-        kputsn_("\tID:", 4, buffer);
-        kputsn_(ID.s, ID.l, buffer);
+        ks_put_string_("\tID:", 4, buffer);
+        ks_put_string_(ID.s, ID.l, buffer);
     }
     if(PI.l > 0) {
-        kputsn_("\tPI:", 4, buffer);
-        kputsn_(PI.s, PI.l, buffer);
+        ks_put_string_("\tPI:", 4, buffer);
+        ks_put_string_(PI.s, PI.l, buffer);
     }
     if(LB.l > 0) {
-        kputsn_("\tLB:", 4, buffer);
-        kputsn_(LB.s, LB.l, buffer);
+        ks_put_string_("\tLB:", 4, buffer);
+        ks_put_string_(LB.s, LB.l, buffer);
     }
     if(SM.l > 0) {
-        kputsn_("\tSM:", 4, buffer);
-        kputsn_(SM.s, SM.l, buffer);
+        ks_put_string_("\tSM:", 4, buffer);
+        ks_put_string_(SM.s, SM.l, buffer);
     }
     if(PU.l > 0) {
-        kputsn_("\tPU:", 4, buffer);
-        kputsn_(PU.s, PU.l, buffer);
+        ks_put_string_("\tPU:", 4, buffer);
+        ks_put_string_(PU.s, PU.l, buffer);
     }
     if(CN.l > 0) {
-        kputsn_("\tCN:", 4, buffer);
-        kputsn_(CN.s, CN.l, buffer);
+        ks_put_string_("\tCN:", 4, buffer);
+        ks_put_string_(CN.s, CN.l, buffer);
     }
     if(DS.l > 0) {
-        kputsn_("\tDS:", 4, buffer);
-        kputsn_(DS.s, DS.l, buffer);
+        ks_put_string_("\tDS:", 4, buffer);
+        ks_put_string_(DS.s, DS.l, buffer);
     }
     if(DT.l > 0) {
-        kputsn_("\tDT:", 4, buffer);
-        kputsn_(DT.s, DT.l, buffer);
+        ks_put_string_("\tDT:", 4, buffer);
+        ks_put_string_(DT.s, DT.l, buffer);
     }
     if(PL.l > 0) {
-        kputsn_("\tPL:", 4, buffer);
-        kputsn_(PL.s, PL.l, buffer);
+        ks_put_string_("\tPL:", 4, buffer);
+        ks_put_string_(PL.s, PL.l, buffer);
     }
     if(PM.l > 0) {
-        kputsn_("\tPM:", 4, buffer);
-        kputsn_(PM.s, PM.l, buffer);
+        ks_put_string_("\tPM:", 4, buffer);
+        ks_put_string_(PM.s, PM.l, buffer);
     }
     if(PG.l > 0) {
-        kputsn_("\tPG:", 4, buffer);
-        kputsn_(PG.s, PG.l, buffer);
+        ks_put_string_("\tPG:", 4, buffer);
+        ks_put_string_(PG.s, PG.l, buffer);
     }
     if(FO.l > 0) {
-        kputsn_("\tFO:", 4, buffer);
-        kputsn_(FO.s, FO.l, buffer);
+        ks_put_string_("\tFO:", 4, buffer);
+        ks_put_string_(FO.s, FO.l, buffer);
     }
     if(KS.l > 0) {
-        kputsn_("\tKS:", 4, buffer);
-        kputsn_(KS.s, KS.l, buffer);
+        ks_put_string_("\tKS:", 4, buffer);
+        ks_put_string_(KS.s, KS.l, buffer);
     }
-    kputc(LINE_BREAK, buffer);
+    ks_put_character(LINE_BREAK, buffer);
 };
 char* HeadRGAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
@@ -587,55 +907,55 @@ char* HeadRGAtom::decode(char* position, const char* end) {
         position += 3;
         switch (tag) {
             case uint16_t(HtsAuxiliaryCode::ID): {
-                position = copy_until_tag_end(position, end, &ID);
+                position = copy_until_tag_end(position, end, ID);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::CN): {
-                position = copy_until_tag_end(position, end, &CN);
+                position = copy_until_tag_end(position, end, CN);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::DS): {
-                position = copy_until_tag_end(position, end, &DS);
+                position = copy_until_tag_end(position, end, DS);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::DT): {
-                position = copy_until_tag_end(position, end, &DT);
+                position = copy_until_tag_end(position, end, DT);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::FO): {
-                position = copy_until_tag_end(position, end, &FO);
+                position = copy_until_tag_end(position, end, FO);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::KS): {
-                position = copy_until_tag_end(position, end, &KS);
+                position = copy_until_tag_end(position, end, KS);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::LB): {
-                position = copy_until_tag_end(position, end, &LB);
+                position = copy_until_tag_end(position, end, LB);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::PG): {
-                position = copy_until_tag_end(position, end, &PG);
+                position = copy_until_tag_end(position, end, PG);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::PI): {
-                position = copy_until_tag_end(position, end, &PI);
+                position = copy_until_tag_end(position, end, PI);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::PL): {
-                position = copy_until_tag_end(position, end, &PL);
+                position = copy_until_tag_end(position, end, PL);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::PM): {
-                position = copy_until_tag_end(position, end, &PM);
+                position = copy_until_tag_end(position, end, PM);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::PU): {
-                position = copy_until_tag_end(position, end, &PU);
+                position = copy_until_tag_end(position, end, PU);
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::SM): {
-                position = copy_until_tag_end(position, end, &SM);
+                position = copy_until_tag_end(position, end, SM);
                 break;
             };
             default:
@@ -650,18 +970,18 @@ void HeadRGAtom::set_platform(const Platform& value) {
 };
 void HeadRGAtom::expand(const HeadRGAtom& other) {
     if(&other != this) {
-        if(PI.l == 0 && other.PI.l > 0) kputsn(other.PI.s, other.PI.l, &PI);
-        if(LB.l == 0 && other.LB.l > 0) kputsn(other.LB.s, other.LB.l, &LB);
-        if(SM.l == 0 && other.SM.l > 0) kputsn(other.SM.s, other.SM.l, &SM);
-        if(PU.l == 0 && other.PU.l > 0) kputsn(other.PU.s, other.PU.l, &PU);
-        if(CN.l == 0 && other.CN.l > 0) kputsn(other.CN.s, other.CN.l, &CN);
-        if(DS.l == 0 && other.DS.l > 0) kputsn(other.DS.s, other.DS.l, &DS);
-        if(DT.l == 0 && other.DT.l > 0) kputsn(other.DT.s, other.DT.l, &DT);
-        if(PL.l == 0 && other.PL.l > 0) kputsn(other.PL.s, other.PL.l, &PL);
-        if(PM.l == 0 && other.PM.l > 0) kputsn(other.PM.s, other.PM.l, &PM);
-        if(PG.l == 0 && other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
-        if(FO.l == 0 && other.FO.l > 0) kputsn(other.FO.s, other.FO.l, &FO);
-        if(KS.l == 0 && other.KS.l > 0) kputsn(other.KS.s, other.KS.l, &KS);
+        if(PI.l == 0 && other.PI.l > 0) ks_put_string(other.PI.s, other.PI.l, PI);
+        if(LB.l == 0 && other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
+        if(SM.l == 0 && other.SM.l > 0) ks_put_string(other.SM.s, other.SM.l, SM);
+        if(PU.l == 0 && other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
+        if(CN.l == 0 && other.CN.l > 0) ks_put_string(other.CN.s, other.CN.l, CN);
+        if(DS.l == 0 && other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
+        if(DT.l == 0 && other.DT.l > 0) ks_put_string(other.DT.s, other.DT.l, DT);
+        if(PL.l == 0 && other.PL.l > 0) ks_put_string(other.PL.s, other.PL.l, PL);
+        if(PM.l == 0 && other.PM.l > 0) ks_put_string(other.PM.s, other.PM.l, PM);
+        if(PG.l == 0 && other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
+        if(FO.l == 0 && other.FO.l > 0) ks_put_string(other.FO.s, other.FO.l, FO);
+        if(KS.l == 0 && other.KS.l > 0) ks_put_string(other.KS.s, other.KS.l, KS);
     }
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
@@ -740,7 +1060,7 @@ HeadCOAtom::HeadCOAtom() :
 };
 HeadCOAtom::HeadCOAtom(const HeadCOAtom& other) :
     CO({ 0, 0, NULL }){
-    if(other.CO.l > 0) kputsn(other.CO.s, other.CO.l, &CO);
+    if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
 };
 HeadCOAtom::~HeadCOAtom() {
     ks_free(CO);
@@ -750,22 +1070,22 @@ HeadCOAtom& HeadCOAtom::operator=(const HeadCOAtom& other) {
         return *this;
     } else {
         ks_clear(CO);
-        if(other.CO.l > 0) kputsn(other.CO.s, other.CO.l, &CO);
+        if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
     }
     return *this;
 };
 char* HeadCOAtom::decode(char* position, const char* end) {
     if(*position == '\t' && position <= end) {
         position++;
-        position = copy_until_linebreak(position, end, &CO);
+        position = copy_until_linebreak(position, end, CO);
     }
     return ++position;
 };
-void HeadCOAtom::encode(kstring_t* buffer) const {
+void HeadCOAtom::encode(kstring_t& buffer) const {
     if(CO.l > 0) {
-        kputsn_("@CO:", 4, buffer);
-        kputsn_(CO.s, CO.l, buffer);
-        kputc(LINE_BREAK, buffer);
+        ks_put_string_("@CO:", 4, buffer);
+        ks_put_string_(CO.s, CO.l, buffer);
+        ks_put_character(LINE_BREAK, buffer);
     }
 };
 ostream& operator<<(ostream& o, const HeadCOAtom& co) {

@@ -41,18 +41,18 @@ FeedSpecification::FeedSpecification (
     phred_offset(phred_offset),
     hfile(NULL) {
 };
-void FeedSpecification::set_capacity(const uint64_t& capacity) {
+void FeedSpecification::set_capacity(const int& capacity) {
     if(capacity != this->capacity) {
-        uint64_t aligned = uint64_t(capacity / resolution) * resolution;
+        int aligned = int(capacity / resolution) * resolution;
         if(aligned < capacity) {
             aligned += resolution;
         }
         this->capacity = aligned;
     }
 };
-void FeedSpecification::set_resolution(const uint64_t& resolution) {
+void FeedSpecification::set_resolution(const int& resolution) {
     if(resolution != this->resolution) {
-        uint64_t aligned = uint64_t(capacity / resolution) * resolution;
+        int aligned = int(capacity / resolution) * resolution;
         if(aligned < capacity) {
             aligned += resolution;
         }
@@ -120,9 +120,9 @@ void FeedSpecification::probe() {
         case IoDirection::IN: {
             hfile = hopen(url.c_str(), "r");
             if(url.type() == FormatType::UNKNOWN) {
-                uint64_t buffer_capacity = PEEK_BUFFER_CAPACITY;
-                ssize_t buffer_length = 0;
-                unsigned char* buffer = NULL;
+                ssize_t peeked(0);
+                unsigned char* buffer(NULL);
+                const ssize_t buffer_capacity(PEEK_BUFFER_CAPACITY);
                 if((buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
                     throw InternalError("out of memory");
                 }
@@ -169,8 +169,8 @@ void FeedSpecification::probe() {
                 }
 
                 if(url.type() == FormatType::SAM) {
-                    buffer_length = hpeek(hfile, buffer, buffer_capacity);
-                    if(buffer_length > 0) {
+                    peeked = hpeek(hfile, buffer, buffer_capacity);
+                    if(peeked > 0) {
                         switch (format.compression) {
                             case htsCompression::gzip:
                             case htsCompression::bgzf: {
@@ -182,7 +182,7 @@ void FeedSpecification::probe() {
                                 zstream.zalloc = NULL;
                                 zstream.zfree = NULL;
                                 zstream.next_in = buffer;
-                                zstream.avail_in = buffer_length;
+                                zstream.avail_in = static_cast< unsigned >(peeked);
                                 zstream.next_out = decompressed_buffer;
                                 zstream.avail_out = buffer_capacity;
                                 if(inflateInit2(&zstream, 31) == Z_OK) {
@@ -191,9 +191,9 @@ void FeedSpecification::probe() {
                                     }
                                     inflateEnd(&zstream);
                                     memcpy(buffer, decompressed_buffer, zstream.total_out);
-                                    buffer_length = zstream.total_out;
+                                    peeked = zstream.total_out;
                                 } else {
-                                    buffer_length = 0;
+                                    peeked = 0;
                                 }
                                 free(decompressed_buffer);
                                 break;
@@ -205,10 +205,10 @@ void FeedSpecification::probe() {
                                 break;
                         }
                     }
-                    if(buffer_length > 0) { 
+                    if(peeked > 0) { 
                         uint64_t state = 0;
                         char* position = (char*)buffer;
-                        char* end = position + buffer_length;
+                        char* end = position + peeked;
                         while(position < end && position != NULL) {
                             if(state == 0) {
                                 if(*position == '\n') {
@@ -352,13 +352,13 @@ void ChannelSpecification::describe(ostream& o) const {
     }
     if(!undetermined) {
         o << endl;
-        for(uint64_t i = 0; i < multiplex_barcode.total_fragments(); i++) {
+        for(size_t i = 0; i < multiplex_barcode.total_fragments(); i++) {
             o << "        Multiplex barcode No." << i << " : " << multiplex_barcode.iupac_ambiguity(i) << endl;
         }
     }
     if(!url_by_segment.empty()) {
         o << endl;
-        uint64_t i(0);
+        size_t i(0);
         for(auto& url : url_by_segment) {
             o << "        Output segment No." << i << " : " << url << endl;
             i++;
@@ -409,7 +409,7 @@ void transcode_channel_specification(const Value& from, Value& to, Document& doc
         transcode_value_by_key< string >("PG", from, to, document);
         transcode_value_by_key< string >("FO", from, to, document);
         transcode_value_by_key< string >("KS", from, to, document);
-        transcode_value_by_key< int32_t >("TC", from, to, document);
+        transcode_value_by_key< int64_t >("TC", from, to, document);
         transcode_value_by_key< Decoder >("decoder", from, to, document);
         transcode_value_by_key< bool >("disable quality control", from, to, document);
         transcode_value_by_key< bool >("long read", from, to, document);

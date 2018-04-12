@@ -33,12 +33,10 @@
 #include <condition_variable>
 
 #include <htslib/sam.h>
-#include <htslib/hts.h>
-#include <htslib/kstring.h>
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
+#include "kstring.h"
 #include "sequence.h"
 
 using std::map;
@@ -102,8 +100,8 @@ friend ostream& operator<<(ostream& o, const Auxiliary& auxiliary);
 void operator=(Auxiliary const &) = delete;
 
 public:
-    int32_t FI;
-    int32_t TC;
+    int64_t FI;
+    int64_t TC;
     kstring_t RG;
     kstring_t BC;
     kstring_t QT;
@@ -118,13 +116,13 @@ public:
     float PX;
     float DQ;
     float EE;
-    int32_t XI;
-    int32_t YD;
-    int32_t XD;
+    int64_t XI;
+    int64_t YD;
+    int64_t XD;
     kstring_t XM;
     kstring_t XL;
     float XP;
-    Auxiliary(const int32_t& FI, const int32_t& TC);
+    Auxiliary(const int64_t& FI, const int64_t& TC);
     Auxiliary(const Auxiliary& other);
     ~Auxiliary();
     void decode(const bam1_t* bam1);
@@ -178,17 +176,17 @@ public:
         ks_clear(RX);
         ks_clear(QX);
         ks_clear(BX);
-        if(other.RG.l > 0) kputsn(other.RG.s, other.RG.l, &RG);
-        if(other.BC.l > 0) kputsn(other.BC.s, other.BC.l, &BC);
-        if(other.QT.l > 0) kputsn(other.QT.s, other.QT.l, &QT);
-        if(other.FS.l > 0) kputsn(other.FS.s, other.FS.l, &FS);
-        if(other.LB.l > 0) kputsn(other.LB.s, other.LB.l, &LB);
-        if(other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
-        if(other.PU.l > 0) kputsn(other.PU.s, other.PU.l, &PU);
-        if(other.CO.l > 0) kputsn(other.CO.s, other.CO.l, &CO);
-        if(other.RX.l > 0) kputsn(other.RX.s, other.RX.l, &RX);
-        if(other.QX.l > 0) kputsn(other.QX.s, other.QX.l, &QX);
-        if(other.BX.l > 0) kputsn(other.BX.s, other.BX.l, &BX);
+        if(other.RG.l > 0) ks_put_string(other.RG.s, other.RG.l, RG);
+        if(other.BC.l > 0) ks_put_string(other.BC.s, other.BC.l, BC);
+        if(other.QT.l > 0) ks_put_string(other.QT.s, other.QT.l, QT);
+        if(other.FS.l > 0) ks_put_string(other.FS.s, other.FS.l, FS);
+        if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
+        if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
+        if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
+        if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
+        if(other.RX.l > 0) ks_put_string(other.RX.s, other.RX.l, RX);
+        if(other.QX.l > 0) ks_put_string(other.QX.s, other.QX.l, QX);
+        if(other.BX.l > 0) ks_put_string(other.BX.s, other.BX.l, BX);
         DQ = other.DQ;
     };
 };

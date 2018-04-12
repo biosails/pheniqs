@@ -54,6 +54,9 @@ public:
     };
 };
 
+class OutOfMemoryError : public exception {
+};
+
 class ConfigurationError : public exception {
 public:
     string message;

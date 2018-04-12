@@ -214,12 +214,15 @@ template<> bool decode_value_by_key< kstring_t >(const Value::Ch* key, kstring_t
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
         if(element->value.IsString()) {
-            kputsn(element->value.GetString(), element->value.GetStringLength(), &value);
-            return true;
+            if(element->value.GetStringLength() < numeric_limits< size_t >::max()) {
+                ks_put_string(element->value.GetString(), static_cast< size_t >(element->value.GetStringLength()), value);
+                return true;
+            } else { throw ConfigurationError(string(key) + " element must be a string shorter than " + to_string(numeric_limits< int >::max())); }
         } else { throw ConfigurationError(string(key) + " element must be a string"); }
     }
     return false;
 };
+
 template <> bool decode_value_by_key(const Value::Ch* key, const Value& container) {
     bool value(false);
     decode_value_by_key(key, value, container);

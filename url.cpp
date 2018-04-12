@@ -517,43 +517,6 @@ bool decode_file_url_by_key(const Value::Ch* key, URL& value, const IoDirection&
     }
     return false;
 };
-bool decode_file_url_vector_by_key(const Value::Ch* key, vector< URL >& value, const Value& container, const IoDirection& direction) {
-    Value::ConstMemberIterator collection = container.FindMember(key);
-    if(collection != container.MemberEnd()) {
-        if(!collection->value.IsNull()) {
-            if(collection->value.IsArray() && !collection->value.Empty()) {
-                value.clear();
-                value.reserve(collection->value.Size());
-                for(const auto& element : collection->value.GetArray()) {
-                    if(element.IsString() || element.IsObject()) {
-                        try {
-                            if(element.IsString()) {
-                                value.emplace_back(string(element.GetString(), element.GetStringLength()), direction);
-                            } else {
-                                string buffer;
-                                if(decode_value_by_key< string >("path", buffer, element)) {
-                                    URL url(buffer, direction);
-                                    if(decode_value_by_key< string >("type", buffer, element)) {
-                                        url.set_type(buffer);
-                                    }
-                                    if(decode_value_by_key< string >("compression", buffer, element)) {
-                                        url.set_compression(buffer);
-                                    }
-                                    value.emplace_back(url);
-                                } else { throw ConfigurationError("URL element must contain a non empty path element"); }
-                            }
-                        } catch(ConfigurationError& e) {
-                            value.clear();
-                            throw e;
-                        }
-                    } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
-                }
-                return true;
-            }
-        }
-    }
-    return false;
-};
 bool decode_file_url_list_by_key(const Value::Ch* key, list< URL >& value, const Value& container, const IoDirection& direction) {
     Value::ConstMemberIterator collection = container.FindMember(key);
     if(collection != container.MemberEnd()) {
@@ -601,19 +564,6 @@ bool encode_key_value(const string& key, const URL& value, Value& container, Doc
     return false;
 };
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document) {
-    if(!value.empty()) {
-        Value array(kArrayType);
-        for(auto& v : value) {
-            array.PushBack(Value(v.c_str(), v.size(), document.GetAllocator()).Move(), document.GetAllocator());
-        }
-        Value k(key.c_str(), key.size(), document.GetAllocator());
-        container.RemoveMember(key.c_str());
-        container.AddMember(k.Move(), array.Move(), document.GetAllocator());
-        return true;
-    }
-    return false;
-};
-bool encode_key_value(const string& key, const vector< URL >& value, Value& container, Document& document) {
     if(!value.empty()) {
         Value array(kArrayType);
         for(auto& v : value) {

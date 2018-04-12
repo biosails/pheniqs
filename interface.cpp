@@ -222,7 +222,7 @@ Prototype::Prototype() :
     mandatory(false),
     positional(false) {
 };
-ostream& Prototype::print_help(ostream& o, const size_t& max_option_handle, const Layout& layout) const {
+ostream& Prototype::print_help(ostream& o, const int& max_option_handle, const Layout& layout) const {
     o << setw(layout.option_indent) << ' ';
     if(!positional) {
         for(size_t i = 0; i < handles.size(); i++) {
@@ -245,8 +245,8 @@ ostream& Prototype::print_help(ostream& o, const size_t& max_option_handle, cons
     o << help << endl;
     return o;
 };
-size_t Prototype::handle_length() const {
-    size_t length = 0;
+int Prototype::handle_length() const {
+    int length = 0;
     if(!positional) {
         for(const auto& handle : handles) {
             length += handle.length();
@@ -568,7 +568,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
         buffer.append(" ");
         buffer.append(name);
     }
-    size_t indent = buffer.length();
+    int indent = static_cast< int >(buffer.length());
     for(const auto prototype : optional_order) {
         block.append(" ");
         if(!prototype->mandatory) {
@@ -746,7 +746,7 @@ CommandLine::CommandLine(const int argc, const char** argv) :
                     if(action_name_lookup.find(action->name) == action_name_lookup.end()) {
                         action_name_lookup[action->name] = action;
                         action_order.push_back(action);
-                        layout.max_action_name = MAX(layout.max_action_name, action->name.length());
+                        layout.max_action_name = max(layout.max_action_name, action->name_length());
                     } else { throw ConfigurationError("redefining " + action->name); }
                 } else { throw ConfigurationError("action missing a name"); }
             }
@@ -1253,7 +1253,7 @@ ostream& CommandLine::print_action_element(ostream& o, const Layout& layout) con
     for(const auto action : action_order) {
         o << setw(layout.option_indent) << ' ';
         o << action->name;
-        o << setw(layout.complement_action(action->name.length())) << ' ';
+        o << setw(layout.complement_action(action->name_length())) << ' ';
         o << action->description;
         o << endl;
     }

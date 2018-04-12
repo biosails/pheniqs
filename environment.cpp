@@ -318,7 +318,7 @@ bool Environment::load_input_feed_array() {
             }
         }
 
-        map< URL, uint64_t > reference;
+        map< URL, int > reference;
         for(const auto& url : input_url_array) {
             reference[url]++;
         }
@@ -326,8 +326,8 @@ bool Environment::load_input_feed_array() {
         Platform platform(Platform::UNKNOWN);
         decode_value_by_key< Platform >("platform", platform, _instruction);
 
-        uint64_t buffer_capacity(numeric_limits< uint64_t >::max());
-        decode_value_by_key< uint64_t >("buffer capacity", buffer_capacity, _instruction);
+        int32_t buffer_capacity(numeric_limits< int32_t >::max());
+        decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, _instruction);
 
         uint8_t input_phred_offset(numeric_limits< uint8_t >::max());
         decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, _instruction);
@@ -335,7 +335,7 @@ bool Environment::load_input_feed_array() {
         uint64_t feed_index(0);
         Value feed_array(kArrayType);
         for(const auto& record : reference) {
-            uint64_t resolution(record.second);
+            int resolution(record.second);
             Value specification(kObjectType);
             encode_key_value("index", feed_index++, specification, _instruction);
             encode_key_value("url", record.first, specification, _instruction);
@@ -465,7 +465,7 @@ bool Environment::load_output_feed_array() {
     Value::MemberIterator collection = _instruction.FindMember("channel");
     if(collection != _instruction.MemberEnd()) {
         if(!collection->value.IsNull() && !collection->value.Empty()) {
-            unordered_map< URL, unordered_map< uint64_t, uint64_t > > reference;
+            unordered_map< URL, unordered_map< uint64_t, int > > reference;
             for(auto& element : collection->value.GetArray()) {
                 uint64_t channel_index;
                 if(decode_value_by_key< uint64_t >("index", channel_index, element)) {
@@ -481,8 +481,8 @@ bool Environment::load_output_feed_array() {
             Platform platform(Platform::UNKNOWN);
             decode_value_by_key< Platform >("platform", platform, _instruction);
 
-            uint64_t buffer_capacity(numeric_limits< uint64_t >::max());
-            decode_value_by_key< uint64_t >("buffer capacity", buffer_capacity, _instruction);
+            int32_t buffer_capacity(numeric_limits< int32_t >::max());
+            decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, _instruction);
 
             uint8_t output_phred_offset(numeric_limits< uint8_t >::max());
             decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, _instruction);
@@ -491,7 +491,7 @@ bool Environment::load_output_feed_array() {
             Value feed_array(kArrayType);
             for(const auto& url_record : reference) {
                 const URL& url = url_record.first;
-                uint64_t resolution(0);
+                int resolution(0);
                 for(const auto& channel_record : url_record.second) {
                     if(resolution == 0) {
                         resolution = channel_record.second;
@@ -523,7 +523,7 @@ void Environment::load_undetermined_barcode(const vector< uint64_t >& multiplex_
                 bool undetermined(false);
                 if(decode_value_by_key< bool >("undetermined", undetermined, element) && undetermined) {
                     Barcode barcode(multiplex_barcode_length.size());
-                    for(uint64_t i = 0; i < multiplex_barcode_length.size(); i++) {
+                    for(size_t i = 0; i < multiplex_barcode_length.size(); i++) {
                         string pattern(multiplex_barcode_length[i], '=');
                         barcode.fill(i, pattern.c_str(), pattern.length());
                     }
@@ -546,7 +546,7 @@ void Environment::load_multiplex_barcode_distance_metric(const vector< uint64_t 
                     Barcode multiplex_barcode;
                     if(decode_value_by_key< Barcode >("barcode", multiplex_barcode, element)) {
                         if(!multiplex_barcode.empty()) {
-                            for(uint64_t i = 0; i < multiplex_barcode_length.size(); i++) {
+                            for(size_t i = 0; i < multiplex_barcode_length.size(); i++) {
                                 if(multiplex_barcode.size(i) == multiplex_barcode_length[i]) {
                                     _multiplex_barcode_set_distance[i].add(multiplex_barcode.iupac_ambiguity(i));
                                 } else {
@@ -582,7 +582,7 @@ void Environment::load_barcode_tolerance(const vector< BarcodeDistanceMetric >& 
     vector< uint8_t > multiplex_barcode_tolerance;
     if(decode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", multiplex_barcode_tolerance, _instruction)) {
         if(multiplex_barcode_tolerance.size() == multiplex_barcode_set_distance.size()) {
-            for(uint64_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
+            for(size_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
                 if(multiplex_barcode_tolerance[i] > multiplex_barcode_set_distance[i].shannon_bound()) {
                     throw ConfigurationError(
                         "multiplex barcode tolerance for segment " + 
@@ -595,7 +595,7 @@ void Environment::load_barcode_tolerance(const vector< BarcodeDistanceMetric >& 
         } else { throw ConfigurationError("inconsistent multiplex barcode tolerance specification"); }
     } else {
         multiplex_barcode_tolerance.resize(multiplex_barcode_set_distance.size());
-        for(uint64_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
+        for(size_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
             multiplex_barcode_tolerance[i] = multiplex_barcode_set_distance[i].shannon_bound();
         }
     }
@@ -642,10 +642,10 @@ void Environment::cross_validate_io() {
     }
 };
 void Environment::load_pheniqs_pg() {
-    // kputsn(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.ID);
-    // kputsn(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.PN);
-    // kputsn(interface.application_version.c_str(), interface.application_version.size(), &_pheniqs_pg.VN);
-    // kputsn(interface.full_command.c_str(), interface.full_command.size(), &_pheniqs_pg.CL);
+    // ks_put_string(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.ID);
+    // ks_put_string(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.PN);
+    // ks_put_string(interface.application_version.c_str(), interface.application_version.size(), &_pheniqs_pg.VN);
+    // ks_put_string(interface.full_command.c_str(), interface.full_command.size(), &_pheniqs_pg.CL);
 };
 void Environment::print_help(ostream& o) const {
     interface.print_help(o);
@@ -770,12 +770,12 @@ void Environment::print_instruction_validation(ostream& o) const {
         }
     }
 
-    uint64_t buffer_capacity;
-    decode_value_by_key< uint64_t >("buffer capacity", buffer_capacity, _instruction);
+    int32_t buffer_capacity;
+    decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, _instruction);
     o << "    Feed buffer capacity                        " << to_string(buffer_capacity) << endl;
 
-    uint64_t threads;
-    decode_value_by_key< uint64_t >("threads", threads, _instruction);
+    int32_t threads;
+    decode_value_by_key< int32_t >("threads", threads, _instruction);
     o << "    Threads                                     " << to_string(threads) << endl;
     o << endl;
 

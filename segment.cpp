@@ -30,7 +30,7 @@ Segment::Segment(const Platform& platform) :
     auxiliary(0, 0) {
     ks_terminate(name);
 };
-Segment::Segment(const uint64_t& index, const int32_t& FI, const int32_t& TC, const Platform& platform) :
+Segment::Segment(const uint64_t& index, const int64_t& FI, const int64_t& TC, const Platform& platform) :
     index(index),
     platform(platform),
     name({ 0, 0, NULL }),

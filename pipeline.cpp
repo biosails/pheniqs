@@ -21,6 +21,54 @@
 
 #include "pipeline.h"
 
+void to_string(const FormatKind& value, string& result) {
+    switch(value) {
+        case FormatKind::FASTQ: result.assign("FASTQ");      break;
+        case FormatKind::HTS:   result.assign("HTS");        break;
+        default:                result.assign("UNKNOWN");    break;
+    }
+};
+bool from_string(const char* value, FormatKind& result) {
+         if(value == NULL)              result = FormatKind::UNKNOWN;
+    else if(!strcmp(value, "FASTQ"))    result = FormatKind::FASTQ;
+    else if(!strcmp(value, "HTS"))      result = FormatKind::HTS;
+    else                                result = FormatKind::UNKNOWN;
+
+    return (result == FormatKind::UNKNOWN ? false : true);
+};
+void to_kstring(const FormatKind& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    ks_put_string(string_value.c_str(), string_value.size(), result);
+};
+bool from_string(const string& value, FormatKind& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const FormatKind& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKind& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+
 /*  Pivot */
 
 Pivot::Pivot(Pipeline& pipeline) :
@@ -173,7 +221,7 @@ inline void Pivot::validate() {
     if(input.size() > 1) {
         /* validate that all segments in the pivot have the same identifier */
         const kstring_t& baseline = input[0].name;
-        for(uint64_t i = 1; i < input.size(); i++) {
+        for(size_t i = 1; i < input.size(); i++) {
             Segment& segment = input[i];
             if((baseline.l != segment.name.l) || strncmp(baseline.s, segment.name.s, baseline.l)) {
                 throw SequenceError("read segments out of sync " + string(segment.name.s, segment.name.l) + " and " + string(baseline.s, baseline.l));
@@ -205,7 +253,7 @@ inline void Pivot::transform() {
     filtered = leading_segment->get_qcfail();
 
     for(auto& segment : output) {
-        kputsn(leading_segment->name.s, leading_segment->name.l, &segment.name);
+        ks_put_string(leading_segment->name.s, leading_segment->name.l, segment.name);
         segment.set_qcfail(leading_segment->get_qcfail());
         segment.auxiliary.XI = leading_segment->auxiliary.XI;
     }
@@ -318,14 +366,14 @@ inline void Pivot::encode_auxiliary () {
             segment.auxiliary.set_molecular_barcode(molecular_barcode);
 
             // channel auxiliary tags
-            kputsn(decoded_multiplex_channel->rg.ID.s, decoded_multiplex_channel->rg.ID.l, &segment.auxiliary.RG);
+            ks_put_string(decoded_multiplex_channel->rg.ID.s, decoded_multiplex_channel->rg.ID.l, segment.auxiliary.RG);
 
-            /* those dont change between consecutive reads in the same channel
-            kputsn(decoded_multiplex_channel->rg.LB.s, decoded_multiplex_channel->rg.LB.l, &segment.auxiliary.LB);
-            kputsn(decoded_multiplex_channel->rg.PU.s, decoded_multiplex_channel->rg.PU.l, &segment.auxiliary.PU);
-            kputsn(decoded_multiplex_channel->rg.FS.s, decoded_multiplex_channel->rg.FS.l, &segment.auxiliary.FS);
-            kputsn(decoded_multiplex_channel->rg.PG.s, decoded_multiplex_channel->rg.PG.l, &segment.auxiliary.PG);
-            kputsn(decoded_multiplex_channel->rg.CO.s, decoded_multiplex_channel->rg.CO.l, &segment.auxiliary.CO); */
+            /* those don't change between consecutive reads in the same channel
+            ks_put_string(decoded_multiplex_channel->rg.LB.s, decoded_multiplex_channel->rg.LB.l, &segment.auxiliary.LB);
+            ks_put_string(decoded_multiplex_channel->rg.PU.s, decoded_multiplex_channel->rg.PU.l, &segment.auxiliary.PU);
+            ks_put_string(decoded_multiplex_channel->rg.FS.s, decoded_multiplex_channel->rg.FS.l, &segment.auxiliary.FS);
+            ks_put_string(decoded_multiplex_channel->rg.PG.s, decoded_multiplex_channel->rg.PG.l, &segment.auxiliary.PG);
+            ks_put_string(decoded_multiplex_channel->rg.CO.s, decoded_multiplex_channel->rg.CO.l, &segment.auxiliary.CO); */
         }
     }
 };
@@ -436,7 +484,7 @@ void Channel::push(Pivot& pivot) {
         }
 
         // push the segments to the output feeds
-        for(uint64_t i = 0; i < output_feed_by_segment.size(); i++) {
+        for(size_t i = 0; i < output_feed_by_segment.size(); i++) {
             output_feed_by_segment[i]->push(pivot.output[i]);
         }
 
@@ -473,7 +521,7 @@ Pipeline::Pipeline(Environment& environment) :
     adjusted_multiplex_noise_probability(decode_value_by_key< double >("adjusted multiplex noise probability", instruction)),
     random_multiplex_barcode_probability(decode_value_by_key< double >("random multiplex barcode probability", instruction)),
     multiplex_confidence(decode_value_by_key< double >("multiplex confidence", instruction)),
-    threads(decode_value_by_key< uint64_t >("threads", instruction)),
+    threads(decode_value_by_key< int32_t >("threads", instruction)),
     input_segment_cardinality(decode_value_by_key< uint64_t >("input segment cardinality", instruction)),
     output_segment_cardinality(decode_value_by_key< uint64_t >("output segment cardinality", instruction)),
     multiplex_segment_cardinality(decode_value_by_key< uint64_t >("multiplex segment cardinality", instruction)),
@@ -563,7 +611,7 @@ bool Pipeline::pull(Pivot& pivot) {
     }
 
     // pull into pivot input segments from input feeds
-    for(uint64_t i = 0; i < pivot.input.size(); i++) {
+    for(size_t i = 0; i < pivot.input.size(); i++) {
         if(!input_feed_by_segment[i]->pull(pivot.input[i])) {
             end_of_input = true;
         }
@@ -635,7 +683,8 @@ void Pipeline::load_input() {
     unordered_map< URL, Feed* > input_feed_by_url(feed_specification_array.size());
     for(auto specification : feed_specification_array) {
         Feed* feed(NULL);
-        switch(specification->url.kind()) {
+        FormatKind kind(format_kind_from_type(specification->url.type()));
+        switch(kind) {
             case FormatKind::FASTQ: {
                 feed = new FastqFeed(*specification);
                 break;
@@ -706,7 +755,8 @@ void Pipeline::load_output() {
     unordered_map< URL, Feed* > output_feed_by_url(feed_specification_array.size());
     for(auto specification : feed_specification_array) {
         Feed* feed(NULL);
-        switch(specification->url.kind()) {
+        FormatKind kind(format_kind_from_type(specification->url.type()));
+        switch(kind) {
             case FormatKind::FASTQ: {
                 feed = new FastqFeed(*specification);
                 break;
@@ -775,7 +825,7 @@ void Pipeline::load_output() {
 };
 void Pipeline::load_pivot_array() {
     pivot_array.reserve(threads);
-    for(uint64_t i = 0; i < threads; i++) {
+    for(int i = 0; i < threads; i++) {
         pivot_array.push_back(new Pivot(*this));
     }
 };
@@ -952,7 +1002,8 @@ void Pipeline::probe(const URL& url) {
 
     //     Feed* feed = load_feed(specification);
     //     feed->open();
-    //     switch(feed->specification.url.kind()) {
+    //     FormatKind kind(format_kind_from_type(specification->url.type()));
+    //     switch(kind) {
     //         case FormatKind::FASTQ: {
     //             feed->replenish();
     //             Segment segment(specification->platform);
@@ -997,7 +1048,7 @@ void Pipeline::calibrate(const URL& url) {
     // _input_specification.include_filtered = _include_filtered;
 
     // _input_specification.input_urls.reserve(total_input_segments);
-    // for(uint64_t i = 0; i < total_input_segments; i++) {
+    // for(size_t i = 0; i < total_input_segments; i++) {
     //     _input_specification.input_urls.push_back(url);
     //     token_patterns.emplace_back(to_string(i) + "::");
     //     template_patterns.emplace_back(to_string(i));

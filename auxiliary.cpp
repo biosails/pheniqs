@@ -21,8 +21,25 @@
 
 #include "auxiliary.h"
 
-static inline uint64_t aux_type2size(const uint8_t type) {
-    switch (type) {
+/*
+    Ported internal functions from htslib/sam.c for iterating over all auxiliary tags
+    rather than using a random access search mechanism.
+
+    April 9 2018, htslib 1.8 be22a2a1082f6e570718439b9ace2db17a609eae
+*/
+static inline uint32_t le_to_u32(const uint8_t* buffer) {
+#if defined(HTS_LITTLE_ENDIAN) && HTS_ALLOW_UNALIGNED != 0
+    return *((uint32_u *)buffer);
+#else
+    return
+        ((uint32_t)buffer[0]        |
+        ((uint32_t)buffer[1] << 8)  |
+        ((uint32_t)buffer[2] << 16) |
+        ((uint32_t)buffer[3] << 24));
+#endif
+};
+static inline uint8_t aux_type2size(uint8_t type) {
+    switch(type) {
         case 'A':
         case 'c':
         case 'C':
@@ -44,37 +61,60 @@ static inline uint64_t aux_type2size(const uint8_t type) {
             return 0;
     }
 };
-static inline uint8_t* skip_aux(uint8_t* buffer) {
-    uint64_t size = aux_type2size(*buffer);
-    ++buffer;
-    switch (size) {
-        case 'Z':
-        case 'H':
-            while(*buffer) {
-                buffer++;
-            }
-            return buffer + 1;
+static inline uint8_t* skip_aux(uint8_t* buffer, uint8_t* end) {
+    if(buffer < end) {
+        uint8_t size(aux_type2size(*buffer));
+        buffer++;
 
-        case 'B':
-            size = aux_type2size(*buffer);
-            buffer++;
-            uint64_t count;
-            memcpy(&count, buffer, 4);
-            buffer += 4;
-            return buffer + size * count;
+        switch(size) {
+            case 'Z':
+            case 'H': {
+                /* NULL terminated byte array , search for the terminating NULL character */
+                while(*buffer && buffer < end) {
+                    buffer++;
+                }
+                if(buffer < end) {
+                    return buffer + 1;
+                } else { return end; }
+            };
+            case 'B': {
+                if(end - buffer > 4) {
+                    /* type of array element */
+                    size = aux_type2size(*buffer);
+                    if(size) {
+                        /* skip the element type */
+                        buffer++;
 
-        case 0:
-            throw InternalError("unknown auxiliary field type");
-            break;
+                        /* number of elements in array */
+                        uint32_t count = le_to_u32(buffer);
 
-        default:
-            return buffer + size;
-    }
+                        /* skip the element count */
+                        buffer += 4;
+
+                        /* skip the array elements */
+                        buffer += size * count;
+
+                        if(end >= buffer) {
+                            return buffer;
+                        } else { return NULL; }
+                    } else { return NULL; }
+                } else { return NULL; }
+            };
+            case 0: { return NULL; };
+            default: {
+                /* skip the value */
+                buffer += size;
+                if(end >= buffer) {
+                    return buffer;
+                } else { return NULL; }
+            };
+        }
+    } else { return end; }
 };
 
 /*  Auxiliary tags
 */
-Auxiliary::Auxiliary(const int32_t& FI, const int32_t& TC) :
+Auxiliary::Auxiliary(const int64_t& FI, const int64_t& TC) :
     FI(FI),
     TC(TC),
     RG({ 0, 0, NULL }),
@@ -121,19 +161,19 @@ Auxiliary::Auxiliary(const Auxiliary& other) :
     XM({ 0, 0, NULL }),
     XL({ 0, 0, NULL }),
     XP(other.XP) {
-    if(other.RG.l > 0) kputsn(other.RG.s, other.RG.l, &RG);
-    if(other.BC.l > 0) kputsn(other.BC.s, other.BC.l, &BC);
-    if(other.QT.l > 0) kputsn(other.QT.s, other.QT.l, &QT);
-    if(other.FS.l > 0) kputsn(other.FS.s, other.FS.l, &FS);
-    if(other.LB.l > 0) kputsn(other.LB.s, other.LB.l, &LB);
-    if(other.PG.l > 0) kputsn(other.PG.s, other.PG.l, &PG);
-    if(other.PU.l > 0) kputsn(other.PU.s, other.PU.l, &PU);
-    if(other.CO.l > 0) kputsn(other.CO.s, other.CO.l, &CO);
-    if(other.RX.l > 0) kputsn(other.RX.s, other.RX.l, &RX);
-    if(other.QX.l > 0) kputsn(other.QX.s, other.QX.l, &QX);
-    if(other.BX.l > 0) kputsn(other.BX.s, other.BX.l, &BX);
-    if(other.XM.l > 0) kputsn(other.XM.s, other.XM.l, &XM);
-    if(other.XL.l > 0) kputsn(other.XL.s, other.XL.l, &XL);
+    if(other.RG.l > 0) ks_put_string(other.RG.s, other.RG.l, RG);
+    if(other.BC.l > 0) ks_put_string(other.BC.s, other.BC.l, BC);
+    if(other.QT.l > 0) ks_put_string(other.QT.s, other.QT.l, QT);
+    if(other.FS.l > 0) ks_put_string(other.FS.s, other.FS.l, FS);
+    if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
+    if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
+    if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
+    if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
+    if(other.RX.l > 0) ks_put_string(other.RX.s, other.RX.l, RX);
+    if(other.QX.l > 0) ks_put_string(other.QX.s, other.QX.l, QX);
+    if(other.BX.l > 0) ks_put_string(other.BX.s, other.BX.l, BX);
+    if(other.XM.l > 0) ks_put_string(other.XM.s, other.XM.l, XM);
+    if(other.XL.l > 0) ks_put_string(other.XL.s, other.XL.l, XL);
 };
 Auxiliary::~Auxiliary() {
     ks_free(RG);
@@ -152,6 +192,7 @@ Auxiliary::~Auxiliary() {
 };
 void Auxiliary::decode(const bam1_t* bam1) {
     if(bam1 != NULL) {
+        uint8_t* bam_end = bam1->data + bam1->l_data;
         uint64_t aux_length = bam_get_l_aux(bam1);
         if(aux_length > 0) {
             char* value;
@@ -169,27 +210,27 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         break;
                     case uint16_t(HtsAuxiliaryCode::RG):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &RG); }
+                        if(value) { ks_put_string(value, RG); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::BC):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &BC); }
+                        if(value) { ks_put_string(value, BC); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::QT):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &QT); }
+                        if(value) { ks_put_string(value, QT); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::RX):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &RX); }
+                        if(value) { ks_put_string(value, RX); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::QX):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &QX); }
+                        if(value) { ks_put_string(value, QX); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::BX):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &BX); }
+                        if(value) { ks_put_string(value, BX); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::PX):
                         PX = bam_aux2f(position);
@@ -202,23 +243,23 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         break;
                     case uint16_t(HtsAuxiliaryCode::FS):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &FS); }
+                        if(value) { ks_put_string(value, FS); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::LB):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &LB); }
+                        if(value) { ks_put_string(value, LB); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::PG):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &PG); }
+                        if(value) { ks_put_string(value, PG); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::PU):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &PU); }
+                        if(value) { ks_put_string(value, PU); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::CO):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &CO); }
+                        if(value) { ks_put_string(value, CO); }
                         break;
 
                     /* user space auxiliary tags */
@@ -233,11 +274,11 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         break;
                    case uint16_t(HtsAuxiliaryCode::XM):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &XM); }
+                        if(value) { ks_put_string(value, XM); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::XL):
                         value = bam_aux2Z(position);
-                        if(value) { kputs(value, &XL); }
+                        if(value) { ks_put_string(value, XL); }
                         break;
                     case uint16_t(HtsAuxiliaryCode::XP):
                         XP = bam_aux2f(position);
@@ -245,7 +286,7 @@ void Auxiliary::decode(const bam1_t* bam1) {
                     default:
                         break;
                 }
-                position = skip_aux(position);
+                position = skip_aux(position, bam_end);
             }
         }
     }

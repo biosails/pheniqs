@@ -65,7 +65,7 @@ Sequence::~Sequence() {
 };
 void Sequence::mask(const uint8_t& threshold) {
     if(threshold > 0) {
-        for(uint64_t i = 0; i < length; i++) {
+        for(size_t i = 0; i < length; i++) {
             if(quality[i] < threshold) {
                 code[i] = ANY_NUCLEOTIDE;
                 // TODO do we also set the quality value to 2?

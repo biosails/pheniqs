@@ -29,7 +29,6 @@
 #include "interface.h"
 #include "error.h"
 #include "json.h"
-#include "constant.h"
 #include "url.h"
 #include "nucleotide.h"
 #include "phred.h"

@@ -27,7 +27,6 @@
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
 
 using std::set;
 using std::copy;
@@ -49,6 +48,12 @@ using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
 
+enum class LeftTokenOperator : uint8_t {
+    NONE,
+    REVERSE_COMPLEMENT,
+};
+ostream& operator<<(ostream& o, const LeftTokenOperator& operation);
+
 /* Transform
 */
 class Token {
@@ -56,20 +61,20 @@ friend ostream& operator<<(ostream& o, const Token& token);
 void operator=(Token const &) = delete;
 
 public:
-    const uint32_t index;
-    const uint32_t input_segment_index;
+    const uint64_t index;
+    const uint64_t input_segment_index;
 
     Token(
-        const uint32_t& index,
-        const uint32_t& input_segment_index,
-        const int32_t& start,
-        const int32_t& end,
+        const uint64_t& index,
+        const uint64_t& input_segment_index,
+        const int64_t& start,
+        const int64_t& end,
         const bool& end_terminated);
     Token(const Token& other);
-    inline uint32_t decode_end(const uint32_t& length) const {
-        uint32_t value;
+    inline uint64_t decode_end(const uint64_t& length) const {
+        uint64_t value;
         if(end_terminated) {
-            int32_t v = (end < 0 ? length + end : end);
+            int64_t v = (end < 0 ? length + end : end);
             value = v < 0 ? 0 : v;
             if(value > length) {
                 value = length;
@@ -79,9 +84,9 @@ public:
         }
         return value;
     };
-    inline uint32_t decode_start(const uint32_t& length) const {
-        uint32_t value;
-        int32_t v = start < 0 ? length + start : start;
+    inline uint64_t decode_start(const uint64_t& length) const {
+        uint64_t value;
+        int64_t v = start < 0 ? length + start : start;
         value = v < 0 ? 0 : v;
         if(value > length) {
             value = length;
@@ -98,7 +103,7 @@ public:
             return start < 0;
         }
     };
-    int32_t length() const {
+    int64_t length() const {
         if(constant()) {
             if(end_terminated) {
                 return empty() ? 0 : end - start;
@@ -113,8 +118,8 @@ public:
     string description() const;
 
 private:
-    const int32_t start;
-    const int32_t end;
+    const int64_t start;
+    const int64_t end;
     const bool end_terminated;
 };
 ostream& operator<<(ostream& o, const Token& token);
@@ -124,15 +129,15 @@ friend ostream& operator<<(ostream& o, const Transform& transform);
 void operator=(Transform const &) = delete;
 
 public:
-    const uint32_t index;
-    const uint32_t output_segment_index;
+    const uint64_t index;
+    const uint64_t output_segment_index;
     const Token token;
     const LeftTokenOperator left;
 
     Transform(
-        const uint32_t& index,
+        const uint64_t& index,
         const Token& token,
-        const uint32_t& output_segment_index,
+        const uint64_t& output_segment_index,
         const LeftTokenOperator& left);
     Transform(const Transform& other);
     string description() const;

@@ -34,11 +34,9 @@
 
 #include <htslib/bgzf.h>
 #include <htslib/kseq.h>
-#include <htslib/kstring.h>
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
 #include "auxiliary.h"
 #include "sequence.h"
 #include "feed.h"
@@ -101,14 +99,14 @@ public:
         clear();
 
         // copy from kseq_t to record
-        kputsn(kseq->name.s, kseq->name.l, &name);
-        kputsn(kseq->comment.s, kseq->comment.l, &comment);
+        ks_put_string(kseq->name.s, kseq->name.l, name);
+        ks_put_string(kseq->comment.s, kseq->comment.l, comment);
 
         // decode sequence
         ks_resize(&sequence, kseq->seq.l + 1);
-        for(uint64_t i = 0; i < kseq->seq.l; i++) {
+        for(size_t i = 0; i < kseq->seq.l; i++) {
             sequence.s[i] = AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])];
-            // kputc(AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])], &sequence);
+            // ks_put_character(AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])], &sequence);
         }
         sequence.l = kseq->seq.l;
         sequence.s[sequence.l] = '\0';
@@ -116,9 +114,9 @@ public:
 
         // decode quality
         ks_resize(&quality, kseq->qual.l + 1);
-        for(uint64_t i = 0; i < kseq->qual.l; i++) {
+        for(size_t i = 0; i < kseq->qual.l; i++) {
             quality.s[i] = kseq->qual.s[i] - phred_offset;
-            // kputc(kseq->qual.s[i] - phred_offset, &quality);
+            // ks_put_character(kseq->qual.s[i] - phred_offset, &quality);
         }
         sequence.l = kseq->qual.l;
         sequence.s[sequence.l] = '\0';
@@ -128,17 +126,17 @@ public:
         clear();
 
         // copy from segment to record
-        kputsn((char*)segment.sequence.code, segment.sequence.length, &sequence);
-        kputsn((char*)segment.sequence.quality, segment.sequence.length, &quality);
-        kputsn(segment.name.s, segment.name.l, &name);
+        ks_put_string((char*)segment.sequence.code, segment.sequence.length, sequence);
+        ks_put_string((char*)segment.sequence.quality, segment.sequence.length, quality);
+        ks_put_string(segment.name.s, segment.name.l, name);
         decode_comment(segment);
     };
     inline void encode(Segment& segment) const {
 
         // write the FastqRecord to Segment
         segment.sequence.fill((const uint8_t*)(sequence.s), (const uint8_t*)(quality.s), sequence.l);
-        kputsn(name.s, name.l, &segment.name);
-        kputsn(comment.s, comment.l, &segment.auxiliary.CO);
+        ks_put_string(name.s, name.l, segment.name);
+        ks_put_string(comment.s, comment.l, segment.auxiliary.CO);
         segment.auxiliary.FI = 0;
         segment.set_qcfail(false);
         segment.auxiliary.XI = 0;
@@ -160,7 +158,7 @@ public:
                     9   control number  0               uint16_t
                     10  Barcode         CGATGT          char*
                 */
-                uint64_t offset = 0;
+                size_t offset = 0;
                 parse_illumina_segment_index(segment, offset);
                 parse_illumina_filtered(segment, offset);
                 parse_illumina_control(segment, offset);
@@ -181,33 +179,33 @@ public:
     };
     inline void encode(kstring_t& buffer, uint8_t& phred_offset) const {
         // encode identifier
-        kputc('@', &buffer);
-        kputsn(name.s, name.l, &buffer);
-        kputc(' ', &buffer);
-        kputsn(comment.s, comment.l, &buffer);
-        kputc(LINE_BREAK, &buffer);
+        ks_put_character('@', buffer);
+        ks_put_string(name.s, name.l, buffer);
+        ks_put_character(' ', buffer);
+        ks_put_string(comment.s, comment.l, buffer);
+        ks_put_character(LINE_BREAK, buffer);
 
         // encode sequence
         ks_resize(&buffer, buffer.l + sequence.l + 1);
-        for(uint64_t i = 0; i < sequence.l; i++) {
+        for(size_t i = 0; i < sequence.l; i++) {
             buffer.s[buffer.l + i] = BamToAmbiguousAscii[uint8_t(sequence.s[i])];
-            // kputc(BamToAmbiguousAscii[uint8_t(sequence.s[i])], &buffer);
+            // ks_put_character(BamToAmbiguousAscii[uint8_t(sequence.s[i])], &buffer);
         }
         buffer.l += sequence.l;
-        kputc(LINE_BREAK, &buffer);
+        ks_put_character(LINE_BREAK, buffer);
 
         // encode separator
-        kputc('+', &buffer);
-        kputc(LINE_BREAK, &buffer);
+        ks_put_character('+', buffer);
+        ks_put_character(LINE_BREAK, buffer);
 
         // encode quality
         ks_resize(&buffer, buffer.l + quality.l + 1);
-        for(uint64_t i = 0; i < quality.l; i++) {
+        for(size_t i = 0; i < quality.l; i++) {
             buffer.s[buffer.l + i] = quality.s[i] + phred_offset;
-            // kputc(quality.s[i] + phred_offset, &buffer);
+            // ks_put_character(quality.s[i] + phred_offset, &buffer);
         }
         buffer.l += quality.l;
-        kputc(LINE_BREAK, &buffer);
+        ks_put_character(LINE_BREAK, buffer);
     };
 
 private:
@@ -224,13 +222,13 @@ private:
             case Platform::LS454:
                 break;
             case Platform::ILLUMINA: {
-                kputuw(segment.auxiliary.FI, &comment);
-                kputc(':', &comment);
-                kputc(segment.get_qcfail()? 'Y' : 'N', &comment);
-                kputc(':', &comment);
-                kputuw(segment.auxiliary.XI, &comment);
-                kputc(':', &comment);
-                kputsn(segment.auxiliary.BC.s, segment.auxiliary.BC.l, &comment);
+                ks_put_int64(segment.auxiliary.FI, comment);
+                ks_put_character(':', comment);
+                ks_put_character(segment.get_qcfail()? 'Y' : 'N', comment);
+                ks_put_character(':', comment);
+                ks_put_int64(segment.auxiliary.XI, comment);
+                ks_put_character(':', comment);
+                ks_put_string(segment.auxiliary.BC.s, segment.auxiliary.BC.l, comment);
                 break;
             };
             case Platform::SOLID:
@@ -247,10 +245,10 @@ private:
                 break;
         };
     };
-    inline void parse_illumina_segment_index(Segment& segment, uint64_t& offset) const {
+    inline void parse_illumina_segment_index(Segment& segment, size_t& offset) const {
         int8_t code = -1;
-        uint64_t value = 0;
-        uint64_t position = offset;
+        int64_t value = 0;
+        size_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
@@ -275,9 +273,9 @@ private:
         segment.auxiliary.FI = value;
         offset = position;
     };
-    inline void parse_illumina_filtered(Segment& segment, uint64_t& offset) const {
+    inline void parse_illumina_filtered(Segment& segment, size_t& offset) const {
         int8_t code = -1;
-        uint64_t position = offset;
+        size_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
@@ -308,10 +306,10 @@ private:
         }
         offset = position;
     };
-    inline void parse_illumina_control(Segment& segment, uint64_t& offset) const {
+    inline void parse_illumina_control(Segment& segment, size_t& offset) const {
         int8_t code = -1;
         uint16_t value = 0;
-        uint64_t position = offset;
+        size_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
@@ -337,8 +335,8 @@ private:
         segment.auxiliary.XI = value;
         offset = position;
     };
-    inline void parse_illumina_barcode(Segment& segment, uint64_t& offset) const {
-        uint64_t position = offset;
+    inline void parse_illumina_barcode(Segment& segment, size_t& offset) const {
+        size_t position = offset;
         const char* comment = segment.auxiliary.CO.s;
         while (position < segment.auxiliary.CO.l) {
             char c = *(comment + position);
@@ -347,9 +345,9 @@ private:
                 break;
             }
         }
-        uint64_t length = position - offset;
+        size_t length = position - offset;
         if(length > 0) {
-            kputsn(comment + offset, length, &(segment.auxiliary.BC));
+            ks_put_string(comment + offset, length, segment.auxiliary.BC);
         }
         offset = position;
     };

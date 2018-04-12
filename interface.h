@@ -31,9 +31,9 @@
 #include <vector>
 #include <list>
 #include <unordered_map>
+#include <algorithm>
 
 #include "error.h"
-#include "constant.h"
 #include "url.h"
 #include "json.h"
 
@@ -87,10 +87,10 @@ void encode_key_value(const string& key, const ParameterType& value, Value& cont
 class Layout {
 public:
     const size_t max_line_width;
-    const size_t option_indent;
-    size_t max_action_name;
-    const size_t option_handle_spacing;
-    const size_t option_choice_indent;
+    const int option_indent;
+    int max_action_name;
+    const int option_handle_spacing;
+    const int option_choice_indent;
     Layout() :
         max_line_width(80),
         option_indent(2),
@@ -98,13 +98,13 @@ public:
         option_handle_spacing(4),
         option_choice_indent(0) {
     };
-    size_t complement_handle(const size_t& max_option_handle, const size_t& handle_length) const {
+    int complement_handle(const int& max_option_handle, const int& handle_length) const {
         return max_option_handle - handle_length + option_handle_spacing;
     };
-    size_t complement_action(const size_t& action_name_length) const {
+    int complement_action(const int& action_name_length) const {
         return max_action_name - action_name_length + option_handle_spacing;
     };
-    size_t indent_choice(const size_t& max_option_handle) const {
+    int indent_choice(const int& max_option_handle) const {
         return max_option_handle + option_handle_spacing + option_indent + option_choice_indent;
     };
 };
@@ -122,8 +122,8 @@ public:
     vector< string > choices;
     Prototype(const Value& node);
     Prototype();
-    ostream& print_help(ostream& o, const size_t& max_option_handle, const Layout& layout) const;
-    size_t handle_length() const;
+    ostream& print_help(ostream& o, const int& max_option_handle, const Layout& layout) const;
+    int handle_length() const;
     bool is_choice() const;
 };
 class Argument {
@@ -174,6 +174,9 @@ public:
     string epilog;
     Action(const Value& node, bool root=false);
     ~Action();
+    inline int name_length() const {
+        return static_cast< int >(name.size());
+    };
     const Value* default_value();
     ostream& print_usage(ostream& o, const string& application_name, const Layout& layout) const;
     ostream& print_description_element(ostream& o, const Layout& layout) const;
@@ -183,7 +186,7 @@ public:
 
 private:
     const bool root;
-    size_t max_option_handle;
+    int max_option_handle;
     const Value* default_value_node;
     vector< Prototype* > optional_order;
     vector< Prototype* > positional_order;

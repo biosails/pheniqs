@@ -29,10 +29,10 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <algorithm>
 
 #include "error.h"
 #include "json.h"
-#include "constant.h"
 #include "nucleotide.h"
 #include "phred.h"
 #include "sequence.h"
@@ -40,6 +40,9 @@
 #include "specification.h"
 
 using std::set;
+using std::min;
+using std::max;
+using std::abs;
 using std::setw;
 using std::endl;
 using std::cerr;
@@ -109,23 +112,23 @@ void operator=(SegmentAccumulator const &) = delete;
 
 public:
     uint64_t count;
-    double min;
-    double max;
-    double sum;
-    double mean;
+    double length_min;
+    double length_max;
+    double length_sum;
+    double length_mean;
     uint64_t distribution[EFFECTIVE_PHRED_RANGE];
     SegmentAccumulator();
     inline void increment(const Sequence& sequence) {
         count++;
         double value = 0.0;
-        for(uint64_t i = 0; i < sequence.length; i++) {
+        for(size_t i = 0; i < sequence.length; i++) {
             value += sequence.quality[i];
         }
         value /= double(sequence.length);
-        sum += value;
-        min = MIN(min, value);
-        max = MAX(max, value);
-        distribution[(uint8_t)value]++;
+        length_sum += value;
+        length_min = min(length_min, value);
+        length_max = max(length_max, value);
+        distribution[uint8_t(value)]++;
     };
     void finalize();
     SegmentAccumulator& operator+=(const SegmentAccumulator& rhs);
@@ -146,7 +149,7 @@ public:
     ~FeedAccumulator();
     inline void increment(const Sequence& sequence) {
         if(sequence.length > length) {
-            for(uint64_t i = length; i < sequence.length; i++) {
+            for(size_t i = length; i < sequence.length; i++) {
                 cycles.push_back(new CycleAccumulator());
             }
             length = sequence.length;
@@ -154,7 +157,7 @@ public:
         if(sequence.length < shortest) {
             shortest = sequence.length;
         }
-        for(uint64_t i = 0; i < sequence.length; i++) {
+        for(size_t i = 0; i < sequence.length; i++) {
             iupac_nucleic_acid_count[NO_NUCLEOTIDE]++;
             iupac_nucleic_acid_count[sequence.code[i]]++;
             cycles[i]->increment(sequence.code[i], sequence.quality[i]);
@@ -181,7 +184,7 @@ public:
         if(!filtered) {
             pf_count++;
         }
-        for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
+        for(size_t i = 0; i < feed_accumulators.size(); i++) {
             feed_accumulators[i]->increment(input[i].sequence);
         }
     };
@@ -241,7 +244,7 @@ public:
             }
         }
 
-        for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
+        for(size_t i = 0; i < feed_accumulators.size(); i++) {
             feed_accumulators[i]->increment(output[i].sequence);
         }
     };

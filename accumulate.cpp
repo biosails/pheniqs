@@ -35,7 +35,7 @@ NucleicAcidAccumulator::NucleicAcidAccumulator() :
     LW(0),
     RW(0),
     median(0) {
-    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] = 0;
     }
 };
@@ -55,11 +55,11 @@ inline uint64_t NucleicAcidAccumulator::quantile(const double portion) {
     return cell;
 };
 void NucleicAcidAccumulator::finalize() {
-    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         count += distribution[i];
     }
     if(count > 0) {
-        for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+        for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
             const uint64_t value = distribution[i];
             sum += (value * i);
             if(value != 0) {
@@ -83,7 +83,7 @@ void NucleicAcidAccumulator::finalize() {
     }
 };
 NucleicAcidAccumulator& NucleicAcidAccumulator::operator+=(const NucleicAcidAccumulator& rhs) {
-    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] += rhs.distribution[i];
     }
     return *this;
@@ -106,7 +106,7 @@ void CycleAccumulator::finalize() {
     }
 };
 CycleAccumulator& CycleAccumulator::operator+=(const CycleAccumulator& rhs) {
-    for(uint64_t i = 0; i < iupac_nucleic_acid.size(); i++) {
+    for(size_t i = 0; i < iupac_nucleic_acid.size(); i++) {
         iupac_nucleic_acid[i] += rhs.iupac_nucleic_acid[i];
     }
     return *this;
@@ -116,25 +116,25 @@ CycleAccumulator& CycleAccumulator::operator+=(const CycleAccumulator& rhs) {
 
 SegmentAccumulator::SegmentAccumulator() :
     count(0),
-    min(0),
-    max(0),
-    sum(0),
-    mean(0) {
-    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    length_min(0),
+    length_max(0),
+    length_sum(0),
+    length_mean(0) {
+    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] = 0;
     }
 };
 void SegmentAccumulator::finalize() {
     if(count > 0) {
-        mean = sum / double(count);
+        length_mean = length_sum / double(count);
     }
 };
 SegmentAccumulator& SegmentAccumulator::operator+=(const SegmentAccumulator& rhs) {
     count += rhs.count;
-    sum += rhs.sum;
-    min = MIN(min, rhs.min);
-    max = MAX(max, rhs.max);
-    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    length_sum += rhs.length_sum;
+    length_min = min(length_min, rhs.length_min);
+    length_max = max(length_max, rhs.length_max);
+    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] += rhs.distribution[i];
     }
     return *this;
@@ -145,8 +145,8 @@ SegmentAccumulator& SegmentAccumulator::operator+=(const SegmentAccumulator& rhs
 FeedAccumulator::FeedAccumulator(const FeedSpecification& specification) :
     url(specification.url),
     length(0),
-    shortest(numeric_limits<uint64_t>::max()) {
-    for(uint64_t i = 0; i < IUPAC_CODE_SIZE; i++) {
+    shortest(numeric_limits< uint64_t >::max()) {
+    for(size_t i = 0; i < IUPAC_CODE_SIZE; i++) {
         iupac_nucleic_acid_count[i] = 0;
     }
 };
@@ -182,7 +182,7 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
             Value cycle_quality_mean(kArrayType);
             Value cycle_quality_median(kArrayType);
 
-            for(uint64_t c = 0; c < cycles.size(); c++) {
+            for(size_t c = 0; c < cycles.size(); c++) {
                 v.SetUint64(cycles[c]->iupac_nucleic_acid[n].count);
                 cycle_count.PushBack(v, allocator);
 
@@ -243,12 +243,12 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
     value.AddMember("cycle nucleotide quality report", cycle_quality_report, allocator);
 
     Value average_phred_report(kObjectType);
-    encode_key_value("average phred score min", average_phred.min, average_phred_report, document);
-    encode_key_value("average phred score max", average_phred.max, average_phred_report, document);
-    encode_key_value("average phred score mean", average_phred.mean, average_phred_report, document);
+    encode_key_value("average phred score min", average_phred.length_min, average_phred_report, document);
+    encode_key_value("average phred score max", average_phred.length_max, average_phred_report, document);
+    encode_key_value("average phred score mean", average_phred.length_mean, average_phred_report, document);
 
     Value SegmentAccumulator(kArrayType);
-    for(uint64_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
+    for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         v.SetUint64(average_phred.distribution[i]);
         SegmentAccumulator.PushBack(v, allocator);
     }
@@ -256,7 +256,7 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
     value.AddMember("average phred score report", average_phred_report, allocator);
 };
 void FeedAccumulator::finalize() {
-    if(shortest == numeric_limits<uint64_t>::max()) {
+    if(shortest == numeric_limits< uint64_t >::max()) {
         shortest = 0;
     }
     for(auto cycle : cycles) {
@@ -266,19 +266,19 @@ void FeedAccumulator::finalize() {
 };
 FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
     if(rhs.length > length) {
-        for(uint64_t i = length; i < rhs.length; i++) {
+        for(size_t i = length; i < rhs.length; i++) {
             cycles.push_back(new CycleAccumulator());
         }
         length = rhs.length;
     }
 
-    shortest = MIN(shortest, rhs.shortest);
+    shortest = min(shortest, rhs.shortest);
 
-    for(uint64_t code = 0; code < IUPAC_CODE_SIZE; code++) {
+    for(size_t code = 0; code < IUPAC_CODE_SIZE; code++) {
         iupac_nucleic_acid_count[code] += rhs.iupac_nucleic_acid_count[code];
     }
 
-    for(uint64_t i = 0; i < rhs.length; i++) {
+    for(size_t i = 0; i < rhs.length; i++) {
         *cycles[i] += *rhs.cycles[i];
     }
     average_phred += rhs.average_phred;
@@ -331,7 +331,7 @@ void PivotAccumulator::encode(Document& document, Value& value) const {
 PivotAccumulator& PivotAccumulator::operator+=(const PivotAccumulator& rhs) {
     count += rhs.count;
     pf_count += rhs.pf_count;
-    for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
+    for(size_t i = 0; i < feed_accumulators.size(); i++) {
         *(feed_accumulators[i]) += *(rhs.feed_accumulators[i]);
     }
     return *this;
@@ -402,7 +402,7 @@ void ChannelAccumulator::finalize(const PipelineAccumulator& pipeline_accumulato
 void ChannelAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    encode_key_value("index", uint64_t(index), value, document);
+    encode_key_value("index", index, value, document);
     encode_value_with_key_ID(rg, "RG", value, document);
     if(!undetermined) {
         encode_key_value("concentration", concentration, value, document);
@@ -449,7 +449,7 @@ ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs
     accumulated_multiplex_confidence += rhs.accumulated_multiplex_confidence;
     accumulated_pf_multiplex_distance += rhs.accumulated_pf_multiplex_distance;
     accumulated_pf_multiplex_confidence += rhs.accumulated_pf_multiplex_confidence;
-    for(uint64_t i = 0; i < feed_accumulators.size(); i++) {
+    for(size_t i = 0; i < feed_accumulators.size(); i++) {
         *(feed_accumulators[i]) += *(rhs.feed_accumulators[i]);
     }
     return *this;

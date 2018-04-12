@@ -115,15 +115,15 @@ void HtsHeader::decode(htsFile* hts_file) {
 void HtsHeader::assemble() {
     hdr = bam_hdr_init();
     kstring_t buffer = { 0, 0, NULL };
-    hd.encode(&buffer);
+    hd.encode(buffer);
     for(const auto& record : program_by_id) {
-        record.second.encode(&buffer);
+        record.second.encode(buffer);
     }
     for(const auto& record : read_group_by_id) {
-        record.second.encode(&buffer);
+        record.second.encode(buffer);
     }
     for(const auto& comment: comments){
-        comment.encode(&buffer);
+        comment.encode(buffer);
     }
     hdr->n_targets = 0;
     hdr->l_text = buffer.l;
@@ -169,12 +169,12 @@ ostream& operator<<(ostream& o, const HtsHeader& header) {
 
 /*  bam1_t CyclicBuffer
 */
-template<> void CyclicBuffer<bam1_t>::calibrate(const uint64_t& capacity, const uint64_t& resolution) {
+template<> void CyclicBuffer<bam1_t>::calibrate(const int& capacity, const int& resolution) {
     if(_capacity != capacity || _resolution != resolution) {
         if(capacity > _capacity) {
             if(align_capacity(capacity, resolution) == capacity) {
                 cache.resize(capacity);
-                for(uint64_t i = _capacity; i < capacity; i++) {
+                for(int i = _capacity; i < capacity; i++) {
                     bam1_t* allocated = bam_init1();
                     if(_direction == IoDirection::OUT) {
                         allocated->core.tid = -1;
@@ -201,7 +201,7 @@ template<> void CyclicBuffer<bam1_t>::calibrate(const uint64_t& capacity, const 
         }
     }
 };
-template<> CyclicBuffer<bam1_t>::CyclicBuffer(const IoDirection& direction, const uint64_t& capacity, const uint64_t& resolution) :
+template<> CyclicBuffer<bam1_t>::CyclicBuffer(const IoDirection& direction, const int& capacity, const int& resolution) :
     _direction(direction),
     _capacity(0),
     _resolution(0),
