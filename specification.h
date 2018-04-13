@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -55,9 +55,9 @@ using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
 
-const uint64_t PEEK_BUFFER_CAPACITY = 4096;
-const uint64_t DEFAULT_FEED_CAPACITY = 60;
-const uint64_t DEFAULT_FEED_RESOLUTION = 60;
+const uint64_t PEEK_BUFFER_CAPACITY(4096);
+const uint64_t DEFAULT_FEED_CAPACITY(60);
+const uint64_t DEFAULT_FEED_RESOLUTION(60);
 
 class FeedSpecification {
 friend ostream& operator<<(ostream& o, const FeedSpecification& specification);

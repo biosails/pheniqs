@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -84,19 +84,19 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
             value.clear();
             value.reserve(array->value.Size());
             if(array->value.IsArray()) {
-                uint64_t token_index = 0;
+                uint64_t token_index(0);
                 for(auto& element : array->value.GetArray()) {
                     if(!element.IsNull()) {
                         if(element.IsString()) {
                             string pattern(element.GetString(), element.GetStringLength());
-                            uint64_t input_segment_index = numeric_limits< uint64_t >::max();
-                            int64_t start = numeric_limits< int64_t >::max();
-                            int64_t end = numeric_limits< int64_t >::max();
-                            bool end_terminated = true;
-                            int64_t literal_value = numeric_limits< int64_t >::max();
-                            uint64_t literal_position = 0;
-                            uint64_t position = 0;
-                            bool sign = true;
+                            uint64_t input_segment_index(numeric_limits< uint64_t >::max());
+                            int64_t start(numeric_limits< int64_t >::max());
+                            int64_t end(numeric_limits< int64_t >::max());
+                            bool end_terminated(true);
+                            int64_t literal_value(numeric_limits< int64_t >::max());
+                            uint64_t literal_position(0);
+                            uint64_t position(0);
+                            bool sign(true);
                             while(true) {
                                 const char& c = pattern[position];
                                 switch(c) {
@@ -242,15 +242,15 @@ bool decode_transform_array_by_key(const Value::Ch* key, list< Transform >& valu
         if(!array->value.IsNull()) {
             value.clear();
             if(array->value.IsArray()) {
-                uint64_t transform_index = 0;
-                uint64_t output_segment_index = 0;
+                uint64_t transform_index(0);
+                uint64_t output_segment_index(0);
                 for(auto& element : array->value.GetArray()) {
                     if(!element.IsNull()) {
                         if(element.IsString()) {
                             string pattern(element.GetString(), element.GetStringLength());
-                            uint64_t token_reference = numeric_limits< uint64_t >::max();
+                            uint64_t token_reference(numeric_limits< uint64_t >::max());
                             LeftTokenOperator left = LeftTokenOperator::NONE;
-                            uint64_t position = 0;
+                            uint64_t position(0);
                             while(true) {
                                 const char& c = pattern[position];
                                 switch(c) {
@@ -310,7 +310,7 @@ bool decode_transform_array_by_key(const Value::Ch* key, list< Transform >& valu
 bool encode_key_value(const string& key, const list< Transform >& value, Value& container, Document& document) {
     if(!value.empty()) {
         Value collection(kArrayType);
-        uint64_t index = 0;
+        uint64_t index(0);
         string current;
         for(auto& transform : value) {
             if(transform.output_segment_index != index) {

@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -60,6 +60,32 @@ using std::condition_variable;
 using std::unique_lock;
 using std::lock_guard;
 using std::thread;
+
+/*
+typedef struct {
+    int32_t     tid;
+    int32_t     pos;
+    uint16_t    bin;
+    uint8_t     qual;
+    uint8_t     l_qname;
+    uint16_t    flag;
+    uint8_t     unused1;
+    uint8_t     l_extranul;
+    uint32_t    n_cigar;    *
+    int32_t     l_qseq;
+    int32_t     mtid;
+    int32_t     mpos;
+    int32_t     isize;
+} bam1_core_t;
+
+typedef struct {
+    bam1_core_t core;
+    int         l_data;
+    uint32_t    m_data;
+    uint8_t*    data;
+    uint64_t    id;
+} bam1_t;
+*/
 
 #define bam1_seq_seti(s, i, c) ((s)[(i)>>1] = ((s)[(i)>>1] & 0xf<<(((i)&1)<<2)) | (c)<<((~(i)&1)<<2))
 
@@ -175,36 +201,105 @@ protected:
     HtsHeader header;
     htsFile* hts_file;
     inline void encode(bam1_t* record, const Segment& segment) const {
-        record->core.l_qname = segment.name.l + 1;
-        record->core.l_qseq = segment.sequence.length;
-        record->core.flag = segment.flag;
+        /*  
+            The total size of a bam1_t record is an int32_t
+            bam1_t.l_data =
+            bam1_t.core.l_qname +               // uint8_t : length of the \0 terminated qname, \0 padded to modulo 4
+            ((bam1_t.core.l_qseq + 1) >> 1) +   // nucleotide sequence in 4 bit BAM encoding
+            bam1_t.core.l_qseq +                // quality sequence in ASCII
+            (bam1_t.core.n_cigar << 2) +        // 32 bit per cigar operation 
+            bam1_t.l_aux                        // auxiliary tags added later
+        */
+        size_t i;
+        uint32_t l_data;
+        size_t qname_nuls(4 - segment.name.l % 4);
+        record->core.l_qname = segment.name.l + qname_nuls;
+        if(record->core.l_qname <= numeric_limits< uint8_t >::max()) {
+            record->core.flag = segment.flag;
+            record->core.l_extranul = static_cast< uint8_t >(qname_nuls - 1);
+            record->core.l_qseq = static_cast< int32_t >(segment.sequence.length);
+            l_data = record->core.l_qname + (record->core.n_cigar << 2) + ((segment.sequence.length + 1) >> 1) + segment.sequence.length;
+            if(l_data <= numeric_limits< int32_t >::max()) {
+                record->l_data = static_cast< int32_t >(l_data);
+                if(record->m_data < l_data) {
+                    record->m_data = l_data;
+                    kroundup32(record->m_data);
+                    if((record->data = static_cast< uint8_t* >(realloc(record->data, record->m_data))) == NULL) {
+                        throw OutOfMemoryError();
+                    }
+                }
 
-        uint64_t l_data = record->core.l_qname + ((record->core.l_qseq + 1)>>1) + record->core.l_qseq;
-        record->l_data = l_data;
+                uint8_t* position(record->data);
 
-        // increase allocated space if necessary
-        if(record->m_data < l_data) {
-            record->m_data = l_data;
-            kroundup32(record->m_data);
-            if((record->data = static_cast< uint8_t* >(realloc(record->data, record->m_data))) == NULL) {
-                free(record->data);
-                throw InternalError("out of memory");
+                // write identifier
+                memcpy(position, segment.name.s, segment.name.l);
+                position += segment.name.l;
+                for(i = 0; i < qname_nuls; i++) {
+                    *position = '\0';
+                    position++;
+                }
+
+                // write cigar string
+                if(record->core.n_cigar > 0) {
+                    // memcpy(position, cigar, record->core.n_cigar * 4);
+                    position += (record->core.n_cigar << 2);
+                }
+
+                // encode nucleotide byte BAM numeric encoding into nybble BAM numeric encoding
+                for(i = 0; i < segment.sequence.length; i++) {
+                    bam1_seq_seti(position, i, segment.sequence.code[i]);
+                }
+                position += ((segment.sequence.length + 1) >> 1);
+
+                /*  alternative sequence encoding implementation
+                    
+                    for(i = 0; i + 1 < segment.sequence.length; i += 2) {
+                        *position++ = (AsciiToAmbiguousBam[segment.sequence.code[i]] << 4) + AsciiToAmbiguousBam[segment.sequence.code[i + 1]];
+                    }
+                    if(i < segment.sequence.length) {
+                        *position++ = (AsciiToAmbiguousBam[segment.sequence.code[i]] << 4);
+                    }
+                */
+
+                // encode the quality sequence
+                memcpy(position, segment.sequence.quality, segment.sequence.length);
+
+                // encode the auxiliary tag which will update l_data accordingly
+                segment.auxiliary.encode(record);
+
+            } else { throw OverflowError("BAM record must not exceed " + to_string(numeric_limits< int32_t >::max()) + " bytes"); }
+        } else { throw OverflowError("qname must not exceed 255 characters"); }
+
+        /*
+            record->core.l_qname = segment.name.l + 1;
+            record->core.l_qseq = segment.sequence.length;
+            record->core.flag = segment.flag;
+            int32_t l_data = int32_t(record->core.l_qname + ((record->core.l_qseq + 1)>>1) + record->core.l_qseq + (record->core.n_cigar<<2));
+
+            // increase allocated space if necessary
+            if(record->m_data < l_data) {
+                record->m_data = l_data;
+                kroundup32(record->m_data);
+                if((record->data = static_cast< uint8_t* >(realloc(record->data, record->m_data))) == NULL) {
+                    throw OutOfMemoryError();
+                }
             }
-        }
+            record->l_data = l_data;
 
-        // write identifier to data block
-        memcpy(bam_get_qname(record), segment.name.s, record->core.l_qname);
+            // write identifier to data block
+            memcpy(bam_get_qname(record), segment.name.s, record->core.l_qname);
 
-        // encode nucleotide byte BAM numeric encoding into nybble BAM numeric encoding
-        uint8_t *bam_seq = bam_get_seq(record);
-        for(int i = 0; i < record->core.l_qseq; i++) {
-            bam1_seq_seti(bam_seq, i, segment.sequence.code[i]);
-        }
+            // encode nucleotide byte BAM numeric encoding into nybble BAM numeric encoding
+            uint8_t *bam_seq = bam_get_seq(record);
+            for(int i = 0; i < record->core.l_qseq; i++) {
+                bam1_seq_seti(bam_seq, i, segment.sequence.code[i]);
+            }
 
-        // encode the quality sequence
-        memcpy(bam_get_qual(record), segment.sequence.quality, record->core.l_qseq);
+            // encode the quality sequence
+            memcpy(bam_get_qual(record), segment.sequence.quality, record->core.l_qseq);
 
-        segment.auxiliary.encode(record);
+            segment.auxiliary.encode(record);
+        */
     };
     inline void decode(const bam1_t* record, Segment& segment) {
         // decode identifier and write to segment
@@ -212,9 +307,9 @@ protected:
 
         // decode nucleotide sequence to buffer
         ks_clear(kbuffer);
-        ks_resize(&kbuffer, record->core.l_qseq + 1);
+        ks_increase_size(kbuffer, record->core.l_qseq + 2);
 
-        uint8_t* position = bam_get_seq(record);
+        uint8_t* position(bam_get_seq(record));
         for(int32_t i = 0; i < record->core.l_qseq; i++) {
             // convert from 4bit BAM numeric encoding to 8bit BAM numeric encoding
             kbuffer.s[i] = bam_seqi(position, i);

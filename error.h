@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -98,6 +98,27 @@ public:
     };
     virtual const char* what() const throw() {
         return ("Sequence error : " + message).c_str();
+    };
+};
+
+class OverflowError : public exception {
+public:
+    string message;
+    OverflowError(const string& error) {
+        message.assign(error);
+    };
+    virtual const char* what() const throw() {
+        return ("Identifiers error : " + message).c_str();
+    };
+};
+class CorruptAuxiliaryError : public exception {
+public:
+    string message;
+    CorruptAuxiliaryError(const string& error) {
+        message.assign(error);
+    };
+    virtual const char* what() const throw() {
+        return ("Corrupt auxiliary error : " + message).c_str();
     };
 };
 

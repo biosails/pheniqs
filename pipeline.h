@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -120,7 +120,7 @@ public:
     bool filtered;
     double multiplex_probability;
     double conditioned_multiplex_probability;
-    uint64_t multiplex_distance;
+    size_t multiplex_distance;
     Barcode multiplex_barcode;
     Barcode molecular_barcode;
     vector< Segment > input;

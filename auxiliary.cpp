@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -69,7 +69,7 @@ static inline uint8_t* skip_aux(uint8_t* buffer, uint8_t* end) {
         switch(size) {
             case 'Z':
             case 'H': {
-                /* NULL terminated byte array , search for the terminating NULL character */
+                /* \0 terminated byte array, search for the terminating \0 character */
                 while(*buffer && buffer < end) {
                     buffer++;
                 }
@@ -86,7 +86,7 @@ static inline uint8_t* skip_aux(uint8_t* buffer, uint8_t* end) {
                         buffer++;
 
                         /* number of elements in array */
-                        uint32_t count = le_to_u32(buffer);
+                        uint32_t count(le_to_u32(buffer));
 
                         /* skip the element count */
                         buffer += 4;
@@ -161,19 +161,19 @@ Auxiliary::Auxiliary(const Auxiliary& other) :
     XM({ 0, 0, NULL }),
     XL({ 0, 0, NULL }),
     XP(other.XP) {
-    if(other.RG.l > 0) ks_put_string(other.RG.s, other.RG.l, RG);
-    if(other.BC.l > 0) ks_put_string(other.BC.s, other.BC.l, BC);
-    if(other.QT.l > 0) ks_put_string(other.QT.s, other.QT.l, QT);
-    if(other.FS.l > 0) ks_put_string(other.FS.s, other.FS.l, FS);
-    if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
-    if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
-    if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
-    if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
-    if(other.RX.l > 0) ks_put_string(other.RX.s, other.RX.l, RX);
-    if(other.QX.l > 0) ks_put_string(other.QX.s, other.QX.l, QX);
-    if(other.BX.l > 0) ks_put_string(other.BX.s, other.BX.l, BX);
-    if(other.XM.l > 0) ks_put_string(other.XM.s, other.XM.l, XM);
-    if(other.XL.l > 0) ks_put_string(other.XL.s, other.XL.l, XL);
+    if(other.RG.l > 0) ks_put_string(other.RG, RG);
+    if(other.BC.l > 0) ks_put_string(other.BC, BC);
+    if(other.QT.l > 0) ks_put_string(other.QT, QT);
+    if(other.FS.l > 0) ks_put_string(other.FS, FS);
+    if(other.LB.l > 0) ks_put_string(other.LB, LB);
+    if(other.PG.l > 0) ks_put_string(other.PG, PG);
+    if(other.PU.l > 0) ks_put_string(other.PU, PU);
+    if(other.CO.l > 0) ks_put_string(other.CO, CO);
+    if(other.RX.l > 0) ks_put_string(other.RX, RX);
+    if(other.QX.l > 0) ks_put_string(other.QX, QX);
+    if(other.BX.l > 0) ks_put_string(other.BX, BX);
+    if(other.XM.l > 0) ks_put_string(other.XM, XM);
+    if(other.XL.l > 0) ks_put_string(other.XL, XL);
 };
 Auxiliary::~Auxiliary() {
     ks_free(RG);
@@ -192,101 +192,100 @@ Auxiliary::~Auxiliary() {
 };
 void Auxiliary::decode(const bam1_t* bam1) {
     if(bam1 != NULL) {
-        uint8_t* bam_end = bam1->data + bam1->l_data;
-        uint64_t aux_length = bam_get_l_aux(bam1);
-        if(aux_length > 0) {
-            char* value;
-            uint8_t* position = bam_get_aux(bam1);
-            const uint8_t* end = position + aux_length;
-            while(position < end) {
-                uint16_t code = tag_to_code(position);
-                position += 2;
-                switch (code) {
-                    case uint16_t(HtsAuxiliaryCode::FI):
-                        FI = bam_aux2i(position);
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::TC):
-                        TC = bam_aux2i(position);
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::RG):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, RG); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::BC):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, BC); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::QT):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, QT); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::RX):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, RX); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::QX):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, QX); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::BX):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, BX); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::PX):
-                        PX = bam_aux2f(position);
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::DQ):
-                        DQ = bam_aux2f(position);
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::EE):
-                        EE = bam_aux2f(position);
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::FS):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, FS); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::LB):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, LB); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::PG):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, PG); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::PU):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, PU); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::CO):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, CO); }
-                        break;
+        uint8_t* end(bam1->data + bam1->l_data);
+        uint8_t* position(bam_get_aux(bam1));
+        char* value;
+        while(position < end) {
+            uint16_t code = tag_to_code(position);
+            position += 2;
+            switch (code) {
+                case uint16_t(HtsAuxiliaryCode::FI):
+                    FI = bam_aux2i(position);
+                    break;
+                case uint16_t(HtsAuxiliaryCode::TC):
+                    TC = bam_aux2i(position);
+                    break;
+                case uint16_t(HtsAuxiliaryCode::RG):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, RG); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::BC):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, BC); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::QT):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, QT); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::RX):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, RX); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::QX):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, QX); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::BX):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, BX); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::PX):
+                    PX = bam_aux2f(position);
+                    break;
+                case uint16_t(HtsAuxiliaryCode::DQ):
+                    DQ = bam_aux2f(position);
+                    break;
+                case uint16_t(HtsAuxiliaryCode::EE):
+                    EE = bam_aux2f(position);
+                    break;
+                case uint16_t(HtsAuxiliaryCode::FS):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, FS); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::LB):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, LB); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::PG):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, PG); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::PU):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, PU); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::CO):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, CO); }
+                    break;
 
-                    /* user space auxiliary tags */
-                    case uint16_t(HtsAuxiliaryCode::XI):
-                        YD = bam_aux2i(position);
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::YD):
-                        YD = bam_aux2i(position);
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::XD):
-                        XD = bam_aux2i(position);
-                        break;
-                   case uint16_t(HtsAuxiliaryCode::XM):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, XM); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::XL):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, XL); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::XP):
-                        XP = bam_aux2f(position);
-                        break;
-                    default:
-                        break;
-                }
-                position = skip_aux(position, bam_end);
+                /* user space auxiliary tags */
+                case uint16_t(HtsAuxiliaryCode::XI):
+                    YD = bam_aux2i(position);
+                    break;
+                case uint16_t(HtsAuxiliaryCode::YD):
+                    YD = bam_aux2i(position);
+                    break;
+                case uint16_t(HtsAuxiliaryCode::XD):
+                    XD = bam_aux2i(position);
+                    break;
+               case uint16_t(HtsAuxiliaryCode::XM):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, XM); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::XL):
+                    value = bam_aux2Z(position);
+                    if(value) { ks_put_string(value, XL); }
+                    break;
+                case uint16_t(HtsAuxiliaryCode::XP):
+                    XP = bam_aux2f(position);
+                    break;
+                default:
+                    break;
+            }
+
+            if((position = skip_aux(position, end)) == NULL) {
+                throw CorruptAuxiliaryError(bam_get_qname(bam1));
             }
         }
     }
@@ -296,31 +295,31 @@ void Auxiliary::encode(bam1_t* bam1) const {
         // TC and FI and not mandatory when there are 1 or 2 segments in the read
         // In that case the structure can be deduced from the flags alone
         if(TC > 2) {
-        if(FI   > 0) { bam_aux_append(bam1, "FI", 'i', 4,        (uint8_t*)&FI ); }
-        if(TC   > 0) { bam_aux_append(bam1, "TC", 'i', 4,        (uint8_t*)&TC ); }
+        if(FI   > 0) { bam_aux_append(bam1, "FI", 'i', 4,                            (uint8_t*)&FI ); }
+        if(TC   > 0) { bam_aux_append(bam1, "TC", 'i', 4,                            (uint8_t*)&TC ); }
         }
-        if(RG.l > 0) { bam_aux_append(bam1, "RG", 'Z', RG.l + 1, (uint8_t*)RG.s); }
-        if(BC.l > 0) { bam_aux_append(bam1, "BC", 'Z', BC.l + 1, (uint8_t*)BC.s); }
-        if(QT.l > 0) { bam_aux_append(bam1, "QT", 'Z', QT.l + 1, (uint8_t*)QT.s); }
-        if(RX.l > 0) { bam_aux_append(bam1, "RX", 'Z', RX.l + 1, (uint8_t*)RX.s); }
-        if(QX.l > 0) { bam_aux_append(bam1, "QX", 'Z', QX.l + 1, (uint8_t*)QX.s); }
-        if(BX.l > 0) { bam_aux_append(bam1, "BX", 'Z', BX.l + 1, (uint8_t*)BX.s); }
-        if(PX   > 0) { bam_aux_append(bam1, "PX", 'f', 4,        (uint8_t*)&PX ); }
-        if(DQ   > 0) { bam_aux_append(bam1, "DQ", 'f', 4,        (uint8_t*)&DQ ); }
-        if(EE   > 0) { bam_aux_append(bam1, "EE", 'f', 4,        (uint8_t*)&EE ); }
-        if(FS.l > 0) { bam_aux_append(bam1, "FS", 'Z', FS.l + 1, (uint8_t*)FS.s); }
-        if(LB.l > 0) { bam_aux_append(bam1, "LB", 'Z', LB.l + 1, (uint8_t*)LB.s); }
-        if(PG.l > 0) { bam_aux_append(bam1, "PG", 'Z', PG.l + 1, (uint8_t*)PG.s); }
-        if(PU.l > 0) { bam_aux_append(bam1, "PU", 'Z', PU.l + 1, (uint8_t*)PU.s); }
-        if(CO.l > 0) { bam_aux_append(bam1, "CO", 'Z', CO.l + 1, (uint8_t*)CO.s); }
+        if(RG.l > 0) { bam_aux_append(bam1, "RG", 'Z', static_cast< int >(RG.l + 1), (uint8_t*)RG.s); }
+        if(BC.l > 0) { bam_aux_append(bam1, "BC", 'Z', static_cast< int >(BC.l + 1), (uint8_t*)BC.s); }
+        if(QT.l > 0) { bam_aux_append(bam1, "QT", 'Z', static_cast< int >(QT.l + 1), (uint8_t*)QT.s); }
+        if(RX.l > 0) { bam_aux_append(bam1, "RX", 'Z', static_cast< int >(RX.l + 1), (uint8_t*)RX.s); }
+        if(QX.l > 0) { bam_aux_append(bam1, "QX", 'Z', static_cast< int >(QX.l + 1), (uint8_t*)QX.s); }
+        if(BX.l > 0) { bam_aux_append(bam1, "BX", 'Z', static_cast< int >(BX.l + 1), (uint8_t*)BX.s); }
+        if(PX   > 0) { bam_aux_append(bam1, "PX", 'f', 4,                            (uint8_t*)&PX ); }
+        if(DQ   > 0) { bam_aux_append(bam1, "DQ", 'f', 4,                            (uint8_t*)&DQ ); }
+        if(EE   > 0) { bam_aux_append(bam1, "EE", 'f', 4,                            (uint8_t*)&EE ); }
+        if(FS.l > 0) { bam_aux_append(bam1, "FS", 'Z', static_cast< int >(FS.l + 1), (uint8_t*)FS.s); }
+        if(LB.l > 0) { bam_aux_append(bam1, "LB", 'Z', static_cast< int >(LB.l + 1), (uint8_t*)LB.s); }
+        if(PG.l > 0) { bam_aux_append(bam1, "PG", 'Z', static_cast< int >(PG.l + 1), (uint8_t*)PG.s); }
+        if(PU.l > 0) { bam_aux_append(bam1, "PU", 'Z', static_cast< int >(PU.l + 1), (uint8_t*)PU.s); }
+        if(CO.l > 0) { bam_aux_append(bam1, "CO", 'Z', static_cast< int >(CO.l + 1), (uint8_t*)CO.s); }
 
         /*  user space auxiliary tags */
-        if(XI   > 0) { bam_aux_append(bam1, "XI", 'i', 4,        (uint8_t*)&XI ); }
-        if(YD   > 0) { bam_aux_append(bam1, "YD", 'i', 4,        (uint8_t*)&YD ); }
-        if(XD   > 0) { bam_aux_append(bam1, "XD", 'i', 4,        (uint8_t*)&XD ); }
-        if(XM.l > 0) { bam_aux_append(bam1, "XM", 'Z', XM.l + 1, (uint8_t*)XM.s); }
-        if(XL.l > 0) { bam_aux_append(bam1, "XL", 'Z', XL.l + 1, (uint8_t*)XL.s); }
-        if(XP   > 0) { bam_aux_append(bam1, "XP", 'f', 4,        (uint8_t*)&XP ); }
+        if(XI   > 0) { bam_aux_append(bam1, "XI", 'i', 4,                            (uint8_t*)&XI ); }
+        if(YD   > 0) { bam_aux_append(bam1, "YD", 'i', 4,                            (uint8_t*)&YD ); }
+        if(XD   > 0) { bam_aux_append(bam1, "XD", 'i', 4,                            (uint8_t*)&XD ); }
+        if(XM.l > 0) { bam_aux_append(bam1, "XM", 'Z', static_cast< int >(XM.l + 1), (uint8_t*)XM.s); }
+        if(XL.l > 0) { bam_aux_append(bam1, "XL", 'Z', static_cast< int >(XL.l + 1), (uint8_t*)XL.s); }
+        if(XP   > 0) { bam_aux_append(bam1, "XP", 'f', 4,                            (uint8_t*)&XP ); }
     }
 };
 ostream& operator<<(ostream& o, const Auxiliary& auxiliary) {

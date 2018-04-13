@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -23,12 +23,12 @@
 
 static inline char* copy_until_tag_end(char* source, const char* end, kstring_t& target) {
     ks_clear(target);
-    char* position = source;
+    char* position(source);
     if(source < end) {
         while ((*position != '\t' && *position != LINE_BREAK) && position < end) {
             position++;
         }
-        size_t length = position - source;
+        size_t length(position - source);
         if(length > 0) {
             ks_put_string(source, length, target);
         }
@@ -37,12 +37,12 @@ static inline char* copy_until_tag_end(char* source, const char* end, kstring_t&
 };
 static inline char* copy_until_linebreak(char* source, const char* end, kstring_t& target) {
     ks_clear(target);
-    char* position = source;
+    char* position(source);
     if(source < end) {
         while (*position != LINE_BREAK && position < end) {
             position++;
         }
-        size_t length = position - source;
+        size_t length(position - source);
         if(length > 0) {
             ks_put_string(source, length, target);
         }
@@ -50,7 +50,7 @@ static inline char* copy_until_linebreak(char* source, const char* end, kstring_
     return position;
 };
 static inline char* skip_to_tab(char* source, const char* end) {
-    char* position = source;
+    char* position(source);
     while (*position != '\t' && position < end) {
         position++;
     }
@@ -384,9 +384,9 @@ HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }){
-    if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l, VN);
-    if(other.SO.l > 0) ks_put_string(other.SO.s, other.SO.l, SO);
-    if(other.GO.l > 0) ks_put_string(other.GO.s, other.GO.l, GO);
+    if(other.VN.l > 0) ks_put_string(other.VN, VN);
+    if(other.SO.l > 0) ks_put_string(other.SO, SO);
+    if(other.GO.l > 0) ks_put_string(other.GO, GO);
 };
 HeadHDAtom::~HeadHDAtom() {
     ks_free(VN);
@@ -400,9 +400,9 @@ HeadHDAtom& HeadHDAtom::operator=(const HeadHDAtom& other) {
         ks_clear(VN);
         ks_clear(SO);
         ks_clear(GO);
-        if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l, VN);
-        if(other.SO.l > 0) ks_put_string(other.SO.s, other.SO.l, SO);
-        if(other.GO.l > 0) ks_put_string(other.GO.s, other.GO.l, GO);
+        if(other.VN.l > 0) ks_put_string(other.VN, VN);
+        if(other.SO.l > 0) ks_put_string(other.SO, SO);
+        if(other.GO.l > 0) ks_put_string(other.GO, GO);
     }
     return *this;
 };
@@ -410,15 +410,15 @@ void HeadHDAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@HD", 3, buffer);
     if(VN.l > 0) {
         ks_put_string_("\tVN:", 4, buffer);
-        ks_put_string_(VN.s, VN.l, buffer);
+        ks_put_string_(VN, buffer);
     }
     if(SO.l > 0) {
         ks_put_string_("\tSO:", 4, buffer);
-        ks_put_string_(SO.s, SO.l, buffer);
+        ks_put_string_(SO, buffer);
     }
     if(GO.l > 0) {
         ks_put_string_("\tGO:", 4, buffer);
-        ks_put_string_(GO.s, GO.l, buffer);
+        ks_put_string_(GO, buffer);
     }
     ks_put_character(LINE_BREAK, buffer);
 };
@@ -489,13 +489,13 @@ HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
     ks_terminate(SN);
-    if(other.SN.l > 0) ks_put_string(other.SN.s, other.SN.l, SN);
+    if(other.SN.l > 0) ks_put_string(other.SN, SN);
     if(other.LN > 0)   LN = other.LN;
-    if(other.AH.l > 0) ks_put_string(other.AH.s, other.AH.l, AH);
-    if(other.AS.l > 0) ks_put_string(other.AS.s, other.AS.l, AS);
-    if(other.M5.l > 0) ks_put_string(other.M5.s, other.M5.l, M5);
-    if(other.SP.l > 0) ks_put_string(other.SP.s, other.SP.l, SP);
-    if(other.UR.l > 0) ks_put_string(other.UR.s, other.UR.l, UR);
+    if(other.AH.l > 0) ks_put_string(other.AH, AH);
+    if(other.AS.l > 0) ks_put_string(other.AS, AS);
+    if(other.M5.l > 0) ks_put_string(other.M5, M5);
+    if(other.SP.l > 0) ks_put_string(other.SP, SP);
+    if(other.UR.l > 0) ks_put_string(other.UR, UR);
 };
 HeadSQAtom::~HeadSQAtom() {
     ks_free(SN);
@@ -516,13 +516,13 @@ HeadSQAtom& HeadSQAtom::operator=(const HeadSQAtom& other) {
         ks_clear(M5);
         ks_clear(SP);
         ks_clear(UR);
-        if(other.SN.l > 0) ks_put_string(other.SN.s, other.SN.l, SN);
+        if(other.SN.l > 0) ks_put_string(other.SN, SN);
         if(other.LN > 0)   LN = other.LN;
-        if(other.AH.l > 0) ks_put_string(other.AH.s, other.AH.l, AH);
-        if(other.AS.l > 0) ks_put_string(other.AS.s, other.AS.l, AS);
-        if(other.M5.l > 0) ks_put_string(other.M5.s, other.M5.l, M5);
-        if(other.SP.l > 0) ks_put_string(other.SP.s, other.SP.l, SP);
-        if(other.UR.l > 0) ks_put_string(other.UR.s, other.UR.l, UR);
+        if(other.AH.l > 0) ks_put_string(other.AH, AH);
+        if(other.AS.l > 0) ks_put_string(other.AS, AS);
+        if(other.M5.l > 0) ks_put_string(other.M5, M5);
+        if(other.SP.l > 0) ks_put_string(other.SP, SP);
+        if(other.UR.l > 0) ks_put_string(other.UR, UR);
     }
     return *this;
 };
@@ -533,31 +533,31 @@ void HeadSQAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@SQ", 3, buffer);
     if(SN.l > 0) {
         ks_put_string_("\tSN:", 4, buffer);
-        ks_put_string_(SN.s, SN.l, buffer);
+        ks_put_string_(SN, buffer);
     }
     if(LN > 0) {
         ks_put_string_("\tLN:", 4, buffer);
-        ks_put_int64(LN, buffer);
+        ks_put_int32(LN, buffer);
     }
     if(AH.l > 0) {
         ks_put_string_("\tAH:", 4, buffer);
-        ks_put_string_(AH.s, AH.l, buffer);
+        ks_put_string_(AH, buffer);
     }
     if(AS.l > 0) {
         ks_put_string_("\tAS:", 4, buffer);
-        ks_put_string_(AS.s, AS.l, buffer);
+        ks_put_string_(AS, buffer);
     }
     if(M5.l > 0) {
         ks_put_string_("\tM5:", 4, buffer);
-        ks_put_string_(M5.s, M5.l, buffer);
+        ks_put_string_(M5, buffer);
     }
     if(SP.l > 0) {
         ks_put_string_("\tSP:", 4, buffer);
-        ks_put_string_(SP.s, SP.l, buffer);
+        ks_put_string_(SP, buffer);
     }
     if(UR.l > 0) {
         ks_put_string_("\tUR:", 4, buffer);
-        ks_put_string_(UR.s, UR.l, buffer);
+        ks_put_string_(UR, buffer);
     }
     ks_put_character(LINE_BREAK, buffer);
 };
@@ -633,12 +633,12 @@ HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
     ks_terminate(ID);
-    if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
-    if(other.PN.l > 0) ks_put_string(other.PN.s, other.PN.l, PN);
-    if(other.CL.l > 0) ks_put_string(other.CL.s, other.CL.l, CL);
-    if(other.PP.l > 0) ks_put_string(other.PP.s, other.PP.l, PP);
-    if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
-    if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l, VN);
+    if(other.ID.l > 0) ks_put_string(other.ID, ID);
+    if(other.PN.l > 0) ks_put_string(other.PN, PN);
+    if(other.CL.l > 0) ks_put_string(other.CL, CL);
+    if(other.PP.l > 0) ks_put_string(other.PP, PP);
+    if(other.DS.l > 0) ks_put_string(other.DS, DS);
+    if(other.VN.l > 0) ks_put_string(other.VN, VN);
 };
 HeadPGAtom::~HeadPGAtom() {
     ks_free(ID);
@@ -658,12 +658,12 @@ HeadPGAtom& HeadPGAtom::operator=(const HeadPGAtom& other) {
         ks_clear(PP);
         ks_clear(DS);
         ks_clear(VN);
-        if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
-        if(other.PN.l > 0) ks_put_string(other.PN.s, other.PN.l, PN);
-        if(other.CL.l > 0) ks_put_string(other.CL.s, other.CL.l, CL);
-        if(other.PP.l > 0) ks_put_string(other.PP.s, other.PP.l, PP);
-        if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
-        if(other.VN.l > 0) ks_put_string(other.VN.s, other.VN.l,    VN);
+        if(other.ID.l > 0) ks_put_string(other.ID, ID);
+        if(other.PN.l > 0) ks_put_string(other.PN, PN);
+        if(other.CL.l > 0) ks_put_string(other.CL, CL);
+        if(other.PP.l > 0) ks_put_string(other.PP, PP);
+        if(other.DS.l > 0) ks_put_string(other.DS, DS);
+        if(other.VN.l > 0) ks_put_string(other.VN, VN);
     }
     return *this;
 };
@@ -674,27 +674,27 @@ void HeadPGAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@PG", 3, buffer);
     if(ID.l > 0) {
         ks_put_string_("\tID:", 4, buffer);
-        ks_put_string_(ID.s, ID.l, buffer);
+        ks_put_string_(ID, buffer);
     }
     if(PN.l > 0) {
         ks_put_string_("\tPN:", 4, buffer);
-        ks_put_string_(PN.s, PN.l, buffer);
+        ks_put_string_(PN, buffer);
     }
     if(CL.l > 0) {
         ks_put_string_("\tCL:", 4, buffer);
-        ks_put_string_(CL.s, CL.l, buffer);
+        ks_put_string_(CL, buffer);
     }
     if(PP.l > 0) {
         ks_put_string_("\tPP:", 4, buffer);
-        ks_put_string_(PP.s, PP.l, buffer);
+        ks_put_string_(PP, buffer);
     }
     if(DS.l > 0) {
         ks_put_string_("\tDS:", 4, buffer);
-        ks_put_string_(DS.s, DS.l, buffer);
+        ks_put_string_(DS, buffer);
     }
     if(VN.l > 0) {
         ks_put_string_("\tVN:", 4, buffer);
-        ks_put_string_(VN.s, VN.l, buffer);
+        ks_put_string_(VN, buffer);
     }
     ks_put_character(LINE_BREAK, buffer);
 };
@@ -779,19 +779,19 @@ HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     FO({ 0, 0, NULL }),
     KS({ 0, 0, NULL }){
     ks_terminate(ID);
-    if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
-    if(other.PI.l > 0) ks_put_string(other.PI.s, other.PI.l, PI);
-    if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
-    if(other.SM.l > 0) ks_put_string(other.SM.s, other.SM.l, SM);
-    if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
-    if(other.CN.l > 0) ks_put_string(other.CN.s, other.CN.l, CN);
-    if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
-    if(other.DT.l > 0) ks_put_string(other.DT.s, other.DT.l, DT);
-    if(other.PL.l > 0) ks_put_string(other.PL.s, other.PL.l, PL);
-    if(other.PM.l > 0) ks_put_string(other.PM.s, other.PM.l, PM);
-    if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
-    if(other.FO.l > 0) ks_put_string(other.FO.s, other.FO.l, FO);
-    if(other.KS.l > 0) ks_put_string(other.KS.s, other.KS.l, KS);
+    if(other.ID.l > 0) ks_put_string(other.ID, ID);
+    if(other.PI.l > 0) ks_put_string(other.PI, PI);
+    if(other.LB.l > 0) ks_put_string(other.LB, LB);
+    if(other.SM.l > 0) ks_put_string(other.SM, SM);
+    if(other.PU.l > 0) ks_put_string(other.PU, PU);
+    if(other.CN.l > 0) ks_put_string(other.CN, CN);
+    if(other.DS.l > 0) ks_put_string(other.DS, DS);
+    if(other.DT.l > 0) ks_put_string(other.DT, DT);
+    if(other.PL.l > 0) ks_put_string(other.PL, PL);
+    if(other.PM.l > 0) ks_put_string(other.PM, PM);
+    if(other.PG.l > 0) ks_put_string(other.PG, PG);
+    if(other.FO.l > 0) ks_put_string(other.FO, FO);
+    if(other.KS.l > 0) ks_put_string(other.KS, KS);
 };
 HeadRGAtom::~HeadRGAtom() {
     ks_free(ID);
@@ -825,19 +825,19 @@ HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
         ks_clear(PG);
         ks_clear(FO);
         ks_clear(KS);
-        if(other.ID.l > 0) ks_put_string(other.ID.s, other.ID.l, ID);
-        if(other.PI.l > 0) ks_put_string(other.PI.s, other.PI.l, PI);
-        if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
-        if(other.SM.l > 0) ks_put_string(other.SM.s, other.SM.l, SM);
-        if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
-        if(other.CN.l > 0) ks_put_string(other.CN.s, other.CN.l, CN);
-        if(other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
-        if(other.DT.l > 0) ks_put_string(other.DT.s, other.DT.l, DT);
-        if(other.PL.l > 0) ks_put_string(other.PL.s, other.PL.l, PL);
-        if(other.PM.l > 0) ks_put_string(other.PM.s, other.PM.l, PM);
-        if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
-        if(other.FO.l > 0) ks_put_string(other.FO.s, other.FO.l, FO);
-        if(other.KS.l > 0) ks_put_string(other.KS.s, other.KS.l, KS);
+        if(other.ID.l > 0) ks_put_string(other.ID, ID);
+        if(other.PI.l > 0) ks_put_string(other.PI, PI);
+        if(other.LB.l > 0) ks_put_string(other.LB, LB);
+        if(other.SM.l > 0) ks_put_string(other.SM, SM);
+        if(other.PU.l > 0) ks_put_string(other.PU, PU);
+        if(other.CN.l > 0) ks_put_string(other.CN, CN);
+        if(other.DS.l > 0) ks_put_string(other.DS, DS);
+        if(other.DT.l > 0) ks_put_string(other.DT, DT);
+        if(other.PL.l > 0) ks_put_string(other.PL, PL);
+        if(other.PM.l > 0) ks_put_string(other.PM, PM);
+        if(other.PG.l > 0) ks_put_string(other.PG, PG);
+        if(other.FO.l > 0) ks_put_string(other.FO, FO);
+        if(other.KS.l > 0) ks_put_string(other.KS, KS);
     }
     return *this;
 };
@@ -848,55 +848,55 @@ void HeadRGAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@RG", 3, buffer);
     if(ID.l > 0) {
         ks_put_string_("\tID:", 4, buffer);
-        ks_put_string_(ID.s, ID.l, buffer);
+        ks_put_string_(ID, buffer);
     }
     if(PI.l > 0) {
         ks_put_string_("\tPI:", 4, buffer);
-        ks_put_string_(PI.s, PI.l, buffer);
+        ks_put_string_(PI, buffer);
     }
     if(LB.l > 0) {
         ks_put_string_("\tLB:", 4, buffer);
-        ks_put_string_(LB.s, LB.l, buffer);
+        ks_put_string_(LB, buffer);
     }
     if(SM.l > 0) {
         ks_put_string_("\tSM:", 4, buffer);
-        ks_put_string_(SM.s, SM.l, buffer);
+        ks_put_string_(SM, buffer);
     }
     if(PU.l > 0) {
         ks_put_string_("\tPU:", 4, buffer);
-        ks_put_string_(PU.s, PU.l, buffer);
+        ks_put_string_(PU, buffer);
     }
     if(CN.l > 0) {
         ks_put_string_("\tCN:", 4, buffer);
-        ks_put_string_(CN.s, CN.l, buffer);
+        ks_put_string_(CN, buffer);
     }
     if(DS.l > 0) {
         ks_put_string_("\tDS:", 4, buffer);
-        ks_put_string_(DS.s, DS.l, buffer);
+        ks_put_string_(DS, buffer);
     }
     if(DT.l > 0) {
         ks_put_string_("\tDT:", 4, buffer);
-        ks_put_string_(DT.s, DT.l, buffer);
+        ks_put_string_(DT, buffer);
     }
     if(PL.l > 0) {
         ks_put_string_("\tPL:", 4, buffer);
-        ks_put_string_(PL.s, PL.l, buffer);
+        ks_put_string_(PL, buffer);
     }
     if(PM.l > 0) {
         ks_put_string_("\tPM:", 4, buffer);
-        ks_put_string_(PM.s, PM.l, buffer);
+        ks_put_string_(PM, buffer);
     }
     if(PG.l > 0) {
         ks_put_string_("\tPG:", 4, buffer);
-        ks_put_string_(PG.s, PG.l, buffer);
+        ks_put_string_(PG, buffer);
     }
     if(FO.l > 0) {
         ks_put_string_("\tFO:", 4, buffer);
-        ks_put_string_(FO.s, FO.l, buffer);
+        ks_put_string_(FO, buffer);
     }
     if(KS.l > 0) {
         ks_put_string_("\tKS:", 4, buffer);
-        ks_put_string_(KS.s, KS.l, buffer);
+        ks_put_string_(KS, buffer);
     }
     ks_put_character(LINE_BREAK, buffer);
 };
@@ -970,18 +970,18 @@ void HeadRGAtom::set_platform(const Platform& value) {
 };
 void HeadRGAtom::expand(const HeadRGAtom& other) {
     if(&other != this) {
-        if(PI.l == 0 && other.PI.l > 0) ks_put_string(other.PI.s, other.PI.l, PI);
-        if(LB.l == 0 && other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
-        if(SM.l == 0 && other.SM.l > 0) ks_put_string(other.SM.s, other.SM.l, SM);
-        if(PU.l == 0 && other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
-        if(CN.l == 0 && other.CN.l > 0) ks_put_string(other.CN.s, other.CN.l, CN);
-        if(DS.l == 0 && other.DS.l > 0) ks_put_string(other.DS.s, other.DS.l, DS);
-        if(DT.l == 0 && other.DT.l > 0) ks_put_string(other.DT.s, other.DT.l, DT);
-        if(PL.l == 0 && other.PL.l > 0) ks_put_string(other.PL.s, other.PL.l, PL);
-        if(PM.l == 0 && other.PM.l > 0) ks_put_string(other.PM.s, other.PM.l, PM);
-        if(PG.l == 0 && other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
-        if(FO.l == 0 && other.FO.l > 0) ks_put_string(other.FO.s, other.FO.l, FO);
-        if(KS.l == 0 && other.KS.l > 0) ks_put_string(other.KS.s, other.KS.l, KS);
+        if(PI.l == 0 && other.PI.l > 0) ks_put_string(other.PI, PI);
+        if(LB.l == 0 && other.LB.l > 0) ks_put_string(other.LB, LB);
+        if(SM.l == 0 && other.SM.l > 0) ks_put_string(other.SM, SM);
+        if(PU.l == 0 && other.PU.l > 0) ks_put_string(other.PU, PU);
+        if(CN.l == 0 && other.CN.l > 0) ks_put_string(other.CN, CN);
+        if(DS.l == 0 && other.DS.l > 0) ks_put_string(other.DS, DS);
+        if(DT.l == 0 && other.DT.l > 0) ks_put_string(other.DT, DT);
+        if(PL.l == 0 && other.PL.l > 0) ks_put_string(other.PL, PL);
+        if(PM.l == 0 && other.PM.l > 0) ks_put_string(other.PM, PM);
+        if(PG.l == 0 && other.PG.l > 0) ks_put_string(other.PG, PG);
+        if(FO.l == 0 && other.FO.l > 0) ks_put_string(other.FO, FO);
+        if(KS.l == 0 && other.KS.l > 0) ks_put_string(other.KS, KS);
     }
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
@@ -1060,7 +1060,7 @@ HeadCOAtom::HeadCOAtom() :
 };
 HeadCOAtom::HeadCOAtom(const HeadCOAtom& other) :
     CO({ 0, 0, NULL }){
-    if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
+    if(other.CO.l > 0) ks_put_string(other.CO, CO);
 };
 HeadCOAtom::~HeadCOAtom() {
     ks_free(CO);
@@ -1070,7 +1070,7 @@ HeadCOAtom& HeadCOAtom::operator=(const HeadCOAtom& other) {
         return *this;
     } else {
         ks_clear(CO);
-        if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
+        if(other.CO.l > 0) ks_put_string(other.CO, CO);
     }
     return *this;
 };
@@ -1084,7 +1084,7 @@ char* HeadCOAtom::decode(char* position, const char* end) {
 void HeadCOAtom::encode(kstring_t& buffer) const {
     if(CO.l > 0) {
         ks_put_string_("@CO:", 4, buffer);
-        ks_put_string_(CO.s, CO.l, buffer);
+        ks_put_string_(CO, buffer);
         ks_put_character(LINE_BREAK, buffer);
     }
 };

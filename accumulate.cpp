@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -40,8 +40,8 @@ NucleicAcidAccumulator::NucleicAcidAccumulator() :
     }
 };
 inline uint64_t NucleicAcidAccumulator::quantile(const double portion) {
-    uint64_t position = portion * count;
-    uint64_t cell = 0;
+    uint64_t position(portion * count);
+    uint64_t cell(0);
     while (position > 0) {
         if(distribution[cell] >= position) {
             break;
@@ -60,7 +60,7 @@ void NucleicAcidAccumulator::finalize() {
     }
     if(count > 0) {
         for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
-            const uint64_t value = distribution[i];
+            const uint64_t value(distribution[i]);
             sum += (value * i);
             if(value != 0) {
                 max = i;
@@ -75,7 +75,7 @@ void NucleicAcidAccumulator::finalize() {
         Q3 = quantile(0.75);
         IQR = Q3 - Q1;
 
-        double W = Q1 - IQR * 1.5;
+        double W(Q1 - IQR * 1.5);
         LW = (W < min) ? min : W;
 
         W = Q3 + IQR * 1.5;

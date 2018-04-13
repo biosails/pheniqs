@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -307,7 +307,7 @@ void Environment::load_concentration_prior() {
 bool Environment::load_input_feed_array() {
     list< URL > input_url_array;
     if(decode_file_url_list_by_key("input", input_url_array, _instruction, IoDirection::IN)) {
-        uint64_t input_segment_cardinality = input_url_array.size();
+        uint64_t input_segment_cardinality(input_url_array.size());
         encode_key_value("input segment cardinality", input_segment_cardinality, _instruction, _instruction);
 
         /*  validate leading_segment_index */

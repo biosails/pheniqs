@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -218,7 +218,7 @@ private:
     vector< T* > cache;
     int index;
     inline int align_capacity(const int& capacity, const int& resolution) {
-        int aligned = int(capacity / resolution) * resolution;
+        int aligned(int(capacity / resolution) * resolution);
         if(aligned < capacity) {
             aligned += resolution;
         }

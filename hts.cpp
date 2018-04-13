@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -22,7 +22,7 @@
 #include "hts.h"
 
 static inline char* skip_to_linebreak(char* source, const char* end) {
-    char* position = source;
+    char* position(source);
     while (*position != LINE_BREAK && position < end) {
         position++;
     }
@@ -42,8 +42,8 @@ void HtsHeader::decode(htsFile* hts_file) {
     if(hts_file != NULL) {
         hdr = sam_hdr_read(hts_file);
         if(hdr != NULL) {
-            char* position = hdr->text;
-            char* end = position + hdr->l_text;
+            char* position(hdr->text);
+            char* end(position + hdr->l_text);
             while(position < end) {
                 if(*position == '@') {
                     position++;
@@ -128,7 +128,7 @@ void HtsHeader::assemble() {
     hdr->n_targets = 0;
     hdr->l_text = buffer.l;
     if((hdr->text = static_cast< char* >(malloc(hdr->l_text + 1))) == NULL) {
-        throw InternalError("out of memory");
+        throw OutOfMemoryError();
     }
     memcpy(hdr->text, buffer.s, hdr->l_text + 1);
     ks_free(buffer);

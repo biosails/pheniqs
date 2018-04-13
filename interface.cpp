@@ -4,13 +4,13 @@
 #include "configuration.h"
 
 static inline string get_cwd() {
-    char* buffer = NULL;
-    char* temp = NULL;
+    char* buffer(NULL);
+    char* temp(NULL);
     string directory;
-    size_t size = 128;
+    size_t size(128);
 
     if((buffer = static_cast< char* >(malloc(size))) == NULL) {
-        throw InternalError("out of memory");
+        throw OutOfMemoryError();
     }
     while(getcwd(buffer, size) == NULL) {
         switch(errno) {
@@ -23,7 +23,7 @@ static inline string get_cwd() {
                 size *= 2;
                 if((temp = static_cast< char* >(realloc(buffer, size))) == NULL) {
                     free(buffer);
-                    throw InternalError("out of memory");
+                    throw OutOfMemoryError();
                 } else {
                     buffer = temp;
                 }
@@ -246,7 +246,7 @@ ostream& Prototype::print_help(ostream& o, const int& max_option_handle, const L
     return o;
 };
 int Prototype::handle_length() const {
-    int length = 0;
+    int length(0);
     if(!positional) {
         for(const auto& handle : handles) {
             length += handle.length();
@@ -405,70 +405,70 @@ void Argument::set_value(const URL value) {
     }
 };
 bool* Argument::get_boolean() const {
-    bool* value = NULL;
+    bool* value(NULL);
     if(prototype.type == ParameterType::BOOLEAN) {
         value = boolean_value;
     }
     return value;
 };
 int64_t* Argument::get_integer() const {
-    int64_t* value = NULL;
+    int64_t* value(NULL);
     if(prototype.type == ParameterType::INTEGER) {
         value = integer_value;
     }
     return value;
 };
 double* Argument::get_decimal() const {
-    double* value = NULL;
+    double* value(NULL);
     if(prototype.type == ParameterType::DECIMAL) {
         value = decimal_value;
     }
     return value;
 };
 string* Argument::get_string() const {
-    string* value = NULL;
+    string* value(NULL);
     if(prototype.type == ParameterType::STRING) {
         value = string_value;
     }
     return value;
 };
 URL* Argument::get_url() const {
-    URL* value = NULL;
+    URL* value(NULL);
     if(prototype.type == ParameterType::URL) {
         value = url_value;
     }
     return value;
 };
 list< int64_t >* Argument::get_integer_array() const {
-    list< int64_t >* value = NULL;
+    list< int64_t >* value(NULL);
     if(prototype.type == ParameterType::INTEGER && prototype.plural) {
         value = integer_array_value;
     }
     return value;
 };
 list< double >* Argument::get_decimal_array() const {
-    list< double >* value = NULL;
+    list< double >* value(NULL);
     if(prototype.type == ParameterType::DECIMAL && prototype.plural) {
         value = decimal_array_value;
     }
     return value;
 };
 list< string >* Argument::get_string_array() const {
-    list< string >* value = NULL;
+    list< string >* value(NULL);
     if(prototype.type == ParameterType::STRING && prototype.plural) {
         value = string_array_value;
     }
     return value;
 };
 list< URL >* Argument::get_url_array() const {
-    list< URL >* value = NULL;
+    list< URL >* value(NULL);
     if(prototype.type == ParameterType::URL && prototype.plural) {
         value = url_array_value;
     }
     return value;
 };
 uint64_t Argument::cardinality() const {
-    uint64_t value = 0;
+    uint64_t value(0);
     if(!prototype.plural) {
         value = assigned ? 1 : 0;
     } else {
@@ -495,7 +495,7 @@ uint64_t Argument::cardinality() const {
     return value;
 };
 bool Argument::satisfied() const {
-    bool value = true;
+    bool value(true);
     if(prototype.plural) {
         if(prototype.cardinality == 0 || prototype.cardinality > cardinality()) {
             value = false;
@@ -568,7 +568,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
         buffer.append(" ");
         buffer.append(name);
     }
-    int indent = static_cast< int >(buffer.length());
+    int indent(static_cast< int >(buffer.length()));
     for(const auto prototype : optional_order) {
         block.append(" ");
         if(!prototype->mandatory) {
@@ -777,7 +777,7 @@ Document* CommandLine::load_default_instruction() {
 };
 Document* CommandLine::load_instruction_from_configuration_file() {
     Document* document = NULL;
-    URL* url = get_url("configuration url");
+    URL* url(get_url("configuration url"));
     if(url != NULL) {
         if(url->is_readable()) {
             document = new Document();
@@ -833,27 +833,27 @@ Document* CommandLine::load_instruction_from_command_line(const Value& base) {
             } else {
                 switch(argument->prototype.type) {
                     case ParameterType::BOOLEAN: {
-                        bool* value = get_boolean(key);
+                        bool* value(get_boolean(key));
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
                     case ParameterType::INTEGER: {
-                        int64_t* value = get_integer(key);
+                        int64_t* value(get_integer(key));
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
                     case ParameterType::DECIMAL: {
-                        double* value = get_decimal(key);
+                        double* value(get_decimal(key));
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
                     case ParameterType::STRING: {
-                        string* value = get_string(key);
+                        string* value(get_string(key));
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
                     case ParameterType::URL: {
-                        URL* value = get_url(key);
+                        URL* value(get_url(key));
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
@@ -915,7 +915,7 @@ Argument* CommandLine::get(const string& name) const {
     }
 };
 bool* CommandLine::get_boolean(const string& name) const {
-    bool* value = NULL;
+    bool* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_boolean();
@@ -923,7 +923,7 @@ bool* CommandLine::get_boolean(const string& name) const {
     return value;
 };
 int64_t* CommandLine::get_integer(const string& name) const {
-    int64_t* value = NULL;
+    int64_t* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_integer();
@@ -931,7 +931,7 @@ int64_t* CommandLine::get_integer(const string& name) const {
     return value;
 };
 double* CommandLine::get_decimal(const string& name) const {
-    double* value = NULL;
+    double* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_decimal();
@@ -939,7 +939,7 @@ double* CommandLine::get_decimal(const string& name) const {
     return value;
 };
 string* CommandLine::get_string(const string& name) const {
-    string* value = NULL;
+    string* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_string();
@@ -947,7 +947,7 @@ string* CommandLine::get_string(const string& name) const {
     return value;
 };
 URL* CommandLine::get_url(const string& name) const {
-    URL* value = NULL;
+    URL* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_url();
@@ -955,7 +955,7 @@ URL* CommandLine::get_url(const string& name) const {
     return value;
 };
 list< int64_t >* CommandLine::get_integer_plural(const string& name) const {
-    list< int64_t >* value = NULL;
+    list< int64_t >* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_integer_array();
@@ -963,7 +963,7 @@ list< int64_t >* CommandLine::get_integer_plural(const string& name) const {
     return value;
 };
 list< double >* CommandLine::get_decimal_plural(const string& name) const {
-    list< double >* value = NULL;
+    list< double >* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_decimal_array();
@@ -971,7 +971,7 @@ list< double >* CommandLine::get_decimal_plural(const string& name) const {
     return value;
 };
 list< string >* CommandLine::get_string_plural(const string& name) const {
-    list< string >* value = NULL;
+    list< string >* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_string_array();
@@ -979,7 +979,7 @@ list< string >* CommandLine::get_string_plural(const string& name) const {
     return value;
 };
 list< URL >* CommandLine::get_url_plural(const string& name) const {
-    list< URL >* value = NULL;
+    list< URL >* value(NULL);
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_url_array();
@@ -990,7 +990,7 @@ bool CommandLine::help_triggered() const {
     if(argc < 2) {
         return true;
     } else {
-        bool* value = get_boolean("help only");
+        bool* value(get_boolean("help only"));
         if(value != NULL && value) {
             return true;
         } else {
@@ -1014,7 +1014,7 @@ ostream& CommandLine::print_help(ostream& o) const {
     return o;
 };
 bool CommandLine::version_triggered() const {
-    bool* value = get_boolean("version only");
+    bool* value(get_boolean("version only"));
     if(value != NULL && value) {
         return true;
     } else {
@@ -1026,7 +1026,7 @@ ostream& CommandLine::print_version(ostream& o) const {
     return o;
 };
 Argument* CommandLine::parse_argument(const Prototype* prototype, size_t& index) {
-    Argument* argument = NULL;
+    Argument* argument(NULL);
     try {
         switch(prototype->type) {
             case ParameterType::BOOLEAN: {
@@ -1067,7 +1067,7 @@ Argument* CommandLine::parse_argument(const Prototype* prototype, size_t& index)
     return argument;
 };
 Argument* CommandLine::decode_optional(Action* action, size_t& index, const string& handle, bool& positional, bool composite) {
-    Argument* argument = NULL;
+    Argument* argument(NULL);
     auto record = action->option_handle_lookup.find(handle);
     if(record != action->option_handle_lookup.end()) {
         Prototype* prototype = record->second;
@@ -1101,9 +1101,9 @@ Argument* CommandLine::decode_positional(Action* action, size_t& index, const si
     return argument;
 };
 void CommandLine::decode() {
-    size_t index = 1;
-    size_t position = 0;
-    bool positional = false;
+    size_t index(1);
+    size_t position(0);
+    bool positional(false);
     load_action(index);
     while(index < argc) {
         if(!strcmp(argv[index], "--")) {
@@ -1117,8 +1117,8 @@ void CommandLine::decode() {
             }
         } else {
             if(!positional) {
-                const char* key = argv[index];
-                size_t length = strlen(key);
+                const char* key(argv[index]);
+                size_t length(strlen(key));
                 if(key[0] == '-' && length > 1) {
                     key++;
                     if(*key == '-') {
@@ -1186,8 +1186,8 @@ void CommandLine::validate() {
                         break;
                     };
                     case ParameterType::STRING: {
-                        bool found = false;
-                        string* value = argument->get_string();
+                        bool found(false);
+                        string* value(argument->get_string());
                         if(value != NULL) {
                             for(const auto& choice : prototype->choices) {
                                 if(!choice.compare(*value)) {

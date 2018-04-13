@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -39,7 +39,6 @@ using std::endl;
 using std::cerr;
 using std::cout;
 using std::fixed;
-using std::uint64_t;
 using std::string;
 using std::vector;
 using std::ostream;
@@ -209,7 +208,7 @@ friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
 
 public:
     kstring_t SN;
-    int64_t LN;
+    int32_t LN;
     kstring_t AH;
     kstring_t AS;
     kstring_t M5;

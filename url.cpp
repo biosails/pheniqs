@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -394,8 +394,8 @@ void URL::expand(string& path) {
     if(!path.empty()) {
         string resolved;
         string variable;
-        char* value = NULL;
-        uint64_t position = 0;
+        char* value(NULL);
+        uint64_t position(0);
         while(position < path.size()) {
             const char& c = path[position];
             switch(c) {

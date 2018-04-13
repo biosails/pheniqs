@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -253,7 +253,7 @@ inline void Pivot::transform() {
     filtered = leading_segment->get_qcfail();
 
     for(auto& segment : output) {
-        ks_put_string(leading_segment->name.s, leading_segment->name.l, segment.name);
+        ks_put_string(leading_segment->name, segment.name);
         segment.set_qcfail(leading_segment->get_qcfail());
         segment.auxiliary.XI = leading_segment->auxiliary.XI;
     }
@@ -273,14 +273,14 @@ inline void Pivot::decode_with_pamld() {
         using the Kahan summation algorithm to minimize floating point drift
         see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
     */
-    double adjusted = 0;
-    double compensation = 0;
-    double sigma = 0;
-    double y = 0;
-    double t = 0;
-    double c = 0;
-    double p = 0;
-    uint64_t d = 0;
+    double adjusted(0);
+    double compensation(0);
+    double sigma(0);
+    double y(0);
+    double t(0);
+    double c(0);
+    double p(0);
+    size_t d(0);
     for(auto channel : pipeline.channel_array) {
         channel->multiplex_barcode.accurate_decoding_probability(multiplex_barcode, c, d);
         p = c * channel->concentration;
@@ -366,14 +366,14 @@ inline void Pivot::encode_auxiliary () {
             segment.auxiliary.set_molecular_barcode(molecular_barcode);
 
             // channel auxiliary tags
-            ks_put_string(decoded_multiplex_channel->rg.ID.s, decoded_multiplex_channel->rg.ID.l, segment.auxiliary.RG);
+            ks_put_string(decoded_multiplex_channel->rg.ID, segment.auxiliary.RG);
 
             /* those don't change between consecutive reads in the same channel
-            ks_put_string(decoded_multiplex_channel->rg.LB.s, decoded_multiplex_channel->rg.LB.l, &segment.auxiliary.LB);
-            ks_put_string(decoded_multiplex_channel->rg.PU.s, decoded_multiplex_channel->rg.PU.l, &segment.auxiliary.PU);
-            ks_put_string(decoded_multiplex_channel->rg.FS.s, decoded_multiplex_channel->rg.FS.l, &segment.auxiliary.FS);
-            ks_put_string(decoded_multiplex_channel->rg.PG.s, decoded_multiplex_channel->rg.PG.l, &segment.auxiliary.PG);
-            ks_put_string(decoded_multiplex_channel->rg.CO.s, decoded_multiplex_channel->rg.CO.l, &segment.auxiliary.CO); */
+            ks_put_string(decoded_multiplex_channel->rg.LB, &segment.auxiliary.LB);
+            ks_put_string(decoded_multiplex_channel->rg.PU, &segment.auxiliary.PU);
+            ks_put_string(decoded_multiplex_channel->rg.FS, &segment.auxiliary.FS);
+            ks_put_string(decoded_multiplex_channel->rg.PG, &segment.auxiliary.PG);
+            ks_put_string(decoded_multiplex_channel->rg.CO, &segment.auxiliary.CO); */
         }
     }
 };

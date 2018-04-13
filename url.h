@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -56,8 +56,8 @@ using std::numeric_limits;
 #define CANONICAL_STDOUT_PATH "/dev/stdout"
 #define CANONICAL_STDERR_PATH "/dev/stderr"
 #define CANONICAL_NULL_DEVICE_PATH "/dev/null"
-const char PATH_SEPARATOR = '/';
-const char EXTENSION_SEPARATOR = '.';
+const char PATH_SEPARATOR('/');
+const char EXTENSION_SEPARATOR('.');
 
 enum class FormatType : uint8_t {
     UNKNOWN,

@@ -1,22 +1,36 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
+    Ported from htslib/kstring.h to be more C++ friendly
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    The MIT License
+
+    Copyright (C) 2011 by Attractive Chaos <attractor@live.co.uk>
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 */
 
 #ifndef PHENIQS_KSTRING_H
@@ -27,7 +41,7 @@
 
 #define tag_to_code(t) uint16_t(*(t))<<8 | uint8_t(*((t) + 1))
 
-const char LINE_BREAK = '\n';
+const char LINE_BREAK('\n');
 
 static inline void ks_increase_size(kstring_t& s, size_t size) {
     if(s.m < size) {
@@ -43,7 +57,7 @@ static inline void ks_increase_size(kstring_t& s, size_t size) {
 static inline void ks_clear(kstring_t& s) {
     s.l = 0;
     if(s.s != NULL) {
-        s.s[0] = 0;
+        s.s[0] = '\0';
     }
 };
 static inline void ks_free(kstring_t& s) {
@@ -56,12 +70,12 @@ static inline void ks_free(kstring_t& s) {
 };
 static inline void ks_terminate(kstring_t& s) {
     ks_increase_size(s, s.l + 1);
-    s.s[s.l++] = 0;
+    s.s[s.l] = '\0';
 };
 static inline void ks_put_character(const char c, kstring_t& s) {
     ks_increase_size(s, s.l + 2);
     s.s[s.l++] = c;
-    s.s[s.l] = 0;
+    s.s[s.l] = '\0';
 };
 static inline void ks_put_character_(const char c, kstring_t& s) {
     ks_increase_size(s, s.l + 1);
@@ -71,13 +85,13 @@ static inline void ks_put_string(const char* p, size_t l, kstring_t& s) {
     ks_increase_size(s, s.l + l + 2);
     memcpy(s.s + s.l, p, l);
     s.l += l;
-    s.s[s.l] = 0;
+    s.s[s.l] = '\0';
 };
 static inline void ks_put_string(const kstring_t& from, kstring_t& to) {
     ks_increase_size(to, to.l + from.l + 2);
     memcpy(to.s + to.l, from.s, from.l);
     to.l += from.l;
-    to.s[to.l] = 0;
+    to.s[to.l] = '\0';
 };
 static inline void ks_put_string(const char* p, kstring_t& s) {
     return ks_put_string(p, strlen(p), s);
@@ -112,7 +126,7 @@ static inline void ks_put_int32(const int32_t& c, kstring_t& s) {
     for(i = l - 1; i >= 0; --i) {
         s.s[s.l++] = buffer[i];
     }
-    s.s[s.l] = 0;
+    s.s[s.l] = '\0';
 };
 static inline void ks_put_uint32(const uint32_t c, kstring_t& s) {
     char buffer[16];
@@ -130,7 +144,7 @@ static inline void ks_put_uint32(const uint32_t c, kstring_t& s) {
         for(i = l - 1; i >= 0; --i) {
             s.s[s.l++] = buffer[i];
         }
-        s.s[s.l] = 0;
+        s.s[s.l] = '\0';
     }
 };
 static inline void ks_put_int64(const int64_t c, kstring_t& s) {
@@ -153,7 +167,7 @@ static inline void ks_put_int64(const int64_t c, kstring_t& s) {
     for(i = l - 1; i >= 0; --i) {
         s.s[s.l++] = buffer[i];
     }
-    s.s[s.l] = 0;
+    s.s[s.l] = '\0';
 };
 
 

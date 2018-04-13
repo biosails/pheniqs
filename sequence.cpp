@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -29,10 +29,10 @@ Sequence::Sequence() :
     capacity(INITIAL_SEQUENCE_CAPACITY),
     length(0) {
     if((code = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
-        throw InternalError("out of memory");
+        throw OutOfMemoryError();
     }
     if((quality = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
-        throw InternalError("out of memory");
+        throw OutOfMemoryError();
     }
     terminate();
 };
@@ -40,10 +40,10 @@ Sequence::Sequence(const Sequence& other) :
     capacity(other.capacity),
     length(other.length) {
     if((code = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
-        throw InternalError("out of memory");
+        throw OutOfMemoryError();
     }
     if((quality = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
-        throw InternalError("out of memory");
+        throw OutOfMemoryError();
     }
     memcpy(code, other.code, length);
     memcpy(quality, other.quality, length);
@@ -74,24 +74,22 @@ void Sequence::mask(const uint8_t& threshold) {
     }
 };
 void Sequence::expected_error(float& error) const {
-    double value = 0.0;
+    double value(0);
     for(uint8_t* q = quality; *q; ++q) {
         value += quality_to_probability(uint8_t(*q));
     }
     error = float(value);
 };
-void Sequence::fill(const uint8_t* code, const uint8_t* quality, const uint64_t& size) {
+void Sequence::fill(const uint8_t* code, const uint8_t* quality, const size_t& size) {
     if(size > 0) {
         if(size >= capacity) {
             capacity = size + 1;
             kroundup32(capacity);
             if((this->code = static_cast< uint8_t* >(realloc(this->code, capacity))) == NULL) {
-                free(this->code);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
             if((this->quality = static_cast< uint8_t* >(realloc(this->quality, capacity))) == NULL) {
-                free(this->quality);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
         }
         memcpy(this->code, code, size);
@@ -100,41 +98,37 @@ void Sequence::fill(const uint8_t* code, const uint8_t* quality, const uint64_t&
     length = size;
     terminate();
 };
-void Sequence::fill(const char* code, const uint64_t& size) {
+void Sequence::fill(const char* code, const size_t& size) {
     if(size > 0) {
         if(size >= capacity) {
             capacity = size + 1;
             kroundup32(capacity);
             if((this->code = static_cast< uint8_t* >(realloc(this->code, capacity))) == NULL) {
-                free(this->code);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
             if((this->quality = static_cast< uint8_t* >(realloc(this->quality, capacity))) == NULL) {
-                free(this->quality);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
         }
 
-        for(uint64_t i = 0; i < size; i++) {
-            *(this->code + i) = AsciiToAmbiguousBam[uint64_t(code[i])];
+        for(size_t i = 0; i < size; i++) {
+            *(this->code + i) = AsciiToAmbiguousBam[uint8_t(code[i])];
             *(this->quality + i) = MAX_VALID_PHRED_VALUE;
         }
     }
     length = size;
     terminate();
 };
-void Sequence::append(const uint8_t* code, const uint8_t* quality, const uint64_t& size) {
+void Sequence::append(const uint8_t* code, const uint8_t* quality, const size_t& size) {
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length+ size + 1;
             kroundup32(capacity);
             if((this->code = static_cast< uint8_t* >(realloc(this->code, capacity))) == NULL) {
-                free(this->code);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
             if((this->quality = static_cast< uint8_t* >(realloc(this->quality, capacity))) == NULL) {
-                free(this->quality);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
         }
         memcpy(this->code + length, code, size);
@@ -143,18 +137,16 @@ void Sequence::append(const uint8_t* code, const uint8_t* quality, const uint64_
         terminate();
     }
 };
-void Sequence::append(const Sequence& other, const uint64_t& start, const uint64_t& size) {
+void Sequence::append(const Sequence& other, const size_t& start, const size_t& size) {
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length + size + 1;
             kroundup32(capacity);
             if((code = static_cast< uint8_t* >(realloc(code, capacity))) == NULL) {
-                free(code);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
             if((quality = static_cast< uint8_t* >(realloc(quality, capacity))) == NULL) {
-                free(quality);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
         }
         memcpy(code + length, other.code + start, size);
@@ -163,22 +155,20 @@ void Sequence::append(const Sequence& other, const uint64_t& start, const uint64
         terminate();
     }
 };
-uint64_t Sequence::append(const Sequence& other, const Transform& transform) {
-    const uint64_t start = transform.token.decode_start(other.length);
-    const uint64_t end = transform.token.decode_end(other.length);
-    const uint64_t size = end - start;
+size_t Sequence::append(const Sequence& other, const Transform& transform) {
+    const size_t start(transform.token.decode_start(other.length));
+    const size_t end(transform.token.decode_end(other.length));
+    const size_t size(end - start);
 
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length + size + 1;
             kroundup32(capacity);
             if((code = static_cast< uint8_t* >(realloc(code, capacity))) == NULL) {
-                free(code);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
             if((quality = static_cast< uint8_t* >(realloc(quality, capacity))) == NULL) {
-                free(quality);
-                throw InternalError("out of memory");
+                throw OutOfMemoryError();
             }
         }
         switch (transform.left) {
@@ -214,7 +204,7 @@ ostream& operator<<(ostream& o, const Sequence& sequence) {
     return o;
 };
 bool operator<(const Sequence& left, const Sequence& right) {
-    uint64_t position = 0;
+    uint64_t position(0);
     while(position < left.length && position < right.length) {
         if(left.code[position] == right.code[position]) {
             position++;
@@ -229,7 +219,7 @@ bool operator<(const Sequence& left, const Sequence& right) {
     return false;
 };
 bool operator>(const Sequence& left, const Sequence& right) {
-    uint64_t position = 0;
+    uint64_t position(0);
     while(position < left.length && position < right.length) {
         if(left.code[position] == right.code[position]) {
             position++;
@@ -283,7 +273,7 @@ Barcode::operator string() const {
     /* NOTICE barcode is converted to the BAM encoding string, not iupac */
     string key;
     for(const auto& sequence : fragments) {
-        for(uint64_t i = 0; i < sequence.length; i++) {
+        for(size_t i = 0; i < sequence.length; i++) {
             key.push_back(sequence.code[i]);
         }
     }
@@ -295,7 +285,7 @@ void Barcode::set_tolerance(const vector<uint8_t>& tolerance) {
 void Barcode::set_threshold(const uint8_t& threshold) {
     this->threshold = threshold;
 };
-void Barcode::fill(const uint64_t& position, const char* code, const uint64_t& size) {
+void Barcode::fill(const uint64_t& position, const char* code, const size_t& size) {
     resize(position + 1);
     length += size;
     fragments[position].fill(code, size);
@@ -309,7 +299,7 @@ string Barcode::iupac_ambiguity(const uint64_t position) const {
 string Barcode::iupac_ambiguity() const {
     string result;
     for(const auto& sequence : fragments) {
-        for(uint64_t i = 0; i < sequence.length; i++) {
+        for(size_t i = 0; i < sequence.length; i++) {
             result.push_back(BamToAmbiguousAscii[uint8_t(sequence.code[i])]);
         }
     }

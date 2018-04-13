@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -176,17 +176,17 @@ public:
         ks_clear(RX);
         ks_clear(QX);
         ks_clear(BX);
-        if(other.RG.l > 0) ks_put_string(other.RG.s, other.RG.l, RG);
-        if(other.BC.l > 0) ks_put_string(other.BC.s, other.BC.l, BC);
-        if(other.QT.l > 0) ks_put_string(other.QT.s, other.QT.l, QT);
-        if(other.FS.l > 0) ks_put_string(other.FS.s, other.FS.l, FS);
-        if(other.LB.l > 0) ks_put_string(other.LB.s, other.LB.l, LB);
-        if(other.PG.l > 0) ks_put_string(other.PG.s, other.PG.l, PG);
-        if(other.PU.l > 0) ks_put_string(other.PU.s, other.PU.l, PU);
-        if(other.CO.l > 0) ks_put_string(other.CO.s, other.CO.l, CO);
-        if(other.RX.l > 0) ks_put_string(other.RX.s, other.RX.l, RX);
-        if(other.QX.l > 0) ks_put_string(other.QX.s, other.QX.l, QX);
-        if(other.BX.l > 0) ks_put_string(other.BX.s, other.BX.l, BX);
+        if(other.RG.l > 0) ks_put_string(other.RG, RG);
+        if(other.BC.l > 0) ks_put_string(other.BC, BC);
+        if(other.QT.l > 0) ks_put_string(other.QT, QT);
+        if(other.FS.l > 0) ks_put_string(other.FS, FS);
+        if(other.LB.l > 0) ks_put_string(other.LB, LB);
+        if(other.PG.l > 0) ks_put_string(other.PG, PG);
+        if(other.PU.l > 0) ks_put_string(other.PU, PU);
+        if(other.CO.l > 0) ks_put_string(other.CO, CO);
+        if(other.RX.l > 0) ks_put_string(other.RX, RX);
+        if(other.QX.l > 0) ks_put_string(other.QX, QX);
+        if(other.BX.l > 0) ks_put_string(other.BX, BX);
         DQ = other.DQ;
     };
 };

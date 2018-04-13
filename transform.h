@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -74,7 +74,7 @@ public:
     inline uint64_t decode_end(const uint64_t& length) const {
         uint64_t value;
         if(end_terminated) {
-            int64_t v = (end < 0 ? length + end : end);
+            int64_t v(end < 0 ? length + end : end);
             value = v < 0 ? 0 : v;
             if(value > length) {
                 value = length;
@@ -86,7 +86,7 @@ public:
     };
     inline uint64_t decode_start(const uint64_t& length) const {
         uint64_t value;
-        int64_t v = start < 0 ? length + start : start;
+        int64_t v(start < 0 ? length + start : start);
         value = v < 0 ? 0 : v;
         if(value > length) {
             value = length;

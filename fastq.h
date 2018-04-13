@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -99,11 +99,11 @@ public:
         clear();
 
         // copy from kseq_t to record
-        ks_put_string(kseq->name.s, kseq->name.l, name);
-        ks_put_string(kseq->comment.s, kseq->comment.l, comment);
+        ks_put_string(kseq->name, name);
+        ks_put_string(kseq->comment, comment);
 
         // decode sequence
-        ks_resize(&sequence, kseq->seq.l + 1);
+        ks_increase_size(sequence, kseq->seq.l + 2);
         for(size_t i = 0; i < kseq->seq.l; i++) {
             sequence.s[i] = AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])];
             // ks_put_character(AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])], &sequence);
@@ -113,7 +113,7 @@ public:
         // ks_terminate(sequence);
 
         // decode quality
-        ks_resize(&quality, kseq->qual.l + 1);
+        ks_increase_size(quality, kseq->qual.l + 2);
         for(size_t i = 0; i < kseq->qual.l; i++) {
             quality.s[i] = kseq->qual.s[i] - phred_offset;
             // ks_put_character(kseq->qual.s[i] - phred_offset, &quality);
@@ -135,8 +135,8 @@ public:
 
         // write the FastqRecord to Segment
         segment.sequence.fill((const uint8_t*)(sequence.s), (const uint8_t*)(quality.s), sequence.l);
-        ks_put_string(name.s, name.l, segment.name);
-        ks_put_string(comment.s, comment.l, segment.auxiliary.CO);
+        ks_put_string(name, segment.name);
+        ks_put_string(comment, segment.auxiliary.CO);
         segment.auxiliary.FI = 0;
         segment.set_qcfail(false);
         segment.auxiliary.XI = 0;
@@ -158,7 +158,7 @@ public:
                     9   control number  0               uint16_t
                     10  Barcode         CGATGT          char*
                 */
-                size_t offset = 0;
+                size_t offset(0);
                 parse_illumina_segment_index(segment, offset);
                 parse_illumina_filtered(segment, offset);
                 parse_illumina_control(segment, offset);
@@ -180,13 +180,13 @@ public:
     inline void encode(kstring_t& buffer, uint8_t& phred_offset) const {
         // encode identifier
         ks_put_character('@', buffer);
-        ks_put_string(name.s, name.l, buffer);
+        ks_put_string(name, buffer);
         ks_put_character(' ', buffer);
-        ks_put_string(comment.s, comment.l, buffer);
+        ks_put_string(comment, buffer);
         ks_put_character(LINE_BREAK, buffer);
 
         // encode sequence
-        ks_resize(&buffer, buffer.l + sequence.l + 1);
+        ks_increase_size(buffer, buffer.l + sequence.l + 2);
         for(size_t i = 0; i < sequence.l; i++) {
             buffer.s[buffer.l + i] = BamToAmbiguousAscii[uint8_t(sequence.s[i])];
             // ks_put_character(BamToAmbiguousAscii[uint8_t(sequence.s[i])], &buffer);
@@ -199,7 +199,7 @@ public:
         ks_put_character(LINE_BREAK, buffer);
 
         // encode quality
-        ks_resize(&buffer, buffer.l + quality.l + 1);
+        ks_increase_size(buffer, buffer.l + quality.l + 2);
         for(size_t i = 0; i < quality.l; i++) {
             buffer.s[buffer.l + i] = quality.s[i] + phred_offset;
             // ks_put_character(quality.s[i] + phred_offset, &buffer);
@@ -228,7 +228,7 @@ private:
                 ks_put_character(':', comment);
                 ks_put_int64(segment.auxiliary.XI, comment);
                 ks_put_character(':', comment);
-                ks_put_string(segment.auxiliary.BC.s, segment.auxiliary.BC.l, comment);
+                ks_put_string(segment.auxiliary.BC, comment);
                 break;
             };
             case Platform::SOLID:
@@ -246,12 +246,12 @@ private:
         };
     };
     inline void parse_illumina_segment_index(Segment& segment, size_t& offset) const {
-        int8_t code = -1;
-        int64_t value = 0;
-        size_t position = offset;
-        const char* comment = segment.auxiliary.CO.s;
+        int8_t code(-1);
+        int64_t value(0);
+        size_t position(offset);
+        const char* comment(segment.auxiliary.CO.s);
         while (position < segment.auxiliary.CO.l) {
-            char c = *(comment + position);
+            char c(*(comment + position));
             position++;
             if(c == ':') {
                 break;
@@ -274,11 +274,11 @@ private:
         offset = position;
     };
     inline void parse_illumina_filtered(Segment& segment, size_t& offset) const {
-        int8_t code = -1;
-        size_t position = offset;
-        const char* comment = segment.auxiliary.CO.s;
+        int8_t code(-1);
+        size_t position(offset);
+        const char* comment(segment.auxiliary.CO.s);
         while (position < segment.auxiliary.CO.l) {
-            char c = *(comment + position);
+            char c(*(comment + position));
             position++;
             if(c == ':') {
                 break;
@@ -307,12 +307,12 @@ private:
         offset = position;
     };
     inline void parse_illumina_control(Segment& segment, size_t& offset) const {
-        int8_t code = -1;
-        uint16_t value = 0;
-        size_t position = offset;
-        const char* comment = segment.auxiliary.CO.s;
+        int8_t code(-1);
+        uint16_t value(0);
+        size_t position(offset);
+        const char* comment(segment.auxiliary.CO.s);
         while (position < segment.auxiliary.CO.l) {
-            char c = *(comment + position);
+            char c(*(comment + position));
             position++;
             if(c == ':') {
                 break;
@@ -336,16 +336,16 @@ private:
         offset = position;
     };
     inline void parse_illumina_barcode(Segment& segment, size_t& offset) const {
-        size_t position = offset;
-        const char* comment = segment.auxiliary.CO.s;
+        size_t position(offset);
+        const char* comment(segment.auxiliary.CO.s);
         while (position < segment.auxiliary.CO.l) {
-            char c = *(comment + position);
+            char c(*(comment + position));
             position++;
             if(c == ' ') {
                 break;
             }
         }
-        size_t length = position - offset;
+        size_t length(position - offset);
         if(length > 0) {
             ks_put_string(comment + offset, length, segment.auxiliary.BC);
         }

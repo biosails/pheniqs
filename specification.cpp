@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -43,7 +43,7 @@ FeedSpecification::FeedSpecification (
 };
 void FeedSpecification::set_capacity(const int& capacity) {
     if(capacity != this->capacity) {
-        int aligned = int(capacity / resolution) * resolution;
+        int aligned(int(capacity / resolution) * resolution);
         if(aligned < capacity) {
             aligned += resolution;
         }
@@ -52,7 +52,7 @@ void FeedSpecification::set_capacity(const int& capacity) {
 };
 void FeedSpecification::set_resolution(const int& resolution) {
     if(resolution != this->resolution) {
-        int aligned = int(capacity / resolution) * resolution;
+        int aligned(int(capacity / resolution) * resolution);
         if(aligned < capacity) {
             aligned += resolution;
         }
@@ -124,7 +124,7 @@ void FeedSpecification::probe() {
                 unsigned char* buffer(NULL);
                 const ssize_t buffer_capacity(PEEK_BUFFER_CAPACITY);
                 if((buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
-                    throw InternalError("out of memory");
+                    throw OutOfMemoryError();
                 }
                 htsFormat format;
                 if(!hts_detect_format(hfile, &format)) {
@@ -174,9 +174,9 @@ void FeedSpecification::probe() {
                         switch (format.compression) {
                             case htsCompression::gzip:
                             case htsCompression::bgzf: {
-                                unsigned char* decompressed_buffer = NULL;
+                                unsigned char* decompressed_buffer(NULL);
                                 if((decompressed_buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
-                                    throw InternalError("out of memory");
+                                    throw OutOfMemoryError();
                                 }
                                 z_stream zstream;
                                 zstream.zalloc = NULL;
@@ -206,9 +206,9 @@ void FeedSpecification::probe() {
                         }
                     }
                     if(peeked > 0) { 
-                        uint64_t state = 0;
-                        char* position = (char*)buffer;
-                        char* end = position + peeked;
+                        uint64_t state(0);
+                        char* position((char*)buffer);
+                        char* end(position + peeked);
                         while(position < end && position != NULL) {
                             if(state == 0) {
                                 if(*position == '\n') {

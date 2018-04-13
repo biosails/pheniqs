@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Pheniqs : PHilology ENcoder wIth Quality Statistics
-# Copyright (C) 2017  Lior Galanti
+# Copyright (C) 2018  Lior Galanti
 # NYU Center for Genetics and System Biology
 
 # Author: Lior Galanti <lior.galanti@nyu.edu>

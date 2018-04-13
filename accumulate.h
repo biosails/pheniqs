@@ -1,6 +1,6 @@
 /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -120,7 +120,7 @@ public:
     SegmentAccumulator();
     inline void increment(const Sequence& sequence) {
         count++;
-        double value = 0.0;
+        double value(0);
         for(size_t i = 0; i < sequence.length; i++) {
             value += sequence.quality[i];
         }
