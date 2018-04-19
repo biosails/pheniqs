@@ -72,7 +72,7 @@ template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKi
 /*  Pivot */
 
 Pivot::Pivot(Pipeline& pipeline) :
-    index(pipeline.pivot_array.size()),
+    index(static_cast< int32_t >(pipeline.pivot_array.size())),
     action(pipeline.program_action),
     decoder(pipeline.decoder),
     multiplex_barcode(pipeline.multiplex_segment_cardinality),
@@ -85,13 +85,13 @@ Pivot::Pivot(Pipeline& pipeline) :
 
     /* create input segments */
     input.reserve(pipeline.input_segment_cardinality);
-    for(uint64_t i = 0; i < pipeline.input_segment_cardinality; i++) {
+    for(int32_t i = 0; i < pipeline.input_segment_cardinality; i++) {
         input.emplace_back(i, i + 1, pipeline.input_segment_cardinality, pipeline.platform);
     }
 
     /* create output segments */
     output.reserve(pipeline.output_segment_cardinality);
-    for(uint64_t i = 0; i < pipeline.output_segment_cardinality; i++) {
+    for(int32_t i = 0; i < pipeline.output_segment_cardinality; i++) {
         output.emplace_back(i, i + 1, pipeline.output_segment_cardinality, pipeline.platform);
     }
 
@@ -280,7 +280,7 @@ inline void Pivot::decode_with_pamld() {
     double t(0);
     double c(0);
     double p(0);
-    size_t d(0);
+    int32_t d(0);
     for(auto channel : pipeline.channel_array) {
         channel->multiplex_barcode.accurate_decoding_probability(multiplex_barcode, c, d);
         p = c * channel->concentration;
@@ -514,7 +514,7 @@ Pipeline::Pipeline(Environment& environment) :
     program_action(environment.program_action()),
     decoder(decode_value_by_key< Decoder >("decoder", instruction)),
     platform(decode_value_by_key< Platform >("platform", instruction)),
-    leading_segment_index(decode_value_by_key< uint64_t >("leading segment index", instruction)),
+    leading_segment_index(decode_value_by_key< int32_t >("leading segment index", instruction)),
     disable_quality_control(decode_value_by_key< bool >("disable quality control", instruction)),
     long_read(decode_value_by_key< bool >("long read", instruction)),
     include_filtered(decode_value_by_key< bool >("include filtered", instruction)),
@@ -522,12 +522,12 @@ Pipeline::Pipeline(Environment& environment) :
     random_multiplex_barcode_probability(decode_value_by_key< double >("random multiplex barcode probability", instruction)),
     multiplex_confidence(decode_value_by_key< double >("multiplex confidence", instruction)),
     threads(decode_value_by_key< int32_t >("threads", instruction)),
-    input_segment_cardinality(decode_value_by_key< uint64_t >("input segment cardinality", instruction)),
-    output_segment_cardinality(decode_value_by_key< uint64_t >("output segment cardinality", instruction)),
-    multiplex_segment_cardinality(decode_value_by_key< uint64_t >("multiplex segment cardinality", instruction)),
-    molecular_segment_cardinality(decode_value_by_key< uint64_t >("molecular segment cardinality", instruction)),
-    concatenated_multiplex_barcode_length(decode_value_by_key< uint64_t >("concatenated multiplex barcode length", instruction)),
-    concatenated_molecular_barcode_length(decode_value_by_key< uint64_t >("concatenated molecular barcode length", instruction)),
+    input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", instruction)),
+    output_segment_cardinality(decode_value_by_key< int32_t >("output segment cardinality", instruction)),
+    multiplex_segment_cardinality(decode_value_by_key< int32_t >("multiplex segment cardinality", instruction)),
+    molecular_segment_cardinality(decode_value_by_key< int32_t >("molecular segment cardinality", instruction)),
+    concatenated_multiplex_barcode_length(decode_value_by_key< int32_t >("concatenated multiplex barcode length", instruction)),
+    concatenated_molecular_barcode_length(decode_value_by_key< int32_t >("concatenated molecular barcode length", instruction)),
     end_of_input(false),
     thread_pool({NULL, 0}),
     undetermined(NULL),

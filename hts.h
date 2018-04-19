@@ -210,9 +210,9 @@ protected:
             (bam1_t.core.n_cigar << 2) +        // 32 bit per cigar operation 
             bam1_t.l_aux                        // auxiliary tags added later
         */
-        size_t i;
+        int32_t i;
         uint32_t l_data;
-        size_t qname_nuls(4 - segment.name.l % 4);
+        int32_t qname_nuls(4 - segment.name.l % 4);
         record->core.l_qname = segment.name.l + qname_nuls;
         if(record->core.l_qname <= numeric_limits< uint8_t >::max()) {
             record->core.flag = segment.flag;

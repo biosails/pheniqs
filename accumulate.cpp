@@ -25,34 +25,19 @@
 
 NucleicAcidAccumulator::NucleicAcidAccumulator() :
     count(0),
-    min(0),
-    max(0),
+    min_quality(0),
+    max_quality(0),
     sum(0),
-    mean(0),
+    mean_quality(0),
     Q1(0),
     Q3(0),
     IQR(0),
     LW(0),
     RW(0),
-    median(0) {
+    median_quality(0) {
     for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
         distribution[i] = 0;
     }
-};
-inline uint64_t NucleicAcidAccumulator::quantile(const double portion) {
-    uint64_t position(portion * count);
-    uint64_t cell(0);
-    while (position > 0) {
-        if(distribution[cell] >= position) {
-            break;
-        }
-        position -= distribution[cell];
-        cell++;
-        while (distribution[cell] == 0) {
-            cell++;
-        }
-    }
-    return cell;
 };
 void NucleicAcidAccumulator::finalize() {
     for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
@@ -63,23 +48,23 @@ void NucleicAcidAccumulator::finalize() {
             const uint64_t value(distribution[i]);
             sum += (value * i);
             if(value != 0) {
-                max = i;
-                if(min == 0) {
-                    min = i;
+                max_quality = i;
+                if(min_quality == 0) {
+                    min_quality = i;
                 }
             }
         }
-        mean = double(sum) / double(count);
-        median = quantile(0.5);
+        mean_quality = double(sum) / double(count);
+        median_quality = quantile(0.5);
         Q1 = quantile(0.25);
         Q3 = quantile(0.75);
         IQR = Q3 - Q1;
 
         double W(Q1 - IQR * 1.5);
-        LW = (W < min) ? min : W;
+        LW = (W < min_quality) ? min_quality : W;
 
         W = Q3 + IQR * 1.5;
-        RW = (W > max) ? max : W;
+        RW = (W > max_quality) ? max_quality : W;
     }
 };
 NucleicAcidAccumulator& NucleicAcidAccumulator::operator+=(const NucleicAcidAccumulator& rhs) {
@@ -145,8 +130,8 @@ SegmentAccumulator& SegmentAccumulator::operator+=(const SegmentAccumulator& rhs
 FeedAccumulator::FeedAccumulator(const FeedSpecification& specification) :
     url(specification.url),
     length(0),
-    shortest(numeric_limits< uint64_t >::max()) {
-    for(size_t i = 0; i < IUPAC_CODE_SIZE; i++) {
+    shortest(numeric_limits< int32_t >::max()) {
+    for(uint8_t i = 0; i < IUPAC_CODE_SIZE; i++) {
         iupac_nucleic_acid_count[i] = 0;
     }
 };
@@ -201,16 +186,16 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
                 v.SetUint64(cycles[c]->iupac_nucleic_acid[n].RW);
                 cycle_quality_right_whisker.PushBack(v, allocator);
 
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].min);
+                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].min_quality);
                 cycle_quality_min.PushBack(v, allocator);
 
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].max);
+                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].max_quality);
                 cycle_quality_max.PushBack(v, allocator);
 
-                v.SetDouble(cycles[c]->iupac_nucleic_acid[n].mean);
+                v.SetDouble(cycles[c]->iupac_nucleic_acid[n].mean_quality);
                 cycle_quality_mean.PushBack(v, allocator);
 
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].median);
+                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].median_quality);
                 cycle_quality_median.PushBack(v, allocator);
             }
 
@@ -256,7 +241,7 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
     value.AddMember("average phred score report", average_phred_report, allocator);
 };
 void FeedAccumulator::finalize() {
-    if(shortest == numeric_limits< uint64_t >::max()) {
+    if(shortest == numeric_limits< int32_t >::max()) {
         shortest = 0;
     }
     for(auto cycle : cycles) {
@@ -266,7 +251,7 @@ void FeedAccumulator::finalize() {
 };
 FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
     if(rhs.length > length) {
-        for(size_t i = length; i < rhs.length; i++) {
+        for(int32_t i = length; i < rhs.length; i++) {
             cycles.push_back(new CycleAccumulator());
         }
         length = rhs.length;
@@ -274,11 +259,11 @@ FeedAccumulator& FeedAccumulator::operator+=(const FeedAccumulator& rhs) {
 
     shortest = min(shortest, rhs.shortest);
 
-    for(size_t code = 0; code < IUPAC_CODE_SIZE; code++) {
+    for(uint8_t code = 0; code < IUPAC_CODE_SIZE; code++) {
         iupac_nucleic_acid_count[code] += rhs.iupac_nucleic_acid_count[code];
     }
 
-    for(size_t i = 0; i < rhs.length; i++) {
+    for(int32_t i = 0; i < rhs.length; i++) {
         *cycles[i] += *rhs.cycles[i];
     }
     average_phred += rhs.average_phred;

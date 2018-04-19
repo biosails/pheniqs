@@ -26,13 +26,12 @@
 
 using std::numeric_limits;
 
-const uint64_t DEFAULT_PHRED_OFFSET(33);
-const uint64_t SAM_PHRED_DECODING_OFFSET(33);
-const uint64_t MIN_PHRED_VALUE(2);
-const uint64_t MAX_PHRED_VALUE(104);
-const uint64_t MAX_VALID_PHRED_VALUE(40);
-const uint64_t PHRED_RANGE(128);
-const uint64_t EFFECTIVE_PHRED_RANGE(128);
+const uint8_t SAM_PHRED_DECODING_OFFSET(33);
+const uint8_t MIN_PHRED_VALUE(2);
+const uint8_t MAX_PHRED_VALUE(104);
+const uint8_t MAX_VALID_PHRED_VALUE(40);
+const uint8_t PHRED_RANGE(128);
+const uint8_t EFFECTIVE_PHRED_RANGE(128);
 const double UNIFORM_BASE_PROBABILITY(0.25);
 const double UNIFORM_BASE_PHRED(6.02059991327962329421552567509934);
 

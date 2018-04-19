@@ -86,10 +86,10 @@ template<> bool decode_value_by_key< uint8_t >(const Value::Ch* key, uint8_t& va
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
         unsigned v;
-        if(element->value.IsUint() && (v = element->value.GetUint()) < numeric_limits< uint8_t >::max()) {
+        if(element->value.IsUint() && (v = element->value.GetUint()) <= numeric_limits< uint8_t >::max()) {
             value = static_cast< uint8_t >(v);
             return true;
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer smaller than " + to_string(numeric_limits< uint8_t >::max())); }
+        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer no bigger than " + to_string(numeric_limits< uint8_t >::max())); }
     }
     return false;
 };
@@ -101,9 +101,9 @@ template<> bool decode_value_by_key< vector< uint8_t > >(const Value::Ch* key, v
                 value.reserve(value.size() + element->value.Size());
                 unsigned v;
                 for(const auto& e : element->value.GetArray()) {
-                    if(e.IsUint() && (v = e.GetUint()) < numeric_limits< uint8_t >::max()) {
+                    if(e.IsUint() && (v = e.GetUint()) <= numeric_limits< uint8_t >::max()) {
                         value.emplace_back(static_cast < uint8_t >(v));
-                    } else { throw ConfigurationError(string(key) + " element member must be an unsigned integer smaller than " + to_string(numeric_limits< uint8_t >::max())); }
+                    } else { throw ConfigurationError(string(key) + " element member must be an unsigned integer no bigger than " + to_string(numeric_limits< uint8_t >::max())); }
                 }
                 return true;
             }
@@ -114,31 +114,45 @@ template<> bool decode_value_by_key< vector< uint8_t > >(const Value::Ch* key, v
 template<> bool decode_value_by_key< int32_t >(const Value::Ch* key, int32_t& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
-        int64_t v;
-        if(element->value.IsInt64() && (v = element->value.GetInt64()) < numeric_limits< int32_t >::max() && v > numeric_limits< int32_t >::min()) {
-            value = static_cast< int32_t >(v);
+        if(element->value.IsInt()) {
+            value = element->value.GetInt();
             return true;
         } else { throw ConfigurationError(string(key) + " element must be an integer between " + to_string(numeric_limits< int32_t >::min()) + " and " + to_string(numeric_limits< int32_t >::max())); }
+    }
+    return false;
+};
+template<> bool decode_value_by_key< vector< int32_t > >(const Value::Ch* key, vector< int32_t >& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsArray()){
+            if(!element->value.Empty()) {
+                value.reserve(value.size() + element->value.Size());
+                for(const auto& e : element->value.GetArray()) {
+                    if(e.IsInt()) {
+                        value.emplace_back(e.GetInt());
+                    } else { throw ConfigurationError(string(key) + " element member must be an integer between " + to_string(numeric_limits< int32_t >::min()) + " and " + to_string(numeric_limits< int32_t >::max())); }
+                }
+                return true;
+            }
+        } else { throw ConfigurationError(string(key) + " element must be an array"); }
     }
     return false;
 };
 template<> bool decode_value_by_key< uint32_t >(const Value::Ch* key, uint32_t& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
-        uint64_t v;
-        if(element->value.IsUint64() && (v = element->value.GetUint64()) < numeric_limits< uint32_t >::max()) {
-            value = static_cast< uint32_t >(v);
+        if(element->value.IsUint()) {
+            value = element->value.GetUint();
             return true;
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer smaller than " + to_string(numeric_limits< uint32_t >::max())); }
+        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer no bigger than " + to_string(numeric_limits< uint32_t >::max())); }
     }
     return false;
 };
 template<> bool decode_value_by_key< int64_t >(const Value::Ch* key, int64_t& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
-        int64_t v;
-        if(element->value.IsInt64() && (v = element->value.GetInt64()) < numeric_limits< int64_t >::max()) {
-            value = v;
+        if(element->value.IsInt64()) {
+            value = element->value.GetInt64();
             return true;
         } else { throw ConfigurationError(string(key) + " element must be an integer between " + to_string(numeric_limits< int64_t >::min()) + " and " + to_string(numeric_limits< int64_t >::max())); }
     }
@@ -147,11 +161,10 @@ template<> bool decode_value_by_key< int64_t >(const Value::Ch* key, int64_t& va
 template<> bool decode_value_by_key< uint64_t >(const Value::Ch* key, uint64_t& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
-        uint64_t v;
-        if(element->value.IsUint64() && (v = element->value.GetUint64()) < numeric_limits< uint64_t >::max()) {
-            value = v;
+        if(element->value.IsUint64()) {
+            value = element->value.GetUint64();
             return true;
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer smaller than " + to_string(numeric_limits< uint64_t >::max())); }
+        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer no bigger than " + to_string(numeric_limits< uint64_t >::max())); }
     }
     return false;
 };
@@ -161,11 +174,10 @@ template<> bool decode_value_by_key< vector< uint64_t > >(const Value::Ch* key, 
         if(element->value.IsArray()){
             if(!element->value.Empty()) {
                 value.reserve(value.size() + element->value.Size());
-                uint64_t v;
                 for(const auto& e : element->value.GetArray()) {
-                    if(e.IsUint64() && (v = e.GetUint64()) < numeric_limits< uint64_t >::max()) {
-                        value.emplace_back(v);
-                    } else { throw ConfigurationError(string(key) + " element member must be an unsigned integer smaller than " + to_string(numeric_limits< uint64_t >::max())); }
+                    if(e.IsUint64()) {
+                        value.emplace_back(e.GetUint64());
+                    } else { throw ConfigurationError(string(key) + " element member must be an unsigned integer no bigger than " + to_string(numeric_limits< uint64_t >::max())); }
                 }
                 return true;
             }

@@ -55,6 +55,10 @@ public:
 };
 
 class OutOfMemoryError : public exception {
+public:
+    virtual const char* what() const throw() {
+        return "Out of memory error";
+    };
 };
 
 class ConfigurationError : public exception {

@@ -62,9 +62,12 @@ enum class ProgramState : int8_t {
     UNKNOWN_ERROR,
     INTERNAL_ERROR,
     CONFIGURATION_ERROR,
+    OUT_OF_MEMORY_ERROR,
     COMMAND_LINE_ERROR,
     IO_ERROR,
     SEQUENCE_ERROR,
+    OVERFLOW_ERROR,
+    CORRUPT_AUXILIARY_ERROR,
 };
 
 class Environment {
@@ -112,10 +115,10 @@ private:
     void load_concentration_prior();
     bool load_input_feed_array();
     void load_transformation_array();
-    void pad_output_url_array(const uint64_t& output_segment_cardinality);
+    void pad_output_url_array(const int32_t& output_segment_cardinality);
     bool load_output_feed_array();
-    void load_undetermined_barcode(const vector< uint64_t >& multiplex_barcode_length);
-    void load_multiplex_barcode_distance_metric(const vector< uint64_t >& multiplex_barcode_length);
+    void load_undetermined_barcode(const vector< int32_t >& multiplex_barcode_length);
+    void load_multiplex_barcode_distance_metric(const vector< int32_t >& multiplex_barcode_length);
     void load_barcode_tolerance(const vector< BarcodeDistanceMetric >& multiplex_barcode_set_distance);
     void cross_validate_io();
 };

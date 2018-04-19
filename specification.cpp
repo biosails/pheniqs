@@ -27,7 +27,7 @@
 */
 FeedSpecification::FeedSpecification (
     const IoDirection& direction,
-    const uint64_t& index,
+    const int32_t& index,
     const URL& url,
     const Platform& platform,
     const uint8_t& phred_offset) :
@@ -206,7 +206,7 @@ void FeedSpecification::probe() {
                         }
                     }
                     if(peeked > 0) { 
-                        uint64_t state(0);
+                        size_t state(0);
                         char* position((char*)buffer);
                         char* end(position + peeked);
                         while(position < end && position != NULL) {
@@ -262,8 +262,8 @@ template<> bool decode_value_by_key< list< FeedSpecification* > >(const Value::C
                         IoDirection direction(IoDirection::UNKNOWN);
                         decode_value_by_key< IoDirection >("direction", direction, element);
 
-                        uint64_t index;
-                        decode_value_by_key< uint64_t >("index", index, element);
+                        int32_t index;
+                        decode_value_by_key< int32_t >("index", index, element);
 
                         URL url;
                         decode_file_url_by_key("url", url, direction, element);
@@ -428,7 +428,7 @@ template<> bool decode_value_by_key< list< ChannelSpecification > >(const Value:
                 for(const auto& element : collection->value.GetArray()) {
                     if(element.IsObject()) {
                         ChannelSpecification specification;
-                        decode_value_by_key< uint64_t >("index", specification.index, element);
+                        decode_value_by_key< int32_t >("index", specification.index, element);
                         decode_value_by_key< int64_t >("TC", specification.TC, element);
                         decode_value_by_key< kstring_t >("FS", specification.FS, element);
                         decode_value_by_key< kstring_t >("CO", specification.CO, element);

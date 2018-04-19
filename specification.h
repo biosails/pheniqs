@@ -43,7 +43,6 @@ using std::endl;
 using std::cerr;
 using std::cout;
 using std::fixed;
-using std::uint64_t;
 using std::string;
 using std::vector;
 using std::ostream;
@@ -55,16 +54,16 @@ using std::make_pair;
 using std::setprecision;
 using std::unordered_map;
 
-const uint64_t PEEK_BUFFER_CAPACITY(4096);
-const uint64_t DEFAULT_FEED_CAPACITY(60);
-const uint64_t DEFAULT_FEED_RESOLUTION(60);
+const ssize_t PEEK_BUFFER_CAPACITY(4096);
+const int DEFAULT_FEED_CAPACITY(60);
+const int DEFAULT_FEED_RESOLUTION(60);
 
 class FeedSpecification {
 friend ostream& operator<<(ostream& o, const FeedSpecification& specification);
 
 public:
     const IoDirection direction;
-    const uint64_t index;
+    const int32_t index;
     URL url;
     Platform platform;
     int capacity;
@@ -76,7 +75,7 @@ public:
 
     FeedSpecification (
         const IoDirection& direction,
-        const uint64_t& index,
+        const int32_t& index,
         const URL& url,
         const Platform& platform,
         const uint8_t& phred_offset);
@@ -108,7 +107,7 @@ class ChannelSpecification {
 friend ostream& operator<<(ostream& o, const ChannelSpecification& channel);
 
 public:
-    uint64_t index;
+    int32_t index;
     int64_t TC;
     kstring_t FS;
     kstring_t CO;

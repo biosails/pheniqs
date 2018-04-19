@@ -65,14 +65,14 @@ friend ostream& operator<<(ostream& o, const Segment& segment);
 void operator=(Segment const &) = delete;
 
 public:
-    const uint64_t index;
+    const size_t index;
     const Platform platform;
     kstring_t name;
     uint16_t flag;
     Sequence sequence;
     Auxiliary auxiliary;
     Segment(const Platform& platform);
-    Segment(const uint64_t& index, const int64_t& FI, const int64_t& TC, const Platform& platform);
+    Segment(const size_t& index, const int64_t& FI, const int64_t& TC, const Platform& platform);
     Segment(const Segment& other);
     ~Segment();
     inline int64_t get_segment_index() const {

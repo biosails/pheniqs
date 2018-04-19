@@ -343,7 +343,7 @@ bool URL::is_writable() const {
 const char* const URL::c_str() const {
     return _path.c_str();
 };
-const uint64_t URL::size() const {
+const size_t URL::size() const {
     return _path.size();
 };
 bool URL::operator==(const URL &other) const {

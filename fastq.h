@@ -134,7 +134,7 @@ public:
     inline void encode(Segment& segment) const {
 
         // write the FastqRecord to Segment
-        segment.sequence.fill((const uint8_t*)(sequence.s), (const uint8_t*)(quality.s), sequence.l);
+        segment.sequence.fill((const uint8_t*)(sequence.s), (const uint8_t*)(quality.s), static_cast< int32_t >(sequence.l));
         ks_put_string(name, segment.name);
         ks_put_string(comment, segment.auxiliary.CO);
         segment.auxiliary.FI = 0;

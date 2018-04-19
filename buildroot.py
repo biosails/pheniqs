@@ -130,6 +130,17 @@ base_configuration = {
                         'help': 'build build root environment', 
                         'name': 'build'
                     }
+                },
+                {
+                    'argument': [
+                        'filter',
+                        'path'
+                    ], 
+                    'implementation': 'clean.package', 
+                    'instruction': {
+                        'help': 'delete exploded package', 
+                        'name': 'clean.package'
+                    }
                 }
             ], 
             'instruction': {
@@ -149,9 +160,6 @@ log_levels = {
     'error': logging.ERROR,
     'critical': logging.CRITICAL
 }
-
-def to_json(node):
-    print(json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4))
 
 def merge(this, other):
     result = other
@@ -402,7 +410,7 @@ class Pipeline(object):
                         package = zlibPackage(self, p)
                     elif key == 'xz':
                         package = xzPackage(self, p)
-                    elif key == 'bz2':
+                    elif key == 'bzip2':
                         package = bz2Package(self, p)
                     elif key == 'htslib':
                         package = htslibPackage(self, p)
@@ -472,6 +480,9 @@ class Pipeline(object):
         elif self.action == 'build':
             self.install()
 
+        elif self.action == 'clean.package':
+            self.clean_package()
+
     def close(self):
         self.save_cache()
         self.stdout.close();
@@ -490,6 +501,10 @@ class Pipeline(object):
             self.log.info('cleaning %s', package.display_name)
             package.clean()
 
+    def clean_package(self):
+        for package in self.package:
+            self.log.info('clearing %s', package.display_name)
+            package.clean_package()
 # Package
 
 class Package(object):
@@ -505,6 +520,8 @@ class Package(object):
             'remote url',
             'package url',
             'download url',
+            'remote filename',
+            'remote basename',
             'extension',
             'compression',
             'display name',
@@ -514,28 +531,29 @@ class Package(object):
             if key not in node:
                 node[key] = None
 
-        node['display name']
         if node['remote url'] is not None:
-            remote_dirname, remote_filename = os.path.split(node['remote url'])
-            remote_basename, compression = os.path.splitext(remote_filename)
+            if node['remote filename'] is None:
+                remote_dirname, node['remote filename'] = os.path.split(node['remote url'])
+
+            remote_basename, compression = os.path.splitext(node['remote filename'])
+            if node['compression'] is None and compression:
+                node['compression'] = compression.strip('.')
+
             remote_basename, extension = os.path.splitext(remote_basename)
-            compression = compression.strip('.')
-            extension = extension.strip('.')
+            if node['extension'] is None and extension:
+                node['extension'] = extension.strip('.')
 
-            if node['compression'] is None:
-                node['compression'] = compression
-
-            if node['extension'] is None:
-                node['extension'] = extension
+            if node['remote basename'] is None and remote_basename:
+                 node['remote basename'] = remote_basename
 
             if node['download url'] is None:
-                node['download url'] = os.path.join(self.download_prefix, remote_filename)
+                node['download url'] = os.path.join(self.download_prefix, node['remote filename'])
 
             if node['path in archive'] is None:
-                node['path in archive'] = remote_basename
+                node['path in archive'] = node['remote basename']
 
-            if node['version'] is None and remote_basename:
-                node['version'] = remote_basename.strip(node['name']).strip('-')
+            if node['version'] is None and node['remote basename']:
+                node['version'] = node['remote basename'].strip(node['name']).strip('-')
 
         if node['package url'] is None and node['path in archive'] is not None:
             node['package url'] = os.path.join(self.package_prefix, node['path in archive'])
@@ -555,7 +573,6 @@ class Package(object):
         content = json.dumps(node, sort_keys=True, ensure_ascii=False)
         node['configuration digest'] = hashlib.sha1(content.encode('utf8')).hexdigest()
 
-
         if node['configuration digest'] not in self.cache['package']:
             node['unpacked'] = False
             node['configured'] = False
@@ -564,6 +581,12 @@ class Package(object):
             self.cache['package'][node['configuration digest']] = node
 
         self.node = self.cache['package'][node['configuration digest']]
+
+    @property
+    def env(self):
+        if 'env' not in self.node or self.node['env'] is None:
+            self.node['env'] = os.environ.copy()
+        return self.node['env']
 
     @property
     def cache(self):
@@ -700,15 +723,25 @@ class Package(object):
                 self.download()
 
                 self.log.info('unpacking %s', self.display_name)
-                command = [ 'tar', '-x' ]
-                if self.compression == 'gz':
-                    command.append('-z')
-                elif self.compression == 'bz2':
-                    command.append('-j')
-                command.append('-f')
-                command.append(self.download_url)
+                command = []
+                if self.compression in [ 'gz', 'bz2']:
+                    command.append('tar')
+                    command.append('-x')
+                    if self.compression == 'gz':
+                        command.append('-z')
+                    elif self.compression == 'bz2':
+                        command.append('-j')
+                    command.append('-f')
+                    command.append(self.download_url)
+
+                elif self.compression in [ 'zip' ]:
+                    command.append('unzip')
+                    command.append('-x')
+                    command.append(self.download_url)
+
                 process = Popen(
                     args=command,
+                    env=self.env,
                     cwd=self.package_prefix,
                     stdout=self.stdout,
                     stderr=self.stderr
@@ -740,14 +773,61 @@ class Package(object):
 class makePackage(Package):
     def __init__(self, pipeline, node):
         Package.__init__(self, pipeline, node)
+        for key in [
+            'configure optional',
+            'make build optional',
+            'make build target',
+        ]:
+            if key not in node:
+                self.node[key] = None
+
+        if 'make install target' not in self.node:
+            self.node['make install target'] = 'install'
+
+        if 'make clean target' not in self.node:
+            self.node['make clean target'] = 'clean'
+
+        if 'include prefix in make' not in self.node:
+            self.node['include prefix in make'] = False
+
+    @property
+    def configure_optional(self):
+        return self.node['configure optional']
+
+    @property
+    def make_build_optional(self):
+        return self.node['make build optional']
+
+    @property
+    def make_build_target(self):
+        return self.node['make build target']
+
+    @property
+    def make_install_target(self):
+        return self.node['make install target']
+
+    @property
+    def make_clean_target(self):
+        return self.node['make clean target']
+
+    @property
+    def include_prefix_in_make(self):
+        return self.node['include prefix in make']
 
     def clean(self):
         if self.package_url is not None:
-            if os.path.exists(os.path.join(self.package_url, 'Makefile')):
+            if os.path.exists(os.path.join(self.package_url, 'Makefile')) and self.make_clean_target:
                 self.log.info('cleaning make environment %s', self.display_name)
-                command = [ 'make', 'clean']
+                command = [ 'make', self.make_clean_target ]
+
+                if self.include_prefix_in_make:
+                    command.append('PREFIX={}'.format(self.install_prefix))
+
+                self.log.debug(' '.join([str(i) for i in command]))
+
                 process = Popen(
                     args=command,
+                    env=self.env,
                     cwd=self.package_url,
                     stdout=self.stdout,
                     stderr=self.stderr
@@ -758,7 +838,6 @@ class makePackage(Package):
                     self.node['configured'] = False
                     self.node['built'] = False
                     self.node['installed'] = False
-                    # self.pipeline.save_cache()
                 else:
                     raise CommandFailedError('make clean returned {}'.format(code))
             else:
@@ -766,16 +845,22 @@ class makePackage(Package):
                 self.node['built'] = False
                 self.node['installed'] = False
 
-    def configure(self, optional=None):
+    def configure(self):
         if not self.node['configured']:
             if self.package_url is not None:
                 self.unpack()
                 if os.path.exists(os.path.join(self.package_url, 'configure')):
                     self.log.info('configuring make environment %s', self.display_name)
                     command = [ './configure', '--prefix', self.install_prefix ]
-                    if optional: command.extend(optional)
+
+                    if self.configure_optional:
+                        command.extend(self.configure_optional)
+
+                    self.log.debug(' '.join([str(i) for i in command]))
+
                     process = Popen(
                         args=command,
+                        env=self.env,
                         cwd=self.package_url,
                         stdout=self.stdout,
                         stderr=self.stderr
@@ -784,7 +869,6 @@ class makePackage(Package):
                     code = process.returncode
                     if code == 0:
                         self.node['configured'] = True
-                        # self.pipeline.save_cache()
                     else:
                         raise CommandFailedError('configure returned {}'.format(code))
                 else:
@@ -796,8 +880,21 @@ class makePackage(Package):
             if self.package_url is not None:
                 self.log.info('building with make %s', self.display_name)
                 command = [ 'make' ]
+
+                if self.make_build_target:
+                    command.append(self.make_build_target)
+
+                if self.include_prefix_in_make:
+                    command.append('PREFIX={}'.format(self.install_prefix))
+
+                if self.make_build_optional:
+                    command.extend(self.make_build_optional)
+
+                self.log.debug(' '.join([str(i) for i in command]))
+
                 process = Popen(
                     args=command,
+                    env=self.env,
                     cwd=self.package_url,
                     stdout=self.stdout,
                     stderr=self.stderr
@@ -815,9 +912,16 @@ class makePackage(Package):
             self.build()
             if self.package_url is not None:
                 self.log.info('installing with make %s', self.display_name)
-                command = [ 'make' , 'install' ]
+                command = [ 'make' , self.make_install_target ]
+
+                if self.include_prefix_in_make:
+                    command.append('PREFIX={}'.format(self.install_prefix))
+
+                self.log.debug(' '.join([str(i) for i in command]))
+
                 process = Popen(
                     args=command,
+                    env=self.env,
                     cwd=self.package_url,
                     stdout=self.stdout,
                     stderr=self.stderr
@@ -826,38 +930,12 @@ class makePackage(Package):
                 code = process.returncode
                 if code == 0:
                     self.node['installed'] = True
-                    # self.pipeline.save_cache()
                 else:
                     raise CommandFailedError('make install returned {}'.format(code))
 
 class zlibPackage(makePackage):
     def __init__(self, pipeline, node):
         makePackage.__init__(self, pipeline, node)
-
-    def clean(self):
-        if self.package_url is not None:
-            if os.path.exists(os.path.join(self.package_url, 'Makefile')):
-                self.log.info('cleaning make environment %s', self.display_name)
-                command = [ 'make', 'distclean']
-                process = Popen(
-                    args=command,
-                    cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
-                )
-                output, error = process.communicate()
-                code = process.returncode
-                if code == 0:
-                    self.node['configured'] = False
-                    self.node['built'] = False
-                    self.node['installed'] = False
-                    # self.pipeline.save_cache()
-                else:
-                    raise CommandFailedError('make clean returned {}'.format(code))
-            else:
-                self.node['configured'] = False
-                self.node['built'] = False
-                self.node['installed'] = False
 
 class xzPackage(makePackage):
     def __init__(self, pipeline, node):
@@ -866,26 +944,6 @@ class xzPackage(makePackage):
 class bz2Package(makePackage):
     def __init__(self, pipeline, node):
         makePackage.__init__(self, pipeline, node)
-
-    def install(self):
-        if not self.node['installed']:
-            self.build()
-            if self.package_url is not None:
-                self.log.info('installing with make %s', self.display_name)
-                command = [ 'make' , 'install' ]
-                command.append('PREFIX={}'.format(self.install_prefix))
-                process = Popen(
-                    args=command,
-                    cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
-                )
-                output, error = process.communicate()
-                code = process.returncode
-                if code == 0:
-                    self.node['installed'] = True
-                else:
-                    raise CommandFailedError('make install returned {}'.format(code))
 
 class rapidjsonPackage(Package):
     def __init__(self, pipeline, node):
@@ -901,6 +959,7 @@ class rapidjsonPackage(Package):
                 command.append(os.path.join(self.install_prefix, 'include/'))
                 process = Popen(
                     args=command,
+                    env=self.env,
                     cwd=self.package_url,
                     stdout=self.stdout,
                     stderr=self.stderr
@@ -919,53 +978,14 @@ class htslibPackage(makePackage):
 class samtoolsPackage(makePackage):
     def __init__(self, pipeline, node):
         makePackage.__init__(self, pipeline, node)
-    def configure(self, optional=None):
-        makePackage.configure(self, [ '--with-htslib={}'.format(self.install_prefix), ])
+        self.node['configure optional'] = [ '--with-htslib={}'.format(self.install_prefix) ]
 
 class pheniqsPackage(makePackage):
     def __init__(self, pipeline, node):
         makePackage.__init__(self, pipeline, node)
-
-    def build(self):
-        if not self.node['built']:
-            self.configure()
-            if self.package_url is not None:
-                self.log.info('building with make %s', self.display_name)
-                command = [ 'make' ]
-                command.append('PREFIX={}'.format(self.install_prefix))
-                process = Popen(
-                    args=command,
-                    cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
-                )
-                output, error = process.communicate()
-                code = process.returncode
-                if code == 0:
-                    self.node['built'] = True
-                    self.pipeline.save_cache()
-                else:
-                    raise CommandFailedError('make returned {}'.format(code))
-
-    def install(self):
-        if not self.node['installed']:
-            self.build()
-            if self.package_url is not None:
-                self.log.info('installing with make %s', self.display_name)
-                command = [ 'make' , 'install' ]
-                command.append('PREFIX={}'.format(self.install_prefix))
-                process = Popen(
-                    args=command,
-                    cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
-                )
-                output, error = process.communicate()
-                code = process.returncode
-                if code == 0:
-                    self.node['installed'] = True
-                else:
-                    raise CommandFailedError('make install returned {}'.format(code))
+        self.node['make build optional'] = []
+        for package in self.pipeline.package:
+            self.node['make build optional'].append('{}_VERSION={}'.format(package.name.upper(), package.version))
 
 def main():
     logging.basicConfig()

@@ -65,7 +65,7 @@ Sequence::~Sequence() {
 };
 void Sequence::mask(const uint8_t& threshold) {
     if(threshold > 0) {
-        for(size_t i = 0; i < length; i++) {
+        for(int32_t i = 0; i < length; i++) {
             if(quality[i] < threshold) {
                 code[i] = ANY_NUCLEOTIDE;
                 // TODO do we also set the quality value to 2?
@@ -80,7 +80,7 @@ void Sequence::expected_error(float& error) const {
     }
     error = float(value);
 };
-void Sequence::fill(const uint8_t* code, const uint8_t* quality, const size_t& size) {
+void Sequence::fill(const uint8_t* code, const uint8_t* quality, const int32_t& size) {
     if(size > 0) {
         if(size >= capacity) {
             capacity = size + 1;
@@ -98,7 +98,7 @@ void Sequence::fill(const uint8_t* code, const uint8_t* quality, const size_t& s
     length = size;
     terminate();
 };
-void Sequence::fill(const char* code, const size_t& size) {
+void Sequence::fill(const char* code, const int32_t& size) {
     if(size > 0) {
         if(size >= capacity) {
             capacity = size + 1;
@@ -111,7 +111,7 @@ void Sequence::fill(const char* code, const size_t& size) {
             }
         }
 
-        for(size_t i = 0; i < size; i++) {
+        for(int32_t i = 0; i < size; i++) {
             *(this->code + i) = AsciiToAmbiguousBam[uint8_t(code[i])];
             *(this->quality + i) = MAX_VALID_PHRED_VALUE;
         }
@@ -119,7 +119,7 @@ void Sequence::fill(const char* code, const size_t& size) {
     length = size;
     terminate();
 };
-void Sequence::append(const uint8_t* code, const uint8_t* quality, const size_t& size) {
+void Sequence::append(const uint8_t* code, const uint8_t* quality, const int32_t& size) {
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length+ size + 1;
@@ -137,7 +137,7 @@ void Sequence::append(const uint8_t* code, const uint8_t* quality, const size_t&
         terminate();
     }
 };
-void Sequence::append(const Sequence& other, const size_t& start, const size_t& size) {
+void Sequence::append(const Sequence& other, const int32_t& start, const int32_t& size) {
     if(size > 0) {
         if(length + size >= capacity) {
             capacity = length + size + 1;
@@ -155,10 +155,10 @@ void Sequence::append(const Sequence& other, const size_t& start, const size_t& 
         terminate();
     }
 };
-size_t Sequence::append(const Sequence& other, const Transform& transform) {
-    const size_t start(transform.token.decode_start(other.length));
-    const size_t end(transform.token.decode_end(other.length));
-    const size_t size(end - start);
+int32_t Sequence::append(const Sequence& other, const Transform& transform) {
+    const int32_t start(transform.token.decode_start(other.length));
+    const int32_t end(transform.token.decode_end(other.length));
+    const int32_t size(end - start);
 
     if(size > 0) {
         if(length + size >= capacity) {
@@ -180,7 +180,7 @@ size_t Sequence::append(const Sequence& other, const Transform& transform) {
             };
 
             case LeftTokenOperator::REVERSE_COMPLEMENT: {
-                for(uint64_t i = 0; i < size; i++) {
+                for(int32_t i = 0; i < size; i++) {
                     code[length + i] = BamToReverseComplementBam[other.code[end - i - 1]];
                     quality[length + i] = other.quality[end - i - 1];
                 }
@@ -204,7 +204,7 @@ ostream& operator<<(ostream& o, const Sequence& sequence) {
     return o;
 };
 bool operator<(const Sequence& left, const Sequence& right) {
-    uint64_t position(0);
+    int32_t position(0);
     while(position < left.length && position < right.length) {
         if(left.code[position] == right.code[position]) {
             position++;
@@ -219,7 +219,7 @@ bool operator<(const Sequence& left, const Sequence& right) {
     return false;
 };
 bool operator>(const Sequence& left, const Sequence& right) {
-    uint64_t position(0);
+    int32_t position(0);
     while(position < left.length && position < right.length) {
         if(left.code[position] == right.code[position]) {
             position++;
@@ -247,7 +247,7 @@ Barcode::Barcode() :
     length(0),
     threshold(0) {
 };
-Barcode::Barcode(const uint64_t& width) : 
+Barcode::Barcode(const size_t& width) : 
     length(0),
     tolerance(width),
     fragments(width) {
@@ -273,7 +273,7 @@ Barcode::operator string() const {
     /* NOTICE barcode is converted to the BAM encoding string, not iupac */
     string key;
     for(const auto& sequence : fragments) {
-        for(size_t i = 0; i < sequence.length; i++) {
+        for(int32_t i = 0; i < sequence.length; i++) {
             key.push_back(sequence.code[i]);
         }
     }
@@ -285,21 +285,21 @@ void Barcode::set_tolerance(const vector<uint8_t>& tolerance) {
 void Barcode::set_threshold(const uint8_t& threshold) {
     this->threshold = threshold;
 };
-void Barcode::fill(const uint64_t& position, const char* code, const size_t& size) {
+void Barcode::fill(const size_t& position, const char* code, const int32_t& size) {
     resize(position + 1);
     length += size;
     fragments[position].fill(code, size);
 };
-void Barcode::append(const uint64_t& position, const Sequence& sequence, const Transform& transform) {
+void Barcode::append(const size_t& position, const Sequence& sequence, const Transform& transform) {
     length += fragments[transform.output_segment_index].append(sequence, transform);
 };
-string Barcode::iupac_ambiguity(const uint64_t position) const {
+string Barcode::iupac_ambiguity(const size_t position) const {
     return fragments[position].iupac_ambiguity();
 };
 string Barcode::iupac_ambiguity() const {
     string result;
     for(const auto& sequence : fragments) {
-        for(size_t i = 0; i < sequence.length; i++) {
+        for(int32_t i = 0; i < sequence.length; i++) {
             result.push_back(BamToAmbiguousAscii[uint8_t(sequence.code[i])]);
         }
     }
@@ -338,12 +338,12 @@ template<> bool decode_value_by_key< Barcode >(const Value::Ch* key, Barcode& va
     if(element != container.MemberEnd() && !element->value.IsNull()) {
         if(element->value.IsArray()) {
             if(!element->value.Empty()) {
-                uint64_t index(0);
+                size_t index(0);
                 value.clear();
                 value.resize(element->value.Size());
                 for(auto& e : element->value.GetArray()) {
                     if(e.IsString()) {
-                        value.fill(index, e.GetString(), e.GetStringLength());
+                        value.fill(index, e.GetString(), static_cast< int32_t >(e.GetStringLength()));
                     } else { throw ConfigurationError(string(key) + " element member must be a string"); }
                     index++;
                 }

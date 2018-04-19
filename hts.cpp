@@ -125,13 +125,15 @@ void HtsHeader::assemble() {
     for(const auto& comment: comments){
         comment.encode(buffer);
     }
-    hdr->n_targets = 0;
-    hdr->l_text = buffer.l;
-    if((hdr->text = static_cast< char* >(malloc(hdr->l_text + 1))) == NULL) {
-        throw OutOfMemoryError();
-    }
-    memcpy(hdr->text, buffer.s, hdr->l_text + 1);
-    ks_free(buffer);
+    if(buffer.l <= numeric_limits< uint32_t >::max()) {
+        hdr->n_targets = 0;
+        hdr->l_text = static_cast< uint32_t >(buffer.l);
+        if((hdr->text = static_cast< char* >(malloc(hdr->l_text + 1))) == NULL) {
+            throw OutOfMemoryError();
+        }
+        memcpy(hdr->text, buffer.s, hdr->l_text + 1);
+        ks_free(buffer);
+    } else { throw OverflowError("SAM header must not exceed " + to_string(numeric_limits< uint32_t >::max()) + " bytes"); }
 };
 void HtsHeader::encode(htsFile* hts_file) const {
     if(sam_hdr_write(hts_file, hdr) < 0) {

@@ -41,7 +41,6 @@ namespace rapidjson { typedef ::std::size_t SizeType; }
 #include "error.h"
 #include "kstring.h"
 
-using std::uint64_t;
 using std::string;
 using std::vector;
 using std::list;
@@ -116,6 +115,18 @@ inline bool encode_key_value(const string& key, const int32_t& value, Value& con
     if(value < numeric_limits< int32_t >::max()) {
         container.RemoveMember(key.c_str());
         container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(static_cast< int >(value)).Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
+};
+inline bool encode_key_value(const string& key, const vector< int32_t >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            array.PushBack(Value(v).Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
         return true;
     }
     return false;

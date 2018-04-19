@@ -725,7 +725,7 @@ CommandLine::CommandLine(const int argc, const char** argv) :
     command(NULL),
     selected(NULL) {
 
-    const string content(reinterpret_cast<const char *>(interface_json), interface_json_len);
+    const string content(reinterpret_cast<const char *>(configuration_json), configuration_json_len);
     if(!_configuration.Parse(content.c_str()).HasParseError()) {
         if(_configuration.IsObject()) {
             encode_key_value("version", application_version, _configuration, _configuration);
@@ -1246,6 +1246,27 @@ Argument* CommandLine::get_argument(const Prototype* prototype) {
 };
 ostream& CommandLine::print_version_element(ostream& o, const Layout& layout) const {
     o << name() << " version " << application_version << endl;
+
+    #ifdef ZLIB_VERSION
+        o << "zlib " << ZLIB_VERSION << endl;
+    #endif
+
+    #ifdef BZIP2_VERSION
+        o << "bzlib " << BZIP2_VERSION << endl;
+    #endif
+
+    #ifdef XZ_VERSION
+        o << "xzlib " << XZ_VERSION << endl;
+    #endif
+
+    #ifdef RAPIDJSON_VERSION
+        o << "rapidjson " << RAPIDJSON_VERSION << endl;
+    #endif
+
+    #ifdef HTSLIB_VERSION
+        o << "htslib " << HTSLIB_VERSION << endl;
+    #endif
+
     return o;
 };
 ostream& CommandLine::print_action_element(ostream& o, const Layout& layout) const {

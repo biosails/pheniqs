@@ -113,14 +113,14 @@ void operator=(Pivot const &) = delete;
 
 public:
     thread pivot_thread;
-    const uint64_t index;
+    const int32_t index;
     const ProgramAction action;
     const Decoder decoder;
     bool determined;
     bool filtered;
     double multiplex_probability;
     double conditioned_multiplex_probability;
-    size_t multiplex_distance;
+    int32_t multiplex_distance;
     Barcode multiplex_barcode;
     Barcode molecular_barcode;
     vector< Segment > input;
@@ -157,7 +157,7 @@ private:
 class Channel {
 public:
     mutex channel_mutex;
-    const uint64_t index;
+    const int32_t index;
     const string barcode_key;
     const string rg_key;
     const double concentration;
@@ -190,7 +190,7 @@ public:
     const ProgramAction program_action;
     const Decoder decoder;
     const Platform platform;
-    const uint64_t leading_segment_index;
+    const int32_t leading_segment_index;
     const bool disable_quality_control;
     const bool long_read;
     const bool include_filtered;
@@ -198,12 +198,12 @@ public:
     const double random_multiplex_barcode_probability;
     const double multiplex_confidence;
     const int threads;
-    const uint64_t input_segment_cardinality;
-    const uint64_t output_segment_cardinality;
-    const uint64_t multiplex_segment_cardinality;
-    const uint64_t molecular_segment_cardinality;
-    const uint64_t concatenated_multiplex_barcode_length;
-    const uint64_t concatenated_molecular_barcode_length;
+    const int32_t input_segment_cardinality;
+    const int32_t output_segment_cardinality;
+    const int32_t multiplex_segment_cardinality;
+    const int32_t molecular_segment_cardinality;
+    const int32_t concatenated_multiplex_barcode_length;
+    const int32_t concatenated_molecular_barcode_length;
     InputSpecification input_specification;
     list< ChannelSpecification > channel_specification_array;
     Pipeline(Environment& environment);

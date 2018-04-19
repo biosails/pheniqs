@@ -572,7 +572,7 @@ char* HeadSQAtom::decode(char* position, const char* end) {
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::LN): {
-                LN = strtol(position, &position, 10);
+                LN = static_cast< int32_t >(strtol(position, &position, 10));
                 break;
             };
             case uint16_t(HtsAuxiliaryCode::AH): {

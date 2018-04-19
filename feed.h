@@ -94,7 +94,7 @@ public:
     void set_thread_pool(htsThreadPool* pool) {
         thread_pool = pool;
     };
-    const uint64_t& index() const {
+    const int32_t& index() const {
         return specification.index;
     };
 

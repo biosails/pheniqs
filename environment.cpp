@@ -103,8 +103,8 @@ void Environment::load_interface_instruction() {
     if(collection != original.MemberEnd()) {
         set< string > unique_channel_id;
         if(collection->value.IsArray() && !collection->value.Empty()) {
-            uint64_t channel_index(0);
-            uint64_t undetermined_count(0);
+            int32_t channel_index(0);
+            size_t undetermined_count(0);
             bool undetermined(false);
             Value channel_array(kArrayType);
             for(auto& element : collection->value.GetArray()) {
@@ -256,8 +256,8 @@ void Environment::load_concentration_prior() {
     if(collection != _instruction.MemberEnd()) {
         if(!collection->value.IsNull() && !collection->value.Empty()) {
             double total_concentration(0);
-            uint64_t concentration_count(0);
-            uint64_t concentration_specified(0);
+            size_t concentration_count(0);
+            size_t concentration_specified(0);
 
             for(auto& element : collection->value.GetArray()) {
                 bool undetermined(false);
@@ -307,12 +307,12 @@ void Environment::load_concentration_prior() {
 bool Environment::load_input_feed_array() {
     list< URL > input_url_array;
     if(decode_file_url_list_by_key("input", input_url_array, _instruction, IoDirection::IN)) {
-        uint64_t input_segment_cardinality(input_url_array.size());
+        int32_t input_segment_cardinality(static_cast< int32_t>(input_url_array.size()));
         encode_key_value("input segment cardinality", input_segment_cardinality, _instruction, _instruction);
 
         /*  validate leading_segment_index */
-        uint64_t leading_segment_index(numeric_limits< uint64_t >::max());
-        if(decode_value_by_key< uint64_t >("leading segment index", leading_segment_index, _instruction)) {
+        int32_t leading_segment_index(numeric_limits< int32_t >::max());
+        if(decode_value_by_key< int32_t >("leading segment index", leading_segment_index, _instruction)) {
             if(leading_segment_index >= input_segment_cardinality) {
                 throw ConfigurationError("invalid leading segment index " + to_string(leading_segment_index));
             }
@@ -332,7 +332,7 @@ bool Environment::load_input_feed_array() {
         uint8_t input_phred_offset(numeric_limits< uint8_t >::max());
         decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, _instruction);
 
-        uint64_t feed_index(0);
+        int32_t feed_index(0);
         Value feed_array(kArrayType);
         for(const auto& record : reference) {
             int resolution(record.second);
@@ -352,8 +352,8 @@ bool Environment::load_input_feed_array() {
     return false;
 };
 void Environment::load_transformation_array() {
-    uint64_t input_segment_cardinality(numeric_limits< uint64_t >::max());
-    if(decode_value_by_key< uint64_t >("input segment cardinality", input_segment_cardinality, _instruction)) {
+    int32_t input_segment_cardinality(numeric_limits< int32_t >::max());
+    if(decode_value_by_key< int32_t >("input segment cardinality", input_segment_cardinality, _instruction)) {
         vector< Token > token_array;
         if(decode_value_by_key< vector< Token > >("token", token_array, _instruction)) {
             for(auto& token : token_array) {
@@ -364,7 +364,7 @@ void Environment::load_transformation_array() {
 
             list< Transform > template_transform_array;
             if(decode_transform_array_by_key("template", template_transform_array, _instruction, token_array)) {
-                uint64_t output_segment_cardinality(template_transform_array.size());
+                int32_t output_segment_cardinality(static_cast< int32_t>(template_transform_array.size()));
                 encode_key_value("output segment cardinality", output_segment_cardinality, _instruction, _instruction);
                 pad_output_url_array(output_segment_cardinality);
                 load_output_feed_array();
@@ -373,9 +373,9 @@ void Environment::load_transformation_array() {
             // load multiplex barcode transform array
             list< Transform > multiplex_barcode_transform_array;
             if(decode_transform_array_by_key("multiplex barcode", multiplex_barcode_transform_array, _instruction, token_array)) {
-                uint64_t multiplex_segment_cardinality(multiplex_barcode_transform_array.size());
-                uint64_t concatenated_multiplex_barcode_length(0);
-                vector< uint64_t > multiplex_barcode_length(multiplex_segment_cardinality, 0);
+                int32_t multiplex_segment_cardinality(static_cast< int32_t>(multiplex_barcode_transform_array.size()));
+                int32_t concatenated_multiplex_barcode_length(0);
+                vector< int32_t > multiplex_barcode_length(multiplex_segment_cardinality, 0);
 
                 for(auto& transform : multiplex_barcode_transform_array) {
                     if(transform.token.constant()) {
@@ -408,9 +408,9 @@ void Environment::load_transformation_array() {
             // load molecular barcode transform array
             list< Transform > molecular_barcode_transform_array;
             if(decode_transform_array_by_key("molecular barcode", molecular_barcode_transform_array, _instruction, token_array)) {
-                uint64_t molecular_segment_cardinality(molecular_barcode_transform_array.size());
-                uint64_t concatenated_molecular_barcode_length(0);
-                vector< uint64_t > molecular_barcode_length(molecular_segment_cardinality, 0);
+                int32_t molecular_segment_cardinality(static_cast< int32_t>(molecular_barcode_transform_array.size()));
+                int32_t concatenated_molecular_barcode_length(0);
+                vector< int32_t > molecular_barcode_length(molecular_segment_cardinality, 0);
 
                 for(auto& transform : molecular_barcode_transform_array) {
                     if(transform.token.constant()) {
@@ -434,7 +434,7 @@ void Environment::load_transformation_array() {
         }
     }
 };
-void Environment::pad_output_url_array(const uint64_t& output_segment_cardinality) {
+void Environment::pad_output_url_array(const int32_t& output_segment_cardinality) {
     Value::MemberIterator collection = _instruction.FindMember("channel");
     if(collection != _instruction.MemberEnd()) {
         if(!collection->value.IsNull() && !collection->value.Empty()) {
@@ -442,14 +442,14 @@ void Environment::pad_output_url_array(const uint64_t& output_segment_cardinalit
                 list< URL > array;
                 if(decode_file_url_list_by_key("output", array, element, IoDirection::OUT)) {
                     if(!array.empty()) {
-                        if(array.size() != output_segment_cardinality) {
+                        if(static_cast< int32_t >(array.size()) != output_segment_cardinality) {
                             if(array.size() == 1) {
-                                while(array.size() < output_segment_cardinality) {
+                                while(static_cast< int32_t >(array.size()) < output_segment_cardinality) {
                                     array.push_back(array.front());
                                 }
                             } else { 
-                                uint64_t channel_index;
-                                decode_value_by_key< uint64_t >("index", channel_index, element);
+                                int32_t channel_index;
+                                decode_value_by_key< int32_t >("index", channel_index, element);
                                 throw ConfigurationError("incorrect number of output URLs in channel " + to_string(channel_index)); 
                             }
                         }
@@ -465,10 +465,10 @@ bool Environment::load_output_feed_array() {
     Value::MemberIterator collection = _instruction.FindMember("channel");
     if(collection != _instruction.MemberEnd()) {
         if(!collection->value.IsNull() && !collection->value.Empty()) {
-            unordered_map< URL, unordered_map< uint64_t, int > > reference;
+            unordered_map< URL, unordered_map< int32_t, int > > reference;
             for(auto& element : collection->value.GetArray()) {
-                uint64_t channel_index;
-                if(decode_value_by_key< uint64_t >("index", channel_index, element)) {
+                int32_t channel_index;
+                if(decode_value_by_key< int32_t >("index", channel_index, element)) {
                     list< URL > output;
                     if(decode_file_url_list_by_key("output", output, element, IoDirection::OUT)) {
                         for(auto& url : output) {
@@ -487,7 +487,7 @@ bool Environment::load_output_feed_array() {
             uint8_t output_phred_offset(numeric_limits< uint8_t >::max());
             decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, _instruction);
 
-            uint64_t feed_index(0);
+            int32_t feed_index(0);
             Value feed_array(kArrayType);
             for(const auto& url_record : reference) {
                 const URL& url = url_record.first;
@@ -515,7 +515,7 @@ bool Environment::load_output_feed_array() {
     }
     return false;
 };
-void Environment::load_undetermined_barcode(const vector< uint64_t >& multiplex_barcode_length) {
+void Environment::load_undetermined_barcode(const vector< int32_t >& multiplex_barcode_length) {
     Value::MemberIterator collection = _instruction.FindMember("channel");
     if(collection != _instruction.MemberEnd()) {
         if(!collection->value.IsNull() && !collection->value.Empty()) {
@@ -525,7 +525,7 @@ void Environment::load_undetermined_barcode(const vector< uint64_t >& multiplex_
                     Barcode barcode(multiplex_barcode_length.size());
                     for(size_t i = 0; i < multiplex_barcode_length.size(); i++) {
                         string pattern(multiplex_barcode_length[i], '=');
-                        barcode.fill(i, pattern.c_str(), pattern.length());
+                        barcode.fill(i, pattern.c_str(), static_cast< int32_t >(pattern.length()));
                     }
                     encode_key_value("barcode", barcode, element, _instruction);
                     break;
@@ -534,7 +534,7 @@ void Environment::load_undetermined_barcode(const vector< uint64_t >& multiplex_
         }
     }
 };
-void Environment::load_multiplex_barcode_distance_metric(const vector< uint64_t >& multiplex_barcode_length) {
+void Environment::load_multiplex_barcode_distance_metric(const vector< int32_t >& multiplex_barcode_length) {
     Value::MemberIterator collection = _instruction.FindMember("channel");
     if(collection != _instruction.MemberEnd()) {
         if(!collection->value.IsNull() && !collection->value.Empty()) {
@@ -550,8 +550,8 @@ void Environment::load_multiplex_barcode_distance_metric(const vector< uint64_t 
                                 if(multiplex_barcode.size(i) == multiplex_barcode_length[i]) {
                                     _multiplex_barcode_set_distance[i].add(multiplex_barcode.iupac_ambiguity(i));
                                 } else {
-                                    uint64_t channel_index;
-                                    decode_value_by_key< uint64_t >("index", channel_index, element);
+                                    int32_t channel_index;
+                                    decode_value_by_key< int32_t >("index", channel_index, element);
                                     string message("multiplex barcode ");
                                     message.append(to_string(i));
                                     message.append(" in channel ");
@@ -692,21 +692,21 @@ void Environment::print_instruction_validation(ostream& o) const {
     decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, _instruction);
     o << "    Output Phred offset                         " << to_string(output_phred_offset) << endl;
 
-    uint64_t leading_segment_index;
-    decode_value_by_key< uint64_t >("leading segment index", leading_segment_index, _instruction);
+    int32_t leading_segment_index;
+    decode_value_by_key< int32_t >("leading segment index", leading_segment_index, _instruction);
     o << "    Leading template segment                    " << to_string(leading_segment_index) << endl;
 
     // o << "    Undetermined reads                          " << (undetermined != NULL ? undetermined->alias() : "ignored") << endl;
 
-    uint64_t multiplex_segment_cardinality;
-    if(decode_value_by_key< uint64_t >("multiplex segment cardinality", multiplex_segment_cardinality, _instruction)) {
+    int32_t multiplex_segment_cardinality;
+    if(decode_value_by_key< int32_t >("multiplex segment cardinality", multiplex_segment_cardinality, _instruction)) {
         if(multiplex_segment_cardinality) {
-            uint64_t concatenated_multiplex_barcode_length;
-            decode_value_by_key< uint64_t >("concatenated multiplex barcode length", concatenated_multiplex_barcode_length, _instruction);
+            int32_t concatenated_multiplex_barcode_length;
+            decode_value_by_key< int32_t >("concatenated multiplex barcode length", concatenated_multiplex_barcode_length, _instruction);
             o << "    Multiplex barcoding cycles                  " << concatenated_multiplex_barcode_length << endl;
 
-            vector< uint64_t > multiplex_barcode_length;
-            decode_value_by_key< vector< uint64_t > >("multiplex barcode length", multiplex_barcode_length, _instruction);
+            vector< int32_t > multiplex_barcode_length;
+            decode_value_by_key< vector< int32_t > >("multiplex barcode length", multiplex_barcode_length, _instruction);
             o << "    Multiplex barcode length                    ";
             for(const auto& value : multiplex_barcode_length) {
                 o << value << ' ';
@@ -725,7 +725,7 @@ void Environment::print_instruction_validation(ostream& o) const {
 
                 o << "    Multiplex barcode tolerance                 ";
                 for(const auto& value : multiplex_barcode_tolerance) {
-                    o << uint64_t(value) << ' ';
+                    o << int32_t(value) << ' ';
                 } o << endl;
 
                 uint8_t masking_threshold;
@@ -754,15 +754,15 @@ void Environment::print_instruction_validation(ostream& o) const {
         }
     }
 
-    uint64_t molecular_segment_cardinality;
-    if(decode_value_by_key< uint64_t >("molecular segment cardinality", molecular_segment_cardinality, _instruction)) {
+    int32_t molecular_segment_cardinality;
+    if(decode_value_by_key< int32_t >("molecular segment cardinality", molecular_segment_cardinality, _instruction)) {
         if(molecular_segment_cardinality) {
-            uint64_t concatenated_molecular_barcode_length;
-            decode_value_by_key< uint64_t >("concatenated molecular barcode length", concatenated_molecular_barcode_length, _instruction);
+            int32_t concatenated_molecular_barcode_length;
+            decode_value_by_key< int32_t >("concatenated molecular barcode length", concatenated_molecular_barcode_length, _instruction);
             o << "    Molecular barcoding cycles                  " << concatenated_molecular_barcode_length << endl;
 
-            vector< uint64_t > molecular_barcode_length;
-            decode_value_by_key< vector< uint64_t > >("molecular barcode length", molecular_barcode_length, _instruction);
+            vector< int32_t > molecular_barcode_length;
+            decode_value_by_key< vector< int32_t > >("molecular barcode length", molecular_barcode_length, _instruction);
             o << "    Molecular barcode length                    ";
             for(const auto& value : molecular_barcode_length) {
                 o << value << ' ';
@@ -822,7 +822,7 @@ void Environment::print_instruction_validation(ostream& o) const {
     list< URL > input_url_array;
     if(decode_file_url_list_by_key("input", input_url_array, _instruction, IoDirection::IN)) {
         o << "Input " << endl << endl;
-        uint64_t url_index(0);
+        int32_t url_index(0);
         for(auto& url : input_url_array) {
             o << "    Input segment No." << url_index << " : " << url << endl;
             url_index++;

@@ -72,22 +72,36 @@ void operator=(NucleicAcidAccumulator const &) = delete;
 
 public:
     uint64_t count;
-    uint64_t min;
-    uint64_t max;
+    uint8_t min_quality;
+    uint8_t max_quality;
     uint64_t sum;
-    double mean;
-    uint64_t Q1;
-    uint64_t Q3;
-    uint64_t IQR;
-    uint64_t LW;
-    uint64_t RW;
-    uint64_t median;
+    double mean_quality;
+    uint8_t Q1;
+    uint8_t Q3;
+    uint8_t IQR;
+    uint8_t LW;
+    uint8_t RW;
+    uint8_t median_quality;
     uint64_t distribution[EFFECTIVE_PHRED_RANGE];
     NucleicAcidAccumulator();
     inline void increment(const uint8_t phred) {
         distribution[phred]++;
     };
-    uint64_t quantile(const double portion);
+    inline uint64_t quantile(const double portion) {
+        uint64_t position(portion * count);
+        uint64_t cell(0);
+        while (position > 0) {
+            if(distribution[cell] >= position) {
+                break;
+            }
+            position -= distribution[cell];
+            cell++;
+            while (distribution[cell] == 0) {
+                cell++;
+            }
+        }
+        return cell;
+    };
     void finalize();
     NucleicAcidAccumulator& operator+=(const NucleicAcidAccumulator& rhs);
 };
@@ -121,7 +135,7 @@ public:
     inline void increment(const Sequence& sequence) {
         count++;
         double value(0);
-        for(size_t i = 0; i < sequence.length; i++) {
+        for(int32_t i = 0; i < sequence.length; i++) {
             value += sequence.quality[i];
         }
         value /= double(sequence.length);
@@ -140,8 +154,8 @@ void operator=(FeedAccumulator const &) = delete;
 
 public:
     const URL url;
-    uint64_t length;
-    uint64_t shortest;
+    int32_t length;
+    int32_t shortest;
     uint64_t iupac_nucleic_acid_count[IUPAC_CODE_SIZE];
     SegmentAccumulator average_phred;
     vector< CycleAccumulator* > cycles;
@@ -149,7 +163,7 @@ public:
     ~FeedAccumulator();
     inline void increment(const Sequence& sequence) {
         if(sequence.length > length) {
-            for(size_t i = length; i < sequence.length; i++) {
+            for(int32_t i = length; i < sequence.length; i++) {
                 cycles.push_back(new CycleAccumulator());
             }
             length = sequence.length;
@@ -157,7 +171,7 @@ public:
         if(sequence.length < shortest) {
             shortest = sequence.length;
         }
-        for(size_t i = 0; i < sequence.length; i++) {
+        for(int32_t i = 0; i < sequence.length; i++) {
             iupac_nucleic_acid_count[NO_NUCLEOTIDE]++;
             iupac_nucleic_acid_count[sequence.code[i]]++;
             cycles[i]->increment(sequence.code[i], sequence.quality[i]);

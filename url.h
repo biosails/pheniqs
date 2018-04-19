@@ -40,7 +40,6 @@ using std::list;
 using std::cerr;
 using std::cout;
 using std::fixed;
-using std::uint64_t;
 using std::string;
 using std::vector;
 using std::ostream;
@@ -165,7 +164,7 @@ public:
     bool is_readable() const;
     bool is_writable() const;
     const char* const c_str() const;
-    const uint64_t size() const;
+    const size_t size() const;
     void describe(ostream& o) const;
     bool operator==(const URL& other) const;
     URL& operator=(const URL& other);
@@ -187,7 +186,7 @@ bool operator<(const URL& lhs, const URL& rhs);
 
 namespace std {
     template <> struct hash< URL > {
-        uint64_t operator()(const URL& url) const {
+        size_t operator()(const URL& url) const {
             return hash< string >()(url.path());
         };
     };

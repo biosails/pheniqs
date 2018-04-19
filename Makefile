@@ -17,24 +17,36 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# The PHENIQS_VERSION defaults to $(MAJOR_REVISON).$(MINOR_REVISON) if not provided by the environment.
+# git revision checksum is appended if available
+# If available in the environment, dependency version are also included when generating version.h
+# 	PHENIQS_VERSION
+#	ZLIB_VERSION
+#	BZIP2_VERSION
+#	XZ_VERSION
+#	RAPIDJSON_VERSION
+#	HTSLIB_VERSION
 
 MAJOR_REVISON := 1
 MINOR_REVISON := 1
 
-# Construct version variable
-GIT_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
-ifdef GIT_VERSION
-	PACKAGE_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON).$(GIT_VERSION)
-else
-	PACKAGE_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
-endif
+CC              = clang++
+PREFIX          = /usr/local
+BIN_PREFIX      = $(PREFIX)/bin
+INCLUDE_PREFIX  = $(PREFIX)/include
+LIB_PREFIX      = $(PREFIX)/lib
 
-LIBS = -lhts -lz -lpthread
-CC = clang++
-CFLAGS = -c -std=c++11 -O3 -Wall -Wsign-compare 
-LDFLAGS = $(LIBS)
+CFLAGS          = -std=c++11 -O3 -Wall -Wsign-compare
+LDFLAGS         =
+LIBS            = -lhts -lz -lbz2 -llzma
 
-SOURCES = \
+STATIC_LIBS = \
+$(LIB_PREFIX)/libhts.a \
+$(LIB_PREFIX)/libz.a \
+$(LIB_PREFIX)/libbz2.a \
+$(LIB_PREFIX)/liblzma.a
+
+PHENIQS_SOURCES = \
 	json.cpp \
 	url.cpp \
 	interface.cpp \
@@ -52,7 +64,7 @@ SOURCES = \
 	pipeline.cpp \
 	pheniqs.cpp
 
-OBJECTS = \
+PHENIQS_OBJECTS = \
 	json.o \
 	url.o \
 	interface.o \
@@ -70,30 +82,46 @@ OBJECTS = \
 	pipeline.o \
 	pheniqs.o
 
-EXECUTABLE = pheniqs
+PHENIQS_EXECUTABLE = pheniqs
 
-ifdef PREFIX
-	CFLAGS += -I$(PREFIX)/include
-	LDFLAGS += -L$(PREFIX)/lib
+PHENIQS_GIT_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
+
+ifndef PHENIQS_VERSION
+	PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
 endif
 
-all: $(SOURCES) configuration.h version.h $(EXECUTABLE)
+ifdef PHENIQS_GIT_VERSION
+	override PHENIQS_VERSION := $(PHENIQS_VERSION).$(PHENIQS_GIT_VERSION)
+endif
+
+ifdef PREFIX
+	CFLAGS += -I$(INCLUDE_PREFIX)
+	LDFLAGS += -L$(LIB_PREFIX)
+endif
+
+all: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
+	$(CC) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(LIBS) -o $(PHENIQS_EXECUTABLE)
+
+static: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
+	$(CC) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(STATIC_LIBS) -o $(PHENIQS_EXECUTABLE)
 
 .cpp.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+# Regenerate version.h when PHENIQS_VERSION changes
+version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),,clean-version))
+	@echo Generate version.h with $(PHENIQS_VERSION)
+	$(if $(PHENIQS_VERSION), 	@echo '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"' 		>> $@)
+	$(if $(ZLIB_VERSION), 		@echo '#define ZLIB_VERSION "$(ZLIB_VERSION)"' 				>> $@)
+	$(if $(BZIP2_VERSION), 		@echo '#define BZIP2_VERSION "$(BZIP2_VERSION)"' 			>> $@)
+	$(if $(XZ_VERSION), 		@echo '#define XZ_VERSION "$(XZ_VERSION)"' 			>> $@)
+	$(if $(RAPIDJSON_VERSION), 	@echo '#define RAPIDJSON_VERSION "$(RAPIDJSON_VERSION)"'	>> $@)
+	$(if $(HTSLIB_VERSION), 	@echo '#define HTSLIB_VERSION "$(HTSLIB_VERSION)"' 			>> $@)
 
-# Regenerate version.h when PACKAGE_VERSION changes
-version.h: $(if $(wildcard version.h),$(if $(findstring "$(PACKAGE_VERSION)",$(shell cat version.h)),,clean-version))
-	@echo Generate version.h with $(PACKAGE_VERSION)
-	@echo '#define PHENIQS_VERSION "$(PACKAGE_VERSION)"' > $@
-
-# Regenerate configuration.h when interface.json file changes
-configuration.h: interface.json
+# Regenerate configuration.h when configuration.json file changes
+configuration.h: configuration.json
 	@echo Generate command line interface configuration
-	@xxd -i interface.json > $@
+	$(shell ./configuration.sh)
 
 clean-version:
 	-@rm -f version.h
@@ -102,7 +130,7 @@ clean-configuration:
 	-@rm -f configuration.h
 
 clean: clean-version clean-configuration
-	-@rm -f $(EXECUTABLE) $(OBJECTS)
+	-@rm -f $(PHENIQS_EXECUTABLE) $(PHENIQS_OBJECTS)
 
 install: pheniqs
 	if( test ! -d $(PREFIX)/bin ) ; then mkdir -p $(PREFIX)/bin ; fi
