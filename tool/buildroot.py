@@ -26,6 +26,7 @@ import sys
 import json
 import logging
 import hashlib
+import platform
 from copy import deepcopy
 from datetime import datetime
 from subprocess import Popen, PIPE
@@ -348,26 +349,37 @@ class Pipeline(object):
                 node = json.loads(file.read().decode('utf8'))
                 for key in [
                     'home',
+                    'platform',
                     'package',
                     'cache path',
-                    'package prefix',
                     'install prefix',
                     'download prefix',
+                    'package prefix',
+                    'bin prefix',
+                    'include prefix',
+                    'lib prefix',
                 ]:
                     if key not in node: node[key] = None
 
-                if not node['home']: node['home'] =                         '~/.pheniqs'
-                if not node['cache path']: node['cache path'] =             os.path.join(node['home'], 'cache.json')
+                if not node['home']:            node['home'] =              '~/.pheniqs'
+                if not node['platform']:        node['platform'] =          platform.system()
+                if not node['cache path']:      node['cache path'] =        os.path.join(node['home'], 'cache.json')
+                if not node['install prefix']:  node['install prefix'] =    os.path.join(node['home'], 'install')
                 if not node['download prefix']: node['download prefix'] =   os.path.join(node['home'], 'download')
-                if not node['package prefix']: node['package prefix'] =     os.path.join(node['home'], 'package')
-                if not node['install prefix']: node['install prefix'] =     os.path.join(node['home'], 'install')
+                if not node['package prefix']:  node['package prefix'] =    os.path.join(node['home'], 'package')
+                if not node['bin prefix']:      node['bin prefix'] =        os.path.join(node['install prefix'], 'bin')
+                if not node['include prefix']:  node['include prefix'] =    os.path.join(node['install prefix'], 'include')
+                if not node['lib prefix']:      node['lib prefix'] =        os.path.join(node['install prefix'], 'lib')
 
                 for path in [
                     'home',
                     'cache path',
+                    'install prefix',
                     'download prefix',
                     'package prefix',
-                    'install prefix',
+                    'bin prefix',
+                    'include prefix',
+                    'lib prefix',
                 ]:
                     node[path] = os.path.abspath(os.path.expanduser(os.path.expandvars(node[path])))
                 node['configuration digest'] = hashlib.sha1(os.path.abspath(os.path.expanduser(os.path.expandvars(self.configuration_path))).encode('utf8')).hexdigest()
@@ -412,6 +424,8 @@ class Pipeline(object):
                         package = xzPackage(self, p)
                     elif key == 'bzip2':
                         package = bz2Package(self, p)
+                    elif key == 'libdeflate':
+                        package = libdeflatePackage(self, p)
                     elif key == 'htslib':
                         package = htslibPackage(self, p)
                     elif key == 'rapidjson':
@@ -442,6 +456,10 @@ class Pipeline(object):
         return self.ontology['configuration digest']
 
     @property
+    def platform(self):
+        return self.ontology['platform']
+
+    @property
     def home(self):
         return self.ontology['home']
 
@@ -464,6 +482,18 @@ class Pipeline(object):
     @property
     def package_prefix(self):
         return self.ontology['package prefix']
+
+    @property
+    def bin_prefix(self):
+        return self.ontology['bin prefix']
+
+    @property
+    def include_prefix(self):
+        return self.ontology['include prefix']
+
+    @property
+    def lib_prefix(self):
+        return self.ontology['lib prefix']
 
     @property
     def filter(self):
@@ -491,7 +521,6 @@ class Pipeline(object):
     def install(self):
         for package in self.package:
             if not package.installed:
-                self.log.info('installing %s', package.display_name)
                 package.install()
             else:
                 self.log.info('%s is already installed', package.display_name)
@@ -505,6 +534,7 @@ class Pipeline(object):
         for package in self.package:
             self.log.info('clearing %s', package.display_name)
             package.clean_package()
+
 # Package
 
 class Package(object):
@@ -593,6 +623,10 @@ class Package(object):
         return self.pipeline.cache['environment'][self.pipeline.configuration_digest]
 
     @property
+    def platform(self):
+        return self.pipeline.platform
+
+    @property
     def name(self):
         return self.node['name']
 
@@ -635,6 +669,18 @@ class Package(object):
     @property
     def package_prefix(self):
         return self.pipeline.package_prefix
+
+    @property
+    def bin_prefix(self):
+        return self.pipeline.bin_prefix
+
+    @property
+    def include_prefix(self):
+        return self.pipeline.include_prefix
+
+    @property
+    def lib_prefix(self):
+        return self.pipeline.lib_prefix
 
     @property
     def extension(self):
@@ -790,6 +836,9 @@ class makePackage(Package):
         if 'include prefix in make' not in self.node:
             self.node['include prefix in make'] = False
 
+        self.env['CFLAGS'] = '-I{}'.format(self.include_prefix)
+        self.env['LDFLAGS'] = '-L{}'.format(self.lib_prefix)
+
     @property
     def configure_optional(self):
         return self.node['configure optional']
@@ -851,7 +900,7 @@ class makePackage(Package):
                 self.unpack()
                 if os.path.exists(os.path.join(self.package_url, 'configure')):
                     self.log.info('configuring make environment %s', self.display_name)
-                    command = [ './configure', '--prefix', self.install_prefix ]
+                    command = [ './configure', '--prefix={}'.format(self.install_prefix) ]
 
                     if self.configure_optional:
                         command.extend(self.configure_optional)
@@ -945,6 +994,113 @@ class bz2Package(makePackage):
     def __init__(self, pipeline, node):
         makePackage.__init__(self, pipeline, node)
 
+    def install_dynamic(self):
+        dynamic_library_path = os.path.join(self.package_url, 'libbz2.so')
+        versioned_dynamic_library_path = '{}.{}'.format(dynamic_library_path, self.version)
+
+        self.log.info('copying %s to %s', versioned_dynamic_library_path, self.lib_prefix)
+        command = [ 'rsync', versioned_dynamic_library_path, self.lib_prefix ]
+        process = Popen(
+            args=command,
+            env=self.env,
+            cwd=self.package_url,
+            stdout=self.stdout,
+            stderr=self.stderr
+        )
+        output, error = process.communicate()
+        code = process.returncode
+        if code != 0:
+            raise CommandFailedError('rsync returned {}'.format(code))
+
+        self.log.info('symlinking %s to %s', versioned_dynamic_library_path, dynamic_library_path)
+        os.symlink(versioned_dynamic_library_path, dynamic_library_path)
+
+    def build(self):
+        if self.platform == 'Linux':
+            if not self.node['built']:
+                self.configure()
+                if self.package_url is not None:
+                    self.log.info('building %s dynamic library', self.display_name)
+                    command = [ 'make', '--file', 'Makefile-libbz2_so' ]
+
+                    if self.include_prefix_in_make:
+                        command.append('PREFIX={}'.format(self.install_prefix))
+
+                    self.log.debug(' '.join([str(i) for i in command]))
+
+                    process = Popen(
+                        args=command,
+                        env=self.env,
+                        cwd=self.package_url,
+                        stdout=self.stdout,
+                        stderr=self.stderr
+                    )
+                    output, error = process.communicate()
+                    code = process.returncode
+                    if code == 0:
+                        self.install_dynamic()
+                        makePackage.build(self)
+                    else:
+                        raise CommandFailedError('make returned {}'.format(code))
+        else:
+            makePackage.build(self)
+
+class libdeflatePackage(makePackage):
+    def __init__(self, pipeline, node):
+        makePackage.__init__(self, pipeline, node)
+
+    def install(self):
+        if not self.node['installed']:
+            self.build()
+            if self.package_url is not None:
+                static_library_path = os.path.join(self.package_url, 'libdeflate.a')
+                self.log.info('copying %s to %s', static_library_path, self.lib_prefix)
+                command = [ 'rsync', static_library_path, self.lib_prefix ]
+                process = Popen(
+                    args=command,
+                    env=self.env,
+                    cwd=self.package_url,
+                    stdout=self.stdout,
+                    stderr=self.stderr
+                )
+                output, error = process.communicate()
+                code = process.returncode
+                if code != 0:
+                    raise CommandFailedError('rsync returned {}'.format(code))
+
+                library_header_path = os.path.join(self.package_url, 'libdeflate.h')
+                self.log.info('copying %s to %s', library_header_path, self.include_prefix)
+                command = [ 'rsync', library_header_path, self.include_prefix ]
+                process = Popen(
+                    args=command,
+                    env=self.env,
+                    cwd=self.package_url,
+                    stdout=self.stdout,
+                    stderr=self.stderr
+                )
+                output, error = process.communicate()
+                code = process.returncode
+                if code != 0:
+                    raise CommandFailedError('rsync returned {}'.format(code))
+
+                if self.platform == 'Linux':
+                    dynamic_library_path = os.path.join(self.package_url, 'libdeflate.so')
+                    self.log.info('copying %s to %s', dynamic_library_path, self.lib_prefix)
+                    command = [ 'rsync', dynamic_library_path, self.lib_prefix ]
+                    process = Popen(
+                        args=command,
+                        env=self.env,
+                        cwd=self.package_url,
+                        stdout=self.stdout,
+                        stderr=self.stderr
+                    )
+                    output, error = process.communicate()
+                    code = process.returncode
+                    if code != 0:
+                        raise CommandFailedError('rsync returned {}'.format(code))
+
+                self.node['installed'] = True
+
 class rapidjsonPackage(Package):
     def __init__(self, pipeline, node):
         Package.__init__(self, pipeline, node)
@@ -953,10 +1109,8 @@ class rapidjsonPackage(Package):
         if not self.node['installed']:
             self.build()
             if self.package_url is not None:
-                self.log.info('copying header files to include folder %s', self.display_name)
-                command = [ 'rsync' , '--recursive' ]
-                command.append(os.path.join(self.package_url, 'include/'))
-                command.append(os.path.join(self.install_prefix, 'include/'))
+                self.log.info('copying %s header files to %s', self.display_name, self.include_prefix)
+                command = [ 'rsync' , '--recursive', os.path.join(self.package_url, 'include/'), self.include_prefix ]
                 process = Popen(
                     args=command,
                     env=self.env,
@@ -969,7 +1123,7 @@ class rapidjsonPackage(Package):
                 if code == 0:
                     self.node['installed'] = True
                 else:
-                    raise CommandFailedError('make install returned {}'.format(code))
+                    raise CommandFailedError('rsync returned {}'.format(code))
 
 class htslibPackage(makePackage):
     def __init__(self, pipeline, node):

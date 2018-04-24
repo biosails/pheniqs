@@ -1,5 +1,5 @@
 {
-    "home": "~/.pheniqs",
+    "home": "~/.pheniqs/pheniqs-curl-trunk-static",
     "package": [
         {
             "configure optional": [
@@ -32,9 +32,11 @@
             "version": "1.1.0"
         },
         {
-            "configure optional": [
-                "--disable-libcurl"
-            ],
+            "name": "curl",
+            "remote url": "https://curl.haxx.se/download/curl-7.59.0.tar.bz2",
+            "sha1": "0dd78aa857342b85b90bd6b0a53f6aee3516cb13"
+        },
+        {
             "name": "htslib",
             "remote url": "https://github.com/samtools/htslib/releases/download/1.8/htslib-1.8.tar.bz2",
             "sha1": "d9d9a1d03991da0738bf2eecb54bfb620cc776b3"

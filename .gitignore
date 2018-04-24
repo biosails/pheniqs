@@ -5,3 +5,5 @@
 /version.h
 /*.sublime-workspace
 /*.sublime-project
+/pheniqs.xcodeproj
+/.gcc-flags.json

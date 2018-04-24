@@ -1,10 +1,8 @@
 {
-    "home": "~/.pheniqs",
+    "download prefix": "~/.pheniqs/download",
+    "home": "~/.pheniqs/pheniqs-trunk",
     "package": [
         {
-            "configure optional": [
-                "--static"
-            ],
             "make clean target": "distclean",
             "name": "zlib",
             "remote url": "https://zlib.net/zlib-1.2.11.tar.gz",
@@ -17,24 +15,16 @@
             "sha1": "3f89f861209ce81a6bab1fd1998c0ef311712002"
         },
         {
-            "configure optional": [
-                "--enable-static"
-            ],
             "name": "xz",
             "remote url": "https://tukaani.org/xz/xz-5.2.3.tar.bz2",
             "sha1": "82c87a0d6241da0f7e07c7cc54fdae6e3c9abf26"
         },
         {
-            "name": "rapidjson",
-            "path in archive": "rapidjson-1.1.0",
-            "remote url": "https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz",
-            "sha1": "a3e0d043ad3c2d7638ffefa3beb30a77c71c869f",
-            "version": "1.1.0"
-        },
-        {
-            "name": "curl",
-            "remote url": "https://curl.haxx.se/download/curl-7.59.0.tar.bz2",
-            "sha1": "0dd78aa857342b85b90bd6b0a53f6aee3516cb13"
+            "name": "libdeflate",
+            "remote filename": "libdeflate-1.0.tar.gz",
+            "remote url": "https://github.com/ebiggers/libdeflate/archive/v1.0.tar.gz",
+            "sha1": "17da81b2a058906f087e797fc69399c606a2c011",
+            "version": "1.0"
         },
         {
             "name": "htslib",
@@ -42,8 +32,19 @@
             "sha1": "d9d9a1d03991da0738bf2eecb54bfb620cc776b3"
         },
         {
+            "name": "samtools",
+            "remote url": "https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2",
+            "sha1": "de345ebc1fd144d8c6b15ec3bb759c6cd00294c8"
+        },
+        {
+            "name": "rapidjson",
+            "remote filename": "rapidjson-1.1.0.tar.gz",
+            "remote url": "https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz",
+            "sha1": "a3e0d043ad3c2d7638ffefa3beb30a77c71c869f",
+            "version": "1.1.0"
+        },
+        {
             "include prefix in make": true,
-            "make build target": "static",
             "name": "pheniqs",
             "package url": "~/code/pheniqs",
             "version": "1.1"

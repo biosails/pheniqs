@@ -36,15 +36,10 @@ BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
 
-CFLAGS          = -std=c++11 -O3 -Wall -Wsign-compare
+CFLAGS          = -std=c++11 -O3 -Wall -Wsign-compare -pedantic
 LDFLAGS         =
 LIBS            = -lhts -lz -lbz2 -llzma
-
-STATIC_LIBS = \
-$(LIB_PREFIX)/libhts.a \
-$(LIB_PREFIX)/libz.a \
-$(LIB_PREFIX)/libbz2.a \
-$(LIB_PREFIX)/liblzma.a
+STATIC_LIBS     = $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
 
 PHENIQS_SOURCES = \
 	json.cpp \
@@ -84,19 +79,40 @@ PHENIQS_OBJECTS = \
 
 PHENIQS_EXECUTABLE = pheniqs
 
-PHENIQS_GIT_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
+PHENIQS_GIT_REVISION := $(shell git describe --abbrev=40 --always 2> /dev/null)
 
-ifndef PHENIQS_VERSION
-	PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
+PLATFORM := $(shell uname -s)
+
+ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.a)','')
+    ifeq ($(PLATFORM), Darwin)
+        with-libdeflate = 1
+    else ifeq ($(PLATFORM), Linux)
+        ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.so)','')
+            with-libdeflate = 1
+        endif
+    else ifeq ($(PLATFORM), Darwin)
+        with-libdeflate = 0
+    endif
+else
+    with-libdeflate = 0
 endif
 
-ifdef PHENIQS_GIT_VERSION
-	override PHENIQS_VERSION := $(PHENIQS_VERSION).$(PHENIQS_GIT_VERSION)
+ifndef PHENIQS_VERSION
+    PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
+endif
+
+ifdef PHENIQS_GIT_REVISION
+    override PHENIQS_VERSION := '$(PHENIQS_VERSION).$(PHENIQS_GIT_REVISION)'
 endif
 
 ifdef PREFIX
-	CFLAGS += -I$(INCLUDE_PREFIX)
-	LDFLAGS += -L$(LIB_PREFIX)
+    CFLAGS += -I$(INCLUDE_PREFIX)
+    LDFLAGS += -L$(LIB_PREFIX)
+endif
+
+ifeq ($(with-libdeflate), 1)
+    LIBS += -ldeflate
+    STATIC_LIBS += $(LIB_PREFIX)/libdeflate.a
 endif
 
 all: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
@@ -105,18 +121,33 @@ all: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
 static: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
 	$(CC) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(STATIC_LIBS) -o $(PHENIQS_EXECUTABLE)
 
+config:
+	@echo 'PHENIQS_VERSION  :  $(PHENIQS_VERSION)'
+	@echo 'CC               :  $(CC)'
+	@echo 'PREFIX           :  $(PREFIX)'
+	@echo 'BIN_PREFIX       :  $(BIN_PREFIX)'
+	@echo 'INCLUDE_PREFIX   :  $(INCLUDE_PREFIX)'
+	@echo 'LIB_PREFIX       :  $(LIB_PREFIX)'
+	@echo 'CFLAGS           :  $(CFLAGS)'
+	@echo 'LDFLAGS          :  $(LDFLAGS)'
+	@echo 'CFLAGS           :  $(CFLAGS)'
+	@echo 'LIBS             :  $(LIBS)'
+	@echo 'STATIC_LIBS      :  $(STATIC_LIBS)'
+	@echo 'with-libdeflate  :  $(with-libdeflate)'
+
 .cpp.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Regenerate version.h when PHENIQS_VERSION changes
 version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),,clean-version))
 	@echo Generate version.h with $(PHENIQS_VERSION)
-	$(if $(PHENIQS_VERSION), 	@echo '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"' 		>> $@)
-	$(if $(ZLIB_VERSION), 		@echo '#define ZLIB_VERSION "$(ZLIB_VERSION)"' 				>> $@)
-	$(if $(BZIP2_VERSION), 		@echo '#define BZIP2_VERSION "$(BZIP2_VERSION)"' 			>> $@)
-	$(if $(XZ_VERSION), 		@echo '#define XZ_VERSION "$(XZ_VERSION)"' 			>> $@)
-	$(if $(RAPIDJSON_VERSION), 	@echo '#define RAPIDJSON_VERSION "$(RAPIDJSON_VERSION)"'	>> $@)
-	$(if $(HTSLIB_VERSION), 	@echo '#define HTSLIB_VERSION "$(HTSLIB_VERSION)"' 			>> $@)
+	$(if $(PHENIQS_VERSION),    @echo '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"'        >> $@)
+	$(if $(ZLIB_VERSION),       @echo '#define ZLIB_VERSION "$(ZLIB_VERSION)"'              >> $@)
+	$(if $(BZIP2_VERSION),      @echo '#define BZIP2_VERSION "$(BZIP2_VERSION)"'            >> $@)
+	$(if $(XZ_VERSION),         @echo '#define XZ_VERSION "$(XZ_VERSION)"'                  >> $@)
+	$(if $(LIBDEFLATE_VERSION), @echo '#define LIBDEFLATE_VERSION "$(LIBDEFLATE_VERSION)"'  >> $@)
+	$(if $(RAPIDJSON_VERSION),  @echo '#define RAPIDJSON_VERSION "$(RAPIDJSON_VERSION)"'    >> $@)
+	$(if $(HTSLIB_VERSION),     @echo '#define HTSLIB_VERSION "$(HTSLIB_VERSION)"'          >> $@)
 
 # Regenerate configuration.h when configuration.json file changes
 configuration.h: configuration.json
