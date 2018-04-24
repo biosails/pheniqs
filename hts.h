@@ -201,13 +201,13 @@ protected:
     HtsHeader header;
     htsFile* hts_file;
     inline void encode(bam1_t* record, const Segment& segment) const {
-        /*  
+        /*
             The total size of a bam1_t record is an int32_t
             bam1_t.l_data =
             bam1_t.core.l_qname +               // uint8_t : length of the \0 terminated qname, \0 padded to modulo 4
             ((bam1_t.core.l_qseq + 1) >> 1) +   // nucleotide sequence in 4 bit BAM encoding
             bam1_t.core.l_qseq +                // quality sequence in ASCII
-            (bam1_t.core.n_cigar << 2) +        // 32 bit per cigar operation 
+            (bam1_t.core.n_cigar << 2) +        // 32 bit per cigar operation
             bam1_t.l_aux                        // auxiliary tags added later
         */
         int32_t i;
@@ -252,7 +252,7 @@ protected:
                 position += ((segment.sequence.length + 1) >> 1);
 
                 /*  alternative sequence encoding implementation
-                    
+
                     for(i = 0; i + 1 < segment.sequence.length; i += 2) {
                         *position++ = (AsciiToAmbiguousBam[segment.sequence.code[i]] << 4) + AsciiToAmbiguousBam[segment.sequence.code[i + 1]];
                     }

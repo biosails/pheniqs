@@ -112,9 +112,9 @@ void FeedSpecification::describe(ostream& o) const {
 };
 void FeedSpecification::probe() {
     /*  Probe input file
-        
+
         Here you can potentially use hfile to probe the file
-        and verify file format and potentially examine the first read 
+        and verify file format and potentially examine the first read
     */
     switch(direction) {
         case IoDirection::IN: {
@@ -205,7 +205,7 @@ void FeedSpecification::probe() {
                                 break;
                         }
                     }
-                    if(peeked > 0) { 
+                    if(peeked > 0) {
                         size_t state(0);
                         char* position(reinterpret_cast< char * >(buffer));
                         char* end(position + peeked);

@@ -191,10 +191,10 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd);
 
     SN  Reference sequence identifier.
         The value of this field is used in the alignment records in RNAME and RNEXT fields.
-    LN  Reference sequence length. 32 bit signed.     
+    LN  Reference sequence length. 32 bit signed.
     AH  Indicates that this sequence is an alternate locus.
-        The value is the locus in the primary assembly for which this sequence is an alternative, 
-        in the format ‘chr:start-end’, ‘chr’ (if known), or ‘*’ (if unknown), where ‘chr’ is a sequence in the primary assembly. 
+        The value is the locus in the primary assembly for which this sequence is an alternative,
+        in the format ‘chr:start-end’, ‘chr’ (if known), or ‘*’ (if unknown), where ‘chr’ is a sequence in the primary assembly.
         Must not be present on sequences in the primary assembly.
     AS  Genome assembly identifier.
     M5  MD5 checksum of the sequence in the uppercase, excluding spaces but including pads (as ‘*’s).

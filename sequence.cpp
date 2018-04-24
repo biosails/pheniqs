@@ -248,7 +248,7 @@ Barcode::Barcode() :
     length(0),
     threshold(0) {
 };
-Barcode::Barcode(const size_t& width) : 
+Barcode::Barcode(const size_t& width) :
     length(0),
     tolerance(width),
     fragments(width) {

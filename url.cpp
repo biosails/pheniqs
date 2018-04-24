@@ -148,11 +148,11 @@ URL::URL(const URL& other) :
     _compression(other._compression),
     _type(other._type) {
 };
-URL::URL(const string& path) : 
+URL::URL(const string& path) :
     _type(FormatType::UNKNOWN) {
     parse_file(path, IoDirection::UNKNOWN);
 };
-URL::URL(const string& path, const bool& is_directory) : 
+URL::URL(const string& path, const bool& is_directory) :
     _type(FormatType::UNKNOWN) {
     if(is_directory) {
         parse_directory(path);
@@ -160,7 +160,7 @@ URL::URL(const string& path, const bool& is_directory) :
         parse_file(path, IoDirection::UNKNOWN);
     }
 };
-URL::URL(const string& path, const IoDirection& direction) : 
+URL::URL(const string& path, const IoDirection& direction) :
     _type(FormatType::UNKNOWN) {
     parse_file(path, direction);
 };
@@ -187,7 +187,7 @@ void URL::parse_file(const string& path, const IoDirection& direction) {
         // first resolve any environment variables in the path
         expand(_path);
 
-        /*  standard stream handling 
+        /*  standard stream handling
             first allow - as an alias for stdin and stdout according to IO direction
             otherwise check for non canonical paths to standard streams and replace with
             the canonical one
@@ -257,7 +257,7 @@ void URL::parse_file(const string& path, const IoDirection& direction) {
                 }
                 _basename.resize(position);
 
-                // if there is a second extension 
+                // if there is a second extension
                 // and the first is a compression marker
                 position = _basename.find_last_of(EXTENSION_SEPARATOR);
                 if(position != string::npos && (_extension == "gz" || _extension == "bz2" || _extension == "xz")) {
@@ -361,7 +361,7 @@ URL& URL::operator=(const URL& other) {
     }
     return *this;
 };
-URL::operator string() const { 
+URL::operator string() const {
     return string(_path);
 };
 void URL::refresh() {

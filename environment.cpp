@@ -94,9 +94,9 @@ void Environment::load_interface_instruction() {
     /*  extract a base channel from the root element */
     transcode_channel_specification(original, base, base);
 
-    /*  if a matching read group has been defined overlay the read group 
+    /*  if a matching read group has been defined overlay the read group
         on top of the default channel and than the channel on top of that.
-        otherwise overlay every channel on top of the default 
+        otherwise overlay every channel on top of the default
 
         also make sure there are no two channels with the same read group ID */
     collection = original.FindMember("channel");
@@ -447,10 +447,10 @@ void Environment::pad_output_url_array(const int32_t& output_segment_cardinality
                                 while(static_cast< int32_t >(array.size()) < output_segment_cardinality) {
                                     array.push_back(array.front());
                                 }
-                            } else { 
+                            } else {
                                 int32_t channel_index;
                                 decode_value_by_key< int32_t >("index", channel_index, element);
-                                throw ConfigurationError("incorrect number of output URLs in channel " + to_string(channel_index)); 
+                                throw ConfigurationError("incorrect number of output URLs in channel " + to_string(channel_index));
                             }
                         }
                         encode_key_value("output", array, element, _instruction);
@@ -585,9 +585,9 @@ void Environment::load_barcode_tolerance(const vector< BarcodeDistanceMetric >& 
             for(size_t i = 0; i < multiplex_barcode_set_distance.size(); i++) {
                 if(multiplex_barcode_tolerance[i] > multiplex_barcode_set_distance[i].shannon_bound()) {
                     throw ConfigurationError(
-                        "multiplex barcode tolerance for segment " + 
-                        to_string(i) + 
-                        " is higher than the shannon bound " + 
+                        "multiplex barcode tolerance for segment " +
+                        to_string(i) +
+                        " is higher than the shannon bound " +
                         to_string(multiplex_barcode_set_distance[i].shannon_bound())
                     );
                 }
@@ -614,7 +614,7 @@ void Environment::cross_validate_io() {
     /*  verify no URL is used for both input and output */
     URL url;
     Value::ConstMemberIterator collection;
-    
+
     collection = _instruction.FindMember("input feed");
     if(collection != _instruction.MemberEnd()) {
         if(!collection->value.IsNull() && !collection->value.Empty()) {

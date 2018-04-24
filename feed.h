@@ -127,14 +127,14 @@ public:
     virtual ~CyclicBuffer() {
     };
     void increment() {
-        /*  if the cache is empty then the next record 
+        /*  if the cache is empty then the next record
             is the vacant record we just populated  */
         if(_next < 0) _next = _vacant;
 
         /*  increment vacancy pointer on the circular buffer  */
         _vacant = (_vacant + 1) % _capacity;
 
-        /*  if the vacancy pointer is the next record there is 
+        /*  if the vacancy pointer is the next record there is
             no more space and vacant becomes -1, or unavailable */
         if(_vacant == _next) _vacant = -1;
     };
@@ -342,7 +342,7 @@ public:
                 buffer->calibrate(capacity, resolution);
 
                 /*  sync queue
-                    move elements from buffer to queue until 
+                    move elements from buffer to queue until
                     queue is aligned with the new resolution */
                 queue->sync(buffer);
 

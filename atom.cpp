@@ -375,7 +375,7 @@ template <> Decoder decode_value_by_key(const Value::Ch* key, const Value& conta
 
 /* @HD The header line
 */
-HeadHDAtom::HeadHDAtom() : 
+HeadHDAtom::HeadHDAtom() :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }) {
@@ -1002,7 +1002,7 @@ ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
 };
 void decode_head_RG_atom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key) {
     if(node.IsObject()) {
-        if(key != NULL) { 
+        if(key != NULL) {
             decode_value_by_key< kstring_t >(key,  value.ID, node);
         }
         decode_value_by_key< kstring_t >("PI", value.PI, node);

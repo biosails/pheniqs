@@ -730,7 +730,7 @@ CommandLine::CommandLine(const int argc, const char** argv) :
         if(_configuration.IsObject()) {
             encode_key_value("version", application_version, _configuration, _configuration);
         } else { throw ConfigurationError("interface configuration must be a dictionary"); }
-    } else { 
+    } else {
         throw ConfigurationError (
             string(GetParseError_En(_configuration.GetParseError())) + " at position " + to_string(_configuration.GetErrorOffset())
         );
@@ -874,7 +874,7 @@ void CommandLine::load_instruction() {
         Document* base_configuration = new Document();
         merge_json_value(*default_instruction, *instruction_from_file, *base_configuration, *base_configuration);
         delete instruction_from_file;
-        
+
         merge_json_value(*base_configuration, *instruction_from_command_line, _instruction, _instruction);
         delete base_configuration;
 
@@ -1284,4 +1284,3 @@ ostream& CommandLine::print_action_element(ostream& o, const Layout& layout) con
     }
     return o;
 };
-

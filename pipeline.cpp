@@ -847,9 +847,9 @@ void Pipeline::start() {
     }
 };
 void Pipeline::stop() {
-    /*  
+    /*
         output channel buffers still have residual records
-        notify all output feeds that no more input is coming 
+        notify all output feeds that no more input is coming
         and they should explicitly flush
     */
     for(auto feed : output_feed_by_index) {

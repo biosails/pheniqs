@@ -7,3 +7,4 @@
 /*.sublime-project
 /pheniqs.xcodeproj
 /.gcc-flags.json
+/*.h.gch

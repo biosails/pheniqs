@@ -246,7 +246,7 @@ public:
             accumulated_multiplex_distance += static_cast< uint64_t >(pivot_multiplex_distance);
         }
         if(decoder == Decoder::PAMLD) {
-            accumulated_multiplex_confidence += pivot_multiplex_confidence; 
+            accumulated_multiplex_confidence += pivot_multiplex_confidence;
         }
         if(!filtered) {
             pf_count++;

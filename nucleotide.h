@@ -145,7 +145,7 @@ const char BamToAmbiguousAscii[IUPAC_CODE_SIZE] = {
 };
 /*  BAM to Unambiguous ASCII
     Convert IUPAC ambiguous nucleic acid 4bit BAM encoding to unambiguous ASCII
-    Ambiguous code is mapped to N 
+    Ambiguous code is mapped to N
 */
 const char BamToUnambiguousAscii[IUPAC_CODE_SIZE] = {
     '=',    //          0x0
