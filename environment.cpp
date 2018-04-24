@@ -725,7 +725,7 @@ void Environment::print_instruction_validation(ostream& o) const {
 
                 o << "    Multiplex barcode tolerance                 ";
                 for(const auto& value : multiplex_barcode_tolerance) {
-                    o << int32_t(value) << ' ';
+                    o << static_cast< int32_t >(value) << ' ';
                 } o << endl;
 
                 uint8_t masking_threshold;

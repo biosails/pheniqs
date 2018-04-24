@@ -218,7 +218,7 @@ private:
     vector< T* > cache;
     int index;
     inline int align_capacity(const int& capacity, const int& resolution) {
-        int aligned(int(capacity / resolution) * resolution);
+        int aligned(static_cast< int >(capacity / resolution) * resolution);
         if(aligned < capacity) {
             aligned += resolution;
         }

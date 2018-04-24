@@ -40,11 +40,11 @@ const double UNIFORM_BASE_PHRED(6.02059991327962329421552567509934);
 #define quality_to_third_probability(q) (ThirdProbability[(q)])
 #define quality_to_inverse_quality(q) (InverseQuality[(q)])
 
-#define probability_to_quality(p) uint8_t(-10.0 * log10(p))
-#define probability_to_phred(p,o) char(uint8_t(-10.0 * log10(p)) + (o))
-#define phred_to_quality(c,o) uint8_t((c) - (o))
-#define phred_to_quality_double(c,o) double((c) - (o))
-#define quality_to_phred(c,o) char((c) + (o))
+#define probability_to_quality(p) static_cast< uint8_t >(-10.0 * log10(p))
+#define probability_to_phred(p,o) static_cast< char >(static_cast< uint8_t >(-10.0 * log10(p)) + (o))
+#define phred_to_quality(c,o) static_cast< uint8_t >((c) - (o))
+#define phred_to_quality_double(c,o) static_cast< double >((c) - (o))
+#define quality_to_phred(c,o) static_cast< char >((c) + (o))
 
 /*  Quality to Probability
     P(q) = pow(10.0, double(q) / -10.0)

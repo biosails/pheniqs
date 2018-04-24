@@ -100,8 +100,8 @@ friend ostream& operator<<(ostream& o, const Auxiliary& auxiliary);
 void operator=(Auxiliary const &) = delete;
 
 public:
-    int64_t FI;
-    int64_t TC;
+    uint32_t FI;
+    uint32_t TC;
     kstring_t RG;
     kstring_t BC;
     kstring_t QT;
@@ -116,13 +116,13 @@ public:
     float PX;
     float DQ;
     float EE;
-    int64_t XI;
-    int64_t YD;
-    int64_t XD;
+    uint32_t XI;
+    int32_t YD;
+    int32_t XD;
     kstring_t XM;
     kstring_t XL;
     float XP;
-    Auxiliary(const int64_t& FI, const int64_t& TC);
+    Auxiliary(const uint32_t& FI, const uint32_t& TC);
     Auxiliary(const Auxiliary& other);
     ~Auxiliary();
     void decode(const bam1_t* bam1);

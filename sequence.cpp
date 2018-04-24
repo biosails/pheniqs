@@ -76,7 +76,7 @@ void Sequence::mask(const uint8_t& threshold) {
 void Sequence::expected_error(float& error) const {
     double value(0);
     for(uint8_t* q = quality; *q; ++q) {
-        value += quality_to_probability(uint8_t(*q));
+        value += quality_to_probability(static_cast< uint8_t >(*q));
     }
     error = float(value);
 };
@@ -112,7 +112,7 @@ void Sequence::fill(const char* code, const int32_t& size) {
         }
 
         for(int32_t i = 0; i < size; i++) {
-            *(this->code + i) = AsciiToAmbiguousBam[uint8_t(code[i])];
+            *(this->code + i) = AsciiToAmbiguousBam[static_cast< uint8_t >(code[i])];
             *(this->quality + i) = MAX_VALID_PHRED_VALUE;
         }
     }
@@ -134,6 +134,7 @@ void Sequence::append(const uint8_t* code, const uint8_t* quality, const int32_t
         memcpy(this->code + length, code, size);
         memcpy(this->quality + length, quality, size);
         length += size;
+
         terminate();
     }
 };
@@ -300,7 +301,7 @@ string Barcode::iupac_ambiguity() const {
     string result;
     for(const auto& sequence : fragments) {
         for(int32_t i = 0; i < sequence.length; i++) {
-            result.push_back(BamToAmbiguousAscii[uint8_t(sequence.code[i])]);
+            result.push_back(BamToAmbiguousAscii[static_cast< uint8_t >(sequence.code[i])]);
         }
     }
     return result;

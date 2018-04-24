@@ -142,20 +142,14 @@ FeedAccumulator::~FeedAccumulator() {
 };
 void FeedAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
-
-    Value v;
-
     encode_key_value("url", url, value, document);
     encode_key_value("min sequence length", shortest, value, document);
     encode_key_value("max sequence length", length, value, document);
-
     Value cycle_quality_report(kObjectType);
     Value cycle_nucleotide_quality_reports(kArrayType);
-
     for(uint8_t n = 0; n < IUPAC_CODE_SIZE; n++) {
         if(iupac_nucleic_acid_count[n] > 0) {
             Value cycle_quality_distribution(kObjectType);
-
             Value cycle_count(kArrayType);
             Value cycle_quality_first_quartile(kArrayType);
             Value cycle_quality_third_quartile(kArrayType);
@@ -166,39 +160,18 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
             Value cycle_quality_max(kArrayType);
             Value cycle_quality_mean(kArrayType);
             Value cycle_quality_median(kArrayType);
-
             for(size_t c = 0; c < cycles.size(); c++) {
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].count);
-                cycle_count.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].Q1);
-                cycle_quality_first_quartile.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].Q3);
-                cycle_quality_third_quartile.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].IQR);
-                cycle_quality_interquartile_range.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].LW);
-                cycle_quality_left_whisker.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].RW);
-                cycle_quality_right_whisker.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].min_quality);
-                cycle_quality_min.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].max_quality);
-                cycle_quality_max.PushBack(v, allocator);
-
-                v.SetDouble(cycles[c]->iupac_nucleic_acid[n].mean_quality);
-                cycle_quality_mean.PushBack(v, allocator);
-
-                v.SetUint64(cycles[c]->iupac_nucleic_acid[n].median_quality);
-                cycle_quality_median.PushBack(v, allocator);
+                cycle_count.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].count).Move(), allocator);
+                cycle_quality_first_quartile.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].Q1).Move(), allocator);
+                cycle_quality_third_quartile.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].Q3).Move(), allocator);
+                cycle_quality_interquartile_range.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].IQR).Move(), allocator);
+                cycle_quality_left_whisker.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].LW).Move(), allocator);
+                cycle_quality_right_whisker.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].RW).Move(), allocator);
+                cycle_quality_min.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].min_quality).Move(), allocator);
+                cycle_quality_max.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].max_quality).Move(), allocator);
+                cycle_quality_mean.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].mean_quality).Move(), allocator);
+                cycle_quality_median.PushBack(Value(cycles[c]->iupac_nucleic_acid[n].median_quality).Move(), allocator);
             }
-
             cycle_quality_distribution.AddMember("cycle count", cycle_count, allocator);
             cycle_quality_distribution.AddMember("cycle quality first quartile", cycle_quality_first_quartile, allocator);
             cycle_quality_distribution.AddMember("cycle quality third quartile", cycle_quality_third_quartile, allocator);
@@ -209,16 +182,12 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
             cycle_quality_distribution.AddMember("cycle quality max", cycle_quality_max, allocator);
             cycle_quality_distribution.AddMember("cycle quality mean", cycle_quality_mean, allocator);
             cycle_quality_distribution.AddMember("cycle quality median", cycle_quality_median, allocator);
-
             if(n > 0) {
                 Value cycle_nucleotide_quality_report(kObjectType);
-
                 encode_key_value("nucleotide count", iupac_nucleic_acid_count[n], cycle_nucleotide_quality_report, document);
                 encode_key_value("nucleotide", string(1, BamToAmbiguousAscii[n]), cycle_nucleotide_quality_report, document);
-
                 cycle_nucleotide_quality_report.AddMember("cycle quality distribution", cycle_quality_distribution, allocator);
                 cycle_nucleotide_quality_reports.PushBack(cycle_nucleotide_quality_report, allocator);
-
             } else {
                 cycle_quality_report.AddMember("cycle quality distribution", cycle_quality_distribution, allocator);
             }
@@ -234,8 +203,7 @@ void FeedAccumulator::encode(Document& document, Value& value) const {
 
     Value SegmentAccumulator(kArrayType);
     for(size_t i = 0; i < EFFECTIVE_PHRED_RANGE; i++) {
-        v.SetUint64(average_phred.distribution[i]);
-        SegmentAccumulator.PushBack(v, allocator);
+        SegmentAccumulator.PushBack(Value(average_phred.distribution[i]).Move(), allocator);
     }
     average_phred_report.AddMember("average phred score distribution", SegmentAccumulator, allocator);
     value.AddMember("average phred score report", average_phred_report, allocator);
@@ -298,11 +266,9 @@ void PivotAccumulator::finalize() {
 };
 void PivotAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
-
     encode_key_value("count", count, value, document);
     encode_key_value("pf count", pf_count, value, document);
     encode_key_value("pf fraction", pf_fraction, value, document);
-
     Value feed_reports(kArrayType);
     for(auto& accumulator : feed_accumulators) {
         Value feed_report(kObjectType);
@@ -386,7 +352,6 @@ void ChannelAccumulator::finalize(const PipelineAccumulator& pipeline_accumulato
 };
 void ChannelAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
-
     encode_key_value("index", index, value, document);
     encode_value_with_key_ID(rg, "RG", value, document);
     if(!undetermined) {
@@ -416,7 +381,6 @@ void ChannelAccumulator::encode(Document& document, Value& value) const {
         encode_key_value("pooled multiplex fraction", pooled_multiplex_fraction, value, document);
         encode_key_value("pf pooled multiplex fraction", pf_pooled_multiplex_fraction, value, document);
     }
-
     Value feed_reports(kArrayType);
     for(auto accumulator : feed_accumulators) {
         Value feed_report(kObjectType);

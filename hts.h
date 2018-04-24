@@ -269,55 +269,39 @@ protected:
 
             } else { throw OverflowError("BAM record must not exceed " + to_string(numeric_limits< int32_t >::max()) + " bytes"); }
         } else { throw OverflowError("qname must not exceed 255 characters"); }
-
-        /*
-            record->core.l_qname = segment.name.l + 1;
-            record->core.l_qseq = segment.sequence.length;
-            record->core.flag = segment.flag;
-            int32_t l_data = int32_t(record->core.l_qname + ((record->core.l_qseq + 1)>>1) + record->core.l_qseq + (record->core.n_cigar<<2));
-
-            // increase allocated space if necessary
-            if(record->m_data < l_data) {
-                record->m_data = l_data;
-                kroundup32(record->m_data);
-                if((record->data = static_cast< uint8_t* >(realloc(record->data, record->m_data))) == NULL) {
-                    throw OutOfMemoryError();
-                }
-            }
-            record->l_data = l_data;
-
-            // write identifier to data block
-            memcpy(bam_get_qname(record), segment.name.s, record->core.l_qname);
-
-            // encode nucleotide byte BAM numeric encoding into nybble BAM numeric encoding
-            uint8_t *bam_seq = bam_get_seq(record);
-            for(int i = 0; i < record->core.l_qseq; i++) {
-                bam1_seq_seti(bam_seq, i, segment.sequence.code[i]);
-            }
-
-            // encode the quality sequence
-            memcpy(bam_get_qual(record), segment.sequence.quality, record->core.l_qseq);
-
-            segment.auxiliary.encode(record);
-        */
     };
     inline void decode(const bam1_t* record, Segment& segment) {
-        // decode identifier and write to segment
+        /* copy the identifier to the segment */
         ks_put_string(bam_get_qname(record), record->core.l_qname, segment.name);
 
-        // decode nucleotide sequence to buffer
-        ks_clear(kbuffer);
-        ks_increase_size(kbuffer, record->core.l_qseq + 2);
-
-        uint8_t* position(bam_get_seq(record));
+        /* copy the sequence */
+        uint8_t* bam_seq(bam_get_seq(record));
+        segment.sequence.increase_size(record->core.l_qseq + 1);
         for(int32_t i = 0; i < record->core.l_qseq; i++) {
-            // convert from 4bit BAM numeric encoding to 8bit BAM numeric encoding
-            kbuffer.s[i] = bam_seqi(position, i);
-            // ks_put_character(bam_seqi(position, i), &kbuffer);
+            /* pad 4bit BAM numeric encoding to 8bit */
+            segment.sequence.code[i] = bam_seqi(bam_seq, i);
         }
-        kbuffer.l = record->core.l_qseq;
-        kbuffer.s[kbuffer.l] = '\0';
-        segment.sequence.fill((uint8_t*)kbuffer.s, bam_get_qual(record), record->core.l_qseq);
+        segment.sequence.code[record->core.l_qseq] = '\0';
+
+        /* copy the quality */
+        memcpy(segment.sequence.quality, bam_get_qual(record), record->core.l_qseq);
+        segment.sequence.quality[record->core.l_qseq] = '\0';
+
+        /* assign the sequence length */
+        segment.sequence.length = record->core.l_qseq;
+
+        /*  copy sequence using a buffer
+
+            ks_clear(kbuffer);
+            ks_increase_size(kbuffer, record->core.l_qseq + 2);
+            uint8_t* position(bam_get_seq(record));
+            for(int32_t i = 0; i < record->core.l_qseq; i++) {
+                reinterpret_cast< uint8_t* >(kbuffer.s)[i] = bam_seqi(position, i);
+            }
+            kbuffer.l = record->core.l_qseq;
+            kbuffer.s[kbuffer.l] = '\0';
+            segment.sequence.fill(reinterpret_cast< uint8_t* >(kbuffer.s), bam_get_qual(record), record->core.l_qseq);
+        */
 
         segment.flag = record->core.flag;
         segment.auxiliary.decode(record);

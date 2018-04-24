@@ -89,6 +89,18 @@ public:
     inline bool empty() const {
         return length == 0;
     };
+    inline void increase_size(const int32_t& size) {
+        if(size >= capacity) {
+            capacity = length + size;
+            kroundup32(capacity);
+            if((code = static_cast< uint8_t* >(realloc(code, capacity))) == NULL) {
+                throw OutOfMemoryError();
+            }
+            if((quality = static_cast< uint8_t* >(realloc(quality, capacity))) == NULL) {
+                throw OutOfMemoryError();
+            }
+        }
+    };
     inline int32_t distance_from(const Sequence& other, const uint8_t threshold) const {
         int32_t distance(0);
         if(threshold > 0) {
@@ -132,7 +144,6 @@ public:
             ks_increase_size(*buffer, buffer->l + length + 2);
             for(int32_t i = 0; i < length; i++) {
                 buffer->s[buffer->l + i] = BamToAmbiguousAscii[code[i]];
-                // ks_put_character(BamToAmbiguousAscii[uint8_t(code[i])], buffer);
             }
             buffer->l += length;
             ks_terminate(*buffer);
@@ -162,7 +173,6 @@ public:
             ks_increase_size(*buffer, buffer->l + length + 2);
             for(int32_t i = 0; i < length; i++) {
                 buffer->s[buffer->l + i] = quality[i] + phred_offset;
-                // ks_put_character(quality[i] + phred_offset, buffer);
             }
             buffer->l += length;
             ks_terminate(*buffer);

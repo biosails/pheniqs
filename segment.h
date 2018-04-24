@@ -72,10 +72,10 @@ public:
     Sequence sequence;
     Auxiliary auxiliary;
     Segment(const Platform& platform);
-    Segment(const size_t& index, const int64_t& FI, const int64_t& TC, const Platform& platform);
+    Segment(const size_t& index, const uint32_t& FI, const uint32_t& TC, const Platform& platform);
     Segment(const Segment& other);
     ~Segment();
-    inline int64_t get_segment_index() const {
+    inline uint32_t get_segment_index() const {
         if(!auxiliary.FI) {
             if(flag & uint16_t(HtsFlag::PAIRED)) {
                 if(flag & uint16_t(HtsFlag::READ1)) {
@@ -92,7 +92,7 @@ public:
             return auxiliary.FI;
         }
     };
-    inline int64_t get_total_segments() const {
+    inline uint32_t get_total_segments() const {
         if(!auxiliary.TC) {
             if(flag & uint16_t(HtsFlag::PAIRED)) {
                 return 2;

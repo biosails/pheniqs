@@ -43,7 +43,7 @@ FeedSpecification::FeedSpecification (
 };
 void FeedSpecification::set_capacity(const int& capacity) {
     if(capacity != this->capacity) {
-        int aligned(int(capacity / resolution) * resolution);
+        int aligned(static_cast< int >(capacity / resolution) * resolution);
         if(aligned < capacity) {
             aligned += resolution;
         }
@@ -52,7 +52,7 @@ void FeedSpecification::set_capacity(const int& capacity) {
 };
 void FeedSpecification::set_resolution(const int& resolution) {
     if(resolution != this->resolution) {
-        int aligned(int(capacity / resolution) * resolution);
+        int aligned(static_cast< int >(capacity / resolution) * resolution);
         if(aligned < capacity) {
             aligned += resolution;
         }
@@ -207,7 +207,7 @@ void FeedSpecification::probe() {
                     }
                     if(peeked > 0) { 
                         size_t state(0);
-                        char* position((char*)buffer);
+                        char* position(reinterpret_cast< char * >(buffer));
                         char* end(position + peeked);
                         while(position < end && position != NULL) {
                             if(state == 0) {

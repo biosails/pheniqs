@@ -39,7 +39,7 @@
 #include <htslib/kstring.h>
 #include "error.h"
 
-#define tag_to_code(t) uint16_t(*(t))<<8 | uint8_t(*((t) + 1))
+#define tag_to_code(t) static_cast< uint16_t >(*(t)) << 8 | static_cast< uint8_t >(*((t) + 1))
 
 const char LINE_BREAK('\n');
 
@@ -65,7 +65,7 @@ static inline void ks_free(kstring_t& s) {
         free(s.s);
         s.s = NULL;
     }
-    s.l = 0; 
+    s.l = 0;
     s.m = 0;
 };
 static inline void ks_terminate(kstring_t& s) {
@@ -106,16 +106,35 @@ static inline void ks_put_string_(const kstring_t& from, kstring_t& to) {
     memcpy(to.s + to.l, from.s, from.l);
     to.l += from.l;
 };
+static inline void ks_put_uint16(const uint16_t& c, kstring_t& s) {
+    char buffer[8];
+    uint16_t x;
+    int16_t l(0);
+    int16_t i(0);
+
+    if(c == 0) {
+        ks_put_character('0', s);
+    } else {
+        for(l = 0, x = c; x > 0; x /= 10) {
+            buffer[l++] = x % 10 + '0';
+        }
+        ks_increase_size(s, s.l + l + 2);
+        for(i = l - 1; i >= 0; --i) {
+            s.s[s.l++] = buffer[i];
+        }
+        s.s[s.l] = '\0';
+    }
+};
 static inline void ks_put_int32(const int32_t& c, kstring_t& s) {
     char buffer[16];
     uint32_t x(c);
-    int32_t i(0);
-    int32_t l(0);
+    int16_t i(0);
+    int16_t l(0);
 
     if(c < 0) {
         x = -x;
     }
-    do { 
+    do {
         buffer[l++] = x % 10 + '0';
         x /= 10;
     } while(x > 0);
@@ -131,8 +150,8 @@ static inline void ks_put_int32(const int32_t& c, kstring_t& s) {
 static inline void ks_put_uint32(const uint32_t c, kstring_t& s) {
     char buffer[16];
     uint32_t x;
-    int32_t l(0);
-    int32_t i(0);
+    int16_t l(0);
+    int16_t i(0);
 
     if(c == 0) {
         ks_put_character('0', s);
@@ -297,4 +316,3 @@ enum class HtsAuxiliaryCode : uint16_t {
 // #define ks_free(x) if((x).s != NULL) { free((x).s); (x).s = NULL; (x).l = 0; (x).m = 0; }
 // #define ks_clear(x) (x).l = 0; if((x).s != NULL) { (x).s[0] = '\0'; }
 // #define ks_terminate(x) if((x).s == NULL){ ks_resize(&(x), 1); } else if((x).m == (x).l){ ks_resize(&(x), (x).l + 1); }; (x).s[(x).l] = '\0';
-

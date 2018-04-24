@@ -105,36 +105,32 @@ public:
         // decode sequence
         ks_increase_size(sequence, kseq->seq.l + 2);
         for(size_t i = 0; i < kseq->seq.l; i++) {
-            sequence.s[i] = AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])];
-            // ks_put_character(AsciiToAmbiguousBam[uint8_t(kseq->seq.s[i])], &sequence);
+            sequence.s[i] = AsciiToAmbiguousBam[static_cast< uint8_t >(kseq->seq.s[i])];
         }
         sequence.l = kseq->seq.l;
         sequence.s[sequence.l] = '\0';
-        // ks_terminate(sequence);
 
         // decode quality
         ks_increase_size(quality, kseq->qual.l + 2);
         for(size_t i = 0; i < kseq->qual.l; i++) {
             quality.s[i] = kseq->qual.s[i] - phred_offset;
-            // ks_put_character(kseq->qual.s[i] - phred_offset, &quality);
         }
         sequence.l = kseq->qual.l;
         sequence.s[sequence.l] = '\0';
-        // ks_terminate(sequence);
     };
     inline void decode(const Segment& segment) {
         clear();
 
         // copy from segment to record
-        ks_put_string((char*)segment.sequence.code, segment.sequence.length, sequence);
-        ks_put_string((char*)segment.sequence.quality, segment.sequence.length, quality);
+        ks_put_string(reinterpret_cast< char* >(segment.sequence.code), segment.sequence.length, sequence);
+        ks_put_string(reinterpret_cast< char* >(segment.sequence.quality), segment.sequence.length, quality);
         ks_put_string(segment.name.s, segment.name.l, name);
         decode_comment(segment);
     };
     inline void encode(Segment& segment) const {
 
         // write the FastqRecord to Segment
-        segment.sequence.fill((const uint8_t*)(sequence.s), (const uint8_t*)(quality.s), static_cast< int32_t >(sequence.l));
+        segment.sequence.fill(reinterpret_cast< uint8_t* >(sequence.s), reinterpret_cast< uint8_t* >(quality.s), static_cast< int32_t >(sequence.l));
         ks_put_string(name, segment.name);
         ks_put_string(comment, segment.auxiliary.CO);
         segment.auxiliary.FI = 0;
@@ -188,8 +184,7 @@ public:
         // encode sequence
         ks_increase_size(buffer, buffer.l + sequence.l + 2);
         for(size_t i = 0; i < sequence.l; i++) {
-            buffer.s[buffer.l + i] = BamToAmbiguousAscii[uint8_t(sequence.s[i])];
-            // ks_put_character(BamToAmbiguousAscii[uint8_t(sequence.s[i])], &buffer);
+            buffer.s[buffer.l + i] = BamToAmbiguousAscii[static_cast< uint8_t >(sequence.s[i])];
         }
         buffer.l += sequence.l;
         ks_put_character(LINE_BREAK, buffer);
@@ -202,7 +197,6 @@ public:
         ks_increase_size(buffer, buffer.l + quality.l + 2);
         for(size_t i = 0; i < quality.l; i++) {
             buffer.s[buffer.l + i] = quality.s[i] + phred_offset;
-            // ks_put_character(quality.s[i] + phred_offset, &buffer);
         }
         buffer.l += quality.l;
         ks_put_character(LINE_BREAK, buffer);
@@ -222,11 +216,11 @@ private:
             case Platform::LS454:
                 break;
             case Platform::ILLUMINA: {
-                ks_put_int64(segment.auxiliary.FI, comment);
+                ks_put_uint32(segment.auxiliary.FI, comment);
                 ks_put_character(':', comment);
                 ks_put_character(segment.get_qcfail()? 'Y' : 'N', comment);
                 ks_put_character(':', comment);
-                ks_put_int64(segment.auxiliary.XI, comment);
+                ks_put_uint32(segment.auxiliary.XI, comment);
                 ks_put_character(':', comment);
                 ks_put_string(segment.auxiliary.BC, comment);
                 break;
@@ -247,7 +241,7 @@ private:
     };
     inline void parse_illumina_segment_index(Segment& segment, size_t& offset) const {
         int8_t code(-1);
-        int64_t value(0);
+        uint32_t value(0);
         size_t position(offset);
         const char* comment(segment.auxiliary.CO.s);
         while (position < segment.auxiliary.CO.l) {

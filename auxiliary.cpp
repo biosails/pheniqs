@@ -32,10 +32,10 @@ static inline uint32_t le_to_u32(const uint8_t* buffer) {
     return *((uint32_u *)buffer);
 #else
     return
-        ((uint32_t)buffer[0]        |
-        ((uint32_t)buffer[1] << 8)  |
-        ((uint32_t)buffer[2] << 16) |
-        ((uint32_t)buffer[3] << 24));
+        (static_cast< uint32_t >(buffer[0])        |
+        (static_cast< uint32_t >(buffer[1]) << 8)  |
+        (static_cast< uint32_t >(buffer[2]) << 16) |
+        (static_cast< uint32_t >(buffer[3]) << 24));
 #endif
 };
 static inline uint8_t aux_type2size(uint8_t type) {
@@ -114,7 +114,7 @@ static inline uint8_t* skip_aux(uint8_t* buffer, uint8_t* end) {
 
 /*  Auxiliary tags
 */
-Auxiliary::Auxiliary(const int64_t& FI, const int64_t& TC) :
+Auxiliary::Auxiliary(const uint32_t& FI, const uint32_t& TC) :
     FI(FI),
     TC(TC),
     RG({ 0, 0, NULL }),
@@ -200,10 +200,10 @@ void Auxiliary::decode(const bam1_t* bam1) {
             position += 2;
             switch (code) {
                 case uint16_t(HtsAuxiliaryCode::FI):
-                    FI = bam_aux2i(position);
+                    FI = static_cast< uint32_t >(bam_aux2i(position));
                     break;
                 case uint16_t(HtsAuxiliaryCode::TC):
-                    TC = bam_aux2i(position);
+                    TC = static_cast< uint32_t >(bam_aux2i(position));
                     break;
                 case uint16_t(HtsAuxiliaryCode::RG):
                     value = bam_aux2Z(position);
@@ -261,13 +261,13 @@ void Auxiliary::decode(const bam1_t* bam1) {
 
                 /* user space auxiliary tags */
                 case uint16_t(HtsAuxiliaryCode::XI):
-                    YD = bam_aux2i(position);
+                    XI = static_cast< uint32_t >(bam_aux2i(position));
                     break;
                 case uint16_t(HtsAuxiliaryCode::YD):
-                    YD = bam_aux2i(position);
+                    YD = static_cast< int32_t >(bam_aux2i(position));
                     break;
                 case uint16_t(HtsAuxiliaryCode::XD):
-                    XD = bam_aux2i(position);
+                    XD = static_cast< int32_t >(bam_aux2i(position));
                     break;
                case uint16_t(HtsAuxiliaryCode::XM):
                     value = bam_aux2Z(position);
@@ -295,31 +295,31 @@ void Auxiliary::encode(bam1_t* bam1) const {
         // TC and FI and not mandatory when there are 1 or 2 segments in the read
         // In that case the structure can be deduced from the flags alone
         if(TC > 2) {
-        if(FI   > 0) { bam_aux_append(bam1, "FI", 'i', 4,                            (uint8_t*)&FI ); }
-        if(TC   > 0) { bam_aux_append(bam1, "TC", 'i', 4,                            (uint8_t*)&TC ); }
+        if(FI   > 0) { bam_aux_append(bam1, "FI", 'i', sizeof(uint32_t),             reinterpret_cast< const uint8_t* >(&FI));  }
+        if(TC   > 0) { bam_aux_append(bam1, "TC", 'i', sizeof(uint32_t),             reinterpret_cast< const uint8_t* >(&TC));  }
         }
-        if(RG.l > 0) { bam_aux_append(bam1, "RG", 'Z', static_cast< int >(RG.l + 1), (uint8_t*)RG.s); }
-        if(BC.l > 0) { bam_aux_append(bam1, "BC", 'Z', static_cast< int >(BC.l + 1), (uint8_t*)BC.s); }
-        if(QT.l > 0) { bam_aux_append(bam1, "QT", 'Z', static_cast< int >(QT.l + 1), (uint8_t*)QT.s); }
-        if(RX.l > 0) { bam_aux_append(bam1, "RX", 'Z', static_cast< int >(RX.l + 1), (uint8_t*)RX.s); }
-        if(QX.l > 0) { bam_aux_append(bam1, "QX", 'Z', static_cast< int >(QX.l + 1), (uint8_t*)QX.s); }
-        if(BX.l > 0) { bam_aux_append(bam1, "BX", 'Z', static_cast< int >(BX.l + 1), (uint8_t*)BX.s); }
-        if(PX   > 0) { bam_aux_append(bam1, "PX", 'f', 4,                            (uint8_t*)&PX ); }
-        if(DQ   > 0) { bam_aux_append(bam1, "DQ", 'f', 4,                            (uint8_t*)&DQ ); }
-        if(EE   > 0) { bam_aux_append(bam1, "EE", 'f', 4,                            (uint8_t*)&EE ); }
-        if(FS.l > 0) { bam_aux_append(bam1, "FS", 'Z', static_cast< int >(FS.l + 1), (uint8_t*)FS.s); }
-        if(LB.l > 0) { bam_aux_append(bam1, "LB", 'Z', static_cast< int >(LB.l + 1), (uint8_t*)LB.s); }
-        if(PG.l > 0) { bam_aux_append(bam1, "PG", 'Z', static_cast< int >(PG.l + 1), (uint8_t*)PG.s); }
-        if(PU.l > 0) { bam_aux_append(bam1, "PU", 'Z', static_cast< int >(PU.l + 1), (uint8_t*)PU.s); }
-        if(CO.l > 0) { bam_aux_append(bam1, "CO", 'Z', static_cast< int >(CO.l + 1), (uint8_t*)CO.s); }
+        if(RG.l > 0) { bam_aux_append(bam1, "RG", 'Z', static_cast< int >(RG.l + 1), reinterpret_cast< const uint8_t* >(RG.s)); }
+        if(BC.l > 0) { bam_aux_append(bam1, "BC", 'Z', static_cast< int >(BC.l + 1), reinterpret_cast< const uint8_t* >(BC.s)); }
+        if(QT.l > 0) { bam_aux_append(bam1, "QT", 'Z', static_cast< int >(QT.l + 1), reinterpret_cast< const uint8_t* >(QT.s)); }
+        if(RX.l > 0) { bam_aux_append(bam1, "RX", 'Z', static_cast< int >(RX.l + 1), reinterpret_cast< const uint8_t* >(RX.s)); }
+        if(QX.l > 0) { bam_aux_append(bam1, "QX", 'Z', static_cast< int >(QX.l + 1), reinterpret_cast< const uint8_t* >(QX.s)); }
+        if(BX.l > 0) { bam_aux_append(bam1, "BX", 'Z', static_cast< int >(BX.l + 1), reinterpret_cast< const uint8_t* >(BX.s)); }
+        if(PX   > 0) { bam_aux_append(bam1, "PX", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&PX));  }
+        if(DQ   > 0) { bam_aux_append(bam1, "DQ", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&DQ));  }
+        if(EE   > 0) { bam_aux_append(bam1, "EE", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&EE));  }
+        if(FS.l > 0) { bam_aux_append(bam1, "FS", 'Z', static_cast< int >(FS.l + 1), reinterpret_cast< const uint8_t* >(FS.s)); }
+        if(LB.l > 0) { bam_aux_append(bam1, "LB", 'Z', static_cast< int >(LB.l + 1), reinterpret_cast< const uint8_t* >(LB.s)); }
+        if(PG.l > 0) { bam_aux_append(bam1, "PG", 'Z', static_cast< int >(PG.l + 1), reinterpret_cast< const uint8_t* >(PG.s)); }
+        if(PU.l > 0) { bam_aux_append(bam1, "PU", 'Z', static_cast< int >(PU.l + 1), reinterpret_cast< const uint8_t* >(PU.s)); }
+        if(CO.l > 0) { bam_aux_append(bam1, "CO", 'Z', static_cast< int >(CO.l + 1), reinterpret_cast< const uint8_t* >(CO.s)); }
 
         /*  user space auxiliary tags */
-        if(XI   > 0) { bam_aux_append(bam1, "XI", 'i', 4,                            (uint8_t*)&XI ); }
-        if(YD   > 0) { bam_aux_append(bam1, "YD", 'i', 4,                            (uint8_t*)&YD ); }
-        if(XD   > 0) { bam_aux_append(bam1, "XD", 'i', 4,                            (uint8_t*)&XD ); }
-        if(XM.l > 0) { bam_aux_append(bam1, "XM", 'Z', static_cast< int >(XM.l + 1), (uint8_t*)XM.s); }
-        if(XL.l > 0) { bam_aux_append(bam1, "XL", 'Z', static_cast< int >(XL.l + 1), (uint8_t*)XL.s); }
-        if(XP   > 0) { bam_aux_append(bam1, "XP", 'f', 4,                            (uint8_t*)&XP ); }
+        if(XI   > 0) { bam_aux_append(bam1, "XI", 'i', sizeof(uint32_t),             reinterpret_cast< const uint8_t* >(&XI));  }
+        if(YD   > 0) { bam_aux_append(bam1, "YD", 'i', sizeof(int32_t),              reinterpret_cast< const uint8_t* >(&YD));  }
+        if(XD   > 0) { bam_aux_append(bam1, "XD", 'i', sizeof(int32_t),              reinterpret_cast< const uint8_t* >(&XD));  }
+        if(XM.l > 0) { bam_aux_append(bam1, "XM", 'Z', static_cast< int >(XM.l + 1), reinterpret_cast< const uint8_t* >(XM.s)); }
+        if(XL.l > 0) { bam_aux_append(bam1, "XL", 'Z', static_cast< int >(XL.l + 1), reinterpret_cast< const uint8_t* >(XL.s)); }
+        if(XP   > 0) { bam_aux_append(bam1, "XP", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&XP));  }
     }
 };
 ostream& operator<<(ostream& o, const Auxiliary& auxiliary) {

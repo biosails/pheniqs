@@ -1259,6 +1259,10 @@ ostream& CommandLine::print_version_element(ostream& o, const Layout& layout) co
         o << "xzlib " << XZ_VERSION << endl;
     #endif
 
+    #ifdef LIBDEFLATE_VERSION
+        o << "libdeflate " << LIBDEFLATE_VERSION << endl;
+    #endif
+
     #ifdef RAPIDJSON_VERSION
         o << "rapidjson " << RAPIDJSON_VERSION << endl;
     #endif

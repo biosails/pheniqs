@@ -142,7 +142,7 @@ public:
         length_sum += value;
         length_min = min(length_min, value);
         length_max = max(length_max, value);
-        distribution[uint8_t(value)]++;
+        distribution[static_cast< uint8_t >(value)]++;
     };
     void finalize();
     SegmentAccumulator& operator+=(const SegmentAccumulator& rhs);
@@ -238,12 +238,12 @@ public:
     inline void increment (
         const bool filtered,
         const double pivot_multiplex_confidence,
-        const uint64_t pivot_multiplex_distance,
+        const int32_t pivot_multiplex_distance,
         const vector< Segment >& output) {
 
         count++;
         if(pivot_multiplex_distance) {
-            accumulated_multiplex_distance += uint64_t(pivot_multiplex_distance);
+            accumulated_multiplex_distance += static_cast< uint64_t >(pivot_multiplex_distance);
         }
         if(decoder == Decoder::PAMLD) {
             accumulated_multiplex_confidence += pivot_multiplex_confidence; 
@@ -251,7 +251,7 @@ public:
         if(!filtered) {
             pf_count++;
             if(pivot_multiplex_distance) {
-                accumulated_pf_multiplex_distance += uint64_t(pivot_multiplex_distance);
+                accumulated_pf_multiplex_distance += static_cast< uint64_t >(pivot_multiplex_distance);
             }
             if(decoder == Decoder::PAMLD) {
                 accumulated_pf_multiplex_confidence += pivot_multiplex_confidence;
