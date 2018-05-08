@@ -143,7 +143,7 @@ before_install:
 install: true
 
 script:
-    - ./tool/pheniqs-tools.py build build/travis.json
+    - ./tool/pheniqs-tools.py -v debug build build/travis.json
     - make all PREFIX=~/.pheniqs/travis/install ZLIB_VERSION=1.2.11 BZIP2_VERSION=1.0.6 XZ_VERSION=5.2.3 LIBDEFLATE_VERSION=1.0 RAPIDJSON_VERSION=1.1.0 HTSLIB_VERSION=1.8
     - ./pheniqs --version
     - ./pheniqs --help

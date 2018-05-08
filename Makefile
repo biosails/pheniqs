@@ -39,7 +39,7 @@ BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
 
-CXX              = clang++
+# CXX              = clang++
 CPPFLAGS        += -Wall -Wsign-compare
 CXXFLAGS        += -std=c++11 -O3
 LDFLAGS         +=
