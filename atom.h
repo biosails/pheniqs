@@ -288,33 +288,28 @@ ostream& operator<<(ostream& o, const HeadPGAtom& pg);
     KS  The array of nucleotide bases that correspond to the key sequence of each read.
 
     From GATK: https://software.broadinstitute.org/gatk/guide/article?id=6472
-    ID  Read group identifier This tag identifies which read group each read belongs to, so each read group's ID must be unique.
-        It is referenced both in the read group definition line in the file header (starting with @RG) and in the RG:Z tag for each read record.
-        Note that some Picard tools have the ability to modify IDs when merging SAM files in order to avoid collisions.
-        In Illumina data, read group IDs are composed using the flowcell + lane name and number,
-        making them a globally unique identifier across all sequencing data in the world.
-        Use for BQSR: ID is the lowest denominator that differentiates factors contributing to technical batch effects:
+
+    ID  Read group identifier, RG-ID, identifies which read group each read belongs to using a reference in the RG auxiliary tag.
+        RG-ID must be unique in a SAM file.
+        The default convention for illumina is the same as PU.
+        When used in BQSR, RG-ID is the lowest denominator that differentiates factors contributing to technical batch effects:
         therefore, a read group is effectively treated as a separate run of the instrument in data processing steps
         such as base quality score recalibration, since they are assumed to share the same error model.
 
-    PU  Platform Unit The PU holds three types of information, the {FLOWCELL_BARCODE}.{LANE}.{SAMPLE_BARCODE}.
-        The {FLOWCELL_BARCODE} refers to the unique identifier for a particular flow cell.
-        The {LANE} indicates the lane of the flow cell
-        and the {SAMPLE_BARCODE} is a sample/library-specific identifier.
-        Although the PU is not required by GATK but takes precedence over ID for base recalibration if it is present.
-        In the example shown earlier, two read group fields, ID and PU, appropriately differentiate flow cell lane,
-        marked by .2, a factor that contributes to batch effects.
+    PL  Platform used to produce the read. identifies the sequencing technology used to generate the sequencing data.
 
-    SM  Sample The name of the sample sequenced in this read group.
+    PU  Platform Unit, RG-PU, is unique read group identifier in the platform vendor dialect.
+        The default convention for illumina seuqnce reads is <flowcell id>:<flowcell lane number>:<multiplex barcode>
+        making it a globally unique identifier across all sequencing data in the world.
+        PU is not required by GATK but takes precedence over ID for base recalibration if present.
+
+    SM  The name of the sample sequenced in this read group.
         GATK tools treat all read groups with the same SM value as containing sequencing data for the same sample,
         and this is also the name that will be used for the sample column in the VCF file.
-        Therefore it's critical that the SM field be specified correctly.
         When sequencing pools of samples, use a pool name instead of an individual sample name.
 
-    PL  Platform/technology used to produce the read This constitutes the only way to know what
-        sequencing technology was used to generate the sequencing data. Valid values: ILLUMINA, SOLID, LS454, HELICOS and PACBIO.
-
-    LB  DNA preparation library identifier MarkDuplicates uses the LB field to determine which read groups might contain molecular duplicates,
+    LB  DNA preparation library identifier.
+        MarkDuplicates uses the LB field to determine which read groups might contain molecular duplicates,
         in case the same DNA library was sequenced on multiple lanes.
 
     also informative: http://gatkforums.broadinstitute.org/gatk/discussion/6472/read-groups
@@ -351,9 +346,12 @@ private:
     char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg);
-void decode_head_RG_atom_with_key_ID(const Value& node, HeadRGAtom& value, const Value::Ch* key);
-void encode_value_with_key_ID(const HeadRGAtom& value, const string& key, Value& container, Document& document);
-void transcode_head_RG_atom(const Value& from, Value& to, Document& document);
+template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container);
+template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, list< HeadRGAtom >& value, const Value& container);
+bool encode_value(const HeadRGAtom& value, Value& container, Document& document);
+bool encode_key_value(const string& key, const HeadRGAtom& value, Value& container, Document& document);
+bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value& container, Document& document);
+template <> bool transcode_value< HeadRGAtom >(const Value& from, Value& to, Document& document);
 
 /*  @CO free text comment
 */

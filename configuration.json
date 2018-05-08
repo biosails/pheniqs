@@ -2,6 +2,8 @@
     "action": [
         {
             "default": {
+                "flowcell id": null,
+                "flowcell lane number": null,
                 "adjusted multiplex noise probability": 0,
                 "buffer capacity": 2048,
                 "concatenated molecular barcode length": 0,
@@ -76,6 +78,9 @@
                     "type": "boolean"
                 },
                 {
+                    "extension": [
+                        "json"
+                    ],
                     "handle": [
                         "-C",
                         "--config"
@@ -142,7 +147,7 @@
                     ],
                     "help": "Base input url",
                     "name": "base input url",
-                    "type": "string"
+                    "type": "directory"
                 },
                 {
                     "handle": [
@@ -151,7 +156,7 @@
                     ],
                     "help": "Base output url",
                     "name": "base output url",
-                    "type": "string"
+                    "type": "directory"
                 },
                 {
                     "handle": [
@@ -167,6 +172,11 @@
                         "pamld",
                         "mdd",
                         "benchmark"
+                    ],
+                    "choice description": [
+                        "phred adjusted maximum likelihood decoder",
+                        "minimum distance decoder",
+                        "benchmark meta decoder"
                     ],
                     "default": "pamld",
                     "handle": [
@@ -252,6 +262,15 @@
                     "type": "boolean"
                 },
                 {
+                    "extension": [
+                        "fq",
+                        "fq.gz",
+                        "fastq",
+                        "fastq.gz",
+                        "bam",
+                        "cram",
+                        "sam"
+                    ],
                     "handle": [
                         "-i",
                         "--input"
@@ -260,7 +279,7 @@
                     "mandatory": true,
                     "meta": "PATH",
                     "name": "input path",
-                    "type": "string"
+                    "type": "url"
                 },
                 {
                     "default": false,

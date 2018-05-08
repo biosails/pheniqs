@@ -44,7 +44,7 @@ Environment::Environment(const int argc, const char** argv) :
     if(!_help_only && !_version_only) {
         switch (_program_action) {
             case ProgramAction::DEMULTIPLEX: {
-                load_interface_instruction();
+                load_instruction();
                 decode_value_by_key< bool >("validate only", _validate_only, _instruction);
                 decode_value_by_key< bool >("lint only", _lint_only, _instruction);
                 decode_value_by_key< bool >("display distance", _display_distance, _instruction);
@@ -59,13 +59,15 @@ Environment::Environment(const int argc, const char** argv) :
         }
     }
 };
-void Environment::load_interface_instruction() {
+void Environment::load_instruction() {
     const Document& original = interface.instruction();
     Value::ConstMemberIterator collection;
     Document base;
+    string key;
+    bool undetermined(false);
 
     /*  extract a base read group from the root element */
-    transcode_head_RG_atom(original, base, base);
+    transcode_value< HeadRGAtom >(original, base, base);
 
     /*  overlay any explicitly defined read groups on top of the default */
     map< string, Value* > read_group_node_by_id;
@@ -73,18 +75,16 @@ void Environment::load_interface_instruction() {
     if(collection != original.MemberEnd()) {
         if(collection->value.IsArray() && !collection->value.Empty()) {
             for(auto& element : collection->value.GetArray()) {
-                string key;
-                decode_value_by_key< string >("ID", key, element);
-                if(!key.empty()) {
-                    Value* implicit_read_group = new Value();
+                Value* implicit = new Value();
+                merge_json_value(base, element, *implicit, _instruction);
+                if(infer_ID("ID", key, *implicit, _instruction)) {
                     auto record = read_group_node_by_id.find(key);
                     if(record == read_group_node_by_id.end()) {
-                        merge_json_value(base, element, *implicit_read_group, _instruction);
-                        read_group_node_by_id.emplace(make_pair(key, implicit_read_group));
+                        read_group_node_by_id.emplace(make_pair(key, implicit));
                     } else {
-                        merge_json_value(*record->second, element, *implicit_read_group, _instruction);
+                        merge_json_value(*record->second, element, *implicit, _instruction);
                         delete record->second;
-                        read_group_node_by_id[key] = implicit_read_group;
+                        read_group_node_by_id[key] = implicit;
                     }
                 } else { throw ConfigurationError("read group is missing an ID"); }
             }
@@ -92,67 +92,86 @@ void Environment::load_interface_instruction() {
     }
 
     /*  extract a base channel from the root element */
-    transcode_channel_specification(original, base, base);
+    transcode_value< ChannelSpecification >(original, base, base);
 
     /*  if a matching read group has been defined overlay the read group
         on top of the default channel and than the channel on top of that.
         otherwise overlay every channel on top of the default
-
         also make sure there are no two channels with the same read group ID */
+    list< Value* > channel_by_index;
     collection = original.FindMember("channel");
     if(collection != original.MemberEnd()) {
-        set< string > unique_channel_id;
         if(collection->value.IsArray() && !collection->value.Empty()) {
             int32_t channel_index(0);
             size_t undetermined_count(0);
-            bool undetermined(false);
-            Value channel_array(kArrayType);
             for(auto& element : collection->value.GetArray()) {
-                string key;
-                decode_value_by_key< string >("RG", key, element);
-                if(!key.empty()) {
-                    if(!unique_channel_id.count(key)) {
-                        unique_channel_id.emplace(key);
-
-                        Value implicit_channel;
-                        auto record = read_group_node_by_id.find(key);
-                        if(record == read_group_node_by_id.end()) {
-                            merge_json_value(base, element, implicit_channel, _instruction);
-                        } else {
-                            Value annotated_channel;
-                            merge_json_value(base, *record->second, annotated_channel, _instruction);
-                            merge_json_value(annotated_channel, element, implicit_channel, _instruction);
-                            annotated_channel.SetNull();
-                        }
-
-                        /* remove any barcode and concentration declared on the undetermined channel */
-                        if(decode_value_by_key< bool >("undetermined", undetermined, implicit_channel)) {
-                            if(undetermined) {
-                                implicit_channel.RemoveMember("barcode");
-                                implicit_channel.RemoveMember("concentration");
-                                undetermined_count++;
-                            }
-                        }
-
-                        encode_key_value("index", channel_index++, implicit_channel, _instruction);
-                        channel_array.PushBack(implicit_channel.Move(), _instruction.GetAllocator());
-                    } else { throw ConfigurationError("channel " + key + " at position " + to_string(channel_index) + " is already defined"); }
-                } else { throw ConfigurationError("channel is missing a read group ID"); }
-            }
-
-            if(undetermined_count > 1) {
-                throw ConfigurationError("only one undetermined channel can be declared");
-
-            } else if(channel_index == 1 && undetermined_count == 0) {
-                /*  if only one channel is defined and it has no barcode defined, mark it as undetermined */
-                for(auto& element : channel_array.GetArray()) {
-                    Barcode barcode;
-                    if(!decode_value_by_key< Barcode >("barcode", barcode, element)) {
-                        encode_key_value("undetermined", true, element, _instruction);
+                Value* implicit = new Value();
+                merge_json_value(base, element, *implicit, _instruction);
+                if(infer_ID("ID", key, *implicit, _instruction)) {
+                    /* if the channel defines a RG element, check if a read group is defined and overlay */
+                    auto record = read_group_node_by_id.find(key);
+                    if(record != read_group_node_by_id.end()) {
+                        Value annotated;
+                        merge_json_value(base, *record->second, annotated, _instruction);
+                        merge_json_value(annotated, element, *implicit, _instruction);
                     }
                 }
+
+                /* enumerate the channel */
+                encode_key_value("index", channel_index++, *implicit, _instruction);
+
+                /* count the chennels declared undetermined */
+                if(decode_value_by_key< bool >("undetermined", undetermined, *implicit) && undetermined) {
+                    undetermined_count++;
+                }
+
+                channel_by_index.push_back(implicit);
             }
-            _instruction.AddMember("channel", channel_array.Move(), _instruction.GetAllocator());
+
+            if(undetermined_count < 2) {
+                /*  if only one channel is defined and it does not define a barcode, mark it as undetermined */
+                if(undetermined_count == 0 && channel_index == 1) {
+                    for(auto element : channel_by_index) {
+                        Barcode barcode;
+                        if(!decode_value_by_key< Barcode >("barcode", barcode, *element)) {
+                            encode_key_value("undetermined", true, *element, _instruction);
+                            undetermined_count++;
+                        }
+                    }
+                }
+
+                /*  if there is still no underemined channel, define one to keep track of statistic    */
+                if(undetermined_count == 0) {
+                    Value* element = new Value();
+                    element->CopyFrom(base, _instruction.GetAllocator());
+                    encode_key_value("undetermined", true, *element, _instruction);
+                    encode_key_value("index", channel_index++, *element, _instruction);
+                    channel_by_index.push_back(element);
+                }
+
+                /* explicitly remove barcode and concentration */
+                for(auto element : channel_by_index) {
+                    if(decode_value_by_key< bool >("undetermined", undetermined, *element)) {
+                        if(undetermined) {
+                            element->RemoveMember("barcode");
+                            element->RemoveMember("concentration");
+                        }
+                    }
+                }
+
+                set< string > unique_channel_id;
+                for(auto element : channel_by_index) {
+                    if(infer_ID("ID", key, *element, _instruction)) {
+                        if(!unique_channel_id.count(key)) {
+                            unique_channel_id.emplace(key);
+                        } else {
+                            int32_t duplicate(0);
+                            decode_value_by_key< int32_t >("index", duplicate, *element);
+                            throw ConfigurationError("channel at position " + to_string(duplicate) + " duplicates ID " + key);
+                        }
+                    }
+                }
+            } else { throw ConfigurationError("only one undetermined channel can be declared"); }
         } else { throw ConfigurationError("channel element must be an array"); }
     }
     base.SetNull();
@@ -164,6 +183,16 @@ void Environment::load_interface_instruction() {
             read_group_array.PushBack(record.second->Move(), _instruction.GetAllocator());
         }
         _instruction.AddMember("read group", read_group_array.Move(), _instruction.GetAllocator());
+    }
+
+    /*  encode the channel array */
+    if(!channel_by_index.empty()) {
+        Value channel_array(kArrayType);
+        for(auto element : channel_by_index) {
+            infer_PU("PU", key, *element, _instruction);
+            channel_array.PushBack(element->Move(), _instruction.GetAllocator());
+        }
+        _instruction.AddMember("channel", channel_array.Move(), _instruction.GetAllocator());
     }
 
     /*  copy everything except the read group and channel arrays */
@@ -225,7 +254,7 @@ void Environment::apply_url_base() {
     URL base_input_url;
     if(decode_directory_url_by_key("base input url", base_input_url, _instruction)) {
         list< URL > input;
-        if(decode_file_url_list_by_key("input", input, _instruction, IoDirection::IN)) {
+        if(decode_value_by_key< list< URL > >("input", input, _instruction)) {
             for(auto& url : input) {
                 url.relocate(base_input_url);
             }
@@ -240,7 +269,7 @@ void Environment::apply_url_base() {
             if(!collection->value.IsNull() && !collection->value.Empty()) {
                 for(auto& element : collection->value.GetArray()) {
                     list< URL > output;
-                    if(decode_file_url_list_by_key("output", output, element, IoDirection::OUT)) {
+                    if(decode_value_by_key< list< URL > >("output", output, element)) {
                         for(auto& url : output) {
                             url.relocate(base_output_url);
                         }
@@ -306,7 +335,7 @@ void Environment::load_concentration_prior() {
 };
 bool Environment::load_input_feed_array() {
     list< URL > input_url_array;
-    if(decode_file_url_list_by_key("input", input_url_array, _instruction, IoDirection::IN)) {
+    if(decode_value_by_key< list< URL > >("input", input_url_array, _instruction)) {
         int32_t input_segment_cardinality(static_cast< int32_t>(input_url_array.size()));
         encode_key_value("input segment cardinality", input_segment_cardinality, _instruction, _instruction);
 
@@ -364,7 +393,11 @@ void Environment::load_transformation_array() {
 
             list< Transform > template_transform_array;
             if(decode_transform_array_by_key("template", template_transform_array, _instruction, token_array)) {
-                int32_t output_segment_cardinality(static_cast< int32_t>(template_transform_array.size()));
+                int32_t output_segment_cardinality(0);
+                for(auto& transform : template_transform_array) {
+                    output_segment_cardinality = max(output_segment_cardinality, transform.output_segment_index);
+                }
+                output_segment_cardinality++;
                 encode_key_value("output segment cardinality", output_segment_cardinality, _instruction, _instruction);
                 pad_output_url_array(output_segment_cardinality);
                 load_output_feed_array();
@@ -373,7 +406,11 @@ void Environment::load_transformation_array() {
             // load multiplex barcode transform array
             list< Transform > multiplex_barcode_transform_array;
             if(decode_transform_array_by_key("multiplex barcode", multiplex_barcode_transform_array, _instruction, token_array)) {
-                int32_t multiplex_segment_cardinality(static_cast< int32_t>(multiplex_barcode_transform_array.size()));
+                int32_t multiplex_segment_cardinality(0);
+                for(auto& transform : multiplex_barcode_transform_array) {
+                    multiplex_segment_cardinality = max(multiplex_segment_cardinality, transform.output_segment_index);
+                }
+                multiplex_segment_cardinality++;
                 int32_t concatenated_multiplex_barcode_length(0);
                 vector< int32_t > multiplex_barcode_length(multiplex_segment_cardinality, 0);
 
@@ -408,7 +445,11 @@ void Environment::load_transformation_array() {
             // load molecular barcode transform array
             list< Transform > molecular_barcode_transform_array;
             if(decode_transform_array_by_key("molecular barcode", molecular_barcode_transform_array, _instruction, token_array)) {
-                int32_t molecular_segment_cardinality(static_cast< int32_t>(molecular_barcode_transform_array.size()));
+                int32_t molecular_segment_cardinality(0);
+                for(auto& transform : molecular_barcode_transform_array) {
+                    molecular_segment_cardinality = max(molecular_segment_cardinality, transform.output_segment_index);
+                }
+                molecular_segment_cardinality++;
                 int32_t concatenated_molecular_barcode_length(0);
                 vector< int32_t > molecular_barcode_length(molecular_segment_cardinality, 0);
 
@@ -440,7 +481,7 @@ void Environment::pad_output_url_array(const int32_t& output_segment_cardinality
         if(!collection->value.IsNull() && !collection->value.Empty()) {
             for(auto& element : collection->value.GetArray()) {
                 list< URL > array;
-                if(decode_file_url_list_by_key("output", array, element, IoDirection::OUT)) {
+                if(decode_value_by_key< list< URL > >("output", array, element)) {
                     if(!array.empty()) {
                         if(static_cast< int32_t >(array.size()) != output_segment_cardinality) {
                             if(array.size() == 1) {
@@ -470,7 +511,7 @@ bool Environment::load_output_feed_array() {
                 int32_t channel_index;
                 if(decode_value_by_key< int32_t >("index", channel_index, element)) {
                     list< URL > output;
-                    if(decode_file_url_list_by_key("output", output, element, IoDirection::OUT)) {
+                    if(decode_value_by_key< list< URL > >("output", output, element)) {
                         for(auto& url : output) {
                             reference[url][channel_index]++;
                         }
@@ -620,7 +661,7 @@ void Environment::cross_validate_io() {
         if(!collection->value.IsNull() && !collection->value.Empty()) {
             set< URL > input_feed_url;
             for(auto& element : collection->value.GetArray()) {
-                if(decode_file_url_by_key("url", url, IoDirection::IN, element)) {
+                if(decode_value_by_key< URL >("url", url, element)) {
                     input_feed_url.emplace(url);
                 }
             }
@@ -629,7 +670,7 @@ void Environment::cross_validate_io() {
             if(collection != _instruction.MemberEnd()) {
                 if(!collection->value.IsNull() && !collection->value.Empty()) {
                     for(auto& element : collection->value.GetArray()) {
-                        if(decode_file_url_by_key("url", url, IoDirection::IN, element)) {
+                        if(decode_value_by_key< URL >("url", url, element)) {
                             if(input_feed_url.count(url) > 0) {
                                 throw ConfigurationError("URL " + string(url) + " is used for both input and output");
                             }
@@ -663,6 +704,14 @@ void Environment::print_instruction_validation(ostream& o) const {
     o << fixed << setprecision(19);
     o << "Environment " << endl << endl;
     o << "    Version                                     " << interface.application_version << endl;
+
+    URL base_input_url;
+    decode_directory_url_by_key("base input url", base_input_url, _instruction);
+    o << "    Base input URL                              " << base_input_url << endl;
+
+    URL base_output_url;
+    decode_directory_url_by_key("base input url", base_output_url, _instruction);
+    o << "    Base output URL                             " << base_output_url << endl;
 
     Decoder decoder;
     decode_value_by_key< Decoder >("decoder", decoder, _instruction);
@@ -802,7 +851,7 @@ void Environment::print_instruction_validation(ostream& o) const {
     }
 
     list< Transform > multiplex_barcode_transforms;
-    if(decode_transform_array_by_key("template", multiplex_barcode_transforms, _instruction, token_array)) {
+    if(decode_transform_array_by_key("multiplex barcode", multiplex_barcode_transforms, _instruction, token_array)) {
         o << "    Multiplex barcode transform" << endl;
         for(const auto& transform : multiplex_barcode_transforms) {
             o << "        " << transform.description() << endl;
@@ -811,7 +860,7 @@ void Environment::print_instruction_validation(ostream& o) const {
     }
 
     list< Transform > molecular_barcode_transforms;
-    if(decode_transform_array_by_key("template", molecular_barcode_transforms, _instruction, token_array)) {
+    if(decode_transform_array_by_key("molecular barcode", molecular_barcode_transforms, _instruction, token_array)) {
         o << "    Molecular barcode transform" << endl;
         for(const auto& transform : molecular_barcode_transforms) {
             o << "        " << transform.description() << endl;
@@ -820,7 +869,7 @@ void Environment::print_instruction_validation(ostream& o) const {
     }
 
     list< URL > input_url_array;
-    if(decode_file_url_list_by_key("input", input_url_array, _instruction, IoDirection::IN)) {
+    if(decode_value_by_key< list< URL > >("input", input_url_array, _instruction)) {
         o << "Input " << endl << endl;
         int32_t url_index(0);
         for(auto& url : input_url_array) {

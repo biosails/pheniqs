@@ -1,6 +1,6 @@
 {
     "download prefix": "~/.pheniqs/download",
-    "home": "~/.pheniqs/pheniqs-trunk",
+    "home": "~/.pheniqs/travis",
     "package": [
         {
             "make clean target": "distclean",
@@ -33,22 +33,11 @@
             "sha1": "d9d9a1d03991da0738bf2eecb54bfb620cc776b3"
         },
         {
-            "name": "samtools",
-            "remote url": "https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2",
-            "sha1": "de345ebc1fd144d8c6b15ec3bb759c6cd00294c8"
-        },
-        {
             "name": "rapidjson",
             "remote filename": "rapidjson-1.1.0.tar.gz",
             "remote url": "https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz",
             "sha1": "a3e0d043ad3c2d7638ffefa3beb30a77c71c869f",
             "version": "1.1.0"
-        },
-        {
-            "include prefix in make": true,
-            "name": "pheniqs",
-            "package url": "~/code/pheniqs",
-            "version": "1.1"
         }
     ]
 }

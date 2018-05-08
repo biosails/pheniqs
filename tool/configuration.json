@@ -1,0 +1,128 @@
+{
+    "interface": {
+        "global": {
+            "argument": [
+                "version",
+                "verbosity"
+            ]
+        },
+        "instruction": {
+            "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+        },
+        "prototype": {
+            "filter": {
+                "flag": [
+                    "-f",
+                    "--filter"
+                ],
+                "parameter": {
+                    "help": "list of packages",
+                    "metavar": "PACKAGE",
+                    "nargs": "*"
+                }
+            },
+            "force": {
+                "flag": [
+                    "-F",
+                    "--force"
+                ],
+                "parameter": {
+                    "help": "list of packages to force",
+                    "metavar": "PACKAGE",
+                    "nargs": "*"
+                }
+            },
+            "path": {
+                "flag": [
+                    "path"
+                ],
+                "required": true,
+                "parameter": {
+                    "help": "path",
+                    "metavar": "PATH"
+                }
+            },
+            "verbosity": {
+                "flag": [
+                    "-v",
+                    "--verbosity"
+                ],
+                "parameter": {
+                    "choices": [
+                        "debug",
+                        "info",
+                        "warning",
+                        "error",
+                        "critical"
+                    ],
+                    "dest": "verbosity",
+                    "help": "logging verbosity level",
+                    "metavar": "LEVEL"
+                }
+            },
+            "version": {
+                "flag": [
+                    "--version"
+                ],
+                "parameter": {
+                    "action": "version",
+                    "version": "%[prog]s 1.0"
+                }
+            }
+        },
+        "section": {
+            "action": [
+                {
+                    "argument": [
+                        "path"
+                    ],
+                    "implementation": "zsh_completion",
+                    "instruction": {
+                        "help": "generate zsh completion script",
+                        "name": "zsh"
+                    }
+                },
+                {
+                    "argument": [
+                        "filter",
+                        "path"
+                    ],
+                    "implementation": "clean",
+                    "instruction": {
+                        "help": "clean build root environment",
+                        "name": "clean"
+                    }
+                },
+                {
+                    "argument": [
+                        "filter",
+                        "path"
+                    ],
+                    "implementation": "build",
+                    "instruction": {
+                        "help": "build build root environment",
+                        "name": "build"
+                    }
+                },
+                {
+                    "argument": [
+                        "filter",
+                        "path"
+                    ],
+                    "implementation": "clean.package",
+                    "instruction": {
+                        "help": "delete exploded package",
+                        "name": "clean.package"
+                    }
+                }
+            ],
+            "instruction": {
+                "description": "",
+                "dest": "action",
+                "help": null,
+                "metavar": "ACTION",
+                "title": "pipeline operations"
+            }
+        }
+    }
+}

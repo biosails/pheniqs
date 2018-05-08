@@ -1,1480 +1,1292 @@
 {
-    "CN": "CGSB", 
-    "DT": "2016-07-15T07:00:00+00:00", 
-    "PI": "1500", 
-    "PL": "ILLUMINA", 
-    "PM": "nextseq 500", 
+    "CN": "CGSB",
+    "DT": "2016-07-15T07:00:00+00:00",
+    "PI": "1500",
+    "PL": "ILLUMINA",
+    "PM": "nextseq 500",
+    "flowcell id": "HK5NHBGXX",
+    "flowcell lane number": 1,
     "channel": [
         {
-            "DS": "undetermined description", 
-            "LB": "undetermined_library", 
-            "PU": "HK5NHBGXX:1:undetermined", 
-            "RG": "HK5NHBGXX:1:undetermined", 
-            "SM": "undetermined_sample", 
+            "DS": "undetermined description",
+            "LB": "undetermined_library",
+            "SM": "undetermined_sample",
             "output": [
-                "out.fastq.gz"
-            ], 
+                "out.sam"
+            ],
             "undetermined": true
-        }, 
+        },
         {
-            "DS": "ntr_1 description", 
-            "LB": "ntr_1_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "RG": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "SM": "ntr_1_sample", 
+            "DS": "ntr_1 description",
+            "LB": "ntr_1_library",
+            "SM": "ntr_1_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_2 description", 
-            "LB": "ntr_2_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGTCTTACGC", 
-            "RG": "HK5NHBGXX:1:CGTACTAGTCTTACGC", 
-            "SM": "ntr_2_sample", 
+            "DS": "ntr_2 description",
+            "LB": "ntr_2_library",
+            "SM": "ntr_2_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_3 description", 
-            "LB": "ntr_3_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAATCTTACGC", 
-            "RG": "HK5NHBGXX:1:AGGCAGAATCTTACGC", 
-            "SM": "ntr_3_sample", 
+            "DS": "ntr_3 description",
+            "LB": "ntr_3_library",
+            "SM": "ntr_3_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_4 description", 
-            "LB": "ntr_4_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCTCTTACGC", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCTCTTACGC", 
-            "SM": "ntr_4_sample", 
+            "DS": "ntr_4 description",
+            "LB": "ntr_4_library",
+            "SM": "ntr_4_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_5 description", 
-            "LB": "ntr_5_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTTCTTACGC", 
-            "RG": "HK5NHBGXX:1:GGACTCCTTCTTACGC", 
-            "SM": "ntr_5_sample", 
+            "DS": "ntr_5 description",
+            "LB": "ntr_5_library",
+            "SM": "ntr_5_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_6 description", 
-            "LB": "ntr_6_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGTCTTACGC", 
-            "RG": "HK5NHBGXX:1:TAGGCATGTCTTACGC", 
-            "SM": "ntr_6_sample", 
+            "DS": "ntr_6 description",
+            "LB": "ntr_6_library",
+            "SM": "ntr_6_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_7 description", 
-            "LB": "ntr_7_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACTCTTACGC", 
-            "RG": "HK5NHBGXX:1:CTCTCTACTCTTACGC", 
-            "SM": "ntr_7_sample", 
+            "DS": "ntr_7 description",
+            "LB": "ntr_7_library",
+            "SM": "ntr_7_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_8 description", 
-            "LB": "ntr_8_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGTCTTACGC", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGTCTTACGC", 
-            "SM": "ntr_8_sample", 
+            "DS": "ntr_8 description",
+            "LB": "ntr_8_library",
+            "SM": "ntr_8_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_9 description", 
-            "LB": "ntr_9_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTTCTTACGC", 
-            "RG": "HK5NHBGXX:1:GCTACGCTTCTTACGC", 
-            "SM": "ntr_9_sample", 
+            "DS": "ntr_9 description",
+            "LB": "ntr_9_library",
+            "SM": "ntr_9_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_10 description", 
-            "LB": "ntr_10_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGTCTTACGC", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGTCTTACGC", 
-            "SM": "ntr_10_sample", 
+            "DS": "ntr_10 description",
+            "LB": "ntr_10_library",
+            "SM": "ntr_10_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_11 description", 
-            "LB": "ntr_11_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCATCTTACGC", 
-            "RG": "HK5NHBGXX:1:AAGAGGCATCTTACGC", 
-            "SM": "ntr_11_sample", 
+            "DS": "ntr_11 description",
+            "LB": "ntr_11_library",
+            "SM": "ntr_11_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_12 description", 
-            "LB": "ntr_12_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGATCTTACGC", 
-            "RG": "HK5NHBGXX:1:GTAGAGGATCTTACGC", 
-            "SM": "ntr_12_sample", 
+            "DS": "ntr_12 description",
+            "LB": "ntr_12_library",
+            "SM": "ntr_12_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "TCTTACGC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_13 description", 
-            "LB": "ntr_13_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGAATAGAGAG", 
-            "RG": "HK5NHBGXX:1:TAAGGCGAATAGAGAG", 
-            "SM": "ntr_13_sample", 
+            "DS": "ntr_13 description",
+            "LB": "ntr_13_library",
+            "SM": "ntr_13_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_14 description", 
-            "LB": "ntr_14_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGATAGAGAG", 
-            "RG": "HK5NHBGXX:1:CGTACTAGATAGAGAG", 
-            "SM": "ntr_14_sample", 
+            "DS": "ntr_14 description",
+            "LB": "ntr_14_library",
+            "SM": "ntr_14_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_15 description", 
-            "LB": "ntr_15_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAAATAGAGAG", 
-            "RG": "HK5NHBGXX:1:AGGCAGAAATAGAGAG", 
-            "SM": "ntr_15_sample", 
+            "DS": "ntr_15 description",
+            "LB": "ntr_15_library",
+            "SM": "ntr_15_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_16 description", 
-            "LB": "ntr_16_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCATAGAGAG", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCATAGAGAG", 
-            "SM": "ntr_16_sample", 
+            "DS": "ntr_16 description",
+            "LB": "ntr_16_library",
+            "SM": "ntr_16_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_17 description", 
-            "LB": "ntr_17_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTATAGAGAG", 
-            "RG": "HK5NHBGXX:1:GGACTCCTATAGAGAG", 
-            "SM": "ntr_17_sample", 
+            "DS": "ntr_17 description",
+            "LB": "ntr_17_library",
+            "SM": "ntr_17_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_18 description", 
-            "LB": "ntr_18_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGATAGAGAG", 
-            "RG": "HK5NHBGXX:1:TAGGCATGATAGAGAG", 
-            "SM": "ntr_18_sample", 
+            "DS": "ntr_18 description",
+            "LB": "ntr_18_library",
+            "SM": "ntr_18_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_19 description", 
-            "LB": "ntr_19_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACATAGAGAG", 
-            "RG": "HK5NHBGXX:1:CTCTCTACATAGAGAG", 
-            "SM": "ntr_19_sample", 
+            "DS": "ntr_19 description",
+            "LB": "ntr_19_library",
+            "SM": "ntr_19_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_20 description", 
-            "LB": "ntr_20_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGATAGAGAG", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGATAGAGAG", 
-            "SM": "ntr_20_sample", 
+            "DS": "ntr_20 description",
+            "LB": "ntr_20_library",
+            "SM": "ntr_20_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_21 description", 
-            "LB": "ntr_21_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTATAGAGAG", 
-            "RG": "HK5NHBGXX:1:GCTACGCTATAGAGAG", 
-            "SM": "ntr_21_sample", 
+            "DS": "ntr_21 description",
+            "LB": "ntr_21_library",
+            "SM": "ntr_21_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_22 description", 
-            "LB": "ntr_22_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGATAGAGAG", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGATAGAGAG", 
-            "SM": "ntr_22_sample", 
+            "DS": "ntr_22 description",
+            "LB": "ntr_22_library",
+            "SM": "ntr_22_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_23 description", 
-            "LB": "ntr_23_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCAATAGAGAG", 
-            "RG": "HK5NHBGXX:1:AAGAGGCAATAGAGAG", 
-            "SM": "ntr_23_sample", 
+            "DS": "ntr_23 description",
+            "LB": "ntr_23_library",
+            "SM": "ntr_23_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_24 description", 
-            "LB": "ntr_24_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGAATAGAGAG", 
-            "RG": "HK5NHBGXX:1:GTAGAGGAATAGAGAG", 
-            "SM": "ntr_24_sample", 
+            "DS": "ntr_24 description",
+            "LB": "ntr_24_library",
+            "SM": "ntr_24_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "ATAGAGAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_25 description", 
-            "LB": "ntr_25_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGAAGAGGATA", 
-            "RG": "HK5NHBGXX:1:TAAGGCGAAGAGGATA", 
-            "SM": "ntr_25_sample", 
+            "DS": "ntr_25 description",
+            "LB": "ntr_25_library",
+            "SM": "ntr_25_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_26 description", 
-            "LB": "ntr_26_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGAGAGGATA", 
-            "RG": "HK5NHBGXX:1:CGTACTAGAGAGGATA", 
-            "SM": "ntr_26_sample", 
+            "DS": "ntr_26 description",
+            "LB": "ntr_26_library",
+            "SM": "ntr_26_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_27 description", 
-            "LB": "ntr_27_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAAAGAGGATA", 
-            "RG": "HK5NHBGXX:1:AGGCAGAAAGAGGATA", 
-            "SM": "ntr_27_sample", 
+            "DS": "ntr_27 description",
+            "LB": "ntr_27_library",
+            "SM": "ntr_27_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_28 description", 
-            "LB": "ntr_28_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCAGAGGATA", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCAGAGGATA", 
-            "SM": "ntr_28_sample", 
+            "DS": "ntr_28 description",
+            "LB": "ntr_28_library",
+            "SM": "ntr_28_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_29 description", 
-            "LB": "ntr_29_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTAGAGGATA", 
-            "RG": "HK5NHBGXX:1:GGACTCCTAGAGGATA", 
-            "SM": "ntr_29_sample", 
+            "DS": "ntr_29 description",
+            "LB": "ntr_29_library",
+            "SM": "ntr_29_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_30 description", 
-            "LB": "ntr_30_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGAGAGGATA", 
-            "RG": "HK5NHBGXX:1:TAGGCATGAGAGGATA", 
-            "SM": "ntr_30_sample", 
+            "DS": "ntr_30 description",
+            "LB": "ntr_30_library",
+            "SM": "ntr_30_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_31 description", 
-            "LB": "ntr_31_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACAGAGGATA", 
-            "RG": "HK5NHBGXX:1:CTCTCTACAGAGGATA", 
-            "SM": "ntr_31_sample", 
+            "DS": "ntr_31 description",
+            "LB": "ntr_31_library",
+            "SM": "ntr_31_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_32 description", 
-            "LB": "ntr_32_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGAGAGGATA", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGAGAGGATA", 
-            "SM": "ntr_32_sample", 
+            "DS": "ntr_32 description",
+            "LB": "ntr_32_library",
+            "SM": "ntr_32_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_33 description", 
-            "LB": "ntr_33_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTAGAGGATA", 
-            "RG": "HK5NHBGXX:1:GCTACGCTAGAGGATA", 
-            "SM": "ntr_33_sample", 
+            "DS": "ntr_33 description",
+            "LB": "ntr_33_library",
+            "SM": "ntr_33_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_34 description", 
-            "LB": "ntr_34_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGAGAGGATA", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGAGAGGATA", 
-            "SM": "ntr_34_sample", 
+            "DS": "ntr_34 description",
+            "LB": "ntr_34_library",
+            "SM": "ntr_34_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_35 description", 
-            "LB": "ntr_35_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCAAGAGGATA", 
-            "RG": "HK5NHBGXX:1:AAGAGGCAAGAGGATA", 
-            "SM": "ntr_35_sample", 
+            "DS": "ntr_35 description",
+            "LB": "ntr_35_library",
+            "SM": "ntr_35_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_36 description", 
-            "LB": "ntr_36_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGAAGAGGATA", 
-            "RG": "HK5NHBGXX:1:GTAGAGGAAGAGGATA", 
-            "SM": "ntr_36_sample", 
+            "DS": "ntr_36 description",
+            "LB": "ntr_36_library",
+            "SM": "ntr_36_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "AGAGGATA"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_37 description", 
-            "LB": "ntr_37_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTACTCT", 
-            "RG": "HK5NHBGXX:1:TAAGGCGATCTACTCT", 
-            "SM": "ntr_37_sample", 
+            "DS": "ntr_37 description",
+            "LB": "ntr_37_library",
+            "SM": "ntr_37_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_38 description", 
-            "LB": "ntr_38_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGTCTACTCT", 
-            "RG": "HK5NHBGXX:1:CGTACTAGTCTACTCT", 
-            "SM": "ntr_38_sample", 
+            "DS": "ntr_38 description",
+            "LB": "ntr_38_library",
+            "SM": "ntr_38_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_39 description", 
-            "LB": "ntr_39_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAATCTACTCT", 
-            "RG": "HK5NHBGXX:1:AGGCAGAATCTACTCT", 
-            "SM": "ntr_39_sample", 
+            "DS": "ntr_39 description",
+            "LB": "ntr_39_library",
+            "SM": "ntr_39_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_40 description", 
-            "LB": "ntr_40_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCTCTACTCT", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCTCTACTCT", 
-            "SM": "ntr_40_sample", 
+            "DS": "ntr_40 description",
+            "LB": "ntr_40_library",
+            "SM": "ntr_40_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_41 description", 
-            "LB": "ntr_41_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTTCTACTCT", 
-            "RG": "HK5NHBGXX:1:GGACTCCTTCTACTCT", 
-            "SM": "ntr_41_sample", 
+            "DS": "ntr_41 description",
+            "LB": "ntr_41_library",
+            "SM": "ntr_41_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_42 description", 
-            "LB": "ntr_42_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGTCTACTCT", 
-            "RG": "HK5NHBGXX:1:TAGGCATGTCTACTCT", 
-            "SM": "ntr_42_sample", 
+            "DS": "ntr_42 description",
+            "LB": "ntr_42_library",
+            "SM": "ntr_42_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_43 description", 
-            "LB": "ntr_43_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACTCTACTCT", 
-            "RG": "HK5NHBGXX:1:CTCTCTACTCTACTCT", 
-            "SM": "ntr_43_sample", 
+            "DS": "ntr_43 description",
+            "LB": "ntr_43_library",
+            "SM": "ntr_43_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_44 description", 
-            "LB": "ntr_44_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGTCTACTCT", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGTCTACTCT", 
-            "SM": "ntr_44_sample", 
+            "DS": "ntr_44 description",
+            "LB": "ntr_44_library",
+            "SM": "ntr_44_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_45 description", 
-            "LB": "ntr_45_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTTCTACTCT", 
-            "RG": "HK5NHBGXX:1:GCTACGCTTCTACTCT", 
-            "SM": "ntr_45_sample", 
+            "DS": "ntr_45 description",
+            "LB": "ntr_45_library",
+            "SM": "ntr_45_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_46 description", 
-            "LB": "ntr_46_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGTCTACTCT", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGTCTACTCT", 
-            "SM": "ntr_46_sample", 
+            "DS": "ntr_46 description",
+            "LB": "ntr_46_library",
+            "SM": "ntr_46_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_47 description", 
-            "LB": "ntr_47_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCATCTACTCT", 
-            "RG": "HK5NHBGXX:1:AAGAGGCATCTACTCT", 
-            "SM": "ntr_47_sample", 
+            "DS": "ntr_47 description",
+            "LB": "ntr_47_library",
+            "SM": "ntr_47_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_48 description", 
-            "LB": "ntr_48_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGATCTACTCT", 
-            "RG": "HK5NHBGXX:1:GTAGAGGATCTACTCT", 
-            "SM": "ntr_48_sample", 
+            "DS": "ntr_48 description",
+            "LB": "ntr_48_library",
+            "SM": "ntr_48_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "TCTACTCT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_49 description", 
-            "LB": "ntr_49_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGACTCCTTAC", 
-            "RG": "HK5NHBGXX:1:TAAGGCGACTCCTTAC", 
-            "SM": "ntr_49_sample", 
+            "DS": "ntr_49 description",
+            "LB": "ntr_49_library",
+            "SM": "ntr_49_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_50 description", 
-            "LB": "ntr_50_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:CGTACTAGCTCCTTAC", 
-            "SM": "ntr_50_sample", 
+            "DS": "ntr_50 description",
+            "LB": "ntr_50_library",
+            "SM": "ntr_50_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_51 description", 
-            "LB": "ntr_51_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAACTCCTTAC", 
-            "RG": "HK5NHBGXX:1:AGGCAGAACTCCTTAC", 
-            "SM": "ntr_51_sample", 
+            "DS": "ntr_51 description",
+            "LB": "ntr_51_library",
+            "SM": "ntr_51_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_52 description", 
-            "LB": "ntr_52_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCCTCCTTAC", 
-            "SM": "ntr_52_sample", 
+            "DS": "ntr_52 description",
+            "LB": "ntr_52_library",
+            "SM": "ntr_52_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_53 description", 
-            "LB": "ntr_53_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:GGACTCCTCTCCTTAC", 
-            "SM": "ntr_53_sample", 
+            "DS": "ntr_53 description",
+            "LB": "ntr_53_library",
+            "SM": "ntr_53_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_54 description", 
-            "LB": "ntr_54_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:TAGGCATGCTCCTTAC", 
-            "SM": "ntr_54_sample", 
+            "DS": "ntr_54 description",
+            "LB": "ntr_54_library",
+            "SM": "ntr_54_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_55 description", 
-            "LB": "ntr_55_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:CTCTCTACCTCCTTAC", 
-            "SM": "ntr_55_sample", 
+            "DS": "ntr_55 description",
+            "LB": "ntr_55_library",
+            "SM": "ntr_55_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_56 description", 
-            "LB": "ntr_56_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGCTCCTTAC", 
-            "SM": "ntr_56_sample", 
+            "DS": "ntr_56 description",
+            "LB": "ntr_56_library",
+            "SM": "ntr_56_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_57 description", 
-            "LB": "ntr_57_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:GCTACGCTCTCCTTAC", 
-            "SM": "ntr_57_sample", 
+            "DS": "ntr_57 description",
+            "LB": "ntr_57_library",
+            "SM": "ntr_57_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_58 description", 
-            "LB": "ntr_58_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGCTCCTTAC", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGCTCCTTAC", 
-            "SM": "ntr_58_sample", 
+            "DS": "ntr_58 description",
+            "LB": "ntr_58_library",
+            "SM": "ntr_58_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_59 description", 
-            "LB": "ntr_59_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCACTCCTTAC", 
-            "RG": "HK5NHBGXX:1:AAGAGGCACTCCTTAC", 
-            "SM": "ntr_59_sample", 
+            "DS": "ntr_59 description",
+            "LB": "ntr_59_library",
+            "SM": "ntr_59_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_60 description", 
-            "LB": "ntr_60_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGACTCCTTAC", 
-            "RG": "HK5NHBGXX:1:GTAGAGGACTCCTTAC", 
-            "SM": "ntr_60_sample", 
+            "DS": "ntr_60 description",
+            "LB": "ntr_60_library",
+            "SM": "ntr_60_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "CTCCTTAC"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_61 description", 
-            "LB": "ntr_61_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATATGCAGT", 
-            "RG": "HK5NHBGXX:1:TAAGGCGATATGCAGT", 
-            "SM": "ntr_61_sample", 
+            "DS": "ntr_61 description",
+            "LB": "ntr_61_library",
+            "SM": "ntr_61_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_62 description", 
-            "LB": "ntr_62_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGTATGCAGT", 
-            "RG": "HK5NHBGXX:1:CGTACTAGTATGCAGT", 
-            "SM": "ntr_62_sample", 
+            "DS": "ntr_62 description",
+            "LB": "ntr_62_library",
+            "SM": "ntr_62_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_63 description", 
-            "LB": "ntr_63_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAATATGCAGT", 
-            "RG": "HK5NHBGXX:1:AGGCAGAATATGCAGT", 
-            "SM": "ntr_63_sample", 
+            "DS": "ntr_63 description",
+            "LB": "ntr_63_library",
+            "SM": "ntr_63_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_64 description", 
-            "LB": "ntr_64_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCTATGCAGT", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCTATGCAGT", 
-            "SM": "ntr_64_sample", 
+            "DS": "ntr_64 description",
+            "LB": "ntr_64_library",
+            "SM": "ntr_64_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_65 description", 
-            "LB": "ntr_65_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTTATGCAGT", 
-            "RG": "HK5NHBGXX:1:GGACTCCTTATGCAGT", 
-            "SM": "ntr_65_sample", 
+            "DS": "ntr_65 description",
+            "LB": "ntr_65_library",
+            "SM": "ntr_65_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_66 description", 
-            "LB": "ntr_66_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGTATGCAGT", 
-            "RG": "HK5NHBGXX:1:TAGGCATGTATGCAGT", 
-            "SM": "ntr_66_sample", 
+            "DS": "ntr_66 description",
+            "LB": "ntr_66_library",
+            "SM": "ntr_66_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_67 description", 
-            "LB": "ntr_67_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACTATGCAGT", 
-            "RG": "HK5NHBGXX:1:CTCTCTACTATGCAGT", 
-            "SM": "ntr_67_sample", 
+            "DS": "ntr_67 description",
+            "LB": "ntr_67_library",
+            "SM": "ntr_67_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_68 description", 
-            "LB": "ntr_68_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGTATGCAGT", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGTATGCAGT", 
-            "SM": "ntr_68_sample", 
+            "DS": "ntr_68 description",
+            "LB": "ntr_68_library",
+            "SM": "ntr_68_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_69 description", 
-            "LB": "ntr_69_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTTATGCAGT", 
-            "RG": "HK5NHBGXX:1:GCTACGCTTATGCAGT", 
-            "SM": "ntr_69_sample", 
+            "DS": "ntr_69 description",
+            "LB": "ntr_69_library",
+            "SM": "ntr_69_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_70 description", 
-            "LB": "ntr_70_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGTATGCAGT", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGTATGCAGT", 
-            "SM": "ntr_70_sample", 
+            "DS": "ntr_70 description",
+            "LB": "ntr_70_library",
+            "SM": "ntr_70_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_71 description", 
-            "LB": "ntr_71_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCATATGCAGT", 
-            "RG": "HK5NHBGXX:1:AAGAGGCATATGCAGT", 
-            "SM": "ntr_71_sample", 
+            "DS": "ntr_71 description",
+            "LB": "ntr_71_library",
+            "SM": "ntr_71_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_72 description", 
-            "LB": "ntr_72_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGATATGCAGT", 
-            "RG": "HK5NHBGXX:1:GTAGAGGATATGCAGT", 
-            "SM": "ntr_72_sample", 
+            "DS": "ntr_72 description",
+            "LB": "ntr_72_library",
+            "SM": "ntr_72_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "TATGCAGT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_73 description", 
-            "LB": "ntr_73_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATACTCCTT", 
-            "RG": "HK5NHBGXX:1:TAAGGCGATACTCCTT", 
-            "SM": "ntr_73_sample", 
+            "DS": "ntr_73 description",
+            "LB": "ntr_73_library",
+            "SM": "ntr_73_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_74 description", 
-            "LB": "ntr_74_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGTACTCCTT", 
-            "RG": "HK5NHBGXX:1:CGTACTAGTACTCCTT", 
-            "SM": "ntr_74_sample", 
+            "DS": "ntr_74 description",
+            "LB": "ntr_74_library",
+            "SM": "ntr_74_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_75 description", 
-            "LB": "ntr_75_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAATACTCCTT", 
-            "RG": "HK5NHBGXX:1:AGGCAGAATACTCCTT", 
-            "SM": "ntr_75_sample", 
+            "DS": "ntr_75 description",
+            "LB": "ntr_75_library",
+            "SM": "ntr_75_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_76 description", 
-            "LB": "ntr_76_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCTACTCCTT", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCTACTCCTT", 
-            "SM": "ntr_76_sample", 
+            "DS": "ntr_76 description",
+            "LB": "ntr_76_library",
+            "SM": "ntr_76_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_77 description", 
-            "LB": "ntr_77_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTTACTCCTT", 
-            "RG": "HK5NHBGXX:1:GGACTCCTTACTCCTT", 
-            "SM": "ntr_77_sample", 
+            "DS": "ntr_77 description",
+            "LB": "ntr_77_library",
+            "SM": "ntr_77_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_78 description", 
-            "LB": "ntr_78_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGTACTCCTT", 
-            "RG": "HK5NHBGXX:1:TAGGCATGTACTCCTT", 
-            "SM": "ntr_78_sample", 
+            "DS": "ntr_78 description",
+            "LB": "ntr_78_library",
+            "SM": "ntr_78_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_79 description", 
-            "LB": "ntr_79_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACTACTCCTT", 
-            "RG": "HK5NHBGXX:1:CTCTCTACTACTCCTT", 
-            "SM": "ntr_79_sample", 
+            "DS": "ntr_79 description",
+            "LB": "ntr_79_library",
+            "SM": "ntr_79_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_80 description", 
-            "LB": "ntr_80_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGTACTCCTT", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGTACTCCTT", 
-            "SM": "ntr_80_sample", 
+            "DS": "ntr_80 description",
+            "LB": "ntr_80_library",
+            "SM": "ntr_80_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_81 description", 
-            "LB": "ntr_81_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTTACTCCTT", 
-            "RG": "HK5NHBGXX:1:GCTACGCTTACTCCTT", 
-            "SM": "ntr_81_sample", 
+            "DS": "ntr_81 description",
+            "LB": "ntr_81_library",
+            "SM": "ntr_81_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_82 description", 
-            "LB": "ntr_82_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGTACTCCTT", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGTACTCCTT", 
-            "SM": "ntr_82_sample", 
+            "DS": "ntr_82 description",
+            "LB": "ntr_82_library",
+            "SM": "ntr_82_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_83 description", 
-            "LB": "ntr_83_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCATACTCCTT", 
-            "RG": "HK5NHBGXX:1:AAGAGGCATACTCCTT", 
-            "SM": "ntr_83_sample", 
+            "DS": "ntr_83 description",
+            "LB": "ntr_83_library",
+            "SM": "ntr_83_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_84 description", 
-            "LB": "ntr_84_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGATACTCCTT", 
-            "RG": "HK5NHBGXX:1:GTAGAGGATACTCCTT", 
-            "SM": "ntr_84_sample", 
+            "DS": "ntr_84 description",
+            "LB": "ntr_84_library",
+            "SM": "ntr_84_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "TACTCCTT"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_85 description", 
-            "LB": "ntr_85_library", 
-            "PU": "HK5NHBGXX:1:TAAGGCGAAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:TAAGGCGAAGGCTTAG", 
-            "SM": "ntr_85_sample", 
+            "DS": "ntr_85 description",
+            "LB": "ntr_85_library",
+            "SM": "ntr_85_sample",
             "barcode": [
-                "TAAGGCGA", 
+                "TAAGGCGA",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_86 description", 
-            "LB": "ntr_86_library", 
-            "PU": "HK5NHBGXX:1:CGTACTAGAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:CGTACTAGAGGCTTAG", 
-            "SM": "ntr_86_sample", 
+            "DS": "ntr_86 description",
+            "LB": "ntr_86_library",
+            "SM": "ntr_86_sample",
             "barcode": [
-                "CGTACTAG", 
+                "CGTACTAG",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_87 description", 
-            "LB": "ntr_87_library", 
-            "PU": "HK5NHBGXX:1:AGGCAGAAAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:AGGCAGAAAGGCTTAG", 
-            "SM": "ntr_87_sample", 
+            "DS": "ntr_87 description",
+            "LB": "ntr_87_library",
+            "SM": "ntr_87_sample",
             "barcode": [
-                "AGGCAGAA", 
+                "AGGCAGAA",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_88 description", 
-            "LB": "ntr_88_library", 
-            "PU": "HK5NHBGXX:1:TCCTGAGCAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:TCCTGAGCAGGCTTAG", 
-            "SM": "ntr_88_sample", 
+            "DS": "ntr_88 description",
+            "LB": "ntr_88_library",
+            "SM": "ntr_88_sample",
             "barcode": [
-                "TCCTGAGC", 
+                "TCCTGAGC",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_89 description", 
-            "LB": "ntr_89_library", 
-            "PU": "HK5NHBGXX:1:GGACTCCTAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:GGACTCCTAGGCTTAG", 
-            "SM": "ntr_89_sample", 
+            "DS": "ntr_89 description",
+            "LB": "ntr_89_library",
+            "SM": "ntr_89_sample",
             "barcode": [
-                "GGACTCCT", 
+                "GGACTCCT",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_90 description", 
-            "LB": "ntr_90_library", 
-            "PU": "HK5NHBGXX:1:TAGGCATGAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:TAGGCATGAGGCTTAG", 
-            "SM": "ntr_90_sample", 
+            "DS": "ntr_90 description",
+            "LB": "ntr_90_library",
+            "SM": "ntr_90_sample",
             "barcode": [
-                "TAGGCATG", 
+                "TAGGCATG",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_91 description", 
-            "LB": "ntr_91_library", 
-            "PU": "HK5NHBGXX:1:CTCTCTACAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:CTCTCTACAGGCTTAG", 
-            "SM": "ntr_91_sample", 
+            "DS": "ntr_91 description",
+            "LB": "ntr_91_library",
+            "SM": "ntr_91_sample",
             "barcode": [
-                "CTCTCTAC", 
+                "CTCTCTAC",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_92 description", 
-            "LB": "ntr_92_library", 
-            "PU": "HK5NHBGXX:1:CAGAGAGGAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:CAGAGAGGAGGCTTAG", 
-            "SM": "ntr_92_sample", 
+            "DS": "ntr_92 description",
+            "LB": "ntr_92_library",
+            "SM": "ntr_92_sample",
             "barcode": [
-                "CAGAGAGG", 
+                "CAGAGAGG",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_93 description", 
-            "LB": "ntr_93_library", 
-            "PU": "HK5NHBGXX:1:GCTACGCTAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:GCTACGCTAGGCTTAG", 
-            "SM": "ntr_93_sample", 
+            "DS": "ntr_93 description",
+            "LB": "ntr_93_library",
+            "SM": "ntr_93_sample",
             "barcode": [
-                "GCTACGCT", 
+                "GCTACGCT",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_94 description", 
-            "LB": "ntr_94_library", 
-            "PU": "HK5NHBGXX:1:CGAGGCTGAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:CGAGGCTGAGGCTTAG", 
-            "SM": "ntr_94_sample", 
+            "DS": "ntr_94 description",
+            "LB": "ntr_94_library",
+            "SM": "ntr_94_sample",
             "barcode": [
-                "CGAGGCTG", 
+                "CGAGGCTG",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_95 description", 
-            "LB": "ntr_95_library", 
-            "PU": "HK5NHBGXX:1:AAGAGGCAAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:AAGAGGCAAGGCTTAG", 
-            "SM": "ntr_95_sample", 
+            "DS": "ntr_95 description",
+            "LB": "ntr_95_library",
+            "SM": "ntr_95_sample",
             "barcode": [
-                "AAGAGGCA", 
+                "AAGAGGCA",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
-        }, 
+        },
         {
-            "DS": "ntr_96 description", 
-            "LB": "ntr_96_library", 
-            "PU": "HK5NHBGXX:1:GTAGAGGAAGGCTTAG", 
-            "RG": "HK5NHBGXX:1:GTAGAGGAAGGCTTAG", 
-            "SM": "ntr_96_sample", 
+            "DS": "ntr_96 description",
+            "LB": "ntr_96_library",
+            "SM": "ntr_96_sample",
             "barcode": [
-                "GTAGAGGA", 
+                "GTAGAGGA",
                 "AGGCTTAG"
-            ], 
-            "concentration": 1, 
+            ],
+            "concentration": 1,
             "output": [
-                "out.fastq.gz"
+                "out.sam"
             ]
         }
-    ], 
-    "confidence": 0.99, 
-    "decoder": "pamld", 
-    "include filtered": false, 
+    ],
+    "confidence": 0.99,
+    "decoder": "pamld",
+    "include filtered": false,
     "input": [
         "/dev/stdin"
-    ], 
+    ],
     "multiplex barcode": [
-        "0", 
+        "0",
         "1"
-    ], 
-    "noise": 0.01, 
+    ],
+    "molecular barcode": [
+        "0",
+        "1"
+    ],
+    "multiplex noise": 0.01,
     "template": [
         "0:1:2"
-    ], 
-    "threads": 4, 
+    ],
+    "threads": 4,
     "token": [
-        "0::8", 
-        "0:8:16", 
+        "0::8",
+        "0:8:16",
         "0:16:"
     ]
 }

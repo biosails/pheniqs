@@ -24,6 +24,7 @@
 #include <set>
 #include <map>
 #include <list>
+#include <cstdlib>
 #include <unordered_map>
 
 #include "interface.h"
@@ -43,6 +44,7 @@ using std::setw;
 using std::endl;
 using std::cerr;
 using std::cout;
+using std::size_t;
 using std::pair;
 using std::fixed;
 using std::string;
@@ -56,6 +58,48 @@ using std::setprecision;
 using std::unordered_map;
 using std::numeric_limits;
 using std::istreambuf_iterator;
+
+inline bool infer_PU(const Value::Ch* key, string& value, Value& container, Document& document) {
+    if(decode_value_by_key< string >(key, value, container)) {
+        return true;
+    } else {
+        string PU;
+        bool undetermined(false);
+        list< string > multiplex_barcode;
+        if(decode_value_by_key< bool >("undetermined", undetermined, container) && undetermined) {
+            PU.assign("undetermined");
+        } else if(decode_value_by_key< list< string > >("barcode", multiplex_barcode, container)) {
+            for(auto& segment : multiplex_barcode) {
+                PU.append(segment);
+            }
+        }
+        if(!PU.empty()) {
+            string flowcell_id;
+            if(decode_value_by_key< string >("flowcell id", flowcell_id, container)) {
+                value.assign(flowcell_id);
+                value.push_back(':');
+
+                int32_t flowcell_lane_number;
+                if(decode_value_by_key< int32_t >("flowcell lane number", flowcell_lane_number, container)) {
+                    value.append(to_string(flowcell_lane_number));
+                    value.push_back(':');
+                }
+            }
+            value.append(PU);
+            encode_key_value(key, value, container, document);
+            return true;
+        }
+    }
+    return false;
+};
+inline bool infer_ID(const Value::Ch* key, string& value, Value& container, Document& document) {
+    if(decode_value_by_key< string >(key, value, container)) {
+        return true;
+    } else if(infer_PU("PU", value, container, document)) {
+        encode_key_value(key, value, container, document);
+        return true;
+    } else { return false; }
+};
 
 enum class ProgramState : int8_t {
     OK,
@@ -73,6 +117,7 @@ enum class ProgramState : int8_t {
 class Environment {
 public:
     Environment(const int argc, const char** argv);
+    ~Environment(){};
     inline const ProgramAction program_action() const {
         return _program_action;
     };
@@ -109,7 +154,7 @@ private:
     BarcodeDistanceMetric _multiplex_barcode_distance;
     vector< BarcodeDistanceMetric > _multiplex_barcode_set_distance;
     void load_pheniqs_pg();
-    void load_interface_instruction();
+    void load_instruction();
     void validate_global_parameters();
     void apply_url_base();
     void load_concentration_prior();

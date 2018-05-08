@@ -100,8 +100,8 @@ public:
     URL(const URL& other);
     URL(const string& path);
     URL(const string& path, const bool& is_directory);
-    URL(const string& path, const IoDirection& direction);
     void parse_directory(const string& path);
+    void parse_file(const string& path);
     void parse_file(const string& path, const IoDirection& direction);
     void set_basename(const string& name);
     void set_dirname(const string& directory);
@@ -179,7 +179,6 @@ private:
     FormatType _type;
 
     void refresh();
-    void expand(string& path);
     void decode_extension(const FormatType& type);
 };
 bool operator<(const URL& lhs, const URL& rhs);
@@ -191,9 +190,12 @@ namespace std {
         };
     };
 };
+
+template<> bool decode_value< URL >(URL& value, const Value& container);
+template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container);
+template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< URL >& value, const Value& container);
+
 bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& container);
-bool decode_file_url_by_key(const Value::Ch* key, URL& value, const IoDirection& direction, const Value& container);
-bool decode_file_url_list_by_key(const Value::Ch* key, list< URL >& value, const Value& container, const IoDirection& direction);
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document);
 void encode_element(const URL& value, Value& container, Document& document);

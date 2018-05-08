@@ -64,9 +64,16 @@ using rapidjson::kArrayType;
 using rapidjson::kObjectType;
 
 void print_json(const Value& node, ostream& o);
+
+/*  Recursively merge two JSON documents.
+    Overlay < other > on < node > and write the result to < container >, using < document > for memory allocation.
+    < container > is first initialized to a null value.
+*/
 void merge_json_value(const Value& node, const Value& other, Value& container, Document& document);
 void merge_json_value(const Value& node, const Value& other, Document& document);
 
+/* decoding JSON container into an object */
+template < typename T > bool decode_value(T& value, const Value& container);
 template < typename T > bool decode_value_by_key(const Value::Ch* key, T& value, const Value& container);
 template < typename T > T decode_value_by_key(const Value::Ch* key, const Value& container) {
     T value;
@@ -74,6 +81,7 @@ template < typename T > T decode_value_by_key(const Value::Ch* key, const Value&
     return value;
 };
 
+/* encoding object to JSON container */
 inline bool encode_key_value(const string& key, const bool& value, Value& container, Document& document) {
     container.RemoveMember(key.c_str());
     container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), Value(value).Move(), document.GetAllocator());
@@ -296,6 +304,14 @@ inline bool encode_key_value(const string& key, const kstring_t& value, Value& c
     return false;
 };
 
+/* transcoding from one JSON container to another */
+template < typename T > bool transcode_value(const Value& from, Value& to, Document& document) {
+    T buffer;
+    if(decode_value< T >(buffer, from)) {
+        return encode_value(buffer, to, document);
+    }
+    return false;
+};
 template < typename T > bool transcode_value_by_key(const Value::Ch* key, const Value& from, Value& to, Document& document) {
     T buffer;
     if(decode_value_by_key< T >(key, buffer, from)) {

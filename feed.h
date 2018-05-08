@@ -369,10 +369,10 @@ protected:
     kstring_t kbuffer;
     CyclicBuffer<T>* buffer;
     CyclicBuffer<T>* queue;
-    virtual inline void encode(T* record, const Segment& segment) const = 0;
-    virtual inline void decode(const T* record, Segment& segment) = 0;
-    virtual inline void replenish_buffer() = 0;
-    virtual inline void flush_buffer() = 0;
+    virtual void encode(T* record, const Segment& segment) const = 0;
+    virtual void decode(const T* record, Segment& segment) = 0;
+    virtual void replenish_buffer() = 0;
+    virtual void flush_buffer() = 0;
 
 private:
     bool started;

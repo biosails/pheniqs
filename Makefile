@@ -20,26 +20,31 @@
 # The PHENIQS_VERSION defaults to $(MAJOR_REVISON).$(MINOR_REVISON) if not provided by the environment.
 # git revision checksum is appended if available
 # If available in the environment, dependency version are also included when generating version.h
-# 	PHENIQS_VERSION
-#	ZLIB_VERSION
-#	BZIP2_VERSION
-#	XZ_VERSION
-#	RAPIDJSON_VERSION
-#	HTSLIB_VERSION
 
-MAJOR_REVISON := 1
-MINOR_REVISON := 1
+# PHENIQS_VERSION
+# ZLIB_VERSION = 1.2.11
+# BZIP2_VERSION = 1.0.6
+# XZ_VERSION = 5.2.3
+# LIBDEFLATE_VERSION = 1.0
+# RAPIDJSON_VERSION = 1.1.0
+# HTSLIB_VERSION = 1.8
 
-CC              = clang++
+# GCC building on MacOS
+# CXX              = /usr/local/bin/g++-7
+
+MAJOR_REVISON  := 1
+MINOR_REVISON  := 1
 PREFIX          = /usr/local
 BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
 
-CFLAGS          = -std=c++11 -O3 -Wall -Wsign-compare -pedantic
-LDFLAGS         =
-LIBS            = -lhts -lz -lbz2 -llzma
-STATIC_LIBS     = $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
+CXX              = clang++
+CPPFLAGS        += -Wall -Wsign-compare
+CXXFLAGS        += -std=c++11 -O3
+LDFLAGS         +=
+LIBS            += -lhts -lz -lbz2 -llzma
+STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
 
 PHENIQS_SOURCES = \
 	json.cpp \
@@ -83,20 +88,6 @@ PHENIQS_GIT_REVISION := $(shell git describe --abbrev=40 --always 2> /dev/null)
 
 PLATFORM := $(shell uname -s)
 
-ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.a)','')
-    ifeq ($(PLATFORM), Darwin)
-        with-libdeflate = 1
-    else ifeq ($(PLATFORM), Linux)
-        ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.so)','')
-            with-libdeflate = 1
-        endif
-    else ifeq ($(PLATFORM), Darwin)
-        with-libdeflate = 0
-    endif
-else
-    with-libdeflate = 0
-endif
-
 ifndef PHENIQS_VERSION
     PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
 endif
@@ -106,8 +97,20 @@ ifdef PHENIQS_GIT_REVISION
 endif
 
 ifdef PREFIX
-    CFLAGS += -I$(INCLUDE_PREFIX)
+    CPPFLAGS += -I$(INCLUDE_PREFIX)
     LDFLAGS += -L$(LIB_PREFIX)
+endif
+
+with-static = 0
+with-libdeflate = 0
+ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.a)','')
+    ifeq ($(PLATFORM), Darwin)
+        with-libdeflate = 1
+    else ifeq ($(PLATFORM), Linux)
+        ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.so)','')
+            with-libdeflate = 1
+        endif
+    endif
 endif
 
 ifeq ($(with-libdeflate), 1)
@@ -115,32 +118,42 @@ ifeq ($(with-libdeflate), 1)
     STATIC_LIBS += $(LIB_PREFIX)/libdeflate.a
 endif
 
-all: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
-	$(CC) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(LIBS) -o $(PHENIQS_EXECUTABLE)
+ifeq ($(with-static), 1)
+    LIBS = $(STATIC_LIBS)
+endif
 
-static: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
-	$(CC) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(STATIC_LIBS) -o $(PHENIQS_EXECUTABLE)
+all: $(PHENIQS_SOURCES) generated $(PHENIQS_EXECUTABLE)
 
 config:
-	@echo 'PHENIQS_VERSION  :  $(PHENIQS_VERSION)'
-	@echo 'CC               :  $(CC)'
-	@echo 'PREFIX           :  $(PREFIX)'
-	@echo 'BIN_PREFIX       :  $(BIN_PREFIX)'
-	@echo 'INCLUDE_PREFIX   :  $(INCLUDE_PREFIX)'
-	@echo 'LIB_PREFIX       :  $(LIB_PREFIX)'
-	@echo 'CFLAGS           :  $(CFLAGS)'
-	@echo 'LDFLAGS          :  $(LDFLAGS)'
-	@echo 'CFLAGS           :  $(CFLAGS)'
-	@echo 'LIBS             :  $(LIBS)'
-	@echo 'STATIC_LIBS      :  $(STATIC_LIBS)'
-	@echo 'with-libdeflate  :  $(with-libdeflate)'
+	@echo 'PHENIQS_VERSION     :  $(PHENIQS_VERSION)'
+	@echo 'PLATFORM            :  $(PLATFORM)'
+	@echo 'PREFIX              :  $(PREFIX)'
+	@echo 'BIN_PREFIX          :  $(BIN_PREFIX)'
+	@echo 'INCLUDE_PREFIX      :  $(INCLUDE_PREFIX)'
+	@echo 'LIB_PREFIX          :  $(LIB_PREFIX)'
+	@echo 'CXX                 :  $(CXX)'
+	@echo 'CPPFLAGS            :  $(CPPFLAGS)'
+	@echo 'CXXFLAGS            :  $(CXXFLAGS)'
+	@echo 'LDFLAGS             :  $(LDFLAGS)'
+	@echo 'LIBS                :  $(LIBS)'
+	@echo 'with-libdeflate     :  $(with-libdeflate)'
+	@echo 'with-static         :  $(with-static)'
+	$(if $(ZLIB_VERSION),        @echo 'ZLIB_VERSION        :  $(ZLIB_VERSION)' )
+	$(if $(BZIP2_VERSION),       @echo 'BZIP2_VERSION       :  $(BZIP2_VERSION)' )
+	$(if $(XZ_VERSION),          @echo 'XZ_VERSION          :  $(XZ_VERSION)' )
+	$(if $(LIBDEFLATE_VERSION),  @echo 'LIBDEFLATE_VERSION  :  $(LIBDEFLATE_VERSION)' )
+	$(if $(RAPIDJSON_VERSION),   @echo 'RAPIDJSON_VERSION   :  $(RAPIDJSON_VERSION)' )
+	$(if $(HTSLIB_VERSION),      @echo 'HTSLIB_VERSION      :  $(HTSLIB_VERSION)' )
 
 .cpp.o:
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+
+$(PHENIQS_EXECUTABLE): $(PHENIQS_OBJECTS)
+	$(CXX) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(LIBS) -o $(PHENIQS_EXECUTABLE)
 
 # Regenerate version.h when PHENIQS_VERSION changes
-version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),,clean-version))
-	@echo Generate version.h with $(PHENIQS_VERSION)
+version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),clean.version))
+	@echo version.h generated with PHENIQS_VERSION $(PHENIQS_VERSION)
 	$(if $(PHENIQS_VERSION),    @echo '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"'        >> $@)
 	$(if $(ZLIB_VERSION),       @echo '#define ZLIB_VERSION "$(ZLIB_VERSION)"'              >> $@)
 	$(if $(BZIP2_VERSION),      @echo '#define BZIP2_VERSION "$(BZIP2_VERSION)"'            >> $@)
@@ -149,19 +162,30 @@ version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(s
 	$(if $(RAPIDJSON_VERSION),  @echo '#define RAPIDJSON_VERSION "$(RAPIDJSON_VERSION)"'    >> $@)
 	$(if $(HTSLIB_VERSION),     @echo '#define HTSLIB_VERSION "$(HTSLIB_VERSION)"'          >> $@)
 
-# Regenerate configuration.h when configuration.json file changes
-configuration.h: configuration.json
-	@echo Generate command line interface configuration
-	$(shell ./configuration.sh)
-
-clean-version:
+clean.version:
 	-@rm -f version.h
 
-clean-configuration:
-	-@rm -f configuration.h
+# Regenerate interface configuration.h from configuration.json
+configuration.h: configuration.json
+	@echo configuration.h command line interface configuration generated.
+	$(shell ./tool/make_configuration_h.sh)
 
-clean: clean-version clean-configuration
-	-@rm -f $(PHENIQS_EXECUTABLE) $(PHENIQS_OBJECTS)
+# Regenerate zsh completion from configuration.json
+_pheniqs: configuration.json
+	@echo zsh completion _pheniqs generated.
+	$(shell ./tool/pheniqs-tools.py zsh configuration.json > _pheniqs)
+
+generated: version.h configuration.h _pheniqs
+
+clean.generated: clean.version
+	-@rm -f configuration.h
+	-@rm -f _pheniqs
+
+clean.object:
+	-@rm -f $(PHENIQS_OBJECTS)
+
+clean: clean.generated clean.object
+	-@rm -f $(PHENIQS_EXECUTABLE)
 
 install: pheniqs
 	if( test ! -d $(PREFIX)/bin ) ; then mkdir -p $(PREFIX)/bin ; fi

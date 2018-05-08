@@ -1,10 +1,12 @@
 /pheniqs
-/*.o
-/**.DS_Store
+/_pheniqs
 /configuration.h
 /version.h
+**/*.o
 /*.sublime-workspace
 /*.sublime-project
 /pheniqs.xcodeproj
-/.gcc-flags.json
-/*.h.gch
+**/.DS_Store
+**/__pycache__
+**/.gcc-flags.json
+**/*.h.gch

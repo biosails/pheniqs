@@ -25,6 +25,15 @@
 
 /*  Feed specification
 */
+FeedSpecification::FeedSpecification () :
+    direction(IoDirection::UNKNOWN),
+    index(numeric_limits< int32_t >::min()),
+    platform(Platform::UNKNOWN),
+    capacity(DEFAULT_FEED_CAPACITY),
+    resolution(DEFAULT_FEED_RESOLUTION),
+    phred_offset(0),
+    hfile(NULL) {
+};
 FeedSpecification::FeedSpecification (
     const IoDirection& direction,
     const int32_t& index,
@@ -252,31 +261,30 @@ ostream& operator<<(ostream& o, const FeedSpecification& specification) {
     o << specification.url;
     return o;
 };
+template<> bool decode_value< FeedSpecification >(FeedSpecification& value, const Value& container) {
+    if(container.IsObject()) {
+        if(container.IsObject()) {
+            decode_value_by_key< IoDirection >("direction", value.direction, container);
+            decode_value_by_key< int32_t >("index", value.index, container);
+            decode_value_by_key< URL >("url", value.url, container);
+            decode_value_by_key< Platform >("platform", value.platform, container);
+            decode_value_by_key< uint8_t >("phred offset", value.phred_offset, container);
+        } else { throw ConfigurationError("feed node must be a dictionary"); }
+        return true;
+    } else { throw ConfigurationError("channel node must be a dictionary"); }
+};
 template<> bool decode_value_by_key< list< FeedSpecification* > >(const Value::Ch* key, list< FeedSpecification* >& value, const Value& container) {
     Value::ConstMemberIterator collection = container.FindMember(key);
     if(collection != container.MemberEnd()) {
         if(!collection->value.IsNull()) {
             if(collection->value.IsArray() && !collection->value.Empty()) {
                 for(const auto& element : collection->value.GetArray()) {
-                    if(element.IsObject()) {
-                        IoDirection direction(IoDirection::UNKNOWN);
-                        decode_value_by_key< IoDirection >("direction", direction, element);
-
-                        int32_t index;
-                        decode_value_by_key< int32_t >("index", index, element);
-
-                        URL url;
-                        decode_file_url_by_key("url", url, direction, element);
-
-                        Platform platform;
-                        decode_value_by_key< Platform >("platform", platform, element);
-
-                        uint8_t phred_offset;
-                        decode_value_by_key< uint8_t >("phred offset", phred_offset, element);
-
-                        value.push_back(new FeedSpecification(direction, index, url, platform, phred_offset));
-
-                    } else { throw ConfigurationError("feed node must be a dictionary"); }
+                    FeedSpecification* o = new FeedSpecification();
+                    if(decode_value(*o, element)) {
+                        value.push_back(o);
+                    } else {
+                        delete o;
+                    }
                 }
                 return true;
             }
@@ -285,15 +293,13 @@ template<> bool decode_value_by_key< list< FeedSpecification* > >(const Value::C
     return false;
 };
 
-
-
 InputSpecification::InputSpecification() :
     decoder(Decoder::UNKNOWN),
     disable_quality_control(false),
     include_filtered(true) {
 };
-template<> bool decode_value_by_key< InputSpecification >(const Value::Ch* key, InputSpecification& value, const Value& container) {
-    if(decode_file_url_list_by_key("input", value.url_by_segment, container, IoDirection::IN)) {
+template<> bool decode_value< InputSpecification >(InputSpecification& value, const Value& container) {
+    if(decode_value_by_key< list< URL > >("input", value.url_by_segment, container)) {
         decode_value_by_key< Decoder >("decoder", value.decoder, container);
         decode_value_by_key< bool >("disable quality control", value.disable_quality_control, container);
         decode_value_by_key< bool >("long read", value.long_read, container);
@@ -320,30 +326,25 @@ ChannelSpecification::~ChannelSpecification() {
     ks_free(FS);
     ks_free(CO);
 };
-string ChannelSpecification::alias() const {
-    string alias("Channel No.");
-    alias.append(to_string(index));
-    return alias;
-};
 void ChannelSpecification::describe(ostream& o) const {
     o << "    " << alias() << endl;
     // o << "\tRG index : " << head_read_group->index << endl;
-    o << "        RG : " << rg.ID.s << endl;
-    if(rg.PU.l > 0) o << "        PU : " << rg.PU.s << endl;
-    if(rg.LB.l > 0) o << "        LB : " << rg.LB.s << endl;
-    if(rg.SM.l > 0) o << "        SM : " << rg.SM.s << endl;
-    if(rg.CN.l > 0) o << "        CN : " << rg.CN.s << endl;
-    if(rg.DS.l > 0) o << "        DS : " << rg.DS.s << endl;
-    if(rg.DT.l > 0) o << "        DT : " << rg.DT.s << endl;
-    if(rg.PL.l > 0) o << "        PL : " << rg.PL.s << endl;
-    if(rg.PM.l > 0) o << "        PM : " << rg.PM.s << endl;
-    if(rg.PG.l > 0) o << "        PG : " << rg.PG.s << endl;
-    if(rg.FO.l > 0) o << "        FO : " << rg.FO.s << endl;
-    if(rg.KS.l > 0) o << "        KS : " << rg.KS.s << endl;
-    if(rg.PI.l > 0) o << "        PI : " << rg.PI.s << endl;
-    if(TC)          o << "        TC : " << TC      << endl;
-    if(FS.l > 0)    o << "        FS : " << FS.s    << endl;
-    if(CO.l > 0)    o << "        CO : " << CO.s    << endl;
+    o << "        ID : " << rg.ID.s << endl;
+    if(!ks_empty(rg.PU)) o << "        PU : " << rg.PU.s << endl;
+    if(!ks_empty(rg.LB)) o << "        LB : " << rg.LB.s << endl;
+    if(!ks_empty(rg.SM)) o << "        SM : " << rg.SM.s << endl;
+    if(!ks_empty(rg.CN)) o << "        CN : " << rg.CN.s << endl;
+    if(!ks_empty(rg.DS)) o << "        DS : " << rg.DS.s << endl;
+    if(!ks_empty(rg.DT)) o << "        DT : " << rg.DT.s << endl;
+    if(!ks_empty(rg.PL)) o << "        PL : " << rg.PL.s << endl;
+    if(!ks_empty(rg.PM)) o << "        PM : " << rg.PM.s << endl;
+    if(!ks_empty(rg.PG)) o << "        PG : " << rg.PG.s << endl;
+    if(!ks_empty(rg.FO)) o << "        FO : " << rg.FO.s << endl;
+    if(!ks_empty(rg.KS)) o << "        KS : " << rg.KS.s << endl;
+    if(!ks_empty(rg.PI)) o << "        PI : " << rg.PI.s << endl;
+    if(TC > 0)           o << "        TC : " << TC      << endl;
+    if(!ks_empty(FS))    o << "        FS : " << FS.s    << endl;
+    if(!ks_empty(CO))    o << "        CO : " << CO.s    << endl;
     if(concentration > 0) {
                     o << "        PC : " << setprecision(numeric_limits<double>::digits10 + 1) << concentration << endl;
     }
@@ -369,16 +370,15 @@ void ChannelSpecification::describe(ostream& o) const {
 void ChannelSpecification::encode(Document& document, Value& node) const {
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value channel(kObjectType);
-    encode_value_with_key_ID(rg, "RG", channel, document);
-    encode_key_value("FS", FS, channel, document);
-    encode_key_value("CO", CO, channel, document);
-
+    Value specification(kObjectType);
+    encode_value(rg, specification, document);
+    encode_key_value("FS", FS, specification, document);
+    encode_key_value("CO", CO, specification, document);
     if(undetermined) {
-        encode_key_value("undetermined", undetermined, channel, document);
+        encode_key_value("undetermined", undetermined, specification, document);
     } else {
-        encode_key_value("concentration", concentration, channel, document);
-        multiplex_barcode.encode_configuration(document, channel, "barcode");
+        encode_key_value("concentration", concentration, specification, document);
+        multiplex_barcode.encode_configuration(document, specification, "barcode");
     }
 
     if(!url_by_segment.empty()) {
@@ -386,18 +386,70 @@ void ChannelSpecification::encode(Document& document, Value& node) const {
         for(auto& url : url_by_segment) {
             encode_element(url, collection, document);
         }
-        channel.AddMember("output", collection.Move(), allocator);
+        specification.AddMember("output", collection.Move(), allocator);
     }
-    node.PushBack(channel, allocator);
+    node.PushBack(specification, allocator);
 };
 ostream& operator<<(ostream& o, const ChannelSpecification& specification) {
     o << specification.alias();
     return o;
 };
-void transcode_channel_specification(const Value& from, Value& to, Document& document) {
+template<> bool decode_value< ChannelSpecification >(ChannelSpecification& value, const Value& container) {
+    if(container.IsObject()) {
+        decode_value_by_key< int32_t >("index", value.index, container);
+        decode_value_by_key< uint32_t >("TC", value.TC, container);
+        decode_value_by_key< kstring_t >("FS", value.FS, container);
+        decode_value_by_key< kstring_t >("CO", value.CO, container);
+        decode_value_by_key< Decoder >("decoder", value.decoder, container);
+        decode_value_by_key< bool >("disable quality control", value.disable_quality_control, container);
+        decode_value_by_key< bool >("long read", value.long_read, container);
+        decode_value_by_key< bool >("include filtered", value.include_filtered, container);
+        decode_value_by_key< bool >("undetermined", value.undetermined, container);
+        decode_value_by_key< double >("concentration", value.concentration, container);
+        decode_value_by_key< Barcode >("barcode", value.multiplex_barcode, container);
+        decode_value_by_key< list< URL > >("output", value.url_by_segment, container);
+
+        uint8_t masking_threshold;
+        if(decode_value_by_key< uint8_t >("masking threshold", masking_threshold, container)) {
+            value.multiplex_barcode.set_threshold(masking_threshold);
+        }
+
+        vector< uint8_t> multiplex_barcode_tolerance;
+        if(decode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", multiplex_barcode_tolerance, container)) {
+            value.multiplex_barcode.set_tolerance(multiplex_barcode_tolerance);
+        }
+
+        if(decode_value< HeadRGAtom >(value.rg, container)) {
+            // if a read group could be decoded
+        }
+        return true;
+    } else { throw ConfigurationError("channel node must be a dictionary"); }
+};
+template<> bool decode_value_by_key< list< ChannelSpecification > >(const Value::Ch* key, list< ChannelSpecification >& value, const Value& container) {
+    Value::ConstMemberIterator collection = container.FindMember(key);
+    if(collection != container.MemberEnd()) {
+        if(!collection->value.IsNull()) {
+            if(collection->value.IsArray() && !collection->value.Empty()) {
+                for(const auto& element : collection->value.GetArray()) {
+                    if(element.IsObject()) {
+                        ChannelSpecification o;
+                        if(decode_value(o, element)) {
+                            value.emplace_back(o);
+                        }
+                    } else { throw ConfigurationError("channel node must be a dictionary"); }
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+};
+template <> bool transcode_value< ChannelSpecification >(const Value& from, Value& to, Document& document) {
     if(from.IsObject()) {
         to.SetObject();
-        transcode_value_by_key< string >("RG", from, to, document);
+        transcode_value_by_key< string >("flowcell id", from, to, document);
+        transcode_value_by_key< int32_t >("flowcell lane number", from, to, document);
+        transcode_value_by_key< string >("ID", from, to, document);
         transcode_value_by_key< string >("LB", from, to, document);
         transcode_value_by_key< string >("SM", from, to, document);
         transcode_value_by_key< string >("PU", from, to, document);
@@ -409,7 +461,7 @@ void transcode_channel_specification(const Value& from, Value& to, Document& doc
         transcode_value_by_key< string >("PG", from, to, document);
         transcode_value_by_key< string >("FO", from, to, document);
         transcode_value_by_key< string >("KS", from, to, document);
-        transcode_value_by_key< int64_t >("TC", from, to, document);
+        transcode_value_by_key< uint32_t >("TC", from, to, document);
         transcode_value_by_key< Decoder >("decoder", from, to, document);
         transcode_value_by_key< bool >("disable quality control", from, to, document);
         transcode_value_by_key< bool >("long read", from, to, document);
@@ -418,44 +470,7 @@ void transcode_channel_specification(const Value& from, Value& to, Document& doc
         transcode_value_by_key< double >("concentration", from, to, document);
         transcode_value_by_key< uint8_t >("masking threshold", from, to, document);
         transcode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", from, to, document);
+        return true;
     } else { throw ConfigurationError("channel node must be a dictionary"); }
-};
-template<> bool decode_value_by_key< list< ChannelSpecification > >(const Value::Ch* key, list< ChannelSpecification >& value, const Value& container) {
-    Value::ConstMemberIterator collection = container.FindMember(key);
-    if(collection != container.MemberEnd()) {
-        if(!collection->value.IsNull()) {
-            if(collection->value.IsArray() && !collection->value.Empty()) {
-                for(const auto& element : collection->value.GetArray()) {
-                    if(element.IsObject()) {
-                        ChannelSpecification specification;
-                        decode_value_by_key< int32_t >("index", specification.index, element);
-                        decode_value_by_key< int64_t >("TC", specification.TC, element);
-                        decode_value_by_key< kstring_t >("FS", specification.FS, element);
-                        decode_value_by_key< kstring_t >("CO", specification.CO, element);
-                        decode_value_by_key< Decoder >("decoder", specification.decoder, element);
-                        decode_value_by_key< bool >("disable quality control", specification.disable_quality_control, element);
-                        decode_value_by_key< bool >("long read", specification.long_read, element);
-                        decode_value_by_key< bool >("include filtered", specification.include_filtered, element);
-                        decode_value_by_key< bool >("undetermined", specification.undetermined, element);
-                        decode_value_by_key< double >("concentration", specification.concentration, element);
-                        decode_value_by_key< Barcode >("barcode", specification.multiplex_barcode, element);
-                        decode_file_url_list_by_key("output", specification.url_by_segment, element, IoDirection::OUT);
-                        decode_head_RG_atom_with_key_ID(element, specification.rg, "RG");
-
-                        uint8_t masking_threshold;
-                        decode_value_by_key< uint8_t >("masking threshold", masking_threshold, element);
-                        specification.multiplex_barcode.set_threshold(masking_threshold);
-
-                        vector< uint8_t> multiplex_barcode_tolerance;
-                        decode_value_by_key< vector< uint8_t > >("multiplex barcode tolerance", multiplex_barcode_tolerance, element);
-                        specification.multiplex_barcode.set_tolerance(multiplex_barcode_tolerance);
-
-                        value.emplace_back(specification);
-                    } else { throw ConfigurationError("channel node must be a dictionary"); }
-                }
-                return true;
-            }
-        }
-    }
     return false;
 };

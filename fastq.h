@@ -21,6 +21,7 @@
 
 #ifndef PHENIQS_FASTQ_H
 #define PHENIQS_FASTQ_H
+// #define PHENIQS_ILLUMINA_CONTROL_NUMBER
 
 #include <fstream>
 #include <iostream>
@@ -135,7 +136,11 @@ public:
         ks_put_string(comment, segment.auxiliary.CO);
         segment.auxiliary.FI = 0;
         segment.set_qcfail(false);
-        segment.auxiliary.XI = 0;
+
+        #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
+        segment.auxiliary.illumina_control_number = 0;
+        #endif
+
         switch (segment.platform) {
             case Platform::ILLUMINA: {
                 /*  @HWI-ST911:232:HABDFADXX:1:1101:1224:1932 1:N:0:CGATGT
@@ -212,6 +217,7 @@ private:
     inline void decode_comment(const Segment& segment) {
         switch (segment.platform) {
             case Platform::CAPILLARY:
+                // Sanger sequencing
                 break;
             case Platform::LS454:
                 break;
@@ -220,7 +226,13 @@ private:
                 ks_put_character(':', comment);
                 ks_put_character(segment.get_qcfail()? 'Y' : 'N', comment);
                 ks_put_character(':', comment);
-                ks_put_uint32(segment.auxiliary.XI, comment);
+
+                #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
+                ks_put_uint16(segment.auxiliary.illumina_control_number, comment);
+                #else
+                ks_put_uint16(0, comment);
+                #endif
+
                 ks_put_character(':', comment);
                 ks_put_string(segment.auxiliary.BC, comment);
                 break;
@@ -326,7 +338,9 @@ private:
         if(code < 0) {
             value = 0;
         }
-        segment.auxiliary.XI = value;
+        #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
+        segment.auxiliary.illumina_control_number = value;
+        #endif
         offset = position;
     };
     inline void parse_illumina_barcode(Segment& segment, size_t& offset) const {

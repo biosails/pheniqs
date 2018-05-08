@@ -29,9 +29,6 @@ void print_json(const Value& node, ostream& o) {
     o << buffer.GetString() << endl;
 };
 
-/*  Recursively merge two JSON documents.
-    This will overlay other on node and write the result to container, using document for memory allocation.
-*/
 void merge_json_value(const Value& node, const Value& other, Value& container, Document& document) {
     container.SetNull();
     if(!other.IsNull() && !node.IsNull()) {
@@ -219,6 +216,22 @@ template<> bool decode_value_by_key< string >(const Value::Ch* key, string& valu
             value.assign(element->value.GetString(), element->value.GetStringLength());
             return true;
         } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template<> bool decode_value_by_key< list< string > >(const Value::Ch* key, list< string >& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsArray()) {
+            if(!element->value.Empty()) {
+                for(const auto& e : element->value.GetArray()) {
+                    if(e.IsString()) {
+                        value.emplace_back(e.GetString(), e.GetStringLength());
+                    } else { throw ConfigurationError(string(key) + " element must be a string"); }
+                }
+                return true;
+            }
+        } else { throw ConfigurationError(string(key) + " element must be an array"); }
     }
     return false;
 };

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Pheniqs : PHilology ENcoder wIth Quality Statistics
 # Copyright (C) 2018  Lior Galanti
@@ -26,187 +26,35 @@ import sys
 import json
 import logging
 import hashlib
-import platform
-from copy import deepcopy
 from datetime import datetime
 from subprocess import Popen, PIPE
-from argparse import ArgumentParser
 import urllib.request, urllib.parse, urllib.error
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from http.client import BadStatusLine
 
-base_configuration = {
-    'interface': {
-        'global': {
-            'argument': [
-                'version', 
-                'verbosity'
-            ]
-        }, 
-        'instruction': {
-            'description': 'Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology'
-        }, 
-        'prototype': {
-            'path': {
-                'flag': [
-                    'configuration path'
-                ], 
-                'parameter': {
-                    'help': 'configuration path', 
-                    'metavar': 'PATH',
-                    'nargs': '?'
-                }
-            }, 
-            'filter': {
-                'flag': [
-                    '-f',
-                    '--filter'
-                ], 
-                'parameter': {
-                    'help': 'list of packages', 
-                    'metavar': 'PACKAGE',
-                    'nargs': '*'
-                }
-            }, 
-            'force': {
-                'flag': [
-                    '-F',
-                    '--force'
-                ], 
-                'parameter': {
-                    'help': 'list of packages to force', 
-                    'metavar': 'PACKAGE',
-                    'nargs': '*'
-                }
-            }, 
-            'verbosity': {
-                'flag': [
-                    '-v', 
-                    '--verbosity'
-                ], 
-                'parameter': {
-                    'choices': [
-                        'debug', 
-                        'info', 
-                        'warning', 
-                        'error', 
-                        'critical'
-                    ], 
-                    'dest': 'verbosity', 
-                    'help': 'logging verbosity level', 
-                    'metavar': 'LEVEL'
-                }
-            }, 
-            'version': {
-                'flag': [
-                    '--version'
-                ], 
-                'parameter': {
-                    'action': 'version', 
-                    'version': '%[prog]s 1.0'
-                }
-            }
-        }, 
-        'section': {
-            'action': [
-                {
-                    'argument': [
-                        'filter',
-                        'path'
-                    ], 
-                    'implementation': 'clean', 
-                    'instruction': {
-                        'help': 'clean build root environment', 
-                        'name': 'clean'
-                    }
-                },
-                {
-                    'argument': [
-                        'filter',
-                        'path'
-                    ], 
-                    'implementation': 'build', 
-                    'instruction': {
-                        'help': 'build build root environment', 
-                        'name': 'build'
-                    }
-                },
-                {
-                    'argument': [
-                        'filter',
-                        'path'
-                    ], 
-                    'implementation': 'clean.package', 
-                    'instruction': {
-                        'help': 'delete exploded package', 
-                        'name': 'clean.package'
-                    }
-                }
-            ], 
-            'instruction': {
-                'description': '', 
-                'dest': 'action', 
-                'help': None, 
-                'metavar': 'ACTION', 
-                'title': 'pipeline operations'
-            }
-        }
-    }
-}
-log_levels = {
-    'debug': logging.DEBUG,
-    'info': logging.INFO,
-    'warning': logging.WARNING,
-    'error': logging.ERROR,
-    'critical': logging.CRITICAL
-}
+from error import *
 
-def merge(this, other):
-    result = other
-    if this is not None:
-        result = this
-        if other is not None:
-            if isinstance(this, dict):
-                if isinstance(other, dict):
-                    for k,v in other.items():
-                        if k in result:
-                            result[k] = merge(result[k], v)
-                        else:
-                            result[k] = v
-                else:
-                    raise ValueError('incompatible structure')
+def to_json(node):
+    return json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4)
 
-            elif isinstance(this, list):
-                if isinstance(other, list):
-                    result.extend(other)
-                else:
-                    raise ValueError('incompatible structure')
-            else:
-                result = other
-    return result
+split_class = lambda x: (x[0:x.rfind('.')], x[x.rfind('.') + 1:])
 
-def prepare_directory(directory, log):
-    def check_permission(directory):
-        writable = os.access(directory, os.W_OK)
-        present = os.path.exists(directory)
-
-        if writable and present:
-            # this hirarchy exists and is writable
-            return directory
-
-        elif not (writable or present):
-            # try the next one up
-            return check_permission(os.path.dirname(directory))
-
-        elif present and not writable:
-            # directory exists but it not writable
-            raise PermissionDeniedError(directory)
-
-    available = check_permission(directory)
-    if available != directory:
-       log.debug('creating directory %s', directory)
-       os.makedirs(directory)
+def remove_directory(directory, log):
+    if os.path.exists(directory):
+        log.info('removing {}'.format(directory))
+        command = [ 'rm', '-rf' ]
+        command.append(directory)
+        process = Popen(
+            args=command,
+            stdout=PIPE,
+            stderr=PIPE
+        )
+        output, error = process.communicate()
+        code = process.returncode
+        if code is not 0:
+            print(output, error, code)
+            raise CommandFailedError('failed to remove directory {}'.format(directory))
 
 def prepare_path(path, log, overwrite=True):
     def check_permission(path):
@@ -235,315 +83,32 @@ def prepare_path(path, log, overwrite=True):
             log.debug('creating directory %s', directory)
             os.makedirs(directory)
 
-def remove_directory(directory, log):
-    if os.path.exists(directory):
-        log.info('removing {}'.format(directory))
-        command = [ 'rm', '-rf' ]
-        command.append(directory)
-        process = Popen(
-            args=command,
-            stdout=PIPE,
-            stderr=PIPE
-        )
-        output, error = process.communicate()
-        code = process.returncode
-        if code is not 0:
-            print(output, error, code)
-            raise CommandFailedError('failed to remove directory {}'.format(directory))
+def prepare_directory(directory, log):
+    def check_permission(directory):
+        writable = os.access(directory, os.W_OK)
+        present = os.path.exists(directory)
 
-class PermissionDeniedError(Exception):
-    def __init__(self, path):
-        super(Exception, self).__init__('permission denied for {}'.format(path))
-        self.path = path
+        if writable and present:
+            # this hirarchy exists and is writable
+            return directory
 
-class NoOverwriteError(Exception):
-    def __init__(self, path):
-        super(Exception, self).__init__('refusing to overwrite {}'.format(path))
-        self.path = path
+        elif not (writable or present):
+            # try the next one up
+            return check_permission(os.path.dirname(directory))
 
-class InvalidChecksumError(Exception):
-    def __init__(self, message):
-        super(Exception, self).__init__('invalid checksum {}'.format(message))
+        elif present and not writable:
+            # directory exists but it not writable
+            raise PermissionDeniedError(directory)
 
-class CommandFailedError(Exception):
-    def __init__(self, message):
-        super(Exception, self).__init__(message)
-
-class NoConfigurationFileError(Exception):
-    def __init__(self, message):
-        super(Exception, self).__init__(message)
-
-class CommandLineParser(object):
-    def __init__(self, node):
-        self.node = node
-        self.parser = ArgumentParser(**self.node['instruction'])
-        self._instruction = None
-        def add_argument(parser, name):
-            node = self.node['prototype'][name]
-            parser.add_argument(*node['flag'], **node['parameter'])
-
-        # evaluate the type for each prototype
-        for argument in self.node['prototype'].values():
-            if 'type' in argument['parameter']:
-                argument['parameter']['type'] = eval(argument['parameter']['type'])
-
-        # add global arguments
-        for argument in self.node['global']['argument']:
-            add_argument(self.parser, argument)
-
-        if self.sectioned:
-            # Add individual command sections
-            sub = self.parser.add_subparsers(**self.node['section']['instruction'])
-            for action in self.node['section']['action']:
-                action_parser = sub.add_parser(**action['instruction'])
-                if 'argument' in action:
-                    for argument in action['argument']:
-                        add_argument(action_parser, argument)
-
-                # Add groups of arguments, if any.
-                if 'group' in action:
-                    for group in action['group']:
-                        group_parser = action_parser.add_argument_group(**group['instruction'])
-                        if 'argument' in group:
-                            for argument in group['argument']:
-                                add_argument(group_parser, argument)
-
-    @property
-    def sectioned(self):
-        return 'section' in self.node and 'action' in self.node['section'] and self.node['section']['action']
-
-    @property
-    def instruction(self):
-        if self._instruction == None:
-            self._instruction = vars(self.parser.parse_args())
-        return self._instruction
-
-    @property
-    def action(self):
-        return None if 'action' not in self.instruction else self.instruction['action']
-
-    def help(self):
-        self.parser.print_help()
-
-class Pipeline(object):
-    def __init__(self, ontology):
-        self.log = logging.getLogger('Package')
-        self.ontology = ontology
-        self.stdout = None
-        self.stderr = None
-        self.package = None
-        self.cache = None
-
-        self.load_configuration()
-        self.load_cache()
-        self.load_packages()
-        self.load_work_directory()
-
-    def load_configuration(self):
-        if 'configuration path' not in self.ontology or self.ontology['configuration path'] is None:
-            self.ontology['configuration path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'buildroot.json')
-
-        if os.path.exists(self.configuration_path):
-            self.log.debug('loading %s', self.configuration_path)
-            with io.open(self.configuration_path, 'rb') as file:
-                node = json.loads(file.read().decode('utf8'))
-                for key in [
-                    'home',
-                    'platform',
-                    'package',
-                    'cache path',
-                    'install prefix',
-                    'download prefix',
-                    'package prefix',
-                    'bin prefix',
-                    'include prefix',
-                    'lib prefix',
-                ]:
-                    if key not in node: node[key] = None
-
-                if not node['home']:            node['home'] =              '~/.pheniqs'
-                if not node['platform']:        node['platform'] =          platform.system()
-                if not node['cache path']:      node['cache path'] =        os.path.join(node['home'], 'cache.json')
-                if not node['install prefix']:  node['install prefix'] =    os.path.join(node['home'], 'install')
-                if not node['download prefix']: node['download prefix'] =   os.path.join(node['home'], 'download')
-                if not node['package prefix']:  node['package prefix'] =    os.path.join(node['home'], 'package')
-                if not node['bin prefix']:      node['bin prefix'] =        os.path.join(node['install prefix'], 'bin')
-                if not node['include prefix']:  node['include prefix'] =    os.path.join(node['install prefix'], 'include')
-                if not node['lib prefix']:      node['lib prefix'] =        os.path.join(node['install prefix'], 'lib')
-
-                for path in [
-                    'home',
-                    'cache path',
-                    'install prefix',
-                    'download prefix',
-                    'package prefix',
-                    'bin prefix',
-                    'include prefix',
-                    'lib prefix',
-                ]:
-                    node[path] = os.path.abspath(os.path.expanduser(os.path.expandvars(node[path])))
-                node['configuration digest'] = hashlib.sha1(os.path.abspath(os.path.expanduser(os.path.expandvars(self.configuration_path))).encode('utf8')).hexdigest()
-
-                merge(self.ontology, node)
-        else:
-            raise NoConfigurationFileError('No buildroot.json configuration found')
-
-    def load_cache(self):
-        if os.path.exists(self.cache_path):
-            with io.open(self.cache_path, 'rb') as file:
-                self.cache = json.loads(file.read().decode('utf8'))
-
-        if self.cache is None:
-            self.cache = { 
-                'environment': {},
-                'created': str(datetime.now()),
-            }
-
-        if self.configuration_digest not in self.cache['environment']:
-            self.cache['environment'][self.configuration_digest] = {
-                'package': {},
-            }
-        self.cache['loaded'] = str(datetime.now())
-
-    def save_cache(self):
-        self.log.debug('persisting cache')
-        with io.open(self.cache_path, 'wb') as file:
-            self.cache['saved'] = str(datetime.now())
-            content = json.dumps(self.cache, sort_keys=True, ensure_ascii=False, indent=4).encode('utf8')
-            file.write(content)
-
-    def load_packages(self):
-        if self.ontology['package'] is not None:
-            self.package = []
-            for p in self.ontology['package']:
-                key = p['name']
-                if self.filter is None or key in self.filter:
-                    if   key == 'zlib':
-                        package = zlibPackage(self, p)
-                    elif key == 'xz':
-                        package = xzPackage(self, p)
-                    elif key == 'bzip2':
-                        package = bz2Package(self, p)
-                    elif key == 'libdeflate':
-                        package = libdeflatePackage(self, p)
-                    elif key == 'htslib':
-                        package = htslibPackage(self, p)
-                    elif key == 'rapidjson':
-                        package = rapidjsonPackage(self, p)
-                    elif key == 'pheniqs':
-                        package = pheniqsPackage(self, p)
-                    elif key == 'samtools':
-                        package = samtoolsPackage(self, p)
-                    else:
-                        package = Package(self, p)
-
-                    self.package.append(package)
-
-    def load_work_directory(self):
-        prepare_directory(self.home, self.log)
-        prepare_directory(self.install_prefix, self.log)
-        prepare_directory(self.download_prefix, self.log)
-        prepare_directory(self.package_prefix, self.log)
-        self.stdout = io.open(os.path.join(self.home, 'output'), 'a')
-        self.stderr = io.open(os.path.join(self.home, 'error'), 'a')
-
-    @property
-    def configuration_path(self):
-        return self.ontology['configuration path']
-
-    @property
-    def configuration_digest(self):
-        return self.ontology['configuration digest']
-
-    @property
-    def platform(self):
-        return self.ontology['platform']
-
-    @property
-    def home(self):
-        return self.ontology['home']
-
-    @property
-    def action(self):
-        return self.ontology['action']
-
-    @property
-    def cache_path(self):
-        return self.ontology['cache path']
-
-    @property
-    def install_prefix(self):
-        return self.ontology['install prefix']
-
-    @property
-    def download_prefix(self):
-        return self.ontology['download prefix']
-
-    @property
-    def package_prefix(self):
-        return self.ontology['package prefix']
-
-    @property
-    def bin_prefix(self):
-        return self.ontology['bin prefix']
-
-    @property
-    def include_prefix(self):
-        return self.ontology['include prefix']
-
-    @property
-    def lib_prefix(self):
-        return self.ontology['lib prefix']
-
-    @property
-    def filter(self):
-        return self.ontology['filter']
-
-    @property
-    def force(self):
-        return self.ontology['force']
-
-    def execute(self):
-        if self.action == 'clean':
-            self.clean()
-
-        elif self.action == 'build':
-            self.install()
-
-        elif self.action == 'clean.package':
-            self.clean_package()
-
-    def close(self):
-        self.save_cache()
-        self.stdout.close();
-        self.stderr.close();
-
-    def install(self):
-        for package in self.package:
-            if not package.installed:
-                package.install()
-            else:
-                self.log.info('%s is already installed', package.display_name)
-
-    def clean(self):
-        for package in self.package:
-            self.log.info('cleaning %s', package.display_name)
-            package.clean()
-
-    def clean_package(self):
-        for package in self.package:
-            self.log.info('clearing %s', package.display_name)
-            package.clean_package()
-
-# Package
+    available = check_permission(directory)
+    if available != directory:
+       log.debug('creating directory %s', directory)
+       os.makedirs(directory)
 
 class Package(object):
     def __init__(self, pipeline, node):
         self.log = logging.getLogger('Package')
         self.pipeline = pipeline
-        self.load(node)
-
-    def load(self, node):
         for key in [
             'sha1',
             'version',
@@ -556,7 +121,7 @@ class Package(object):
             'compression',
             'display name',
             'path in archive',
-            'configuration digest',
+            'document sha1 digest',
         ]:
             if key not in node:
                 node[key] = None
@@ -601,26 +166,47 @@ class Package(object):
                 node[url] = os.path.abspath(os.path.expanduser(os.path.expandvars(node[url])))
 
         content = json.dumps(node, sort_keys=True, ensure_ascii=False)
-        node['configuration digest'] = hashlib.sha1(content.encode('utf8')).hexdigest()
+        node['document sha1 digest'] = hashlib.sha1(content.encode('utf8')).hexdigest()
 
-        if node['configuration digest'] not in self.cache['package']:
+        if node['document sha1 digest'] not in self.pipeline.persisted_instruction['package']:
             node['unpacked'] = False
             node['configured'] = False
             node['built'] = False
             node['installed'] = False
-            self.cache['package'][node['configuration digest']] = node
+            self.pipeline.persisted_instruction['package'][node['document sha1 digest']] = node
 
-        self.node = self.cache['package'][node['configuration digest']]
+        self.node = self.pipeline.persisted_instruction['package'][node['document sha1 digest']]
+
+    @classmethod
+    def create(cls, pipeline, ontology):
+        instance = None
+        if pipeline and ontology:
+            if 'name' in ontology:
+                if not('implementation' in ontology and ontology['implementation']):
+                    ontology['implementation'] = 'package.{}Package'.format(ontology['name'])
+
+                module, name  = split_class(ontology['implementation'])
+                try:
+                    implementation_module = __import__(module, fromlist=[name])
+                    implementation_class = getattr(implementation_module, name)
+                    instance = implementation_class(pipeline, ontology)
+                except ImportError as e:
+                    pipeline.log.error('no module named %s found when attempting to instantiate %s job implementation', module, ontology['action'])
+                    pipeline.log.debug(e)
+                except AttributeError as e:
+                    pipeline.log.error('class %s not defined in module %s when attempting to instantiate job implementation', name, module)
+                    pipeline.log.debug(e)
+                except Exception as e:
+                    pipeline.log.error('%s %s', type(e), e)
+            else:
+                pipeline.log.error('make job missing a name')
+        return instance
 
     @property
     def env(self):
         if 'env' not in self.node or self.node['env'] is None:
             self.node['env'] = os.environ.copy()
         return self.node['env']
-
-    @property
-    def cache(self):
-        return self.pipeline.cache['environment'][self.pipeline.configuration_digest]
 
     @property
     def platform(self):
@@ -1138,34 +724,5 @@ class pheniqsPackage(makePackage):
     def __init__(self, pipeline, node):
         makePackage.__init__(self, pipeline, node)
         self.node['make build optional'] = []
-        for package in self.pipeline.package:
+        for package in self.pipeline.execution['package']:
             self.node['make build optional'].append('{}_VERSION={}'.format(package.name.upper(), package.version))
-
-def main():
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.INFO)
-
-    command = CommandLineParser(base_configuration['interface'])
-    if command.sectioned and command.action is None:
-        command.help()
-    else:
-        if 'verbosity' in command.instruction and command.instruction['verbosity']:
-            logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
-
-        pipeline = Pipeline(command.instruction)
-        try:
-            pipeline.execute()
-        except ValueError as e:
-            logging.getLogger('main').critical(e)
-            sys.exit(1)
-        except CommandFailedError as e:
-            logging.getLogger('main').critical(e)
-            sys.exit(1)
-        except(KeyboardInterrupt, SystemExit) as e:
-            pipeline.close()
-            sys.exit(1)
-        pipeline.close()
-    sys.exit(0)
-
-if __name__ == '__main__':
-    main()

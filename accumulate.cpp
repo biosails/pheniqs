@@ -353,7 +353,7 @@ void ChannelAccumulator::finalize(const PipelineAccumulator& pipeline_accumulato
 void ChannelAccumulator::encode(Document& document, Value& value) const {
     Document::AllocatorType& allocator = document.GetAllocator();
     encode_key_value("index", index, value, document);
-    encode_value_with_key_ID(rg, "RG", value, document);
+    encode_value(rg, value, document);
     if(!undetermined) {
         encode_key_value("concentration", concentration, value, document);
         multiplex_barcode.encode_report(document, value, "multiplex barcode");

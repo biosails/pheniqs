@@ -32,6 +32,7 @@
 #include <list>
 #include <unordered_map>
 #include <algorithm>
+#include <cstdlib>
 
 #include "error.h"
 #include "url.h"
@@ -45,6 +46,7 @@ using std::fixed;
 using std::string;
 using std::vector;
 using std::list;
+using std::size_t;
 using std::ostream;
 using std::ifstream;
 using std::ios_base;
@@ -76,6 +78,7 @@ enum class ParameterType : uint8_t {
     DECIMAL,
     STRING,
     URL,
+    DIRECTORY,
     UNKNOWN
 };
 void to_string(const ParameterType& value, string& result);
@@ -143,6 +146,8 @@ public:
     double* get_decimal() const;
     string* get_string() const;
     URL* get_url() const;
+    URL* get_directory() const;
+    list< URL >* get_directory_array() const;
     list< int64_t >* get_integer_array() const;
     list< double >* get_decimal_array() const;
     list< string >* get_string_array() const;
@@ -214,10 +219,12 @@ public:
     double* get_decimal(const string& name) const;
     string* get_string(const string& name) const;
     URL* get_url(const string& name) const;
+    URL* get_directory(const string& name) const;
     list< int64_t >* get_integer_plural(const string& name) const;
     list< double >* get_decimal_plural(const string& name) const;
     list< string >* get_string_plural(const string& name) const;
     list< URL >* get_url_plural(const string& name) const;
+    list< URL >* get_directory_plural(const string& name) const;
     bool help_triggered() const;
     ostream& print_help(ostream& o) const;
     bool version_triggered() const;

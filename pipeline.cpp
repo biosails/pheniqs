@@ -1,4 +1,4 @@
-/*
+    /*
     Pheniqs : PHilology ENcoder wIth Quality Statistics
     Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
@@ -182,6 +182,8 @@ void Pivot::run() {
                 }
                 break;
             };
+
+            #if defined(PHENIQS_BENCHMARK)
             case(Decoder::BENCHMARK): {
                 while(pipeline.pull(*this)) {
                     validate();
@@ -197,6 +199,8 @@ void Pivot::run() {
                 }
                 break;
             };
+            #endif
+
             default: break;
             }
             break;
@@ -255,7 +259,10 @@ inline void Pivot::transform() {
     for(auto& segment : output) {
         ks_put_string(leading_segment->name, segment.name);
         segment.set_qcfail(leading_segment->get_qcfail());
-        segment.auxiliary.XI = leading_segment->auxiliary.XI;
+
+        #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
+        segment.auxiliary.illumina_control_number = leading_segment->auxiliary.illumina_control_number;
+        #endif
     }
 };
 inline void Pivot::decode_with_pamld() {
@@ -342,7 +349,7 @@ inline void Pivot::decode_with_mdd() {
     }
 };
 inline void Pivot::decode_tagged_channel() {
-    if(leading_segment->auxiliary.RG.l > 0) {
+    if(!ks_empty(leading_segment->auxiliary.RG)) {
         string rg(leading_segment->auxiliary.RG.s, leading_segment->auxiliary.RG.l);
         auto record = pipeline.channel_by_read_group_id.find(rg);
         if(record != pipeline.channel_by_read_group_id.end()) {
@@ -429,6 +436,8 @@ inline void Pivot::increment() {
         }
     }
 };
+
+#if defined(PHENIQS_BENCHMARK)
 inline void Pivot::encode_mmd_benchmark_auxiliary () {
     if(decoded_multiplex_channel != NULL) {
         for(auto& segment: output) {
@@ -446,6 +455,7 @@ inline void Pivot::encode_pamld_benchmark_auxiliary () {
         }
     }
 };
+#endif
 
 /*  Channel */
 
@@ -630,7 +640,7 @@ void Pipeline::validate_url_accessibility() {
     collection = instruction.FindMember("input feed");
     if(collection != instruction.MemberEnd()) {
         for(auto& element : collection->value.GetArray()) {
-            if(decode_file_url_by_key("url", url, IoDirection::IN, element)) {
+            if(decode_value_by_key< URL >("url", url, element)) {
                 if(!url.is_readable()) {
                     throw IOError("could not open " + string(url) + " for reading");
                 }
@@ -641,7 +651,7 @@ void Pipeline::validate_url_accessibility() {
     collection = instruction.FindMember("output feed");
     if(collection != instruction.MemberEnd()) {
         for(auto& element : collection->value.GetArray()) {
-            if(decode_file_url_by_key("url", url, IoDirection::IN, element)) {
+            if(decode_value_by_key< URL >("url", url, element)) {
                 if(!url.is_writable()) {
                     throw IOError("could not open " + string(url) + " for writing");
                 }
@@ -666,7 +676,7 @@ void Pipeline::load_input() {
     };
 
     /*  load the input specification */
-    decode_value_by_key< InputSpecification >(NULL, input_specification, instruction);
+    decode_value< InputSpecification >(input_specification, instruction);
     input_specification.feed_specification_by_segment.reserve(input_specification.url_by_segment.size());
 
     /*  populate the feed_specification_by_segment in the input_specification */

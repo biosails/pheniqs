@@ -62,8 +62,8 @@ class FeedSpecification {
 friend ostream& operator<<(ostream& o, const FeedSpecification& specification);
 
 public:
-    const IoDirection direction;
-    const int32_t index;
+    IoDirection direction;
+    int32_t index;
     URL url;
     Platform platform;
     int capacity;
@@ -72,7 +72,7 @@ public:
     unordered_map< string, const HeadPGAtom > program_by_id;
     unordered_map< string, const HeadRGAtom > read_group_by_id;
     hFILE* hfile;
-
+    FeedSpecification ();
     FeedSpecification (
         const IoDirection& direction,
         const int32_t& index,
@@ -102,13 +102,14 @@ public:
     InputSpecification();
     void encode(Document& document, Value& node) const;
 };
+template<> bool decode_value< InputSpecification >(InputSpecification& value, const Value& container);
 
 class ChannelSpecification {
 friend ostream& operator<<(ostream& o, const ChannelSpecification& channel);
 
 public:
     int32_t index;
-    int64_t TC;
+    uint32_t TC;
     kstring_t FS;
     kstring_t CO;
     Decoder decoder;
@@ -127,11 +128,17 @@ public:
     inline bool empty() const {
         return url_by_segment.empty();
     };
-    string alias() const;
+    inline string alias() const {
+        string alias("Channel No.");
+        alias.append(to_string(index));
+        return alias;
+    };
     void describe(ostream& o) const;
     void encode(Document& document, Value& node) const;
 };
 ostream& operator<<(ostream& o, const ChannelSpecification& specification);
-void transcode_channel_specification(const Value& from, Value& to, Document& document);
+template<> bool decode_value< ChannelSpecification >(ChannelSpecification& value, const Value& container);
+template <> bool transcode_value< ChannelSpecification >(const Value& from, Value& to, Document& document);
+template<> bool decode_value_by_key< list< ChannelSpecification > >(const Value::Ch* key, list< ChannelSpecification >& value, const Value& container);
 
 #endif /* PHENIQS_MODEL_H */

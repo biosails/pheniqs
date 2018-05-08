@@ -25,6 +25,7 @@
 #include <set>
 #include <algorithm>
 #include <unordered_map>
+#include <math.h>
 
 #include "error.h"
 #include "json.h"

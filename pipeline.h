@@ -21,6 +21,8 @@
 
 #ifndef PHENIQS_PIPELINE_H
 #define PHENIQS_PIPELINE_H
+// #define PHENIQS_BENCHMARK
+// #define PHENIQS_ILLUMINA_CONTROL_NUMBER
 
 #include <string>
 #include <unordered_map>
@@ -29,7 +31,6 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-
 #include <htslib/thread_pool.h>
 
 #include "error.h"
@@ -148,8 +149,11 @@ private:
     inline void copy_auxiliary();
     inline void push();
     inline void increment();
+
+    #if defined(PHENIQS_BENCHMARK)
     inline void encode_mmd_benchmark_auxiliary();
     inline void encode_pamld_benchmark_auxiliary();
+    #endif
 };
 
 /*  Channel */

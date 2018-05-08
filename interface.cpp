@@ -47,6 +47,226 @@ static inline string assemble_full_command(const int argc, const char** argv) {
     }
     return value;
 };
+void expand_shell_variables(string& path) {
+    if(!path.empty()) {
+        string resolved;
+        string variable;
+        char* value(NULL);
+        uint64_t position(0);
+        while(position < path.size()) {
+            const char& c = path[position];
+            switch(c) {
+                case '~':
+                    if(resolved.empty()) {
+                        value = getenv("HOME");
+                        if(value != NULL) {
+                            resolved.append(value);
+                        } else {
+                            resolved.push_back(c);
+                        }
+                    } else {
+                        resolved.push_back(c);
+                    }
+                    break;
+                case '$':
+                    if(variable.empty()) {
+                        variable.push_back(c);
+                    } else {
+                        resolved.push_back(c);
+                    }
+                    break;
+                case '{':
+                    if(variable.size() == 1) {
+                        variable.push_back(c);
+                    } else {
+                        resolved.push_back(c);
+                    }
+                    break;
+                case '}':
+                    if(variable.empty()) {
+                        resolved.push_back(c);
+                    } else if(variable.size() == 1) {
+                        resolved.append(variable);
+                        resolved.push_back(c);
+                        variable.clear();
+                    } else {
+                        value = getenv(variable.c_str() + 2);
+                        if(value != NULL) {
+                            resolved.append(value);
+                        }
+                        variable.clear();
+                    }
+                    break;
+                case '\0':
+                    throw InternalError("unexpected string terminal encountered in " + path);
+                    break;
+                default:
+                    if(variable.empty()) {
+                        resolved.push_back(c);
+                    } else if(variable.size() == 1) {
+                        resolved.append(variable);
+                        resolved.push_back(c);
+                        variable.clear();
+                    } else {
+                        variable.push_back(c);
+                    }
+            }
+            position++;
+        }
+        if(variable.empty()) {
+        } else if(variable.size() == 1) {
+            resolved.append(variable);
+            variable.clear();
+        } else {
+            string message("unterminated environment variable in path ");
+            message += path;
+            message += " at position ";
+            message += to_string(position - variable.size());
+            throw ConfigurationError (message);
+        }
+        path.assign(resolved);
+    }
+};
+bool resolve_standard_stream(string& path, const IoDirection& direction) {
+    if(path == STANDARD_STREAM_ALIAS) {
+        switch(direction) {
+            case IoDirection::IN: {
+                path.assign(CANONICAL_STDIN_PATH);
+                break;
+            };
+            case IoDirection::OUT: {
+                path.assign(CANONICAL_STDOUT_PATH);
+                break;
+            };
+            case IoDirection::UNKNOWN: {
+                throw ConfigurationError("can not interpret standard stream alias " + path + " without a declared IO direction");
+                break;
+            };
+        }
+        return true;
+    } else {
+        if(path == "/dev/stdin" || path == "/dev/fd/0" || path == "/proc/self/fd/0") {
+            if(direction == IoDirection::OUT) {
+                throw ConfigurationError("can not use " + path + " for output");
+            }
+            path.assign(CANONICAL_STDIN_PATH);
+            return true;
+
+        } else if(path == "/dev/stdout" || path == "/dev/fd/1" || path == "/proc/self/fd/1") {
+            if(direction == IoDirection::IN) {
+                throw ConfigurationError("can not use " + path + " for input");
+            }
+            path.assign(CANONICAL_STDOUT_PATH);
+            return true;
+
+        } else if(path == "/dev/stderr" || path == "/dev/fd/2" || path == "/proc/self/fd/2") {
+            if(direction == IoDirection::IN) {
+                throw ConfigurationError("can not use " + path + " for input");
+            }
+            path.assign(CANONICAL_STDERR_PATH);
+            return true;
+        }
+    }
+    return false;
+};
+bool expand_file_url(const Value& from, Value& to, Document& document, const IoDirection& direction) {
+    string buffer;
+    if(from.IsString()) {
+        buffer.assign(from.GetString(), from.GetStringLength());
+        expand_shell_variables(buffer);
+        resolve_standard_stream(buffer, direction);
+        to.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
+        return true;
+
+    } else if(from.IsObject() && decode_value_by_key< string >("path", buffer, from)) {
+        expand_shell_variables(buffer);
+        resolve_standard_stream(buffer, direction);
+        to.CopyFrom(from, document.GetAllocator());
+        encode_key_value("path", buffer, to, document);
+        return true;
+
+    } else { return false; }
+};
+bool expand_directory_url(const Value& from, Value& to, Document& document) {
+    string buffer;
+    if(from.IsString()) {
+        buffer.assign(from.GetString(), from.GetStringLength());
+        expand_shell_variables(buffer);
+        to.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
+        return true;
+
+    } else if(from.IsObject() && decode_value_by_key< string >("path", buffer, from)) {
+        expand_shell_variables(buffer);
+        to.CopyFrom(from, document.GetAllocator());
+        encode_key_value("path", buffer, to, document);
+        return true;
+
+    } else { return false; }
+};
+void expand_url_variables_in_instruction(Document& _instruction) {
+    /*  expand shell variables and standard streams in URL objects */
+    Value::MemberIterator reference;
+    string key;
+
+    key.assign("base input url");
+    reference = _instruction.FindMember(key.c_str());
+    if(reference != _instruction.MemberEnd() && !reference->value.IsNull()) {
+        Value to;
+        if(expand_directory_url(reference->value, to, _instruction)) {
+            _instruction.RemoveMember(key.c_str());
+            _instruction.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), to.Move(), _instruction.GetAllocator());
+        }
+    }
+
+    key.assign("base output url");
+    reference = _instruction.FindMember(key.c_str());
+    if(reference != _instruction.MemberEnd() && !reference->value.IsNull()) {
+        Value to;
+        if(expand_directory_url(reference->value, to, _instruction)) {
+            _instruction.RemoveMember(key.c_str());
+            _instruction.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), to.Move(), _instruction.GetAllocator());
+        }
+    }
+
+    key.assign("input");
+    reference = _instruction.FindMember(key.c_str());
+    if(reference != _instruction.MemberEnd() && !reference->value.IsNull()) {
+        if(reference->value.IsArray() && !reference->value.Empty()) {
+            Value array(kArrayType);
+            for(const auto& from : reference->value.GetArray()) {
+                Value to;
+                if(expand_file_url(from, to, _instruction, IoDirection::IN)){
+                    array.PushBack(to.Move(), _instruction.GetAllocator());
+                }
+            }
+            _instruction.RemoveMember(key.c_str());
+            _instruction.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), array.Move(), _instruction.GetAllocator());
+        }
+    }
+
+    key.assign("output");
+    reference = _instruction.FindMember("channel");
+    if(reference != _instruction.MemberEnd()) {
+        if(!reference->value.IsNull() && !reference->value.Empty()) {
+            for(auto& element : reference->value.GetArray()) {
+                Value::ConstMemberIterator o = element.FindMember(key.c_str());
+                if(o != element.MemberEnd() && !o->value.IsNull()) {
+                    if(o->value.IsArray() && !o->value.Empty()) {
+                        Value array(kArrayType);
+                        for(const auto& from : o->value.GetArray()) {
+                            Value to;
+                            if(expand_file_url(from, to, _instruction, IoDirection::OUT)){
+                                array.PushBack(to.Move(), _instruction.GetAllocator());
+                            }
+                        }
+                        element.RemoveMember(key.c_str());
+                        element.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), array.Move(), _instruction.GetAllocator());
+                    }
+                }
+            }
+        }
+    }
+};
 
 void to_string(const ProgramAction& value, string& result) {
     switch(value) {
@@ -96,17 +316,19 @@ void to_string(const ParameterType& value, string& result) {
         case ParameterType::DECIMAL:    result.assign("decimal");   break;
         case ParameterType::STRING:     result.assign("string");    break;
         case ParameterType::URL:        result.assign("url");       break;
+        case ParameterType::DIRECTORY:  result.assign("directory"); break;
         default:                        result.assign("unknown");   break;
     }
 };
 bool from_string(const char* value, ParameterType& result) {
-         if(value == NULL)              result = ParameterType::UNKNOWN;
-    else if(!strcmp(value, "boolean"))  result = ParameterType::BOOLEAN;
-    else if(!strcmp(value, "integer"))  result = ParameterType::INTEGER;
-    else if(!strcmp(value, "decimal"))  result = ParameterType::DECIMAL;
-    else if(!strcmp(value, "string"))   result = ParameterType::STRING;
-    else if(!strcmp(value, "url"))      result = ParameterType::URL;
-    else                                result = ParameterType::UNKNOWN;
+         if(value == NULL)                  result = ParameterType::UNKNOWN;
+    else if(!strcmp(value, "boolean"))      result = ParameterType::BOOLEAN;
+    else if(!strcmp(value, "integer"))      result = ParameterType::INTEGER;
+    else if(!strcmp(value, "decimal"))      result = ParameterType::DECIMAL;
+    else if(!strcmp(value, "string"))       result = ParameterType::STRING;
+    else if(!strcmp(value, "url"))          result = ParameterType::URL;
+    else if(!strcmp(value, "directory"))    result = ParameterType::DIRECTORY;
+    else                                    result = ParameterType::UNKNOWN;
     return (result == ParameterType::UNKNOWN ? false : true);
 };
 bool from_string(const string& value, ParameterType& result) {
@@ -163,6 +385,9 @@ Prototype::Prototype(const Value& node) :
                     break;
                 case ParameterType::URL:
                     meta.assign("URL");
+                    break;
+                case ParameterType::DIRECTORY:
+                    meta.assign("DIR");
                     break;
                 default:
                     break;
@@ -281,7 +506,8 @@ Argument::Argument(const Prototype* prototype) :
                 string_array_value = new list< string >();
                 break;
             };
-            case ParameterType::URL: {
+            case ParameterType::URL:
+            case ParameterType::DIRECTORY: {
                 url_array_value = new list< URL >();
                 break;
             };
@@ -307,7 +533,8 @@ Argument::Argument(const Prototype* prototype) :
                 string_value = new string();
                 break;
             };
-            case ParameterType::URL: {
+            case ParameterType::URL:
+            case ParameterType::DIRECTORY: {
                 url_value = new URL();
                 break;
             };
@@ -332,7 +559,8 @@ Argument::~Argument() {
                 delete string_array_value;
                 break;
             };
-            case ParameterType::URL: {
+            case ParameterType::URL:
+            case ParameterType::DIRECTORY: {
                 delete url_array_value;
                 break;
             };
@@ -358,7 +586,8 @@ Argument::~Argument() {
                 delete string_value;
                 break;
             };
-            case ParameterType::URL: {
+            case ParameterType::URL:
+            case ParameterType::DIRECTORY: {
                 delete url_value;
                 break;
             };
@@ -439,6 +668,13 @@ URL* Argument::get_url() const {
     }
     return value;
 };
+URL* Argument::get_directory() const {
+    URL* value(NULL);
+    if(prototype.type == ParameterType::DIRECTORY) {
+        value = url_value;
+    }
+    return value;
+};
 list< int64_t >* Argument::get_integer_array() const {
     list< int64_t >* value(NULL);
     if(prototype.type == ParameterType::INTEGER && prototype.plural) {
@@ -467,6 +703,13 @@ list< URL >* Argument::get_url_array() const {
     }
     return value;
 };
+list< URL >* Argument::get_directory_array() const {
+    list< URL >* value(NULL);
+    if(prototype.type == ParameterType::DIRECTORY && prototype.plural) {
+        value = url_array_value;
+    }
+    return value;
+};
 uint64_t Argument::cardinality() const {
     uint64_t value(0);
     if(!prototype.plural) {
@@ -486,6 +729,7 @@ uint64_t Argument::cardinality() const {
                 value = string_array_value->size();
                 break;
             case ParameterType::URL:
+            case ParameterType::DIRECTORY:
                 value = url_array_value->size();
                 break;
             default:
@@ -608,6 +852,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
                 }
                 break;
             case ParameterType::URL:
+            case ParameterType::DIRECTORY:
                 block.append(prototype->handles[0]);
                 block.append(" ");
                 block.append(prototype->meta);
@@ -636,6 +881,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
             case ParameterType::INTEGER:
             case ParameterType::DECIMAL:
             case ParameterType::URL:
+            case ParameterType::DIRECTORY:
                 block.append(prototype->meta);
                 break;
             case ParameterType::STRING: {
@@ -822,7 +1068,8 @@ Document* CommandLine::load_instruction_from_command_line(const Value& base) {
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::URL: {
+                    case ParameterType::URL:
+                    case ParameterType::DIRECTORY: {
                         list< URL >* value = get_url_plural(key);
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
@@ -852,7 +1099,8 @@ Document* CommandLine::load_instruction_from_command_line(const Value& base) {
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
                     };
-                    case ParameterType::URL: {
+                    case ParameterType::URL:
+                    case ParameterType::DIRECTORY: {
                         URL* value(get_url(key));
                         if(value != NULL) { encode_key_value(key, *value, *document, *document); }
                         break;
@@ -884,6 +1132,7 @@ void CommandLine::load_instruction() {
     }
     delete default_instruction;
     delete instruction_from_command_line;
+    expand_url_variables_in_instruction(_instruction);
 };
 const Document& CommandLine::instruction() const {
     return _instruction;
@@ -954,6 +1203,14 @@ URL* CommandLine::get_url(const string& name) const {
     }
     return value;
 };
+URL* CommandLine::get_directory(const string& name) const {
+    URL* value(NULL);
+    Argument* argument = get(name);
+    if(argument) {
+        value = argument->get_directory();
+    }
+    return value;
+};
 list< int64_t >* CommandLine::get_integer_plural(const string& name) const {
     list< int64_t >* value(NULL);
     Argument* argument = get(name);
@@ -983,6 +1240,14 @@ list< URL >* CommandLine::get_url_plural(const string& name) const {
     Argument* argument = get(name);
     if(argument) {
         value = argument->get_url_array();
+    }
+    return value;
+};
+list< URL >* CommandLine::get_directory_plural(const string& name) const {
+    list< URL >* value(NULL);
+    Argument* argument = get(name);
+    if(argument) {
+        value = argument->get_directory_array();
     }
     return value;
 };
@@ -1053,7 +1318,14 @@ Argument* CommandLine::parse_argument(const Prototype* prototype, size_t& index)
             };
             case ParameterType::URL: {
                 argument = get_argument(prototype);
-                argument->set_value(argv[index]);
+                URL url(argv[index], false);
+                argument->set_value(url);
+                break;
+            };
+            case ParameterType::DIRECTORY: {
+                argument = get_argument(prototype);
+                URL url(argv[index], true);
+                argument->set_value(url);
                 break;
             };
             default:

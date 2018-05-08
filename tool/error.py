@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+# -*- coding: utf-8 -*-
 
 # Pheniqs : PHilology ENcoder wIth Quality Statistics
 # Copyright (C) 2018  Lior Galanti
@@ -19,10 +19,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# dump configuration.json into a byte array in configuration.h
+class PermissionDeniedError(Exception):
+    def __init__(self, path):
+        super(Exception, self).__init__('permission denied for {}'.format(path))
+        self.path = path
 
-echo "size_t configuration_json_len = \
-$(cat configuration.json | sed -E 's/^ +//g' | hexdump -v -e '1/1 "%02x "' | wc -w | sed 's/ //g');" >> configuration.h;
+class NoOverwriteError(Exception):
+    def __init__(self, path):
+        super(Exception, self).__init__('refusing to overwrite {}'.format(path))
+        self.path = path
 
-echo "const char configuration_json[] = \
-{\n    $(cat configuration.json | sed -E 's/^ +//g' | hexdump -v -e '12/1 "0x%02x, " "\n" "    "' | sed -E 's/( 0x  ,)*$//' | grep -vE "^\s+$")\n};" >> configuration.h;
+class InvalidChecksumError(Exception):
+    def __init__(self, message):
+        super(Exception, self).__init__('invalid checksum {}'.format(message))
+
+class CommandFailedError(Exception):
+    def __init__(self, message):
+        super(Exception, self).__init__(message)
+
+class NoConfigurationFileError(Exception):
+    def __init__(self, message):
+        super(Exception, self).__init__(message)

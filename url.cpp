@@ -89,8 +89,6 @@ template <> FormatType decode_value_by_key(const Value::Ch* key, const Value& co
     return value;
 };
 
-
-
 void to_string(const IoDirection& value, string& result) {
     switch (value) {
         case IoDirection::IN:   result.assign("in");    break;
@@ -150,27 +148,20 @@ URL::URL(const URL& other) :
 };
 URL::URL(const string& path) :
     _type(FormatType::UNKNOWN) {
-    parse_file(path, IoDirection::UNKNOWN);
+    parse_file(path);
 };
 URL::URL(const string& path, const bool& is_directory) :
     _type(FormatType::UNKNOWN) {
     if(is_directory) {
         parse_directory(path);
     } else {
-        parse_file(path, IoDirection::UNKNOWN);
+        parse_file(path);
     }
-};
-URL::URL(const string& path, const IoDirection& direction) :
-    _type(FormatType::UNKNOWN) {
-    parse_file(path, direction);
 };
 void URL::parse_directory(const string& path) {
     clear();
     if(!path.empty()) {
         _path.assign(path);
-
-        // first resolve any environment variables in the path
-        expand(_path);
 
         /* trim trailing file separator if present */
         if(_path.size() > 1 && _path.back() == PATH_SEPARATOR) {
@@ -179,54 +170,10 @@ void URL::parse_directory(const string& path) {
         _dirname.assign(_path);
     }
 };
-void URL::parse_file(const string& path, const IoDirection& direction) {
+void URL::parse_file(const string& path) {
     clear();
     if(!path.empty()) {
         _path.assign(path);
-
-        // first resolve any environment variables in the path
-        expand(_path);
-
-        /*  standard stream handling
-            first allow - as an alias for stdin and stdout according to IO direction
-            otherwise check for non canonical paths to standard streams and replace with
-            the canonical one
-        */
-        if(_path == STANDARD_STREAM_ALIAS) {
-            switch(direction) {
-                case IoDirection::IN: {
-                    _path.assign(CANONICAL_STDIN_PATH);
-                    break;
-                };
-                case IoDirection::OUT: {
-                    _path.assign(CANONICAL_STDOUT_PATH);
-                    break;
-                };
-                case IoDirection::UNKNOWN: {
-                    throw ConfigurationError("can not interpret standard stream alias - without a declared IO direction");
-                    break;
-                };
-            }
-        } else {
-            if(_path == "/dev/stdin" || _path == "/dev/fd/0" || _path == "/proc/self/fd/0") {
-                if(direction == IoDirection::OUT) {
-                    throw ConfigurationError("can not use " + _path + " for output");
-                }
-                _path.assign(CANONICAL_STDIN_PATH);
-
-            } else if(_path == "/dev/stdout" || _path == "/dev/fd/1" || _path == "/proc/self/fd/1") {
-                if(direction == IoDirection::IN) {
-                    throw ConfigurationError("can not use " + _path + " for input");
-                }
-                _path.assign(CANONICAL_STDOUT_PATH);
-
-            } else if(_path == "/dev/stderr" || _path == "/dev/fd/2" || _path == "/proc/self/fd/2") {
-                if(direction == IoDirection::IN) {
-                    throw ConfigurationError("can not use " + _path + " for input");
-                }
-                _path.assign(CANONICAL_STDERR_PATH);
-            }
-        }
 
         // split the path into dirname and basename
         auto position = _path.find_last_of(PATH_SEPARATOR);
@@ -283,7 +230,6 @@ void URL::set_basename(const string& name) {
 };
 void URL::set_dirname(const string& directory) {
     _dirname.assign(directory);
-    expand(_dirname);
     refresh();
 };
 void URL::set_compression(const string& compression) {
@@ -390,86 +336,6 @@ void URL::decode_extension(const FormatType& type) {
     _extension.clear();
     to_string(type, _extension);
 };
-void URL::expand(string& path) {
-    if(!path.empty()) {
-        string resolved;
-        string variable;
-        char* value(NULL);
-        uint64_t position(0);
-        while(position < path.size()) {
-            const char& c = path[position];
-            switch(c) {
-                case '~':
-                    if(resolved.empty()) {
-                        value = getenv("HOME");
-                        if(value != NULL) {
-                            resolved.append(value);
-                        } else {
-                            resolved.push_back(c);
-                        }
-                    } else {
-                        resolved.push_back(c);
-                    }
-                    break;
-                case '$':
-                    if(variable.empty()) {
-                        variable.push_back(c);
-                    } else {
-                        resolved.push_back(c);
-                    }
-                    break;
-                case '{':
-                    if(variable.size() == 1) {
-                        variable.push_back(c);
-                    } else {
-                        resolved.push_back(c);
-                    }
-                    break;
-                case '}':
-                    if(variable.empty()) {
-                        resolved.push_back(c);
-                    } else if(variable.size() == 1) {
-                        resolved.append(variable);
-                        resolved.push_back(c);
-                        variable.clear();
-                    } else {
-                        value = getenv(variable.c_str() + 2);
-                        if(value != NULL) {
-                            resolved.append(value);
-                        }
-                        variable.clear();
-                    }
-                    break;
-                case '\0':
-                    throw InternalError("unexpected string terminal encountered in " + string(*this));
-                    break;
-                default:
-                    if(variable.empty()) {
-                        resolved.push_back(c);
-                    } else if(variable.size() == 1) {
-                        resolved.append(variable);
-                        resolved.push_back(c);
-                        variable.clear();
-                    } else {
-                        variable.push_back(c);
-                    }
-            }
-            position++;
-        }
-        if(variable.empty()) {
-        } else if(variable.size() == 1) {
-            resolved.append(variable);
-            variable.clear();
-        } else {
-            string message("unterminated environment variable in path ");
-            message += path;
-            message += " at position ";
-            message += to_string(position - variable.size());
-            throw ConfigurationError (message);
-        }
-        path.assign(resolved);
-    }
-};
 bool operator<(const URL& lhs, const URL& rhs) {
     return lhs._path < rhs._path;
 };
@@ -477,6 +343,58 @@ ostream& operator<<(ostream& o, const URL& url) {
     o << url._path;
     return o;
 };
+
+template<> bool decode_value< URL >(URL& value, const Value& container) {
+    if(container.IsString() || container.IsObject()) {
+        try {
+            if(container.IsString()) {
+                string buffer(container.GetString(), container.GetStringLength());
+                value.parse_file(buffer);
+                return true;
+            } else {
+                string buffer;
+                if(decode_value_by_key< string >("path", buffer, container)) {
+                    value.parse_file(buffer);
+                    if(decode_value_by_key< string >("type", buffer, container)) {
+                        value.set_type(buffer);
+                    }
+                    if(decode_value_by_key< string >("compression", buffer, container   )) {
+                        value.set_compression(buffer);
+                    }
+                    return true;
+                } else { throw ConfigurationError("URL element must contain a non empty path element"); }
+            }
+        } catch(ConfigurationError& e) {
+            value.clear();
+            throw e;
+        }
+    } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
+    return false;
+};
+template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd()) {
+        return decode_value< URL >(value, element->value);
+    } else { return false; }
+};
+template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< URL >& value, const Value& container) {
+    Value::ConstMemberIterator collection = container.FindMember(key);
+    if(collection != container.MemberEnd()) {
+        if(!collection->value.IsNull()) {
+            if(collection->value.IsArray() && !collection->value.Empty()) {
+                for(const auto& element : collection->value.GetArray()) {
+                    URL o;
+                    if(decode_value< URL >(o, element)) {
+                        value.emplace_back(o);
+                    }
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
 bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd()) {
@@ -484,72 +402,6 @@ bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& 
             value.parse_directory(string(element->value.GetString(), element->value.GetStringLength()));
             return true;
         } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-bool decode_file_url_by_key(const Value::Ch* key, URL& value, const IoDirection& direction, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        value.clear();
-        if(element->value.IsString() || element->value.IsObject()) {
-            try {
-                if(element->value.IsString()) {
-                    value.parse_file(string(element->value.GetString(), element->value.GetStringLength()), direction);
-                    return true;
-                } else {
-                    string buffer;
-                    if(decode_value_by_key< string >("path", buffer, element->value)) {
-                        value.parse_file(buffer, direction);
-                        if(decode_value_by_key< string >("type", buffer, element->value)) {
-                            value.set_type(buffer);
-                        }
-                        if(decode_value_by_key< string >("compression", buffer, element->value)) {
-                            value.set_compression(buffer);
-                        }
-                        return true;
-                    } else { throw ConfigurationError("URL element must contain a non empty path element"); }
-                }
-            } catch(ConfigurationError& e) {
-                value.clear();
-                throw e;
-            }
-        } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
-    }
-    return false;
-};
-bool decode_file_url_list_by_key(const Value::Ch* key, list< URL >& value, const Value& container, const IoDirection& direction) {
-    Value::ConstMemberIterator collection = container.FindMember(key);
-    if(collection != container.MemberEnd()) {
-        if(!collection->value.IsNull()) {
-            if(collection->value.IsArray() && !collection->value.Empty()) {
-                value.clear();
-                for(const auto& element : collection->value.GetArray()) {
-                    if(element.IsString() || element.IsObject()) {
-                        try {
-                            if(element.IsString()) {
-                                value.emplace_back(string(element.GetString(), element.GetStringLength()), direction);
-                            } else {
-                                string buffer;
-                                if(decode_value_by_key< string >("path", buffer, element)) {
-                                    URL url(buffer, direction);
-                                    if(decode_value_by_key< string >("type", buffer, element)) {
-                                        url.set_type(buffer);
-                                    }
-                                    if(decode_value_by_key< string >("compression", buffer, element)) {
-                                        url.set_compression(buffer);
-                                    }
-                                    value.emplace_back(url);
-                                } else { throw ConfigurationError("URL element must contain a non empty path element"); }
-                            }
-                        } catch(ConfigurationError& e) {
-                            value.clear();
-                            throw e;
-                        }
-                    } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
-                }
-                return true;
-            }
-        }
     }
     return false;
 };
