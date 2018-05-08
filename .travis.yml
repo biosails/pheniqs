@@ -105,17 +105,6 @@ matrix:
         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
         - LD_LIBRARY_PATH="/home/travis/.pheniqs/travis/install/lib"
 
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
-          packages:
-            - clang-5.0
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-        - LD_LIBRARY_PATH="/home/travis/.pheniqs/travis/install/lib"
-
 before_install:
     - eval "${MATRIX_EVAL}"
 
