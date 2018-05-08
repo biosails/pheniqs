@@ -7,7 +7,7 @@ compiler:
 install:
     - ./tool/pheniqs-tools.py build build/travis.json
 
-script: make all
+script: make all PREFIX=/home/travis/.pheniqs/travis/install/
 
 matrix:
   include:
