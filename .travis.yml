@@ -1,5 +1,5 @@
 env:
-    - LD_LIBRARY_PATH="/home/travis/.pheniqs/travis/install"
+    - LD_LIBRARY_PATH="/home/travis/.pheniqs/travis/lib"
 
 language:
     - cpp
