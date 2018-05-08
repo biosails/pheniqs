@@ -7,7 +7,7 @@ compiler:
 install:
     - ./tool/pheniqs-tools.py build build/travis.json
 
-script: make all PREFIX=/home/travis/.pheniqs/travis/install/
+script: make all PREFIX=/home/travis/.pheniqs/travis/install ZLIB_VERSION=1.2.11 BZIP2_VERSION=1.0.6 XZ_VERSION=5.2.3 LIBDEFLATE_VERSION=1.0 RAPIDJSON_VERSION=1.1.0 HTSLIB_VERSION=1.8
 
 matrix:
   include:
@@ -122,3 +122,10 @@ matrix:
 
 before_install:
     - eval "${MATRIX_EVAL}"
+
+after_install:
+    - ./pheniqs --version
+    - ./pheniqs --help
+    - ./pheniqs demux --help
+    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -VD
+    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -j
