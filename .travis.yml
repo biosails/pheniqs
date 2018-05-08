@@ -1,5 +1,9 @@
+env:
+    - LD_LIBRARY_PATH="/home/travis/.pheniqs/travis/install"
+
 language:
     - cpp
+
 compiler:
     - clang
     - gcc
