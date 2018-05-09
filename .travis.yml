@@ -23,6 +23,9 @@ matrix:
     - os: osx
       osx_image: xcode9.3
       env:
+        - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9 && CXX=g++-4.9"
+        - MATRIX_EVAL="brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5 && CXX=g++-5"
+        - MATRIX_EVAL="brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
         - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 && CXX=g++-7"
 
 before_install:
