@@ -1,21 +1,5 @@
 language: cpp
 
-before_install:
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python  ; fi
-    - eval "${MATRIX_EVAL}"
-
-install: true
-
-script:
-    - ./tool/pheniqs-tools.py -v debug build build/travis.json
-    - make all PREFIX=~/.pheniqs/travis/install ZLIB_VERSION=1.2.11 BZIP2_VERSION=1.0.6 XZ_VERSION=5.2.3 LIBDEFLATE_VERSION=1.0 RAPIDJSON_VERSION=1.1.0 HTSLIB_VERSION=1.8
-    - ./pheniqs --version
-    - ./pheniqs --help
-    - ./pheniqs demux --help
-    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -VD
-    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -j
-
 matrix:
   include:
     - os: linux
@@ -158,3 +142,19 @@ matrix:
       env:
         - MATRIX_EVAL="brew install gcc@7 && CC=gcc-7 && CXX=g++-7"
         - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+
+before_install:
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python  ; fi
+    - eval "${MATRIX_EVAL}"
+
+install: true
+
+script:
+    - ./tool/pheniqs-tools.py -v debug build build/travis.json
+    - make all PREFIX=~/.pheniqs/travis/install ZLIB_VERSION=1.2.11 BZIP2_VERSION=1.0.6 XZ_VERSION=5.2.3 LIBDEFLATE_VERSION=1.0 RAPIDJSON_VERSION=1.1.0 HTSLIB_VERSION=1.8
+    - ./pheniqs --version
+    - ./pheniqs --help
+    - ./pheniqs demux --help
+    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -VD
+    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -j
