@@ -1,5 +1,7 @@
 language: cpp
 env:
+  matrix:
+    - SUPPORTED=1
 
 matrix:
   fast_finish: true
