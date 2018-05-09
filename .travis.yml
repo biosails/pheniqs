@@ -1,6 +1,6 @@
-dist: trusty
 language: cpp
 env:
+
 matrix:
   fast_finish: true
   allow_failures:
@@ -15,8 +15,8 @@ matrix:
           packages:
             - g++-4.9
       env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -26,8 +26,8 @@ matrix:
           packages:
             - g++-5
       env:
-        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -141,19 +141,19 @@ matrix:
         - SUPPORTED=0
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
-      then brew update > /dev/null 2>&1;
-      brew upgrade python > /dev/null 2>&1;
-    fi
-  - eval "${MATRIX_EVAL}"
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
+        then brew update > /dev/null 2>&1;
+        brew upgrade python > /dev/null 2>&1;
+      fi
+    - eval "${MATRIX_EVAL}"
 
 install: true
 
 script:
-  - ./tool/pheniqs-tools.py build build/travis.json
-  - make all PREFIX=${HOME}/.pheniqs/travis/install
-  - ./pheniqs --version
-  - ./pheniqs --help
-  - ./pheniqs demux --help
-  - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -VD
-  - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -j
+    - ./tool/pheniqs-tools.py build build/travis.json
+    - make all PREFIX=${HOME}/.pheniqs/travis/install
+    - ./pheniqs --version
+    - ./pheniqs --help
+    - ./pheniqs demux --help
+    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -VD
+    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -j
