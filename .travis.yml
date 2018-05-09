@@ -138,7 +138,7 @@ matrix:
 before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
         then brew update > /dev/null 2>&1;
-        brew upgrade python > /dev/null 2>&1
+        brew upgrade python > /dev/null 2>&1;
       fi
     - eval "${MATRIX_EVAL}"
 
