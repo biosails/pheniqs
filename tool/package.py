@@ -386,7 +386,9 @@ class Package(object):
                     self.stderr.write(error.decode('utf8'))
                     # self.pipeline.save_cache()
                 else:
-                    print(code, output, error)
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
                     raise CommandFailedError('tar returned {}'.format(code))
 
     def configure(self):
@@ -478,7 +480,9 @@ class makePackage(Package):
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
                 else:
-                    print(code, output, error)
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
                     raise CommandFailedError('make clean returned {}'.format(code))
             else:
                 self.node['configured'] = False
@@ -512,7 +516,9 @@ class makePackage(Package):
                         self.stdout.write(output.decode('utf8'))
                         self.stderr.write(error.decode('utf8'))
                     else:
-                        print(code, output, error)
+                        print(code)
+                        print(output.decode('utf8'))
+                        print(error.decode('utf8'))
                         raise CommandFailedError('configure returned {}'.format(code))
                 else:
                     self.node['configured'] = True
@@ -550,7 +556,9 @@ class makePackage(Package):
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
                 else:
-                    print(code, output, error)
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
                     raise CommandFailedError('make returned {}'.format(code))
 
     def install(self):
@@ -579,7 +587,9 @@ class makePackage(Package):
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
                 else:
-                    print(code, output, error)
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
                     raise CommandFailedError('make install returned {}'.format(code))
 
 class zlibPackage(makePackage):
@@ -613,7 +623,9 @@ class bz2Package(makePackage):
             self.stdout.write(output.decode('utf8'))
             self.stderr.write(error.decode('utf8'))
         else:
-            print(code, output, error)
+            print(code)
+            print(output.decode('utf8'))
+            print(error.decode('utf8'))
             raise CommandFailedError('rsync returned {}'.format(code))
 
         self.log.info('symlinking %s to %s', versioned_dynamic_library_path, dynamic_library_path)
@@ -647,7 +659,9 @@ class bz2Package(makePackage):
                         self.install_dynamic()
                         makePackage.build(self)
                     else:
-                        print(code, output, error)
+                        print(code)
+                        print(output.decode('utf8'))
+                        print(error.decode('utf8'))
                         raise CommandFailedError('make returned {}'.format(code))
         else:
             makePackage.build(self)
@@ -676,7 +690,9 @@ class libdeflatePackage(makePackage):
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
                 else:
-                    print(code, output, error)
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
                     raise CommandFailedError('rsync returned {}'.format(code))
 
                 library_header_path = os.path.join(self.package_url, 'libdeflate.h')
@@ -695,7 +711,9 @@ class libdeflatePackage(makePackage):
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
                 else:
-                    print(code, output, error)
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
                     raise CommandFailedError('rsync returned {}'.format(code))
 
                 if self.platform == 'Linux':
@@ -715,7 +733,9 @@ class libdeflatePackage(makePackage):
                         self.stdout.write(output.decode('utf8'))
                         self.stderr.write(error.decode('utf8'))
                     else:
-                        print(code, output, error)
+                        print(code)
+                        print(output.decode('utf8'))
+                        print(error.decode('utf8'))
                         raise CommandFailedError('rsync returned {}'.format(code))
 
                 self.node['installed'] = True
@@ -744,7 +764,9 @@ class rapidjsonPackage(Package):
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
                 else:
-                    print(code, output, error)
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
                     raise CommandFailedError('rsync returned {}'.format(code))
 
 class htslibPackage(makePackage):
