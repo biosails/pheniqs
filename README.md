@@ -1,6 +1,6 @@
 # Pheniqs
 
-Pheniqs is a generic high throughput DNA sequence demultiplexer and quality analyzer written in multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11). Pheniqs is pronounced  ***phoe·nix*** and stands for **PH**ilology **EN**coder w**I**th **Q**uality **S**tatistics. 
+Pheniqs is a generic high throughput DNA sequence demultiplexer and quality analyzer written in multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11). Pheniqs is pronounced  ***phoe·nix*** and stands for **PH**ilology **EN**coder w**I**th **Q**uality **S**tatistics.
 
 Documentation and examples can be found on the **[Pheniqs website](http://biosails.github.io/pheniqs)**.
 
@@ -16,14 +16,16 @@ Documentation and examples can be found on the **[Pheniqs website](http://biosai
 
 **Proposed tags:** Pheniqs proposes to standardize three new auxiliary tags: [DQ](http://biosails.github.io/pheniqs/glossary.html#dq_auxiliary_tag), [PX](http://biosails.github.io/pheniqs/glossary.html#px_auxiliary_tag) and [EE](http://biosails.github.io/pheniqs/glossary.html#ee_auxiliary_tag) for encoding the multiplex barcode decoding error probability, molecular barcode decoding error probability and the expected number of errors.
 
-**Command line friendly:** Written in multi threaded C++ Pheniqs can be deployed as a single compiled binary executable. Pheniqs follows the [POSIX command line syntax](https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html) and even comes with its own [zsh completion](zsh_completion/_pheniqs) script for a more interactive command line experience. 
+**Command line friendly:** Written in multi threaded C++ Pheniqs can be deployed as a single compiled binary executable. Pheniqs follows the [POSIX command line syntax](https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html) and even comes with its own [zsh completion](zsh_completion/_pheniqs) script for a more interactive command line experience.
 
 **Pipeline friendly:** [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration files and reports that can be streamed through [standard POSIX streams](https://en.wikipedia.org/wiki/Standard_streams) enable streamlined pipeline and [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer) service integration.
 
 **Few dependencies:** Pheniqs depends only on [HTSlib](https://github.com/samtools/htslib) and [RapidJSON](https://github.com/miloyip/rapidjson). Both are widely packaged, easy to install from source and maintained by a highly active community.
 
-**Open Source:** Pheniqs is released under the terms of the [AGPL 3.0 license agreement](http://opensource.org/licenses/AGPL-3.0). 
+**Open Source:** Pheniqs is released under the terms of the [AGPL 3.0 license agreement](http://opensource.org/licenses/AGPL-3.0).
 
 ## Getting started
 
 Head over to the [Pheniqs web site](http://biosails.github.io/pheniqs) for a [quick tutorial](http://biosails.github.io/pheniqs/tutorial.html), [documentation](http://biosails.github.io/pheniqs/manual.html) and [building instructions](http://biosails.github.io/pheniqs/building.html).
+
+[![Build Status](https://travis-ci.org/biosails/pheniqs.svg?branch=master)](https://travis-ci.org/biosails/pheniqs)
