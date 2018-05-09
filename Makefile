@@ -21,7 +21,10 @@
 # git revision checksum is appended if available
 # If available in the environment, dependency version are also included when generating version.h
 
-# PHENIQS_VERSION
+# providing those to make during build will report them on pheniqs --version
+# this is especially useful when building a static binary
+
+# PHENIQS_VERSION = $(MAJOR_REVISON).$(MINOR_REVISON).$(PHENIQS_GIT_REVISION)
 # ZLIB_VERSION = 1.2.11
 # BZIP2_VERSION = 1.0.6
 # XZ_VERSION = 5.2.3
@@ -29,8 +32,11 @@
 # RAPIDJSON_VERSION = 1.1.0
 # HTSLIB_VERSION = 1.8
 
-# GCC building on MacOS
-# CXX              = /usr/local/bin/g++-7
+# to build with an explicit compiler with set CXX or provide the path on the command line to make
+# for instance to build with gcc 7 from homebrew on MacOS you can install it with `brew install gcc@7`
+# and build with `make CXX=/usr/local/bin/g++-7`
+
+# CXX              = clang++
 
 MAJOR_REVISON  := 1
 MINOR_REVISON  := 1
@@ -39,7 +45,6 @@ BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
 
-# CXX              = clang++
 CPPFLAGS        += -Wall -Wsign-compare
 CXXFLAGS        += -std=c++11 -O3
 LDFLAGS         +=
