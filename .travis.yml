@@ -114,25 +114,25 @@ matrix:
     - os: osx
       osx_image: xcode9.3
       env:
-        - MATRIX_EVAL="brew update && brew upgrade python && brew install gcc@4.9 && CC=gcc-4.9 && CXX=g++-4.9"
+        - MATRIX_EVAL="brew update; brew upgrade python; brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9; CXX=g++-4.9"
         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
-        - MATRIX_EVAL="brew update && brew upgrade python && brew install gcc@5 && CC=gcc-5 && CXX=g++-5"
+        - MATRIX_EVAL="brew update; brew upgrade python; brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5; CXX=g++-5"
         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
-        - MATRIX_EVAL="brew update && brew upgrade python && brew install gcc@6 && CC=gcc-6 && CXX=g++-6"
+        - MATRIX_EVAL="brew update; brew upgrade python; brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6; CXX=g++-6"
         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
-        - MATRIX_EVAL="brew update && brew upgrade python && brew install gcc@7 && CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="brew update; brew upgrade python; brew install gcc@7; brew link --overwrite gcc@7; CC=gcc-5; CXX=g++-7"
         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
 before_install:
