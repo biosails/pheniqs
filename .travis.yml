@@ -12,7 +12,7 @@ matrix:
             - g++-4.9
       env:
          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-         - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -23,7 +23,7 @@ matrix:
             - g++-5
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-         - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+         - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -34,7 +34,7 @@ matrix:
             - g++-6
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -45,7 +45,7 @@ matrix:
             - g++-7
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -57,7 +57,7 @@ matrix:
             - clang-3.6
       env:
         - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -69,7 +69,7 @@ matrix:
             - clang-3.7
       env:
         - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -81,7 +81,7 @@ matrix:
             - clang-3.8
       env:
         - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -92,7 +92,7 @@ matrix:
             - clang-3.9
       env:
         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: linux
       addons:
@@ -103,37 +103,37 @@ matrix:
             - clang-4.0
       env:
         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
         - MATRIX_EVAL="brew install gcc@4.9 CC=gcc-4.9 && CXX=g++-4.9"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
         - MATRIX_EVAL="brew install gcc@5 && CC=gcc-5 && CXX=g++-5"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
         - MATRIX_EVAL="brew install gcc@6 && CC=gcc-6 && CXX=g++-6"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
     - os: osx
       osx_image: xcode9.3
       env:
         - MATRIX_EVAL="brew install gcc@7 && CC=gcc-7 && CXX=g++-7"
-        - LD_LIBRARY_PATH="~/.pheniqs/travis/install/lib"
+        - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
 before_install:
     - eval "${MATRIX_EVAL}"
@@ -144,7 +144,7 @@ install: true
 
 script:
     - ./tool/pheniqs-tools.py -v debug build build/travis.json
-    - make all PREFIX=~/.pheniqs/travis/install ZLIB_VERSION=1.2.11 BZIP2_VERSION=1.0.6 XZ_VERSION=5.2.3 LIBDEFLATE_VERSION=1.0 RAPIDJSON_VERSION=1.1.0 HTSLIB_VERSION=1.8
+    - make all PREFIX=${HOME}/.pheniqs/travis/install
     - ./pheniqs --version
     - ./pheniqs --help
     - ./pheniqs demux --help
