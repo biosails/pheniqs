@@ -294,19 +294,24 @@ class Pipeline(object):
                             if package:
                                 self.execution['package'].append(package)
 
-                                if self.action == 'clean':
-                                    self.log.info('cleaning %s', package.display_name)
-                                    package.clean()
+                                try:
+                                    if self.action == 'clean':
+                                        self.log.info('cleaning %s', package.display_name)
+                                        package.clean()
 
-                                elif self.action == 'build':
-                                    if not package.installed:
-                                        package.install()
-                                    else:
-                                        self.log.info('%s is already installed', package.display_name)
+                                    elif self.action == 'build':
+                                        if not package.installed:
+                                            package.install()
+                                        else:
+                                            self.log.info('%s is already installed', package.display_name)
 
-                                elif self.action == 'clean.package':
-                                    self.log.info('clearing %s', package.display_name)
-                                    package.clean_package()
+                                    elif self.action == 'clean.package':
+                                        self.log.info('clearing %s', package.display_name)
+                                        package.clean_package()
+                                except CommandFailedError as e:
+                                    with io.open(self.stderr, 'r') as stderr:
+                                        print(stderr.read())
+                                    raise
 
     def execute_zsh_job(self):
         def parse_zsh_completion_option(node, buffer):
