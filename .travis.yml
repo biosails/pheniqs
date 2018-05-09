@@ -1,6 +1,6 @@
 language: cpp
 env:
-  matrix:
+  global:
     - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
 
 matrix:
