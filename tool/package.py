@@ -375,16 +375,18 @@ class Package(object):
                     args=command,
                     env=self.env,
                     cwd=self.package_prefix,
-                    stdout=self.stdout,
-                    stderr=self.stderr
+                    stdout=PIPE,
+                    stderr=PIPE
                 )
                 output, error = process.communicate()
                 code = process.returncode
                 if code == 0:
                     self.node['unpacked'] = True
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
                     # self.pipeline.save_cache()
                 else:
-                    print(output, error, code)
+                    print(code, output, error)
                     raise CommandFailedError('tar returned {}'.format(code))
 
     def configure(self):
@@ -464,8 +466,8 @@ class makePackage(Package):
                     args=command,
                     env=self.env,
                     cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
+                    stdout=PIPE,
+                    stderr=PIPE
                 )
                 output, error = process.communicate()
                 code = process.returncode
@@ -473,7 +475,10 @@ class makePackage(Package):
                     self.node['configured'] = False
                     self.node['built'] = False
                     self.node['installed'] = False
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
                 else:
+                    print(code, output, error)
                     raise CommandFailedError('make clean returned {}'.format(code))
             else:
                 self.node['configured'] = False
@@ -497,14 +502,17 @@ class makePackage(Package):
                         args=command,
                         env=self.env,
                         cwd=self.package_url,
-                        stdout=self.stdout,
-                        stderr=self.stderr
+                        stdout=PIPE,
+                        stderr=PIPE
                     )
                     output, error = process.communicate()
                     code = process.returncode
                     if code == 0:
                         self.node['configured'] = True
+                        self.stdout.write(output.decode('utf8'))
+                        self.stderr.write(error.decode('utf8'))
                     else:
+                        print(code, output, error)
                         raise CommandFailedError('configure returned {}'.format(code))
                 else:
                     self.node['configured'] = True
@@ -531,15 +539,18 @@ class makePackage(Package):
                     args=command,
                     env=self.env,
                     cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
+                    stdout=PIPE,
+                    stderr=PIPE
                 )
                 output, error = process.communicate()
                 code = process.returncode
                 if code == 0:
                     self.node['built'] = True
-                    self.pipeline.save_cache()
+                    # self.pipeline.save_cache()
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
                 else:
+                    print(code, output, error)
                     raise CommandFailedError('make returned {}'.format(code))
 
     def install(self):
@@ -558,14 +569,17 @@ class makePackage(Package):
                     args=command,
                     env=self.env,
                     cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
+                    stdout=PIPE,
+                    stderr=PIPE
                 )
                 output, error = process.communicate()
                 code = process.returncode
                 if code == 0:
                     self.node['installed'] = True
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
                 else:
+                    print(code, output, error)
                     raise CommandFailedError('make install returned {}'.format(code))
 
 class zlibPackage(makePackage):
@@ -590,12 +604,16 @@ class bz2Package(makePackage):
             args=command,
             env=self.env,
             cwd=self.package_url,
-            stdout=self.stdout,
-            stderr=self.stderr
+            stdout=PIPE,
+            stderr=PIPE
         )
         output, error = process.communicate()
         code = process.returncode
-        if code != 0:
+        if code == 0:
+            self.stdout.write(output.decode('utf8'))
+            self.stderr.write(error.decode('utf8'))
+        else:
+            print(code, output, error)
             raise CommandFailedError('rsync returned {}'.format(code))
 
         self.log.info('symlinking %s to %s', versioned_dynamic_library_path, dynamic_library_path)
@@ -618,15 +636,18 @@ class bz2Package(makePackage):
                         args=command,
                         env=self.env,
                         cwd=self.package_url,
-                        stdout=self.stdout,
-                        stderr=self.stderr
+                        stdout=PIPE,
+                        stderr=PIPE
                     )
                     output, error = process.communicate()
                     code = process.returncode
                     if code == 0:
+                        self.stdout.write(output.decode('utf8'))
+                        self.stderr.write(error.decode('utf8'))
                         self.install_dynamic()
                         makePackage.build(self)
                     else:
+                        print(code, output, error)
                         raise CommandFailedError('make returned {}'.format(code))
         else:
             makePackage.build(self)
@@ -646,12 +667,16 @@ class libdeflatePackage(makePackage):
                     args=command,
                     env=self.env,
                     cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
+                    stdout=PIPE,
+                    stderr=PIPE
                 )
                 output, error = process.communicate()
                 code = process.returncode
-                if code != 0:
+                if code == 0:
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
+                else:
+                    print(code, output, error)
                     raise CommandFailedError('rsync returned {}'.format(code))
 
                 library_header_path = os.path.join(self.package_url, 'libdeflate.h')
@@ -661,12 +686,16 @@ class libdeflatePackage(makePackage):
                     args=command,
                     env=self.env,
                     cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
+                    stdout=PIPE,
+                    stderr=PIPE
                 )
                 output, error = process.communicate()
                 code = process.returncode
-                if code != 0:
+                if code == 0:
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
+                else:
+                    print(code, output, error)
                     raise CommandFailedError('rsync returned {}'.format(code))
 
                 if self.platform == 'Linux':
@@ -677,12 +706,16 @@ class libdeflatePackage(makePackage):
                         args=command,
                         env=self.env,
                         cwd=self.package_url,
-                        stdout=self.stdout,
-                        stderr=self.stderr
+                        stdout=PIPE,
+                        stderr=PIPE
                     )
                     output, error = process.communicate()
                     code = process.returncode
-                    if code != 0:
+                    if code == 0:
+                        self.stdout.write(output.decode('utf8'))
+                        self.stderr.write(error.decode('utf8'))
+                    else:
+                        print(code, output, error)
                         raise CommandFailedError('rsync returned {}'.format(code))
 
                 self.node['installed'] = True
@@ -701,14 +734,17 @@ class rapidjsonPackage(Package):
                     args=command,
                     env=self.env,
                     cwd=self.package_url,
-                    stdout=self.stdout,
-                    stderr=self.stderr
+                    stdout=PIPE,
+                    stderr=PIPE
                 )
                 output, error = process.communicate()
                 code = process.returncode
                 if code == 0:
                     self.node['installed'] = True
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
                 else:
+                    print(code, output, error)
                     raise CommandFailedError('rsync returned {}'.format(code))
 
 class htslibPackage(makePackage):
