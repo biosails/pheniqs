@@ -38,8 +38,8 @@
 
 # CXX              = clang++
 
-MAJOR_REVISON  := 1
-MINOR_REVISON  := 1
+MAJOR_REVISON  := 2
+MINOR_REVISON  := 0
 PREFIX          = /usr/local
 BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include

@@ -143,5 +143,5 @@ script:
     - ./pheniqs --version
     - ./pheniqs --help
     - ./pheniqs demux --help
-    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -VD
-    - ./pheniqs demux --config example/HK5NHBGXX_cram_combined.json -j
+    - ./pheniqs demux --config example/000000000-BDGGG.json -VD
+    - ./pheniqs demux --config example/000000000-BDGGG.json -j
