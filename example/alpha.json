@@ -1,0 +1,1439 @@
+{
+    "base input url": "~/HK5NHBGXX",
+    "base output url": "~/HK5NHBGXX",
+    "codec": {
+        "alpha": {
+            "barcode": {
+                "AAGAGGCAAGAGGATA": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "AGAGGATA"
+                    ]
+                },
+                "AAGAGGCAAGGCTTAG": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "AAGAGGCAATAGAGAG": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "AAGAGGCACTCCTTAC": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "AAGAGGCATACTCCTT": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "TACTCCTT"
+                    ]
+                },
+                "AAGAGGCATATGCAGT": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "TATGCAGT"
+                    ]
+                },
+                "AAGAGGCATCTACTCT": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "TCTACTCT"
+                    ]
+                },
+                "AAGAGGCATCTTACGC": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "TCTTACGC"
+                    ]
+                },
+                "AGGCAGAAAGAGGATA": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "AGAGGATA"
+                    ]
+                },
+                "AGGCAGAAAGGCTTAG": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "AGGCAGAAATAGAGAG": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "AGGCAGAACTCCTTAC": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "AGGCAGAATACTCCTT": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "TACTCCTT"
+                    ]
+                },
+                "AGGCAGAATATGCAGT": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "TATGCAGT"
+                    ]
+                },
+                "AGGCAGAATCTACTCT": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "TCTACTCT"
+                    ]
+                },
+                "AGGCAGAATCTTACGC": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "TCTTACGC"
+                    ]
+                },
+                "CAGAGAGGAGAGGATA": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "AGAGGATA"
+                    ]
+                },
+                "CAGAGAGGAGGCTTAG": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "CAGAGAGGATAGAGAG": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "CAGAGAGGCTCCTTAC": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "CAGAGAGGTACTCCTT": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TACTCCTT"
+                    ]
+                },
+                "CAGAGAGGTATGCAGT": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TATGCAGT"
+                    ]
+                },
+                "CAGAGAGGTCTACTCT": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TCTACTCT"
+                    ]
+                },
+                "CAGAGAGGTCTTACGC": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TCTTACGC"
+                    ]
+                },
+                "CGAGGCTGAGAGGATA": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "AGAGGATA"
+                    ]
+                },
+                "CGAGGCTGAGGCTTAG": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "CGAGGCTGATAGAGAG": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "CGAGGCTGCTCCTTAC": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "CGAGGCTGTACTCCTT": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "TACTCCTT"
+                    ]
+                },
+                "CGAGGCTGTATGCAGT": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "TATGCAGT"
+                    ]
+                },
+                "CGAGGCTGTCTACTCT": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "TCTACTCT"
+                    ]
+                },
+                "CGAGGCTGTCTTACGC": {
+                    "segment": [
+                        "CGAGGCTG",
+                        "TCTTACGC"
+                    ]
+                },
+                "CGTACTAGAGAGGATA": {
+                    "segment": [
+                        "CGTACTAG",
+                        "AGAGGATA"
+                    ]
+                },
+                "CGTACTAGAGGCTTAG": {
+                    "segment": [
+                        "CGTACTAG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "CGTACTAGATAGAGAG": {
+                    "segment": [
+                        "CGTACTAG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "CGTACTAGCTCCTTAC": {
+                    "segment": [
+                        "CGTACTAG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "CGTACTAGTACTCCTT": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TACTCCTT"
+                    ]
+                },
+                "CGTACTAGTATGCAGT": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TATGCAGT"
+                    ]
+                },
+                "CGTACTAGTCTACTCT": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TCTACTCT"
+                    ]
+                },
+                "CGTACTAGTCTTACGC": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TCTTACGC"
+                    ]
+                },
+                "CTCTCTACAGAGGATA": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "AGAGGATA"
+                    ]
+                },
+                "CTCTCTACAGGCTTAG": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "CTCTCTACATAGAGAG": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "CTCTCTACCTCCTTAC": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "CTCTCTACTACTCCTT": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "TACTCCTT"
+                    ]
+                },
+                "CTCTCTACTATGCAGT": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "TATGCAGT"
+                    ]
+                },
+                "CTCTCTACTCTACTCT": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "TCTACTCT"
+                    ]
+                },
+                "CTCTCTACTCTTACGC": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "TCTTACGC"
+                    ]
+                },
+                "GCTACGCTAGAGGATA": {
+                    "segment": [
+                        "GCTACGCT",
+                        "AGAGGATA"
+                    ]
+                },
+                "GCTACGCTAGGCTTAG": {
+                    "segment": [
+                        "GCTACGCT",
+                        "AGGCTTAG"
+                    ]
+                },
+                "GCTACGCTATAGAGAG": {
+                    "segment": [
+                        "GCTACGCT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "GCTACGCTCTCCTTAC": {
+                    "segment": [
+                        "GCTACGCT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "GCTACGCTTACTCCTT": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TACTCCTT"
+                    ]
+                },
+                "GCTACGCTTATGCAGT": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TATGCAGT"
+                    ]
+                },
+                "GCTACGCTTCTACTCT": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TCTACTCT"
+                    ]
+                },
+                "GCTACGCTTCTTACGC": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TCTTACGC"
+                    ]
+                },
+                "GGACTCCTAGAGGATA": {
+                    "segment": [
+                        "GGACTCCT",
+                        "AGAGGATA"
+                    ]
+                },
+                "GGACTCCTAGGCTTAG": {
+                    "segment": [
+                        "GGACTCCT",
+                        "AGGCTTAG"
+                    ]
+                },
+                "GGACTCCTATAGAGAG": {
+                    "segment": [
+                        "GGACTCCT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "GGACTCCTCTCCTTAC": {
+                    "segment": [
+                        "GGACTCCT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "GGACTCCTTACTCCTT": {
+                    "segment": [
+                        "GGACTCCT",
+                        "TACTCCTT"
+                    ]
+                },
+                "GGACTCCTTATGCAGT": {
+                    "segment": [
+                        "GGACTCCT",
+                        "TATGCAGT"
+                    ]
+                },
+                "GGACTCCTTCTACTCT": {
+                    "segment": [
+                        "GGACTCCT",
+                        "TCTACTCT"
+                    ]
+                },
+                "GGACTCCTTCTTACGC": {
+                    "segment": [
+                        "GGACTCCT",
+                        "TCTTACGC"
+                    ]
+                },
+                "GTAGAGGAAGAGGATA": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "AGAGGATA"
+                    ]
+                },
+                "GTAGAGGAAGGCTTAG": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "GTAGAGGAATAGAGAG": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "GTAGAGGACTCCTTAC": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "GTAGAGGATACTCCTT": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "TACTCCTT"
+                    ]
+                },
+                "GTAGAGGATATGCAGT": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "TATGCAGT"
+                    ]
+                },
+                "GTAGAGGATCTACTCT": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "TCTACTCT"
+                    ]
+                },
+                "GTAGAGGATCTTACGC": {
+                    "segment": [
+                        "GTAGAGGA",
+                        "TCTTACGC"
+                    ]
+                },
+                "TAAGGCGAAGAGGATA": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "AGAGGATA"
+                    ]
+                },
+                "TAAGGCGAAGGCTTAG": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "TAAGGCGAATAGAGAG": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "TAAGGCGACTCCTTAC": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "TAAGGCGATACTCCTT": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "TACTCCTT"
+                    ]
+                },
+                "TAAGGCGATATGCAGT": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "TATGCAGT"
+                    ]
+                },
+                "TAAGGCGATCTACTCT": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "TCTACTCT"
+                    ]
+                },
+                "TAAGGCGATCTTACGC": {
+                    "segment": [
+                        "TAAGGCGA",
+                        "TCTTACGC"
+                    ]
+                },
+                "TAGGCATGAGAGGATA": {
+                    "segment": [
+                        "TAGGCATG",
+                        "AGAGGATA"
+                    ]
+                },
+                "TAGGCATGAGGCTTAG": {
+                    "segment": [
+                        "TAGGCATG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "TAGGCATGATAGAGAG": {
+                    "segment": [
+                        "TAGGCATG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "TAGGCATGCTCCTTAC": {
+                    "segment": [
+                        "TAGGCATG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "TAGGCATGTACTCCTT": {
+                    "segment": [
+                        "TAGGCATG",
+                        "TACTCCTT"
+                    ]
+                },
+                "TAGGCATGTATGCAGT": {
+                    "segment": [
+                        "TAGGCATG",
+                        "TATGCAGT"
+                    ]
+                },
+                "TAGGCATGTCTACTCT": {
+                    "segment": [
+                        "TAGGCATG",
+                        "TCTACTCT"
+                    ]
+                },
+                "TAGGCATGTCTTACGC": {
+                    "segment": [
+                        "TAGGCATG",
+                        "TCTTACGC"
+                    ]
+                },
+                "TCCTGAGCAGAGGATA": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "AGAGGATA"
+                    ]
+                },
+                "TCCTGAGCAGGCTTAG": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "TCCTGAGCATAGAGAG": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "TCCTGAGCCTCCTTAC": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "TCCTGAGCTACTCCTT": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "TACTCCTT"
+                    ]
+                },
+                "TCCTGAGCTATGCAGT": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "TATGCAGT"
+                    ]
+                },
+                "TCCTGAGCTCTACTCT": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "TCTACTCT"
+                    ]
+                },
+                "TCCTGAGCTCTTACGC": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "TCTTACGC"
+                    ]
+                }
+            }
+        },
+        "beta": {
+            "barcode": {
+                "AAGAGGCATATGCAGT": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "TATGCAGT"
+                    ]
+                },
+                "AAGAGGCATCTACTCT": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "TCTACTCT"
+                    ]
+                },
+                "AAGAGGCATCTTACGC": {
+                    "segment": [
+                        "AAGAGGCA",
+                        "TCTTACGC"
+                    ]
+                },
+                "AGGCAGAAAGAGGATA": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "AGAGGATA"
+                    ]
+                },
+                "AGGCAGAAAGGCTTAG": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "AGGCAGAATATGCAGT": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "TATGCAGT"
+                    ]
+                },
+                "AGGCAGAATCTACTCT": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "TCTACTCT"
+                    ]
+                },
+                "AGGCAGAATCTTACGC": {
+                    "segment": [
+                        "AGGCAGAA",
+                        "TCTTACGC"
+                    ]
+                },
+                "CAGAGAGGAGAGGATA": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "AGAGGATA"
+                    ]
+                },
+                "CAGAGAGGAGGCTTAG": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "CAGAGAGGATAGAGAG": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "CAGAGAGGCTCCTTAC": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "CAGAGAGGTACTCCTT": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TACTCCTT"
+                    ]
+                },
+                "CAGAGAGGTATGCAGT": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TATGCAGT"
+                    ]
+                },
+                "CAGAGAGGTCTACTCT": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TCTACTCT"
+                    ]
+                },
+                "CAGAGAGGTCTTACGC": {
+                    "segment": [
+                        "CAGAGAGG",
+                        "TCTTACGC"
+                    ]
+                },
+                "CGTACTAGATAGAGAG": {
+                    "segment": [
+                        "CGTACTAG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "CGTACTAGCTCCTTAC": {
+                    "segment": [
+                        "CGTACTAG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "CGTACTAGTACTCCTT": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TACTCCTT"
+                    ]
+                },
+                "CGTACTAGTATGCAGT": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TATGCAGT"
+                    ]
+                },
+                "CGTACTAGTCTACTCT": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TCTACTCT"
+                    ]
+                },
+                "CGTACTAGTCTTACGC": {
+                    "segment": [
+                        "CGTACTAG",
+                        "TCTTACGC"
+                    ]
+                },
+                "CTCTCTACAGAGGATA": {
+                    "segment": [
+                        "CTCTCTAC",
+                        "AGAGGATA"
+                    ]
+                },
+                "GCTACGCTATAGAGAG": {
+                    "segment": [
+                        "GCTACGCT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "GCTACGCTCTCCTTAC": {
+                    "segment": [
+                        "GCTACGCT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "GCTACGCTTACTCCTT": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TACTCCTT"
+                    ]
+                },
+                "GCTACGCTTATGCAGT": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TATGCAGT"
+                    ]
+                },
+                "GCTACGCTTCTACTCT": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TCTACTCT"
+                    ]
+                },
+                "GCTACGCTTCTTACGC": {
+                    "segment": [
+                        "GCTACGCT",
+                        "TCTTACGC"
+                    ]
+                },
+                "GGACTCCTAGAGGATA": {
+                    "segment": [
+                        "GGACTCCT",
+                        "AGAGGATA"
+                    ]
+                },
+                "GGACTCCTAGGCTTAG": {
+                    "segment": [
+                        "GGACTCCT",
+                        "AGGCTTAG"
+                    ]
+                },
+                "GGACTCCTATAGAGAG": {
+                    "segment": [
+                        "GGACTCCT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "GGACTCCTCTCCTTAC": {
+                    "segment": [
+                        "GGACTCCT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "TAGGCATGTCTACTCT": {
+                    "segment": [
+                        "TAGGCATG",
+                        "TCTACTCT"
+                    ]
+                },
+                "TAGGCATGTCTTACGC": {
+                    "segment": [
+                        "TAGGCATG",
+                        "TCTTACGC"
+                    ]
+                },
+                "TCCTGAGCAGAGGATA": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "AGAGGATA"
+                    ]
+                },
+                "TCCTGAGCAGGCTTAG": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "TCCTGAGCATAGAGAG": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "TCCTGAGCCTCCTTAC": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "TCCTGAGCTACTCCTT": {
+                    "segment": [
+                        "TCCTGAGC",
+                        "TACTCCTT"
+                    ]
+                }
+            }
+        },
+        "gamma": {
+            "CN": "CGSB",
+            "PM": "hiseq 2500",
+            "barcode": {
+                "AAGAGGCAAGAGGATA": {
+                    "DS": "AAGAGGCAAGAGGATA description",
+                    "LB": "AAGAGGCAAGAGGATA library",
+                    "SM": "AAGAGGCAAGAGGATA sample"
+                },
+                "AAGAGGCAAGGCTTAG": {
+                    "DS": "AAGAGGCAAGGCTTAG description",
+                    "LB": "AAGAGGCAAGGCTTAG library",
+                    "SM": "AAGAGGCAAGGCTTAG sample"
+                },
+                "AAGAGGCAATAGAGAG": {
+                    "DS": "AAGAGGCAATAGAGAG description",
+                    "LB": "AAGAGGCAATAGAGAG library",
+                    "SM": "AAGAGGCAATAGAGAG sample"
+                },
+                "AAGAGGCACTCCTTAC": {
+                    "DS": "AAGAGGCACTCCTTAC description",
+                    "LB": "AAGAGGCACTCCTTAC library",
+                    "SM": "AAGAGGCACTCCTTAC sample"
+                },
+                "AAGAGGCATACTCCTT": {
+                    "DS": "AAGAGGCATACTCCTT description",
+                    "LB": "AAGAGGCATACTCCTT library",
+                    "SM": "AAGAGGCATACTCCTT sample"
+                },
+                "AAGAGGCATATGCAGT": {
+                    "DS": "AAGAGGCATATGCAGT description",
+                    "LB": "AAGAGGCATATGCAGT library",
+                    "SM": "AAGAGGCATATGCAGT sample"
+                },
+                "AAGAGGCATCTACTCT": {
+                    "DS": "AAGAGGCATCTACTCT description",
+                    "LB": "AAGAGGCATCTACTCT library",
+                    "SM": "AAGAGGCATCTACTCT sample"
+                },
+                "AAGAGGCATCTTACGC": {
+                    "DS": "AAGAGGCATCTTACGC description",
+                    "LB": "AAGAGGCATCTTACGC library",
+                    "SM": "AAGAGGCATCTTACGC sample"
+                },
+                "AGGCAGAAAGAGGATA": {
+                    "DS": "AGGCAGAAAGAGGATA description",
+                    "LB": "AGGCAGAAAGAGGATA library",
+                    "SM": "AGGCAGAAAGAGGATA sample"
+                },
+                "AGGCAGAAAGGCTTAG": {
+                    "DS": "AGGCAGAAAGGCTTAG description",
+                    "LB": "AGGCAGAAAGGCTTAG library",
+                    "SM": "AGGCAGAAAGGCTTAG sample"
+                },
+                "AGGCAGAAATAGAGAG": {
+                    "DS": "AGGCAGAAATAGAGAG description",
+                    "LB": "AGGCAGAAATAGAGAG library",
+                    "SM": "AGGCAGAAATAGAGAG sample"
+                },
+                "AGGCAGAACTCCTTAC": {
+                    "DS": "AGGCAGAACTCCTTAC description",
+                    "LB": "AGGCAGAACTCCTTAC library",
+                    "SM": "AGGCAGAACTCCTTAC sample"
+                },
+                "AGGCAGAATACTCCTT": {
+                    "DS": "AGGCAGAATACTCCTT description",
+                    "LB": "AGGCAGAATACTCCTT library",
+                    "SM": "AGGCAGAATACTCCTT sample"
+                },
+                "AGGCAGAATATGCAGT": {
+                    "DS": "AGGCAGAATATGCAGT description",
+                    "LB": "AGGCAGAATATGCAGT library",
+                    "SM": "AGGCAGAATATGCAGT sample"
+                },
+                "AGGCAGAATCTACTCT": {
+                    "DS": "AGGCAGAATCTACTCT description",
+                    "LB": "AGGCAGAATCTACTCT library",
+                    "SM": "AGGCAGAATCTACTCT sample"
+                },
+                "AGGCAGAATCTTACGC": {
+                    "DS": "AGGCAGAATCTTACGC description",
+                    "LB": "AGGCAGAATCTTACGC library",
+                    "SM": "AGGCAGAATCTTACGC sample"
+                },
+                "CAGAGAGGAGAGGATA": {
+                    "DS": "CAGAGAGGAGAGGATA description",
+                    "LB": "CAGAGAGGAGAGGATA library",
+                    "SM": "CAGAGAGGAGAGGATA sample"
+                },
+                "CAGAGAGGAGGCTTAG": {
+                    "DS": "CAGAGAGGAGGCTTAG description",
+                    "LB": "CAGAGAGGAGGCTTAG library",
+                    "SM": "CAGAGAGGAGGCTTAG sample"
+                },
+                "CAGAGAGGATAGAGAG": {
+                    "DS": "CAGAGAGGATAGAGAG description",
+                    "LB": "CAGAGAGGATAGAGAG library",
+                    "SM": "CAGAGAGGATAGAGAG sample"
+                },
+                "CAGAGAGGCTCCTTAC": {
+                    "DS": "CAGAGAGGCTCCTTAC description",
+                    "LB": "CAGAGAGGCTCCTTAC library",
+                    "SM": "CAGAGAGGCTCCTTAC sample"
+                },
+                "CAGAGAGGTACTCCTT": {
+                    "DS": "CAGAGAGGTACTCCTT description",
+                    "LB": "CAGAGAGGTACTCCTT library",
+                    "SM": "CAGAGAGGTACTCCTT sample"
+                },
+                "CAGAGAGGTATGCAGT": {
+                    "DS": "CAGAGAGGTATGCAGT description",
+                    "LB": "CAGAGAGGTATGCAGT library",
+                    "SM": "CAGAGAGGTATGCAGT sample"
+                },
+                "CAGAGAGGTCTACTCT": {
+                    "DS": "CAGAGAGGTCTACTCT description",
+                    "LB": "CAGAGAGGTCTACTCT library",
+                    "SM": "CAGAGAGGTCTACTCT sample"
+                },
+                "CAGAGAGGTCTTACGC": {
+                    "DS": "CAGAGAGGTCTTACGC description",
+                    "LB": "CAGAGAGGTCTTACGC library",
+                    "SM": "CAGAGAGGTCTTACGC sample"
+                },
+                "CGAGGCTGAGAGGATA": {
+                    "DS": "CGAGGCTGAGAGGATA description",
+                    "LB": "CGAGGCTGAGAGGATA library",
+                    "SM": "CGAGGCTGAGAGGATA sample"
+                },
+                "CGAGGCTGAGGCTTAG": {
+                    "DS": "CGAGGCTGAGGCTTAG description",
+                    "LB": "CGAGGCTGAGGCTTAG library",
+                    "SM": "CGAGGCTGAGGCTTAG sample"
+                },
+                "CGAGGCTGATAGAGAG": {
+                    "DS": "CGAGGCTGATAGAGAG description",
+                    "LB": "CGAGGCTGATAGAGAG library",
+                    "SM": "CGAGGCTGATAGAGAG sample"
+                },
+                "CGAGGCTGCTCCTTAC": {
+                    "DS": "CGAGGCTGCTCCTTAC description",
+                    "LB": "CGAGGCTGCTCCTTAC library",
+                    "SM": "CGAGGCTGCTCCTTAC sample"
+                },
+                "CGAGGCTGTACTCCTT": {
+                    "DS": "CGAGGCTGTACTCCTT description",
+                    "LB": "CGAGGCTGTACTCCTT library",
+                    "SM": "CGAGGCTGTACTCCTT sample"
+                },
+                "CGAGGCTGTATGCAGT": {
+                    "DS": "CGAGGCTGTATGCAGT description",
+                    "LB": "CGAGGCTGTATGCAGT library",
+                    "SM": "CGAGGCTGTATGCAGT sample"
+                },
+                "CGAGGCTGTCTACTCT": {
+                    "DS": "CGAGGCTGTCTACTCT description",
+                    "LB": "CGAGGCTGTCTACTCT library",
+                    "SM": "CGAGGCTGTCTACTCT sample"
+                },
+                "CGAGGCTGTCTTACGC": {
+                    "DS": "CGAGGCTGTCTTACGC description",
+                    "LB": "CGAGGCTGTCTTACGC library",
+                    "SM": "CGAGGCTGTCTTACGC sample"
+                },
+                "CGTACTAGAGAGGATA": {
+                    "DS": "CGTACTAGAGAGGATA description",
+                    "LB": "CGTACTAGAGAGGATA library",
+                    "SM": "CGTACTAGAGAGGATA sample"
+                },
+                "CGTACTAGAGGCTTAG": {
+                    "DS": "CGTACTAGAGGCTTAG description",
+                    "LB": "CGTACTAGAGGCTTAG library",
+                    "SM": "CGTACTAGAGGCTTAG sample"
+                },
+                "CGTACTAGATAGAGAG": {
+                    "DS": "CGTACTAGATAGAGAG description",
+                    "LB": "CGTACTAGATAGAGAG library",
+                    "SM": "CGTACTAGATAGAGAG sample"
+                },
+                "CGTACTAGCTCCTTAC": {
+                    "DS": "CGTACTAGCTCCTTAC description",
+                    "LB": "CGTACTAGCTCCTTAC library",
+                    "SM": "CGTACTAGCTCCTTAC sample"
+                },
+                "CGTACTAGTACTCCTT": {
+                    "DS": "CGTACTAGTACTCCTT description",
+                    "LB": "CGTACTAGTACTCCTT library",
+                    "SM": "CGTACTAGTACTCCTT sample"
+                },
+                "CGTACTAGTATGCAGT": {
+                    "DS": "CGTACTAGTATGCAGT description",
+                    "LB": "CGTACTAGTATGCAGT library",
+                    "SM": "CGTACTAGTATGCAGT sample"
+                },
+                "CGTACTAGTCTACTCT": {
+                    "DS": "CGTACTAGTCTACTCT description",
+                    "LB": "CGTACTAGTCTACTCT library",
+                    "SM": "CGTACTAGTCTACTCT sample"
+                },
+                "CGTACTAGTCTTACGC": {
+                    "DS": "CGTACTAGTCTTACGC description",
+                    "LB": "CGTACTAGTCTTACGC library",
+                    "SM": "CGTACTAGTCTTACGC sample"
+                },
+                "CTCTCTACAGAGGATA": {
+                    "DS": "CTCTCTACAGAGGATA description",
+                    "LB": "CTCTCTACAGAGGATA library",
+                    "SM": "CTCTCTACAGAGGATA sample"
+                },
+                "CTCTCTACAGGCTTAG": {
+                    "DS": "CTCTCTACAGGCTTAG description",
+                    "LB": "CTCTCTACAGGCTTAG library",
+                    "SM": "CTCTCTACAGGCTTAG sample"
+                },
+                "CTCTCTACATAGAGAG": {
+                    "DS": "CTCTCTACATAGAGAG description",
+                    "LB": "CTCTCTACATAGAGAG library",
+                    "SM": "CTCTCTACATAGAGAG sample"
+                },
+                "CTCTCTACCTCCTTAC": {
+                    "DS": "CTCTCTACCTCCTTAC description",
+                    "LB": "CTCTCTACCTCCTTAC library",
+                    "SM": "CTCTCTACCTCCTTAC sample"
+                },
+                "CTCTCTACTACTCCTT": {
+                    "DS": "CTCTCTACTACTCCTT description",
+                    "LB": "CTCTCTACTACTCCTT library",
+                    "SM": "CTCTCTACTACTCCTT sample"
+                },
+                "CTCTCTACTATGCAGT": {
+                    "DS": "CTCTCTACTATGCAGT description",
+                    "LB": "CTCTCTACTATGCAGT library",
+                    "SM": "CTCTCTACTATGCAGT sample"
+                },
+                "CTCTCTACTCTACTCT": {
+                    "DS": "CTCTCTACTCTACTCT description",
+                    "LB": "CTCTCTACTCTACTCT library",
+                    "SM": "CTCTCTACTCTACTCT sample"
+                },
+                "CTCTCTACTCTTACGC": {
+                    "DS": "CTCTCTACTCTTACGC description",
+                    "LB": "CTCTCTACTCTTACGC library",
+                    "SM": "CTCTCTACTCTTACGC sample"
+                },
+                "GCTACGCTAGAGGATA": {
+                    "DS": "GCTACGCTAGAGGATA description",
+                    "LB": "GCTACGCTAGAGGATA library",
+                    "SM": "GCTACGCTAGAGGATA sample"
+                },
+                "GCTACGCTAGGCTTAG": {
+                    "DS": "GCTACGCTAGGCTTAG description",
+                    "LB": "GCTACGCTAGGCTTAG library",
+                    "SM": "GCTACGCTAGGCTTAG sample"
+                },
+                "GCTACGCTATAGAGAG": {
+                    "DS": "GCTACGCTATAGAGAG description",
+                    "LB": "GCTACGCTATAGAGAG library",
+                    "SM": "GCTACGCTATAGAGAG sample"
+                },
+                "GCTACGCTCTCCTTAC": {
+                    "DS": "GCTACGCTCTCCTTAC description",
+                    "LB": "GCTACGCTCTCCTTAC library",
+                    "SM": "GCTACGCTCTCCTTAC sample"
+                },
+                "GCTACGCTTACTCCTT": {
+                    "DS": "GCTACGCTTACTCCTT description",
+                    "LB": "GCTACGCTTACTCCTT library",
+                    "SM": "GCTACGCTTACTCCTT sample"
+                },
+                "GCTACGCTTATGCAGT": {
+                    "DS": "GCTACGCTTATGCAGT description",
+                    "LB": "GCTACGCTTATGCAGT library",
+                    "SM": "GCTACGCTTATGCAGT sample"
+                },
+                "GCTACGCTTCTACTCT": {
+                    "DS": "GCTACGCTTCTACTCT description",
+                    "LB": "GCTACGCTTCTACTCT library",
+                    "SM": "GCTACGCTTCTACTCT sample"
+                },
+                "GCTACGCTTCTTACGC": {
+                    "DS": "GCTACGCTTCTTACGC description",
+                    "LB": "GCTACGCTTCTTACGC library",
+                    "SM": "GCTACGCTTCTTACGC sample"
+                },
+                "GGACTCCTAGAGGATA": {
+                    "DS": "GGACTCCTAGAGGATA description",
+                    "LB": "GGACTCCTAGAGGATA library",
+                    "SM": "GGACTCCTAGAGGATA sample"
+                },
+                "GGACTCCTAGGCTTAG": {
+                    "DS": "GGACTCCTAGGCTTAG description",
+                    "LB": "GGACTCCTAGGCTTAG library",
+                    "SM": "GGACTCCTAGGCTTAG sample"
+                },
+                "GGACTCCTATAGAGAG": {
+                    "DS": "GGACTCCTATAGAGAG description",
+                    "LB": "GGACTCCTATAGAGAG library",
+                    "SM": "GGACTCCTATAGAGAG sample"
+                },
+                "GGACTCCTCTCCTTAC": {
+                    "DS": "GGACTCCTCTCCTTAC description",
+                    "LB": "GGACTCCTCTCCTTAC library",
+                    "SM": "GGACTCCTCTCCTTAC sample"
+                },
+                "GGACTCCTTACTCCTT": {
+                    "DS": "GGACTCCTTACTCCTT description",
+                    "LB": "GGACTCCTTACTCCTT library",
+                    "SM": "GGACTCCTTACTCCTT sample"
+                },
+                "GGACTCCTTATGCAGT": {
+                    "DS": "GGACTCCTTATGCAGT description",
+                    "LB": "GGACTCCTTATGCAGT library",
+                    "SM": "GGACTCCTTATGCAGT sample"
+                },
+                "GGACTCCTTCTACTCT": {
+                    "DS": "GGACTCCTTCTACTCT description",
+                    "LB": "GGACTCCTTCTACTCT library",
+                    "SM": "GGACTCCTTCTACTCT sample"
+                },
+                "GGACTCCTTCTTACGC": {
+                    "DS": "GGACTCCTTCTTACGC description",
+                    "LB": "GGACTCCTTCTTACGC library",
+                    "SM": "GGACTCCTTCTTACGC sample"
+                },
+                "GTAGAGGAAGAGGATA": {
+                    "DS": "GTAGAGGAAGAGGATA description",
+                    "LB": "GTAGAGGAAGAGGATA library",
+                    "SM": "GTAGAGGAAGAGGATA sample"
+                },
+                "GTAGAGGAAGGCTTAG": {
+                    "DS": "GTAGAGGAAGGCTTAG description",
+                    "LB": "GTAGAGGAAGGCTTAG library",
+                    "SM": "GTAGAGGAAGGCTTAG sample"
+                },
+                "GTAGAGGAATAGAGAG": {
+                    "DS": "GTAGAGGAATAGAGAG description",
+                    "LB": "GTAGAGGAATAGAGAG library",
+                    "SM": "GTAGAGGAATAGAGAG sample"
+                },
+                "GTAGAGGACTCCTTAC": {
+                    "DS": "GTAGAGGACTCCTTAC description",
+                    "LB": "GTAGAGGACTCCTTAC library",
+                    "SM": "GTAGAGGACTCCTTAC sample"
+                },
+                "GTAGAGGATACTCCTT": {
+                    "DS": "GTAGAGGATACTCCTT description",
+                    "LB": "GTAGAGGATACTCCTT library",
+                    "SM": "GTAGAGGATACTCCTT sample"
+                },
+                "GTAGAGGATATGCAGT": {
+                    "DS": "GTAGAGGATATGCAGT description",
+                    "LB": "GTAGAGGATATGCAGT library",
+                    "SM": "GTAGAGGATATGCAGT sample"
+                },
+                "GTAGAGGATCTACTCT": {
+                    "DS": "GTAGAGGATCTACTCT description",
+                    "LB": "GTAGAGGATCTACTCT library",
+                    "SM": "GTAGAGGATCTACTCT sample"
+                },
+                "GTAGAGGATCTTACGC": {
+                    "DS": "GTAGAGGATCTTACGC description",
+                    "LB": "GTAGAGGATCTTACGC library",
+                    "SM": "GTAGAGGATCTTACGC sample"
+                },
+                "TAAGGCGAAGAGGATA": {
+                    "DS": "TAAGGCGAAGAGGATA description",
+                    "LB": "TAAGGCGAAGAGGATA library",
+                    "SM": "TAAGGCGAAGAGGATA sample"
+                },
+                "TAAGGCGAAGGCTTAG": {
+                    "DS": "TAAGGCGAAGGCTTAG description",
+                    "LB": "TAAGGCGAAGGCTTAG library",
+                    "SM": "TAAGGCGAAGGCTTAG sample"
+                },
+                "TAAGGCGAATAGAGAG": {
+                    "DS": "TAAGGCGAATAGAGAG description",
+                    "LB": "TAAGGCGAATAGAGAG library",
+                    "SM": "TAAGGCGAATAGAGAG sample"
+                },
+                "TAAGGCGACTCCTTAC": {
+                    "DS": "TAAGGCGACTCCTTAC description",
+                    "LB": "TAAGGCGACTCCTTAC library",
+                    "SM": "TAAGGCGACTCCTTAC sample"
+                },
+                "TAAGGCGATACTCCTT": {
+                    "DS": "TAAGGCGATACTCCTT description",
+                    "LB": "TAAGGCGATACTCCTT library",
+                    "SM": "TAAGGCGATACTCCTT sample"
+                },
+                "TAAGGCGATATGCAGT": {
+                    "DS": "TAAGGCGATATGCAGT description",
+                    "LB": "TAAGGCGATATGCAGT library",
+                    "SM": "TAAGGCGATATGCAGT sample"
+                },
+                "TAAGGCGATCTACTCT": {
+                    "DS": "TAAGGCGATCTACTCT description",
+                    "LB": "TAAGGCGATCTACTCT library",
+                    "SM": "TAAGGCGATCTACTCT sample"
+                },
+                "TAAGGCGATCTTACGC": {
+                    "DS": "TAAGGCGATCTTACGC description",
+                    "LB": "TAAGGCGATCTTACGC library",
+                    "SM": "TAAGGCGATCTTACGC sample"
+                },
+                "TAGGCATGAGAGGATA": {
+                    "DS": "TAGGCATGAGAGGATA description",
+                    "LB": "TAGGCATGAGAGGATA library",
+                    "SM": "TAGGCATGAGAGGATA sample"
+                },
+                "TAGGCATGAGGCTTAG": {
+                    "DS": "TAGGCATGAGGCTTAG description",
+                    "LB": "TAGGCATGAGGCTTAG library",
+                    "SM": "TAGGCATGAGGCTTAG sample"
+                },
+                "TAGGCATGATAGAGAG": {
+                    "DS": "TAGGCATGATAGAGAG description",
+                    "LB": "TAGGCATGATAGAGAG library",
+                    "SM": "TAGGCATGATAGAGAG sample"
+                },
+                "TAGGCATGCTCCTTAC": {
+                    "DS": "TAGGCATGCTCCTTAC description",
+                    "LB": "TAGGCATGCTCCTTAC library",
+                    "SM": "TAGGCATGCTCCTTAC sample"
+                },
+                "TAGGCATGTACTCCTT": {
+                    "DS": "TAGGCATGTACTCCTT description",
+                    "LB": "TAGGCATGTACTCCTT library",
+                    "SM": "TAGGCATGTACTCCTT sample"
+                },
+                "TAGGCATGTATGCAGT": {
+                    "DS": "TAGGCATGTATGCAGT description",
+                    "LB": "TAGGCATGTATGCAGT library",
+                    "SM": "TAGGCATGTATGCAGT sample"
+                },
+                "TAGGCATGTCTACTCT": {
+                    "DS": "TAGGCATGTCTACTCT description",
+                    "LB": "TAGGCATGTCTACTCT library",
+                    "SM": "TAGGCATGTCTACTCT sample"
+                },
+                "TAGGCATGTCTTACGC": {
+                    "DS": "TAGGCATGTCTTACGC description",
+                    "LB": "TAGGCATGTCTTACGC library",
+                    "SM": "TAGGCATGTCTTACGC sample"
+                },
+                "TCCTGAGCAGAGGATA": {
+                    "DS": "TCCTGAGCAGAGGATA description",
+                    "LB": "TCCTGAGCAGAGGATA library",
+                    "SM": "TCCTGAGCAGAGGATA sample"
+                },
+                "TCCTGAGCAGGCTTAG": {
+                    "DS": "TCCTGAGCAGGCTTAG description",
+                    "LB": "TCCTGAGCAGGCTTAG library",
+                    "SM": "TCCTGAGCAGGCTTAG sample"
+                },
+                "TCCTGAGCATAGAGAG": {
+                    "DS": "TCCTGAGCATAGAGAG description",
+                    "LB": "TCCTGAGCATAGAGAG library",
+                    "SM": "TCCTGAGCATAGAGAG sample"
+                },
+                "TCCTGAGCCTCCTTAC": {
+                    "DS": "TCCTGAGCCTCCTTAC description",
+                    "LB": "TCCTGAGCCTCCTTAC library",
+                    "SM": "TCCTGAGCCTCCTTAC sample"
+                },
+                "TCCTGAGCTACTCCTT": {
+                    "DS": "TCCTGAGCTACTCCTT description",
+                    "LB": "TCCTGAGCTACTCCTT library",
+                    "SM": "TCCTGAGCTACTCCTT sample"
+                },
+                "TCCTGAGCTATGCAGT": {
+                    "DS": "TCCTGAGCTATGCAGT description",
+                    "LB": "TCCTGAGCTATGCAGT library",
+                    "SM": "TCCTGAGCTATGCAGT sample"
+                },
+                "TCCTGAGCTCTACTCT": {
+                    "DS": "TCCTGAGCTCTACTCT description",
+                    "LB": "TCCTGAGCTCTACTCT library",
+                    "SM": "TCCTGAGCTCTACTCT sample"
+                },
+                "TCCTGAGCTCTTACGC": {
+                    "DS": "TCCTGAGCTCTTACGC description",
+                    "LB": "TCCTGAGCTCTTACGC library",
+                    "SM": "TCCTGAGCTCTTACGC sample"
+                }
+            },
+            "base": "alpha",
+            "confidence threshold": 0.99,
+            "noise": 0.1
+        }
+    },
+    "input": [
+        "HK5NHBGXX_1_interleaved.fastq.gz",
+        "HK5NHBGXX_1_interleaved.fastq.gz",
+        "HK5NHBGXX_1_interleaved.fastq.gz",
+        "HK5NHBGXX_1_interleaved.fastq.gz"
+    ],
+    "molecular": [
+        {
+            "algorithm": "copy",
+            "template": {
+                "observation": [
+                    "0"
+                ],
+                "token": [
+                    "0:24:36"
+                ]
+            }
+        }
+    ],
+    "multiplex": {
+        "DT": "2016-07-15T07:00:00+00:00",
+        "PI": "1500",
+        "algorithm": "pamld",
+        "base": "gamma",
+        "flowcell id": "HK5NHBGXX",
+        "flowcell lane number": 1,
+        "output": [
+            "HK5NHBGXX.cram"
+        ],
+        "template": {
+            "observation": [
+                "0",
+                "1"
+            ],
+            "token": [
+                "1::8",
+                "2::8"
+            ]
+        },
+        "undetermined": {
+            "DS": "undetermined description",
+            "LB": "undetermined library",
+            "SM": "undetermined sample",
+            "output": [
+                "/dev/null"
+            ]
+        }
+    },
+    "splitseq": [
+        {
+            "algorithm": "mdd",
+            "base": "beta",
+            "distance tolerance": [
+                1,
+                1
+            ],
+            "quality masking threshold": 8,
+            "template": {
+                "observation": [
+                    "0",
+                    "1"
+                ],
+                "token": [
+                    "0::8",
+                    "3:-8:"
+                ]
+            }
+        },
+        {
+            "algorithm": "pamld",
+            "base": "beta",
+            "confidence threshold": 0.95,
+            "noise": 0.02,
+            "template": {
+                "observation": [
+                    "0",
+                    "1"
+                ],
+                "token": [
+                    "0:8:16",
+                    "3:-16:-8"
+                ]
+            }
+        },
+        {
+            "algorithm": "pamld",
+            "barcode": {
+                "AGGCAGAATCTTACGC": {
+                    "concentration": 10
+                },
+                "CGTACTAGTCTTACGC": {
+                    "concentration": 2
+                }
+            },
+            "base": "beta",
+            "confidence threshold": 0.96,
+            "noise": 0.03,
+            "template": {
+                "observation": [
+                    "0",
+                    "1"
+                ],
+                "token": [
+                    "0:16:24",
+                    "3:-24:-16"
+                ]
+            }
+        }
+    ],
+    "template": {
+        "observation": [
+            "0",
+            "1"
+        ],
+        "token": [
+            "0::",
+            "3::"
+        ]
+    },
+    "threads": 4
+}

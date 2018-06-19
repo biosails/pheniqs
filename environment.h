@@ -21,85 +21,9 @@
 #ifndef PHENIQS_ENVIRONMENT_H
 #define PHENIQS_ENVIRONMENT_H
 
-#include <set>
-#include <map>
-#include <list>
-#include <cstdlib>
-#include <unordered_map>
+#include "include.h"
 
 #include "interface.h"
-#include "error.h"
-#include "json.h"
-#include "url.h"
-#include "nucleotide.h"
-#include "phred.h"
-#include "atom.h"
-#include "specification.h"
-
-using std::set;
-using std::map;
-using std::list;
-using std::hash;
-using std::setw;
-using std::endl;
-using std::cerr;
-using std::cout;
-using std::size_t;
-using std::pair;
-using std::fixed;
-using std::string;
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::ios_base;
-using std::exception;
-using std::to_string;
-using std::setprecision;
-using std::unordered_map;
-using std::numeric_limits;
-using std::istreambuf_iterator;
-
-inline bool infer_PU(const Value::Ch* key, string& value, Value& container, Document& document) {
-    if(decode_value_by_key< string >(key, value, container)) {
-        return true;
-    } else {
-        string PU;
-        bool undetermined(false);
-        list< string > multiplex_barcode;
-        if(decode_value_by_key< bool >("undetermined", undetermined, container) && undetermined) {
-            PU.assign("undetermined");
-        } else if(decode_value_by_key< list< string > >("barcode", multiplex_barcode, container)) {
-            for(auto& segment : multiplex_barcode) {
-                PU.append(segment);
-            }
-        }
-        if(!PU.empty()) {
-            string flowcell_id;
-            if(decode_value_by_key< string >("flowcell id", flowcell_id, container)) {
-                value.assign(flowcell_id);
-                value.push_back(':');
-
-                int32_t flowcell_lane_number;
-                if(decode_value_by_key< int32_t >("flowcell lane number", flowcell_lane_number, container)) {
-                    value.append(to_string(flowcell_lane_number));
-                    value.push_back(':');
-                }
-            }
-            value.append(PU);
-            encode_key_value(key, value, container, document);
-            return true;
-        }
-    }
-    return false;
-};
-inline bool infer_ID(const Value::Ch* key, string& value, Value& container, Document& document) {
-    if(decode_value_by_key< string >(key, value, container)) {
-        return true;
-    } else if(infer_PU("PU", value, container, document)) {
-        encode_key_value(key, value, container, document);
-        return true;
-    } else { return false; }
-};
 
 enum class ProgramState : int8_t {
     OK,
@@ -115,57 +39,51 @@ enum class ProgramState : int8_t {
 };
 
 class Environment {
-public:
-    Environment(const int argc, const char** argv);
-    ~Environment(){};
-    inline const ProgramAction program_action() const {
-        return _program_action;
-    };
-    inline const bool is_help_only() const {
-        return _help_only;
-    };
-    inline const bool is_version_only() const {
-        return _version_only;
-    };
-    inline const bool is_validate_only() const {
-        return _validate_only;
-    };
-    inline const bool is_lint_only() const {
-        return _lint_only;
-    };
-    const Document& instruction() const {
-        return _instruction;
-    };
-    void print_help(ostream& o) const;
-    void print_version(ostream& o) const;
-    void print_instruction_validation(ostream& o) const;
-    void print_linted_instruction(ostream& o) const;
+    public:
+        Document instruction;
+        Environment(const int argc, const char** argv);
+        ~Environment(){};
+        inline const ProgramAction program_action() const {
+            return _program_action;
+        };
+        inline const bool is_help_only() const {
+            return _help_only;
+        };
+        inline const bool is_version_only() const {
+            return _version_only;
+        };
+        inline const bool is_validate_only() const {
+            return _validate_only;
+        };
+        inline const bool is_lint_only() const {
+            return _lint_only;
+        };
+        void print_help(ostream& o) const;
+        void print_version(ostream& o) const;
+        void print_instruction_validation(ostream& o) const;
+        void print_linted_instruction(ostream& o) const;
 
-private:
-    const CommandLine interface;
-    const ProgramAction _program_action;
-    const bool _help_only;
-    const bool _version_only;
-    bool _validate_only;
-    bool _lint_only;
-    bool _display_distance;
-    Document _instruction;
-    HeadPGAtom _pheniqs_pg;
-    BarcodeDistanceMetric _multiplex_barcode_distance;
-    vector< BarcodeDistanceMetric > _multiplex_barcode_set_distance;
-    void load_pheniqs_pg();
-    void load_instruction();
-    void validate_global_parameters();
-    void apply_url_base();
-    void load_concentration_prior();
-    bool load_input_feed_array();
-    void load_transformation_array();
-    void pad_output_url_array(const int32_t& output_segment_cardinality);
-    bool load_output_feed_array();
-    void load_undetermined_barcode(const vector< int32_t >& multiplex_barcode_length);
-    void load_multiplex_barcode_distance_metric(const vector< int32_t >& multiplex_barcode_length);
-    void load_barcode_tolerance(const vector< BarcodeDistanceMetric >& multiplex_barcode_set_distance);
-    void cross_validate_io();
+    private:
+        const Interface interface;
+        const ProgramAction _program_action;
+        const bool _help_only;
+        const bool _version_only;
+        bool _validate_only;
+        bool _lint_only;
+        bool _display_distance;
+        HeadPGAtom _pheniqs_pg;
+        void load_pheniqs_pg();
+        void print_feed_instruction(const Value::Ch* key, ostream& o) const;
+        void print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const;
+        void print_codec_instruction(const Value& value, ostream& o) const;
+        void print_codec_template(const Value& value, ostream& o) const;
+        void print_global_instruction(ostream& o) const;
+        void print_input_instruction(ostream& o) const;
+        void print_template_instruction(ostream& o) const;
+        void print_multiplex_instruction(ostream& o) const;
+        void print_molecular_instruction(ostream& o) const;
+        void print_splitseq_instruction(ostream& o) const;
+        void load_undetermined_barcode(const vector< int32_t >& multiplex_barcode_length);
 };
 
 #endif /* PHENIQS_ENVIRONMENT_H */

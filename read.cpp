@@ -19,47 +19,27 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "segment.h"
+#include "read.h"
 
-Segment::Segment(const Platform& platform) :
-    index(0),
-    platform(platform),
-    name({ 0, 0, NULL }),
-    flag(0),
-    sequence(),
-    auxiliary(0, 0) {
-    ks_terminate(name);
-};
-Segment::Segment(const size_t& index, const uint32_t& FI, const uint32_t& TC, const Platform& platform) :
-    index(index),
-    platform(platform),
-    name({ 0, 0, NULL }),
-    flag(0),
-    sequence(),
-    auxiliary(FI, TC) {
-    ks_terminate(name);
-    flag |= uint16_t(HtsFlag::UNMAP);
-    flag |= uint16_t(HtsFlag::MUNMAP);
-    if(TC > 1) { flag |= uint16_t(HtsFlag::PAIRED); }
-};
-Segment::Segment(const Segment& other) :
-    index(other.index),
-    platform(other.platform),
-    name({ 0, 0, NULL }),
-    flag(other.flag),
-    sequence(other.sequence),
-    auxiliary(other.auxiliary) {
-    ks_terminate(name);
-};
-Segment::~Segment() {
-    ks_free(name);
-};
 ostream& operator<<(ostream& o, const Segment& segment) {
     o << "Index : "     << segment.index << endl;
-    o << "Platform : "  << segment.platform << endl;
+    // o << "Platform : "  << segment.platform << endl;
     o << "Name : "      << segment.name.s << endl;
     o << "Flag : "      << segment.flag << endl;
-    o << "Sequence : "  << endl << segment.sequence << endl;
-    o << "Auxiliary : " << endl << segment.auxiliary << endl;
+    // o << "Auxiliary : " << endl << segment.auxiliary << endl;
+
+    string buffer;
+    segment.encode_iupac_ambiguity(buffer);
+    buffer.push_back(LINE_BREAK);
+    segment.encode_phred_quality(buffer, SAM_PHRED_DECODING_OFFSET);
+    buffer.push_back(LINE_BREAK);
+    o << buffer << endl;
+    return o;
+};
+
+ostream& operator<<(ostream& o, const Read& read) {
+    for(auto& segment : read) {
+        o << segment;
+    }
     return o;
 };

@@ -2,40 +2,19 @@
     "action": [
         {
             "default": {
-                "flowcell id": null,
-                "flowcell lane number": null,
-                "adjusted multiplex noise probability": 0,
-                "buffer capacity": 2048,
-                "concatenated molecular barcode length": 0,
-                "concatenated multiplex barcode length": 0,
                 "decoder": "pamld",
                 "disable quality control": false,
                 "display distance": false,
-                "help only": false,
-                "include filtered": false,
-                "input phred offset": 33,
-                "leading segment index": 0,
+                "flowcell id": null,
+                "flowcell lane number": null,
+                "input segment cardinality": 0,
                 "lint only": false,
-                "long read": false,
-                "masking threshold": null,
-                "molecular barcode length": 0,
-                "molecular segment cardinality": 0,
-                "multiplex barcode length": 0,
-                "multiplex barcode tolerance": null,
-                "multiplex confidence": 0.99,
-                "multiplex noise": 0,
-                "multiplex segment cardinality": 0,
-                "output phred offset": 33,
                 "output segment cardinality": 0,
-                "platform": "ILLUMINA",
-                "random multiplex barcode probability": 0,
-                "threads": 1,
-                "undetermined": false,
+                "quality masking threshold": 0,
                 "validate only": false,
                 "version only": false
             },
             "description": "Demultiplex and report quality control",
-            "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nnd you are welcome to redistribute it under certain conditions.",
             "name": "demux",
             "option": [
                 {
@@ -133,15 +112,6 @@
                 },
                 {
                     "handle": [
-                        "-m",
-                        "--mask"
-                    ],
-                    "help": "Phred masking threshold",
-                    "name": "masking threshold",
-                    "type": "integer"
-                },
-                {
-                    "handle": [
                         "-i",
                         "--base-input"
                     ],
@@ -217,16 +187,6 @@
                     "type": "integer"
                 },
                 {
-                    "default": false,
-                    "handle": [
-                        "-L",
-                        "--long"
-                    ],
-                    "help": "Optimize threading for long read",
-                    "name": "long read",
-                    "type": "boolean"
-                },
-                {
                     "handle": [
                         "-B",
                         "--buffer"
@@ -238,8 +198,10 @@
             ]
         },
         {
+            "default": {
+                "input url": null
+            },
             "description": "Report quality control",
-            "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.",
             "name": "quality",
             "option": [
                 {
@@ -249,16 +211,6 @@
                     ],
                     "help": "Show this help",
                     "name": "help only",
-                    "type": "boolean"
-                },
-                {
-                    "default": false,
-                    "handle": [
-                        "-V",
-                        "--validate"
-                    ],
-                    "help": "Only validate configuration",
-                    "name": "validate only",
                     "type": "boolean"
                 },
                 {
@@ -278,7 +230,7 @@
                     "help": "Path to input file",
                     "mandatory": true,
                     "meta": "PATH",
-                    "name": "input path",
+                    "name": "input url",
                     "type": "url"
                 },
                 {
@@ -289,16 +241,6 @@
                     ],
                     "help": "Include filtered reads",
                     "name": "filtered",
-                    "type": "boolean"
-                },
-                {
-                    "default": false,
-                    "handle": [
-                        "-L",
-                        "--long"
-                    ],
-                    "help": "Optimize threading for long read",
-                    "name": "long read",
                     "type": "boolean"
                 },
                 {
@@ -343,6 +285,16 @@
         }
     ],
     "comment": "main pheniqs command line configuration file",
+    "default": {
+        "buffer capacity": 2048,
+        "help only": false,
+        "include filtered": false,
+        "input phred offset": 33,
+        "leading segment index": 0,
+        "output phred offset": 33,
+        "platform": "ILLUMINA",
+        "threads": 1
+    },
     "description": "Lior Galanti < lior.galanti@nyu.edu >\nNYU Center for Genomics & Systems Biology 2017\nSee manual at https://biosails.github.io/pheniqs",
     "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.",
     "name": "pheniqs",
@@ -365,5 +317,57 @@
             "type": "boolean"
         }
     ],
+    "projection": {
+        "action": {
+            "base input url": null,
+            "base output url": null,
+            "default": null,
+            "epilog": null,
+            "projection": null,
+            "version": null,
+            "working directory": null
+        },
+        "barcode": {
+            "CN": null,
+            "DS": null,
+            "DT": null,
+            "FO": null,
+            "ID": null,
+            "KS": null,
+            "LB": null,
+            "PG": null,
+            "PL": null,
+            "PM": null,
+            "PU": null,
+            "SM": null,
+            "TC": null,
+            "algorithm": null,
+            "concentration": 1,
+            "disable quality control": null,
+            "flowcell id": null,
+            "flowcell lane number": null,
+            "output": null,
+            "segment cardinality": null
+        },
+        "codec": {
+            "adjusted noise probability": null,
+            "algorithm": null,
+            "barcode": null,
+            "barcode length": null,
+            "base": null,
+            "concatenated barcode length": null,
+            "confidence threshold": null,
+            "disable quality control": null,
+            "distance tolerance": null,
+            "flowcell id": null,
+            "flowcell lane number": null,
+            "noise": 0,
+            "output": null,
+            "quality masking threshold": null,
+            "random barcode probability": null,
+            "segment cardinality": null,
+            "undetermined": null
+        }
+    },
     "version comment": "Now with flavor!"
 }

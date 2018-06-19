@@ -1,4 +1,4 @@
-<!-- 
+<!--
     Pheniqs : PHilology ENcoder wIth Quality Statistics
     Copyright (C) 2017  Lior Galanti
     NYU Center for Genetics and System Biology
@@ -94,7 +94,6 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
       -p, --platform STRING       Sequencing platform
       -t, --threads INT           IO thread pool size
       -T, --transforms INT        Number of transforming threads
-      -L, --long                  Optimize threading for long read
       -B, --buffer INT            Records per resolution in feed buffer
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
@@ -117,7 +116,6 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
       -V, --validate           Only validate configuration
       -i, --input PATH         Path to input file
       -f, --filtered           Include filtered reads
-      -L, --long               Optimize threading for long read
       -p, --platform STRING    Sequencing platform
       -t, --threads INT        IO thread pool size
       -T, --transforms INT     Number of transforming threads
@@ -142,7 +140,7 @@ You may alternatively set it up as an alias in your shell's profile by adding to
 
     alias jsl="python -c \"import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')\""
 
-or 
+or
 
     alias jsl="python3 -c \"import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))\""
 

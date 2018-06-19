@@ -23,24 +23,26 @@
 
 void to_string(const FormatType& value, string& result) {
     switch (value) {
-        case FormatType::FASTQ: result.assign("fastq");  break;
-        case FormatType::SAM:   result.assign("sam");    break;
-        case FormatType::BAM:   result.assign("bam");    break;
-        case FormatType::BAI:   result.assign("bai");    break;
-        case FormatType::CRAM:  result.assign("cram");   break;
-        case FormatType::CRAI:  result.assign("crai");   break;
-        case FormatType::VCF:   result.assign("vcf");    break;
-        case FormatType::BCF:   result.assign("bcf");    break;
-        case FormatType::CSI:   result.assign("csi");    break;
-        case FormatType::GZI:   result.assign("gzi");    break;
-        case FormatType::TBI:   result.assign("tbi");    break;
-        case FormatType::BED:   result.assign("bed");    break;
-        case FormatType::JSON:  result.assign("json");   break;
-        default:                                         break;
+        case FormatType::NONE:      result.assign("none");   break;
+        case FormatType::FASTQ:     result.assign("fastq");  break;
+        case FormatType::SAM:       result.assign("sam");    break;
+        case FormatType::BAM:       result.assign("bam");    break;
+        case FormatType::BAI:       result.assign("bai");    break;
+        case FormatType::CRAM:      result.assign("cram");   break;
+        case FormatType::CRAI:      result.assign("crai");   break;
+        case FormatType::VCF:       result.assign("vcf");    break;
+        case FormatType::BCF:       result.assign("bcf");    break;
+        case FormatType::CSI:       result.assign("csi");    break;
+        case FormatType::GZI:       result.assign("gzi");    break;
+        case FormatType::TBI:       result.assign("tbi");    break;
+        case FormatType::BED:       result.assign("bed");    break;
+        case FormatType::JSON:      result.assign("json");   break;
+        default:                                             break;
     }
 };
 bool from_string(const char* value, FormatType& result) {
          if(value == NULL)              result = FormatType::UNKNOWN;
+    else if(!strcmp(value, "none"))     result = FormatType::NONE;
     else if(!strcmp(value, "fastq"))    result = FormatType::FASTQ;
     else if(!strcmp(value, "sam"))      result = FormatType::SAM;
     else if(!strcmp(value, "bam"))      result = FormatType::BAM;
@@ -69,10 +71,7 @@ ostream& operator<<(ostream& o, const FormatType& value) {
 void encode_key_value(const string& key, const FormatType& value, Value& container, Document& document) {
     string string_value;
     to_string(value, string_value);
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+    encode_key_value(key, string_value, container, document);
 };
 template<> bool decode_value_by_key< FormatType >(const Value::Ch* key, FormatType& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
@@ -115,10 +114,7 @@ ostream& operator<<(ostream& o, const IoDirection& value) {
 void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document) {
     string string_value;
     to_string(value, string_value);
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+    encode_key_value(key, string_value, container, document);
 };
 template<> bool decode_value_by_key< IoDirection >(const Value::Ch* key, IoDirection& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
@@ -336,12 +332,67 @@ void URL::decode_extension(const FormatType& type) {
     _extension.clear();
     to_string(type, _extension);
 };
+void URL::describe(ostream& o) const {
+    o << "path : " << _path << endl;
+    o << "basename : " << _basename << endl;
+    o << "dirname : " << _dirname << endl;
+    o << "extension : " << _extension << endl;
+    o << "compression : " << _compression << endl;
+    o << "type : " << _type << endl;
+};
+
 bool operator<(const URL& lhs, const URL& rhs) {
     return lhs._path < rhs._path;
 };
 ostream& operator<<(ostream& o, const URL& url) {
     o << url._path;
     return o;
+};
+
+template<> URL decode_value(const Value& container) {
+    if(!container.IsNull()) {
+        if(container.IsString() || container.IsObject()) {
+            URL value;
+            string buffer;
+            if(container.IsString()) {
+                buffer.assign(container.GetString(), container.GetStringLength());
+                value.parse_file(buffer);
+            } else {
+                if(decode_value_by_key< string >("path", buffer, container)) {
+                    value.parse_file(buffer);
+                    if(decode_value_by_key< string >("type", buffer, container)) {
+                        value.set_type(buffer);
+                    }
+                    if(decode_value_by_key< string >("compression", buffer, container   )) {
+                        value.set_compression(buffer);
+                    }
+                } else { throw ConfigurationError("URL element must contain a non empty path element"); }
+            }
+            return value;
+        } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
+    } else { throw ConfigurationError("URL element is null"); }
+};
+template<> URL decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        return decode_value< URL >(reference->value);
+    } else { throw ConfigurationError(string(key) + " not found"); }
+};
+template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(!container.IsNull()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                list< URL > value;
+                if(reference->value.IsArray()) {
+                    for(const auto& element : reference->value.GetArray()) {
+                        value.emplace_back(decode_value< URL >(element));
+                    }
+                }
+                return value;
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is null"); }
 };
 
 template<> bool decode_value< URL >(URL& value, const Value& container) {
@@ -372,20 +423,20 @@ template<> bool decode_value< URL >(URL& value, const Value& container) {
     return false;
 };
 template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        return decode_value< URL >(value, element->value);
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        return decode_value< URL >(value, reference->value);
     } else { return false; }
 };
 template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< URL >& value, const Value& container) {
-    Value::ConstMemberIterator collection = container.FindMember(key);
-    if(collection != container.MemberEnd()) {
-        if(!collection->value.IsNull()) {
-            if(collection->value.IsArray() && !collection->value.Empty()) {
-                for(const auto& element : collection->value.GetArray()) {
-                    URL o;
-                    if(decode_value< URL >(o, element)) {
-                        value.emplace_back(o);
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsArray() && !reference->value.Empty()) {
+                for(const auto& element : reference->value.GetArray()) {
+                    URL url;
+                    if(decode_value< URL >(url, element)) {
+                        value.emplace_back(url);
                     }
                 }
                 return true;
@@ -394,7 +445,6 @@ template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< U
     }
     return false;
 };
-
 bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd()) {
@@ -405,12 +455,22 @@ bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& 
     }
     return false;
 };
+
+void encode_value(const URL& value, Value& container, Document& document) {
+    if(value.is_standard_stream()) {
+        container.SetObject();
+        encode_key_value("path", value.path(), container, document);
+        encode_key_value("type", value.type(), container, document);
+    } else {
+        container.SetString(value.c_str(), value.size(), document.GetAllocator());
+    }
+};
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document) {
     if(!value.empty()) {
-        Value v(value.c_str(), value.size(), document.GetAllocator());
-        Value k(key.c_str(), key.size(), document.GetAllocator());
+        Value element;
+        encode_value(value, element, document);
         container.RemoveMember(key.c_str());
-        container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), element.Move(), document.GetAllocator());
         return true;
     }
     return false;
@@ -418,17 +478,14 @@ bool encode_key_value(const string& key, const URL& value, Value& container, Doc
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document) {
     if(!value.empty()) {
         Value array(kArrayType);
-        for(auto& v : value) {
-            array.PushBack(Value(v.c_str(), v.size(), document.GetAllocator()).Move(), document.GetAllocator());
+        for(auto& url : value) {
+            Value element;
+            encode_value(url, element, document);
+            array.PushBack(element.Move(), document.GetAllocator());
         }
-        Value k(key.c_str(), key.size(), document.GetAllocator());
         container.RemoveMember(key.c_str());
-        container.AddMember(k.Move(), array.Move(), document.GetAllocator());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
         return true;
     }
     return false;
-};
-void encode_element(const URL& value, Value& container, Document& document) {
-    Value v(value.c_str(), value.size(), document.GetAllocator());
-    container.PushBack(v.Move(), document.GetAllocator());
 };

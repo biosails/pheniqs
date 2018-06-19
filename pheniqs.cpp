@@ -18,16 +18,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <stdio.h>
-#include <iostream>
 
-#include "error.h"
-#include "environment.h"
 #include "pipeline.h"
-
-using std::endl;
-using std::cerr;
-using std::cout;
 
 int main(int argc, char** argv) {
     try {
@@ -46,7 +38,7 @@ int main(int argc, char** argv) {
             environment.print_linted_instruction(cout);
 
         } else {
-            Pipeline pipeline(environment);
+            Pipeline pipeline(environment.instruction);
             pipeline.execute();
         }
 

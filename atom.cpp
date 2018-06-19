@@ -26,7 +26,7 @@ static inline char* copy_until_tag_end(char* source, const char* end, kstring_t&
     char* position(source);
     if(source < end) {
         while ((*position != '\t' && *position != LINE_BREAK) && position < end) {
-            position++;
+            ++position;
         }
         size_t length(position - source);
         if(length > 0) {
@@ -40,7 +40,7 @@ static inline char* copy_until_linebreak(char* source, const char* end, kstring_
     char* position(source);
     if(source < end) {
         while (*position != LINE_BREAK && position < end) {
-            position++;
+            ++position;
         }
         size_t length(position - source);
         if(length > 0) {
@@ -52,7 +52,7 @@ static inline char* copy_until_linebreak(char* source, const char* end, kstring_
 static inline char* skip_to_tab(char* source, const char* end) {
     char* position(source);
     while (*position != '\t' && position < end) {
-        position++;
+        ++position;
     }
     return position;
 };
@@ -313,41 +313,43 @@ template <> Platform decode_value_by_key(const Value::Ch* key, const Value& cont
     return value;
 };
 
-void to_string(const Decoder& value, string& result) {
+void to_string(const Algorithm& value, string& result) {
     switch(value) {
-        case Decoder::UNKNOWN:      result.assign("unknown");    break;
-        case Decoder::MDD:          result.assign("mdd");        break;
-        case Decoder::PAMLD:        result.assign("pamld");      break;
-        case Decoder::BENCHMARK:    result.assign("benchmark");  break;
-        default:                                                 break;
+        case Algorithm::UNKNOWN:      result.assign("unknown");    break;
+        case Algorithm::MDD:          result.assign("mdd");        break;
+        case Algorithm::PAMLD:        result.assign("pamld");      break;
+        case Algorithm::SIMPLE:       result.assign("simple");     break;
+        case Algorithm::BENCHMARK:    result.assign("benchmark");  break;
+        default:                                                   break;
     }
 };
-bool from_string(const char* value, Decoder& result) {
-         if(value == NULL)                  result = Decoder::UNKNOWN;
-    else if(!strcmp(value, "mdd"))          result = Decoder::MDD;
-    else if(!strcmp(value, "pamld"))        result = Decoder::PAMLD;
-    else if(!strcmp(value, "benchmark"))    result = Decoder::BENCHMARK;
-    else                                    result = Decoder::UNKNOWN;
+bool from_string(const char* value, Algorithm& result) {
+         if(value == NULL)                  result = Algorithm::UNKNOWN;
+    else if(!strcmp(value, "mdd"))          result = Algorithm::MDD;
+    else if(!strcmp(value, "pamld"))        result = Algorithm::PAMLD;
+    else if(!strcmp(value, "simple"))       result = Algorithm::SIMPLE;
+    else if(!strcmp(value, "benchmark"))    result = Algorithm::BENCHMARK;
+    else                                    result = Algorithm::UNKNOWN;
 
-    return (result == Decoder::UNKNOWN ? false : true);
+    return (result == Algorithm::UNKNOWN ? false : true);
 };
-void to_kstring(const Decoder& value, kstring_t& result) {
+void to_kstring(const Algorithm& value, kstring_t& result) {
     ks_clear(result);
     string string_value;
     to_string(value, string_value);
     ks_put_string(string_value.c_str(), string_value.size(), result);
 };
-bool from_string(const string& value, Decoder& result) {
+bool from_string(const string& value, Algorithm& result) {
     return from_string(value.c_str(), result);
 };
-ostream& operator<<(ostream& o, const Decoder& value) {
+ostream& operator<<(ostream& o, const Algorithm& value) {
     string string_value;
     to_string(value, string_value);
     o << string_value;
     return o;
 };
-bool encode_key_value(const string& key, const Decoder& value, Value& container, Document& document) {
-    if(value != Decoder::UNKNOWN) {
+bool encode_key_value(const string& key, const Algorithm& value, Value& container, Document& document) {
+    if(value != Algorithm::UNKNOWN) {
         string string_value;
         to_string(value, string_value);
         Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
@@ -358,7 +360,7 @@ bool encode_key_value(const string& key, const Decoder& value, Value& container,
     }
     return false;
 };
-template<> bool decode_value_by_key< Decoder >(const Value::Ch* key, Decoder& value, const Value& container) {
+template<> bool decode_value_by_key< Algorithm >(const Value::Ch* key, Algorithm& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
         if(element->value.IsString()) {
@@ -367,19 +369,29 @@ template<> bool decode_value_by_key< Decoder >(const Value::Ch* key, Decoder& va
     }
     return false;
 };
-template <> Decoder decode_value_by_key(const Value::Ch* key, const Value& container) {
-    Decoder value(Decoder::UNKNOWN);
+template <> Algorithm decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Algorithm value(Algorithm::UNKNOWN);
     decode_value_by_key(key, value, container);
     return value;
 };
 
-/* @HD The header line
-*/
+/* @HD The header line */
 HeadHDAtom::HeadHDAtom() :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }) {
 };
+HeadHDAtom::HeadHDAtom(const Value& ontology) :
+    VN({ 0, 0, NULL }),
+    SO({ 0, 0, NULL }),
+    GO({ 0, 0, NULL }) {
+    if(ontology.IsObject()) {
+        decode_value_by_key< kstring_t >("VN", VN, ontology);
+        decode_value_by_key< kstring_t >("SO", SO, ontology);
+        decode_value_by_key< kstring_t >("GO", GO, ontology);
+    } else { throw ConfigurationError("HD element must be a dictionary"); }
+};
+
 HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
@@ -424,7 +436,7 @@ void HeadHDAtom::encode(kstring_t& buffer) const {
 };
 char* HeadHDAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
-        position++;
+        ++position;
         uint16_t tag = tag_to_code(position);
         position += 3;
         switch (tag) {
@@ -479,6 +491,24 @@ HeadSQAtom::HeadSQAtom() :
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
     ks_terminate(SN);
+};
+HeadSQAtom::HeadSQAtom(const Value& ontology) :
+    SN({ 0, 0, NULL }),
+    LN(0),
+    AH({ 0, 0, NULL }),
+    AS({ 0, 0, NULL }),
+    M5({ 0, 0, NULL }),
+    SP({ 0, 0, NULL }),
+    UR({ 0, 0, NULL }){
+    if(ontology.IsObject()) {
+        decode_value_by_key< kstring_t >("SN", SN, ontology);
+        decode_value_by_key< int32_t >("LN", LN, ontology);
+        decode_value_by_key< kstring_t >("AH", AH, ontology);
+        decode_value_by_key< kstring_t >("AS", AS, ontology);
+        decode_value_by_key< kstring_t >("M5", M5, ontology);
+        decode_value_by_key< kstring_t >("SP", SP, ontology);
+        decode_value_by_key< kstring_t >("UR", UR, ontology);
+    } else { throw ConfigurationError("SQ element must be a dictionary"); }
 };
 HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     SN({ 0, 0, NULL }),
@@ -563,7 +593,7 @@ void HeadSQAtom::encode(kstring_t& buffer) const {
 };
 char* HeadSQAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
-        position++;
+        ++position;
         uint16_t tag = tag_to_code(position);
         position += 3;
         switch (tag) {
@@ -624,6 +654,21 @@ HeadPGAtom::HeadPGAtom() :
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
     ks_terminate(ID);
+};
+HeadPGAtom::HeadPGAtom(const Value& ontology) :
+    ID(decode_value_by_key< kstring_t >("ID", ontology)),
+    PN({ 0, 0, NULL }),
+    CL({ 0, 0, NULL }),
+    PP({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
+    VN({ 0, 0, NULL }){
+    if(ontology.IsObject()) {
+        decode_value_by_key< kstring_t >("PN", PN, ontology);
+        decode_value_by_key< kstring_t >("CL", CL, ontology);
+        decode_value_by_key< kstring_t >("PP", PP, ontology);
+        decode_value_by_key< kstring_t >("DS", DS, ontology);
+        decode_value_by_key< kstring_t >("VN", VN, ontology);
+    } else { throw ConfigurationError("PG element must be a dictionary"); }
 };
 HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -700,7 +745,7 @@ void HeadPGAtom::encode(kstring_t& buffer) const {
 };
 char* HeadPGAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
-        position++;
+        ++position;
         uint16_t tag = tag_to_code(position);
         position += 3;
         switch (tag) {
@@ -763,6 +808,35 @@ HeadRGAtom::HeadRGAtom() :
     FO({ 0, 0, NULL }),
     KS({ 0, 0, NULL }){
     ks_terminate(ID);
+};
+HeadRGAtom::HeadRGAtom(const Value& ontology) :
+    ID(decode_value_by_key< kstring_t >("ID", ontology)),
+    PI({ 0, 0, NULL }),
+    LB({ 0, 0, NULL }),
+    SM({ 0, 0, NULL }),
+    PU({ 0, 0, NULL }),
+    CN({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
+    DT({ 0, 0, NULL }),
+    PL({ 0, 0, NULL }),
+    PM({ 0, 0, NULL }),
+    PG({ 0, 0, NULL }),
+    FO({ 0, 0, NULL }),
+    KS({ 0, 0, NULL }) {
+    if(ontology.IsObject()) {
+        decode_value_by_key< kstring_t >("PI", PI, ontology);
+        decode_value_by_key< kstring_t >("LB", LB, ontology);
+        decode_value_by_key< kstring_t >("SM", SM, ontology);
+        decode_value_by_key< kstring_t >("PU", PU, ontology);
+        decode_value_by_key< kstring_t >("CN", CN, ontology);
+        decode_value_by_key< kstring_t >("DS", DS, ontology);
+        decode_value_by_key< kstring_t >("DT", DT, ontology);
+        decode_value_by_key< kstring_t >("PL", PL, ontology);
+        decode_value_by_key< kstring_t >("PM", PM, ontology);
+        decode_value_by_key< kstring_t >("PG", PG, ontology);
+        decode_value_by_key< kstring_t >("FO", FO, ontology);
+        decode_value_by_key< kstring_t >("KS", KS, ontology);
+    } else { throw ConfigurationError("RG element must be a dictionary"); }
 };
 HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -902,7 +976,7 @@ void HeadRGAtom::encode(kstring_t& buffer) const {
 };
 char* HeadRGAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
-        position++;
+        ++position;
         uint16_t tag = tag_to_code(position);
         position += 3;
         switch (tag) {
@@ -1017,7 +1091,7 @@ template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& conta
             decode_value_by_key< kstring_t >("KS", value.KS, container);
             return true;
         } else { return false; }
-    } else { throw ConfigurationError("Read Group node must be a dictionary"); }
+    } else { throw ConfigurationError("Read Group element must be a dictionary"); }
 };
 template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, list< HeadRGAtom >& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
@@ -1052,7 +1126,7 @@ bool encode_value(const HeadRGAtom& value, Value& container, Document& document)
         encode_key_value("FO", value.FO, container, document);
         encode_key_value("KS", value.KS, container, document);
         return true;
-    } else { throw ConfigurationError("Read Group can only be encoded to a dictionary"); }
+    } else { throw ConfigurationError("Read Group element must be a dictionary"); }
 };
 bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value& container, Document& document) {
     if(!value.empty()) {
@@ -1068,35 +1142,17 @@ bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value&
     }
     return false;
 };
-template <> bool transcode_value< HeadRGAtom >(const Value& from, Value& to, Document& document) {
-    if(from.IsObject()) {
-        to.SetObject();
-        transcode_value_by_key< string >("ID", from, to, document);
-        transcode_value_by_key< string >("PI", from, to, document);
-        transcode_value_by_key< string >("LB", from, to, document);
-        transcode_value_by_key< string >("SM", from, to, document);
-        transcode_value_by_key< string >("PU", from, to, document);
-        transcode_value_by_key< string >("CN", from, to, document);
-        transcode_value_by_key< string >("DS", from, to, document);
-        transcode_value_by_key< string >("DT", from, to, document);
-        transcode_value_by_key< string >("PL", from, to, document);
-        transcode_value_by_key< string >("PM", from, to, document);
-        transcode_value_by_key< string >("PG", from, to, document);
-        transcode_value_by_key< string >("FO", from, to, document);
-        transcode_value_by_key< string >("KS", from, to, document);
-        transcode_value_by_key< string >("flowcell id", from, to, document);
-        transcode_value_by_key< int32_t >("flowcell lane number", from, to, document);
-        transcode_value_by_key< list< string > >("barcode", from, to, document);
-        return true;
-    } else { throw ConfigurationError("channel node must be a dictionary"); }
-    return false;
-};
-
 
 /* @CO free text comment
 */
 HeadCOAtom::HeadCOAtom() :
-    CO({ 0, 0, NULL }){
+    CO({ 0, 0, NULL }) {
+};
+HeadCOAtom::HeadCOAtom(const Value& ontology) :
+    CO({ 0, 0, NULL }) {
+    if(ontology.IsObject()) {
+        decode_value_by_key< kstring_t >("CO", CO, ontology);
+    } else { throw ConfigurationError("CO element must be a dictionary"); }
 };
 HeadCOAtom::HeadCOAtom(const HeadCOAtom& other) :
     CO({ 0, 0, NULL }){
@@ -1116,7 +1172,7 @@ HeadCOAtom& HeadCOAtom::operator=(const HeadCOAtom& other) {
 };
 char* HeadCOAtom::decode(char* position, const char* end) {
     if(*position == '\t' && position <= end) {
-        position++;
+        ++position;
         position = copy_until_linebreak(position, end, CO);
     }
     return ++position;

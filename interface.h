@@ -22,238 +22,333 @@
 #ifndef PHENIQS_INTERFACE_H
 #define PHENIQS_INTERFACE_H
 
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <exception>
-#include <vector>
-#include <list>
-#include <unordered_map>
-#include <algorithm>
-#include <cstdlib>
+#include "include.h"
 
-#include "error.h"
-#include "url.h"
-#include "json.h"
+#include "command.h"
+#include "barcode.h"
+#include "transform.h"
 
-using std::setw;
-using std::endl;
-using std::cerr;
-using std::cout;
-using std::fixed;
-using std::string;
-using std::vector;
-using std::list;
-using std::size_t;
-using std::ostream;
-using std::ifstream;
-using std::ios_base;
-using std::exception;
-using std::to_string;
-using std::setprecision;
-using std::unordered_map;
-using std::invalid_argument;
-using std::out_of_range;
-using std::min;
-using std::max;
-using std::abs;
-using std::istreambuf_iterator;
-
-enum class ProgramAction : uint8_t {
+enum class ProgramAction : uint16_t {
     UNKNOWN,
     DEMULTIPLEX,
     QUALITY,
 };
 void to_string(const ProgramAction& value, string& result);
+string to_string(const ProgramAction& value);
 bool from_string(const char* value, ProgramAction& result);
 bool from_string(const string& value, ProgramAction& result);
 ostream& operator<<(ostream& o, const ProgramAction& value);
 void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document);
 
-enum class ParameterType : uint8_t {
-    BOOLEAN,
-    INTEGER,
-    DECIMAL,
-    STRING,
-    URL,
-    DIRECTORY,
-    UNKNOWN
+class CodeWordDistanceMetric {
+    friend class CodecDistanceMetric;
+    public:
+        const size_t barcode_length;
+        CodeWordDistanceMetric(const size_t barcode_length) :
+            barcode_length(barcode_length),
+            _min_word_length(0),
+            _max_word_length(0),
+            _min_distance(0),
+            _max_distance(0),
+            _shannon_bound(0),
+            _padding(0),
+            _spacing(1) {
+        };
+        inline bool empty() const {
+            return _words.empty();
+        };
+        inline int32_t width() const {
+            return _max_word_length;
+        };
+        inline int32_t height() const {
+            return static_cast< int32_t >(_words.size());
+        };
+        inline int32_t value(int32_t i, int32_t j) const {
+            return _matrix[i][j];
+        };
+        inline const string& word(size_t i) const {
+            return _words[i];
+        };
+        inline int32_t cumulative(size_t i) const {
+            return _cumulative[i];
+        };
+        inline int32_t minimum_distance() const {
+            return _min_distance;
+        };
+        inline int32_t shannon_bound() const {
+            return _shannon_bound;
+        };
+        void describe(ostream& o) const {
+            o << std::left;
+            if(!empty()) {
+                for(int32_t i = 0; i < height(); ++i) {
+                    o << "    ";
+                    for(int32_t j = 0; j < height(); ++j) {
+                        o << setw(_padding)<< value(i, j);
+                    }
+                    o << word(i) << ' ' << setw(_padding) << cumulative(i) << endl;
+                }
+                o << endl;
+            }
+        };
+
+    private:
+        int32_t _min_word_length;
+        int32_t _max_word_length;
+        int32_t _min_distance;
+        int32_t _max_distance;
+        int32_t _shannon_bound;
+        int32_t _padding;
+        int32_t _spacing;
+        set< string > _index;
+        vector < string > _words;
+        vector < int32_t > _cumulative;
+        vector< vector< int32_t > > _matrix;
+        void add(const string& word) {
+            if(word.size() == barcode_length) {
+                _index.insert(word);
+            } else { throw ConfigurationError(to_string(word.size()) + " nucleotide long but expecting " + to_string(barcode_length)); }
+        };
+        void load() {
+            _words.clear();
+            _cumulative.clear();
+            if(!_index.empty()) {
+
+                _max_word_length = 0;
+                _min_word_length = numeric_limits< int32_t >::max();
+                for(const auto& word : _index) {
+                    _min_word_length = min(_min_word_length, static_cast< int32_t >(word.size()));
+                    _max_word_length = max(_max_word_length, static_cast< int32_t >(word.size()));
+                    _words.push_back(word);
+                }
+
+                _max_distance = 0;
+                _min_distance = numeric_limits< int32_t >::max();
+                _matrix.resize(height());
+                _cumulative.resize(height());
+                for(int32_t i = 0; i < height(); ++i) {
+                    const string& row = word(i);
+                    _matrix[i].resize(height());
+                    for(int32_t j = 0; j < height(); ++j) {
+                        const string& column = word(j);
+                        if(i == j) {
+                            _matrix[i][j] = 0;
+
+                        } else if(i < j) {
+                            int32_t distance(hamming_distance(row, column));
+                            _min_distance = min(_min_distance, distance);
+                            _max_distance = max(_max_distance, distance);
+                            _matrix[i][j] = distance;
+                            _cumulative[i] += distance;
+                            _cumulative[j] += distance;
+
+                        } else {
+                            _matrix[i][j] = shannon_bound(row, column);
+                        }
+                    }
+                }
+                _shannon_bound = ((_min_distance - 1) / 2);
+
+                for(size_t i = 0; i < _cumulative.size(); ++i) {
+                    _cumulative[i] /= (height() * 2);
+                }
+                // We want to know how many digits are in the biggest value to be able to align the matrix
+                _padding = _spacing;
+                int32_t digit(_max_distance);
+                do {
+                    digit /= 10;
+                    ++_padding;
+                } while (digit != 0);
+            }
+        };
+        inline int32_t hamming_distance(const string& left, const string& right) const {
+            int32_t result(0);
+            for(size_t i = 0; i < left.length(); ++i) {
+                if(left[i] != right[i]) {
+                    ++result;
+                }
+            }
+            return result;
+        };
+        inline int32_t shannon_bound(const string& left, const string& right) const {
+            int32_t result(hamming_distance(left, right));
+            result = ((result - 1) / 2);
+            return result;
+        };
 };
-void to_string(const ParameterType& value, string& result);
-bool from_string(const char* value, ParameterType& result);
-bool from_string(const string& value, ParameterType& result);
-ostream& operator<<(ostream& o, const ParameterType& value);
-void encode_key_value(const string& key, const ParameterType& value, Value& container, Document& document);
 
-class Layout {
-public:
-    const size_t max_line_width;
-    const int option_indent;
-    int max_action_name;
-    const int option_handle_spacing;
-    const int option_choice_indent;
-    Layout() :
-        max_line_width(80),
-        option_indent(2),
-        max_action_name(0),
-        option_handle_spacing(4),
-        option_choice_indent(0) {
-    };
-    int complement_handle(const int& max_option_handle, const int& handle_length) const {
-        return max_option_handle - handle_length + option_handle_spacing;
-    };
-    int complement_action(const int& action_name_length) const {
-        return max_action_name - action_name_length + option_handle_spacing;
-    };
-    int indent_choice(const int& max_option_handle) const {
-        return max_option_handle + option_handle_spacing + option_indent + option_choice_indent;
-    };
+class CodecDistanceMetric {
+    public:
+        const Value& ontology;
+        const size_t segment_cardinality;
+        const int32_t nucleotide_cardinality;
+        const vector< int32_t > barcode_segment_length;
+        CodecDistanceMetric(const Value& ontology) :
+            ontology(ontology),
+            segment_cardinality(decode_value_by_key< int32_t >("segment cardinality", ontology)),
+            nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
+            barcode_segment_length(decode_value_by_key< vector< int32_t > >("barcode length", ontology)),
+            concatenated_metric(nucleotide_cardinality) {
+
+            for(auto& segment : barcode_segment_length) {
+                segment_metric.emplace_back(segment);
+            }
+
+            Value::ConstMemberIterator reference = ontology.FindMember("barcode");
+            if(reference != ontology.MemberEnd()) {
+                const Value& barcode_dictionary = reference->value;
+                if(!barcode_dictionary.IsNull()) {
+                    for(auto& barcode_record : barcode_dictionary.GetObject()) {
+                        if(!barcode_record.value.IsNull()) {
+                            try {
+                                Barcode barcode(barcode_record.value);
+                                add(barcode);
+                            } catch(ConfigurationError& error) {
+                                string barcode_key(barcode_record.name.GetString(), barcode_record.name.GetStringLength());
+                                throw ConfigurationError("barcode " + barcode_key + " : " + error.message);
+                            }
+                        }
+                    }
+                }
+            }
+            load();
+        };
+        inline bool empty() const {
+            return concatenated_metric.empty();
+        };
+        void apply_barcode_tolerance(Value& value, Document& document) {
+            vector< uint8_t > distance_tolerance;
+            if(decode_value_by_key< vector< uint8_t > >("distance tolerance", distance_tolerance, value)) {
+                if(distance_tolerance.size() == segment_cardinality) {
+                    for(size_t i = 0; i < segment_cardinality; ++i) {
+                        if(distance_tolerance[i] > segment_metric[i].shannon_bound()) {
+                            throw ConfigurationError(
+                                "barcode tolerance for segment " +
+                                to_string(i) +
+                                " is higher than allowed by shannon bound " +
+                                to_string(segment_metric[i].shannon_bound())
+                            );
+                        }
+                    }
+                } else { throw ConfigurationError(to_string(distance_tolerance.size()) + " distance tolerance values inconsistant with " + to_string(segment_cardinality) + " barcode segments"); }
+            } else {
+                distance_tolerance.resize(segment_cardinality);
+                for(size_t i = 0; i < segment_cardinality; ++i) {
+                    distance_tolerance[i] = segment_metric[i].shannon_bound();
+                }
+                encode_key_value("distance tolerance", distance_tolerance, value, document);
+            }
+        };
+        void describe(ostream& o) const {
+            if(!concatenated_metric.empty()) {
+                o << "    Hamming distance distribution" << endl << endl;
+                concatenated_metric.describe(o);
+
+                if(segment_cardinality > 1) {
+                    int32_t index(0);
+                    for(auto& segment : segment_metric) {
+                        o << "    Skegment No." << index << endl << endl;
+                        segment.describe(o);
+                        ++index;
+                    }
+                }
+            }
+        };
+
+    private:
+        CodeWordDistanceMetric concatenated_metric;
+        vector< CodeWordDistanceMetric > segment_metric;
+        void add(const Barcode& barcode) {
+            if(segment_cardinality == barcode.segment_cardinality()) {
+                for(size_t i(0); i < barcode.segment_cardinality(); ++i) {
+                    try {
+                        segment_metric[i].add(barcode[i].iupac_ambiguity());
+                    } catch(ConfigurationError& error) {
+                        throw ConfigurationError("segment " + to_string(i) + " is " + error.message);
+                    }
+                }
+                try {
+                    concatenated_metric.add(barcode.iupac_ambiguity());
+                } catch(ConfigurationError& error) {
+                    throw ConfigurationError("concatenated is " + error.message);
+                }
+            } else {
+                throw ConfigurationError("barcode must have " + to_string(segment_cardinality) + " segments");
+            }
+        };
+        void load() {
+            concatenated_metric.load();
+            for(auto& segment : segment_metric) {
+                segment.load();
+            }
+        };
 };
-class Prototype {
-public:
-    ParameterType type;
-    string name;
-    string help;
-    string meta;
-    uint64_t cardinality;
-    bool plural;
-    bool mandatory;
-    bool positional;
-    vector< string > handles;
-    vector< string > choices;
-    Prototype(const Value& node);
-    Prototype();
-    ostream& print_help(ostream& o, const int& max_option_handle, const Layout& layout) const;
-    int handle_length() const;
-    bool is_choice() const;
+
+template<> CodecDistanceMetric* decode_value_by_key(const Value::Ch* key, const Value& container);
+
+class Demultiplex : public Action {
+    public:
+        Demultiplex(const Value& ontology) :
+            Action(ontology) {
+        };
+
+    protected:
+        virtual void apply_instruction_manipulation();
+        virtual void validate_instruction();
+        virtual void clean_instruction();
+
+    private:
+        void load_input_feed();
+        int32_t inheritence_depth(const string& key, const unordered_map< string, Value* >& node_by_key, Document& document);
+        void apply_codec_inheritence();
+        void embed_codec(const Value::Ch* key);
+        bool infer_PU(const Value::Ch* key, string& value, Value& container, const bool& undetermined=false);
+        bool infer_ID(const Value::Ch* key, string& value, Value& container, const bool& undetermined=false);
+        void project_codec(Value& value, const Value& default_instruction_codec, const Value& default_instruction_barcode);
+        void project_codec_group(const Value::Ch* key);
+        void enumerate_codec(Value& value);
+        void enumerate_codec_group(const Value::Ch* key);
+        void infer_codec(Value& value);
+        void infer_codec_group(const Value::Ch* key);
+        void manipulate_codec_undetermined(Value& value);
+        void manipulate_codec_group_undetermined(const Value::Ch* key);
+        void normalize_codec_concentration(Value& value);
+        void normalize_codec_group_concentration(const Value::Ch* key);
+        void expand_codec_url_variable(Value& value);
+        void expand_codec_group_url_variable(const Value::Ch* key);
+        void expand_codec_url_base(Value& value);
+        void expand_codec_group_url_base(const Value::Ch* key);
+        void cross_validate_codec_io(Value& value, const set< URL >& input);
+        void cross_validate_codec_group_io(const Value::Ch* key);
+        void pad_codec_output_url(Value& value, const int32_t& output_segment_cardinality);
+        void pad_codec_group_output_url(const Value::Ch* key);
+        void load_codec_output_feed(Value& value, const Platform& platform, const int32_t& buffer_capacity, const uint8_t& phred_offset);
+        void load_codec_group_output_feed(const Value::Ch* key);
+        void load_output_transformation(const Value::Ch* key);
+        void load_codec_transformation(Value& value, const int32_t& input_segment_cardinality);
+        void load_codec_group_transformation(const Value::Ch* key);
+        void validate_codec_sanity(Value& value);
+        void validate_codec_group_sanity(const Value::Ch* key);
 };
-class Argument {
-friend class CommandLine;
-friend ostream& operator<<(ostream& o, const Argument& argument);
 
-public:
-    Argument(const Prototype* prototype);
-    ~Argument();
-    void set_value(const bool value);
-    void set_value(const int64_t value);
-    void set_value(const double value);
-    void set_value(const char* value);
-    void set_value(const URL value);
-    bool* get_boolean() const;
-    int64_t* get_integer() const;
-    double* get_decimal() const;
-    string* get_string() const;
-    URL* get_url() const;
-    URL* get_directory() const;
-    list< URL >* get_directory_array() const;
-    list< int64_t >* get_integer_array() const;
-    list< double >* get_decimal_array() const;
-    list< string >* get_string_array() const;
-    list< URL >* get_url_array() const;
-    uint64_t cardinality() const;
-    bool satisfied() const;
+class Interface : public CommandLine {
+    public:
+        Interface(const size_t argc, const char** argv) :
+            CommandLine(argc, argv),
+            program_action(ProgramAction::UNKNOWN) {
+            load();
+            from_string(selected->name, program_action);
+        };
+        ProgramAction get_selected_action() const {
+            return program_action;
+        };
 
-private:
-    bool assigned;
-    const Prototype prototype;
-    union {
-        bool* boolean_value;
-        int64_t* integer_value;
-        double* decimal_value;
-        string* string_value;
-        URL* url_value;
-        list< int64_t >* integer_array_value;
-        list< double >* decimal_array_value;
-        list< string >* string_array_value;
-        list< URL >* url_array_value;
-    };
+    protected:
+        virtual void load_sub_action(const Value& ontology);
+        virtual ostream& print_version_element(ostream& o) const;
+
+    private:
+        ProgramAction program_action;
 };
-class Action {
-friend class CommandLine;
 
-public:
-    string name;
-    string description;
-    string epilog;
-    Action(const Value& node, bool root=false);
-    ~Action();
-    inline int name_length() const {
-        return static_cast< int >(name.size());
-    };
-    const Value* default_value();
-    ostream& print_usage(ostream& o, const string& application_name, const Layout& layout) const;
-    ostream& print_description_element(ostream& o, const Layout& layout) const;
-    ostream& print_epilog_element(ostream& o, const Layout& layout) const;
-    ostream& print_help(ostream& o, const string& application_name, const Layout& layout) const;
-    bool is_root();
-
-private:
-    const bool root;
-    int max_option_handle;
-    const Value* default_value_node;
-    vector< Prototype* > optional_order;
-    vector< Prototype* > positional_order;
-    unordered_map< string, Prototype* > option_handle_lookup;
-    unordered_map< string, Prototype* > option_name_lookup;
-};
-class CommandLine {
-public:
-    const size_t argc;
-    const char** argv;
-    const string application_name;
-    const string application_version;
-    const string full_command;
-    const URL working_directory;
-
-    CommandLine(const int argc, const char** argv);
-    ~CommandLine();
-    const Document& instruction() const;
-    const string& name() const;
-    Argument* get(const string& name) const;
-    ProgramAction get_selected_action() const;
-    bool has_argument(const string& name);
-    bool* get_boolean(const string& name) const;
-    int64_t* get_integer(const string& name) const;
-    double* get_decimal(const string& name) const;
-    string* get_string(const string& name) const;
-    URL* get_url(const string& name) const;
-    URL* get_directory(const string& name) const;
-    list< int64_t >* get_integer_plural(const string& name) const;
-    list< double >* get_decimal_plural(const string& name) const;
-    list< string >* get_string_plural(const string& name) const;
-    list< URL >* get_url_plural(const string& name) const;
-    list< URL >* get_directory_plural(const string& name) const;
-    bool help_triggered() const;
-    ostream& print_help(ostream& o) const;
-    bool version_triggered() const;
-    ostream& print_version(ostream& o) const;
-    const Value* default_value() const;
-
-private:
-    Document _configuration;
-    Document _instruction;
-    Action* command;
-    Action* selected;
-    Layout layout;
-    vector< Action* > action_order;
-    unordered_map< string, Action* > action_name_lookup;
-    vector< Argument* > argument_order;
-    unordered_map< string, Argument* > argument_name_lookup;
-
-    Argument* parse_argument(const Prototype* prototype, size_t& index);
-    Argument* decode_optional(Action* action, size_t& index, const string& handle, bool& positional, bool composite=false);
-    Argument* decode_positional(Action* action, size_t& index, const size_t& position);
-    void decode();
-    void validate();
-    void load_action(size_t& position);
-    Argument* get_argument(const Prototype* prototype);
-    ostream& print_version_element(ostream& o, const Layout& layout) const;
-    ostream& print_action_element(ostream& o, const Layout& layout) const;
-    Document* load_default_instruction();
-    Document* load_instruction_from_configuration_file();
-    Document* load_instruction_from_command_line(const Value& base);
-    void load_instruction();
-};
 #endif /* PHENIQS_INTERFACE_H */

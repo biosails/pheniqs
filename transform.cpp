@@ -29,8 +29,7 @@ ostream& operator<<(ostream& o, const LeftTokenOperator& value) {
     return o;
 };
 
-/*  Token
-*/
+/*  Token   */
 Token::Token(
     const int32_t& index,
     const int32_t& input_segment_index,
@@ -77,15 +76,15 @@ ostream& operator<<(ostream& o, const Token& token) {
     if(token.end_terminated) o << token.end;
     return o;
 };
-template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vector< Token >& value, const Value& container) {
-    Value::ConstMemberIterator array = container.FindMember(key);
-    if(array != container.MemberEnd()) {
-        if(!array->value.IsNull()) {
-            value.clear();
-            value.reserve(array->value.Size());
-            if(array->value.IsArray()) {
+template<> vector< Token > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsArray()) {
                 int32_t token_index(0);
-                for(auto& element : array->value.GetArray()) {
+                vector< Token > value;
+                value.reserve(reference->value.Size());
+                for(auto& element : reference->value.GetArray()) {
                     if(!element.IsNull()) {
                         if(element.IsString()) {
                             string pattern(element.GetString(), element.GetStringLength());
@@ -136,7 +135,7 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
                                         }
                                         literal_value = numeric_limits< int32_t >::max();
                                         sign = true;
-                                        literal_position++;
+                                        ++literal_position;
                                         break;
                                     case '-':
                                         sign = false;
@@ -163,35 +162,30 @@ template<> bool decode_value_by_key< vector< Token > >(const Value::Ch* key, vec
                                         break;
                                 }
                                 if(c == '\0') { break; }
-                                position++;
+                                ++position;
                             }
                             value.emplace_back(token_index, input_segment_index, start, end, end_terminated);
-                            token_index++;
+                            ++token_index;
                         } else { throw ConfigurationError("token element must be a string"); }
-                    } else { throw ConfigurationError("token element can not be null"); }
+                    } else { throw ConfigurationError("token element is null"); }
                 }
-                return true;
-            } else { throw ConfigurationError(string(key) + " element must be an array"); }
-        }
-    }
-    return false;
+                return value;
+            } else { throw ConfigurationError(string(key) + " element must be a dictionary"); }
+        } else { throw ConfigurationError(string(key) + " element is null"); }
+    } else { throw ConfigurationError(string(key) + " element not found"); }
 };
 
-/*  Transform
-*/
-Transform::Transform (
-    const int32_t& index,
+/*  Transform */
+Transform::Transform(
     const Token& token,
     const int32_t& output_segment_index,
     const LeftTokenOperator& left) :
 
-    index(index),
     output_segment_index(output_segment_index),
     token(token),
     left(left) {
 };
 Transform::Transform(const Transform& other) :
-    index(other.index),
     output_segment_index(other.output_segment_index),
     token(other.token),
     left(other.left) {
@@ -236,78 +230,6 @@ ostream& operator<<(ostream& o, const Transform& transform) {
     o << transform.token.index;
     return o;
 };
-bool decode_transform_array_by_key(const Value::Ch* key, list< Transform >& value, const Value& container, const vector< Token >& tokens) {
-    Value::ConstMemberIterator array = container.FindMember(key);
-    if(array != container.MemberEnd()) {
-        if(!array->value.IsNull()) {
-            value.clear();
-            if(array->value.IsArray()) {
-                const int32_t token_cardinality(static_cast< int32_t >(tokens.size()));
-                int32_t transform_index(0);
-                int32_t output_segment_index(0);
-                for(auto& element : array->value.GetArray()) {
-                    if(!element.IsNull()) {
-                        if(element.IsString()) {
-                            string pattern(element.GetString(), element.GetStringLength());
-                            int32_t token_reference(numeric_limits< int32_t >::max());
-                            LeftTokenOperator left = LeftTokenOperator::NONE;
-                            int32_t position(0);
-                            while(true) {
-                                const char& c = pattern[position];
-                                switch(c) {
-                                    case ':':
-                                    case '\0':
-                                        if(token_reference == numeric_limits< int32_t >::max()) {
-                                            throw ConfigurationError("transform must explicitly specify a token reference");
-                                        } else if(!(token_reference < token_cardinality)) {
-                                            throw ConfigurationError("invalid token reference " + to_string(token_reference) + " in transform");
-                                        } else {
-                                            value.emplace_back(transform_index, tokens[token_reference], output_segment_index, left);
-                                            transform_index++;
-                                            token_reference = numeric_limits< int32_t >::max();
-                                            left = LeftTokenOperator::NONE;
-                                        }
-                                        break;
-                                    case '~':
-                                        if(token_reference == numeric_limits< int32_t >::max()) {
-                                            left = LeftTokenOperator::REVERSE_COMPLEMENT;
-                                        } else {
-                                            throw ConfigurationError(string("illegal right hand side operator in transform ") + c);
-                                        }
-                                        break;
-                                    case '0':
-                                    case '1':
-                                    case '2':
-                                    case '3':
-                                    case '4':
-                                    case '5':
-                                    case '6':
-                                    case '7':
-                                    case '8':
-                                    case '9': {
-                                        if(token_reference == numeric_limits< int32_t >::max()) {
-                                            token_reference = c - '0';
-                                        } else {
-                                            token_reference = token_reference * 10 + (c - '0');
-                                        }
-                                        break;
-                                    };
-                                    default:
-                                        throw ConfigurationError(string("illegal character in transform ") + c);
-                                }
-                                if(c == '\0') { break; }
-                                position++;
-                            }
-                        } else { throw ConfigurationError("transform element must be a string"); }
-                    } else { throw ConfigurationError("transform element can not be null"); }
-                    output_segment_index++;
-                }
-                return true;
-            } else { throw ConfigurationError(string(key) + " element must be an array"); }
-        }
-    }
-    return false;
-};
 bool encode_key_value(const string& key, const list< Transform >& value, Value& container, Document& document) {
     if(!value.empty()) {
         Value collection(kArrayType);
@@ -317,7 +239,7 @@ bool encode_key_value(const string& key, const list< Transform >& value, Value& 
             if(transform.output_segment_index != index) {
                 collection.PushBack(Value(current.c_str(), current.size(), document.GetAllocator()).Move(), document.GetAllocator());
                 current.clear();
-                index++;
+                ++index;
             }
             if(current.size() > 0) {
                 current.push_back(':');
@@ -330,4 +252,86 @@ bool encode_key_value(const string& key, const list< Transform >& value, Value& 
         return true;
     }
     return false;
+};
+
+/*  Rule   */
+template<> Rule decode_value_by_key(const Value::Ch* key, const Value& container) {
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        const Value& rule_element(reference->value);
+        if(!rule_element.IsNull()) {
+            if(rule_element.IsObject()) {
+                vector< Token > token_array(decode_value_by_key< vector< Token > >("token", rule_element));
+                reference = rule_element.FindMember("observation");
+                if(reference != rule_element.MemberEnd()) {
+                    const Value& observation_element(reference->value);
+                    if(!observation_element.IsNull()) {
+                        if(observation_element.IsArray()) {
+                            list< Transform > transform_array;
+                            int32_t output_segment_cardinality(0);
+
+                            for(auto& element : observation_element.GetArray()) {
+                                if(!element.IsNull()) {
+                                    if(element.IsString()) {
+                                        int32_t position(0);
+                                        LeftTokenOperator left = LeftTokenOperator::NONE;
+                                        int32_t token_index(numeric_limits< int32_t >::max());
+                                        string pattern(element.GetString(), element.GetStringLength());
+                                        while(true) {
+                                            const char& c = pattern[position];
+                                            switch(c) {
+                                                case ':':
+                                                case '\0': {
+                                                    if(token_index != numeric_limits< int32_t >::max()) {
+                                                        if(token_index < static_cast< int32_t >(token_array.size())) {
+                                                            transform_array.emplace_back(token_array[token_index], output_segment_cardinality, left);
+                                                            token_index = numeric_limits< int32_t >::max();
+                                                            left = LeftTokenOperator::NONE;
+                                                        } else { throw ConfigurationError("invalid token reference " + to_string(token_index) + " in transform"); }
+                                                    } else { throw ConfigurationError("transform must explicitly specify a token reference"); }
+                                                    break;
+                                                };
+                                                case '~': {
+                                                    if(token_index == numeric_limits< int32_t >::max()) {
+                                                        left = LeftTokenOperator::REVERSE_COMPLEMENT;
+                                                    } else {
+                                                        throw ConfigurationError(string("illegal right hand side operator in transform ") + c);
+                                                    }
+                                                    break;
+                                                };
+                                                case '0':
+                                                case '1':
+                                                case '2':
+                                                case '3':
+                                                case '4':
+                                                case '5':
+                                                case '6':
+                                                case '7':
+                                                case '8':
+                                                case '9': {
+                                                    if(token_index == numeric_limits< int32_t >::max()) {
+                                                        token_index = c - '0';
+                                                    } else {
+                                                        token_index = token_index * 10 + (c - '0');
+                                                    }
+                                                    break;
+                                                };
+                                                default:
+                                                    throw ConfigurationError(string("illegal character in transform ") + c);
+                                            }
+                                            if(c == '\0') { break; }
+                                            ++position;
+                                        }
+                                        ++output_segment_cardinality;
+                                    } else { throw ConfigurationError("transform element must be a string"); }
+                                } else { throw ConfigurationError("transform element can not be null"); }
+                            }
+                            Rule value(token_array, output_segment_cardinality, transform_array);
+                            return value;
+                        } else { throw ConfigurationError("rule observation element must be an array"); }
+                    } else { throw ConfigurationError("rule observation element is null"); }
+                } else { throw ConfigurationError("rule must define an observation element"); }
+            } else { throw ConfigurationError("element " + string(key) + " must be a dictionary"); }
+        } else { throw ConfigurationError("element " + string(key) + " is null"); }
+    } else { throw ConfigurationError("no element " + string(key) + " found"); }
 };

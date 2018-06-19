@@ -22,7 +22,9 @@
 #ifndef PHENIQS_NUCLEOTIDE_H
 #define PHENIQS_NUCLEOTIDE_H
 
-static inline bool is_iupac_ambiguous(char& c) {
+#include "include.h"
+
+static inline bool is_iupac_ambiguous(const char& c) {
     switch(c) {
         case 'A':
         case 'C':
@@ -47,7 +49,7 @@ static inline bool is_iupac_ambiguous(char& c) {
     }
 };
 
-static inline bool is_iupac_unambiguous(char& c) {
+static inline bool is_iupac_unambiguous(const char& c) {
     switch(c) {
         case 'A':
         case 'C':
@@ -62,7 +64,7 @@ static inline bool is_iupac_unambiguous(char& c) {
     }
 };
 
-static inline bool is_iupac_strict_nucleotide(char& c) {
+static inline bool is_iupac_strict_nucleotide(const char& c) {
     switch(c) {
         case 'A':
         case 'C':
@@ -76,7 +78,7 @@ static inline bool is_iupac_strict_nucleotide(char& c) {
     }
 };
 
-static inline bool is_iupac_strict_bam_nucleotide(uint8_t& c) {
+static inline bool is_iupac_strict_bam_nucleotide(const uint8_t& c) {
     switch(c) {
         case 0x1:
         case 0x2:
@@ -88,6 +90,21 @@ static inline bool is_iupac_strict_bam_nucleotide(uint8_t& c) {
             return false;
             break;
     }
+};
+
+static inline bool is_iupac_strict_sequence(const char* s) {
+    if(s != NULL && *s != '\0') {
+        const char* c(s);
+        while(*c != '\0') {
+            if(!is_iupac_strict_nucleotide(*c)) {
+                return false;
+            } else {
+                ++c;
+            }
+        }
+        return true;
+    }
+    return false;
 };
 
 /*  BAM Nucleic Acid Encoding
@@ -143,6 +160,7 @@ const char BamToAmbiguousAscii[IUPAC_CODE_SIZE] = {
     'B',
     'N'
 };
+
 /*  BAM to Unambiguous ASCII
     Convert IUPAC ambiguous nucleic acid 4bit BAM encoding to unambiguous ASCII
     Ambiguous code is mapped to N
@@ -165,6 +183,7 @@ const char BamToUnambiguousAscii[IUPAC_CODE_SIZE] = {
     'N',    //   CGT    0xE
     'N'     //  ACGT    0xF
 };
+
 /*  BAM to reverse complement BAM
     Convert IUPAC ambiguous nucleic acid 4bit BAM encoding to reverse complement
 */
@@ -186,6 +205,7 @@ const char BamToReverseComplementBam[IUPAC_CODE_SIZE] = {
     0x7,
     0xf,
 };
+
 /*  BAM to Unambiguous BAM
     Convert IUPAC ambiguous nucleic acid 4bit BAM encoding to unambiguous
 */
@@ -207,6 +227,7 @@ const char BamToUnambiguousBam[IUPAC_CODE_SIZE] = {
     0xf,
     0xf,
 };
+
 /*  ASCII to ambiguous BAM
     Convert IUPAC ambiguous nucleic acid ASCII  to 4bit BAM encoding
     character may be either an IUPAC ambiguity code,

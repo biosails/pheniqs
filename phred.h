@@ -22,16 +22,14 @@
 #ifndef PHENIQS_PHRED_H
 #define PHENIQS_PHRED_H
 
-#include <limits>
-
-using std::numeric_limits;
+#include "include.h"
 
 const uint8_t SAM_PHRED_DECODING_OFFSET(33);
 const uint8_t MIN_PHRED_VALUE(2);
 const uint8_t MAX_PHRED_VALUE(104);
 const uint8_t MAX_VALID_PHRED_VALUE(40);
 const uint8_t PHRED_RANGE(128);
-const uint8_t EFFECTIVE_PHRED_RANGE(128);
+const uint8_t EFFECTIVE_PHRED_RANGE(42);
 const double UNIFORM_BASE_PROBABILITY(0.25);
 const double UNIFORM_BASE_PHRED(6.02059991327962329421552567509934);
 
@@ -449,7 +447,7 @@ const double ThirdProbability[128] = {
     I(q) =  log10(R(q)) * -10.0
 */
 const double InverseQuality[128] = {
-    numeric_limits<double>::infinity(),
+    numeric_limits< double >::infinity(),
     6.8682532438011545,
     4.3292343333624830,
     3.0206243992830037,
@@ -583,15 +581,15 @@ const double InverseQuality[128] = {
 
     double* make_phred_64bit_scale(ostream& o) {
         double* scale = new double[PHRED_RANGE * 4];
-        for(uint16_t i = 0; i < PHRED_RANGE; i++) {
+        for(uint16_t i = 0; i < PHRED_RANGE; ++i) {
             scale[i] = pow(10.0, double(i) / -10.0);
             scale[PHRED_RANGE + i] = 1.0 - scale[i];
             scale[PHRED_RANGE * 2 + i] = scale[i] / 3.0;
             scale[PHRED_RANGE * 3 + i] = double(-10.0 * log10(scale[PHRED_RANGE + i]));
         }
-        o << fixed << setprecision(numeric_limits<double>::digits10 + 1);
+        o << fixed << setprecision(numeric_limits< double >::digits10 + 1);
         o << "Q" << '\t' << "P" << '\t' << "1-P" << '\t' << "P/3" << '\t' << "inverse Q" << endl;
-        for(uint16_t i = 0; i < PHRED_RANGE; i++) {
+        for(uint16_t i = 0; i < PHRED_RANGE; ++i) {
             o << i << ",\t";
             o << scale[i] << ",\t";
             o << scale[PHRED_RANGE + i] << ",\t";

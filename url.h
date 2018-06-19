@@ -22,33 +22,9 @@
 #ifndef PHENIQS_URL_H
 #define PHENIQS_URL_H
 
-#include <stdio.h>
-#include <iomanip>
-#include <list>
-#include <vector>
-#include <fstream>
-#include <iostream>
-#include <stdlib.h>
+#include "include.h"
 
-#include "error.h"
 #include "json.h"
-
-using std::hash;
-using std::setw;
-using std::endl;
-using std::list;
-using std::cerr;
-using std::cout;
-using std::fixed;
-using std::string;
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::ios_base;
-using std::exception;
-using std::to_string;
-using std::setprecision;
-using std::numeric_limits;
 
 #define STANDARD_STREAM_ALIAS "-"
 #define CANONICAL_STDIN_PATH "/dev/stdin"
@@ -60,6 +36,7 @@ const char EXTENSION_SEPARATOR('.');
 
 enum class FormatType : uint8_t {
     UNKNOWN,
+    NONE,
     FASTQ,
     SAM,
     BAM,
@@ -92,94 +69,93 @@ ostream& operator<<(ostream& o, const IoDirection& direction);
 void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document);
 
 class URL {
-friend ostream& operator<<(ostream& o, const URL& url);
-friend bool operator<(const URL& lhs, const URL& rhs);
+    friend ostream& operator<<(ostream& o, const URL& url);
+    friend bool operator<(const URL& lhs, const URL& rhs);
 
-public:
-    URL();
-    URL(const URL& other);
-    URL(const string& path);
-    URL(const string& path, const bool& is_directory);
-    void parse_directory(const string& path);
-    void parse_file(const string& path);
-    void parse_file(const string& path, const IoDirection& direction);
-    void set_basename(const string& name);
-    void set_dirname(const string& directory);
-    void set_compression(const string& compression);
-    void set_type(const string& type);
-    void set_type(const FormatType type, const bool force = false);
-    void relocate(const URL& base);
-    inline const string& path() const {
-        return _path;
-    };
-    inline const string& basename() const {
-        return _basename;
-    };
-    inline const string& dirname() const {
-        return _dirname;
-    };
-    inline const string& extension() const {
-        return _extension;
-    };
-    inline const string& compression() const {
-        return _compression;
-    };
-    inline const FormatType& type() const {
-        return _type;
-    };
-    inline bool empty() const {
-        return _path.empty();
-    };
-    inline bool is_file() const {
-        return !_basename.empty();
-    };
-    inline bool is_directory() const {
-        return _basename.empty() && !_dirname.empty();
-    };
-    inline bool is_stdin() const {
-        return _path == CANONICAL_STDIN_PATH;
-    };
-    inline bool is_stdout() const {
-        return _path == CANONICAL_STDOUT_PATH;
-    };
-    inline bool is_stderr() const {
-        return _path == CANONICAL_STDERR_PATH;
-    };
-    inline bool is_null() const {
-        return _path == CANONICAL_NULL_DEVICE_PATH;
-    };
-    inline bool is_standard_stream() const {
-        return is_stdin() || is_stdout() || is_stderr() || is_null();
-    };
-    inline bool is_absolute() const {
-        return !_dirname.empty() && _dirname[0] == PATH_SEPARATOR;
-    };
-    inline void clear() {
-        _path.clear();
-        _basename.clear();
-        _dirname.clear();
-        _extension.clear();
-        _compression.clear();
-    };
-    bool is_readable() const;
-    bool is_writable() const;
-    const char* const c_str() const;
-    const size_t size() const;
-    void describe(ostream& o) const;
-    bool operator==(const URL& other) const;
-    URL& operator=(const URL& other);
-    operator string() const;
+    public:
+        URL();
+        URL(const URL& other);
+        URL(const string& path);
+        URL(const string& path, const bool& is_directory);
+        void parse_directory(const string& path);
+        void parse_file(const string& path);
+        void parse_file(const string& path, const IoDirection& direction);
+        void set_basename(const string& name);
+        void set_dirname(const string& directory);
+        void set_compression(const string& compression);
+        void set_type(const string& type);
+        void set_type(const FormatType type, const bool force = false);
+        void relocate(const URL& base);
+        inline const string& path() const {
+            return _path;
+        };
+        inline const string& basename() const {
+            return _basename;
+        };
+        inline const string& dirname() const {
+            return _dirname;
+        };
+        inline const string& extension() const {
+            return _extension;
+        };
+        inline const string& compression() const {
+            return _compression;
+        };
+        inline const FormatType& type() const {
+            return _type;
+        };
+        inline bool empty() const {
+            return _path.empty();
+        };
+        inline bool is_file() const {
+            return !_basename.empty();
+        };
+        inline bool is_directory() const {
+            return _basename.empty() && !_dirname.empty();
+        };
+        inline bool is_stdin() const {
+            return _path == CANONICAL_STDIN_PATH;
+        };
+        inline bool is_stdout() const {
+            return _path == CANONICAL_STDOUT_PATH;
+        };
+        inline bool is_stderr() const {
+            return _path == CANONICAL_STDERR_PATH;
+        };
+        inline bool is_null() const {
+            return _path == CANONICAL_NULL_DEVICE_PATH;
+        };
+        inline bool is_standard_stream() const {
+            return is_stdin() || is_stdout() || is_stderr() || is_null();
+        };
+        inline bool is_absolute() const {
+            return !_dirname.empty() && _dirname[0] == PATH_SEPARATOR;
+        };
+        inline void clear() {
+            _path.clear();
+            _basename.clear();
+            _dirname.clear();
+            _extension.clear();
+            _compression.clear();
+        };
+        bool is_readable() const;
+        bool is_writable() const;
+        const char* const c_str() const;
+        const size_t size() const;
+        bool operator==(const URL& other) const;
+        URL& operator=(const URL& other);
+        operator string() const;
+        void describe(ostream& o) const;
 
-private:
-    string _path;
-    string _basename;
-    string _dirname;
-    string _extension;
-    string _compression;
-    FormatType _type;
-
-    void refresh();
-    void decode_extension(const FormatType& type);
+    private:
+        string _path;
+        string _basename;
+        string _dirname;
+        string _extension;
+        string _compression;
+        FormatType _type;
+        void refresh();
+        void decode_extension(const FormatType& type);
 };
 bool operator<(const URL& lhs, const URL& rhs);
 
@@ -191,6 +167,10 @@ namespace std {
     };
 };
 
+template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container);
+template<> URL decode_value_by_key(const Value::Ch* key, const Value& container);
+template<> URL decode_value(const Value& container);
+
 template<> bool decode_value< URL >(URL& value, const Value& container);
 template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container);
 template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< URL >& value, const Value& container);
@@ -198,6 +178,6 @@ template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< U
 bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& container);
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document);
-void encode_element(const URL& value, Value& container, Document& document);
+void encode_value(const URL& value, Value& container, Document& document);
 
 #endif /* PHENIQS_URL_H */

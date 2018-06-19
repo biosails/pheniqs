@@ -22,33 +22,10 @@
 #ifndef PHENIQS_ATOM_H
 #define PHENIQS_ATOM_H
 
-#include <set>
-#include <unordered_map>
+#include "include.h"
 
 #include <htslib/hts.h>
-
-#include "error.h"
 #include "json.h"
-#include "kstring.h"
-
-using std::set;
-using std::copy;
-using std::hash;
-using std::setw;
-using std::endl;
-using std::cerr;
-using std::cout;
-using std::fixed;
-using std::string;
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::ios_base;
-using std::exception;
-using std::to_string;
-using std::make_pair;
-using std::setprecision;
-using std::unordered_map;
 
 /*  defined in htslib/hts.h */
 void to_string(const htsFormatCategory& value, string& result);
@@ -62,6 +39,99 @@ ostream& operator<<(ostream& o, const htsExactFormat& hts_exact_format);
 void to_string(const htsCompression& value, string& result);
 bool from_string(const char* value, htsCompression& result);
 ostream& operator<<(ostream& o, const htsCompression& hts_compression);
+
+enum class HtsAuxiliaryCode : uint16_t {
+    AH = 0x4148,
+    AM = 0x414d,
+    AS = 0x4153,
+    BC = 0x4243,
+    BQ = 0x4251,
+    BX = 0x4258,
+    BZ = 0x425a,
+    CC = 0x4343,
+    CG = 0x4347,
+    CL = 0x434c,
+    CM = 0x434d,
+    CN = 0x434e,
+    CO = 0x434f,
+    CP = 0x4350,
+    CQ = 0x4351,
+    CS = 0x4353,
+    CT = 0x4354,
+    DQ = 0x4451,
+    DS = 0x4453,
+    DT = 0x4454,
+    E2 = 0x4532,
+    EE = 0x4545,
+    FI = 0x4649,
+    FO = 0x464f,
+    FS = 0x4653,
+    FZ = 0x465a,
+    GC = 0x4743,
+    GO = 0x474f,
+    GQ = 0x4751,
+    GS = 0x4753,
+    H0 = 0x4830,
+    H1 = 0x4831,
+    H2 = 0x4832,
+    HD = 0x4844,
+    HI = 0x4849,
+    ID = 0x4944,
+    IH = 0x4948,
+    KS = 0x4b53,
+    LB = 0x4c42,
+    LN = 0x4c4e,
+    M5 = 0x4d35,
+    MC = 0x4d43,
+    MD = 0x4d44,
+    MF = 0x4d46,
+    MI = 0x4d49,
+    MQ = 0x4d51,
+    NH = 0x4e48,
+    NM = 0x4e4d,
+    OC = 0x4f43,
+    OP = 0x4f50,
+    OQ = 0x4f51,
+    OX = 0x4f58,
+    PG = 0x5047,
+    PI = 0x5049,
+    PL = 0x504c,
+    PM = 0x504d,
+    PN = 0x504e,
+    PP = 0x5050,
+    PQ = 0x5051,
+    PT = 0x5054,
+    PU = 0x5055,
+    PX = 0x5058,
+    Q2 = 0x5132,
+    QT = 0x5154,
+    QX = 0x5158,
+    R2 = 0x5232,
+    RG = 0x5247,
+    RT = 0x5254,
+    RX = 0x5258,
+    S2 = 0x5332,
+    SA = 0x5341,
+    SM = 0x534d,
+    SN = 0x534e,
+    SO = 0x534f,
+    SP = 0x5350,
+    SQ = 0x5351,
+    TC = 0x5443,
+    U2 = 0x5532,
+    UQ = 0x5551,
+    UR = 0x5552,
+    VN = 0x564e,
+    XD = 0x5844,
+    XL = 0x584c,
+    XM = 0x584d,
+    XP = 0x5850,
+    YD = 0x5944,
+    XR = 0x5852,
+    XQ = 0x5851,
+    XO = 0x584f,
+    XZ = 0x585a,
+};
 
 /*  SAM format flags
 
@@ -137,18 +207,19 @@ bool from_string(const string& value, Platform& result);
 ostream& operator<<(ostream& o, const Platform& value);
 void encode_key_value(const string& key, const Platform& value, Value& container, Document& document);
 
-enum class Decoder : uint8_t {
+enum class Algorithm : uint8_t {
     UNKNOWN,
     MDD,
     PAMLD,
+    SIMPLE,
     BENCHMARK,
 };
-void to_string(const Decoder& value, string& result);
-bool from_string(const char* value, Decoder& result);
-void to_kstring(const Decoder& value, kstring_t& result);
-bool from_string(const string& value, Decoder& result);
-ostream& operator<<(ostream& o, const Decoder& value);
-bool encode_key_value(const string& key, const Decoder& value, Value& container, Document& document);
+void to_string(const Algorithm& value, string& result);
+bool from_string(const char* value, Algorithm& result);
+void to_kstring(const Algorithm& value, kstring_t& result);
+bool from_string(const string& value, Algorithm& result);
+ostream& operator<<(ostream& o, const Algorithm& value);
+bool encode_key_value(const string& key, const Algorithm& value, Value& container, Document& document);
 
 /*  @HD The header line
 
@@ -165,25 +236,26 @@ bool encode_key_value(const string& key, const Decoder& value, Value& container,
             reference   grouped by RNAME/POS
 */
 class HeadHDAtom {
-friend class HtsHeader;
-friend ostream& operator<<(ostream& o, const HeadHDAtom& hd);
+    friend class HtsHeader;
+    friend ostream& operator<<(ostream& o, const HeadHDAtom& hd);
 
-public:
-    kstring_t VN;
-    kstring_t SO;
-    kstring_t GO;
+    public:
+        kstring_t VN;
+        kstring_t SO;
+        kstring_t GO;
 
-    HeadHDAtom();
-    ~HeadHDAtom();
-    HeadHDAtom(const HeadHDAtom& other);
-    HeadHDAtom& operator=(const HeadHDAtom& other);
-    void set_alignment_sort_order(const HtsSortOrder& order);
-    void set_alignment_grouping(const HtsGrouping& grouping);
-    void set_version(const htsFormat* format);
+        HeadHDAtom();
+        HeadHDAtom(const Value& ontology);
+        HeadHDAtom(const HeadHDAtom& other);
+        ~HeadHDAtom();
+        void set_alignment_sort_order(const HtsSortOrder& order);
+        void set_alignment_grouping(const HtsGrouping& grouping);
+        void set_version(const htsFormat* format);
+        HeadHDAtom& operator=(const HeadHDAtom& other);
 
-private:
-    void encode(kstring_t& buffer) const;
-    char* decode(char* position, const char* end);
+    private:
+        void encode(kstring_t& buffer) const;
+        char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadHDAtom& hd);
 
@@ -203,27 +275,28 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd);
         If it does not start with one of these protocols, it is assumed to be a file-system path.
 */
 class HeadSQAtom {
-friend class HtsHeader;
-friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
+    friend class HtsHeader;
+    friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
 
-public:
-    kstring_t SN;
-    int32_t LN;
-    kstring_t AH;
-    kstring_t AS;
-    kstring_t M5;
-    kstring_t SP;
-    kstring_t UR;
+    public:
+        kstring_t SN;
+        int32_t LN;
+        kstring_t AH;
+        kstring_t AS;
+        kstring_t M5;
+        kstring_t SP;
+        kstring_t UR;
 
-    HeadSQAtom();
-    ~HeadSQAtom();
-    HeadSQAtom(const HeadSQAtom& other);
-    HeadSQAtom& operator=(const HeadSQAtom& other);
-    operator string() const;
+        HeadSQAtom();
+        HeadSQAtom(const Value& ontology);
+        HeadSQAtom(const HeadSQAtom& other);
+        ~HeadSQAtom();
+        operator string() const;
+        HeadSQAtom& operator=(const HeadSQAtom& other);
 
-private:
-    void encode(kstring_t& buffer) const;
-    char* decode(char* position, const char* end);
+    private:
+        void encode(kstring_t& buffer) const;
+        char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadSQAtom& sq);
 
@@ -240,26 +313,27 @@ ostream& operator<<(ostream& o, const HeadSQAtom& sq);
     VN  Program version
 */
 class HeadPGAtom {
-friend class HtsHeader;
-friend ostream& operator<<(ostream& o, const HeadPGAtom& program);
+    friend class HtsHeader;
+    friend ostream& operator<<(ostream& o, const HeadPGAtom& program);
 
-public:
-    kstring_t ID;
-    kstring_t PN;
-    kstring_t CL;
-    kstring_t PP;
-    kstring_t DS;
-    kstring_t VN;
+    public:
+        kstring_t ID;
+        kstring_t PN;
+        kstring_t CL;
+        kstring_t PP;
+        kstring_t DS;
+        kstring_t VN;
 
-    HeadPGAtom();
-    ~HeadPGAtom();
-    HeadPGAtom(const HeadPGAtom& other);
-    HeadPGAtom& operator=(const HeadPGAtom& other);
-    operator string() const;
+        HeadPGAtom();
+        HeadPGAtom(const Value& ontology);
+        HeadPGAtom(const HeadPGAtom& other);
+        ~HeadPGAtom();
+        operator string() const;
+        HeadPGAtom& operator=(const HeadPGAtom& other);
 
-private:
-    void encode(kstring_t& buffer) const;
-    char* decode(char* position, const char* end);
+    private:
+        void encode(kstring_t& buffer) const;
+        char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadPGAtom& pg);
 
@@ -315,35 +389,36 @@ ostream& operator<<(ostream& o, const HeadPGAtom& pg);
     also informative: http://gatkforums.broadinstitute.org/gatk/discussion/6472/read-groups
 */
 class HeadRGAtom {
-friend class HtsHeader;
-friend ostream& operator<<(ostream& o, const HeadRGAtom& read_group);
+    friend class HtsHeader;
+    friend ostream& operator<<(ostream& o, const HeadRGAtom& read_group);
 
-public:
-    kstring_t ID;
-    kstring_t PI;
-    kstring_t LB;
-    kstring_t SM;
-    kstring_t PU;
-    kstring_t CN;
-    kstring_t DS;
-    kstring_t DT;
-    kstring_t PL;
-    kstring_t PM;
-    kstring_t PG;
-    kstring_t FO;
-    kstring_t KS;
+    public:
+        kstring_t ID;
+        kstring_t PI;
+        kstring_t LB;
+        kstring_t SM;
+        kstring_t PU;
+        kstring_t CN;
+        kstring_t DS;
+        kstring_t DT;
+        kstring_t PL;
+        kstring_t PM;
+        kstring_t PG;
+        kstring_t FO;
+        kstring_t KS;
 
-    HeadRGAtom();
-    ~HeadRGAtom();
-    HeadRGAtom(const HeadRGAtom& other);
-    HeadRGAtom& operator=(const HeadRGAtom& other);
-    operator string() const;
-    void set_platform(const Platform& value);
-    void expand(const HeadRGAtom& other);
+        HeadRGAtom();
+        HeadRGAtom(const Value& ontology);
+        HeadRGAtom(const HeadRGAtom& other);
+        ~HeadRGAtom();
+        operator string() const;
+        void set_platform(const Platform& value);
+        void expand(const HeadRGAtom& other);
+        HeadRGAtom& operator=(const HeadRGAtom& other);
 
-private:
-    void encode(kstring_t& buffer) const;
-    char* decode(char* position, const char* end);
+    private:
+        void encode(kstring_t& buffer) const;
+        char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg);
 template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container);
@@ -351,25 +426,24 @@ template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, 
 bool encode_value(const HeadRGAtom& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const HeadRGAtom& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value& container, Document& document);
-template <> bool transcode_value< HeadRGAtom >(const Value& from, Value& to, Document& document);
 
-/*  @CO free text comment
-*/
+/*  @CO free text comment */
 class HeadCOAtom {
-friend class HtsHeader;
-friend ostream& operator<<(ostream& o, const HeadCOAtom& co);
+    friend class HtsHeader;
+    friend ostream& operator<<(ostream& o, const HeadCOAtom& co);
 
-public:
-    kstring_t CO;
+    public:
+        kstring_t CO;
 
-    HeadCOAtom();
-    ~HeadCOAtom();
-    HeadCOAtom(const HeadCOAtom& other);
-    HeadCOAtom& operator=(const HeadCOAtom& other);
+        HeadCOAtom();
+        HeadCOAtom(const Value& ontology);
+        HeadCOAtom(const HeadCOAtom& other);
+        ~HeadCOAtom();
+        HeadCOAtom& operator=(const HeadCOAtom& other);
 
-private:
-    void encode(kstring_t& buffer) const;
-    char* decode(char* position, const char* end);
+    private:
+        void encode(kstring_t& buffer) const;
+        char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadCOAtom& co);
 

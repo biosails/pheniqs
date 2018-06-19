@@ -19,13 +19,4 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "feed.h"
-
-template< typename T > ostream& operator<<(ostream& o, const CyclicBuffer< T >& buffer) {
-    o << "Next: " << buffer._next << endl;
-    o << "Vacant: " << buffer._vacant << endl;
-    o << "Capacity: " << buffer._capacity << endl;
-    o << "Resolution: " << buffer._resolution << endl;
-    o << "Size: " << buffer.size() << endl;
-    return o;
-};
+#include "decoder.h"

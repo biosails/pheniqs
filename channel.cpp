@@ -19,13 +19,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "feed.h"
+#include "channel.h"
 
-template< typename T > ostream& operator<<(ostream& o, const CyclicBuffer< T >& buffer) {
-    o << "Next: " << buffer._next << endl;
-    o << "Vacant: " << buffer._vacant << endl;
-    o << "Capacity: " << buffer._capacity << endl;
-    o << "Resolution: " << buffer._resolution << endl;
-    o << "Size: " << buffer.size() << endl;
-    return o;
+template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    vector< Channel > value;
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                value.reserve(reference->value.MemberCount());
+                for(auto& record : reference->value.GetObject()) {
+                    value.emplace_back(record.value);
+                }
+            } else { throw ConfigurationError(string(key) + " element must be a dictionary"); }
+        } else { throw ConfigurationError(string(key) + " element is null"); }
+    } else { throw ConfigurationError(string(key) + " not found"); }
+    return value;
 };

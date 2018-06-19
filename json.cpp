@@ -21,245 +21,549 @@
 
 #include "json.h"
 
-
 void print_json(const Value& node, ostream& o) {
     StringBuffer buffer;
     PrettyWriter< StringBuffer > writer(buffer);
     node.Accept(writer);
     o << buffer.GetString() << endl;
 };
+Document* load_json(const string& path) {
+    Document* document(NULL);
+    if(access(path.c_str(), R_OK) != -1) {
+        document = new Document();
+        ifstream file(path);
+        const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
+        file.close();
+        if(document->Parse(content.c_str()).HasParseError()) {
+            string message(GetParseError_En(document->GetParseError()));
+            message += " at position ";
+            message += to_string(document->GetErrorOffset());
+            throw ConfigurationError(message);
+        }
+    }
+    return document;
+};
 
-void merge_json_value(const Value& node, const Value& other, Value& container, Document& document) {
+void merge_json_value(const Value& base, Value& ontology, Document& document) {
+    if(!base.IsNull()) {
+        if(!ontology.IsNull()) {
+            if(base.IsObject()) {
+                if(ontology.IsObject()) {
+                    for(auto& element : base.GetObject()) {
+                        Value::MemberIterator reference = ontology.FindMember(element.name);
+                        if(reference != ontology.MemberEnd()) {
+                            try {
+                                merge_json_value(element.value, reference->value, document);
+                            } catch(ConfigurationError& error) {
+                                throw ConfigurationError(string(element.name.GetString(), element.name.GetStringLength()) + " " + error.message);
+                            }
+                        } else {
+                            ontology.AddMember (
+                                Value(element.name, document.GetAllocator()).Move(),
+                                Value(element.value, document.GetAllocator()).Move(),
+                                document.GetAllocator()
+                            );
+                        }
+                    }
+                } else { throw ConfigurationError("element is not a dictionary"); }
+            }
+        } else {
+            ontology.CopyFrom(base, document.GetAllocator());
+        }
+    }
+};
+void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document) {
     container.SetNull();
-    if(!other.IsNull() && !node.IsNull()) {
-        if(other.IsObject() && node.IsObject()) {
-            container.SetObject();
-            for(auto& record : node.GetObject()) {
-                Value::ConstMemberIterator element = other.FindMember(record.name);
-                Value next;
-                if(element != other.MemberEnd()) {
-                    merge_json_value(record.value, element->value, next, document);
-                } else {
-                    next.CopyFrom(record.value, document.GetAllocator());
+    if(!base.IsNull() && !ontology.IsNull()) {
+        if(base.IsObject()) {
+            if(ontology.IsObject()) {
+                container.SetObject();
+                for(auto& record : base.GetObject()) {
+                    Value child;
+                    Value::ConstMemberIterator element = ontology.FindMember(record.name);
+                    if(element != ontology.MemberEnd()) {
+                        project_json_value(record.value, element->value, child, document);
+                    } else {
+                        child.CopyFrom(record.value, document.GetAllocator());
+                    }
+                    container.AddMember(Value(record.name, document.GetAllocator()).Move(), child.Move(), document.GetAllocator());
                 }
-                container.AddMember(Value(record.name, document.GetAllocator()).Move(), next.Move(), document.GetAllocator());
-            }
-            for(auto& record : other.GetObject()) {
-                Value::ConstMemberIterator element = container.FindMember(record.name);
-                if(element == container.MemberEnd()) {
-                    Value next;
-                    next.CopyFrom(record.value, document.GetAllocator());
-                    container.AddMember(Value(record.name, document.GetAllocator()).Move(), next.Move(), document.GetAllocator());
+            } else if(ontology.IsArray()) {
+                container.SetArray();
+                for(const auto& element : ontology.GetArray()) {
+                    Value child;
+                    project_json_value(base, element, child, document);
+                    container.PushBack(child.Move(), document.GetAllocator());
                 }
-            }
-        } else if(other.IsArray() && node.IsArray()) {
-            container.CopyFrom(node, document.GetAllocator());
-            for(const auto& e : other.GetArray()) {
-                Value next;
-                next.CopyFrom(e, document.GetAllocator());
-                container.PushBack(next.Move(), document.GetAllocator());
             }
         }
     }
-    if(!other.IsNull() && container.IsNull()) {
-        container.CopyFrom(other, document.GetAllocator());
+    if(!ontology.IsNull() && container.IsNull()) {
+        container.CopyFrom(ontology, document.GetAllocator());
     }
 };
-void merge_json_value(const Value& node, const Value& other, Document& document) {
-    merge_json_value(node, other, document, document);
+void clean_json_value(Value& ontology, Document& document) {
+    if(!ontology.IsNull()) {
+        if(ontology.IsObject()) {
+            Value clean(kObjectType);
+            for(auto& element : ontology.GetObject()) {
+                clean_json_value(element.value, document);
+                if(!element.value.IsNull()) {
+                    clean.AddMember(element.name.Move(), element.value.Move(), document.GetAllocator());
+                }
+            }
+            if(clean.ObjectEmpty()) {
+                clean.SetNull();
+            }
+            ontology.Swap(clean);
+
+        } else if(ontology.IsArray()) {
+            Value clean(kArrayType);
+            for(auto& element : ontology.GetArray()) {
+                clean_json_value(element, document);
+                if(!element.IsNull()) {
+                    clean.PushBack(element.Move(), document.GetAllocator());
+                }
+                if(clean.Empty()) {
+                    clean.SetNull();
+                }
+            }
+            ontology.Swap(clean);
+
+        } else if(ontology.IsBool() && !ontology.GetBool()) {
+            ontology.SetNull();
+
+        }
+    }
 };
 
 template<> bool decode_value_by_key< bool >(const Value::Ch* key, bool& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsBool()) {
-            value = element->value.GetBool();
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsBool()) {
+                    value = reference->value.GetBool();
+                    return true;
+                } else { throw ConfigurationError(string(key) + " element is not a boolean"); }
+            } else {
+                value = false;
+                return true;
+            }
+        } else {
+            value = false;
             return true;
-        } else { throw ConfigurationError(string(key) + " element must be a boolean"); }
-    }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< uint8_t >(const Value::Ch* key, uint8_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        unsigned v;
-        if(element->value.IsUint() && (v = element->value.GetUint()) <= numeric_limits< uint8_t >::max()) {
-            value = static_cast< uint8_t >(v);
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer no bigger than " + to_string(numeric_limits< uint8_t >::max())); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            unsigned v;
+            if(reference->value.IsUint() && (v = reference->value.GetUint()) <= numeric_limits< uint8_t >::max()) {
+                value = static_cast< uint8_t >(v);
+                return true;
+            } else { throw ConfigurationError(string(key) + " element is not an 8 bit unsigned integer"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< vector< uint8_t > >(const Value::Ch* key, vector< uint8_t >& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsArray()) {
-            if(!element->value.Empty()) {
-                value.reserve(value.size() + element->value.Size());
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsArray()) {
+                size_t index(0);
                 unsigned v;
-                for(const auto& e : element->value.GetArray()) {
-                    if(e.IsUint() && (v = e.GetUint()) <= numeric_limits< uint8_t >::max()) {
-                        value.emplace_back(static_cast < uint8_t >(v));
-                    } else { throw ConfigurationError(string(key) + " element member must be an unsigned integer no bigger than " + to_string(numeric_limits< uint8_t >::max())); }
+                value.resize(reference->value.Size());
+                for(const auto& element : reference->value.GetArray()) {
+                    if(element.IsUint() && (v = element.GetUint()) <= numeric_limits< uint8_t >::max()) {
+                        value[index] = static_cast < uint8_t >(v);
+                        ++index;
+                    } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not an 8 bit unsigned integer"); }
                 }
                 return true;
-            }
-        } else { throw ConfigurationError(string(key) + " element must be an array"); }
-    }
+            } else { throw ConfigurationError(string(key) + " element is not an array"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< int32_t >(const Value::Ch* key, int32_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsInt()) {
-            value = element->value.GetInt();
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be an integer between " + to_string(numeric_limits< int32_t >::min()) + " and " + to_string(numeric_limits< int32_t >::max())); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsInt()) {
+                value = reference->value.GetInt();
+                return true;
+            } else { throw ConfigurationError(string(key) + " element is not a 32 bit integer"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< vector< int32_t > >(const Value::Ch* key, vector< int32_t >& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsArray()){
-            if(!element->value.Empty()) {
-                value.reserve(value.size() + element->value.Size());
-                for(const auto& e : element->value.GetArray()) {
-                    if(e.IsInt()) {
-                        value.emplace_back(e.GetInt());
-                    } else { throw ConfigurationError(string(key) + " element member must be an integer between " + to_string(numeric_limits< int32_t >::min()) + " and " + to_string(numeric_limits< int32_t >::max())); }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsArray()){
+                size_t index(0);
+                value.resize(reference->value.Size());
+                for(const auto& element : reference->value.GetArray()) {
+                    if(element.IsInt()) {
+                        value[index] = static_cast < uint8_t >(element.GetInt());
+                        ++index;
+                    } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a 32 bit integer"); }
                 }
                 return true;
-            }
-        } else { throw ConfigurationError(string(key) + " element must be an array"); }
-    }
+            } else { throw ConfigurationError(string(key) + " element is not an array"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< uint32_t >(const Value::Ch* key, uint32_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsUint()) {
-            value = element->value.GetUint();
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer no bigger than " + to_string(numeric_limits< uint32_t >::max())); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsUint()) {
+                value = reference->value.GetUint();
+                return true;
+            } else { throw ConfigurationError(string(key) + " element is not a 32 bit unsigned integer"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< int64_t >(const Value::Ch* key, int64_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsInt64()) {
-            value = element->value.GetInt64();
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be an integer between " + to_string(numeric_limits< int64_t >::min()) + " and " + to_string(numeric_limits< int64_t >::max())); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsInt64()) {
+                value = reference->value.GetInt64();
+                return true;
+            } else { throw ConfigurationError(string(key) + " element is not a 64 bit integer"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< uint64_t >(const Value::Ch* key, uint64_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsUint64()) {
-            value = element->value.GetUint64();
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be an unsigned integer no bigger than " + to_string(numeric_limits< uint64_t >::max())); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsUint64()) {
+                value = reference->value.GetUint64();
+                return true;
+            } else { throw ConfigurationError(string(key) + " element is not a 64 bit unsigned integer"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< vector< uint64_t > >(const Value::Ch* key, vector< uint64_t >& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsArray()){
-            if(!element->value.Empty()) {
-                value.reserve(value.size() + element->value.Size());
-                for(const auto& e : element->value.GetArray()) {
-                    if(e.IsUint64()) {
-                        value.emplace_back(e.GetUint64());
-                    } else { throw ConfigurationError(string(key) + " element member must be an unsigned integer no bigger than " + to_string(numeric_limits< uint64_t >::max())); }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsArray()){
+                size_t index(0);
+                value.resize(reference->value.Size());
+                for(const auto& element : reference->value.GetArray()) {
+                    if(element.IsUint64()) {
+                        value[index] = element.GetUint64();
+                        ++index;
+                    } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not an unsigned 64 bit integer"); }
                 }
                 return true;
-            }
-        } else { throw ConfigurationError(string(key) + " element must be an array"); }
-    }
+            } else { throw ConfigurationError(string(key) + " element is not an array"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< double >(const Value::Ch* key, double& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsNumber()) {
-            value = element->value.GetDouble();
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be numeric"); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsNumber()) {
+                value = reference->value.GetDouble();
+                return true;
+            } else { throw ConfigurationError(string(key) + " element is not numeric"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< vector< double > >(const Value::Ch* key, vector< double >& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsArray()) {
-            if(!element->value.Empty()) {
-                value.reserve(value.size() + element->value.Size());
-                for(const auto& e : element->value.GetArray()) {
-                    if(e.IsNumber()) {
-                        value.emplace_back(e.GetDouble());
-                    } else { throw ConfigurationError(string(key) + " element member must be numeric"); }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsArray()) {
+                size_t index(0);
+                value.resize(reference->value.Size());
+                for(const auto& element : reference->value.GetArray()) {
+                    if(element.IsNumber()) {
+                        value[index] = element.GetDouble();
+                        ++index;
+                    } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not numeric"); }
                 }
                 return true;
-            }
-        } else { throw ConfigurationError(string(key) + " element must be an array"); }
-    }
+            } else { throw ConfigurationError(string(key) + " element is not an array"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< string >(const Value::Ch* key, string& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            value.assign(element->value.GetString(), element->value.GetStringLength());
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsString()) {
+                value.assign(reference->value.GetString(), reference->value.GetStringLength());
+                return true;
+            } else { throw ConfigurationError(string(key) + " element is not a string"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< list< string > >(const Value::Ch* key, list< string >& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsArray()) {
-            if(!element->value.Empty()) {
-                for(const auto& e : element->value.GetArray()) {
-                    if(e.IsString()) {
-                        value.emplace_back(e.GetString(), e.GetStringLength());
-                    } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsArray()) {
+                size_t index(0);
+                value.clear();
+                for(const auto& element : reference->value.GetArray()) {
+                    if(element.IsString()) {
+                        value.emplace_back(element.GetString(), element.GetStringLength());
+                        ++index;
+                    } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a string"); }
                 }
                 return true;
-            }
-        } else { throw ConfigurationError(string(key) + " element must be an array"); }
-    }
+            } else { throw ConfigurationError(string(key) + " element is not an array"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 template<> bool decode_value_by_key< kstring_t >(const Value::Ch* key, kstring_t& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            if(element->value.GetStringLength() < numeric_limits< size_t >::max()) {
-                ks_put_string(element->value.GetString(), static_cast< size_t >(element->value.GetStringLength()), value);
-                return true;
-            } else { throw ConfigurationError(string(key) + " element must be a string shorter than " + to_string(numeric_limits< int >::max())); }
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsString()) {
+                if(reference->value.GetStringLength() < numeric_limits< size_t >::max()) {
+                    ks_put_string(reference->value.GetString(), static_cast< size_t >(reference->value.GetStringLength()), value);
+                    return true;
+                } else { throw ConfigurationError(string(key) + " element is too long"); }
+            } else { throw ConfigurationError(string(key) + " element is not a string"); }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
 
 template <> bool decode_value_by_key(const Value::Ch* key, const Value& container) {
-    bool value(false);
-    decode_value_by_key(key, value, container);
-    return value;
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsBool()) {
+                    return reference->value.GetBool();
+                } else { throw ConfigurationError(string(key) + " element is not a boolean"); }
+            } else { return false; }
+        } else { return false; }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> uint8_t decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                unsigned value;
+                if(reference->value.IsUint() && (value = reference->value.GetUint()) <= numeric_limits< uint8_t >::max()) {
+                    return static_cast< uint8_t >(value);
+                } else { throw ConfigurationError(string(key) + " element is not an 8 bit unsigned integer"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> vector< uint8_t > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsArray()) {
+                    size_t index(0);
+                    unsigned value;
+                    vector< uint8_t > array(reference->value.Size());
+                    for(const auto& element : reference->value.GetArray()) {
+                        if(element.IsUint() && (value = element.GetUint()) <= numeric_limits< uint8_t >::max()) {
+                            array[index] = static_cast < uint8_t >(value);
+                            ++index;
+                        } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not an 8 bit unsigned integer"); }
+                    }
+                    return array;
+                } else { throw ConfigurationError(string(key) + " element is not an array"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> int32_t decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsInt()) {
+                    return reference->value.GetInt();
+                } else { throw ConfigurationError(string(key) + " element is not a 32 bit integer"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> vector< int32_t > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsArray()) {
+                    size_t index(0);
+                    vector< int32_t > array(reference->value.Size());
+                    for(const auto& element : reference->value.GetArray()) {
+                        if(element.IsInt()) {
+                            array[index] = element.GetInt();
+                            ++index;
+                        } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a 32 bit integer"); }
+                    }
+                    return array;
+                } else { throw ConfigurationError(string(key) + " element is not an array"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> uint32_t decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsUint()) {
+                    return reference->value.GetUint();
+                } else { throw ConfigurationError(string(key) + " element is not a 32 bit unsigned integer"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> int64_t decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsInt64()) {
+                    return reference->value.GetInt64();
+                } else { throw ConfigurationError(string(key) + " element is not a 64 bit integer"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
 template <> uint64_t decode_value_by_key(const Value::Ch* key, const Value& container) {
-    uint64_t value(numeric_limits< uint64_t >::max());
-    decode_value_by_key(key, value, container);
-    return value;
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsUint64()) {
+                    return reference->value.GetUint64();
+                } else { throw ConfigurationError(string(key) + " element is not a 64 bit unsigned integer"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> vector< uint64_t > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsArray()) {
+                    size_t index(0);
+                    vector< uint64_t > array(reference->value.Size());
+                    for(const auto& element : reference->value.GetArray()) {
+                        if(element.IsUint64()) {
+                            array[index] = element.GetUint64();
+                            ++index;
+                        } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not an unsigned 64 bit integer"); }
+                    }
+                    return array;
+                } else { throw ConfigurationError(string(key) + " element is not an array"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
 template <> double decode_value_by_key(const Value::Ch* key, const Value& container) {
-    double value(numeric_limits< double >::infinity());
-    decode_value_by_key(key, value, container);
-    return value;
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsNumber()) {
+                    return reference->value.GetDouble();
+                } else { throw ConfigurationError(string(key) + " element is not numeric"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> vector< double > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsArray()) {
+                    size_t index(0);
+                    vector< double > array(reference->value.Size());
+                    for(const auto& element : reference->value.GetArray()) {
+                        if(element.IsNumber()) {
+                            array[index] = element.GetDouble();
+                            ++index;
+                        } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not numeric"); }
+                    }
+                    return array;
+                } else { throw ConfigurationError(string(key) + " element is not an array"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> string decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsString()) {
+                    return string(reference->value.GetString(), reference->value.GetStringLength());
+                } else { throw ConfigurationError(string(key) + " element is not a string"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> list< string > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsArray()) {
+                    size_t index(0);
+                    list< string > array;
+                    for(const auto& element : reference->value.GetArray()) {
+                        if(element.IsString()) {
+                            array.emplace_back(reference->value.GetString(), reference->value.GetStringLength());
+                            ++index;
+                        } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a string"); }
+                    }
+                    return array;
+                } else { throw ConfigurationError(string(key) + " element is not an array"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+template <> kstring_t decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsString()) {
+                    if(reference->value.GetStringLength() < numeric_limits< size_t >::max()) {
+                        kstring_t value({ 0, 0, NULL });
+                        ks_put_string(reference->value.GetString(), static_cast< size_t >(reference->value.GetStringLength()), value);
+                        return value;
+                    } else { throw ConfigurationError(string(key) + " element must be a string shorter than " + to_string(numeric_limits< int >::max())); }
+                } else { throw ConfigurationError(string(key) + " element is not a string"); }
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };

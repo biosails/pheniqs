@@ -24,13 +24,11 @@
 static inline char* skip_to_linebreak(char* source, const char* end) {
     char* position(source);
     while (*position != LINE_BREAK && position < end) {
-        position++;
+        ++position;
     }
     return position;
 };
 
-/*  HTS header
-*/
 HtsHeader::HtsHeader() :
     hdr(NULL) {
 };
@@ -46,7 +44,7 @@ void HtsHeader::decode(htsFile* hts_file) {
             char* end(position + hdr->l_text);
             while(position < end) {
                 if(*position == '@') {
-                    position++;
+                    ++position;
                     uint16_t code = tag_to_code(position);
                     position += 2;
                     switch (code) {
@@ -102,7 +100,7 @@ void HtsHeader::decode(htsFile* hts_file) {
                         */
                         default:
                             position = skip_to_linebreak(position, end);
-                            position++;
+                            ++position;
                             break;
                     }
                 }
@@ -169,14 +167,20 @@ ostream& operator<<(ostream& o, const HtsHeader& header) {
     return o;
 };
 
-/*  bam1_t CyclicBuffer
-*/
-template<> void CyclicBuffer<bam1_t>::calibrate(const int& capacity, const int& resolution) {
+ostream& operator<<(ostream& o, const bam1_t& value) {
+    // if(!ks_empty(value.sequence))   o << "sequence : "  << value.sequence.s << endl;
+    // if(!ks_empty(value.quality))    o << "quality : "   << value.quality.s  << endl;
+    // if(!ks_empty(value.name))       o << "name : "      << value.name.s     << endl;
+    // if(!ks_empty(value.comment))    o << "comment : "   << value.comment.s  << endl;
+    return o;
+};
+
+template<> void CyclicBuffer< bam1_t >::calibrate(const int& capacity, const int& resolution) {
     if(_capacity != capacity || _resolution != resolution) {
         if(capacity > _capacity) {
             if(align_capacity(capacity, resolution) == capacity) {
                 cache.resize(capacity);
-                for(int i = _capacity; i < capacity; i++) {
+                for(int i = _capacity; i < capacity; ++i) {
                     bam1_t* allocated = bam_init1();
                     if(_direction == IoDirection::OUT) {
                         allocated->core.tid = -1;
@@ -203,7 +207,7 @@ template<> void CyclicBuffer<bam1_t>::calibrate(const int& capacity, const int& 
         }
     }
 };
-template<> CyclicBuffer<bam1_t>::CyclicBuffer(const IoDirection& direction, const int& capacity, const int& resolution) :
+template<> CyclicBuffer< bam1_t >::CyclicBuffer(const IoDirection& direction, const int& capacity, const int& resolution) :
     _direction(direction),
     _capacity(0),
     _resolution(0),
@@ -212,7 +216,7 @@ template<> CyclicBuffer<bam1_t>::CyclicBuffer(const IoDirection& direction, cons
 
     calibrate(capacity, resolution);
 };
-template<> CyclicBuffer<bam1_t>::~CyclicBuffer() {
+template<> CyclicBuffer< bam1_t >::~CyclicBuffer() {
     for(auto record : cache) {
         bam_destroy1(record);
     }

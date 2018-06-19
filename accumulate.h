@@ -22,275 +22,277 @@
 #ifndef PHENIQS_ACCUMULATE_H
 #define PHENIQS_ACCUMULATE_H
 
-#include <string>
-#include <unordered_map>
-#include <iostream>
-#include <iomanip>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <algorithm>
+#include "include.h"
 
-#include "error.h"
-#include "json.h"
-#include "nucleotide.h"
-#include "phred.h"
-#include "sequence.h"
-#include "segment.h"
-#include "specification.h"
+#include "url.h"
+#include "barcode.h"
+#include "read.h"
 
-using std::set;
-using std::min;
-using std::max;
-using std::abs;
-using std::setw;
-using std::endl;
-using std::cerr;
-using std::cout;
-using std::fixed;
-using std::string;
-using std::vector;
-using std::ostream;
-using std::ios_base;
-using std::exception;
-using std::to_string;
-using std::setprecision;
-using std::unordered_map;
-using std::numeric_limits;
-
-class NucleicAcidAccumulator;
+class NucleotideAccumulator;
 class CycleAccumulator;
+class AveragePhreadAccumulator;
 class SegmentAccumulator;
-class FeedAccumulator;
-class PivotAccumulator;
+class InputAccumulator;
 class ChannelAccumulator;
 class PipelineAccumulator;
+class OutputAccumulator;
 
-class NucleicAcidAccumulator {
-NucleicAcidAccumulator(NucleicAcidAccumulator const &) = delete;
-void operator=(NucleicAcidAccumulator const &) = delete;
-
-public:
-    uint64_t count;
-    uint8_t min_quality;
-    uint8_t max_quality;
-    uint64_t sum;
-    double mean_quality;
-    uint8_t Q1;
-    uint8_t Q3;
-    uint8_t IQR;
-    uint8_t LW;
-    uint8_t RW;
-    uint8_t median_quality;
-    uint64_t distribution[EFFECTIVE_PHRED_RANGE];
-    NucleicAcidAccumulator();
-    inline void increment(const uint8_t phred) {
-        distribution[phred]++;
-    };
-    inline uint64_t quantile(const double portion) {
-        uint64_t position(portion * count);
-        uint64_t cell(0);
-        while (position > 0) {
-            if(distribution[cell] >= position) {
-                break;
+class NucleotideAccumulator {
+    public:
+        uint64_t count;
+        uint8_t min_quality;
+        uint8_t max_quality;
+        uint64_t sum_quality;
+        double mean_quality;
+        uint8_t Q1;
+        uint8_t Q3;
+        uint8_t IQR;
+        uint8_t LW;
+        uint8_t RW;
+        uint8_t median_quality;
+        vector< uint64_t > distribution;
+        NucleotideAccumulator();
+        NucleotideAccumulator(const NucleotideAccumulator& other) :
+            count(other.count),
+            min_quality(other.min_quality),
+            max_quality(other.max_quality),
+            sum_quality(other.sum_quality),
+            mean_quality(other.mean_quality),
+            Q1(other.Q1),
+            Q3(other.Q3),
+            IQR(other.IQR),
+            LW(other.LW),
+            RW(other.RW),
+            median_quality(other.median_quality),
+            distribution(other.distribution) {
+        };
+        inline void increment(const uint8_t phred) {
+            ++(distribution[phred]);
+        };
+        inline uint64_t quantile(const double portion) {
+            uint64_t position(portion * count);
+            uint8_t phred(0);
+            while (position > 0) {
+                if(distribution[phred] >= position) {
+                    break;
+                }
+                position -= distribution[phred];
+                ++phred;
+                while (distribution[phred] == 0) {
+                    ++phred;
+                }
             }
-            position -= distribution[cell];
-            cell++;
-            while (distribution[cell] == 0) {
-                cell++;
-            }
-        }
-        return cell;
-    };
-    void finalize();
-    NucleicAcidAccumulator& operator+=(const NucleicAcidAccumulator& rhs);
+            return phred;
+        };
+        void finalize();
+        NucleotideAccumulator& operator=(const NucleotideAccumulator& rhs);
+        NucleotideAccumulator& operator+=(const NucleotideAccumulator& rhs);
 };
 
 class CycleAccumulator {
-CycleAccumulator(CycleAccumulator const &) = delete;
-void operator=(CycleAccumulator const &) = delete;
+    public:
+        vector< NucleotideAccumulator > nucleotide_by_code;
+        CycleAccumulator();
+        CycleAccumulator(const CycleAccumulator& other) :
+            nucleotide_by_code(other.nucleotide_by_code) {
+        };
+        inline void increment(const uint8_t nucleotide, const uint8_t phred) {
+            nucleotide_by_code[nucleotide].increment(phred);
+        };
+        void finalize();
+        CycleAccumulator& operator=(const CycleAccumulator& rhs);
+        CycleAccumulator& operator+=(const CycleAccumulator& rhs);
+};
 
-public:
-    vector<NucleicAcidAccumulator> iupac_nucleic_acid;
-    CycleAccumulator();
-    inline void increment(const uint8_t nucleotide, const uint8_t phred) {
-        iupac_nucleic_acid[nucleotide].increment(phred);
-    };
-    void finalize();
-    CycleAccumulator& operator+=(const CycleAccumulator& rhs);
+class AveragePhreadAccumulator {
+    public:
+        uint64_t count;
+        double min_value;
+        double max_value;
+        double sum_value;
+        double mean_value;
+        vector< uint64_t > distribution;
+        AveragePhreadAccumulator();
+        AveragePhreadAccumulator(const AveragePhreadAccumulator& other) :
+            count(other.count),
+            min_value(other.min_value),
+            max_value(other.max_value),
+            sum_value(other.sum_value),
+            mean_value(other.mean_value),
+            distribution(other.distribution) {
+        };
+        inline void increment(const Segment& segment) {
+            ++count;
+            double value(0);
+            for(int32_t i(0); i < segment.length; ++i) {
+                value += segment.quality[i];
+            }
+            value /= double(segment.length);
+            sum_value += value;
+            min_value = min(min_value, value);
+            max_value = max(max_value, value);
+            ++(distribution[static_cast< size_t >(value)]);
+        };
+        void finalize();
+        AveragePhreadAccumulator& operator=(const AveragePhreadAccumulator& rhs);
+        AveragePhreadAccumulator& operator+=(const AveragePhreadAccumulator& rhs);
 };
 
 class SegmentAccumulator {
-SegmentAccumulator(SegmentAccumulator const &) = delete;
-void operator=(SegmentAccumulator const &) = delete;
+    void operator=(SegmentAccumulator const &) = delete;
 
-public:
-    uint64_t count;
-    double length_min;
-    double length_max;
-    double length_sum;
-    double length_mean;
-    uint64_t distribution[EFFECTIVE_PHRED_RANGE];
-    SegmentAccumulator();
-    inline void increment(const Sequence& sequence) {
-        count++;
-        double value(0);
-        for(int32_t i = 0; i < sequence.length; i++) {
-            value += sequence.quality[i];
-        }
-        value /= double(sequence.length);
-        length_sum += value;
-        length_min = min(length_min, value);
-        length_max = max(length_max, value);
-        distribution[static_cast< uint8_t >(value)]++;
-    };
-    void finalize();
-    SegmentAccumulator& operator+=(const SegmentAccumulator& rhs);
-};
-
-class FeedAccumulator {
-FeedAccumulator(FeedAccumulator const &) = delete;
-void operator=(FeedAccumulator const &) = delete;
-
-public:
-    const URL url;
-    int32_t length;
-    int32_t shortest;
-    uint64_t iupac_nucleic_acid_count[IUPAC_CODE_SIZE];
-    SegmentAccumulator average_phred;
-    vector< CycleAccumulator* > cycles;
-    FeedAccumulator(const FeedSpecification& specification);
-    ~FeedAccumulator();
-    inline void increment(const Sequence& sequence) {
-        if(sequence.length > length) {
-            for(int32_t i = length; i < sequence.length; i++) {
-                cycles.push_back(new CycleAccumulator());
+    public:
+        const int32_t index;
+        const URL url;
+        const uint8_t phred_offset;
+        const Platform platform;
+        const int32_t resolution;
+        int32_t capacity;
+        int32_t shortest;
+        vector < uint64_t > nucleic_acid_count_by_code;
+        AveragePhreadAccumulator average_phred;
+        vector< CycleAccumulator > cycle_by_index;
+        SegmentAccumulator(const Value& ontology);
+        SegmentAccumulator(const SegmentAccumulator& other) :
+            index(other.index),
+            url(other.url),
+            phred_offset(other.phred_offset),
+            platform(other.platform),
+            resolution(other.resolution),
+            capacity(other.capacity),
+            shortest(other.shortest),
+            nucleic_acid_count_by_code(other.nucleic_acid_count_by_code) {
+        };
+        inline void increment(const Segment& segment) {
+            if(segment.length > capacity) {
+                cycle_by_index.resize(segment.length);
+                capacity = segment.length;
             }
-            length = sequence.length;
-        }
-        if(sequence.length < shortest) {
-            shortest = sequence.length;
-        }
-        for(int32_t i = 0; i < sequence.length; i++) {
-            iupac_nucleic_acid_count[NO_NUCLEOTIDE]++;
-            iupac_nucleic_acid_count[sequence.code[i]]++;
-            cycles[i]->increment(sequence.code[i], sequence.quality[i]);
-        }
-        average_phred.increment(sequence);
-    };
-    void encode(Document& document, Value& value) const;
-    void finalize();
-    FeedAccumulator& operator+=(const FeedAccumulator& rhs);
+            if(segment.length < shortest) {
+                shortest = segment.length;
+            }
+            for(int32_t i(0); i < segment.length; ++i) {
+                ++(nucleic_acid_count_by_code[NO_NUCLEOTIDE]);
+                ++(nucleic_acid_count_by_code[segment.code[i]]);
+                cycle_by_index[i].increment(segment.code[i], segment.quality[i]);
+            }
+            average_phred.increment(segment);
+        };
+        void finalize();
+        SegmentAccumulator& operator+=(const SegmentAccumulator& rhs);
 };
-
-class PivotAccumulator {
-public:
-    const bool disable_quality_control;
-    uint64_t count;
-    uint64_t pf_count;
-    double pf_fraction;
-    vector< FeedAccumulator* > feed_accumulators;
-
-    PivotAccumulator(const InputSpecification& input_specification);
-    ~PivotAccumulator();
-    inline void increment(const bool filtered, const vector< Segment >& input) {
-        count++;
-        if(!filtered) {
-            pf_count++;
-        }
-        for(size_t i = 0; i < feed_accumulators.size(); i++) {
-            feed_accumulators[i]->increment(input[i].sequence);
-        }
-    };
-    void encode(Document& document, Value& value) const;
-    void finalize();
-    PivotAccumulator& operator+=(const PivotAccumulator& rhs);
-};
+bool encode_value(const SegmentAccumulator& value, Value& container, Document& document);
 
 class ChannelAccumulator {
-public:
-    const uint64_t index;
-    const Decoder decoder;
-    const bool disable_quality_control;
-    const bool undetermined;
-    const double concentration;
-    const Barcode multiplex_barcode;
-    const HeadRGAtom rg;
-    uint64_t count;
-    double multiplex_distance;
-    double multiplex_confidence;
-    uint64_t pf_count;
-    double pf_multiplex_distance;
-    double pf_multiplex_confidence;
-    double pf_fraction;
-    double pooled_fraction;
-    double pf_pooled_fraction;
-    double pooled_multiplex_fraction;
-    double pf_pooled_multiplex_fraction;
-    uint64_t accumulated_multiplex_distance;
-    double accumulated_multiplex_confidence;
-    uint64_t accumulated_pf_multiplex_distance;
-    double accumulated_pf_multiplex_confidence;
-    vector< FeedAccumulator* > feed_accumulators;
+    public:
+        const uint64_t index;
+        const Algorithm algorithm;
+        const bool disable_quality_control;
+        const bool undetermined;
+        const double concentration;
+        const Barcode barcode;
+        const HeadRGAtom rg;
+        uint64_t count;
+        double multiplex_distance;
+        double multiplex_confidence;
+        uint64_t pf_count;
+        double pf_multiplex_distance;
+        double pf_multiplex_confidence;
+        double pf_fraction;
+        double pooled_fraction;
+        double pf_pooled_fraction;
+        double pooled_multiplex_fraction;
+        double pf_pooled_multiplex_fraction;
+        uint64_t accumulated_multiplex_distance;
+        double accumulated_multiplex_confidence;
+        uint64_t accumulated_pf_multiplex_distance;
+        double accumulated_pf_multiplex_confidence;
+        vector< SegmentAccumulator > segment_by_index;
 
-    ChannelAccumulator(const ChannelSpecification& specification);
-    ~ChannelAccumulator();
-    inline void increment (
-        const bool filtered,
-        const double pivot_multiplex_confidence,
-        const int32_t pivot_multiplex_distance,
-        const vector< Segment >& output) {
-
-        count++;
-        if(pivot_multiplex_distance) {
-            accumulated_multiplex_distance += static_cast< uint64_t >(pivot_multiplex_distance);
-        }
-        if(decoder == Decoder::PAMLD) {
-            accumulated_multiplex_confidence += pivot_multiplex_confidence;
-        }
-        if(!filtered) {
-            pf_count++;
-            if(pivot_multiplex_distance) {
-                accumulated_pf_multiplex_distance += static_cast< uint64_t >(pivot_multiplex_distance);
+        ChannelAccumulator(const Value& ontology);
+        inline void increment(const Read& read) {
+            ++count;
+            if(read.multiplex_distance()) {
+                accumulated_multiplex_distance += static_cast< uint64_t >(read.multiplex_distance());
             }
-            if(decoder == Decoder::PAMLD) {
-                accumulated_pf_multiplex_confidence += pivot_multiplex_confidence;
+            if(algorithm == Algorithm::PAMLD) {
+                accumulated_multiplex_confidence += read.multiplex_error();
             }
-        }
-
-        for(size_t i = 0; i < feed_accumulators.size(); i++) {
-            feed_accumulators[i]->increment(output[i].sequence);
-        }
-    };
-    void encode(Document& document, Value& value) const;
-    void finalize(const PipelineAccumulator& pipeline_accumulator);
-    ChannelAccumulator& operator+=(const ChannelAccumulator& rhs);
+            if(!read.qcfail()) {
+                ++pf_count;
+                if(read.multiplex_distance()) {
+                    accumulated_pf_multiplex_distance += static_cast< uint64_t >(read.multiplex_distance());
+                }
+                if(algorithm == Algorithm::PAMLD) {
+                    accumulated_pf_multiplex_confidence += read.multiplex_error();
+                }
+            }
+            for(size_t i(0); i < segment_by_index.size(); ++i) {
+                segment_by_index[i].increment(read[i]);
+            }
+        };
+        void finalize(const OutputAccumulator& decoder_accumulator);
+        ChannelAccumulator& operator+=(const ChannelAccumulator& rhs);
 };
+template<> vector< ChannelAccumulator > decode_value_by_key(const Value::Ch* key, const Value& container);
+bool encode_value(const ChannelAccumulator& value, Value& container, Document& document);
+bool encode_key_value(const string& key, const ChannelAccumulator& value, Value& container, Document& document);
 
-class PipelineAccumulator {
-public:
-    const Decoder decoder;
-    uint64_t count;
-    uint64_t multiplex_count;
-    double multiplex_fraction;
-    double multiplex_distance;
-    double multiplex_confidence;
-    uint64_t pf_count;
-    double pf_fraction;
-    uint64_t pf_multiplex_count;
-    double pf_multiplex_fraction;
-    double pf_multiplex_distance;
-    double pf_multiplex_confidence;
-    double multiplex_pf_fraction;
-    uint64_t accumulated_multiplex_distance;
-    double accumulated_multiplex_confidence;
-    uint64_t accumulated_pf_multiplex_distance;
-    double accumulated_pf_multiplex_confidence;
-
-    PipelineAccumulator(const Decoder& decoder);
-    void collect(const ChannelAccumulator& channel_accumulator);
-    void encode(Document& document, Value& value) const;
-    void finalize();
+class InputAccumulator {
+    public:
+        const bool disable_quality_control;
+        uint64_t count;
+        uint64_t pf_count;
+        double pf_fraction;
+        vector< SegmentAccumulator > segment_by_index;
+        InputAccumulator(const Value& ontology);
+        inline void increment(const Read& read) {
+            ++count;
+            if(!read.qcfail()) {
+                ++pf_count;
+            }
+            for(size_t i(0); i < segment_by_index.size(); ++i) {
+                segment_by_index[i].increment(read[i]);
+            }
+        };
+        void finalize();
+        InputAccumulator& operator+=(const InputAccumulator& rhs);
 };
+bool encode_key_value(const string& key, const InputAccumulator& value, Value& container, Document& document);
+
+class OutputAccumulator {
+    public:
+        const Algorithm algorithm;
+        uint64_t count;
+        uint64_t multiplex_count;
+        double multiplex_fraction;
+        double multiplex_distance;
+        double multiplex_confidence;
+        uint64_t pf_count;
+        double pf_fraction;
+        uint64_t pf_multiplex_count;
+        double pf_multiplex_fraction;
+        double pf_multiplex_distance;
+        double pf_multiplex_confidence;
+        double multiplex_pf_fraction;
+        uint64_t accumulated_multiplex_distance;
+        double accumulated_multiplex_confidence;
+        uint64_t accumulated_pf_multiplex_distance;
+        double accumulated_pf_multiplex_confidence;
+        vector< ChannelAccumulator > channel_by_index;
+        ChannelAccumulator undetermined;
+
+        OutputAccumulator(const Value& ontology);
+        inline void increment(const size_t& index, const Read& read) {
+            if(index > 0) {
+                channel_by_index[index - 1].increment(read);
+            } else {
+                undetermined.increment(read);
+            }
+        };
+        void finalize();
+        OutputAccumulator& operator+=(const OutputAccumulator& rhs);
+};
+bool encode_key_value(const string& key, const OutputAccumulator& value, Value& container, Document& document);
 
 #endif /* PHENIQS_ACCUMULATE_H */

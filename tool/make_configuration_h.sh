@@ -44,10 +44,17 @@ printf "/*
     This file is auto generated from configuration.json
 
     Generated on: $(date)
-*/\n\n" > configuration.h;
+*/
+
+#ifndef PHENIQS_CONFIGURATION_H
+#define PHENIQS_CONFIGURATION_H
+
+" > configuration.h;
 
 printf "size_t configuration_json_len = \
 $(cat configuration.json | sed -E 's/^ +//g' | hexdump -v -e '1/1 "%02x "' | wc -w | sed 's/ //g');\n\n" >> configuration.h;
 
 printf "const char configuration_json[] = \
 {\n    $(cat configuration.json | sed -E 's/^ +//g' | hexdump -v -e '12/1 "0x%02x, " "\n" "    "' | sed -E 's/( 0x  ,)*$//' | grep -vE "^\s+$")\n};\n" >> configuration.h;
+
+printf "\n#endif /* PHENIQS_CONFIGURATION_H */\n" >> configuration.h;

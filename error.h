@@ -22,108 +22,89 @@
 #ifndef PHENIQS_ERROR_H
 #define PHENIQS_ERROR_H
 
-#include <stdio.h>
-#include <unistd.h>
-#include <iostream>
-#include <iomanip>
-#include <exception>
-#include <vector>
-#include <string>
-
-using std::setw;
-using std::endl;
-using std::cerr;
-using std::cout;
-using std::fixed;
-using std::string;
-using std::vector;
-using std::ostream;
-using std::ios_base;
-using std::exception;
-using std::to_string;
-using std::setprecision;
+#include "include.h"
 
 class InternalError : public exception {
-public:
-    string message;
-    InternalError(const string& error) {
-        message.assign(error);
-    };
-    virtual const char* what() const throw() {
-        return ("Internal error : " + message).c_str();
-    };
+    public:
+        string message;
+        InternalError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("Internal error : " + message).c_str();
+        };
 };
 
 class OutOfMemoryError : public exception {
-public:
-    virtual const char* what() const throw() {
-        return "Out of memory error";
-    };
+    public:
+        virtual const char* what() const throw() {
+            return "Out of memory error";
+        };
 };
 
 class ConfigurationError : public exception {
-public:
-    string message;
-    ConfigurationError(const string& error) {
-        message.assign(error);
-    };
-    virtual const char* what() const throw() {
-        return ("Configuration error: " + message).c_str();
-    };
+    public:
+        string message;
+        ConfigurationError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("Configuration error: " + message).c_str();
+        };
 };
 
 class CommandLineError : public exception {
-public:
-    string message;
-    CommandLineError(const string error) {
-        message = error;
-    };
-    virtual const char* what() const throw() {
-        return ("Command line error: " + message).c_str();
-    };
+    public:
+        string message;
+        CommandLineError(const string error) {
+            message = error;
+        };
+        virtual const char* what() const throw() {
+            return ("Command line error: " + message).c_str();
+        };
 };
 
 class IOError : public exception {
-public:
-    string message;
-    IOError(const string& error) {
-        message.assign(error);
-    };
-    virtual const char* what() const throw() {
-        return ("IO error : " + message).c_str();
-    };
+    public:
+        string message;
+        IOError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("IO error : " + message).c_str();
+        };
 };
 
 class SequenceError : public exception {
-public:
-    string message;
-    SequenceError(const string& error) {
-        message.assign(error);
-    };
-    virtual const char* what() const throw() {
-        return ("Sequence error : " + message).c_str();
-    };
+    public:
+        string message;
+        SequenceError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("Sequence error : " + message).c_str();
+        };
 };
 
 class OverflowError : public exception {
-public:
-    string message;
-    OverflowError(const string& error) {
-        message.assign(error);
-    };
-    virtual const char* what() const throw() {
-        return ("Identifiers error : " + message).c_str();
-    };
+    public:
+        string message;
+        OverflowError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("Identifiers error : " + message).c_str();
+        };
 };
 class CorruptAuxiliaryError : public exception {
-public:
-    string message;
-    CorruptAuxiliaryError(const string& error) {
-        message.assign(error);
-    };
-    virtual const char* what() const throw() {
-        return ("Corrupt auxiliary error : " + message).c_str();
-    };
+    public:
+        string message;
+        CorruptAuxiliaryError(const string& error) {
+            message.assign(error);
+        };
+        virtual const char* what() const throw() {
+            return ("Corrupt auxiliary error : " + message).c_str();
+        };
 };
 
 #endif /* PHENIQS_ERROR_H */

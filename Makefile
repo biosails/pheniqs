@@ -51,41 +51,57 @@ LDFLAGS         +=
 LIBS            += -lhts -lz -lbz2 -llzma
 STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
 
+# configuration.h : generated from configuration.json
+# version.h       : generated version header file
+# include.h       : standard library include and using statements
+# error.h         : custom exception objects
+# nucleotide.h    : IUPAC nucleotide encoding and decoding
+# phred.h         : Phred quality scale encoding and decoding
+# kstring.h       : wrapper for the kstring_t object from htslib
+
 PHENIQS_SOURCES = \
-	json.cpp \
-	url.cpp \
-	interface.cpp \
-	atom.cpp \
-	transform.cpp \
-	auxiliary.cpp \
-	sequence.cpp \
-	segment.cpp \
-	specification.cpp \
-	feed.cpp \
-	fastq.cpp \
-	hts.cpp \
-	environment.cpp \
 	accumulate.cpp \
+	atom.cpp \
+	auxiliary.cpp \
+	barcode.cpp \
+	channel.cpp \
+	command.cpp \
+	decoder.cpp \
+	environment.cpp \
+	fastq.cpp \
+	feed.cpp \
+	hts.cpp \
+	interface.cpp \
+	json.cpp \
+	pheniqs.cpp \
 	pipeline.cpp \
-	pheniqs.cpp
+	proxy.cpp \
+	read.cpp \
+	sequence.cpp \
+	transform.cpp \
+	url.cpp
 
 PHENIQS_OBJECTS = \
-	json.o \
-	url.o \
-	interface.o \
-	atom.o \
-	transform.o \
-	auxiliary.o \
-	sequence.o \
-	segment.o \
-	specification.o \
-	feed.o \
-	fastq.o \
-	hts.o \
-	environment.o \
 	accumulate.o \
+	atom.o \
+	auxiliary.o \
+	barcode.o \
+	channel.o \
+	command.o \
+	decoder.o \
+	environment.o \
+	fastq.o \
+	feed.o \
+	hts.o \
+	interface.o \
+	json.o \
+	pheniqs.o \
 	pipeline.o \
-	pheniqs.o
+	proxy.o \
+	read.o \
+	sequence.o \
+	transform.o \
+	url.o
 
 PHENIQS_EXECUTABLE = pheniqs
 
@@ -159,6 +175,8 @@ $(PHENIQS_EXECUTABLE): $(PHENIQS_OBJECTS)
 # Regenerate version.h when PHENIQS_VERSION changes
 version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),clean.version))
 	@echo version.h generated with PHENIQS_VERSION $(PHENIQS_VERSION)
+	$(if $(PHENIQS_VERSION),    @echo '#ifndef PHENIQS_VERSION_H'                           >> $@)
+	$(if $(PHENIQS_VERSION),    @echo '#define PHENIQS_VERSION_H\n'                         >> $@)
 	$(if $(PHENIQS_VERSION),    @echo '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"'        >> $@)
 	$(if $(ZLIB_VERSION),       @echo '#define ZLIB_VERSION "$(ZLIB_VERSION)"'              >> $@)
 	$(if $(BZIP2_VERSION),      @echo '#define BZIP2_VERSION "$(BZIP2_VERSION)"'            >> $@)
@@ -166,6 +184,7 @@ version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(s
 	$(if $(LIBDEFLATE_VERSION), @echo '#define LIBDEFLATE_VERSION "$(LIBDEFLATE_VERSION)"'  >> $@)
 	$(if $(RAPIDJSON_VERSION),  @echo '#define RAPIDJSON_VERSION "$(RAPIDJSON_VERSION)"'    >> $@)
 	$(if $(HTSLIB_VERSION),     @echo '#define HTSLIB_VERSION "$(HTSLIB_VERSION)"'          >> $@)
+	$(if $(PHENIQS_VERSION),    @echo '\n#endif /* PHENIQS_VERSION_H */\n'                  >> $@)
 
 clean.version:
 	-@rm -f version.h
@@ -198,131 +217,99 @@ install: pheniqs
 	chmod a+x $(PREFIX)/bin/pheniqs
 
 # Dependencies
-# Regenerate modules when header files they import change
+
 json.o: \
 	error.h \
+	kstring.h \
 	json.h
 
 url.o: \
-	error.h \
-	json.h \
+	json.o \
 	url.h
 
-interface.o: \
-	error.h \
-	json.h \
-	interface.h
-
-atom.o: \
-	error.h \
-	json.h \
-	atom.h
-
-transform.o: \
-	error.h \
-	json.h \
-	transform.h
-
-sequence.o: \
-	error.h \
-	json.h \
-	nucleotide.h \
-	phred.h \
-	transform.h \
-	sequence.h
-
-auxiliary.o: \
-	error.h \
-	json.h \
-	sequence.h \
-	auxiliary.h
-
-segment.o: \
-	error.h \
-	json.h \
-	nucleotide.h \
-	sequence.h \
-	auxiliary.h \
-	segment.h
-
-specification.o: \
-	error.h \
-	json.h \
-	url.h \
-	atom.h \
-	sequence.h \
-	specification.h
-
-accumulate.o: \
-	error.h \
-	json.h \
-	nucleotide.h \
-	phred.h \
-	sequence.h \
-	segment.h \
-	specification.h \
-	accumulate.h
-
-environment.o: \
+command.o: \
+	url.o \
 	version.h \
 	configuration.h \
-	interface.h \
-	error.h \
-	json.h \
-	url.h \
-	nucleotide.h \
+	command.h
+
+atom.o: \
+	json.o \
+	atom.h
+
+sequence.o: \
+	json.o \
 	phred.h \
-	atom.h \
-	specification.h \
-	environment.h
+	nucleotide.h \
+	sequence.h
+
+barcode.o: \
+	sequence.o \
+	barcode.h
+
+auxiliary.o: \
+	atom.o \
+	barcode.o \
+	auxiliary.h
+
+read.o: \
+	auxiliary.o \
+	read.h
+
+accumulate.o: \
+	url.o \
+	read.o \
+	barcode.o \
+	accumulate.h
+
+proxy.o: \
+	url.o \
+	atom.o \
+	proxy.h
 
 feed.o: \
-	error.h \
-	json.h \
-	url.h \
-	sequence.h \
-	specification.h \
+	proxy.o \
+	read.o \
 	feed.h
 
 fastq.o: \
-	error.h \
-	json.h \
-	nucleotide.h \
-	phred.h \
-	sequence.h \
-	segment.h \
-	specification.h \
-	feed.h \
+	feed.o \
 	fastq.h
 
 hts.o: \
-	error.h \
-	json.h \
-	nucleotide.h \
-	phred.h \
-	atom.h \
-	sequence.h \
-	segment.h \
-	specification.h \
-	feed.h \
+	feed.o \
 	hts.h
 
+transform.o: \
+	read.o \
+	transform.h
+
+interface.o: \
+	command.o \
+	barcode.o \
+	transform.o \
+	interface.h
+
+environment.o: \
+	interface.o \
+	environment.h
+
+channel.o: \
+	feed.o \
+	channel.h
+
+decoder.o: \
+	transform.o \
+	channel.o \
+	decoder.h
+
 pipeline.o: \
-	error.h \
-	json.h \
-	url.h \
-	nucleotide.h \
-	phred.h \
-	atom.h \
-	accumulate.h \
-	environment.h \
-	feed.h \
-	fastq.h \
-	hts.h \
+	accumulate.o \
+	environment.o \
+	fastq.o \
+	hts.o \
+	decoder.o \
 	pipeline.h
 
 pheniqs.o: \
-	error.h \
-	json.h \
-	environment.h \
-	pipeline.h
+	pipeline.o

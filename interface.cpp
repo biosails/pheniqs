@@ -1,272 +1,25 @@
+/*
+    Pheniqs : PHilology ENcoder wIth Quality Statistics
+    Copyright (C) 2018  Lior Galanti
+    NYU Center for Genetics and System Biology
+
+    Author: Lior Galanti <lior.galanti@nyu.edu>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "interface.h"
-#include "version.h"
-#include "configuration.h"
-
-static inline string get_cwd() {
-    char* buffer(NULL);
-    char* temp(NULL);
-    string directory;
-    size_t size(128);
-
-    if((buffer = static_cast< char* >(malloc(size))) == NULL) {
-        throw OutOfMemoryError();
-    }
-    while(getcwd(buffer, size) == NULL) {
-        switch(errno) {
-            case EACCES: {
-                free(buffer);
-                throw IOError("insufficient permission to probe working directory");
-                break;
-            };
-            case ERANGE: {
-                size *= 2;
-                if((temp = static_cast< char* >(realloc(buffer, size))) == NULL) {
-                    free(buffer);
-                    throw OutOfMemoryError();
-                } else {
-                    buffer = temp;
-                }
-                break;
-            };
-            default: {
-                throw InternalError("error " + to_string(errno) + " when probing working directory");
-                break;
-            };
-        }
-    }
-    directory.assign(buffer);
-    free(buffer);
-    return directory;
-};
-static inline string assemble_full_command(const int argc, const char** argv) {
-    string value;
-    for(int i = 0; i < argc; i++) {
-        value.append(argv[i]);
-        value.append(" ");
-    }
-    return value;
-};
-void expand_shell_variables(string& path) {
-    if(!path.empty()) {
-        string resolved;
-        string variable;
-        char* value(NULL);
-        uint64_t position(0);
-        while(position < path.size()) {
-            const char& c = path[position];
-            switch(c) {
-                case '~':
-                    if(resolved.empty()) {
-                        value = getenv("HOME");
-                        if(value != NULL) {
-                            resolved.append(value);
-                        } else {
-                            resolved.push_back(c);
-                        }
-                    } else {
-                        resolved.push_back(c);
-                    }
-                    break;
-                case '$':
-                    if(variable.empty()) {
-                        variable.push_back(c);
-                    } else {
-                        resolved.push_back(c);
-                    }
-                    break;
-                case '{':
-                    if(variable.size() == 1) {
-                        variable.push_back(c);
-                    } else {
-                        resolved.push_back(c);
-                    }
-                    break;
-                case '}':
-                    if(variable.empty()) {
-                        resolved.push_back(c);
-                    } else if(variable.size() == 1) {
-                        resolved.append(variable);
-                        resolved.push_back(c);
-                        variable.clear();
-                    } else {
-                        value = getenv(variable.c_str() + 2);
-                        if(value != NULL) {
-                            resolved.append(value);
-                        }
-                        variable.clear();
-                    }
-                    break;
-                case '\0':
-                    throw InternalError("unexpected string terminal encountered in " + path);
-                    break;
-                default:
-                    if(variable.empty()) {
-                        resolved.push_back(c);
-                    } else if(variable.size() == 1) {
-                        resolved.append(variable);
-                        resolved.push_back(c);
-                        variable.clear();
-                    } else {
-                        variable.push_back(c);
-                    }
-            }
-            position++;
-        }
-        if(variable.empty()) {
-        } else if(variable.size() == 1) {
-            resolved.append(variable);
-            variable.clear();
-        } else {
-            string message("unterminated environment variable in path ");
-            message += path;
-            message += " at position ";
-            message += to_string(position - variable.size());
-            throw ConfigurationError (message);
-        }
-        path.assign(resolved);
-    }
-};
-bool resolve_standard_stream(string& path, const IoDirection& direction) {
-    if(path == STANDARD_STREAM_ALIAS) {
-        switch(direction) {
-            case IoDirection::IN: {
-                path.assign(CANONICAL_STDIN_PATH);
-                break;
-            };
-            case IoDirection::OUT: {
-                path.assign(CANONICAL_STDOUT_PATH);
-                break;
-            };
-            case IoDirection::UNKNOWN: {
-                throw ConfigurationError("can not interpret standard stream alias " + path + " without a declared IO direction");
-                break;
-            };
-        }
-        return true;
-    } else {
-        if(path == "/dev/stdin" || path == "/dev/fd/0" || path == "/proc/self/fd/0") {
-            if(direction == IoDirection::OUT) {
-                throw ConfigurationError("can not use " + path + " for output");
-            }
-            path.assign(CANONICAL_STDIN_PATH);
-            return true;
-
-        } else if(path == "/dev/stdout" || path == "/dev/fd/1" || path == "/proc/self/fd/1") {
-            if(direction == IoDirection::IN) {
-                throw ConfigurationError("can not use " + path + " for input");
-            }
-            path.assign(CANONICAL_STDOUT_PATH);
-            return true;
-
-        } else if(path == "/dev/stderr" || path == "/dev/fd/2" || path == "/proc/self/fd/2") {
-            if(direction == IoDirection::IN) {
-                throw ConfigurationError("can not use " + path + " for input");
-            }
-            path.assign(CANONICAL_STDERR_PATH);
-            return true;
-        }
-    }
-    return false;
-};
-bool expand_file_url(const Value& from, Value& to, Document& document, const IoDirection& direction) {
-    string buffer;
-    if(from.IsString()) {
-        buffer.assign(from.GetString(), from.GetStringLength());
-        expand_shell_variables(buffer);
-        resolve_standard_stream(buffer, direction);
-        to.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
-        return true;
-
-    } else if(from.IsObject() && decode_value_by_key< string >("path", buffer, from)) {
-        expand_shell_variables(buffer);
-        resolve_standard_stream(buffer, direction);
-        to.CopyFrom(from, document.GetAllocator());
-        encode_key_value("path", buffer, to, document);
-        return true;
-
-    } else { return false; }
-};
-bool expand_directory_url(const Value& from, Value& to, Document& document) {
-    string buffer;
-    if(from.IsString()) {
-        buffer.assign(from.GetString(), from.GetStringLength());
-        expand_shell_variables(buffer);
-        to.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
-        return true;
-
-    } else if(from.IsObject() && decode_value_by_key< string >("path", buffer, from)) {
-        expand_shell_variables(buffer);
-        to.CopyFrom(from, document.GetAllocator());
-        encode_key_value("path", buffer, to, document);
-        return true;
-
-    } else { return false; }
-};
-void expand_url_variables_in_instruction(Document& _instruction) {
-    /*  expand shell variables and standard streams in URL objects */
-    Value::MemberIterator reference;
-    string key;
-
-    key.assign("base input url");
-    reference = _instruction.FindMember(key.c_str());
-    if(reference != _instruction.MemberEnd() && !reference->value.IsNull()) {
-        Value to;
-        if(expand_directory_url(reference->value, to, _instruction)) {
-            _instruction.RemoveMember(key.c_str());
-            _instruction.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), to.Move(), _instruction.GetAllocator());
-        }
-    }
-
-    key.assign("base output url");
-    reference = _instruction.FindMember(key.c_str());
-    if(reference != _instruction.MemberEnd() && !reference->value.IsNull()) {
-        Value to;
-        if(expand_directory_url(reference->value, to, _instruction)) {
-            _instruction.RemoveMember(key.c_str());
-            _instruction.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), to.Move(), _instruction.GetAllocator());
-        }
-    }
-
-    key.assign("input");
-    reference = _instruction.FindMember(key.c_str());
-    if(reference != _instruction.MemberEnd() && !reference->value.IsNull()) {
-        if(reference->value.IsArray() && !reference->value.Empty()) {
-            Value array(kArrayType);
-            for(const auto& from : reference->value.GetArray()) {
-                Value to;
-                if(expand_file_url(from, to, _instruction, IoDirection::IN)){
-                    array.PushBack(to.Move(), _instruction.GetAllocator());
-                }
-            }
-            _instruction.RemoveMember(key.c_str());
-            _instruction.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), array.Move(), _instruction.GetAllocator());
-        }
-    }
-
-    key.assign("output");
-    reference = _instruction.FindMember("channel");
-    if(reference != _instruction.MemberEnd()) {
-        if(!reference->value.IsNull() && !reference->value.Empty()) {
-            for(auto& element : reference->value.GetArray()) {
-                Value::ConstMemberIterator o = element.FindMember(key.c_str());
-                if(o != element.MemberEnd() && !o->value.IsNull()) {
-                    if(o->value.IsArray() && !o->value.Empty()) {
-                        Value array(kArrayType);
-                        for(const auto& from : o->value.GetArray()) {
-                            Value to;
-                            if(expand_file_url(from, to, _instruction, IoDirection::OUT)){
-                                array.PushBack(to.Move(), _instruction.GetAllocator());
-                            }
-                        }
-                        element.RemoveMember(key.c_str());
-                        element.AddMember(Value(key.c_str(), key.size(), _instruction.GetAllocator()).Move(), array.Move(), _instruction.GetAllocator());
-                    }
-                }
-            }
-        }
-    }
-};
 
 void to_string(const ProgramAction& value, string& result) {
     switch(value) {
@@ -274,6 +27,11 @@ void to_string(const ProgramAction& value, string& result) {
         case ProgramAction::QUALITY:        result.assign("quality");    break;
         default:                            result.assign("unknown");    break;
     }
+};
+string to_string(const ProgramAction& value) {
+    string string_value;
+    to_string(value, string_value);
+    return string_value;
 };
 bool from_string(const char* value, ProgramAction& result) {
          if(value == NULL)              result = ProgramAction::UNKNOWN;
@@ -309,1215 +67,1048 @@ template<> bool decode_value_by_key< ProgramAction >(const Value::Ch* key, Progr
     return false;
 };
 
-void to_string(const ParameterType& value, string& result) {
-    switch(value) {
-        case ParameterType::BOOLEAN:    result.assign("boolean");   break;
-        case ParameterType::INTEGER:    result.assign("integer");   break;
-        case ParameterType::DECIMAL:    result.assign("decimal");   break;
-        case ParameterType::STRING:     result.assign("string");    break;
-        case ParameterType::URL:        result.assign("url");       break;
-        case ParameterType::DIRECTORY:  result.assign("directory"); break;
-        default:                        result.assign("unknown");   break;
+template<> CodecDistanceMetric* decode_value_by_key(const Value::Ch* key, const Value& container) {
+    CodecDistanceMetric* value(NULL);
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                value = new CodecDistanceMetric(reference->value);
+            } else { throw ConfigurationError("codec element must be a dictionary"); }
+        }
     }
+    return value;
 };
-bool from_string(const char* value, ParameterType& result) {
-         if(value == NULL)                  result = ParameterType::UNKNOWN;
-    else if(!strcmp(value, "boolean"))      result = ParameterType::BOOLEAN;
-    else if(!strcmp(value, "integer"))      result = ParameterType::INTEGER;
-    else if(!strcmp(value, "decimal"))      result = ParameterType::DECIMAL;
-    else if(!strcmp(value, "string"))       result = ParameterType::STRING;
-    else if(!strcmp(value, "url"))          result = ParameterType::URL;
-    else if(!strcmp(value, "directory"))    result = ParameterType::DIRECTORY;
-    else                                    result = ParameterType::UNKNOWN;
-    return (result == ParameterType::UNKNOWN ? false : true);
-};
-bool from_string(const string& value, ParameterType& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const ParameterType& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
-    return o;
-};
-void encode_key_value(const string& key, const ParameterType& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-template<> bool decode_value_by_key< ParameterType >(const Value::Ch* key, ParameterType& value, const Value& container) {
+template<> bool decode_value_by_key< list< CodecDistanceMetric > >(const Value::Ch* key, list< CodecDistanceMetric >& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
     if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+        if(element->value.IsArray()) {
+            if(!element->value.Empty()) {
+                for(const auto& e : element->value.GetArray()) {
+                    value.emplace_back(e);
+                }
+                return true;
+            }
+        } else { throw ConfigurationError(string(key) + " element must be an array"); }
     }
     return false;
 };
 
-Prototype::Prototype(const Value& node) :
-    cardinality(0),
-    plural(false),
-    mandatory(false),
-    positional(false) {
+void Demultiplex::apply_instruction_manipulation() {
+    apply_codec_inheritence();
 
-    if(node.IsObject()) {
-        decode_value_by_key< ParameterType >("type", type, node);
-        decode_value_by_key< string >("name", name, node);
-        decode_value_by_key< string >("help", help, node);
-        decode_value_by_key< string >("meta", meta, node);
-        if(meta.empty()) {
-            switch(type) {
-                case ParameterType::BOOLEAN:
-                    meta.clear();
-                    break;
-                case ParameterType::INTEGER:
-                    meta.assign("INT");
-                    break;
-                case ParameterType::DECIMAL:
-                    meta.assign("FLOAT");
-                    break;
-                case ParameterType::STRING:
-                    meta.assign("STRING");
-                    break;
-                case ParameterType::URL:
-                    meta.assign("URL");
-                    break;
-                case ParameterType::DIRECTORY:
-                    meta.assign("DIR");
-                    break;
-                default:
-                    break;
-            }
-        }
+    embed_codec("multiplex");
+    project_codec_group("multiplex");
+    infer_codec_group("multiplex");
+    enumerate_codec_group("multiplex");
+    normalize_codec_group_concentration("multiplex");
+    expand_codec_group_url_variable("multiplex");
+    expand_codec_group_url_base("multiplex");
+    load_input_feed();
+    cross_validate_codec_group_io("multiplex");
+    load_codec_group_transformation("multiplex");
+    load_output_transformation("multiplex");
+    embed_codec("molecular");
+    project_codec_group("molecular");
+    enumerate_codec_group("molecular");
+    normalize_codec_group_concentration("molecular");
+    load_codec_group_transformation("molecular");
 
-        Value::ConstMemberIterator element;
-        element = node.FindMember("cardinality");
-        if(element != node.MemberEnd()) {
-            if(element->value.IsString()) {
-                if(element->value.GetStringLength() == 1 && *(element->value.GetString()) == '*') {
-                    plural = true;
-                } else { throw ConfigurationError("incorrect prototype syntax"); }
-            } else if(element->value.IsUint64()) {
-                plural = true;
-                cardinality = element->value.GetUint64();
-            } else { throw ConfigurationError("incorrect prototype syntax"); }
-        }
-
-        decode_value_by_key< bool >("mandatory", mandatory, node);
-
-        element = node.FindMember("handle");
-        if(element != node.MemberEnd()) {
-            if(element->value.IsArray()) {
-                for(auto& v : element->value.GetArray()) {
-                    if(v.IsString()) {
-                        SizeType length = v.GetStringLength();
-                        const Value::Ch* value = v.GetString();
-                        if(length == 2 && value[0] == '-' && value[1] != '-') {
-                            // short
-                            handles.emplace_back(value, 1, length - 1);
-                        } else if(length > 3 && value[0] == '-' && value[1] == '-' && value[2] != '-') {
-                            // long
-                            handles.emplace_back(value, 2, length - 2);
-                        } else { throw ConfigurationError("incorrect option handle syntax " + string(value, length)); }
-                    } else { throw ConfigurationError("incorrect prototype syntax"); }
-                }
-             } else { throw ConfigurationError("incorrect prototype syntax"); }
-        }
-        positional = handles.empty();
-
-        element = node.FindMember("choice");
-        if(element != node.MemberEnd()) {
-            if(element->value.IsArray()) {
-                for(auto& v : element->value.GetArray()) {
-                    if(v.IsString()) {
-                        choices.emplace_back(v.GetString(), v.GetStringLength());
-                    } else { throw ConfigurationError("incorrect prototype syntax"); }
-                }
-            } else { throw ConfigurationError("incorrect prototype syntax"); }
-        }
-    } else { throw ConfigurationError("incorrect prototype syntax"); }
+    embed_codec("splitseq");
+    project_codec_group("splitseq");
+    enumerate_codec_group("splitseq");
+    normalize_codec_group_concentration("splitseq");
+    load_codec_group_transformation("splitseq");
 };
-Prototype::Prototype() :
-    cardinality(0),
-    plural(false),
-    mandatory(false),
-    positional(false) {
+void Demultiplex::load_input_feed() {
+    Platform platform(Platform::UNKNOWN);
+    decode_value_by_key< Platform >("platform", platform, instruction);
+
+    int32_t buffer_capacity(numeric_limits< int32_t >::max());
+    decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, instruction);
+
+    uint8_t input_phred_offset(numeric_limits< uint8_t >::max());
+    decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, instruction);
+
+    list< URL > feed_url_array(decode_value_by_key< list< URL > >("input", instruction));
+    int32_t input_segment_cardinality(static_cast< int32_t>(feed_url_array.size()));
+    encode_key_value("input segment cardinality", input_segment_cardinality, instruction, instruction);
+
+    /*  validate leading_segment_index */
+    int32_t leading_segment_index(numeric_limits< int32_t >::max());
+    if(decode_value_by_key< int32_t >("leading segment index", leading_segment_index, instruction)) {
+        if(leading_segment_index >= input_segment_cardinality) {
+            throw ConfigurationError("invalid leading segment index " + to_string(leading_segment_index));
+        }
+    }
+
+    map< URL, int > feed_resolution;
+    for(const auto& url : feed_url_array) {
+        ++(feed_resolution[url]);
+    }
+
+    unordered_map< URL, Value > feed_ontology_by_url;
+    int32_t feed_index(0);
+    for(const auto& record : feed_resolution) {
+        const URL& url = record.first;
+        int resolution(record.second);
+        Value proxy(kObjectType);
+        encode_key_value("index", feed_index, proxy, instruction);
+        encode_key_value("url", record.first, proxy, instruction);
+        encode_key_value("direction", IoDirection::IN, proxy, instruction);
+        encode_key_value("platform", platform, proxy, instruction);
+        encode_key_value("capacity", buffer_capacity * resolution, proxy, instruction);
+        encode_key_value("resolution", resolution, proxy, instruction);
+        encode_key_value("phred offset", input_phred_offset, proxy, instruction);
+        feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
+        ++feed_index;
+    }
+
+    Value feed_by_segment(kArrayType);
+    for(const auto& url : feed_url_array) {
+        const Value& proxy(feed_ontology_by_url[url]);
+        feed_by_segment.PushBack(Value(proxy, instruction.GetAllocator()).Move(), instruction.GetAllocator());
+    }
+    instruction.AddMember("input feed by segment", feed_by_segment.Move(), instruction.GetAllocator());
+
+    Value feed_array(kArrayType);
+    for(auto& record : feed_ontology_by_url) {
+        feed_array.PushBack(record.second.Move(), instruction.GetAllocator());
+    }
+    instruction.AddMember("input feed", feed_array.Move(), instruction.GetAllocator());
 };
-ostream& Prototype::print_help(ostream& o, const int& max_option_handle, const Layout& layout) const {
-    o << setw(layout.option_indent) << ' ';
-    if(!positional) {
-        for(size_t i = 0; i < handles.size(); i++) {
-            if(i > 0) {
-                o << ", ";
-            }
-            const string& handle = handles[i];
-            if(handle.length() == 1) {
-                o << '-' << handle;
+int32_t Demultiplex::inheritence_depth(const string& key, const unordered_map< string, Value* >& node_by_key, Document& document) {
+    int32_t depth(0);
+    auto record = node_by_key.find(key);
+    if(record != node_by_key.end()) {
+        Value* value = record->second;
+        if(!decode_value_by_key("depth", depth, *value)) {
+            string base_key;
+            if(decode_value_by_key("base", base_key, *value)) {
+                if(base_key != key) {
+                    depth = inheritence_depth(base_key, node_by_key, document) + 1;
+                    encode_key_value("depth", depth, *value, document);
+                } else { throw ConfigurationError("object can not inherit from itself " + key); }
             } else {
-                o << "--" << handle;
+                encode_key_value("depth", depth, *value, document);
             }
         }
-        if(meta.length() > 0) {
-            o << ' ';
-        }
-    }
-    o << meta;
-    o << setw(layout.complement_handle(max_option_handle, handle_length())) << ' ';
-    o << help << endl;
-    return o;
+    } else { throw ConfigurationError("referencing an undefined base codec " + key); }
+    return depth;
 };
-int Prototype::handle_length() const {
-    int length(0);
-    if(!positional) {
-        for(const auto& handle : handles) {
-            length += handle.length();
-            length += (handle.length() > 1 ? 4 : 3);
-        }
-        length--;
-    }
-    if(meta.length() > 0) {
-        length++;
-        length += meta.length();
-    }
-    return length;
-};
-bool Prototype::is_choice() const {
-    return choices.size() > 0;
-};
+void Demultiplex::apply_codec_inheritence() {
+    unordered_map< string, Value* > codec_by_key;
+    Value::MemberIterator reference = instruction.FindMember("codec");
+    if(reference != instruction.MemberEnd()) {
+        Value& original = reference->value;
+        if(!original.IsNull()) {
+            if(original.IsObject()) {
 
-Argument::Argument(const Prototype* prototype) :
-    assigned(false),
-    prototype(*prototype) {
-    if(prototype->plural) {
-        switch(prototype->type) {
-            case ParameterType::INTEGER: {
-                integer_array_value = new list< int64_t >();
-                break;
-            };
-            case ParameterType::DECIMAL: {
-                decimal_array_value = new list< double >();
-                break;
-            };
-            case ParameterType::STRING: {
-                string_array_value = new list< string >();
-                break;
-            };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
-                url_array_value = new list< URL >();
-                break;
-            };
-            default: {
-                break;
-            };
-        };
-    } else {
-        switch(prototype->type) {
-            case ParameterType::BOOLEAN: {
-                boolean_value = new bool(false);
-                break;
-            };
-            case ParameterType::INTEGER: {
-                integer_value = new int64_t(0);
-                break;
-            };
-            case ParameterType::DECIMAL: {
-                decimal_value = new double(0);
-                break;
-            };
-            case ParameterType::STRING: {
-                string_value = new string();
-                break;
-            };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
-                url_value = new URL();
-                break;
-            };
-            default: {
-                break;
-            };
-        };
-    }
-};
-Argument::~Argument() {
-    if(prototype.plural) {
-        switch(prototype.type) {
-            case ParameterType::INTEGER: {
-                delete integer_array_value;
-                break;
-            };
-            case ParameterType::DECIMAL: {
-                delete decimal_array_value;
-                break;
-            };
-            case ParameterType::STRING: {
-                delete string_array_value;
-                break;
-            };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
-                delete url_array_value;
-                break;
-            };
-            default: {
-                break;
-            };
-        };
-    } else {
-        switch(prototype.type) {
-            case ParameterType::BOOLEAN: {
-                delete boolean_value;
-                break;
-            };
-            case ParameterType::INTEGER: {
-                delete integer_value;
-                break;
-            };
-            case ParameterType::DECIMAL: {
-                delete decimal_value;
-                break;
-            };
-            case ParameterType::STRING: {
-                delete string_value;
-                break;
-            };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
-                delete url_value;
-                break;
-            };
-            default: {
-                break;
-            };
-        };
-    }
-};
-void Argument::set_value(const bool value) {
-    assigned = true;
-    *boolean_value = value;
-};
-void Argument::set_value(const int64_t value) {
-    assigned = true;
-    if(!prototype.plural) {
-        *integer_value = value;
-    } else {
-        integer_array_value->push_back(value);
-    }
-};
-void Argument::set_value(const double value) {
-    assigned = true;
-    if(!prototype.plural) {
-        *decimal_value = value;
-    } else {
-        decimal_array_value->push_back(value);
-    }
-};
-void Argument::set_value(const char* value) {
-    assigned = true;
-    if(!prototype.plural) {
-        string_value->assign(value);
-    } else {
-        string_array_value->emplace_back(value);
-    }
-};
-void Argument::set_value(const URL value) {
-    assigned = true;
-    if(!prototype.plural) {
-        *url_value = value;
-    } else {
-        url_array_value->emplace_back(value);
-    }
-};
-bool* Argument::get_boolean() const {
-    bool* value(NULL);
-    if(prototype.type == ParameterType::BOOLEAN) {
-        value = boolean_value;
-    }
-    return value;
-};
-int64_t* Argument::get_integer() const {
-    int64_t* value(NULL);
-    if(prototype.type == ParameterType::INTEGER) {
-        value = integer_value;
-    }
-    return value;
-};
-double* Argument::get_decimal() const {
-    double* value(NULL);
-    if(prototype.type == ParameterType::DECIMAL) {
-        value = decimal_value;
-    }
-    return value;
-};
-string* Argument::get_string() const {
-    string* value(NULL);
-    if(prototype.type == ParameterType::STRING) {
-        value = string_value;
-    }
-    return value;
-};
-URL* Argument::get_url() const {
-    URL* value(NULL);
-    if(prototype.type == ParameterType::URL) {
-        value = url_value;
-    }
-    return value;
-};
-URL* Argument::get_directory() const {
-    URL* value(NULL);
-    if(prototype.type == ParameterType::DIRECTORY) {
-        value = url_value;
-    }
-    return value;
-};
-list< int64_t >* Argument::get_integer_array() const {
-    list< int64_t >* value(NULL);
-    if(prototype.type == ParameterType::INTEGER && prototype.plural) {
-        value = integer_array_value;
-    }
-    return value;
-};
-list< double >* Argument::get_decimal_array() const {
-    list< double >* value(NULL);
-    if(prototype.type == ParameterType::DECIMAL && prototype.plural) {
-        value = decimal_array_value;
-    }
-    return value;
-};
-list< string >* Argument::get_string_array() const {
-    list< string >* value(NULL);
-    if(prototype.type == ParameterType::STRING && prototype.plural) {
-        value = string_array_value;
-    }
-    return value;
-};
-list< URL >* Argument::get_url_array() const {
-    list< URL >* value(NULL);
-    if(prototype.type == ParameterType::URL && prototype.plural) {
-        value = url_array_value;
-    }
-    return value;
-};
-list< URL >* Argument::get_directory_array() const {
-    list< URL >* value(NULL);
-    if(prototype.type == ParameterType::DIRECTORY && prototype.plural) {
-        value = url_array_value;
-    }
-    return value;
-};
-uint64_t Argument::cardinality() const {
-    uint64_t value(0);
-    if(!prototype.plural) {
-        value = assigned ? 1 : 0;
-    } else {
-        switch(prototype.type) {
-            case ParameterType::BOOLEAN:
-                // does not make sense
-                break;
-            case ParameterType::INTEGER:
-                value = integer_array_value->size();
-                break;
-            case ParameterType::DECIMAL:
-                value = decimal_array_value->size();
-                break;
-            case ParameterType::STRING:
-                value = string_array_value->size();
-                break;
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY:
-                value = url_array_value->size();
-                break;
-            default:
-                break;
-        }
-    }
-    return value;
-};
-bool Argument::satisfied() const {
-    bool value(true);
-    if(prototype.plural) {
-        if(prototype.cardinality == 0 || prototype.cardinality > cardinality()) {
-            value = false;
-        }
-    } else {
-        if(!assigned) {
-            value = false;
-        }
-    }
-    return value;
-};
-
-Action::Action(const Value& node, bool root) :
-    root(root),
-    max_option_handle(0),
-    default_value_node(NULL) {
-    if(node.IsObject()) {
-        decode_value_by_key< string >("name", name, node);
-        decode_value_by_key< string >("description", description, node);
-        decode_value_by_key< string >("epilog", epilog, node);
-
-        Value::ConstMemberIterator element;
-        element = node.FindMember("option");
-        if(element != node.MemberEnd()) {
-            if(element->value.IsArray()) {
-                for(auto& o : element->value.GetArray()) {
-                    Prototype* prototype = new Prototype(o);
-                    if(!prototype->name.empty()) {
-                        if(option_name_lookup.find(prototype->name) == option_name_lookup.end()) {
-                            option_name_lookup[prototype->name] = prototype;
-                            for(const auto& handle : prototype->handles) {
-                                if(option_handle_lookup.find(handle) == option_handle_lookup.end()) {
-                                    option_handle_lookup[handle] = prototype;
-                                } else { throw ConfigurationError("redefining handle " + handle + " in option " + prototype->name); }
-                            }
-                            if(prototype->positional) {
-                                positional_order.push_back(prototype);
-                            } else {
-                                optional_order.push_back(prototype);
-                            }
-                            max_option_handle = max(max_option_handle, prototype->handle_length());
-                        } else { throw ConfigurationError("redefining " + prototype->name); }
-                    } else { throw ConfigurationError("missing a name"); }
-                }
-            } else { throw ConfigurationError("incorrect syntax"); }
-        }
-        element = node.FindMember("default");
-        if(element != node.MemberEnd()) {
-            default_value_node = &element->value;
-        }
-    } else { throw ConfigurationError("incorrect action syntax"); }
-};
-Action::~Action() {
-    for(auto prototype : optional_order) {
-        delete prototype;
-    }
-    for(auto prototype : positional_order) {
-        delete prototype;
-    }
-};
-const Value* Action::default_value() {
-    return default_value_node;
-};
-ostream& Action::print_usage(ostream& o, const string& application_name, const Layout& layout) const {
-    string buffer;
-    string block;
-    buffer.append("Usage : ");
-    buffer.append(application_name);
-    if(!root) {
-        buffer.append(" ");
-        buffer.append(name);
-    }
-    int indent(static_cast< int >(buffer.length()));
-    for(const auto prototype : optional_order) {
-        block.append(" ");
-        if(!prototype->mandatory) {
-            block.append("[");
-        }
-        if(prototype->handles[0].length() == 1) {
-            block.append("-");
-        } else {
-            block.append("--");
-        }
-        switch(prototype->type) {
-            case ParameterType::BOOLEAN:
-                block.append(prototype->handles[0]);
-                break;
-            case ParameterType::INTEGER:
-                block.append(prototype->handles[0]);
-                block.append(" ");
-                block.append(prototype->meta);
-                break;
-            case ParameterType::DECIMAL:
-                block.append(prototype->handles[0]);
-                block.append(" ");
-                block.append(prototype->meta);
-                break;
-            case ParameterType::STRING:
-                block.append(prototype->handles[0]);
-                block.append(" ");
-                if(prototype->is_choice()) {
-                    for(size_t i = 0; i < prototype->choices.size(); i++) {
-                        if(i > 0) {
-                            block.append("|");
-                        }
-                        block.append(prototype->choices[i]);
-                    }
-                } else {
-                    block.append(prototype->meta);
-                }
-                break;
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY:
-                block.append(prototype->handles[0]);
-                block.append(" ");
-                block.append(prototype->meta);
-                break;
-            default:
-                break;
-        }
-        if(!prototype->mandatory) {
-            block.append("]");
-        }
-        if(buffer.length() + block.length() > layout.max_line_width) {
-            o << buffer << endl << setw(indent) << ' ';
-            buffer.clear();
-        }
-        buffer.append(block);
-        block.clear();
-    }
-    for(const auto prototype : positional_order) {
-        block.append(" ");
-        if(!prototype->mandatory) {
-            block.append("[");
-        }
-        switch(prototype->type) {
-            case ParameterType::BOOLEAN:
-                break;
-            case ParameterType::INTEGER:
-            case ParameterType::DECIMAL:
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY:
-                block.append(prototype->meta);
-                break;
-            case ParameterType::STRING: {
-                if(prototype->is_choice()) {
-                    for(size_t i = 0; i < prototype->choices.size(); i++) {
-                        if(i > 0) { block.append("|"); }
-                        block.append(prototype->choices[i]);
-                    }
-                } else {
-                    block.append(prototype->meta);
-                }
-                break;
-            };
-            default:
-                break;
-        }
-        if(!prototype->mandatory) {
-            block.append("]");
-        }
-        if(prototype->plural) {
-            if(prototype->cardinality > 0) {
-                block.append("{");
-                block.append(to_string(prototype->cardinality));
-                block.append("}");
-            } else {
-                block.append("*");
-            }
-        }
-        if(buffer.length() + block.length() > layout.max_line_width) {
-            o << buffer << endl << setw(indent) << ' ';
-            buffer.clear();
-        }
-        buffer.append(block);
-        block.clear();
-    }
-    if(root) {
-        buffer.append(" ACTION ...");
-        if(buffer.length() + block.length() > layout.max_line_width) {
-            o << buffer << endl << setw(indent) << ' ';
-            buffer.clear();
-        }
-        buffer.append(block);
-        block.clear();
-    }
-    o << buffer;
-    return o;
-};
-ostream& Action::print_description_element(ostream& o, const Layout& layout) const {
-    if(description.length() > 0) {
-        o << description << endl << endl;
-    }
-    return o;
-};
-ostream& Action::print_epilog_element(ostream& o, const Layout& layout) const {
-    if(epilog.length() > 0) {
-        o << endl << epilog << endl;
-    }
-    return o;
-};
-ostream& Action::print_help(ostream& o, const string& application_name, const Layout& layout) const {
-    print_usage(o, application_name, layout);
-    if(!positional_order.empty()) {
-        o << endl << endl << "Positional:" << endl;
-        for(const auto option : positional_order) {
-            option->print_help(o, max_option_handle, layout);
-        }
-    }
-    if(!optional_order.empty()) {
-        o << endl << endl << "Optional:" << endl;
-        for(const auto option : optional_order) {
-            option->print_help(o, max_option_handle, layout);
-        }
-    }
-    return o;
-};
-bool Action::is_root() {
-    return root;
-};
-
-CommandLine::CommandLine(const int argc, const char** argv) :
-    argc(argc),
-    argv(argv),
-    application_name(argv[0]),
-    application_version(PHENIQS_VERSION),
-    full_command(assemble_full_command(argc, argv)),
-    working_directory(get_cwd(), true),
-    command(NULL),
-    selected(NULL) {
-
-    const string content(reinterpret_cast<const char *>(configuration_json), configuration_json_len);
-    if(!_configuration.Parse(content.c_str()).HasParseError()) {
-        if(_configuration.IsObject()) {
-            encode_key_value("version", application_version, _configuration, _configuration);
-        } else { throw ConfigurationError("interface configuration must be a dictionary"); }
-    } else {
-        throw ConfigurationError (
-            string(GetParseError_En(_configuration.GetParseError())) + " at position " + to_string(_configuration.GetErrorOffset())
-        );
-    }
-
-    command = new Action(_configuration, true);
-    Value::ConstMemberIterator element = _configuration.FindMember("action");
-    if(element != _configuration.MemberEnd()) {
-        if(element->value.IsArray()) {
-            for(auto& v : element->value.GetArray()) {
-                Action* action = new Action(v, false);
-                if(!action->name.empty()) {
-                    if(action_name_lookup.find(action->name) == action_name_lookup.end()) {
-                        action_name_lookup[action->name] = action;
-                        action_order.push_back(action);
-                        layout.max_action_name = max(layout.max_action_name, action->name_length());
-                    } else { throw ConfigurationError("redefining " + action->name); }
-                } else { throw ConfigurationError("action missing a name"); }
-            }
-        } else { throw ConfigurationError("incorrect action syntax"); }
-    }
-    decode();
-    validate();
-    load_instruction();
-};
-CommandLine::~CommandLine() {
-    for(auto action : action_order) {
-        delete action;
-    }
-    for(auto argument : argument_order) {
-        delete argument;
-    }
-};
-Document* CommandLine::load_default_instruction() {
-    Document* document = new Document(kObjectType);
-    if(default_value() != NULL) {
-        document->CopyFrom(*default_value(), document->GetAllocator());
-    }
-    encode_key_value("working directory", working_directory, *document, *document);
-    encode_key_value("base input url", working_directory, *document, *document);
-    encode_key_value("base output url", working_directory, *document, *document);
-    encode_key_value("action", selected->name, *document, *document);
-    return document;
-};
-Document* CommandLine::load_instruction_from_configuration_file() {
-    Document* document = NULL;
-    URL* url(get_url("configuration url"));
-    if(url != NULL) {
-        if(url->is_readable()) {
-            document = new Document();
-            ifstream file(url->path());
-            const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
-            file.close();
-            if(document->Parse(content.c_str()).HasParseError()) {
-                string message(GetParseError_En(document->GetParseError()));
-                message += " at position ";
-                message += to_string(document->GetErrorOffset());
-                throw ConfigurationError(message);
-            }
-        } else { throw IOError("could not read configuration from " + string(*url)); }
-    }
-    return document;
-};
-Document* CommandLine::load_instruction_from_command_line(const Value& base) {
-    Document* document = NULL;
-    document = new Document(kObjectType);
-    for(auto& record : base.GetObject()) {
-        string key(record.name.GetString(), record.name.GetStringLength());
-        Argument* argument = get(key);
-        if(argument != NULL) {
-            if(argument->prototype.plural) {
-                switch(argument->prototype.type) {
-                    case ParameterType::BOOLEAN: {
-                        /* impossible */
-                        break;
-                    };
-                    case ParameterType::INTEGER: {
-                        list< int64_t >* value = get_integer_plural(key);
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    case ParameterType::DECIMAL: {
-                        list< double >* value = get_decimal_plural(key);
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    case ParameterType::STRING: {
-                        list< string >* value = get_string_plural(key);
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    case ParameterType::URL:
-                    case ParameterType::DIRECTORY: {
-                        list< URL >* value = get_url_plural(key);
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    default:
-                        break;
-                }
-            } else {
-                switch(argument->prototype.type) {
-                    case ParameterType::BOOLEAN: {
-                        bool* value(get_boolean(key));
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    case ParameterType::INTEGER: {
-                        int64_t* value(get_integer(key));
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    case ParameterType::DECIMAL: {
-                        double* value(get_decimal(key));
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    case ParameterType::STRING: {
-                        string* value(get_string(key));
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    case ParameterType::URL:
-                    case ParameterType::DIRECTORY: {
-                        URL* value(get_url(key));
-                        if(value != NULL) { encode_key_value(key, *value, *document, *document); }
-                        break;
-                    };
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-    return document;
-};
-void CommandLine::load_instruction() {
-    Document* default_instruction = load_default_instruction();
-    Document* instruction_from_file = load_instruction_from_configuration_file();
-    Document* instruction_from_command_line = load_instruction_from_command_line(*default_instruction);
-
-    if(instruction_from_file != NULL) {
-        Document* base_configuration = new Document();
-        merge_json_value(*default_instruction, *instruction_from_file, *base_configuration, *base_configuration);
-        delete instruction_from_file;
-
-        merge_json_value(*base_configuration, *instruction_from_command_line, _instruction, _instruction);
-        delete base_configuration;
-
-    } else {
-        merge_json_value(*default_instruction, *instruction_from_command_line, _instruction, _instruction);
-
-    }
-    delete default_instruction;
-    delete instruction_from_command_line;
-    expand_url_variables_in_instruction(_instruction);
-};
-const Document& CommandLine::instruction() const {
-    return _instruction;
-};
-const string& CommandLine::name() const {
-    if(!command->name.empty()) {
-        return command->name;
-    } else {
-        return application_name;
-    }
-};
-ProgramAction CommandLine::get_selected_action() const {
-    ProgramAction value;
-    from_string(selected->name, value);
-    return value;
-};
-bool CommandLine::has_argument(const string& name) {
-    return argument_name_lookup.count(name) > 0;
-};
-const Value* CommandLine::default_value() const {
-    return selected->default_value();
-};
-Argument* CommandLine::get(const string& name) const {
-    auto record = argument_name_lookup.find(name);
-    if(record != argument_name_lookup.end()) {
-        return record->second;
-    } else {
-        return NULL;
-    }
-};
-bool* CommandLine::get_boolean(const string& name) const {
-    bool* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_boolean();
-    }
-    return value;
-};
-int64_t* CommandLine::get_integer(const string& name) const {
-    int64_t* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_integer();
-    }
-    return value;
-};
-double* CommandLine::get_decimal(const string& name) const {
-    double* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_decimal();
-    }
-    return value;
-};
-string* CommandLine::get_string(const string& name) const {
-    string* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_string();
-    }
-    return value;
-};
-URL* CommandLine::get_url(const string& name) const {
-    URL* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_url();
-    }
-    return value;
-};
-URL* CommandLine::get_directory(const string& name) const {
-    URL* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_directory();
-    }
-    return value;
-};
-list< int64_t >* CommandLine::get_integer_plural(const string& name) const {
-    list< int64_t >* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_integer_array();
-    }
-    return value;
-};
-list< double >* CommandLine::get_decimal_plural(const string& name) const {
-    list< double >* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_decimal_array();
-    }
-    return value;
-};
-list< string >* CommandLine::get_string_plural(const string& name) const {
-    list< string >* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_string_array();
-    }
-    return value;
-};
-list< URL >* CommandLine::get_url_plural(const string& name) const {
-    list< URL >* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_url_array();
-    }
-    return value;
-};
-list< URL >* CommandLine::get_directory_plural(const string& name) const {
-    list< URL >* value(NULL);
-    Argument* argument = get(name);
-    if(argument) {
-        value = argument->get_directory_array();
-    }
-    return value;
-};
-bool CommandLine::help_triggered() const {
-    if(argc < 2) {
-        return true;
-    } else {
-        bool* value(get_boolean("help only"));
-        if(value != NULL && value) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-};
-ostream& CommandLine::print_help(ostream& o) const {
-    o << endl;
-    print_version_element(o, layout);
-    if(!selected->root) {
-        command->print_description_element(o, layout);
-    }
-    selected->print_description_element(o, layout);
-    selected->print_help(o, name(), layout);
-    if(selected->root) {
-        print_action_element(o, layout);
-    }
-    selected->print_epilog_element(o, layout);
-    o << endl;
-    return o;
-};
-bool CommandLine::version_triggered() const {
-    bool* value(get_boolean("version only"));
-    if(value != NULL && value) {
-        return true;
-    } else {
-        return false;
-    }
-};
-ostream& CommandLine::print_version(ostream& o) const {
-    print_version_element(o, layout);
-    return o;
-};
-Argument* CommandLine::parse_argument(const Prototype* prototype, size_t& index) {
-    Argument* argument(NULL);
-    try {
-        switch(prototype->type) {
-            case ParameterType::BOOLEAN: {
-                argument = get_argument(prototype);
-                argument->set_value(true);
-                break;
-            };
-            case ParameterType::INTEGER: {
-                string raw(argv[index]);
-                argument = get_argument(prototype);
-                argument->set_value(static_cast < int64_t>(stoll(raw)));
-                break;
-            };
-            case ParameterType::DECIMAL: {
-                string raw(argv[index]);
-                argument = get_argument(prototype);
-                argument->set_value(stod(raw));
-                break;
-            };
-            case ParameterType::STRING: {
-                argument = get_argument(prototype);
-                argument->set_value(argv[index]);
-                break;
-            };
-            case ParameterType::URL: {
-                argument = get_argument(prototype);
-                URL url(argv[index], false);
-                argument->set_value(url);
-                break;
-            };
-            case ParameterType::DIRECTORY: {
-                argument = get_argument(prototype);
-                URL url(argv[index], true);
-                argument->set_value(url);
-                break;
-            };
-            default:
-                break;
-        }
-    } catch(invalid_argument& e) {
-        throw CommandLineError("invalid value for argument " + prototype->name);
-    } catch(out_of_range& e) {
-        throw CommandLineError("out of range value for argument " + prototype->name);
-    }
-    return argument;
-};
-Argument* CommandLine::decode_optional(Action* action, size_t& index, const string& handle, bool& positional, bool composite) {
-    Argument* argument(NULL);
-    auto record = action->option_handle_lookup.find(handle);
-    if(record != action->option_handle_lookup.end()) {
-        Prototype* prototype = record->second;
-        // if the option is not a boolean flag
-        if(prototype->type != ParameterType::BOOLEAN) {
-            if(composite) {
-                // if the handle was grouped and not the last in the group it must be a boolean option
-                throw CommandLineError("argument " + prototype->name + " requires a value");
-            } else  if(index + 1 < argc) {
-                // if there is no next token or the next token is a noop than the option is missing a value
-                index++;
-                if(!strcmp(argv[index], "--")) {
-                    positional = true;
-                    index++;
-                    throw CommandLineError("argument " + prototype->name + " requires a value");
-                }
-            } else { throw CommandLineError("argument " + prototype->name + " requires a value"); }
-        }
-        argument = parse_argument(prototype, index);
-    }
-    return argument;
-};
-Argument* CommandLine::decode_positional(Action* action, size_t& index, const size_t& position) {
-    Argument* argument = NULL;
-    if(position < action->positional_order.size()) {
-        Prototype* prototype = action->positional_order[position];
-        argument = parse_argument(prototype, index);
-    } else {
-        throw CommandLineError("too many positional arguments");
-    }
-    return argument;
-};
-void CommandLine::decode() {
-    size_t index(1);
-    size_t position(0);
-    bool positional(false);
-    load_action(index);
-    while(index < argc) {
-        if(!strcmp(argv[index], "--")) {
-            // break signal encountered
-            if(positional) {
-                // if parsing positional arguments skip to the next positional
-                position++;
-            } else {
-                // if parsing optional switch to decoding positional
-                positional = true;
-            }
-        } else {
-            if(!positional) {
-                const char* key(argv[index]);
-                size_t length(strlen(key));
-                if(key[0] == '-' && length > 1) {
-                    key++;
-                    if(*key == '-') {
-                        if(length > 3) {
-                            // long
-                            key++;
-                            string handle(key);
-                            if(!decode_optional(selected, index, handle, positional)) {
-                                throw CommandLineError("unknown argument --" + handle);
-                            }
-                        } else {
-                            throw CommandLineError("unknown argument " + string(argv[index]));
-                        }
-                    } else {
-                        // short, potentially clustered
-                        while(*key != '\0') {
-                            string handle(1, *key);
-                            if(!decode_optional(selected, index, handle, positional, *(key + 1) != '\0')) {
-                                throw CommandLineError("unknown argument -" + handle);
-                            }
-                            key++;
-                        }
-                    }
-                } else {
-                    // first positional
-                    positional = true;
-                }
-            }
-            if(positional) {
-                if(position < selected->positional_order.size()) {
-                    Argument* argument = decode_positional(selected, index, position);
-                    if(argument->satisfied()) {
-                        position++;
+                /*  map a copy of each codec by key */
+                for(auto& codec_record : original.GetObject()) {
+                    if(!codec_record.value.IsNull()) {
+                        string codec_key(codec_record.name.GetString(), codec_record.name.GetStringLength());
+                        codec_record.value.RemoveMember("depth");
+                        codec_by_key.emplace(make_pair(codec_key, &codec_record.value));
                     }
                 }
-            }
-        }
-        index++;
-    }
-};
-void CommandLine::validate() {
-    if(!help_triggered()) {
-        for(const auto& record : selected->option_name_lookup) {
-            Argument* argument = NULL;
-            const string& name = record.first;
-            const Prototype* prototype = record.second;
 
-            auto argument_record = argument_name_lookup.find(name);
-            if(argument_record != argument_name_lookup.end()) {
-                argument = argument_record->second;
-            }
-            if(prototype->mandatory && (argument == NULL || !argument->assigned)) {
-                throw CommandLineError("missing mandatory argument " + prototype->name);
-            } else if(prototype->plural && prototype->cardinality > 0 && (argument == NULL || prototype->cardinality != argument->cardinality())) {
-                throw CommandLineError("argument " + prototype->name + " requires exactly " + to_string(prototype->cardinality) + " values");
-            } else if(argument != NULL && prototype->is_choice()) {
-                switch(prototype->type) {
-                    case ParameterType::BOOLEAN: {
-                        break;
-                    };
-                    case ParameterType::INTEGER: {
-                        break;
-                    };
-                    case ParameterType::DECIMAL: {
-                        break;
-                    };
-                    case ParameterType::STRING: {
-                        bool found(false);
-                        string* value(argument->get_string());
-                        if(value != NULL) {
-                            for(const auto& choice : prototype->choices) {
-                                if(!choice.compare(*value)) {
-                                    found = true;
-                                    break;
+                /* compute the inheritence depth of each codec and keep track of the max depth */
+                int32_t max_depth(0);
+                for(auto& record : codec_by_key) {
+                    max_depth = max(max_depth, inheritence_depth(record.first, codec_by_key, instruction));
+                }
+
+                /* apply codec inheritence down the tree */
+                int32_t depth(0);
+                for(int32_t i(1); i <= max_depth; ++i) {
+                    for(auto& record : codec_by_key) {
+                        Value* value = record.second;
+                        if(decode_value_by_key("depth", depth, *value) && depth == i) {
+                            string base_key;
+                            if(decode_value_by_key< string >("base", base_key, *value)) {
+                                auto base_record = codec_by_key.find(base_key);
+                                if(base_record != codec_by_key.end()) {
+                                    Value* base = base_record->second;
+                                    merge_json_value(*base, *value, instruction);
                                 }
                             }
                         }
-                        if(!found){
-                            throw CommandLineError("invalid value " + *value + " for option " + prototype->name);
+                    }
+                }
+            } else { throw ConfigurationError("codec element must be a dictionary"); }
+        }
+    }
+};
+void Demultiplex::embed_codec(const Value::Ch* key) {
+    Value::MemberIterator reference = instruction.FindMember("codec");
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                if(!reference->value.ObjectEmpty()) {
+
+                    /* create a map of globally available codecs */
+                    unordered_map< string, Value* > codec_by_key;
+                    for(auto& codec_record : reference->value.GetObject()) {
+                        if(!codec_record.value.IsNull()) {
+                            string key(codec_record.name.GetString(), codec_record.name.GetStringLength());
+                            codec_by_key.emplace(make_pair(key, &codec_record.value));
                         }
-                        break;
-                    };
-                    case ParameterType::URL: {
-                        break;
-                    };
-                    default:
-                        break;
-                };
+                    }
+
+                    reference = instruction.FindMember(key);
+                    if(reference != instruction.MemberEnd()) {
+                        if(!reference->value.IsNull()) {
+                            if(reference->value.IsObject()) {
+                                string base_key;
+                                if(decode_value_by_key< string >("base", base_key, reference->value)) {
+                                    auto base_record = codec_by_key.find(base_key);
+                                    if(base_record != codec_by_key.end()) {
+                                        merge_json_value(*base_record->second, reference->value, instruction);
+                                    }
+                                }
+                                encode_key_value("index", 0, reference->value, instruction);
+
+                            } else if(reference->value.IsArray()) {
+                                int32_t index(0);
+                                for(auto& element : reference->value.GetArray()) {
+                                    if(element.IsObject()) {
+                                        string base_key;
+                                        if(decode_value_by_key< string >("base", base_key, element)) {
+                                            auto base_record = codec_by_key.find(base_key);
+                                            if(base_record != codec_by_key.end()) {
+                                                merge_json_value(*base_record->second, element, instruction);
+                                            }
+                                        }
+                                        encode_key_value("index", index, element, instruction);
+                                        ++index;
+                                    } else { throw ConfigurationError("codec element must be a dictionary"); }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::project_codec(Value& value, const Value& default_instruction_codec, const Value& default_instruction_barcode) {
+    if(!value.IsNull()) {
+        merge_json_value(default_instruction_codec, value, instruction);
+
+        Value default_barcode(kObjectType);
+        project_json_value(default_instruction_barcode, value, default_barcode, instruction);
+
+        Value::MemberIterator reference = value.FindMember("barcode");
+        if(reference != value.MemberEnd()){
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    for(auto& record : reference->value.GetObject()) {
+                        merge_json_value(default_barcode, record.value, instruction);
+                    }
+                } else { throw ConfigurationError("barcode element must be a dictionary"); }
+            }
+        }
+
+        reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()){
+            merge_json_value(default_barcode, reference->value, instruction);
+        } else {
+            value.AddMember (
+                Value("undetermined", instruction.GetAllocator()).Move(),
+                Value(default_barcode, instruction.GetAllocator()).Move(),
+                instruction.GetAllocator()
+            );
+        }
+        default_barcode.SetNull();
+    }
+};
+void Demultiplex::project_codec_group(const Value::Ch* key) {
+    /* get the base barcode and codec node from the configuration */
+    Value default_configuration_codec(kObjectType);
+    Value default_configuration_barcode(kObjectType);
+    Value::ConstMemberIterator const_reference = ontology.FindMember("projection");
+    if(const_reference != ontology.MemberEnd()) {
+        const Value& base = const_reference->value;
+        if(!base.IsNull()) {
+            const_reference = base.FindMember("codec");
+            if(const_reference != base.MemberEnd() && !const_reference->value.IsNull()) {
+                default_configuration_codec.CopyFrom(const_reference->value, instruction.GetAllocator());
+            }
+            const_reference = base.FindMember("barcode");
+            if(const_reference != base.MemberEnd() && !const_reference->value.IsNull()) {
+                default_configuration_barcode.CopyFrom(const_reference->value, instruction.GetAllocator());
+            }
+        }
+    }
+
+    /* project codec attributes from the document root */
+    Value default_instruction_codec(kObjectType);
+    project_json_value(default_configuration_codec, instruction, default_instruction_codec, instruction);
+    default_configuration_codec.SetNull();
+
+    /* project barcode attributes from the instruction root */
+    Value default_instruction_barcode(kObjectType);
+    project_json_value(default_configuration_barcode, instruction, default_instruction_barcode, instruction);
+    default_configuration_barcode.SetNull();
+
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                project_codec(reference->value, default_instruction_codec, default_instruction_barcode);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        project_codec(codec, default_instruction_codec, default_instruction_barcode);
+                    }
+                }
+            }
+        }
+    }
+    default_instruction_codec.SetNull();
+    default_instruction_barcode.SetNull();
+};
+bool Demultiplex::infer_PU(const Value::Ch* key, string& value, Value& container, const bool& undetermined) {
+    if(decode_value_by_key< string >(key, value, container)) {
+        return true;
+    } else {
+        string PU;
+        if(undetermined) {
+            PU.assign("undetermined");
+        } else {
+            list< string > barcode;
+            if(decode_value_by_key< list< string > >("segment", barcode, container)) {
+                for(auto& segment : barcode) {
+                    PU.append(segment);
+                }
+            }
+        }
+        if(!PU.empty()) {
+            string flowcell_id;
+            if(decode_value_by_key< string >("flowcell id", flowcell_id, container)) {
+                value.assign(flowcell_id);
+                value.push_back(':');
+
+                int32_t flowcell_lane_number;
+                if(decode_value_by_key< int32_t >("flowcell lane number", flowcell_lane_number, container)) {
+                    value.append(to_string(flowcell_lane_number));
+                    value.push_back(':');
+                }
+            }
+            value.append(PU);
+            encode_key_value(key, value, container, instruction);
+            return true;
+        }
+    }
+    return false;
+};
+bool Demultiplex::infer_ID(const Value::Ch* key, string& value, Value& container, const bool& undetermined) {
+    if(decode_value_by_key< string >(key, value, container)) {
+        return true;
+    } else if(infer_PU("PU", value, container, undetermined)) {
+        encode_key_value(key, value, container, instruction);
+        return true;
+    } else { return false; }
+};
+void Demultiplex::enumerate_codec(Value& value) {
+    Value::MemberIterator reference = value.FindMember("barcode");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                int32_t index(1);
+                for(auto& record : reference->value.GetObject()) {
+                    if(!record.value.IsNull()) {
+                        encode_key_value("index", index, record.value, instruction);
+                        ++index;
+                    }
+                }
+            }
+        }
+    }
+
+    reference = value.FindMember("undetermined");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            encode_key_value("index", 0, reference->value, instruction);
+        }
+    }
+};
+void Demultiplex::enumerate_codec_group(const Value::Ch* key) {
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                enumerate_codec(reference->value);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        enumerate_codec(codec);
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::infer_codec(Value& value) {
+    Value::MemberIterator reference = value.FindMember("barcode");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            set< string > unique_word_id;
+            for(auto& record : reference->value.GetObject()) {
+                if(!record.value.IsNull()) {
+                    string key;
+                    if(infer_ID("ID", key, record.value)) {
+                        if(!unique_word_id.count(key)) {
+                            unique_word_id.emplace(key);
+                        } else {
+                            string duplicate(record.name.GetString(), record.value.GetStringLength());
+                            throw ConfigurationError("duplicate " + duplicate + " barcode");
+                        }
+                    }
+                }
+            }
+        }
+    }
+    reference = value.FindMember("undetermined");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            string key;
+            infer_ID("ID", key, reference->value, true);
+        }
+    }
+};
+void Demultiplex::infer_codec_group(const Value::Ch* key) {
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                infer_codec(reference->value);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        infer_codec(codec);
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::normalize_codec_concentration(Value& value) {
+    double noise(decode_value_by_key< double >("noise", value));
+
+    Value::MemberIterator reference = value.FindMember("barcode");
+    if(reference != value.MemberEnd()) {
+        Value& barcode_dictionary = reference->value;
+        if(!barcode_dictionary.IsNull()) {
+            if(barcode_dictionary.IsObject()) {
+                double total(0);
+                for(auto& barcode_record : barcode_dictionary.GetObject()) {
+                    double concentration(decode_value_by_key< double >("concentration", barcode_record.value));
+                    if(concentration >= 0) {
+                        total += concentration;
+                    } else { throw ConfigurationError("barcode word concentration must be a positive number");  }
+                }
+
+                const double factor((1.0 - noise) / total);
+                for(auto& barcode_record : barcode_dictionary.GetObject()) {
+                    double concentration(decode_value_by_key< double >("concentration", barcode_record.value));
+                    encode_key_value("concentration", concentration * factor, barcode_record.value, instruction);
+                }
+            }
+        }
+    }
+
+    reference = value.FindMember("undetermined");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                encode_key_value("concentration", noise, reference->value, instruction);
+            }
+        }
+    }
+};
+void Demultiplex::normalize_codec_group_concentration(const Value::Ch* key) {
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                normalize_codec_concentration(reference->value);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        normalize_codec_concentration(codec);
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::expand_codec_url_variable(Value& value) {
+    /*  expand shell variables and standard streams in URL objects */
+    Value::MemberIterator reference = value.FindMember("barcode");
+    if(reference != value.MemberEnd()) {
+        Value& barcode_dictionary = reference->value;
+        if(!barcode_dictionary.IsNull()) {
+            if(barcode_dictionary.IsObject()) {
+                for(auto& barcode_record : barcode_dictionary.GetObject()) {
+                    reference = barcode_record.value.FindMember("output");
+                    if(reference != barcode_record.value.MemberEnd()) {
+                        Value& original_output_array = reference->value;
+                        if(!original_output_array.IsNull() && !original_output_array.Empty()) {
+                            if(original_output_array.IsArray()) {
+                                Value expanded;
+                                Value output_array(kArrayType);
+                                for(const auto& url : original_output_array.GetArray()) {
+                                    if(expand_file_url(url, expanded, instruction, IoDirection::OUT)) {
+                                        output_array.PushBack(expanded.Move(), instruction.GetAllocator());
+                                    }
+                                }
+                                barcode_record.value.RemoveMember("output");
+                                barcode_record.value.AddMember(Value("output", instruction.GetAllocator()).Move(), output_array.Move(), instruction.GetAllocator());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::expand_codec_group_url_variable(const Value::Ch* key) {
+    Value expanded;
+    Value::MemberIterator reference = instruction.FindMember("base input url");
+    if(reference != instruction.MemberEnd() && !reference->value.IsNull()) {
+        if(expand_directory_url(reference->value, expanded, instruction)) {
+            instruction.RemoveMember("base input url");
+            instruction.AddMember(Value("base input url", instruction.GetAllocator()).Move(), expanded.Move(), instruction.GetAllocator());
+        }
+    }
+
+    reference = instruction.FindMember("base output url");
+    if(reference != instruction.MemberEnd() && !reference->value.IsNull()) {
+        if(expand_directory_url(reference->value, expanded, instruction)) {
+            instruction.RemoveMember("base output url");
+            instruction.AddMember(Value("base output url", instruction.GetAllocator()).Move(), expanded.Move(), instruction.GetAllocator());
+        }
+    }
+
+    reference = instruction.FindMember("input url");
+    if(reference != instruction.MemberEnd() && !reference->value.IsNull()) {
+        if(expand_file_url(reference->value, expanded, instruction, IoDirection::IN)) {
+            instruction.RemoveMember("input url");
+            instruction.AddMember(Value("input url", instruction.GetAllocator()).Move(), expanded.Move(), instruction.GetAllocator());
+        }
+    }
+
+    reference = instruction.FindMember("input");
+    if(reference != instruction.MemberEnd() && !reference->value.IsNull()) {
+        if(reference->value.IsArray() && !reference->value.Empty()) {
+            Value array(kArrayType);
+            for(const auto& url : reference->value.GetArray()) {
+                if(expand_file_url(url, expanded, instruction, IoDirection::IN)){
+                    array.PushBack(expanded.Move(), instruction.GetAllocator());
+                }
+            }
+            instruction.RemoveMember("input");
+            instruction.AddMember(Value("input", instruction.GetAllocator()).Move(), array.Move(), instruction.GetAllocator());
+        }
+    }
+
+    reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                expand_codec_url_variable(reference->value);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        expand_codec_url_variable(codec);
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::expand_codec_url_base(Value& value) {
+    URL base_output_url;
+    if(decode_directory_url_by_key("base output url", base_output_url, instruction)) {
+        Value::MemberIterator reference = value.FindMember("barcode");
+        if(reference != value.MemberEnd()) {
+            Value& barcode_dictionary = reference->value;
+            if(!barcode_dictionary.IsNull()) {
+                if(barcode_dictionary.IsObject()) {
+                    for(auto& barcode_record : barcode_dictionary.GetObject()) {
+                        list< URL > output;
+                        if(decode_value_by_key< list< URL > >("output", output, barcode_record.value)) {
+                            bool output_disabled(true);
+                            for(auto& url : output) {
+                                url.relocate(base_output_url);
+                                output_disabled = output_disabled && url.is_null();
+                            }
+                            encode_key_value("output", output, barcode_record.value, instruction);
+                            encode_key_value("output disabled", output_disabled, barcode_record.value, instruction);
+                        }
+                    }
+                }
+            }
+        }
+
+        reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    list< URL > output;
+                    if(decode_value_by_key< list< URL > >("output", output, reference->value)) {
+                        bool output_disabled(true);
+                        for(auto& url : output) {
+                            url.relocate(base_output_url);
+                            output_disabled = output_disabled && url.is_null();
+                        }
+                        encode_key_value("output", output, reference->value, instruction);
+                        encode_key_value("output disabled", output_disabled, reference->value, instruction);
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::expand_codec_group_url_base(const Value::Ch* key) {
+    URL base_input_url;
+    if(decode_directory_url_by_key("base input url", base_input_url, instruction)) {
+        list< URL > input;
+        if(decode_value_by_key< list< URL > >("input", input, instruction)) {
+            for(auto& url : input) {
+                url.relocate(base_input_url);
+            }
+            encode_key_value("input", input, instruction, instruction);
+        }
+
+        URL input_url;
+        if(decode_value_by_key< URL >("input url", input_url, instruction)) {
+            input_url.relocate(base_input_url);
+            encode_key_value("input url", input_url, instruction, instruction);
+        }
+    }
+
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                expand_codec_url_base(reference->value);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        expand_codec_url_base(codec);
+                    }
+                }
+            }
+        }
+    }
+
+};
+void Demultiplex::cross_validate_codec_io(Value& value, const set< URL >& input) {
+    /*  verify no URL is used for both input and output */
+    Value::MemberIterator reference = value.FindMember("output feed");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull() && !reference->value.Empty()) {
+            for(auto& element : reference->value.GetArray()) {
+                URL url;
+                if(decode_value_by_key< URL >("url", url, element)) {
+                    if(input.count(url) > 0) {
+                        throw ConfigurationError("URL " + string(url) + " is used for both input and output");
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::cross_validate_codec_group_io(const Value::Ch* key) {
+    Value::MemberIterator reference = instruction.FindMember("input feed");
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull() && !reference->value.Empty()) {
+            set< URL > input;
+            for(auto& element : reference->value.GetArray()) {
+                URL url;
+                if(decode_value_by_key< URL >("url", url, element)) {
+                    input.emplace(url);
+                }
             }
 
-        }
-    }
-};
-void CommandLine::load_action(size_t& position) {
-    if(argc > 1) {
-        for(size_t i = 1; i < argc; i++) {
-            if(argv[i][0] != '-') {
-                string name(argv[i]);
-                position = i + 1;
-                auto record = action_name_lookup.find(name);
-                if(record != action_name_lookup.end()) {
-                    selected = record->second;
-                } else {
-                    throw CommandLineError("unknown action " +  name);
+            reference = instruction.FindMember(key);
+            if(reference != instruction.MemberEnd()) {
+                if(!reference->value.IsNull()) {
+                    if(reference->value.IsObject()) {
+                        cross_validate_codec_io(reference->value, input);
+                    } else if(reference->value.IsArray()) {
+                        for(auto& codec : reference->value.GetArray()) {
+                            if(!codec.IsNull()) {
+                                cross_validate_codec_io(codec, input);
+                            }
+                        }
+                    }
                 }
-                break;
             }
         }
     }
-    if(selected == NULL) {
-        selected = command;
+};
+void Demultiplex::pad_codec_output_url(Value& value, const int32_t& output_segment_cardinality) {
+    Value::MemberIterator reference = value.FindMember("barcode");
+    if(reference != value.MemberEnd()) {
+        Value& barcode_dictionary = reference->value;
+        if(!barcode_dictionary.IsNull()) {
+            if(barcode_dictionary.IsObject()) {
+                for(auto& barcode_record : barcode_dictionary.GetObject()) {
+                    list< URL > array;
+                    if(decode_value_by_key< list< URL > >("output", array, barcode_record.value)) {
+                        if(!array.empty()) {
+                            if(static_cast< int32_t >(array.size()) != output_segment_cardinality) {
+                                if(array.size() == 1) {
+                                    while(static_cast< int32_t >(array.size()) < output_segment_cardinality) {
+                                        array.push_back(array.front());
+                                    }
+                                    encode_key_value("output", array, barcode_record.value, instruction);
+                                } else {
+                                    string barcode_key(barcode_record.name.GetString(), barcode_record.name.GetStringLength());
+                                    throw ConfigurationError("incorrect number of output URLs in channel " + barcode_key);
+                                }
+                            }
+                        }
+                    }
+                    encode_key_value("TC", output_segment_cardinality, barcode_record.value, instruction);
+                }
+            }
+        }
+    }
+
+    reference = value.FindMember("undetermined");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                Value& undetermined(reference->value);
+                list< URL > array;
+                if(decode_value_by_key< list< URL > >("output", array, undetermined)) {
+                    if(!array.empty()) {
+                        if(static_cast< int32_t >(array.size()) != output_segment_cardinality) {
+                            if(array.size() == 1) {
+                                while(static_cast< int32_t >(array.size()) < output_segment_cardinality) {
+                                    array.push_back(array.front());
+                                }
+                                encode_key_value("output", array, undetermined, instruction);
+                            } else {
+                                throw ConfigurationError("incorrect number of output URLs in undetermined channel");
+                            }
+                        }
+                    }
+                }
+                encode_key_value("TC", output_segment_cardinality, undetermined, instruction);
+            }
+        }
     }
 };
-Argument* CommandLine::get_argument(const Prototype* prototype) {
-    Argument* argument = NULL;
-    auto record = argument_name_lookup.find(prototype->name);
-    if(record != argument_name_lookup.end()) {
-        argument = record->second;
-    } else {
-        argument = new Argument(prototype);
-        argument_name_lookup[prototype->name] = argument;
-        argument_order.push_back(argument);
+void Demultiplex::pad_codec_group_output_url(const Value::Ch* key) {
+    int32_t segment_cardinality;
+    if(decode_value_by_key< int32_t >("output segment cardinality", segment_cardinality, instruction)) {
+        Value::MemberIterator reference = instruction.FindMember(key);
+        if(reference != instruction.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    pad_codec_output_url(reference->value, segment_cardinality);
+                } else if(reference->value.IsArray()) {
+                    for(auto& codec : reference->value.GetArray()) {
+                        if(!codec.IsNull()) {
+                            pad_codec_output_url(codec, segment_cardinality);
+                        }
+                    }
+                }
+            }
+        }
     }
-    return argument;
 };
-ostream& CommandLine::print_version_element(ostream& o, const Layout& layout) const {
-    o << name() << " version " << application_version << endl;
+void Demultiplex::load_codec_output_feed(Value& value, const Platform& platform, const int32_t& buffer_capacity, const uint8_t& phred_offset) {
+    unordered_map< URL, unordered_map< int32_t, int > > feed_resolution;
+
+    Value::MemberIterator reference = value.FindMember("undetermined");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            int32_t index(decode_value_by_key< int32_t >("index", reference->value));
+            list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", reference->value));
+            for(auto& url : feed_url_array) {
+                ++(feed_resolution[url][index]);
+            }
+        }
+    }
+
+    reference = value.FindMember("barcode");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                for(auto& record : reference->value.GetObject()) {
+                    int32_t index(decode_value_by_key< int32_t >("index", record.value));
+                    list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", record.value));
+                    for(auto& url : feed_url_array) {
+                        ++(feed_resolution[url][index]);
+                    }
+                }
+            }
+        }
+    }
+
+    if(feed_resolution.size() > 0) {
+        unordered_map< URL, Value > feed_ontology_by_url;
+        int32_t index(0);
+        for(const auto& url_record : feed_resolution) {
+            const URL& url = url_record.first;
+            int resolution(0);
+            for(const auto& record : url_record.second) {
+                if(resolution == 0) {
+                    resolution = record.second;
+                } else if(resolution != record.second) {
+                    throw ConfigurationError("inconsistent resolution for " + string(url));
+                }
+            }
+            Value proxy(kObjectType);
+            encode_key_value("index", index, proxy, instruction);
+            encode_key_value("url", url, proxy, instruction);
+            encode_key_value("direction", IoDirection::OUT, proxy, instruction);
+            encode_key_value("platform", platform, proxy, instruction);
+            encode_key_value("capacity", buffer_capacity * resolution, proxy, instruction);
+            encode_key_value("resolution", resolution, proxy, instruction);
+            encode_key_value("phred offset", phred_offset, proxy, instruction);
+            feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
+            ++index;
+        }
+
+        reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", reference->value));
+                    Value feed_by_segment(kArrayType);
+                    for(const auto& url : feed_url_array) {
+                        const Value& proxy(feed_ontology_by_url[url]);
+                        feed_by_segment.PushBack(Value(proxy, instruction.GetAllocator()).Move(), instruction.GetAllocator());
+                    }
+                    reference->value.AddMember("feed by segment", feed_by_segment.Move(), instruction.GetAllocator());
+                }
+            }
+        }
+
+        reference = value.FindMember("barcode");
+        if(reference != value.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    for(auto& record : reference->value.GetObject()) {
+                        list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", record.value));
+                        Value feed_by_segment(kArrayType);
+                        for(const auto& url : feed_url_array) {
+                            const Value& proxy(feed_ontology_by_url[url]);
+                            feed_by_segment.PushBack(Value(proxy, instruction.GetAllocator()).Move(), instruction.GetAllocator());
+                        }
+                        record.value.AddMember("feed by segment", feed_by_segment.Move(), instruction.GetAllocator());
+                    }
+                }
+            }
+        }
+
+        Value feed_array(kArrayType);
+        for(auto& record : feed_ontology_by_url) {
+            feed_array.PushBack(record.second.Move(), instruction.GetAllocator());
+        }
+        instruction.AddMember("output feed", feed_array.Move(), instruction.GetAllocator());
+    }
+};
+void Demultiplex::load_codec_group_output_feed(const Value::Ch* key) {
+    Platform platform(Platform::UNKNOWN);
+    decode_value_by_key< Platform >("platform", platform, instruction);
+
+    int32_t buffer_capacity(numeric_limits< int32_t >::max());
+    decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, instruction);
+
+    uint8_t output_phred_offset(numeric_limits< uint8_t >::max());
+    decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, instruction);
+
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                load_codec_output_feed(reference->value, platform, buffer_capacity, output_phred_offset);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        load_codec_output_feed(codec, platform, buffer_capacity, output_phred_offset);
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::load_output_transformation(const Value::Ch* key) {
+    int32_t input_segment_cardinality(numeric_limits< int32_t >::max());
+    if(decode_value_by_key< int32_t >("input segment cardinality", input_segment_cardinality, instruction)) {
+        Rule rule(decode_value_by_key< Rule >("template", instruction));
+        for(auto& token : rule.token_array) {
+            if(!(token.input_segment_index < input_segment_cardinality)) {
+                throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
+            }
+        }
+        encode_key_value("output segment cardinality", rule.output_segment_cardinality, instruction, instruction);
+        pad_codec_group_output_url(key);
+        load_codec_group_output_feed(key);
+    }
+};
+void Demultiplex::load_codec_transformation(Value& value, const int32_t& input_segment_cardinality) {
+    Rule rule(decode_value_by_key< Rule >("template", value));
+    for(auto& token : rule.token_array) {
+        if(!(token.input_segment_index < input_segment_cardinality)) {
+            throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
+        }
+    }
+
+    int32_t nucleotide_cardinality(0);
+    vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
+
+    for(auto& transform : rule.transform_array) {
+        if(transform.token.constant()) {
+            if(!transform.token.empty()) {
+                barcode_length[transform.output_segment_index] += transform.token.length();
+                nucleotide_cardinality += transform.token.length();
+            } else { throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty"); }
+        } else { throw ConfigurationError("barcode token " + string(transform.token) + " is not fixed width"); }
+    }
+
+    encode_key_value("segment cardinality", rule.output_segment_cardinality, value, instruction);
+    encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, instruction);
+    encode_key_value("barcode length", barcode_length, value, instruction);
+
+    Value::MemberIterator reference = value.FindMember("barcode");
+    if(reference != value.MemberEnd()) {
+        Value& barcode_dictionary = reference->value;
+        if(!barcode_dictionary.IsNull()) {
+            if(barcode_dictionary.IsObject()) {
+                for(auto& barcode_record : barcode_dictionary.GetObject()) {
+                    encode_key_value("segment cardinality", rule.output_segment_cardinality, barcode_record.value, instruction);
+                }
+            }
+        }
+    }
+
+    reference = value.FindMember("undetermined");
+    if(reference != value.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            Value& undetermined(reference->value);
+
+            Value segment(kArrayType);
+            for(size_t i = 0; i < barcode_length.size(); ++i) {
+                string sequence(barcode_length[i], '=');
+                segment.PushBack(Value(sequence.c_str(), sequence.size(), instruction.GetAllocator()).Move(), instruction.GetAllocator());
+            }
+            undetermined.RemoveMember("segment");
+            undetermined.AddMember(Value("segment", instruction.GetAllocator()).Move(), segment.Move(), instruction.GetAllocator());
+
+            encode_key_value("segment cardinality", rule.output_segment_cardinality, undetermined, instruction);
+        }
+    }
+};
+void Demultiplex::load_codec_group_transformation(const Value::Ch* key) {
+    int32_t input_segment_cardinality;
+    if(decode_value_by_key< int32_t >("input segment cardinality", input_segment_cardinality, instruction)) {
+        Value::MemberIterator reference = instruction.FindMember(key);
+        if(reference != instruction.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    load_codec_transformation(reference->value, input_segment_cardinality);
+                } else if(reference->value.IsArray()) {
+                    for(auto& codec : reference->value.GetArray()) {
+                        if(!codec.IsNull()) {
+                            load_codec_transformation(codec, input_segment_cardinality);
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::validate_instruction() {
+    Action::validate_instruction();
+
+    uint8_t input_phred_offset;
+    if(decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, instruction)) {
+        if(input_phred_offset > MAX_PHRED_VALUE || input_phred_offset < MIN_PHRED_VALUE) {
+            throw ConfigurationError("input phred offset out of range " + to_string(input_phred_offset));
+        }
+    }
+
+    uint8_t output_phred_offset;
+    if(decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, instruction)) {
+        if(output_phred_offset > MAX_PHRED_VALUE || output_phred_offset < MIN_PHRED_VALUE) {
+            throw ConfigurationError("output phred offset out of range " + to_string(output_phred_offset));
+        }
+    }
+
+    validate_codec_group_sanity("multiplex");
+    validate_codec_group_sanity("molecular");
+    validate_codec_group_sanity("splitseq");
+};
+void Demultiplex::validate_codec_sanity(Value& value) {
+    if(!value.IsNull()) {
+        CodecDistanceMetric metric(value);
+        if(!metric.empty()) {
+            metric.apply_barcode_tolerance(value, instruction);
+        }
+        double confidence_threshold;
+        if(decode_value_by_key< double >("confidence threshold", confidence_threshold, value)) {
+            if(confidence_threshold < 0 || confidence_threshold > 1) {
+                throw ConfigurationError("confidence threshold value " + to_string(confidence_threshold) + " not between 0 and 1");
+            }
+        }
+
+        double noise;
+        if(decode_value_by_key< double >("noise", noise, value)) {
+            if(noise < 0 || noise > 1) {
+                throw ConfigurationError("noise value " + to_string(noise) + " not between 0 and 1");
+            }
+        }
+    }
+};
+void Demultiplex::validate_codec_group_sanity(const Value::Ch* key) {
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                validate_codec_sanity(reference->value);
+            } else if(reference->value.IsArray()) {
+                for(auto& codec : reference->value.GetArray()) {
+                    if(!codec.IsNull()) {
+                        validate_codec_sanity(codec);
+                    }
+                }
+            }
+        }
+    }
+};
+void Demultiplex::clean_instruction() {
+    instruction.RemoveMember("codec");
+    Action::clean_instruction();
+};
+
+void Interface::load_sub_action(const Value& ontology) {
+    string key;
+    if(decode_value_by_key< string >("name", key, ontology)) {
+        if(action_by_name.find(key) == action_by_name.end()) {
+            Action* action(NULL);
+            if(key == "demux") {
+                action = new Demultiplex(ontology);
+            } else {
+                action = new Action(ontology);
+            }
+            action_by_index.push_back(action);
+            action_by_name.emplace(make_pair(key, action));
+            layout.max_action_name = max(layout.max_action_name, action->name_length());
+        } else { throw ConfigurationError("duplicate action " + key); }
+    } else { throw InternalError("undefined action"); }
+};
+ostream& Interface::print_version_element(ostream& o) const {
+    CommandLine::print_version_element(o);
 
     #ifdef ZLIB_VERSION
         o << "zlib " << ZLIB_VERSION << endl;
@@ -1543,16 +1134,5 @@ ostream& CommandLine::print_version_element(ostream& o, const Layout& layout) co
         o << "htslib " << HTSLIB_VERSION << endl;
     #endif
 
-    return o;
-};
-ostream& CommandLine::print_action_element(ostream& o, const Layout& layout) const {
-    o << endl << "available action" << endl;
-    for(const auto action : action_order) {
-        o << setw(layout.option_indent) << ' ';
-        o << action->name;
-        o << setw(layout.complement_action(action->name_length())) << ' ';
-        o << action->description;
-        o << endl;
-    }
     return o;
 };

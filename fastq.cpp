@@ -21,14 +21,20 @@
 
 #include "fastq.h"
 
-/*  FastqRecord CyclicBuffer
-*/
-template<> void CyclicBuffer<FastqRecord>::calibrate(const int& capacity, const int& resolution) {
+ostream& operator<<(ostream& o, const FastqRecord& value) {
+    if(!ks_empty(value.sequence))   o << "sequence : "  << value.sequence.l << endl;
+    if(!ks_empty(value.quality))    o << "quality : "   << value.quality.l  << endl;
+    if(!ks_empty(value.name))       o << "name : "      << value.name.s     << endl;
+    if(!ks_empty(value.comment))    o << "comment : "   << value.comment.s  << endl;
+    return o;
+};
+
+template<> void CyclicBuffer< FastqRecord >::calibrate(const int& capacity, const int& resolution) {
     if(_capacity != capacity || _resolution != resolution) {
         if(capacity > _capacity) {
             if(align_capacity(capacity, resolution) == capacity) {
                 cache.resize(capacity);
-                for(int i = _capacity; i < capacity; i++) {
+                for(int i = _capacity; i < capacity; ++i) {
                     cache[i] = new FastqRecord();
                 }
                 if(_vacant < 0) {
@@ -44,7 +50,7 @@ template<> void CyclicBuffer<FastqRecord>::calibrate(const int& capacity, const 
         }
     }
 };
-template<> CyclicBuffer<FastqRecord>::CyclicBuffer (
+template<> CyclicBuffer< FastqRecord >::CyclicBuffer (
     const IoDirection& direction,
     const int& capacity,
     const int& resolution) :
@@ -57,7 +63,7 @@ template<> CyclicBuffer<FastqRecord>::CyclicBuffer (
 
     calibrate(capacity, resolution);
 };
-template<> CyclicBuffer<FastqRecord>::~CyclicBuffer() {
+template<> CyclicBuffer< FastqRecord >::~CyclicBuffer() {
     for(auto record : cache) {
         delete record;
     }
