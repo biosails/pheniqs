@@ -13,9 +13,6 @@
         {
             "algorithm": "simple",
             "template": {
-                "observation": [
-                    "0"
-                ],
                 "token": [
                     "0:8:16"
                 ]
@@ -57,7 +54,7 @@
                 "SM": "trinidad8 sample"
             }
         },
-        "base": "alpha",
+        "base": "beta",
         "confidence threshold": 0.8,
         "flowcell id": "000000000-BDGGG",
         "flowcell lane number": 1,
@@ -69,9 +66,6 @@
             }
         ],
         "template": {
-            "observation": [
-                "0"
-            ],
             "token": [
                 "1::8"
             ]
@@ -81,15 +75,11 @@
             "LB": "undetermined library",
             "SM": "undetermined sample",
             "output": [
-                "000000000-BDGGG.sam"
+                "/dev/null"
             ]
         }
     },
     "template": {
-        "observation": [
-            "0",
-            "1"
-        ],
         "token": [
             "0::",
             "2::"

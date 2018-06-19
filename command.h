@@ -313,10 +313,6 @@ class Action {
         void set_help_triggered();
 
     protected:
-        void expand_shell_variables(string& path);
-        bool resolve_standard_stream(string& path, const IoDirection& direction);
-        bool expand_file_url(const Value& from, Value& to, Document& document, const IoDirection& direction);
-        bool expand_directory_url(const Value& from, Value& to, Document& document);
         virtual void parse_command_line(const size_t argc, const char** argv);
         virtual void validate_command_line();
         virtual void load_instruction_file();

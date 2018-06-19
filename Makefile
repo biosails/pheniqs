@@ -34,9 +34,7 @@
 
 # to build with an explicit compiler with set CXX or provide the path on the command line to make
 # for instance to build with gcc 7 from homebrew on MacOS you can install it with `brew install gcc@7`
-# and build with `make CXX=/usr/local/bin/g++-7`
-
-# CXX              = clang++
+# and build with `make CXX=/usr/local/bin/g++-7` or `make CXX=clang++` for explicitly building with clang
 
 MAJOR_REVISON  := 2
 MINOR_REVISON  := 0

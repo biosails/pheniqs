@@ -76,23 +76,29 @@ void Environment::print_codec_group_instruction(const Value::Ch* key, const stri
         if(!reference->value.IsNull()) {
             o << head << endl << endl;
             if(reference->value.IsObject()) {
-                print_codec_instruction(reference->value, o);
+                print_codec_instruction(reference->value, false, o);
             } else if(reference->value.IsArray()) {
+                bool plural(reference->value.Size() > 1);
                 for(auto& codec : reference->value.GetArray()) {
                     if(!codec.IsNull()) {
-                        print_codec_instruction(codec, o);
+                        print_codec_instruction(codec, plural, o);
                     }
                 }
             }
         }
     }
 };
-void Environment::print_codec_instruction(const Value& value, ostream& o) const {
+void Environment::print_codec_instruction(const Value& value, const bool& plural, ostream& o) const {
     if(!value.IsNull()) {
-        int32_t index;
-        if(decode_value_by_key< int32_t >("index", index, value)) {
-            o << "  Decoder No." << to_string(index) << endl << endl;
+        if(plural) {
+            int32_t index;
+            if(decode_value_by_key< int32_t >("index", index, value)) {
+                o << "  Decoder No." << to_string(index) << endl << endl;
+            }
         }
+
+        Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+        o << "    Decoding algorithm                   " << algorithm << endl;
 
         print_codec_template(value, o);
         if(_display_distance) {
@@ -268,7 +274,7 @@ void Environment::print_codec_template(const Value& value, ostream& o) const {
     o << endl;
 };
 void Environment::print_multiplex_instruction(ostream& o) const {
-    print_codec_group_instruction("multiplex", "Mutliplexing barcoding", o);
+    print_codec_group_instruction("multiplex", "Mutliplexing", o);
     print_feed_instruction("output feed", o);
 };
 void Environment::print_molecular_instruction(ostream& o) const {

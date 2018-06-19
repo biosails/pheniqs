@@ -13,7 +13,12 @@
                     "segment": [
                         "CGTACTAG"
                     ]
-                },
+                }
+            }
+        },
+        "beta": {
+            "base": "alpha",
+            "barcode": {
                 "GGACTCCT": {
                     "segment": [
                         "GGACTCCT"

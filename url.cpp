@@ -21,6 +21,147 @@
 
 #include "url.h"
 
+void expand_shell(string& path) {
+    if(!path.empty()) {
+        string resolved;
+        string variable;
+        char* value(NULL);
+        size_t position(0);
+        while(position < path.size()) {
+            const char& c = path[position];
+            switch(c) {
+                case '~':
+                    if(resolved.empty()) {
+                        value = getenv("HOME");
+                        if(value != NULL) {
+                            resolved.append(value);
+                        } else {
+                            resolved.push_back(c);
+                        }
+                    } else {
+                        resolved.push_back(c);
+                    }
+                    break;
+                case '$':
+                    if(variable.empty()) {
+                        variable.push_back(c);
+                    } else {
+                        resolved.push_back(c);
+                    }
+                    break;
+                case '{':
+                    if(variable.size() == 1) {
+                        variable.push_back(c);
+                    } else {
+                        resolved.push_back(c);
+                    }
+                    break;
+                case '}':
+                    if(variable.empty()) {
+                        resolved.push_back(c);
+                    } else if(variable.size() == 1) {
+                        resolved.append(variable);
+                        resolved.push_back(c);
+                        variable.clear();
+                    } else {
+                        value = getenv(variable.c_str() + 2);
+                        if(value != NULL) {
+                            resolved.append(value);
+                        }
+                        variable.clear();
+                    }
+                    break;
+                case '\0':
+                    throw InternalError("unexpected string terminator encountered in " + path);
+                    break;
+                default:
+                    if(variable.empty()) {
+                        resolved.push_back(c);
+                    } else if(variable.size() == 1) {
+                        resolved.append(variable);
+                        resolved.push_back(c);
+                        variable.clear();
+                    } else {
+                        variable.push_back(c);
+                    }
+            }
+            ++position;
+        }
+        if(!variable.empty()) {
+            if(variable.size() == 1) {
+                resolved.append(variable);
+                variable.clear();
+            } else {
+                string message("unterminated environment variable in path ");
+                message += path;
+                message += " at position ";
+                message += to_string(position - variable.size());
+                throw ConfigurationError (message);
+            }
+        }
+        path.assign(resolved);
+    }
+};
+void normaize_standard_stream(string& path, const IoDirection& direction) {
+    if(path == STANDARD_STREAM_ALIAS) {
+        switch(direction) {
+            case IoDirection::IN: {
+                path.assign(CANONICAL_STDIN_PATH);
+                break;
+            };
+            case IoDirection::OUT: {
+                path.assign(CANONICAL_STDOUT_PATH);
+                break;
+            };
+            case IoDirection::UNKNOWN: {
+                throw ConfigurationError("can not interpret standard stream alias " + path + " without a declared IO direction");
+                break;
+            };
+        }
+    } else {
+        if(path == "/dev/stdin" || path == "/dev/fd/0" || path == "/proc/self/fd/0") {
+            if(direction == IoDirection::OUT) {
+                throw ConfigurationError("can not use " + path + " for output");
+            }
+            path.assign(CANONICAL_STDIN_PATH);
+
+        } else if(path == "/dev/stdout" || path == "/dev/fd/1" || path == "/proc/self/fd/1") {
+            if(direction == IoDirection::IN) {
+                throw ConfigurationError("can not use " + path + " for input");
+            }
+            path.assign(CANONICAL_STDOUT_PATH);
+
+        } else if(path == "/dev/stderr" || path == "/dev/fd/2" || path == "/proc/self/fd/2") {
+            if(direction == IoDirection::IN) {
+                throw ConfigurationError("can not use " + path + " for input");
+            }
+            path.assign(CANONICAL_STDERR_PATH);
+        }
+    }
+};
+void expand_url_value(Value& value, Document& document, const IoDirection& direction) {
+    if(!value.IsNull()) {
+        string buffer;
+        if(value.IsString()) {
+            buffer.assign(value.GetString(), value.GetStringLength());
+            expand_shell(buffer);
+            if(direction != IoDirection::UNKNOWN) {
+                normaize_standard_stream(buffer, direction);
+            }
+            value.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
+
+        } else if(value.IsObject()) {
+            if(decode_value_by_key< string >("path", buffer, value)) {
+                expand_shell(buffer);
+                if(direction != IoDirection::UNKNOWN) {
+                    normaize_standard_stream(buffer, direction);
+                }
+                encode_key_value("path", buffer, value, document);
+            }
+        }
+    }
+};
+
 void to_string(const FormatType& value, string& result) {
     switch (value) {
         case FormatType::NONE:      result.assign("none");   break;
@@ -457,7 +598,7 @@ bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& 
 };
 
 void encode_value(const URL& value, Value& container, Document& document) {
-    if(value.is_standard_stream()) {
+    if(value.is_standard_stream() && !value.is_null()) {
         container.SetObject();
         encode_key_value("path", value.path(), container, document);
         encode_key_value("type", value.type(), container, document);

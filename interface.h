@@ -308,8 +308,9 @@ class Demultiplex : public Action {
         void project_codec_group(const Value::Ch* key);
         void enumerate_codec(Value& value);
         void enumerate_codec_group(const Value::Ch* key);
-        void infer_codec(Value& value);
-        void infer_codec_group(const Value::Ch* key);
+        void complement_transformation(Value& value);
+        void complement_codec(Value& value);
+        void complement_codec_group(const Value::Ch* key);
         void manipulate_codec_undetermined(Value& value);
         void manipulate_codec_group_undetermined(const Value::Ch* key);
         void normalize_codec_concentration(Value& value);

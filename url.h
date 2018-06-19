@@ -68,6 +68,10 @@ bool from_string(const string& value, IoDirection& result);
 ostream& operator<<(ostream& o, const IoDirection& direction);
 void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document);
 
+void expand_shell(string& path);
+void normaize_standard_stream(string& path, const IoDirection& direction);
+void expand_url_value(Value& value, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
+
 class URL {
     friend ostream& operator<<(ostream& o, const URL& url);
     friend bool operator<(const URL& lhs, const URL& rhs);
