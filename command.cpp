@@ -530,6 +530,104 @@ Action::~Action() {
         delete argument;
     }
 };
+Argument* Action::get_argument(const Prototype* prototype) {
+    Argument* argument = NULL;
+    auto record = argument_by_name.find(prototype->name);
+    if(record != argument_by_name.end()) {
+        argument = record->second;
+    } else {
+        argument = new Argument(prototype);
+        argument_by_name[prototype->name] = argument;
+        argument_by_index.push_back(argument);
+    }
+    return argument;
+};
+Argument* Action::parse_argument(const size_t argc, const char** argv, const Prototype* prototype, size_t& index) {
+    Argument* argument(NULL);
+    try {
+        switch(prototype->type) {
+            case ParameterType::BOOLEAN: {
+                argument = get_argument(prototype);
+                argument->set_value(true);
+                break;
+            };
+            case ParameterType::INTEGER: {
+                string raw(argv[index]);
+                argument = get_argument(prototype);
+                argument->set_value(static_cast < int64_t>(stoll(raw)));
+                break;
+            };
+            case ParameterType::DECIMAL: {
+                string raw(argv[index]);
+                argument = get_argument(prototype);
+                argument->set_value(stod(raw));
+                break;
+            };
+            case ParameterType::STRING: {
+                argument = get_argument(prototype);
+                argument->set_value(argv[index]);
+                break;
+            };
+            case ParameterType::URL: {
+                argument = get_argument(prototype);
+                string buffer(argv[index]);
+                expand_shell(buffer);
+                URL url(buffer);
+                argument->set_value(url);
+                break;
+            };
+            case ParameterType::DIRECTORY: {
+                argument = get_argument(prototype);
+                string buffer(argv[index]);
+                expand_shell(buffer);
+                URL url(buffer, true);
+                argument->set_value(url);
+                break;
+            };
+            default:
+                break;
+        }
+    } catch(invalid_argument& e) {
+        throw CommandLineError("invalid value for argument " + prototype->name);
+    } catch(out_of_range& e) {
+        throw CommandLineError("out of range value for argument " + prototype->name);
+    }
+    return argument;
+};
+Argument* Action::load_optional_argument(const size_t argc, const char** argv, size_t& index, const string& handle, bool& positional, bool composite) {
+    Argument* argument(NULL);
+    auto record = option_by_handle.find(handle);
+    if(record != option_by_handle.end()) {
+        Prototype* prototype = record->second;
+        // if the option is not a boolean flag
+        if(prototype->type != ParameterType::BOOLEAN) {
+            if(composite) {
+                // if the handle was grouped and not the last in the group it must be a boolean option
+                throw CommandLineError("argument " + prototype->name + " requires a value");
+            } else  if(index + 1 < argc) {
+                // if there is no next token or the next token is a noop than the option is missing a value
+                ++index;
+                if(!strcmp(argv[index], "--")) {
+                    positional = true;
+                    ++index;
+                    throw CommandLineError("argument " + prototype->name + " requires a value");
+                }
+            } else { throw CommandLineError("argument " + prototype->name + " requires a value"); }
+        }
+        argument = parse_argument(argc, argv, prototype, index);
+    }
+    return argument;
+};
+Argument* Action::load_positional_argument(const size_t argc, const char** argv, size_t& index, const size_t& position) {
+    Argument* argument = NULL;
+    if(position < positional_by_index.size()) {
+        Prototype* prototype = positional_by_index[position];
+        argument = parse_argument(argc, argv, prototype, index);
+    } else {
+        throw CommandLineError("too many positional arguments");
+    }
+    return argument;
+};
 void Action::load(const size_t argc, const char** argv) {
     parse_command_line(argc, argv);
     if(!help_triggered() && !version_triggered()) {
@@ -670,6 +768,7 @@ void Action::validate_command_line() {
 void Action::load_instruction_file() {
     URL* url(get_url("configuration url"));
     if(url != NULL) {
+        url->normaize(IoDirection::IN);
         Document loaded(load_document(*url));
         instruction.Swap(loaded);
     }
@@ -755,100 +854,7 @@ void Action::apply_command_line_instruction() {
     }
     merge_json_value(instruction, overlay, overlay);
     instruction.Swap(overlay);
-};
-Argument* Action::get_argument(const Prototype* prototype) {
-    Argument* argument = NULL;
-    auto record = argument_by_name.find(prototype->name);
-    if(record != argument_by_name.end()) {
-        argument = record->second;
-    } else {
-        argument = new Argument(prototype);
-        argument_by_name[prototype->name] = argument;
-        argument_by_index.push_back(argument);
-    }
-    return argument;
-};
-Argument* Action::parse_argument(const size_t argc, const char** argv, const Prototype* prototype, size_t& index) {
-    Argument* argument(NULL);
-    try {
-        switch(prototype->type) {
-            case ParameterType::BOOLEAN: {
-                argument = get_argument(prototype);
-                argument->set_value(true);
-                break;
-            };
-            case ParameterType::INTEGER: {
-                string raw(argv[index]);
-                argument = get_argument(prototype);
-                argument->set_value(static_cast < int64_t>(stoll(raw)));
-                break;
-            };
-            case ParameterType::DECIMAL: {
-                string raw(argv[index]);
-                argument = get_argument(prototype);
-                argument->set_value(stod(raw));
-                break;
-            };
-            case ParameterType::STRING: {
-                argument = get_argument(prototype);
-                argument->set_value(argv[index]);
-                break;
-            };
-            case ParameterType::URL: {
-                argument = get_argument(prototype);
-                URL url(argv[index], false);
-                argument->set_value(url);
-                break;
-            };
-            case ParameterType::DIRECTORY: {
-                argument = get_argument(prototype);
-                URL url(argv[index], true);
-                argument->set_value(url);
-                break;
-            };
-            default:
-                break;
-        }
-    } catch(invalid_argument& e) {
-        throw CommandLineError("invalid value for argument " + prototype->name);
-    } catch(out_of_range& e) {
-        throw CommandLineError("out of range value for argument " + prototype->name);
-    }
-    return argument;
-};
-Argument* Action::load_optional_argument(const size_t argc, const char** argv, size_t& index, const string& handle, bool& positional, bool composite) {
-    Argument* argument(NULL);
-    auto record = option_by_handle.find(handle);
-    if(record != option_by_handle.end()) {
-        Prototype* prototype = record->second;
-        // if the option is not a boolean flag
-        if(prototype->type != ParameterType::BOOLEAN) {
-            if(composite) {
-                // if the handle was grouped and not the last in the group it must be a boolean option
-                throw CommandLineError("argument " + prototype->name + " requires a value");
-            } else  if(index + 1 < argc) {
-                // if there is no next token or the next token is a noop than the option is missing a value
-                ++index;
-                if(!strcmp(argv[index], "--")) {
-                    positional = true;
-                    ++index;
-                    throw CommandLineError("argument " + prototype->name + " requires a value");
-                }
-            } else { throw CommandLineError("argument " + prototype->name + " requires a value"); }
-        }
-        argument = parse_argument(argc, argv, prototype, index);
-    }
-    return argument;
-};
-Argument* Action::load_positional_argument(const size_t argc, const char** argv, size_t& index, const size_t& position) {
-    Argument* argument = NULL;
-    if(position < positional_by_index.size()) {
-        Prototype* prototype = positional_by_index[position];
-        argument = parse_argument(argc, argv, prototype, index);
-    } else {
-        throw CommandLineError("too many positional arguments");
-    }
-    return argument;
+    clean_json_value(instruction, instruction);
 };
 Document Action::load_document(const URL& url) {
     Document document;
@@ -864,32 +870,23 @@ Document Action::load_document(const URL& url) {
             message += to_string(document.GetErrorOffset());
             throw ConfigurationError(message);
         }
-    } else { ConfigurationError("could not open imported configuration " + string(url)); }
+    } else { throw ConfigurationError("unreadable configuration file at " + string(url)); }
     return document;
 };
 void Action::apply_import(Document& document) {
-    Value::ConstMemberIterator reference = document.FindMember("import");
-    if(reference != document.MemberEnd()) {
-        const Value& import_array = reference->value;
-        if(!import_array.IsNull()) {
-            if(import_array.IsArray()) {
-                if(!import_array.Empty()) {
-                    Document aggregated(kNullType);
-                    for(const auto& element : import_array.GetArray()) {
-                        URL url(decode_value< URL >(element));
-                        Document imported(load_document(url));
-                        merge_json_value(aggregated, imported, imported);
-                        aggregated.Swap(imported);
-                    }
-                    merge_json_value(aggregated, document, document);
-                }
-            } else { throw ConfigurationError("import element must be an array"); }
+    list< string > import;
+    if(decode_value_by_key< list< string > >("import", import, document)) {
+        Document aggregated(kNullType);
+        for(auto& record : import) {
+            expand_shell(record);
+            URL url(record);
+            Document imported(load_document(url));
+            merge_json_value(aggregated, imported, imported);
+            aggregated.Swap(imported);
         }
-        document.RemoveMember("import");
+        merge_json_value(aggregated, document, document);
     }
-};
-void Action::clean_instruction() {
-    clean_json_value(instruction, instruction);
+    document.RemoveMember("import");
 };
 ostream& Action::print_usage(ostream& o, const string& application_name, const Layout& layout) const {
     string buffer;
@@ -1086,6 +1083,17 @@ void CommandLine::apply_action_base() {
             }
         }
     }
+
+    reference = configuration.FindMember("default");
+    if(reference != configuration.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            encode_key_value("working directory", working_directory, reference->value, configuration);
+            encode_key_value("base input url", working_directory, reference->value, configuration);
+            encode_key_value("base output url", working_directory, reference->value, configuration);
+            encode_key_value("version", application_version, reference->value, configuration);
+        }
+    }
+
     encode_key_value("working directory", working_directory, default_configuration_action, configuration);
     encode_key_value("base input url", working_directory, default_configuration_action, configuration);
     encode_key_value("base output url", working_directory, default_configuration_action, configuration);

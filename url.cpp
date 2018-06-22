@@ -21,14 +21,14 @@
 
 #include "url.h"
 
-void expand_shell(string& path) {
-    if(!path.empty()) {
+void expand_shell(string& expression) {
+    if(!expression.empty()) {
         string resolved;
         string variable;
         char* value(NULL);
         size_t position(0);
-        while(position < path.size()) {
-            const char& c = path[position];
+        while(position < expression.size()) {
+            const char& c = expression[position];
             switch(c) {
                 case '~':
                     if(resolved.empty()) {
@@ -72,7 +72,7 @@ void expand_shell(string& path) {
                     }
                     break;
                 case '\0':
-                    throw InternalError("unexpected string terminator encountered in " + path);
+                    throw InternalError("unexpected string terminator encountered in " + expression);
                     break;
                 default:
                     if(variable.empty()) {
@@ -92,14 +92,14 @@ void expand_shell(string& path) {
                 resolved.append(variable);
                 variable.clear();
             } else {
-                string message("unterminated environment variable in path ");
-                message += path;
+                string message("unterminated environment variable in expression ");
+                message += expression;
                 message += " at position ";
                 message += to_string(position - variable.size());
                 throw ConfigurationError (message);
             }
         }
-        path.assign(resolved);
+        expression.assign(resolved);
     }
 };
 void normaize_standard_stream(string& path, const IoDirection& direction) {
@@ -136,28 +136,6 @@ void normaize_standard_stream(string& path, const IoDirection& direction) {
                 throw ConfigurationError("can not use " + path + " for input");
             }
             path.assign(CANONICAL_STDERR_PATH);
-        }
-    }
-};
-void expand_url_value(Value& value, Document& document, const IoDirection& direction) {
-    if(!value.IsNull()) {
-        string buffer;
-        if(value.IsString()) {
-            buffer.assign(value.GetString(), value.GetStringLength());
-            expand_shell(buffer);
-            if(direction != IoDirection::UNKNOWN) {
-                normaize_standard_stream(buffer, direction);
-            }
-            value.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
-
-        } else if(value.IsObject()) {
-            if(decode_value_by_key< string >("path", buffer, value)) {
-                expand_shell(buffer);
-                if(direction != IoDirection::UNKNOWN) {
-                    normaize_standard_stream(buffer, direction);
-                }
-                encode_key_value("path", buffer, value, document);
-            }
         }
     }
 };
@@ -391,7 +369,21 @@ void URL::set_type(const FormatType type, const bool force) {
         refresh();
     }
 };
-void URL::relocate(const URL& base) {
+void URL::relocate_child(const URL& base) {
+    if(!base._dirname.empty() && !is_absolute()) {
+        string joined;
+        joined.append(base._path);
+        if(!_dirname.empty()) {
+            if(joined.back() != PATH_SEPARATOR) {
+                joined.push_back(PATH_SEPARATOR);
+            }
+            joined.append(_dirname);
+        }
+        _dirname.assign(joined);
+        refresh();
+    }
+};
+void URL::relocate_sibling(const URL& base) {
     if(!base._dirname.empty() && !is_absolute()) {
         string joined;
         joined.append(base._dirname);
@@ -514,13 +506,15 @@ template<> URL decode_value(const Value& container) {
     } else { throw ConfigurationError("URL element is null"); }
 };
 template<> URL decode_value_by_key(const Value::Ch* key, const Value& container) {
-    Value::ConstMemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd()) {
-        return decode_value< URL >(reference->value);
-    } else { throw ConfigurationError(string(key) + " not found"); }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            return decode_value< URL >(reference->value);
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
 template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container) {
-    if(!container.IsNull()) {
+    if(container.IsObject()) {
         Value::ConstMemberIterator reference = container.FindMember(key);
         if(reference != container.MemberEnd()) {
             if(!reference->value.IsNull()) {
@@ -533,68 +527,61 @@ template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& co
                 return value;
             } else { throw ConfigurationError(string(key) + " is null"); }
         } else { throw ConfigurationError(string(key) + " not found"); }
-    } else { throw ConfigurationError(string(key) + " container is null"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
-
 template<> bool decode_value< URL >(URL& value, const Value& container) {
-    if(container.IsString() || container.IsObject()) {
-        try {
-            if(container.IsString()) {
-                string buffer(container.GetString(), container.GetStringLength());
-                value.parse_file(buffer);
-                return true;
-            } else {
-                string buffer;
-                if(decode_value_by_key< string >("path", buffer, container)) {
+    if(!container.IsNull()) {
+        if(container.IsString() || container.IsObject()) {
+            try {
+                if(container.IsString()) {
+                    string buffer(container.GetString(), container.GetStringLength());
                     value.parse_file(buffer);
-                    if(decode_value_by_key< string >("type", buffer, container)) {
-                        value.set_type(buffer);
-                    }
-                    if(decode_value_by_key< string >("compression", buffer, container   )) {
-                        value.set_compression(buffer);
-                    }
                     return true;
-                } else { throw ConfigurationError("URL element must contain a non empty path element"); }
+                } else {
+                    string buffer;
+                    if(decode_value_by_key< string >("path", buffer, container)) {
+                        value.parse_file(buffer);
+                        if(decode_value_by_key< string >("type", buffer, container)) {
+                            value.set_type(buffer);
+                        }
+                        if(decode_value_by_key< string >("compression", buffer, container   )) {
+                            value.set_compression(buffer);
+                        }
+                        return true;
+                    } else { throw ConfigurationError("URL element must contain a non empty path element"); }
+                }
+            } catch(ConfigurationError& e) {
+                value.clear();
+                throw e;
             }
-        } catch(ConfigurationError& e) {
-            value.clear();
-            throw e;
-        }
-    } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
+        } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
+    }
     return false;
 };
 template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container) {
-    Value::ConstMemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd()) {
-        return decode_value< URL >(value, reference->value);
-    } else { return false; }
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            return decode_value< URL >(value, reference->value);
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+    return false;
 };
 template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< URL >& value, const Value& container) {
-    Value::ConstMemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsArray() && !reference->value.Empty()) {
+    bool result(false);
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsArray()) {
+                value.clear();
                 for(const auto& element : reference->value.GetArray()) {
-                    URL url;
-                    if(decode_value< URL >(url, element)) {
-                        value.emplace_back(url);
-                    }
+                    value.emplace_back(decode_value< URL >(element));
+                    result = true;
                 }
-                return true;
-            }
+            } else { throw ConfigurationError(string(key) + " element is not an array"); }
         }
-    }
-    return false;
-};
-bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd()) {
-        if(element->value.IsString()) {
-            value.parse_directory(string(element->value.GetString(), element->value.GetStringLength()));
-            return true;
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+    return result;
 };
 
 void encode_value(const URL& value, Value& container, Document& document) {
@@ -629,4 +616,60 @@ bool encode_key_value(const string& key, const list< URL >& value, Value& contai
         return true;
     }
     return false;
+};
+
+void expand_url_value(Value& container, Document& document, const IoDirection& direction) {
+    if(!container.IsNull()) {
+        string buffer;
+        if(container.IsString()) {
+            buffer.assign(container.GetString(), container.GetStringLength());
+            expand_shell(buffer);
+            if(direction != IoDirection::UNKNOWN) {
+                normaize_standard_stream(buffer, direction);
+            }
+            container.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
+
+        } else if(container.IsObject()) {
+            if(decode_value_by_key< string >("path", buffer, container)) {
+                expand_shell(buffer);
+                if(direction != IoDirection::UNKNOWN) {
+                    normaize_standard_stream(buffer, direction);
+                }
+                encode_key_value("path", buffer, container, document);
+            }
+        }
+    }
+};
+void expand_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction) {
+    if(container.IsObject()) {
+        Value::MemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            expand_url_value(reference->value, document, direction);
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+void expand_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction) {
+    if(container.IsObject()) {
+        Value::MemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(reference->value.IsArray()) {
+                for(auto& record : reference->value.GetArray()) {
+                    expand_url_value(record, document, direction);
+                }
+            } else { throw ConfigurationError(string(key) + " is not an array");  }
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+void relocate_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base) {
+    list< URL > value;
+    if(decode_value_by_key< list< URL > >(key, value, container)) {
+        Value array(kArrayType);
+        for(auto& url : value) {
+            url.relocate_child(base);
+            Value element;
+            encode_value(url, element, document);
+            array.PushBack(element.Move(), document.GetAllocator());
+        }
+    }
+    encode_key_value(key, value, container, document);
 };

@@ -2,7 +2,7 @@
     "base input url": "~/Downloads/000000000-BDGGG",
     "base output url": "~/Downloads/000000000-BDGGG",
     "import": [
-        "example/codec.json"
+        "~/code/pheniqs/example/codec.json"
     ],
     "input": [
         "000000000-BDGGG_l01n01.33100000099898.fastq",
@@ -60,10 +60,7 @@
         "flowcell lane number": 1,
         "noise": 0.03,
         "output": [
-            {
-                "path": "000000000-BDGGG.sam",
-                "type": "sam"
-            }
+            "000000000-BDGGG.sam"
         ],
         "template": {
             "token": [

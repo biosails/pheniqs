@@ -315,10 +315,6 @@ class Demultiplex : public Action {
         void manipulate_codec_group_undetermined(const Value::Ch* key);
         void normalize_codec_concentration(Value& value);
         void normalize_codec_group_concentration(const Value::Ch* key);
-        void expand_codec_url_variable(Value& value);
-        void expand_codec_group_url_variable(const Value::Ch* key);
-        void expand_codec_url_base(Value& value);
-        void expand_codec_group_url_base(const Value::Ch* key);
         void cross_validate_codec_io(Value& value, const set< URL >& input);
         void cross_validate_codec_group_io(const Value::Ch* key);
         void pad_codec_output_url(Value& value, const int32_t& output_segment_cardinality);

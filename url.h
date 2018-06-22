@@ -68,9 +68,8 @@ bool from_string(const string& value, IoDirection& result);
 ostream& operator<<(ostream& o, const IoDirection& direction);
 void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document);
 
-void expand_shell(string& path);
+void expand_shell(string& expression);
 void normaize_standard_stream(string& path, const IoDirection& direction);
-void expand_url_value(Value& value, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
 
 class URL {
     friend ostream& operator<<(ostream& o, const URL& url);
@@ -89,7 +88,8 @@ class URL {
         void set_compression(const string& compression);
         void set_type(const string& type);
         void set_type(const FormatType type, const bool force = false);
-        void relocate(const URL& base);
+        void relocate_child(const URL& base);
+        void relocate_sibling(const URL& base);
         inline const string& path() const {
             return _path;
         };
@@ -142,6 +142,16 @@ class URL {
             _extension.clear();
             _compression.clear();
         };
+        void expand() {
+            expand_shell(_basename);
+            expand_shell(_dirname);
+            refresh();
+        };
+        void normaize(const IoDirection& direction) {
+            string buffer(_path);
+            normaize_standard_stream(buffer, direction);
+            parse_file(buffer);
+        };
         bool is_readable() const;
         bool is_writable() const;
         const char* const c_str() const;
@@ -171,17 +181,13 @@ namespace std {
     };
 };
 
-template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container);
-template<> URL decode_value_by_key(const Value::Ch* key, const Value& container);
-template<> URL decode_value(const Value& container);
-
-template<> bool decode_value< URL >(URL& value, const Value& container);
-template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container);
-template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< URL >& value, const Value& container);
-
-bool decode_directory_url_by_key(const Value::Ch* key, URL& value, const Value& container);
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document);
 void encode_value(const URL& value, Value& container, Document& document);
+
+void expand_url_value(Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
+void expand_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
+void expand_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
+void relocate_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base);
 
 #endif /* PHENIQS_URL_H */

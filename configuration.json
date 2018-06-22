@@ -2,7 +2,7 @@
     "action": [
         {
             "default": {
-                "decoder": "pamld",
+                "algorithm": "pamld",
                 "disable quality control": false,
                 "display distance": false,
                 "flowcell id": null,
@@ -27,7 +27,6 @@
                     "type": "boolean"
                 },
                 {
-                    "default": false,
                     "handle": [
                         "-V",
                         "--validate"
@@ -37,7 +36,6 @@
                     "type": "boolean"
                 },
                 {
-                    "default": false,
                     "handle": [
                         "-j",
                         "--lint"
@@ -47,7 +45,6 @@
                     "type": "boolean"
                 },
                 {
-                    "default": false,
                     "handle": [
                         "-D",
                         "--distance"
@@ -71,7 +68,6 @@
                     "type": "url"
                 },
                 {
-                    "default": 0.99,
                     "handle": [
                         "-c",
                         "--multiplex-confidence"
@@ -81,7 +77,6 @@
                     "type": "decimal"
                 },
                 {
-                    "default": false,
                     "handle": [
                         "-f",
                         "--filtered"
@@ -91,7 +86,6 @@
                     "type": "boolean"
                 },
                 {
-                    "default": false,
                     "handle": [
                         "-q",
                         "--quality"
@@ -101,7 +95,6 @@
                     "type": "boolean"
                 },
                 {
-                    "default": 0,
                     "handle": [
                         "-n",
                         "--multiplex-noise"
@@ -148,13 +141,12 @@
                         "minimum distance decoder",
                         "benchmark meta decoder"
                     ],
-                    "default": "pamld",
                     "handle": [
                         "-d",
-                        "--decoder"
+                        "--algorithm"
                     ],
-                    "help": "Barcode decoder",
-                    "name": "decoder",
+                    "help": "Barcode decoding algorithm",
+                    "name": "algorithm",
                     "type": "string"
                 },
                 {
@@ -168,7 +160,6 @@
                         "ONT",
                         "PACBIO"
                     ],
-                    "default": "ILLUMINA",
                     "handle": [
                         "-p",
                         "--platform"
@@ -234,7 +225,6 @@
                     "type": "url"
                 },
                 {
-                    "default": false,
                     "handle": [
                         "-f",
                         "--filtered"
@@ -254,7 +244,6 @@
                         "ONT",
                         "PACBIO"
                     ],
-                    "default": "ILLUMINA",
                     "handle": [
                         "-p",
                         "--platform"
@@ -350,6 +339,7 @@
             "segment cardinality": null
         },
         "codec": {
+            "base output url": null,
             "adjusted noise probability": null,
             "algorithm": null,
             "barcode": null,

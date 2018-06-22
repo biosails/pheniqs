@@ -34,6 +34,7 @@ namespace rapidjson { typedef ::std::size_t SizeType; }
 #include "error.h"
 #include "kstring.h"
 
+using rapidjson::Type;
 using rapidjson::Value;
 using rapidjson::Document;
 using rapidjson::SizeType;

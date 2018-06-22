@@ -153,11 +153,11 @@ void Environment::print_global_instruction(ostream& o) const {
     o << "    Version                                     " << interface.application_version << endl;
 
     URL base_input_url;
-    decode_directory_url_by_key("base input url", base_input_url, instruction);
+    decode_value_by_key< URL >("base input url", base_input_url, instruction);
     o << "    Base input URL                              " << base_input_url << endl;
 
     URL base_output_url;
-    decode_directory_url_by_key("base input url", base_output_url, instruction);
+    decode_value_by_key< URL >("base input url", base_output_url, instruction);
     o << "    Base output URL                             " << base_output_url << endl;
 
     Platform platform;

@@ -324,7 +324,9 @@ class Action {
         virtual void validate_instruction() {
 
         };
-        virtual void clean_instruction();
+        virtual void clean_instruction() {
+            clean_json_value(instruction, instruction);
+        };
 };
 
 class CommandLine {
