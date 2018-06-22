@@ -80,6 +80,6 @@ bool encode_key_value(const string& key, const Barcode& value, Value& container,
     return false;
 };
 ostream& operator<<(ostream& o, const Barcode& barcode) {
-    o << barcode.iupac_ambiguity();
+    o << barcode.iupac_ambiguity() << endl;
     return o;
 };

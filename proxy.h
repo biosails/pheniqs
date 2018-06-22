@@ -232,44 +232,4 @@ ostream& operator<<(ostream& o, const FeedProxy& proxy);
 template<> FeedProxy decode_value< FeedProxy >(const Value& container);
 template<> list< FeedProxy > decode_value_by_key< list< FeedProxy > >(const Value::Ch* key, const Value& container);
 
-// class ChannelProxy : public Barcode {
-//     public:
-//         void describe(ostream& o) const {
-//                                     o << "    " << alias() << endl;
-//                                     o << "        ID : " << rg.ID.s << endl;
-//             if(!ks_empty(rg.PU))    o << "        PU : " << rg.PU.s << endl;
-//             if(!ks_empty(rg.LB))    o << "        LB : " << rg.LB.s << endl;
-//             if(!ks_empty(rg.SM))    o << "        SM : " << rg.SM.s << endl;
-//             if(!ks_empty(rg.CN))    o << "        CN : " << rg.CN.s << endl;
-//             if(!ks_empty(rg.DS))    o << "        DS : " << rg.DS.s << endl;
-//             if(!ks_empty(rg.DT))    o << "        DT : " << rg.DT.s << endl;
-//             if(!ks_empty(rg.PL))    o << "        PL : " << rg.PL.s << endl;
-//             if(!ks_empty(rg.PM))    o << "        PM : " << rg.PM.s << endl;
-//             if(!ks_empty(rg.PG))    o << "        PG : " << rg.PG.s << endl;
-//             if(!ks_empty(rg.FO))    o << "        FO : " << rg.FO.s << endl;
-//             if(!ks_empty(rg.KS))    o << "        KS : " << rg.KS.s << endl;
-//             if(!ks_empty(rg.PI))    o << "        PI : " << rg.PI.s << endl;
-//             if(TC > 0)              o << "        TC : " << TC      << endl;
-//             if(!ks_empty(FS))       o << "        FS : " << FS.s    << endl;
-//             if(!ks_empty(CO))       o << "        CO : " << CO.s    << endl;
-//             if(concentration > 0) { o << "        PC : " << setprecision(numeric_limits< double >::digits10 + 1) << concentration << endl; }
-//             if(undetermined) {      o << "        Undetermined : true" << endl; }
-//             if(!undetermined) {
-//                 o << endl;
-//                 int32_t index(0);
-//                 for(auto& segment : segment_array) {
-//                                     o << "        Multiplex barcode No." << index++ << " : " << segment.iupac_ambiguity() << endl;
-//                 }
-//             }
-//             if(!url_by_segment.empty()) {
-//                 o << endl;
-//                 int32_t index(0);
-//                 for(auto& url : url_by_segment) {
-//                                     o << "        Output segment No." << index++ << " : " << url << endl;
-//                 }
-//             }
-//             o << endl;
-//         };
-// };
-
 #endif /* PHENIQS_PROXY_H */

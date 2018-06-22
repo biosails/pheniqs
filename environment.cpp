@@ -105,6 +105,47 @@ void Environment::print_codec_instruction(const Value& value, const bool& plural
             CodecDistanceMetric metric(value);
             metric.describe(cout);
         }
+
+        Value::ConstMemberIterator reference = value.FindMember("barcode");
+        if(reference != value.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                for(const auto& record : reference->value.GetObject()) {
+                    const Value& element(record.value);
+                    int32_t index(decode_value_by_key< int32_t >("index", element));
+                    o << "    Channel No." << index << endl;
+
+                    string buffer;
+                    if(decode_value_by_key< string >("ID", buffer, element)) { o << "        ID : " << buffer << endl; }
+                    if(decode_value_by_key< string >("PU", buffer, element)) { o << "        PU : " << buffer << endl; }
+                    if(decode_value_by_key< string >("LB", buffer, element)) { o << "        LB : " << buffer << endl; }
+                    if(decode_value_by_key< string >("SM", buffer, element)) { o << "        SM : " << buffer << endl; }
+                    if(decode_value_by_key< string >("DS", buffer, element)) { o << "        DS : " << buffer << endl; }
+                    if(decode_value_by_key< string >("DT", buffer, element)) { o << "        DT : " << buffer << endl; }
+                    if(decode_value_by_key< string >("PL", buffer, element)) { o << "        PL : " << buffer << endl; }
+                    if(decode_value_by_key< string >("PM", buffer, element)) { o << "        PM : " << buffer << endl; }
+                    if(decode_value_by_key< string >("CN", buffer, element)) { o << "        CN : " << buffer << endl; }
+                    if(decode_value_by_key< string >("FO", buffer, element)) { o << "        FO : " << buffer << endl; }
+                    if(decode_value_by_key< string >("KS", buffer, element)) { o << "        KS : " << buffer << endl; }
+                    if(decode_value_by_key< string >("PI", buffer, element)) { o << "        PI : " << buffer << endl; }
+                    if(decode_value_by_key< string >("FS", buffer, element)) { o << "        FS : " << buffer << endl; }
+                    if(decode_value_by_key< string >("CO", buffer, element)) { o << "        CO : " << buffer << endl; }
+                    double concentration;
+                    if(decode_value_by_key< double >("concentration", concentration, element)) {
+                        o << "        Concentration : " << concentration << endl;
+                    }
+
+                    int32_t segment_index(0);
+                    list< URL > output;
+                    if(decode_value_by_key< list< URL > >("output", output, element)) {
+                        for(auto& url : output) {
+                            o << "        Segment No." + to_string(segment_index) + "  : " << url << endl;
+                            ++segment_index;
+                        }
+                    }
+                    o << endl;
+                }
+            }
+        }
     }
 };
 void Environment::print_feed_instruction(const Value::Ch* key, ostream& o) const {
