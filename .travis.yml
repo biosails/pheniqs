@@ -143,5 +143,5 @@ script:
     - ./pheniqs --version
     - ./pheniqs --help
     - ./pheniqs demux --help
-    - ./pheniqs demux --config example/000000000-BDGGG.json -VD
-    - ./pheniqs demux --config example/000000000-BDGGG.json -j
+    - ./pheniqs demux --config test//000000000-BDGGG/demultiplex.json -VD
+    - ./pheniqs demux --config test//000000000-BDGGG/demultiplex.json -j

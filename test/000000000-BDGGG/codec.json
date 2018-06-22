@@ -1,0 +1,40 @@
+{
+    "CN": "CGSB",
+    "PL": "ILLUMINA",
+    "codec": {
+        "alpha": {
+            "barcode": {
+                "AGGCAGAA": {
+                    "segment": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "CGTACTAG": {
+                    "segment": [
+                        "CGTACTAG"
+                    ]
+                }
+            }
+        },
+        "beta": {
+            "base": "alpha",
+            "barcode": {
+                "GGACTCCT": {
+                    "segment": [
+                        "GGACTCCT"
+                    ]
+                },
+                "TAAGGCGA": {
+                    "segment": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "TCCTGAGC": {
+                    "segment": [
+                        "TCCTGAGC"
+                    ]
+                }
+            }
+        }
+    }
+}

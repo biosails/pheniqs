@@ -1,0 +1,86 @@
+{
+    "base input url": "./test/000000000-BDGGG",
+    "base output url": "./test/000000000-BDGGG",
+    "import": [
+        "./test/000000000-BDGGG/codec.json"
+    ],
+    "input": [
+        "000000000-BDGGG_l01n01.33100000099898.fastq.gz",
+        "000000000-BDGGG_l01n02.33200000099895.fastq.gz",
+        "000000000-BDGGG_l01n03.33300000099892.fastq.gz"
+    ],
+    "molecular": [
+        {
+            "algorithm": "simple",
+            "template": {
+                "token": [
+                    "0:8:16"
+                ]
+            }
+        }
+    ],
+    "multiplex": {
+        "DT": "2018-02-25T07:00:00+00:00",
+        "PI": "300",
+        "PM": "miseq",
+        "algorithm": "pamld",
+        "barcode": {
+            "AGGCAGAA": {
+                "DS": "trinidad5 description",
+                "LB": "trinidad5 library",
+                "SM": "trinidad5 sample",
+                "concentration": 1
+            },
+            "CGTACTAG": {
+                "DS": "trinidad4 description",
+                "LB": "trinidad4 library",
+                "SM": "trinidad4 sample",
+                "concentration": 1
+            },
+            "GGACTCCT": {
+                "DS": "trinidad9 description",
+                "LB": "trinidad9 library",
+                "SM": "trinidad9 sample",
+                "concentration": 1
+            },
+            "TAAGGCGA": {
+                "DS": "trinidad1 description",
+                "LB": "trinidad1 library",
+                "SM": "trinidad1 sample"
+            },
+            "TCCTGAGC": {
+                "DS": "trinidad8 description",
+                "LB": "trinidad8 library",
+                "SM": "trinidad8 sample"
+            }
+        },
+        "base": "beta",
+        "confidence threshold": 0.8,
+        "flowcell id": "000000000-BDGGG",
+        "flowcell lane number": 1,
+        "noise": 0.03,
+        "output": [
+            "000000000-BDGGG.sam"
+        ],
+        "template": {
+            "token": [
+                "1::8"
+            ]
+        },
+        "undetermined": {
+            "DS": "undetermined description",
+            "LB": "undetermined library",
+            "SM": "undetermined sample",
+            "output": [
+                "/dev/null"
+            ]
+        }
+    },
+    "template": {
+        "token": [
+            "0::",
+            "2::"
+        ]
+    },
+    "threads": 4
+}
