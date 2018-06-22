@@ -74,7 +74,7 @@ template<> CodecDistanceMetric* decode_value_by_key(const Value::Ch* key, const 
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
                 value = new CodecDistanceMetric(reference->value);
-            } else { throw ConfigurationError("codec element must be a dictionary"); }
+            } else { throw ConfigurationError("decoder element must be a dictionary"); }
         }
     }
     return value;
@@ -94,34 +94,13 @@ template<> bool decode_value_by_key< list< CodecDistanceMetric > >(const Value::
     return false;
 };
 
-void Demultiplex::apply_instruction_manipulation() {
-    apply_codec_inheritence();
-
+void Demultiplex::manipulate_instruction() {
+    apply_decoder_inheritence();
     load_input_feed();
-
-    embed_codec("multiplex");
-    project_codec_group("multiplex");
-    complement_codec_group("multiplex");
-    enumerate_codec_group("multiplex");
-    load_codec_group_transformation("multiplex");
-    normalize_codec_group_concentration("multiplex");
-
-    load_output_transformation("multiplex");
-    cross_validate_codec_group_io("multiplex");
-
-    embed_codec("molecular");
-    project_codec_group("molecular");
-    complement_codec_group("molecular");
-    enumerate_codec_group("molecular");
-    load_codec_group_transformation("molecular");
-    normalize_codec_group_concentration("molecular");
-
-    embed_codec("splitseq");
-    project_codec_group("splitseq");
-    complement_codec_group("splitseq");
-    enumerate_codec_group("splitseq");
-    load_codec_group_transformation("splitseq");
-    normalize_codec_group_concentration("splitseq");
+    load_decoder_group("multiplex");
+    load_output_feed();
+    load_decoder_group("molecular");
+    load_decoder_group("splitseq");
 };
 int32_t Demultiplex::inheritence_depth(const string& key, const unordered_map< string, Value* >& node_by_key, Document& document) {
     int32_t depth(0);
@@ -139,16 +118,45 @@ int32_t Demultiplex::inheritence_depth(const string& key, const unordered_map< s
                 encode_key_value("depth", depth, *value, document);
             }
         }
-    } else { throw ConfigurationError("referencing an undefined base codec " + key); }
+    } else { throw ConfigurationError("referencing an undefined base decoder " + key); }
     return depth;
 };
-void Demultiplex::apply_codec_inheritence() {
-    Value::MemberIterator reference = instruction.FindMember("codec");
+void Demultiplex::complement_transformation(Value& value) {
+    /* add the default observation if one was not specificed.
+       default observation will treat every token as a segment */
+    if(value.IsObject()) {
+        Value::MemberIterator reference = value.FindMember("template");
+        if(reference != value.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                Value& template_element(reference->value);
+                reference = template_element.FindMember("token");
+                if(reference != template_element.MemberEnd()) {
+                    if(reference->value.IsArray()) {
+                        int32_t token_cardinality(reference->value.Size());
+
+                        reference = template_element.FindMember("observation");
+                        if(reference == template_element.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
+                            Value observation(kArrayType);
+                            for(int32_t i(0); i < token_cardinality; ++i) {
+                                string element(to_string(i));
+                                observation.PushBack(Value(element.c_str(), element.size(),instruction.GetAllocator()).Move(), instruction.GetAllocator());
+                            }
+                            template_element.RemoveMember("observation");
+                            template_element.AddMember(Value("observation", instruction.GetAllocator()).Move(), observation.Move(), instruction.GetAllocator());
+                        }
+                    } else { throw ConfigurationError("template token element is not an array"); }
+                } else { throw ConfigurationError("template element is missing a token array"); }
+            }
+        }
+    }
+};
+void Demultiplex::apply_decoder_inheritence() {
+    Value::MemberIterator reference = instruction.FindMember("decoder");
     if(reference != instruction.MemberEnd()) {
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
 
-                /*  map each codec by key */
+                /*  map each decoder by key */
                 unordered_map< string, Value* > codec_by_key;
                 for(auto& record : reference->value.GetObject()) {
                     if(!record.value.IsNull()) {
@@ -157,17 +165,17 @@ void Demultiplex::apply_codec_inheritence() {
                     }
                 }
 
-                /* compute the inheritence depth of each codec and keep track of the max depth */
+                /* compute the inheritence depth of each decoder and keep track of the max depth */
                 int32_t max_depth(0);
                 for(auto& record : codec_by_key) {
                     try {
                         max_depth = max(max_depth, inheritence_depth(record.first, codec_by_key, instruction));
                     } catch(ConfigurationError& error) {
-                        throw CommandLineError("codec " + record.first + " is " + error.message);
+                        throw CommandLineError("decoder " + record.first + " is " + error.message);
                     }
                 }
 
-                /* apply codec inheritence down the tree */
+                /* apply decoder inheritence down the tree */
                 int32_t depth(0);
                 for(int32_t i(1); i <= max_depth; ++i) {
                     for(auto& record : codec_by_key) {
@@ -180,441 +188,10 @@ void Demultiplex::apply_codec_inheritence() {
                         }
                     }
                 }
-            } else { throw ConfigurationError("codec element must be a dictionary"); }
+            } else { throw ConfigurationError("decoder element must be a dictionary"); }
         }
     }
 };
-
-void Demultiplex::embed_codec(const Value::Ch* key) {
-    Value::MemberIterator reference = instruction.FindMember("codec");
-    if(reference != instruction.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                if(!reference->value.ObjectEmpty()) {
-
-                    /* create a map of globally available codecs */
-                    unordered_map< string, Value* > codec_by_key;
-                    for(auto& record : reference->value.GetObject()) {
-                        if(!record.value.IsNull()) {
-                            string key(record.name.GetString(), record.name.GetStringLength());
-                            codec_by_key.emplace(make_pair(key, &record.value));
-                        }
-                    }
-
-                    reference = instruction.FindMember(key);
-                    if(reference != instruction.MemberEnd()) {
-                        if(!reference->value.IsNull()) {
-                            if(reference->value.IsObject()) {
-                                string base;
-                                if(decode_value_by_key< string >("base", base, reference->value)) {
-                                    auto record = codec_by_key.find(base);
-                                    if(record != codec_by_key.end()) {
-                                        merge_json_value(*record->second, reference->value, instruction);
-                                    } else { throw ConfigurationError(string(key) + " is referencing an undefined base codec " + base); }
-                                }
-                                encode_key_value("index", 0, reference->value, instruction);
-
-                            } else if(reference->value.IsArray()) {
-                                int32_t index(0);
-                                for(auto& element : reference->value.GetArray()) {
-                                    if(element.IsObject()) {
-                                        string base;
-                                        if(decode_value_by_key< string >("base", base, element)) {
-                                            auto record = codec_by_key.find(base);
-                                            if(record != codec_by_key.end()) {
-                                                merge_json_value(*record->second, element, instruction);
-                                            } else { throw ConfigurationError("element " + to_string(index) + " of " + string(key) + " is referencing an undefined base codec " + base); }
-                                        }
-                                        encode_key_value("index", index, element, instruction);
-                                        ++index;
-                                    } else { throw ConfigurationError("codec element must be a dictionary"); }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
-void Demultiplex::project_codec_group(const Value::Ch* key) {
-    /* get the base barcode and codec node from the configuration */
-    Value default_configuration_codec(kObjectType);
-    Value default_configuration_barcode(kObjectType);
-    Value::ConstMemberIterator const_reference = ontology.FindMember("projection");
-    if(const_reference != ontology.MemberEnd()) {
-        const Value& base = const_reference->value;
-        if(!base.IsNull()) {
-            const_reference = base.FindMember("codec");
-            if(const_reference != base.MemberEnd() && !const_reference->value.IsNull()) {
-                default_configuration_codec.CopyFrom(const_reference->value, instruction.GetAllocator());
-            }
-            const_reference = base.FindMember("barcode");
-            if(const_reference != base.MemberEnd() && !const_reference->value.IsNull()) {
-                default_configuration_barcode.CopyFrom(const_reference->value, instruction.GetAllocator());
-            }
-        }
-    }
-
-    /* project codec attributes from the document root */
-    Value default_instruction_codec(kObjectType);
-    project_json_value(default_configuration_codec, instruction, default_instruction_codec, instruction);
-    default_configuration_codec.SetNull();
-
-    /* project barcode attributes from the instruction root */
-    Value default_instruction_barcode(kObjectType);
-    project_json_value(default_configuration_barcode, instruction, default_instruction_barcode, instruction);
-    default_configuration_barcode.SetNull();
-
-    Value::MemberIterator reference = instruction.FindMember(key);
-    if(reference != instruction.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                project_codec(reference->value, default_instruction_codec, default_instruction_barcode);
-            } else if(reference->value.IsArray()) {
-                for(auto& codec : reference->value.GetArray()) {
-                    if(!codec.IsNull()) {
-                        project_codec(codec, default_instruction_codec, default_instruction_barcode);
-                    }
-                }
-            }
-        }
-    }
-    default_instruction_codec.SetNull();
-    default_instruction_barcode.SetNull();
-};
-void Demultiplex::complement_codec_group(const Value::Ch* key) {
-    Value::MemberIterator reference = instruction.FindMember(key);
-    if(reference != instruction.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                complement_codec(reference->value);
-            } else if(reference->value.IsArray()) {
-                for(auto& codec : reference->value.GetArray()) {
-                    if(!codec.IsNull()) {
-                        complement_codec(codec);
-                    }
-                }
-            }
-        }
-    }
-};
-void Demultiplex::enumerate_codec_group(const Value::Ch* key) {
-    Value::MemberIterator reference = instruction.FindMember(key);
-    if(reference != instruction.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                enumerate_codec(reference->value);
-            } else if(reference->value.IsArray()) {
-                for(auto& codec : reference->value.GetArray()) {
-                    if(!codec.IsNull()) {
-                        enumerate_codec(codec);
-                    }
-                }
-            }
-        }
-    }
-};
-void Demultiplex::normalize_codec_group_concentration(const Value::Ch* key) {
-    Value::MemberIterator reference = instruction.FindMember(key);
-    if(reference != instruction.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                normalize_codec_concentration(reference->value);
-            } else if(reference->value.IsArray()) {
-                for(auto& codec : reference->value.GetArray()) {
-                    if(!codec.IsNull()) {
-                        normalize_codec_concentration(codec);
-                    }
-                }
-            }
-        }
-    }
-};
-void Demultiplex::cross_validate_codec_group_io(const Value::Ch* key) {
-    Value::MemberIterator reference = instruction.FindMember("input feed");
-    if(reference != instruction.MemberEnd()) {
-        if(!reference->value.IsNull() && !reference->value.Empty()) {
-            set< URL > input;
-            for(auto& element : reference->value.GetArray()) {
-                URL url;
-                if(decode_value_by_key< URL >("url", url, element)) {
-                    input.emplace(url);
-                }
-            }
-
-            reference = instruction.FindMember(key);
-            if(reference != instruction.MemberEnd()) {
-                if(!reference->value.IsNull()) {
-                    if(reference->value.IsObject()) {
-                        cross_validate_codec_io(reference->value, input);
-                    } else if(reference->value.IsArray()) {
-                        for(auto& codec : reference->value.GetArray()) {
-                            if(!codec.IsNull()) {
-                                cross_validate_codec_io(codec, input);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
-void Demultiplex::load_codec_group_transformation(const Value::Ch* key) {
-    int32_t input_segment_cardinality;
-    if(decode_value_by_key< int32_t >("input segment cardinality", input_segment_cardinality, instruction)) {
-        Value::MemberIterator reference = instruction.FindMember(key);
-        if(reference != instruction.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                if(reference->value.IsObject()) {
-                    load_codec_transformation(reference->value, input_segment_cardinality);
-                } else if(reference->value.IsArray()) {
-                    for(auto& codec : reference->value.GetArray()) {
-                        if(!codec.IsNull()) {
-                            load_codec_transformation(codec, input_segment_cardinality);
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
-
-void Demultiplex::project_codec(Value& value, const Value& default_instruction_codec, const Value& default_instruction_barcode) {
-    if(!value.IsNull()) {
-        merge_json_value(default_instruction_codec, value, instruction);
-
-        Value default_barcode(kObjectType);
-        project_json_value(default_instruction_barcode, value, default_barcode, instruction);
-
-        Value::MemberIterator reference = value.FindMember("undetermined");
-        if(reference != value.MemberEnd()){
-            merge_json_value(default_barcode, reference->value, instruction);
-        } else {
-            value.AddMember (
-                Value("undetermined", instruction.GetAllocator()).Move(),
-                Value(default_barcode, instruction.GetAllocator()).Move(),
-                instruction.GetAllocator()
-            );
-        }
-
-        reference = value.FindMember("barcode");
-        if(reference != value.MemberEnd()){
-            if(!reference->value.IsNull()) {
-                if(reference->value.IsObject()) {
-                    for(auto& record : reference->value.GetObject()) {
-                        merge_json_value(default_barcode, record.value, instruction);
-                    }
-                } else { throw ConfigurationError("barcode element must be a dictionary"); }
-            }
-        }
-        default_barcode.SetNull();
-    }
-};
-void Demultiplex::complement_codec(Value& value) {
-    Value::MemberIterator reference = value.FindMember("undetermined");
-    if(reference != value.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            string key;
-            infer_ID("ID", key, reference->value, true);
-        }
-    }
-
-    reference = value.FindMember("barcode");
-    if(reference != value.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            set< string > unique_word_id;
-            for(auto& record : reference->value.GetObject()) {
-                if(!record.value.IsNull()) {
-                    string key;
-                    if(infer_ID("ID", key, record.value)) {
-                        if(!unique_word_id.count(key)) {
-                            unique_word_id.emplace(key);
-                        } else {
-                            string duplicate(record.name.GetString(), record.value.GetStringLength());
-                            throw ConfigurationError("duplicate " + duplicate + " barcode");
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
-bool Demultiplex::infer_PU(const Value::Ch* key, string& value, Value& container, const bool& undetermined) {
-    if(decode_value_by_key< string >(key, value, container)) {
-        return true;
-    } else {
-        string PU;
-        if(undetermined) {
-            PU.assign("undetermined");
-        } else {
-            list< string > barcode;
-            if(decode_value_by_key< list< string > >("segment", barcode, container)) {
-                for(auto& segment : barcode) {
-                    PU.append(segment);
-                }
-            }
-        }
-        if(!PU.empty()) {
-            string flowcell_id;
-            if(decode_value_by_key< string >("flowcell id", flowcell_id, container)) {
-                value.assign(flowcell_id);
-                value.push_back(':');
-
-                int32_t flowcell_lane_number;
-                if(decode_value_by_key< int32_t >("flowcell lane number", flowcell_lane_number, container)) {
-                    value.append(to_string(flowcell_lane_number));
-                    value.push_back(':');
-                }
-            }
-            value.append(PU);
-            encode_key_value(key, value, container, instruction);
-            return true;
-        }
-    }
-    return false;
-};
-bool Demultiplex::infer_ID(const Value::Ch* key, string& value, Value& container, const bool& undetermined) {
-    if(decode_value_by_key< string >(key, value, container)) {
-        return true;
-    } else if(infer_PU("PU", value, container, undetermined)) {
-        encode_key_value(key, value, container, instruction);
-        return true;
-    } else { return false; }
-};
-void Demultiplex::enumerate_codec(Value& value) {
-    int32_t index(0);
-    Value::MemberIterator reference = value.FindMember("undetermined");
-    if(reference != value.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            encode_key_value("index", index, reference->value, instruction);
-            ++index;
-        }
-    }
-
-    reference = value.FindMember("barcode");
-    if(reference != value.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                for(auto& record : reference->value.GetObject()) {
-                    if(!record.value.IsNull()) {
-                        encode_key_value("index", index, record.value, instruction);
-                        ++index;
-                    }
-                }
-            }
-        }
-    }
-
-};
-void Demultiplex::normalize_codec_concentration(Value& value) {
-    double noise(decode_value_by_key< double >("noise", value));
-
-    /* the undetermined concentration is set to the noise level although this is just syntactical */
-    Value::MemberIterator reference = value.FindMember("undetermined");
-    if(reference != value.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                encode_key_value("concentration", noise, reference->value, instruction);
-            }
-        }
-    }
-
-    reference = value.FindMember("barcode");
-    if(reference != value.MemberEnd()) {
-        Value& barcode_dictionary = reference->value;
-        if(!barcode_dictionary.IsNull()) {
-            if(barcode_dictionary.IsObject()) {
-                double total(0);
-                for(auto& barcode_record : barcode_dictionary.GetObject()) {
-                    double concentration(decode_value_by_key< double >("concentration", barcode_record.value));
-                    if(concentration >= 0) {
-                        total += concentration;
-                    } else { throw ConfigurationError("barcode concentration must be a positive number");  }
-                }
-
-                const double factor((1.0 - noise) / total);
-                for(auto& barcode_record : barcode_dictionary.GetObject()) {
-                    double concentration(decode_value_by_key< double >("concentration", barcode_record.value));
-                    encode_key_value("concentration", concentration * factor, barcode_record.value, instruction);
-                }
-            }
-        }
-    }
-};
-void Demultiplex::cross_validate_codec_io(Value& value, const set< URL >& input) {
-    /*  verify no URL is used for both input and output */
-    Value::MemberIterator reference = value.FindMember("output feed");
-    if(reference != value.MemberEnd()) {
-        if(!reference->value.IsNull() && !reference->value.Empty()) {
-            for(auto& element : reference->value.GetArray()) {
-                URL url;
-                if(decode_value_by_key< URL >("url", url, element)) {
-                    if(input.count(url) > 0) {
-                        throw ConfigurationError("URL " + string(url) + " is used for both input and output");
-                    }
-                }
-            }
-        }
-    }
-};
-void Demultiplex::load_codec_transformation(Value& value, const int32_t& input_segment_cardinality) {
-    complement_transformation(value);
-
-    Rule rule(decode_value_by_key< Rule >("template", value));
-    for(auto& token : rule.token_array) {
-        if(!(token.input_segment_index < input_segment_cardinality)) {
-            throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
-        }
-    }
-
-    int32_t nucleotide_cardinality(0);
-    vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
-
-    for(auto& transform : rule.transform_array) {
-        if(transform.token.constant()) {
-            if(!transform.token.empty()) {
-                barcode_length[transform.output_segment_index] += transform.token.length();
-                nucleotide_cardinality += transform.token.length();
-            } else { throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty"); }
-        } else { throw ConfigurationError("barcode token " + string(transform.token) + " is not fixed width"); }
-    }
-
-    encode_key_value("segment cardinality", rule.output_segment_cardinality, value, instruction);
-    encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, instruction);
-    encode_key_value("barcode length", barcode_length, value, instruction);
-
-    Value::MemberIterator reference = value.FindMember("undetermined");
-    if(reference != value.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            Value& undetermined(reference->value);
-
-            Value segment(kArrayType);
-            for(size_t i = 0; i < barcode_length.size(); ++i) {
-                string sequence(barcode_length[i], '=');
-                segment.PushBack(Value(sequence.c_str(), sequence.size(), instruction.GetAllocator()).Move(), instruction.GetAllocator());
-            }
-            undetermined.RemoveMember("segment");
-            undetermined.AddMember(Value("segment", instruction.GetAllocator()).Move(), segment.Move(), instruction.GetAllocator());
-
-            encode_key_value("segment cardinality", rule.output_segment_cardinality, undetermined, instruction);
-        }
-    }
-
-    reference = value.FindMember("barcode");
-    if(reference != value.MemberEnd()) {
-        Value& barcode_dictionary = reference->value;
-        if(!barcode_dictionary.IsNull()) {
-            if(barcode_dictionary.IsObject()) {
-                for(auto& barcode_record : barcode_dictionary.GetObject()) {
-                    encode_key_value("segment cardinality", rule.output_segment_cardinality, barcode_record.value, instruction);
-                }
-            }
-        }
-    }
-
-};
-
 void Demultiplex::load_input_feed() {
     expand_url_value_by_key("base input url", instruction, instruction);
     expand_url_array_by_key("input", instruction, instruction, IoDirection::IN);
@@ -674,244 +251,446 @@ void Demultiplex::load_input_feed() {
     instruction.RemoveMember("input feed");
     instruction.AddMember("input feed", feed_array.Move(), instruction.GetAllocator());
 };
-void Demultiplex::load_output_transformation(const Value::Ch* key) {
-    int32_t input_segment_cardinality(numeric_limits< int32_t >::max());
-    if(decode_value_by_key< int32_t >("input segment cardinality", input_segment_cardinality, instruction)) {
-        complement_transformation(instruction);
-        Rule rule(decode_value_by_key< Rule >("template", instruction));
-        for(auto& token : rule.token_array) {
-            if(!(token.input_segment_index < input_segment_cardinality)) {
-                throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
-            }
-        }
-        encode_key_value("output segment cardinality", rule.output_segment_cardinality, instruction, instruction);
-        pad_codec_group_output_url(key);
-        load_codec_group_output_feed(key);
-    }
-};
-void Demultiplex::pad_codec_output_url(Value& value, const int32_t& output_segment_cardinality) {
-    Value::MemberIterator reference = value.FindMember("undetermined");
-    if(reference != value.MemberEnd()) {
+void Demultiplex::load_decoder_group(const Value::Ch* key) {
+    /* create a map of globally available codecs */
+    unordered_map< string, Value* > codec_by_key;
+    Value::MemberIterator reference = instruction.FindMember("decoder");
+    if(reference != instruction.MemberEnd()) {
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
-                Value& undetermined(reference->value);
-                list< URL > array;
-                if(decode_value_by_key< list< URL > >("output", array, undetermined)) {
-                    if(!array.empty()) {
-                        if(static_cast< int32_t >(array.size()) != output_segment_cardinality) {
-                            if(array.size() == 1) {
-                                while(static_cast< int32_t >(array.size()) < output_segment_cardinality) {
-                                    array.push_back(array.front());
-                                }
-                                encode_key_value("output", array, undetermined, instruction);
-                            } else {
-                                throw ConfigurationError("incorrect number of output URLs in undetermined channel");
-                            }
-                        }
+                for(auto& record : reference->value.GetObject()) {
+                    if(!record.value.IsNull()) {
+                        string key(record.name.GetString(), record.name.GetStringLength());
+                        codec_by_key.emplace(make_pair(key, &record.value));
                     }
-                }
-                encode_key_value("TC", output_segment_cardinality, undetermined, instruction);
-            }
-        }
-    }
-
-    reference = value.FindMember("barcode");
-    if(reference != value.MemberEnd()) {
-        Value& barcode_dictionary = reference->value;
-        if(!barcode_dictionary.IsNull()) {
-            if(barcode_dictionary.IsObject()) {
-                for(auto& barcode_record : barcode_dictionary.GetObject()) {
-                    list< URL > array;
-                    if(decode_value_by_key< list< URL > >("output", array, barcode_record.value)) {
-                        if(!array.empty()) {
-                            if(static_cast< int32_t >(array.size()) != output_segment_cardinality) {
-                                if(array.size() == 1) {
-                                    while(static_cast< int32_t >(array.size()) < output_segment_cardinality) {
-                                        array.push_back(array.front());
-                                    }
-                                    encode_key_value("output", array, barcode_record.value, instruction);
-                                } else {
-                                    string barcode_key(barcode_record.name.GetString(), barcode_record.name.GetStringLength());
-                                    throw ConfigurationError("incorrect number of output URLs in channel " + barcode_key);
-                                }
-                            }
-                        }
-                    }
-                    encode_key_value("TC", output_segment_cardinality, barcode_record.value, instruction);
                 }
             }
         }
     }
 
+    reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                string base;
+                if(decode_value_by_key< string >("base", base, reference->value)) {
+                    auto record = codec_by_key.find(base);
+                    if(record != codec_by_key.end()) {
+                        merge_json_value(*record->second, reference->value, instruction);
+                    } else { throw ConfigurationError(string(key) + " is referencing an undefined base decoder " + base); }
+                }
+                encode_key_value("index", 0, reference->value, instruction);
 
-};
-void Demultiplex::pad_codec_group_output_url(const Value::Ch* key) {
-    int32_t segment_cardinality;
-    if(decode_value_by_key< int32_t >("output segment cardinality", segment_cardinality, instruction)) {
-        Value::MemberIterator reference = instruction.FindMember(key);
-        if(reference != instruction.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                if(reference->value.IsObject()) {
-                    pad_codec_output_url(reference->value, segment_cardinality);
-                } else if(reference->value.IsArray()) {
-                    for(auto& codec : reference->value.GetArray()) {
-                        if(!codec.IsNull()) {
-                            pad_codec_output_url(codec, segment_cardinality);
+            } else if(reference->value.IsArray()) {
+                int32_t index(0);
+                for(auto& element : reference->value.GetArray()) {
+                    if(element.IsObject()) {
+                        string base;
+                        if(decode_value_by_key< string >("base", base, element)) {
+                            auto record = codec_by_key.find(base);
+                            if(record != codec_by_key.end()) {
+                                merge_json_value(*record->second, element, instruction);
+                            } else { throw ConfigurationError("element " + to_string(index) + " of " + string(key) + " is referencing an undefined base decoder " + base); }
                         }
-                    }
+                        encode_key_value("index", index, element, instruction);
+                        ++index;
+                    } else { throw ConfigurationError("decoder element must be a dictionary"); }
                 }
             }
+            project_decoder_group(key);
         }
     }
 };
-void Demultiplex::load_codec_output_feed(Value& value, const Platform& platform, const int32_t& buffer_capacity, const uint8_t& phred_offset) {
-    expand_url_value_by_key("base output url", value, instruction);
-    URL base(decode_value_by_key< URL >("base output url", value));
-    unordered_map< URL, unordered_map< int32_t, int > > feed_resolution;
+void Demultiplex::project_decoder_group(const Value::Ch* key) {
+    /* get the base decoder and codec node from the configuration */
+    Value default_configuration_decoder(kObjectType);
+    Value default_configuration_codec(kObjectType);
+    Value::ConstMemberIterator const_reference = ontology.FindMember("projection");
+    if(const_reference != ontology.MemberEnd()) {
+        const Value& base = const_reference->value;
+        if(!base.IsNull()) {
+            const_reference = base.FindMember("decoder");
+            if(const_reference != base.MemberEnd() && !const_reference->value.IsNull()) {
+                default_configuration_decoder.CopyFrom(const_reference->value, instruction.GetAllocator());
+            }
+            const_reference = base.FindMember("codec");
+            if(const_reference != base.MemberEnd() && !const_reference->value.IsNull()) {
+                default_configuration_codec.CopyFrom(const_reference->value, instruction.GetAllocator());
+            }
+        }
+    }
 
+    /* project decoder attributes from the document root */
+    Value default_instruction_decoder(kObjectType);
+    project_json_value(default_configuration_decoder, instruction, default_instruction_decoder, instruction);
+    default_configuration_decoder.SetNull();
+
+    /* project codec attributes from the instruction root */
+    Value default_instruction_codec(kObjectType);
+    project_json_value(default_configuration_codec, instruction, default_instruction_codec, instruction);
+    default_configuration_codec.SetNull();
+
+    Value::MemberIterator reference = instruction.FindMember(key);
+    if(reference != instruction.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                project_decoder(reference->value, default_instruction_decoder, default_instruction_codec);
+            } else if(reference->value.IsArray()) {
+                for(auto& decoder : reference->value.GetArray()) {
+                    if(!decoder.IsNull()) {
+                        project_decoder(decoder, default_instruction_decoder, default_instruction_codec);
+                    }
+                }
+            }
+        }
+    }
+    default_instruction_decoder.SetNull();
+    default_instruction_codec.SetNull();
+};
+void Demultiplex::project_decoder(Value& value, const Value& default_instruction_decoder, const Value& default_instruction_codec) {
+    if(value.IsObject()) {
+        string buffer;
+
+        /* merge the default instruction decoder */
+        merge_json_value(default_instruction_decoder, value, instruction);
+
+        /* compute default barcode induced by the codec */
+        Value default_codec(kObjectType);
+        project_json_value(default_instruction_codec, value, default_codec, instruction);
+        clean_json_value(value, instruction);
+
+
+        int32_t barcode_index(0);
+        double total_concentration(0);
+        set< string > unique_barcode_id;
+        double noise(decode_value_by_key< double >("noise", value));
+
+        /* apply barcode default on undetermined barcode or create it from the default if one was not explicitly specified */
+        Value::MemberIterator reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()){
+            merge_json_value(default_codec, reference->value, instruction);
+        } else {
+            value.AddMember (
+                Value("undetermined", instruction.GetAllocator()).Move(),
+                Value(default_codec, instruction.GetAllocator()).Move(),
+                instruction.GetAllocator()
+            );
+        }
+        clean_json_value(reference->value, instruction);
+
+        reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()){
+            encode_key_value("index", barcode_index, reference->value, instruction);
+            if(infer_ID("ID", buffer, reference->value, true)) {
+                unique_barcode_id.emplace(buffer);
+            }
+            encode_key_value("concentration", noise, reference->value, instruction);
+            ++barcode_index;
+        }
+
+        reference = value.FindMember("codec");
+        if(reference != value.MemberEnd()){
+            if(reference->value.IsObject()) {
+                Value& codec(reference->value);
+
+                for(auto& record : codec.GetObject()) {
+                    merge_json_value(default_codec, record.value, instruction);
+                    clean_json_value(record.value, instruction);
+
+                    encode_key_value("index", barcode_index, record.value, instruction);
+
+                    if(infer_ID("ID", buffer, record.value)) {
+                        if(!unique_barcode_id.count(buffer)) {
+                            unique_barcode_id.emplace(buffer);
+                        } else {
+                            string duplicate(record.name.GetString(), record.value.GetStringLength());
+                            throw ConfigurationError("duplicate " + duplicate + " barcode");
+                        }
+                    }
+
+                    double concentration(decode_value_by_key< double >("concentration", record.value));
+                    if(concentration >= 0) {
+                        total_concentration += concentration;
+                    } else { throw ConfigurationError("barcode concentration must be a positive number");  }
+
+                    ++barcode_index;
+                }
+
+                if(total_concentration > 0) {
+                    const double factor((1.0 - noise) / total_concentration);
+                    for(auto& record : codec.GetObject()) {
+                        double concentration(decode_value_by_key< double >("concentration", record.value));
+                        encode_key_value("concentration", concentration * factor, record.value, instruction);
+                    }
+                } else { throw ConfigurationError("total pool concentration is not a positive number"); }
+            } else { throw ConfigurationError("codec element must be a dictionary"); }
+        }
+        default_codec.SetNull();
+        load_decoder_transformation(value);
+    }
+};
+void Demultiplex::load_decoder_transformation(Value& value) {
+    complement_transformation(value);
+
+    /* decode the transformation rule */
+    Rule rule(decode_value_by_key< Rule >("template", value));
+    int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", instruction));
+
+    /* validate all tokens refer to an existing input segment */
+    for(auto& token : rule.token_array) {
+        if(!(token.input_segment_index < input_segment_cardinality)) {
+            throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
+        }
+    }
+
+    /* annotate the decoder with cardinality information from the transfortmation */
+    int32_t nucleotide_cardinality(0);
+    vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
+    for(auto& transform : rule.transform_array) {
+        if(transform.token.constant()) {
+            if(!transform.token.empty()) {
+                barcode_length[transform.output_segment_index] += transform.token.length();
+                nucleotide_cardinality += transform.token.length();
+            } else { throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty"); }
+        } else { throw ConfigurationError("barcode token " + string(transform.token) + " is not fixed width"); }
+    }
+    encode_key_value("segment cardinality", rule.output_segment_cardinality, value, instruction);
+    encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, instruction);
+    encode_key_value("barcode length", barcode_length, value, instruction);
+
+    /* annotate each barcode element with the barcode segment cardinality */
     Value::MemberIterator reference = value.FindMember("undetermined");
     if(reference != value.MemberEnd()) {
         if(!reference->value.IsNull()) {
-            int32_t index(decode_value_by_key< int32_t >("index", reference->value));
-            expand_url_array_by_key("output", reference->value, instruction, IoDirection::OUT);
-            relocate_url_array_by_key("output", reference->value, instruction, base);
-            list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", reference->value));
+            Value& undetermined(reference->value);
 
-            for(auto& url : feed_url_array) {
-                ++(feed_resolution[url][index]);
+            /* explicitly define a null barcode segment for the right dimension in the undetermined */
+            Value barcode_segment(kArrayType);
+            for(size_t i = 0; i < barcode_length.size(); ++i) {
+                string sequence(barcode_length[i], '=');
+                barcode_segment.PushBack(Value(sequence.c_str(), sequence.size(), instruction.GetAllocator()).Move(), instruction.GetAllocator());
             }
+            undetermined.RemoveMember("barcode segment");
+            undetermined.AddMember(Value("barcode segment", instruction.GetAllocator()).Move(), barcode_segment.Move(), instruction.GetAllocator());
+            encode_key_value("segment cardinality", rule.output_segment_cardinality, undetermined, instruction);
         }
     }
 
-    reference = value.FindMember("barcode");
+    reference = value.FindMember("codec");
     if(reference != value.MemberEnd()) {
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
                 for(auto& record : reference->value.GetObject()) {
-                    int32_t index(decode_value_by_key< int32_t >("index", record.value));
-                    expand_url_array_by_key("output", record.value, instruction, IoDirection::OUT);
-                    relocate_url_array_by_key("output", record.value, instruction, base);
-                    list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", record.value));
+                    encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, instruction);
+                }
+            }
+        }
+    }
+};
+bool Demultiplex::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+    string suffix;
+    if(!decode_value_by_key< string >(key, suffix, container)) {
+        if(!undetermined) {
+            list< string > barcode;
+            if(decode_value_by_key< list< string > >("barcode segment", barcode, container)) {
+                for(auto& segment : barcode) {
+                    suffix.append(segment);
+                }
+            }
+        } else { suffix.assign("undetermined"); }
+
+        if(!suffix.empty()) {
+            if(decode_value_by_key< string >("flowcell id", buffer, container)) {
+                buffer.push_back(':');
+                int32_t lane;
+                if(decode_value_by_key< int32_t >("flowcell lane number", lane, container)) {
+                    buffer.append(to_string(lane));
+                    buffer.push_back(':');
+                }
+            }
+            buffer.append(suffix);
+            encode_key_value(key, buffer, container, instruction);
+            return true;
+        } else { return false; }
+    } else { return true; }
+};
+bool Demultiplex::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+    if(!decode_value_by_key< string >(key, buffer, container)) {
+        if(infer_PU("PU", buffer, container, undetermined)) {
+            encode_key_value(key, buffer, container, instruction);
+            return true;
+        } else { return false; }
+    } else { return true; }
+};
+void Demultiplex::pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& segment_cardinality) {
+    list< URL > array;
+    if(decode_value_by_key< list< URL > >(key, array, container)) {
+        if(!array.empty()) {
+            if(static_cast< int32_t >(array.size()) != segment_cardinality) {
+                if(array.size() == 1) {
+                    while(static_cast< int32_t >(array.size()) < segment_cardinality) {
+                        array.push_back(array.front());
+                    }
+                    encode_key_value(key, array, container, instruction);
+                } else { throw ConfigurationError("incorrect number of output URLs in undetermined channel"); }
+            }
+        }
+    }
+};
+void Demultiplex::load_output_feed() {
+    /* load output template */
+    const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", instruction));
+    complement_transformation(instruction);
+
+    Rule rule(decode_value_by_key< Rule >("template", instruction));
+    for(auto& token : rule.token_array) {
+        if(!(token.input_segment_index < input_segment_cardinality)) {
+            throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
+        }
+    }
+    const int32_t output_segment_cardinality(rule.output_segment_cardinality);
+    encode_key_value("output segment cardinality", output_segment_cardinality, instruction, instruction);
+
+    Value::MemberIterator reference = instruction.FindMember("multiplex");
+    if(reference != instruction.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            Value& value(reference->value);
+            expand_url_value_by_key("base output url", value, instruction);
+            URL base(decode_value_by_key< URL >("base output url", value));
+
+            Platform platform(decode_value_by_key< Platform >("platform", instruction));
+            int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", instruction));
+            uint8_t phred_offset(decode_value_by_key< uint8_t >("output phred offset", instruction));
+
+            unordered_map< URL, unordered_map< int32_t, int > > feed_resolution;
+            Value::MemberIterator reference = value.FindMember("undetermined");
+            if(reference != value.MemberEnd()) {
+                if(!reference->value.IsNull()) {
+                    int32_t index(decode_value_by_key< int32_t >("index", reference->value));
+                    encode_key_value("TC", output_segment_cardinality, reference->value, instruction);
+                    pad_url_array_by_key("output", reference->value, output_segment_cardinality);
+                    expand_url_array_by_key("output", reference->value, instruction, IoDirection::OUT);
+                    relocate_url_array_by_key("output", reference->value, instruction, base);
+                    list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", reference->value));
 
                     for(auto& url : feed_url_array) {
                         ++(feed_resolution[url][index]);
                     }
                 }
             }
+            reference = value.FindMember("codec");
+            if(reference != value.MemberEnd()) {
+                if(!reference->value.IsNull()) {
+                    if(reference->value.IsObject()) {
+                        for(auto& record : reference->value.GetObject()) {
+                            int32_t index(decode_value_by_key< int32_t >("index", record.value));
+                            encode_key_value("TC", output_segment_cardinality, record.value, instruction);
+                            pad_url_array_by_key("output", record.value, output_segment_cardinality);
+                            expand_url_array_by_key("output", record.value, instruction, IoDirection::OUT);
+                            relocate_url_array_by_key("output", record.value, instruction, base);
+                            list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", record.value));
+
+                            for(auto& url : feed_url_array) {
+                                ++(feed_resolution[url][index]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(feed_resolution.size() > 0) {
+                unordered_map< URL, Value > feed_ontology_by_url;
+                int32_t index(0);
+                for(const auto& url_record : feed_resolution) {
+                    const URL& url = url_record.first;
+                    int resolution(0);
+                    for(const auto& record : url_record.second) {
+                        if(resolution == 0) {
+                            resolution = record.second;
+                        } else if(resolution != record.second) {
+                            throw ConfigurationError("inconsistent resolution for " + string(url));
+                        }
+                    }
+                    Value proxy(kObjectType);
+                    encode_key_value("index", index, proxy, instruction);
+                    encode_key_value("url", url, proxy, instruction);
+                    encode_key_value("direction", IoDirection::OUT, proxy, instruction);
+                    encode_key_value("platform", platform, proxy, instruction);
+                    encode_key_value("capacity", buffer_capacity * resolution, proxy, instruction);
+                    encode_key_value("resolution", resolution, proxy, instruction);
+                    encode_key_value("phred offset", phred_offset, proxy, instruction);
+                    feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
+                    ++index;
+                }
+
+                reference = value.FindMember("undetermined");
+                if(reference != value.MemberEnd()) {
+                    if(!reference->value.IsNull()) {
+                        if(reference->value.IsObject()) {
+                            list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", reference->value));
+                            Value feed_by_segment(kArrayType);
+                            for(const auto& url : feed_url_array) {
+                                const Value& proxy(feed_ontology_by_url[url]);
+                                feed_by_segment.PushBack(Value(proxy, instruction.GetAllocator()).Move(), instruction.GetAllocator());
+                            }
+                            reference->value.RemoveMember("feed by segment");
+                            reference->value.AddMember("feed by segment", feed_by_segment.Move(), instruction.GetAllocator());
+                        }
+                    }
+                }
+
+                reference = value.FindMember("codec");
+                if(reference != value.MemberEnd()) {
+                    if(!reference->value.IsNull()) {
+                        if(reference->value.IsObject()) {
+                            for(auto& record : reference->value.GetObject()) {
+                                list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", record.value));
+                                Value feed_by_segment(kArrayType);
+                                for(const auto& url : feed_url_array) {
+                                    const Value& proxy(feed_ontology_by_url[url]);
+                                    feed_by_segment.PushBack(Value(proxy, instruction.GetAllocator()).Move(), instruction.GetAllocator());
+                                }
+                                record.value.RemoveMember("feed by segment");
+                                record.value.AddMember("feed by segment", feed_by_segment.Move(), instruction.GetAllocator());
+                            }
+                        }
+                    }
+                }
+
+                Value feed_array(kArrayType);
+                for(auto& record : feed_ontology_by_url) {
+                    feed_array.PushBack(record.second.Move(), instruction.GetAllocator());
+                }
+                instruction.RemoveMember("output feed");
+                instruction.AddMember("output feed", feed_array.Move(), instruction.GetAllocator());
+            }
+            cross_validate_io();
         }
     }
+};
+void Demultiplex::cross_validate_io() {
+    list< URL > input_array(decode_value_by_key< list< URL > >("input", instruction));
 
-    if(feed_resolution.size() > 0) {
-        unordered_map< URL, Value > feed_ontology_by_url;
-        int32_t index(0);
-        for(const auto& url_record : feed_resolution) {
-            const URL& url = url_record.first;
-            int resolution(0);
-            for(const auto& record : url_record.second) {
-                if(resolution == 0) {
-                    resolution = record.second;
-                } else if(resolution != record.second) {
-                    throw ConfigurationError("inconsistent resolution for " + string(url));
-                }
-            }
-            Value proxy(kObjectType);
-            encode_key_value("index", index, proxy, instruction);
-            encode_key_value("url", url, proxy, instruction);
-            encode_key_value("direction", IoDirection::OUT, proxy, instruction);
-            encode_key_value("platform", platform, proxy, instruction);
-            encode_key_value("capacity", buffer_capacity * resolution, proxy, instruction);
-            encode_key_value("resolution", resolution, proxy, instruction);
-            encode_key_value("phred offset", phred_offset, proxy, instruction);
-            feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
-            ++index;
-        }
+    set< URL > input;
+    for(auto& url : input_array) {
+        input.emplace(url);
+    }
 
-        reference = value.FindMember("undetermined");
-        if(reference != value.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                if(reference->value.IsObject()) {
-                    list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", reference->value));
-                    Value feed_by_segment(kArrayType);
-                    for(const auto& url : feed_url_array) {
-                        const Value& proxy(feed_ontology_by_url[url]);
-                        feed_by_segment.PushBack(Value(proxy, instruction.GetAllocator()).Move(), instruction.GetAllocator());
-                    }
-                    reference->value.RemoveMember("feed by segment");
-                    reference->value.AddMember("feed by segment", feed_by_segment.Move(), instruction.GetAllocator());
-                }
-            }
-        }
-
-        reference = value.FindMember("barcode");
-        if(reference != value.MemberEnd()) {
-            if(!reference->value.IsNull()) {
+    Value::MemberIterator reference = instruction.FindMember("multiplex");
+    if(reference != instruction.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            reference = reference->value.FindMember("codec");
+            if(reference != instruction.MemberEnd()) {
                 if(reference->value.IsObject()) {
                     for(auto& record : reference->value.GetObject()) {
-                        list< URL > feed_url_array(decode_value_by_key< list< URL > >("output", record.value));
-                        Value feed_by_segment(kArrayType);
-                        for(const auto& url : feed_url_array) {
-                            const Value& proxy(feed_ontology_by_url[url]);
-                            feed_by_segment.PushBack(Value(proxy, instruction.GetAllocator()).Move(), instruction.GetAllocator());
+                        list< URL > output;
+                        if(decode_value_by_key< list< URL > >("output", output, record.value)) {
+                            for(auto& url : output) {
+                                if(input.count(url) > 0) {
+                                    throw ConfigurationError("URL " + string(url) + " is used for both input and output");
+                                }
+                            }
                         }
-                        record.value.RemoveMember("feed by segment");
-                        record.value.AddMember("feed by segment", feed_by_segment.Move(), instruction.GetAllocator());
-                    }
-                }
-            }
-        }
-
-        Value feed_array(kArrayType);
-        for(auto& record : feed_ontology_by_url) {
-            feed_array.PushBack(record.second.Move(), instruction.GetAllocator());
-        }
-        instruction.RemoveMember("output feed");
-        instruction.AddMember("output feed", feed_array.Move(), instruction.GetAllocator());
-    }
-};
-void Demultiplex::load_codec_group_output_feed(const Value::Ch* key) {
-    Platform platform(Platform::UNKNOWN);
-    decode_value_by_key< Platform >("platform", platform, instruction);
-
-    int32_t buffer_capacity(numeric_limits< int32_t >::max());
-    decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, instruction);
-
-    uint8_t output_phred_offset(numeric_limits< uint8_t >::max());
-    decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, instruction);
-
-    Value::MemberIterator reference = instruction.FindMember(key);
-    if(reference != instruction.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                load_codec_output_feed(reference->value, platform, buffer_capacity, output_phred_offset);
-            } else if(reference->value.IsArray()) {
-                for(auto& codec : reference->value.GetArray()) {
-                    if(!codec.IsNull()) {
-                        load_codec_output_feed(codec, platform, buffer_capacity, output_phred_offset);
-                    }
-                }
-            }
-        }
-    }
-};
-
-void Demultiplex::complement_transformation(Value& value) {
-    if(value.IsObject()) {
-        Value::MemberIterator reference = value.FindMember("template");
-        if(reference != value.MemberEnd()) {
-            if(reference->value.IsObject()) {
-                Value& rule(reference->value);
-                reference = rule.FindMember("token");
-                if(reference != rule.MemberEnd() && reference->value.IsArray()) {
-                    int32_t token_cardinality(reference->value.Size());
-                    reference = rule.FindMember("observation");
-                    if(reference == rule.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
-                        Value array(kArrayType);
-                        for(int32_t i(0); i < token_cardinality; ++i) {
-                            string element(to_string(i));
-                            array.PushBack(Value(element.c_str(), element.size(),instruction.GetAllocator()).Move(), instruction.GetAllocator());
-                        }
-                        rule.RemoveMember("observation");
-                        rule.AddMember(Value("observation", instruction.GetAllocator()).Move(), array.Move(), instruction.GetAllocator());
                     }
                 }
             }
@@ -967,9 +746,9 @@ void Demultiplex::validate_codec_group_sanity(const Value::Ch* key) {
             if(reference->value.IsObject()) {
                 validate_codec_sanity(reference->value);
             } else if(reference->value.IsArray()) {
-                for(auto& codec : reference->value.GetArray()) {
-                    if(!codec.IsNull()) {
-                        validate_codec_sanity(codec);
+                for(auto& decoder : reference->value.GetArray()) {
+                    if(!decoder.IsNull()) {
+                        validate_codec_sanity(decoder);
                     }
                 }
             }
@@ -977,7 +756,7 @@ void Demultiplex::validate_codec_group_sanity(const Value::Ch* key) {
     }
 };
 void Demultiplex::clean_instruction() {
-    instruction.RemoveMember("codec");
+    instruction.RemoveMember("decoder");
     Action::clean_instruction();
 };
 

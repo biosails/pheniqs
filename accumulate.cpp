@@ -368,7 +368,7 @@ bool encode_value(const ChannelAccumulator& value, Value& container, Document& d
         encode_value(value.rg, container, document);
         if(value.index > 0) {
             encode_key_value("concentration", value.concentration, container, document);
-            encode_key_value("segment", value.barcode, container, document);
+            encode_key_value("barcode segment", value.barcode, container, document);
         }
         encode_key_value("count", value.count, container, document);
         if(value.index > 0) {
@@ -478,7 +478,7 @@ OutputAccumulator::OutputAccumulator(const Value& ontology):
     accumulated_multiplex_confidence(0),
     accumulated_pf_multiplex_distance(0),
     accumulated_pf_multiplex_confidence(0),
-    channel_by_index(decode_value_by_key< vector< ChannelAccumulator > >("barcode", ontology)),
+    channel_by_index(decode_value_by_key< vector< ChannelAccumulator > >("codec", ontology)),
     undetermined(find_value_by_key("undetermined", ontology)) {
 };
 void OutputAccumulator::finalize() {

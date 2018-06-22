@@ -43,7 +43,7 @@ template < class T > class DiscreteDecoder : public Decoder {
         T* decoded;
         DiscreteDecoder(const Value& ontology) :
             Decoder(ontology),
-            element_by_index(decode_value_by_key< vector< T > >("barcode", ontology)),
+            element_by_index(decode_value_by_key< vector< T > >("codec", ontology)),
             undetermined(find_value_by_key("undetermined", ontology)),
             decoded(NULL) {
         };

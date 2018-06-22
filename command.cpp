@@ -635,7 +635,7 @@ void Action::load(const size_t argc, const char** argv) {
         load_instruction_file();
         apply_instruction_default();
         apply_command_line_instruction();
-        apply_instruction_manipulation();
+        manipulate_instruction();
         validate_instruction();
         clean_instruction();
     }
@@ -1071,7 +1071,7 @@ void CommandLine::load() {
     } else { throw ConfigurationError(string(GetParseError_En(configuration.GetParseError())) + " at position " + to_string(configuration.GetErrorOffset())); }
 };
 void CommandLine::apply_action_base() {
-    /* get the base code and codec node from the configuration */
+    /* get the base code and decoder node from the configuration */
     Value default_configuration_action(kObjectType);
     Value::MemberIterator reference = configuration.FindMember("projection");
     if(reference != configuration.MemberEnd()) {

@@ -79,9 +79,9 @@ void Environment::print_codec_group_instruction(const Value::Ch* key, const stri
                 print_codec_instruction(reference->value, false, o);
             } else if(reference->value.IsArray()) {
                 bool plural(reference->value.Size() > 1);
-                for(auto& codec : reference->value.GetArray()) {
-                    if(!codec.IsNull()) {
-                        print_codec_instruction(codec, plural, o);
+                for(auto& decoder : reference->value.GetArray()) {
+                    if(!decoder.IsNull()) {
+                        print_codec_instruction(decoder, plural, o);
                     }
                 }
             }
@@ -106,7 +106,7 @@ void Environment::print_codec_instruction(const Value& value, const bool& plural
             metric.describe(cout);
         }
 
-        Value::ConstMemberIterator reference = value.FindMember("barcode");
+        Value::ConstMemberIterator reference = value.FindMember("codec");
         if(reference != value.MemberEnd()) {
             if(reference->value.IsObject()) {
                 for(const auto& record : reference->value.GetObject()) {

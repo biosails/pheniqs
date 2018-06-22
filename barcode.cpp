@@ -25,7 +25,7 @@ Barcode::Barcode(const Value& ontology) :
     SequenceArray< Sequence >(decode_value_by_key< int32_t >("segment cardinality", ontology)),
     index(decode_value_by_key< int32_t >("index", ontology)),
     concentration(decode_value_by_key< double >("concentration", ontology)) {
-    Value::ConstMemberIterator reference = ontology.FindMember("segment");
+    Value::ConstMemberIterator reference = ontology.FindMember("barcode segment");
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
             if(reference->value.IsArray()) {
@@ -44,7 +44,7 @@ Barcode::Barcode(const Value& ontology) :
                 } else { throw ConfigurationError("barcode must have exactly " + to_string(segment_cardinality()) + " segments"); }
             } else { throw ConfigurationError("barcode segment element must be an array"); }
         } else { throw ConfigurationError("barcode segment can not be null"); }
-    } else { throw ConfigurationError("barcode is missing a segment element"); }
+    } else { throw ConfigurationError("barcode is missing a barcode segment element"); }
 };
 
 template<> vector< Barcode > decode_value_by_key(const Value::Ch* key, const Value& container) {
@@ -74,7 +74,7 @@ bool encode_key_value(const string& key, const Barcode& value, Value& container,
         for(auto& segment : value) {
             encode_value(segment, array, document);
         }
-        element.AddMember(Value("segment", document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        element.AddMember(Value("barcode segment", document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
         return true;
     }
     return false;

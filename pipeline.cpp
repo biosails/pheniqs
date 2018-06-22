@@ -382,7 +382,7 @@ void Pipeline::load_output() {
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
                 const Value& multiplex(reference->value);
-                reference = multiplex.FindMember("barcode");
+                reference = multiplex.FindMember("codec");
                 if(reference != instruction.MemberEnd()) {
                     if(!reference->value.IsNull()) {
                         if(reference->value.IsObject()) {
@@ -393,7 +393,7 @@ void Pipeline::load_output() {
                                     feed_proxy_by_url[url]->register_rg(rg);
                                 }
                             }
-                        } else { throw ConfigurationError("barcode element must be a dictionary"); }
+                        } else { throw ConfigurationError("codec element must be a dictionary"); }
                     }
                 }
             } else { throw ConfigurationError("multiplex element must be a dictionary"); }

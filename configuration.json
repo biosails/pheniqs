@@ -316,7 +316,7 @@
             "version": null,
             "working directory": null
         },
-        "barcode": {
+        "codec": {
             "CN": null,
             "DS": null,
             "DT": null,
@@ -338,13 +338,13 @@
             "output": null,
             "segment cardinality": null
         },
-        "codec": {
-            "base output url": null,
+        "decoder": {
             "adjusted noise probability": null,
             "algorithm": null,
-            "barcode": null,
             "barcode length": null,
             "base": null,
+            "base output url": null,
+            "codec": null,
             "concatenated barcode length": null,
             "confidence threshold": null,
             "disable quality control": null,

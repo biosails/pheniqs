@@ -194,7 +194,7 @@ class CodecDistanceMetric {
                 segment_metric.emplace_back(segment);
             }
 
-            Value::ConstMemberIterator reference = ontology.FindMember("barcode");
+            Value::ConstMemberIterator reference = ontology.FindMember("codec");
             if(reference != ontology.MemberEnd()) {
                 const Value& barcode_dictionary = reference->value;
                 if(!barcode_dictionary.IsNull()) {
@@ -293,37 +293,25 @@ class Demultiplex : public Action {
         };
 
     protected:
-        virtual void apply_instruction_manipulation();
+        virtual void manipulate_instruction();
         virtual void validate_instruction();
         virtual void clean_instruction();
 
     private:
         void load_input_feed();
         int32_t inheritence_depth(const string& key, const unordered_map< string, Value* >& node_by_key, Document& document);
-        void apply_codec_inheritence();
-        void embed_codec(const Value::Ch* key);
-        bool infer_PU(const Value::Ch* key, string& value, Value& container, const bool& undetermined=false);
-        bool infer_ID(const Value::Ch* key, string& value, Value& container, const bool& undetermined=false);
-        void project_codec(Value& value, const Value& default_instruction_codec, const Value& default_instruction_barcode);
-        void project_codec_group(const Value::Ch* key);
-        void enumerate_codec(Value& value);
-        void enumerate_codec_group(const Value::Ch* key);
-        void complement_transformation(Value& value);
-        void complement_codec(Value& value);
-        void complement_codec_group(const Value::Ch* key);
-        void manipulate_codec_undetermined(Value& value);
+        void apply_decoder_inheritence();
+        void load_decoder_group(const Value::Ch* key);
+        bool infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
+        bool infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
+        void project_decoder(Value& value, const Value& default_instruction_decoder, const Value& default_instruction_codec);
+        void project_decoder_group(const Value::Ch* key);
         void manipulate_codec_group_undetermined(const Value::Ch* key);
-        void normalize_codec_concentration(Value& value);
-        void normalize_codec_group_concentration(const Value::Ch* key);
-        void cross_validate_codec_io(Value& value, const set< URL >& input);
-        void cross_validate_codec_group_io(const Value::Ch* key);
-        void pad_codec_output_url(Value& value, const int32_t& output_segment_cardinality);
-        void pad_codec_group_output_url(const Value::Ch* key);
-        void load_codec_output_feed(Value& value, const Platform& platform, const int32_t& buffer_capacity, const uint8_t& phred_offset);
-        void load_codec_group_output_feed(const Value::Ch* key);
-        void load_output_transformation(const Value::Ch* key);
-        void load_codec_transformation(Value& value, const int32_t& input_segment_cardinality);
-        void load_codec_group_transformation(const Value::Ch* key);
+        void cross_validate_io();
+        void pad_url_array_by_key(const Value::Ch* key, Value& constainer, const int32_t& segment_cardinality);
+        void load_output_feed();
+        void complement_transformation(Value& value);
+        void load_decoder_transformation(Value& value);
         void validate_codec_sanity(Value& value);
         void validate_codec_group_sanity(const Value::Ch* key);
 };

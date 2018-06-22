@@ -24,24 +24,25 @@
         "PI": "300",
         "PM": "miseq",
         "algorithm": "pamld",
-        "barcode": {
+        "base": "beta",
+        "codec": {
             "AGGCAGAA": {
                 "DS": "trinidad5 description",
                 "LB": "trinidad5 library",
                 "SM": "trinidad5 sample",
-                "concentration": 1
+                "concentration": 1.5
             },
             "CGTACTAG": {
                 "DS": "trinidad4 description",
                 "LB": "trinidad4 library",
                 "SM": "trinidad4 sample",
-                "concentration": 1
+                "concentration": 0.5
             },
             "GGACTCCT": {
                 "DS": "trinidad9 description",
                 "LB": "trinidad9 library",
                 "SM": "trinidad9 sample",
-                "concentration": 1
+                "concentration": 3
             },
             "TAAGGCGA": {
                 "DS": "trinidad1 description",
@@ -54,7 +55,6 @@
                 "SM": "trinidad8 sample"
             }
         },
-        "base": "beta",
         "confidence threshold": 0.95,
         "flowcell id": "000000000-BDGGG",
         "flowcell lane number": 1,

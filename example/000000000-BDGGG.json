@@ -24,7 +24,7 @@
         "PI": "300",
         "PM": "miseq",
         "algorithm": "pamld",
-        "barcode": {
+        "codec": {
             "AGGCAGAA": {
                 "DS": "trinidad5 description",
                 "LB": "trinidad5 library",

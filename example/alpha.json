@@ -1,581 +1,581 @@
 {
     "base input url": "~/HK5NHBGXX",
     "base output url": "~/HK5NHBGXX",
-    "codec": {
+    "decoder": {
         "alpha": {
-            "barcode": {
+            "codec": {
                 "AAGAGGCAAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "AGAGGATA"
                     ]
                 },
                 "AAGAGGCAAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "AGGCTTAG"
                     ]
                 },
                 "AAGAGGCAATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "ATAGAGAG"
                     ]
                 },
                 "AAGAGGCACTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "CTCCTTAC"
                     ]
                 },
                 "AAGAGGCATACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "TACTCCTT"
                     ]
                 },
                 "AAGAGGCATATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "TATGCAGT"
                     ]
                 },
                 "AAGAGGCATCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "TCTACTCT"
                     ]
                 },
                 "AAGAGGCATCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "TCTTACGC"
                     ]
                 },
                 "AGGCAGAAAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "AGAGGATA"
                     ]
                 },
                 "AGGCAGAAAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "AGGCTTAG"
                     ]
                 },
                 "AGGCAGAAATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "ATAGAGAG"
                     ]
                 },
                 "AGGCAGAACTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "CTCCTTAC"
                     ]
                 },
                 "AGGCAGAATACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "TACTCCTT"
                     ]
                 },
                 "AGGCAGAATATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "TATGCAGT"
                     ]
                 },
                 "AGGCAGAATCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "TCTACTCT"
                     ]
                 },
                 "AGGCAGAATCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "TCTTACGC"
                     ]
                 },
                 "CAGAGAGGAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "AGAGGATA"
                     ]
                 },
                 "CAGAGAGGAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "AGGCTTAG"
                     ]
                 },
                 "CAGAGAGGATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "ATAGAGAG"
                     ]
                 },
                 "CAGAGAGGCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "CTCCTTAC"
                     ]
                 },
                 "CAGAGAGGTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TACTCCTT"
                     ]
                 },
                 "CAGAGAGGTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TATGCAGT"
                     ]
                 },
                 "CAGAGAGGTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TCTACTCT"
                     ]
                 },
                 "CAGAGAGGTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TCTTACGC"
                     ]
                 },
                 "CGAGGCTGAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "AGAGGATA"
                     ]
                 },
                 "CGAGGCTGAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "AGGCTTAG"
                     ]
                 },
                 "CGAGGCTGATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "ATAGAGAG"
                     ]
                 },
                 "CGAGGCTGCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "CTCCTTAC"
                     ]
                 },
                 "CGAGGCTGTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "TACTCCTT"
                     ]
                 },
                 "CGAGGCTGTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "TATGCAGT"
                     ]
                 },
                 "CGAGGCTGTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "TCTACTCT"
                     ]
                 },
                 "CGAGGCTGTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "CGAGGCTG",
                         "TCTTACGC"
                     ]
                 },
                 "CGTACTAGAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "AGAGGATA"
                     ]
                 },
                 "CGTACTAGAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "AGGCTTAG"
                     ]
                 },
                 "CGTACTAGATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "ATAGAGAG"
                     ]
                 },
                 "CGTACTAGCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "CTCCTTAC"
                     ]
                 },
                 "CGTACTAGTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TACTCCTT"
                     ]
                 },
                 "CGTACTAGTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TATGCAGT"
                     ]
                 },
                 "CGTACTAGTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TCTACTCT"
                     ]
                 },
                 "CGTACTAGTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TCTTACGC"
                     ]
                 },
                 "CTCTCTACAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "AGAGGATA"
                     ]
                 },
                 "CTCTCTACAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "AGGCTTAG"
                     ]
                 },
                 "CTCTCTACATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "ATAGAGAG"
                     ]
                 },
                 "CTCTCTACCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "CTCCTTAC"
                     ]
                 },
                 "CTCTCTACTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "TACTCCTT"
                     ]
                 },
                 "CTCTCTACTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "TATGCAGT"
                     ]
                 },
                 "CTCTCTACTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "TCTACTCT"
                     ]
                 },
                 "CTCTCTACTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "TCTTACGC"
                     ]
                 },
                 "GCTACGCTAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "AGAGGATA"
                     ]
                 },
                 "GCTACGCTAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "AGGCTTAG"
                     ]
                 },
                 "GCTACGCTATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "ATAGAGAG"
                     ]
                 },
                 "GCTACGCTCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "CTCCTTAC"
                     ]
                 },
                 "GCTACGCTTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TACTCCTT"
                     ]
                 },
                 "GCTACGCTTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TATGCAGT"
                     ]
                 },
                 "GCTACGCTTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TCTACTCT"
                     ]
                 },
                 "GCTACGCTTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TCTTACGC"
                     ]
                 },
                 "GGACTCCTAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "AGAGGATA"
                     ]
                 },
                 "GGACTCCTAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "AGGCTTAG"
                     ]
                 },
                 "GGACTCCTATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "ATAGAGAG"
                     ]
                 },
                 "GGACTCCTCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "CTCCTTAC"
                     ]
                 },
                 "GGACTCCTTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "TACTCCTT"
                     ]
                 },
                 "GGACTCCTTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "TATGCAGT"
                     ]
                 },
                 "GGACTCCTTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "TCTACTCT"
                     ]
                 },
                 "GGACTCCTTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "TCTTACGC"
                     ]
                 },
                 "GTAGAGGAAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "AGAGGATA"
                     ]
                 },
                 "GTAGAGGAAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "AGGCTTAG"
                     ]
                 },
                 "GTAGAGGAATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "ATAGAGAG"
                     ]
                 },
                 "GTAGAGGACTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "CTCCTTAC"
                     ]
                 },
                 "GTAGAGGATACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "TACTCCTT"
                     ]
                 },
                 "GTAGAGGATATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "TATGCAGT"
                     ]
                 },
                 "GTAGAGGATCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "TCTACTCT"
                     ]
                 },
                 "GTAGAGGATCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "GTAGAGGA",
                         "TCTTACGC"
                     ]
                 },
                 "TAAGGCGAAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "AGAGGATA"
                     ]
                 },
                 "TAAGGCGAAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "AGGCTTAG"
                     ]
                 },
                 "TAAGGCGAATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "ATAGAGAG"
                     ]
                 },
                 "TAAGGCGACTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "CTCCTTAC"
                     ]
                 },
                 "TAAGGCGATACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "TACTCCTT"
                     ]
                 },
                 "TAAGGCGATATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "TATGCAGT"
                     ]
                 },
                 "TAAGGCGATCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "TCTACTCT"
                     ]
                 },
                 "TAAGGCGATCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "TAAGGCGA",
                         "TCTTACGC"
                     ]
                 },
                 "TAGGCATGAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "AGAGGATA"
                     ]
                 },
                 "TAGGCATGAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "AGGCTTAG"
                     ]
                 },
                 "TAGGCATGATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "ATAGAGAG"
                     ]
                 },
                 "TAGGCATGCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "CTCCTTAC"
                     ]
                 },
                 "TAGGCATGTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "TACTCCTT"
                     ]
                 },
                 "TAGGCATGTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "TATGCAGT"
                     ]
                 },
                 "TAGGCATGTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "TCTACTCT"
                     ]
                 },
                 "TAGGCATGTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "TCTTACGC"
                     ]
                 },
                 "TCCTGAGCAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "AGAGGATA"
                     ]
                 },
                 "TCCTGAGCAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "AGGCTTAG"
                     ]
                 },
                 "TCCTGAGCATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "ATAGAGAG"
                     ]
                 },
                 "TCCTGAGCCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "CTCCTTAC"
                     ]
                 },
                 "TCCTGAGCTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "TACTCCTT"
                     ]
                 },
                 "TCCTGAGCTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "TATGCAGT"
                     ]
                 },
                 "TCCTGAGCTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "TCTACTCT"
                     ]
                 },
                 "TCCTGAGCTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "TCTTACGC"
                     ]
@@ -583,243 +583,243 @@
             }
         },
         "beta": {
-            "barcode": {
+            "codec": {
                 "AAGAGGCATATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "TATGCAGT"
                     ]
                 },
                 "AAGAGGCATCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "TCTACTCT"
                     ]
                 },
                 "AAGAGGCATCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "AAGAGGCA",
                         "TCTTACGC"
                     ]
                 },
                 "AGGCAGAAAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "AGAGGATA"
                     ]
                 },
                 "AGGCAGAAAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "AGGCTTAG"
                     ]
                 },
                 "AGGCAGAATATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "TATGCAGT"
                     ]
                 },
                 "AGGCAGAATCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "TCTACTCT"
                     ]
                 },
                 "AGGCAGAATCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "AGGCAGAA",
                         "TCTTACGC"
                     ]
                 },
                 "CAGAGAGGAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "AGAGGATA"
                     ]
                 },
                 "CAGAGAGGAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "AGGCTTAG"
                     ]
                 },
                 "CAGAGAGGATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "ATAGAGAG"
                     ]
                 },
                 "CAGAGAGGCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "CTCCTTAC"
                     ]
                 },
                 "CAGAGAGGTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TACTCCTT"
                     ]
                 },
                 "CAGAGAGGTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TATGCAGT"
                     ]
                 },
                 "CAGAGAGGTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TCTACTCT"
                     ]
                 },
                 "CAGAGAGGTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "CAGAGAGG",
                         "TCTTACGC"
                     ]
                 },
                 "CGTACTAGATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "ATAGAGAG"
                     ]
                 },
                 "CGTACTAGCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "CTCCTTAC"
                     ]
                 },
                 "CGTACTAGTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TACTCCTT"
                     ]
                 },
                 "CGTACTAGTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TATGCAGT"
                     ]
                 },
                 "CGTACTAGTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TCTACTCT"
                     ]
                 },
                 "CGTACTAGTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "CGTACTAG",
                         "TCTTACGC"
                     ]
                 },
                 "CTCTCTACAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "CTCTCTAC",
                         "AGAGGATA"
                     ]
                 },
                 "GCTACGCTATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "ATAGAGAG"
                     ]
                 },
                 "GCTACGCTCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "CTCCTTAC"
                     ]
                 },
                 "GCTACGCTTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TACTCCTT"
                     ]
                 },
                 "GCTACGCTTATGCAGT": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TATGCAGT"
                     ]
                 },
                 "GCTACGCTTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TCTACTCT"
                     ]
                 },
                 "GCTACGCTTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "GCTACGCT",
                         "TCTTACGC"
                     ]
                 },
                 "GGACTCCTAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "AGAGGATA"
                     ]
                 },
                 "GGACTCCTAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "AGGCTTAG"
                     ]
                 },
                 "GGACTCCTATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "ATAGAGAG"
                     ]
                 },
                 "GGACTCCTCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "GGACTCCT",
                         "CTCCTTAC"
                     ]
                 },
                 "TAGGCATGTCTACTCT": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "TCTACTCT"
                     ]
                 },
                 "TAGGCATGTCTTACGC": {
-                    "segment": [
+                    "barcode segment": [
                         "TAGGCATG",
                         "TCTTACGC"
                     ]
                 },
                 "TCCTGAGCAGAGGATA": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "AGAGGATA"
                     ]
                 },
                 "TCCTGAGCAGGCTTAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "AGGCTTAG"
                     ]
                 },
                 "TCCTGAGCATAGAGAG": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "ATAGAGAG"
                     ]
                 },
                 "TCCTGAGCCTCCTTAC": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "CTCCTTAC"
                     ]
                 },
                 "TCCTGAGCTACTCCTT": {
-                    "segment": [
+                    "barcode segment": [
                         "TCCTGAGC",
                         "TACTCCTT"
                     ]
@@ -829,7 +829,7 @@
         "gamma": {
             "CN": "CGSB",
             "PM": "hiseq 2500",
-            "barcode": {
+            "codec": {
                 "AAGAGGCAAGAGGATA": {
                     "DS": "AAGAGGCAAGAGGATA description",
                     "LB": "AAGAGGCAAGAGGATA library",
@@ -1402,7 +1402,7 @@
         },
         {
             "algorithm": "pamld",
-            "barcode": {
+            "codec": {
                 "AGGCAGAATCTTACGC": {
                     "concentration": 10
                 },
