@@ -410,10 +410,8 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
                     record->encode(kbuffer, phred_offset);
                     buffer->decrement();
                 }
-                if(!is_dev_null) {
-                    if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
-                        throw IOError("error writing to " + string(url));
-                    }
+                if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
+                    throw IOError("error writing to " + string(url));
                 }
             }
         };

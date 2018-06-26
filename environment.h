@@ -76,6 +76,7 @@ class Environment {
         void print_feed_instruction(const Value::Ch* key, ostream& o) const;
         void print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const;
         void print_codec_instruction(const Value& value, const bool& plural, ostream& o) const;
+        void print_channel_instruction(const Value& value, ostream& o) const;
         void print_codec_template(const Value& value, ostream& o) const;
         void print_global_instruction(ostream& o) const;
         void print_input_instruction(ostream& o) const;

@@ -289,6 +289,10 @@ void Pipeline::load_input() {
                 feed = new HtsFeed(proxy);
                 break;
             };
+            case FormatKind::DEV_NULL: {
+                feed = new NullFeed(proxy);
+                break;
+            };
             default: {
                 throw InternalError("unknown input format " + string(proxy.url));
                 break;
@@ -368,6 +372,10 @@ void Pipeline::load_output() {
                     feed = new HtsFeed(proxy);
                     break;
                 };
+                case FormatKind::DEV_NULL: {
+                    feed = new NullFeed(proxy);
+                    break;
+                };
                 default: {
                     throw InternalError("unknown output format " + string(proxy.url));
                     break;
@@ -401,11 +409,14 @@ void Pipeline::populate_multiplex_channel(Channel& channel) {
     }
     channel.output_feed_by_segment.shrink_to_fit();
 
-    channel.output_feed_by_order.reserve(feed_by_index.size());
+    channel.output_feed_lock_order.reserve(feed_by_index.size());
     for(auto& record : feed_by_index) {
-        channel.output_feed_by_order.push_back(record.second);
+        /* /dev/null is not really being written to so we don't need to lock it */
+        if(!record.second->url.is_dev_null()) {
+            channel.output_feed_lock_order.push_back(record.second);
+        }
     }
-    channel.output_feed_by_order.shrink_to_fit();
+    channel.output_feed_lock_order.shrink_to_fit();
 };
 void Pipeline::encode_report(ostream& o) const {
     Document document(kObjectType);

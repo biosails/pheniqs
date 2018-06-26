@@ -31,33 +31,30 @@ class Channel : public Barcode {
 
     public:
         const HeadRGAtom rg;
-        const bool concrete;
         const bool disable_quality_control;
         const list< URL > output_feed_url_by_segment;
-        vector< Feed* > output_feed_by_order;
+        vector< Feed* > output_feed_lock_order;
         vector< Feed* > output_feed_by_segment;
         Channel(const Value& ontology) :
             Barcode(ontology),
             rg(ontology),
-            concrete(!decode_value_by_key< bool >("output disabled", ontology)),
             disable_quality_control(decode_value_by_key< bool >("disable quality control", ontology)),
             output_feed_url_by_segment(decode_value_by_key< list< URL > >("output", ontology)) {
         };
         Channel(const Channel& other) :
             Barcode(other),
             rg(other.rg),
-            concrete(other.concrete),
             disable_quality_control(other.disable_quality_control),
             output_feed_url_by_segment(other.output_feed_url_by_segment),
-            output_feed_by_order(other.output_feed_by_order),
+            output_feed_lock_order(other.output_feed_lock_order),
             output_feed_by_segment(other.output_feed_by_segment) {
         };
         inline void push(const Read& read) {
-            if(concrete) {
+            if(output_feed_lock_order.size() > 0) {
                 // acquire a push lock for all feeds in a fixed order
                 vector< unique_lock< mutex > > feed_locks;
-                feed_locks.reserve(output_feed_by_order.size());
-                for(const auto feed : output_feed_by_order) {
+                feed_locks.reserve(output_feed_lock_order.size());
+                for(const auto feed : output_feed_lock_order) {
                     feed_locks.push_back(feed->acquire_push_lock());
                 }
 

@@ -106,46 +106,55 @@ void Environment::print_codec_instruction(const Value& value, const bool& plural
             metric.describe(cout);
         }
 
-        Value::ConstMemberIterator reference = value.FindMember("codec");
+        Value::ConstMemberIterator reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()) {
+            print_channel_instruction(reference->value, o);
+        }
+
+        reference = value.FindMember("codec");
         if(reference != value.MemberEnd()) {
             if(reference->value.IsObject()) {
                 for(const auto& record : reference->value.GetObject()) {
-                    const Value& element(record.value);
-                    int32_t index(decode_value_by_key< int32_t >("index", element));
-                    o << "    Channel No." << index << endl;
-
-                    string buffer;
-                    if(decode_value_by_key< string >("ID", buffer, element)) { o << "        ID : " << buffer << endl; }
-                    if(decode_value_by_key< string >("PU", buffer, element)) { o << "        PU : " << buffer << endl; }
-                    if(decode_value_by_key< string >("LB", buffer, element)) { o << "        LB : " << buffer << endl; }
-                    if(decode_value_by_key< string >("SM", buffer, element)) { o << "        SM : " << buffer << endl; }
-                    if(decode_value_by_key< string >("DS", buffer, element)) { o << "        DS : " << buffer << endl; }
-                    if(decode_value_by_key< string >("DT", buffer, element)) { o << "        DT : " << buffer << endl; }
-                    if(decode_value_by_key< string >("PL", buffer, element)) { o << "        PL : " << buffer << endl; }
-                    if(decode_value_by_key< string >("PM", buffer, element)) { o << "        PM : " << buffer << endl; }
-                    if(decode_value_by_key< string >("CN", buffer, element)) { o << "        CN : " << buffer << endl; }
-                    if(decode_value_by_key< string >("FO", buffer, element)) { o << "        FO : " << buffer << endl; }
-                    if(decode_value_by_key< string >("KS", buffer, element)) { o << "        KS : " << buffer << endl; }
-                    if(decode_value_by_key< string >("PI", buffer, element)) { o << "        PI : " << buffer << endl; }
-                    if(decode_value_by_key< string >("FS", buffer, element)) { o << "        FS : " << buffer << endl; }
-                    if(decode_value_by_key< string >("CO", buffer, element)) { o << "        CO : " << buffer << endl; }
-                    double concentration;
-                    if(decode_value_by_key< double >("concentration", concentration, element)) {
-                        o << "        Concentration : " << concentration << endl;
-                    }
-
-                    int32_t segment_index(0);
-                    list< URL > output;
-                    if(decode_value_by_key< list< URL > >("output", output, element)) {
-                        for(auto& url : output) {
-                            o << "        Segment No." + to_string(segment_index) + "  : " << url << endl;
-                            ++segment_index;
-                        }
-                    }
-                    o << endl;
+                    print_channel_instruction(record.value, o);
                 }
             }
         }
+    }
+};
+void Environment::print_channel_instruction(const Value& value, ostream& o) const {
+    if(value.IsObject()) {
+        int32_t index(decode_value_by_key< int32_t >("index", value));
+        o << "    Channel No." << index << endl;
+
+        string buffer;
+        if(decode_value_by_key< string >("ID", buffer, value)) { o << "        ID : " << buffer << endl; }
+        if(decode_value_by_key< string >("PU", buffer, value)) { o << "        PU : " << buffer << endl; }
+        if(decode_value_by_key< string >("LB", buffer, value)) { o << "        LB : " << buffer << endl; }
+        if(decode_value_by_key< string >("SM", buffer, value)) { o << "        SM : " << buffer << endl; }
+        if(decode_value_by_key< string >("DS", buffer, value)) { o << "        DS : " << buffer << endl; }
+        if(decode_value_by_key< string >("DT", buffer, value)) { o << "        DT : " << buffer << endl; }
+        if(decode_value_by_key< string >("PL", buffer, value)) { o << "        PL : " << buffer << endl; }
+        if(decode_value_by_key< string >("PM", buffer, value)) { o << "        PM : " << buffer << endl; }
+        if(decode_value_by_key< string >("CN", buffer, value)) { o << "        CN : " << buffer << endl; }
+        if(decode_value_by_key< string >("FO", buffer, value)) { o << "        FO : " << buffer << endl; }
+        if(decode_value_by_key< string >("KS", buffer, value)) { o << "        KS : " << buffer << endl; }
+        if(decode_value_by_key< string >("PI", buffer, value)) { o << "        PI : " << buffer << endl; }
+        if(decode_value_by_key< string >("FS", buffer, value)) { o << "        FS : " << buffer << endl; }
+        if(decode_value_by_key< string >("CO", buffer, value)) { o << "        CO : " << buffer << endl; }
+        double concentration;
+        if(decode_value_by_key< double >("concentration", concentration, value)) {
+            o << "        Concentration : " << concentration << endl;
+        }
+
+        int32_t segment_index(0);
+        list< URL > output;
+        if(decode_value_by_key< list< URL > >("output", output, value)) {
+            for(auto& url : output) {
+                o << "        Segment No." + to_string(segment_index) + "  : " << url << endl;
+                ++segment_index;
+            }
+        }
+        o << endl;
     }
 };
 void Environment::print_feed_instruction(const Value::Ch* key, ostream& o) const {

@@ -303,7 +303,7 @@ class Demultiplex : public Action {
         void compile_decoder_codec(Value& value, const Value& default_instruction_decoder, const Value& default_instruction_codec);
         void manipulate_codec_group_undetermined(const Value::Ch* key);
         void cross_validate_io();
-        void pad_url_array_by_key(const Value::Ch* key, Value& constainer, const int32_t& segment_cardinality);
+        void pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality);
         void compile_output_instruction();
         void compile_transformation(Value& value);
         void compile_decoder_transformation(Value& value);

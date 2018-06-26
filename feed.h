@@ -69,9 +69,7 @@ class Feed {
         virtual unique_lock< mutex > acquire_push_lock() = 0;
         virtual inline bool opened() = 0;
         void set_thread_pool(htsThreadPool* pool) {
-            if(!is_dev_null) {
-                thread_pool = pool;
-            }
+            thread_pool = pool;
         };
 
     protected:
@@ -81,6 +79,39 @@ class Feed {
         bool exhausted;
         hFILE* hfile;
         htsThreadPool* thread_pool;
+};
+
+class NullFeed : public Feed {
+    public:
+        mutex null_mutex;
+        NullFeed(const FeedProxy& proxy) :
+            Feed(proxy) {
+        };
+        void join() {
+        };
+        void start() {
+        };
+        void stop() {
+        };
+        void open() {
+        };
+        void close() {
+        };
+        virtual bool pull(Segment& segment) { return true; };
+        virtual void push(const Segment& segment) {};
+        virtual bool peek(Segment& segment, const int& position) { return false; };
+        virtual inline bool flush() { return false; };
+        virtual inline bool replenish() { return false; };
+        virtual void calibrate(FeedProxy const * proxy) {};
+        unique_lock< mutex > acquire_pull_lock() {
+            unique_lock< mutex > queue_lock(null_mutex);
+            return queue_lock;
+        };
+        unique_lock< mutex > acquire_push_lock() {
+            unique_lock< mutex > queue_lock(null_mutex);
+            return queue_lock;
+        };
+        virtual inline bool opened() { return true; }
 };
 
 template < class T > class CyclicBuffer {
