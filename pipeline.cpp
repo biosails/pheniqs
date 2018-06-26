@@ -21,54 +21,6 @@
 
 #include "pipeline.h"
 
-void to_string(const FormatKind& value, string& result) {
-    switch(value) {
-        case FormatKind::FASTQ: result.assign("FASTQ");      break;
-        case FormatKind::HTS:   result.assign("HTS");        break;
-        default:                result.assign("UNKNOWN");    break;
-    }
-};
-bool from_string(const char* value, FormatKind& result) {
-         if(value == NULL)              result = FormatKind::UNKNOWN;
-    else if(!strcmp(value, "FASTQ"))    result = FormatKind::FASTQ;
-    else if(!strcmp(value, "HTS"))      result = FormatKind::HTS;
-    else                                result = FormatKind::UNKNOWN;
-
-    return (result == FormatKind::UNKNOWN ? false : true);
-};
-void to_kstring(const FormatKind& value, kstring_t& result) {
-    ks_clear(result);
-    string string_value;
-    to_string(value, string_value);
-    ks_put_string(string_value.c_str(), string_value.size(), result);
-};
-bool from_string(const string& value, FormatKind& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const FormatKind& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
-    return o;
-};
-void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKind& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-
 /*  Pivot */
 
 Pivot::Pivot(Pipeline& pipeline, const Value& ontology, const int32_t& index) :
@@ -328,8 +280,7 @@ void Pipeline::load_input() {
     unordered_map< URL, Feed* > feed_by_url(feed_proxy_array.size());
     for(auto& proxy : feed_proxy_array) {
         Feed* feed(NULL);
-        FormatKind kind(format_kind_from_type(proxy.url.type()));
-        switch(kind) {
+        switch(proxy.kind()) {
             case FormatKind::FASTQ: {
                 feed = new FastqFeed(proxy);
                 break;
@@ -367,6 +318,7 @@ void Pipeline::load_output() {
         and contains only unique url references
     */
     list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("output feed", instruction));
+    HeadPGAtom program(decode_value_by_key< HeadPGAtom >("program", instruction));
 
     /*  Register the read group elements on the feed proxy so it can be added to SAM header
         if a URL is present in the channel output that means the channel writes output to that file
@@ -374,6 +326,7 @@ void Pipeline::load_output() {
     */
     map< URL, FeedProxy* > feed_proxy_by_url;
     for(auto& proxy : feed_proxy_array) {
+        proxy.register_pg(program);
         feed_proxy_by_url.emplace(make_pair(proxy.url, &proxy));
     };
 
@@ -384,16 +337,12 @@ void Pipeline::load_output() {
                 const Value& multiplex(reference->value);
                 reference = multiplex.FindMember("codec");
                 if(reference != instruction.MemberEnd()) {
-                    if(!reference->value.IsNull()) {
-                        if(reference->value.IsObject()) {
-                            for(auto& record : reference->value.GetObject()) {
-                                HeadRGAtom rg(record.value);
-                                list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
-                                for(auto& url : output) {
-                                    feed_proxy_by_url[url]->register_rg(rg);
-                                }
-                            }
-                        } else { throw ConfigurationError("codec element must be a dictionary"); }
+                    for(auto& record : reference->value.GetObject()) {
+                        HeadRGAtom rg(record.value);
+                        list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
+                        for(auto& url : output) {
+                            feed_proxy_by_url[url]->register_rg(rg);
+                        }
                     }
                 }
             } else { throw ConfigurationError("multiplex element must be a dictionary"); }
@@ -409,10 +358,8 @@ void Pipeline::load_output() {
         Populate output_feed_by_index used to enumerate threaded access to the output feeds */
     output_feed_by_url.reserve(feed_proxy_array.size());
     for(auto& proxy : feed_proxy_array) {
-        if(!proxy.url.is_null()) {
             Feed* feed(NULL);
-            FormatKind kind(format_kind_from_type(proxy.url.type()));
-            switch(kind) {
+            switch(proxy.kind()) {
                 case FormatKind::FASTQ: {
                     feed = new FastqFeed(proxy);
                     break;
@@ -429,7 +376,6 @@ void Pipeline::load_output() {
             feed->set_thread_pool(&thread_pool);
             output_feed_by_index.push_back(feed);
             output_feed_by_url.emplace(make_pair(proxy.url, feed));
-        }
     }
 };
 void Pipeline::load_pivot() {
@@ -447,12 +393,10 @@ void Pipeline::populate_multiplex_channel(Channel& channel) {
     map< int32_t, Feed* > feed_by_index;
     channel.output_feed_by_segment.reserve(channel.output_feed_url_by_segment.size());
     for(const auto& url : channel.output_feed_url_by_segment) {
-        if(!url.is_null()) {
-            Feed* feed(output_feed_by_url[url]);
-            channel.output_feed_by_segment.emplace_back(feed);
-            if(feed_by_index.count(feed->index) == 0) {
-                feed_by_index.emplace(make_pair(feed->index, feed));
-            }
+        Feed* feed(output_feed_by_url[url]);
+        channel.output_feed_by_segment.emplace_back(feed);
+        if(feed_by_index.count(feed->index) == 0) {
+            feed_by_index.emplace(make_pair(feed->index, feed));
         }
     }
     channel.output_feed_by_segment.shrink_to_fit();

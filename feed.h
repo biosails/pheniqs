@@ -45,6 +45,7 @@ class Feed {
             direction(proxy.direction),
             phred_offset(proxy.phred_offset),
             platform(proxy.platform),
+            is_dev_null(proxy.is_dev_null()),
             capacity(proxy.capacity),
             resolution(proxy.resolution),
             exhausted(false),
@@ -68,10 +69,13 @@ class Feed {
         virtual unique_lock< mutex > acquire_push_lock() = 0;
         virtual inline bool opened() = 0;
         void set_thread_pool(htsThreadPool* pool) {
-            thread_pool = pool;
+            if(!is_dev_null) {
+                thread_pool = pool;
+            }
         };
 
     protected:
+        const bool is_dev_null;
         int capacity;
         int resolution;
         bool exhausted;

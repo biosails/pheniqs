@@ -318,7 +318,7 @@ class Action {
         virtual void load_instruction_file();
         virtual void apply_instruction_default();
         virtual void apply_command_line_instruction();
-        virtual void manipulate_instruction() {
+        virtual void compile_instruction() {
 
         };
         virtual void validate_instruction() {

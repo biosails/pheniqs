@@ -400,7 +400,7 @@ void URL::relocate_sibling(const URL& base) {
 bool URL::is_readable() const {
     if(is_stdin()) {
         return true;
-    } else if(is_stdout() || is_stderr() || is_null()) {
+    } else if(is_stdout() || is_stderr() || is_dev_null()) {
         return false;
     } else {
         return access(_path.c_str(), R_OK) != -1;
@@ -409,7 +409,7 @@ bool URL::is_readable() const {
 bool URL::is_writable() const {
     if(is_stdin()) {
         return false;
-    } else if(is_stdout() || is_stderr() || is_null()) {
+    } else if(is_stdout() || is_stderr() || is_dev_null()) {
         return true;
     } else {
         return access(_path.c_str(), F_OK) != -1 ? access(_path.c_str(), W_OK) != -1 : access(_dirname.c_str(), W_OK) != -1;
@@ -585,7 +585,7 @@ template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< U
 };
 
 void encode_value(const URL& value, Value& container, Document& document) {
-    if(value.is_standard_stream() && !value.is_null()) {
+    if(value.is_standard_stream() && !value.is_dev_null()) {
         container.SetObject();
         encode_key_value("path", value.path(), container, document);
         encode_key_value("type", value.type(), container, document);

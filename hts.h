@@ -284,8 +284,10 @@ class HtsFeed : public BufferedFeed< bam1_t > {
         };
         inline void flush_buffer() {
             while(buffer->is_not_empty()) {
-                if(sam_write1(hts_file, header.hdr, buffer->next()) < 0) {
-                    throw IOError("error writing to " + string(url));
+                if(!is_dev_null) {
+                    if(sam_write1(hts_file, header.hdr, buffer->next()) < 0) {
+                        throw IOError("error writing to " + string(url));
+                    }
                 }
                 buffer->decrement();
             }

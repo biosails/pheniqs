@@ -480,8 +480,7 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
     return o;
 };
 
-/* @SQ reference sequence dictionary
-*/
+/* @SQ reference sequence dictionary */
 HeadSQAtom::HeadSQAtom() :
     SN({ 0, 0, NULL }),
     LN(0),
@@ -644,8 +643,7 @@ ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
     return o;
 };
 
-/* @PG program
-*/
+/* @PG program */
 HeadPGAtom::HeadPGAtom() :
     ID({ 0, 0, NULL }),
     PN({ 0, 0, NULL }),
@@ -662,13 +660,12 @@ HeadPGAtom::HeadPGAtom(const Value& ontology) :
     PP({ 0, 0, NULL }),
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("PN", PN, ontology);
-        decode_value_by_key< kstring_t >("CL", CL, ontology);
-        decode_value_by_key< kstring_t >("PP", PP, ontology);
-        decode_value_by_key< kstring_t >("DS", DS, ontology);
-        decode_value_by_key< kstring_t >("VN", VN, ontology);
-    } else { throw ConfigurationError("PG element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("PN", PN, ontology);
+    decode_value_by_key< kstring_t >("CL", CL, ontology);
+    decode_value_by_key< kstring_t >("PP", PP, ontology);
+    decode_value_by_key< kstring_t >("DS", DS, ontology);
+    decode_value_by_key< kstring_t >("VN", VN, ontology);
 };
 HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -790,9 +787,18 @@ ostream& operator<<(ostream& o, const HeadPGAtom& pg) {
     if(!ks_empty(pg.VN)) o << "VN : " << pg.VN.s << endl;
     return o;
 };
+template<> HeadPGAtom decode_value_by_key< HeadPGAtom >(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            HeadPGAtom PG(reference->value);
+            return PG;
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
 
-/* @RG Read Group
-*/
+
+/* @RG Read Group */
 HeadRGAtom::HeadRGAtom() :
     ID({ 0, 0, NULL }),
     PI({ 0, 0, NULL }),
@@ -823,20 +829,19 @@ HeadRGAtom::HeadRGAtom(const Value& ontology) :
     PG({ 0, 0, NULL }),
     FO({ 0, 0, NULL }),
     KS({ 0, 0, NULL }) {
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("PI", PI, ontology);
-        decode_value_by_key< kstring_t >("LB", LB, ontology);
-        decode_value_by_key< kstring_t >("SM", SM, ontology);
-        decode_value_by_key< kstring_t >("PU", PU, ontology);
-        decode_value_by_key< kstring_t >("CN", CN, ontology);
-        decode_value_by_key< kstring_t >("DS", DS, ontology);
-        decode_value_by_key< kstring_t >("DT", DT, ontology);
-        decode_value_by_key< kstring_t >("PL", PL, ontology);
-        decode_value_by_key< kstring_t >("PM", PM, ontology);
-        decode_value_by_key< kstring_t >("PG", PG, ontology);
-        decode_value_by_key< kstring_t >("FO", FO, ontology);
-        decode_value_by_key< kstring_t >("KS", KS, ontology);
-    } else { throw ConfigurationError("RG element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("PI", PI, ontology);
+    decode_value_by_key< kstring_t >("LB", LB, ontology);
+    decode_value_by_key< kstring_t >("SM", SM, ontology);
+    decode_value_by_key< kstring_t >("PU", PU, ontology);
+    decode_value_by_key< kstring_t >("CN", CN, ontology);
+    decode_value_by_key< kstring_t >("DS", DS, ontology);
+    decode_value_by_key< kstring_t >("DT", DT, ontology);
+    decode_value_by_key< kstring_t >("PL", PL, ontology);
+    decode_value_by_key< kstring_t >("PM", PM, ontology);
+    decode_value_by_key< kstring_t >("PG", PG, ontology);
+    decode_value_by_key< kstring_t >("FO", FO, ontology);
+    decode_value_by_key< kstring_t >("KS", KS, ontology);
 };
 HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -1094,12 +1099,12 @@ template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& conta
     } else { throw ConfigurationError("Read Group element must be a dictionary"); }
 };
 template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, list< HeadRGAtom >& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsArray()) {
-            if(!element->value.Empty()) {
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+        if(reference->value.IsArray()) {
+            if(!reference->value.Empty()) {
                 HeadRGAtom v;
-                for(const auto& e : element->value.GetArray()) {
+                for(const auto& e : reference->value.GetArray()) {
                     if(decode_value< HeadRGAtom >(v, e)) {
                         value.emplace_back(v);
                     }
@@ -1143,8 +1148,7 @@ bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value&
     return false;
 };
 
-/* @CO free text comment
-*/
+/* @CO free text comment */
 HeadCOAtom::HeadCOAtom() :
     CO({ 0, 0, NULL }) {
 };

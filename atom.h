@@ -336,6 +336,7 @@ class HeadPGAtom {
         char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadPGAtom& pg);
+template<> HeadPGAtom decode_value_by_key< HeadPGAtom >(const Value::Ch* key, const Value& container);
 
 /*  @RG Read Group
 

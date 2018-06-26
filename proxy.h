@@ -33,6 +33,20 @@ const ssize_t PEEK_BUFFER_CAPACITY(4096);
 const int DEFAULT_FEED_CAPACITY(60);
 const int DEFAULT_FEED_RESOLUTION(60);
 
+enum class FormatKind : uint8_t {
+    UNKNOWN,
+    DEV_NULL,
+    FASTQ,
+    HTS,
+};
+void to_string(const FormatKind& value, string& result);
+bool from_string(const char* value, FormatKind& result);
+void to_kstring(const FormatKind& value, kstring_t& result);
+bool from_string(const string& value, FormatKind& result);
+ostream& operator<<(ostream& o, const FormatKind& value);
+void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document);
+
+
 class FeedProxy {
     friend ostream& operator<<(ostream& o, const FeedProxy& proxy);
 
@@ -56,6 +70,45 @@ class FeedProxy {
             capacity(decode_value_by_key< int32_t >("capacity", ontology)),
             resolution(decode_value_by_key< int32_t >("resolution", ontology)),
             platform(decode_value_by_key< Platform >("platform", ontology)) {
+        };
+        inline bool is_dev_null() const {
+            return url.is_dev_null();
+        };
+        inline bool is_stdin() const {
+            return url.is_stdin();
+        };
+        inline bool is_stdout() const {
+            return url.is_stdout();
+        };
+        inline bool is_stderr() const {
+            return url.is_stderr();
+        };
+        inline FormatKind kind() const {
+            if(is_dev_null()) {
+                return FormatKind::DEV_NULL;
+            } else {
+                switch(url.type()) {
+                    case FormatType::SAM:
+                    case FormatType::BAM:
+                    case FormatType::BAI:
+                    case FormatType::CRAM:
+                    case FormatType::CRAI:
+                    case FormatType::VCF:
+                    case FormatType::BCF:
+                    case FormatType::CSI:
+                    case FormatType::GZI:
+                    case FormatType::TBI:
+                    case FormatType::BED:
+                        return FormatKind::HTS;
+                        break;
+                    case FormatType::FASTQ:
+                        return FormatKind::FASTQ;
+                        break;
+                    default:
+                        return FormatKind::UNKNOWN;
+                        break;
+                }
+            }
         };
         void set_capacity(const int& capacity) {
             if(capacity != this->capacity) {
@@ -91,140 +144,142 @@ class FeedProxy {
             }
         };
         void probe() {
-            /*  Probe input file
+            if(!url.is_dev_null()) {
+                switch(direction) {
+                    case IoDirection::IN: {
+                        /*  Probe input file
 
-                Here you can potentially use hfile to probe the file
-                and verify file format and potentially examine the first read
-            */
-            switch(direction) {
-                case IoDirection::IN: {
-                    hfile = hopen(url.c_str(), "r");
-                    if(url.type() == FormatType::UNKNOWN) {
-                        ssize_t peeked(0);
-                        unsigned char* buffer(NULL);
-                        const ssize_t buffer_capacity(PEEK_BUFFER_CAPACITY);
-                        if((buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
-                            throw OutOfMemoryError();
-                        }
-                        htsFormat format;
-                        if(!hts_detect_format(hfile, &format)) {
-                            switch (format.format) {
-                                case htsExactFormat::sam:
-                                    url.set_type(FormatType::SAM);
-                                    break;
-                                case htsExactFormat::bam:
-                                    url.set_type(FormatType::BAM);
-                                    break;
-                                case htsExactFormat::bai:
-                                    url.set_type(FormatType::BAI);
-                                    break;
-                                case htsExactFormat::cram:
-                                    url.set_type(FormatType::CRAM);
-                                    break;
-                                case htsExactFormat::crai:
-                                    url.set_type(FormatType::CRAI);
-                                    break;
-                                case htsExactFormat::vcf:
-                                    url.set_type(FormatType::VCF);
-                                    break;
-                                case htsExactFormat::bcf:
-                                    url.set_type(FormatType::BCF);
-                                    break;
-                                case htsExactFormat::csi:
-                                    url.set_type(FormatType::CSI);
-                                    break;
-                                case htsExactFormat::gzi:
-                                    url.set_type(FormatType::GZI);
-                                    break;
-                                case htsExactFormat::tbi:
-                                    url.set_type(FormatType::TBI);
-                                    break;
-                                case htsExactFormat::bed:
-                                    url.set_type(FormatType::BED);
-                                    break;
-                                default:
-                                    url.set_type(FormatType::UNKNOWN);
-                                    break;
+                            Here you can potentially use hfile to probe the file
+                            and verify file format and potentially examine the first read
+                        */
+                        hfile = hopen(url.c_str(), "r");
+                        if(url.type() == FormatType::UNKNOWN) {
+                            ssize_t peeked(0);
+                            unsigned char* buffer(NULL);
+                            const ssize_t buffer_capacity(PEEK_BUFFER_CAPACITY);
+                            if((buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
+                                throw OutOfMemoryError();
                             }
-                        }
-                        if(url.type() == FormatType::SAM) {
-                            peeked = hpeek(hfile, buffer, buffer_capacity);
-                            if(peeked > 0) {
-                                switch (format.compression) {
-                                    case htsCompression::gzip:
-                                    case htsCompression::bgzf: {
-                                        unsigned char* decompressed_buffer(NULL);
-                                        if((decompressed_buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
-                                            throw OutOfMemoryError();
-                                        }
-                                        z_stream zstream;
-                                        zstream.zalloc = NULL;
-                                        zstream.zfree = NULL;
-                                        zstream.next_in = buffer;
-                                        zstream.avail_in = static_cast< unsigned >(peeked);
-                                        zstream.next_out = decompressed_buffer;
-                                        zstream.avail_out = buffer_capacity;
-                                        if(inflateInit2(&zstream, 31) == Z_OK) {
-                                            while(zstream.total_out < buffer_capacity) {
-                                                if(inflate(&zstream, Z_SYNC_FLUSH) != Z_OK) break;
-                                            }
-                                            inflateEnd(&zstream);
-                                            memcpy(buffer, decompressed_buffer, zstream.total_out);
-                                            peeked = zstream.total_out;
-                                        } else {
-                                            peeked = 0;
-                                        }
-                                        free(decompressed_buffer);
+                            htsFormat format;
+                            if(!hts_detect_format(hfile, &format)) {
+                                switch (format.format) {
+                                    case htsExactFormat::sam:
+                                        url.set_type(FormatType::SAM);
                                         break;
-                                    };
-                                    case htsCompression::no_compression:
+                                    case htsExactFormat::bam:
+                                        url.set_type(FormatType::BAM);
+                                        break;
+                                    case htsExactFormat::bai:
+                                        url.set_type(FormatType::BAI);
+                                        break;
+                                    case htsExactFormat::cram:
+                                        url.set_type(FormatType::CRAM);
+                                        break;
+                                    case htsExactFormat::crai:
+                                        url.set_type(FormatType::CRAI);
+                                        break;
+                                    case htsExactFormat::vcf:
+                                        url.set_type(FormatType::VCF);
+                                        break;
+                                    case htsExactFormat::bcf:
+                                        url.set_type(FormatType::BCF);
+                                        break;
+                                    case htsExactFormat::csi:
+                                        url.set_type(FormatType::CSI);
+                                        break;
+                                    case htsExactFormat::gzi:
+                                        url.set_type(FormatType::GZI);
+                                        break;
+                                    case htsExactFormat::tbi:
+                                        url.set_type(FormatType::TBI);
+                                        break;
+                                    case htsExactFormat::bed:
+                                        url.set_type(FormatType::BED);
                                         break;
                                     default:
-                                        throw InternalError("unknown compression");
+                                        url.set_type(FormatType::UNKNOWN);
                                         break;
                                 }
                             }
-                            if(peeked > 0) {
-                                size_t state(0);
-                                char* position(reinterpret_cast< char * >(buffer));
-                                char* end(position + peeked);
-                                while(position < end && position != NULL) {
-                                    if(state == 0) {
-                                        if(*position == '\n') {
-                                            ++position;
-                                        } else {
-                                            if(*position == '@') {
-                                                state = 1;
+                            if(url.type() == FormatType::SAM) {
+                                peeked = hpeek(hfile, buffer, buffer_capacity);
+                                if(peeked > 0) {
+                                    switch (format.compression) {
+                                        case htsCompression::gzip:
+                                        case htsCompression::bgzf: {
+                                            unsigned char* decompressed_buffer(NULL);
+                                            if((decompressed_buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
+                                                throw OutOfMemoryError();
+                                            }
+                                            z_stream zstream;
+                                            zstream.zalloc = NULL;
+                                            zstream.zfree = NULL;
+                                            zstream.next_in = buffer;
+                                            zstream.avail_in = static_cast< unsigned >(peeked);
+                                            zstream.next_out = decompressed_buffer;
+                                            zstream.avail_out = buffer_capacity;
+                                            if(inflateInit2(&zstream, 31) == Z_OK) {
+                                                while(zstream.total_out < buffer_capacity) {
+                                                    if(inflate(&zstream, Z_SYNC_FLUSH) != Z_OK) break;
+                                                }
+                                                inflateEnd(&zstream);
+                                                memcpy(buffer, decompressed_buffer, zstream.total_out);
+                                                peeked = zstream.total_out;
+                                            } else {
+                                                peeked = 0;
+                                            }
+                                            free(decompressed_buffer);
+                                            break;
+                                        };
+                                        case htsCompression::no_compression:
+                                            break;
+                                        default:
+                                            throw InternalError("unknown compression");
+                                            break;
+                                    }
+                                }
+                                if(peeked > 0) {
+                                    size_t state(0);
+                                    char* position(reinterpret_cast< char * >(buffer));
+                                    char* end(position + peeked);
+                                    while(position < end && position != NULL) {
+                                        if(state == 0) {
+                                            if(*position == '\n') {
+                                                ++position;
+                                            } else {
+                                                if(*position == '@') {
+                                                    state = 1;
+                                                } else {
+                                                    break;
+                                                }
+                                            }
+                                        } else if(state == 1) {
+                                            if((*position >= 'A' && *position <= 'Z') || (*position >= 'a' && *position <= 'z')) {
+                                                state = 2;
                                             } else {
                                                 break;
                                             }
-                                        }
-                                    } else if(state == 1) {
-                                        if((*position >= 'A' && *position <= 'Z') || (*position >= 'a' && *position <= 'z')) {
-                                            state = 2;
-                                        } else {
+                                        } else if(state == 2) {
+                                            if(*position == '+' && position < end && *(position + 1) == '\n') {
+                                                url.set_type(FormatType::FASTQ);
+                                            }
                                             break;
                                         }
-                                    } else if(state == 2) {
-                                        if(*position == '+' && position < end && *(position + 1) == '\n') {
-                                            url.set_type(FormatType::FASTQ);
-                                        }
-                                        break;
+                                        if((position = strchr(position, '\n')) != NULL) ++position;
                                     }
-                                    if((position = strchr(position, '\n')) != NULL) ++position;
                                 }
                             }
+                            free(buffer);
                         }
-                        free(buffer);
-                    }
-                    break;
-                };
-                case IoDirection::OUT: {
-                    hfile = hopen(url.c_str(), "w");
-                    break;
-                };
-                default:
-                    break;
+                        break;
+                    };
+                    case IoDirection::OUT: {
+                        hfile = hopen(url.c_str(), "w");
+                        break;
+                    };
+                    default:
+                        break;
+                }
             }
         };
 };

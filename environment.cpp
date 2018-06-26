@@ -102,7 +102,7 @@ void Environment::print_codec_instruction(const Value& value, const bool& plural
 
         print_codec_template(value, o);
         if(_display_distance) {
-            CodecDistanceMetric metric(value);
+            CodecMetric metric(value);
             metric.describe(cout);
         }
 
@@ -323,10 +323,4 @@ void Environment::print_molecular_instruction(ostream& o) const {
 };
 void Environment::print_splitseq_instruction(ostream& o) const {
     print_codec_group_instruction("splitseq", "SplitSEQ", o);
-};
-void Environment::load_pheniqs_pg() {
-    // ks_put_string(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.ID);
-    // ks_put_string(interface.name().c_str(), interface.name().size(), &_pheniqs_pg.PN);
-    // ks_put_string(interface.application_version.c_str(), interface.application_version.size(), &_pheniqs_pg.VN);
-    // ks_put_string(interface.full_command.c_str(), interface.full_command.size(), &_pheniqs_pg.CL);
 };

@@ -126,11 +126,11 @@ class URL {
         inline bool is_stderr() const {
             return _path == CANONICAL_STDERR_PATH;
         };
-        inline bool is_null() const {
+        inline bool is_dev_null() const {
             return _path == CANONICAL_NULL_DEVICE_PATH;
         };
         inline bool is_standard_stream() const {
-            return is_stdin() || is_stdout() || is_stderr() || is_null();
+            return is_stdin() || is_stdout() || is_stderr() || is_dev_null();
         };
         inline bool is_absolute() const {
             return !_dirname.empty() && _dirname[0] == PATH_SEPARATOR;

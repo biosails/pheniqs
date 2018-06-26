@@ -21,6 +21,55 @@
 
 #include "proxy.h"
 
+void to_string(const FormatKind& value, string& result) {
+    switch(value) {
+        case FormatKind::FASTQ: result.assign("FASTQ");      break;
+        case FormatKind::HTS:   result.assign("HTS");        break;
+        default:                result.assign("UNKNOWN");    break;
+    }
+};
+bool from_string(const char* value, FormatKind& result) {
+         if(value == NULL)              result = FormatKind::UNKNOWN;
+    else if(!strcmp(value, "FASTQ"))    result = FormatKind::FASTQ;
+    else if(!strcmp(value, "HTS"))      result = FormatKind::HTS;
+    else                                result = FormatKind::UNKNOWN;
+
+    return (result == FormatKind::UNKNOWN ? false : true);
+};
+void to_kstring(const FormatKind& value, kstring_t& result) {
+    ks_clear(result);
+    string string_value;
+    to_string(value, string_value);
+    ks_put_string(string_value.c_str(), string_value.size(), result);
+};
+bool from_string(const string& value, FormatKind& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const FormatKind& value) {
+    string string_value;
+    to_string(value, string_value);
+    o << string_value;
+    return o;
+};
+void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document) {
+    string string_value;
+    to_string(value, string_value);
+    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
+    Value k(key.c_str(), key.size(), document.GetAllocator());
+    container.RemoveMember(key.c_str());
+    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
+};
+template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKind& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+
+
 ostream& operator<<(ostream& o, const FeedProxy& proxy) {
     o << "direction : " << proxy.direction << endl;
     o << "index : " << proxy.index << endl;

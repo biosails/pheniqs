@@ -635,7 +635,7 @@ void Action::load(const size_t argc, const char** argv) {
         load_instruction_file();
         apply_instruction_default();
         apply_command_line_instruction();
-        manipulate_instruction();
+        compile_instruction();
         validate_instruction();
         clean_instruction();
     }
@@ -1090,14 +1090,18 @@ void CommandLine::apply_action_base() {
             encode_key_value("working directory", working_directory, reference->value, configuration);
             encode_key_value("base input url", working_directory, reference->value, configuration);
             encode_key_value("base output url", working_directory, reference->value, configuration);
-            encode_key_value("version", application_version, reference->value, configuration);
+            encode_key_value("application version", application_version, reference->value, configuration);
+            encode_key_value("application name", application_name, reference->value, configuration);
+            encode_key_value("full command", full_command, reference->value, configuration);
         }
     }
 
     encode_key_value("working directory", working_directory, default_configuration_action, configuration);
     encode_key_value("base input url", working_directory, default_configuration_action, configuration);
     encode_key_value("base output url", working_directory, default_configuration_action, configuration);
-    encode_key_value("version", application_version, default_configuration_action, configuration);
+    encode_key_value("application version", application_version, default_configuration_action, configuration);
+    encode_key_value("application name", application_name, default_configuration_action, configuration);
+    encode_key_value("full command", full_command, default_configuration_action, configuration);
 
     /* project action attributes from the document root */
     Value action_template(kObjectType);

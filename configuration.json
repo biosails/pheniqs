@@ -308,12 +308,14 @@
     ],
     "projection": {
         "action": {
+            "application name": null,
+            "application version": null,
             "base input url": null,
             "base output url": null,
             "default": null,
             "epilog": null,
+            "full command": null,
             "projection": null,
-            "version": null,
             "working directory": null
         },
         "codec": {

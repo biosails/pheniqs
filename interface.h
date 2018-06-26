@@ -40,11 +40,11 @@ bool from_string(const string& value, ProgramAction& result);
 ostream& operator<<(ostream& o, const ProgramAction& value);
 void encode_key_value(const string& key, const ProgramAction& value, Value& container, Document& document);
 
-class CodeWordDistanceMetric {
-    friend class CodecDistanceMetric;
+class WordMetric {
+    friend class CodecMetric;
     public:
         const size_t barcode_length;
-        CodeWordDistanceMetric(const size_t barcode_length) :
+        WordMetric(const size_t barcode_length) :
             barcode_length(barcode_length),
             _min_word_length(0),
             _max_word_length(0),
@@ -55,19 +55,19 @@ class CodeWordDistanceMetric {
             _spacing(1) {
         };
         inline bool empty() const {
-            return _words.empty();
+            return word_array.empty();
         };
-        inline int32_t width() const {
+        inline int32_t nucleotide_cardinality() const {
             return _max_word_length;
         };
-        inline int32_t height() const {
-            return static_cast< int32_t >(_words.size());
+        inline int32_t cardinality() const {
+            return static_cast< int32_t >(word_array.size());
         };
         inline int32_t value(int32_t i, int32_t j) const {
             return _matrix[i][j];
         };
         inline const string& word(size_t i) const {
-            return _words[i];
+            return word_array[i];
         };
         inline int32_t cumulative(size_t i) const {
             return _cumulative[i];
@@ -81,9 +81,9 @@ class CodeWordDistanceMetric {
         void describe(ostream& o) const {
             o << std::left;
             if(!empty()) {
-                for(int32_t i = 0; i < height(); ++i) {
+                for(int32_t i = 0; i < cardinality(); ++i) {
                     o << "    ";
-                    for(int32_t j = 0; j < height(); ++j) {
+                    for(int32_t j = 0; j < cardinality(); ++j) {
                         o << setw(_padding)<< value(i, j);
                     }
                     o << word(i) << ' ' << setw(_padding) << cumulative(i) << endl;
@@ -101,16 +101,16 @@ class CodeWordDistanceMetric {
         int32_t _padding;
         int32_t _spacing;
         set< string > _index;
-        vector < string > _words;
+        vector < string > word_array;
         vector < int32_t > _cumulative;
         vector< vector< int32_t > > _matrix;
         void add(const string& word) {
             if(word.size() == barcode_length) {
                 _index.insert(word);
-            } else { throw ConfigurationError(to_string(word.size()) + " nucleotide long but expecting " + to_string(barcode_length)); }
+            } else { throw ConfigurationError(word + " is " + to_string(word.size()) + " nucleotide long but expecting " + to_string(barcode_length)); }
         };
         void load() {
-            _words.clear();
+            word_array.clear();
             _cumulative.clear();
             if(!_index.empty()) {
 
@@ -119,17 +119,17 @@ class CodeWordDistanceMetric {
                 for(const auto& word : _index) {
                     _min_word_length = min(_min_word_length, static_cast< int32_t >(word.size()));
                     _max_word_length = max(_max_word_length, static_cast< int32_t >(word.size()));
-                    _words.push_back(word);
+                    word_array.push_back(word);
                 }
 
                 _max_distance = 0;
                 _min_distance = numeric_limits< int32_t >::max();
-                _matrix.resize(height());
-                _cumulative.resize(height());
-                for(int32_t i = 0; i < height(); ++i) {
+                _matrix.resize(cardinality());
+                _cumulative.resize(cardinality());
+                for(int32_t i = 0; i < cardinality(); ++i) {
                     const string& row = word(i);
-                    _matrix[i].resize(height());
-                    for(int32_t j = 0; j < height(); ++j) {
+                    _matrix[i].resize(cardinality());
+                    for(int32_t j = 0; j < cardinality(); ++j) {
                         const string& column = word(j);
                         if(i == j) {
                             _matrix[i][j] = 0;
@@ -150,7 +150,7 @@ class CodeWordDistanceMetric {
                 _shannon_bound = ((_min_distance - 1) / 2);
 
                 for(size_t i = 0; i < _cumulative.size(); ++i) {
-                    _cumulative[i] /= (height() * 2);
+                    _cumulative[i] /= (cardinality() * 2);
                 }
                 // We want to know how many digits are in the biggest value to be able to align the matrix
                 _padding = _spacing;
@@ -177,13 +177,13 @@ class CodeWordDistanceMetric {
         };
 };
 
-class CodecDistanceMetric {
+class CodecMetric {
     public:
         const Value& ontology;
         const size_t segment_cardinality;
         const int32_t nucleotide_cardinality;
         const vector< int32_t > barcode_segment_length;
-        CodecDistanceMetric(const Value& ontology) :
+        CodecMetric(const Value& ontology) :
             ontology(ontology),
             segment_cardinality(decode_value_by_key< int32_t >("segment cardinality", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
@@ -196,15 +196,14 @@ class CodecDistanceMetric {
 
             Value::ConstMemberIterator reference = ontology.FindMember("codec");
             if(reference != ontology.MemberEnd()) {
-                const Value& barcode_dictionary = reference->value;
-                if(!barcode_dictionary.IsNull()) {
-                    for(auto& barcode_record : barcode_dictionary.GetObject()) {
-                        if(!barcode_record.value.IsNull()) {
+                if(!reference->value.IsNull()) {
+                    for(auto& record : reference->value.GetObject()) {
+                        if(!record.value.IsNull()) {
                             try {
-                                Barcode barcode(barcode_record.value);
+                                Barcode barcode(record.value);
                                 add(barcode);
                             } catch(ConfigurationError& error) {
-                                string barcode_key(barcode_record.name.GetString(), barcode_record.name.GetStringLength());
+                                string barcode_key(record.name.GetString(), record.name.GetStringLength());
                                 throw ConfigurationError("barcode " + barcode_key + " : " + error.message);
                             }
                         }
@@ -256,8 +255,8 @@ class CodecDistanceMetric {
         };
 
     private:
-        CodeWordDistanceMetric concatenated_metric;
-        vector< CodeWordDistanceMetric > segment_metric;
+        WordMetric concatenated_metric;
+        vector< WordMetric > segment_metric;
         void add(const Barcode& barcode) {
             if(segment_cardinality == barcode.segment_cardinality()) {
                 for(size_t i(0); i < barcode.segment_cardinality(); ++i) {
@@ -284,8 +283,6 @@ class CodecDistanceMetric {
         };
 };
 
-template<> CodecDistanceMetric* decode_value_by_key(const Value::Ch* key, const Value& container);
-
 class Demultiplex : public Action {
     public:
         Demultiplex(const Value& ontology) :
@@ -293,27 +290,26 @@ class Demultiplex : public Action {
         };
 
     protected:
-        virtual void manipulate_instruction();
+        virtual void compile_instruction();
         virtual void validate_instruction();
         virtual void clean_instruction();
 
     private:
-        void load_input_feed();
-        int32_t inheritence_depth(const string& key, const unordered_map< string, Value* >& node_by_key, Document& document);
+        void compile_input_instruction();
         void apply_decoder_inheritence();
-        void load_decoder_group(const Value::Ch* key);
+        void compile_decoder_group_instruction(const Value::Ch* key);
         bool infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
         bool infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
-        void project_decoder(Value& value, const Value& default_instruction_decoder, const Value& default_instruction_codec);
-        void project_decoder_group(const Value::Ch* key);
+        void compile_decoder_codec(Value& value, const Value& default_instruction_decoder, const Value& default_instruction_codec);
         void manipulate_codec_group_undetermined(const Value::Ch* key);
         void cross_validate_io();
         void pad_url_array_by_key(const Value::Ch* key, Value& constainer, const int32_t& segment_cardinality);
-        void load_output_feed();
-        void complement_transformation(Value& value);
-        void load_decoder_transformation(Value& value);
+        void compile_output_instruction();
+        void compile_transformation(Value& value);
+        void compile_decoder_transformation(Value& value);
         void validate_codec_sanity(Value& value);
         void validate_codec_group_sanity(const Value::Ch* key);
+        void compile_PG_element();
 };
 
 class Interface : public CommandLine {
