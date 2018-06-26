@@ -138,11 +138,11 @@ before_install:
 install: true
 
 script:
-    - ./tool/pheniqs-tools.py build build/travis.json
+    - ./tool/pheniqs-tools.py build test/000000000-BDGGG/build.json
     - make all PREFIX=${HOME}/.pheniqs/travis/install
     - ./pheniqs --version
     - ./pheniqs --help
     - ./pheniqs demux --help
-    - ./pheniqs demux --config test//000000000-BDGGG/demultiplex.json -VD
-    - ./pheniqs demux --config test//000000000-BDGGG/demultiplex.json -j
-    - ./pheniqs demux --config test//000000000-BDGGG/demultiplex.json
+    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json -VD
+    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json -j
+    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json

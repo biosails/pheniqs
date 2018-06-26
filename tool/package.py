@@ -127,8 +127,14 @@ class Package(object):
                 node[key] = None
 
         if node['remote url'] is not None:
+
+            if isinstance(node['remote url'], list):
+                remote_url = node['remote url'][0]
+            else:
+                remote_url = node['remote url']
+
             if node['remote filename'] is None:
-                remote_dirname, node['remote filename'] = os.path.split(node['remote url'])
+                remote_dirname, node['remote filename'] = os.path.split(remote_url)
 
             remote_basename, compression = os.path.splitext(node['remote filename'])
             if node['compression'] is None and compression:
@@ -313,26 +319,43 @@ class Package(object):
                         content = None
 
             if content is None:
-                self.log.debug('fetching %s', self.remote_url)
-                request = Request(self.remote_url, None)
-                try:
-                    response = urlopen(request)
-                except BadStatusLine as e:
-                    self.log.warning('Bad http status error when requesting %s', self.remote_url)
-                except HTTPError as e:
-                    self.log.warning('Server returned an error when requesting %s: %s', self.remote_url, e.code)
-                except URLError as e:
-                    self.log.warning('Could not reach server when requesting %s: %s', self.remote_url, e.reason)
-                else:
-                    content = response.read()
-                    checksum = hashlib.sha1(content).hexdigest()
-                    if checksum != self.sha1:
-                        raise InvalidChecksumError('{} checksum {} differs from {}'.format(self.display_name, checksum, self.sha1))
+                remote_url = self.remote_url
+                if not isinstance(self.remote_url, list):
+                    remote_url = [ self.remote_url ]
+
+
+                error = None
+                success = False
+                for url in remote_url:
+                    self.log.debug('fetching %s', url)
+                    request = Request(url, None)
+                    try:
+                        response = urlopen(request)
+                    except BadStatusLine as e:
+                        error = 'Bad http status error when requesting {}'.format(url)
+                        self.log.warning(error)
+                    except HTTPError as e:
+                        error = 'Server returned an error when requesting {}: {}'.format(url, e.code)
+                        self.log.warning(error)
+                    except URLError as e:
+                        error = 'Could not reach server when requesting {}: {}'.format(url, e.reason)
+                        self.log.warning(error)
                     else:
-                        prepare_path(self.download_url, self.log)
-                        with open(self.download_url, 'wb') as local:
-                            local.write(content)
-                        self.log.info('downloaded archive saved %s %s', self.display_name, self.sha1)
+                        content = response.read()
+                        checksum = hashlib.sha1(content).hexdigest()
+                        if checksum != self.sha1:
+                            error = '{} checksum {} differs from {}'.format(self.display_name, checksum, self.sha1)
+                            self.log.warning(error)
+                        else:
+                            prepare_path(self.download_url, self.log)
+                            with open(self.download_url, 'wb') as local:
+                                local.write(content)
+                            self.log.info('downloaded archive saved %s %s', self.display_name, self.sha1)
+                            success = True
+                            break
+
+                if not success:
+                    raise DownloadError(error)
 
     def clean_package(self):
         if self.download_url is not None:

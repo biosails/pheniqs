@@ -29,7 +29,7 @@ class NoOverwriteError(Exception):
         super(Exception, self).__init__('refusing to overwrite {}'.format(path))
         self.path = path
 
-class InvalidChecksumError(Exception):
+class DownloadError(Exception):
     def __init__(self, message):
         super(Exception, self).__init__('invalid checksum {}'.format(message))
 
