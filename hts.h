@@ -54,6 +54,8 @@
 
 #define bam1_seq_seti(s, i, c) ((s)[(i)>>1] = ((s)[(i)>>1] & 0xf<<(((i)&1)<<2)) | (c)<<((~(i)&1)<<2))
 
+ostream& operator<<(ostream& o, const bam1_t& value);
+
 /*  HTS header */
 class HtsHeader {
     friend ostream& operator<<(ostream& o, const HtsHeader& head);
@@ -77,8 +79,6 @@ class HtsHeader {
 };
 ostream& operator<<(ostream& o, const HtsHeader& header);
 
-ostream& operator<<(ostream& o, const bam1_t& value);
-
 class HtsFeed : public BufferedFeed< bam1_t > {
     friend class Channel;
 
@@ -96,7 +96,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                 header.add_read_group(record.second);
             }
         };
-        void open() {
+        void open() override {
             if(!opened()) {
                 switch(direction) {
                     case IoDirection::IN: {
@@ -150,13 +150,13 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                 }
             }
         };
-        void close() {
+        void close() override {
             if(opened()) {
                 hts_close(hts_file);
                 hts_file = NULL;
             }
         };
-        inline bool opened() {
+        inline bool opened() override {
             return hts_file != NULL;
         };
         HtsHeader& get_header() {
@@ -166,7 +166,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
     protected:
         HtsHeader header;
         htsFile* hts_file;
-        inline void encode(bam1_t* record, const Segment& segment) const {
+        inline void encode(bam1_t* record, const Segment& segment) const override {
             /*
                 The total size of a bam1_t record is an int32_t
                 bam1_t.l_data =
@@ -236,7 +236,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                 } else { throw OverflowError("BAM record must not exceed " + to_string(numeric_limits< int32_t >::max()) + " bytes"); }
             } else { throw OverflowError("qname must not exceed 255 characters"); }
         };
-        inline void decode(const bam1_t* record, Segment& segment) {
+        inline void decode(const bam1_t* record, Segment& segment) override {
             /* copy the identifier to the segment */
             ks_put_string(bam_get_qname(record), record->core.l_qname, segment.name);
 
@@ -272,7 +272,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
             segment.flag = record->core.flag;
             segment.auxiliary.decode(record);
         };
-        inline void replenish_buffer() {
+        inline void replenish_buffer() override {
             while(opened() && buffer->is_not_full()) {
                 if(sam_read1(hts_file, header.hdr, buffer->vacant()) < 0) {
                     close();
@@ -282,7 +282,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                 }
             }
         };
-        inline void flush_buffer() {
+        inline void flush_buffer() override {
             while(buffer->is_not_empty()) {
                 if(sam_write1(hts_file, header.hdr, buffer->next()) < 0) {
                     throw IOError("error writing to " + string(url));

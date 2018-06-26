@@ -100,6 +100,32 @@ void Environment::print_codec_instruction(const Value& value, const bool& plural
         Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
         o << "    Decoding algorithm                   " << algorithm << endl;
 
+        uint8_t quality_masking_threshold;
+        if(decode_value_by_key< uint8_t >("quality masking threshold", quality_masking_threshold, value)) {
+            if(quality_masking_threshold > 0) {
+                o << "    Quality masking threshold            " << int32_t(quality_masking_threshold) << endl;
+            }
+        }
+
+        if(algorithm == Algorithm::MDD) {
+            vector< uint8_t > distance_tolerance;
+            if(decode_value_by_key< vector< uint8_t > >("distance tolerance", distance_tolerance, value)) {
+                o << "    Distance tolerance                  ";
+                for(auto& element : distance_tolerance) {
+                    o << " " << int32_t(element);
+                }
+                o << endl;
+            }
+        }
+
+        if(algorithm == Algorithm::PAMLD) {
+            double noise(decode_value_by_key< double >("noise", value));
+            o << "    Noise                                " << noise << endl;
+
+            double confidence_threshold(decode_value_by_key< double >("confidence threshold", value));
+            o << "    Confidence threshold                 " << confidence_threshold << endl;
+        }
+
         print_codec_template(value, o);
         if(_display_distance) {
             CodecMetric metric(value);
@@ -110,7 +136,6 @@ void Environment::print_codec_instruction(const Value& value, const bool& plural
         if(reference != value.MemberEnd()) {
             print_channel_instruction(reference->value, o);
         }
-
         reference = value.FindMember("codec");
         if(reference != value.MemberEnd()) {
             if(reference->value.IsObject()) {
@@ -145,6 +170,9 @@ void Environment::print_channel_instruction(const Value& value, ostream& o) cons
         if(decode_value_by_key< double >("concentration", concentration, value)) {
             o << "        Concentration : " << concentration << endl;
         }
+
+        Barcode barcode(value);
+        if(!barcode.empty()) { o << "        Barcode       : " << barcode.iupac_ambiguity() << endl; }
 
         int32_t segment_index(0);
         list< URL > output;
@@ -198,7 +226,7 @@ void Environment::print_feed_instruction(const Value::Ch* key, ostream& o) const
     }
 };
 void Environment::print_global_instruction(ostream& o) const {
-    o << fixed << setprecision(19);
+    o << setprecision(16);
     o << "Environment " << endl << endl;
     o << "    Version                                     " << interface.application_version << endl;
 
@@ -298,13 +326,15 @@ void Environment::print_codec_template(const Value& value, ostream& o) const {
         o << "    Nucleotide cardinality               " << to_string(nucleotide_cardinality) << endl;
     }
 
-    vector< int32_t > barcode_length;
-    if(decode_value_by_key< vector< int32_t > >("barcode length", barcode_length, value)) {
-        o << "    Barcode segment length               ";
-        for(const auto& v : barcode_length) {
-            o << to_string(v) << " ";
+    if(segment_cardinality > 1) {
+        vector< int32_t > barcode_length;
+        if(decode_value_by_key< vector< int32_t > >("barcode length", barcode_length, value)) {
+            o << "    Barcode segment length               ";
+            for(const auto& v : barcode_length) {
+                o << to_string(v) << " ";
+            }
+            o << endl;
         }
-        o << endl;
     }
 
     Rule rule(decode_value_by_key< Rule >("template", value));

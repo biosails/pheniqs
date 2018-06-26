@@ -65,7 +65,7 @@ class ReadGroupDecoder : public DiscreteDecoder< Channel > {
                 channel_by_rg.emplace(make_pair(string(element.rg.ID.s, element.rg.ID.l), &element));
             }
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             decoded = &undetermined;
             if(!ks_empty(input.RG())) {
                 key_buffer.assign(input.RG().s, input.RG().l);
@@ -137,7 +137,7 @@ template < class T > class MDDecoder : public BarcodeDecoder< T > {
                 element_by_sequence.emplace(make_pair(string(element), &element));
             }
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             this->observation.clear();
             this->decoded = &this->undetermined;
             this->distance = this->nucleotide_cardinality;
@@ -182,7 +182,7 @@ template < class T > class PAMLDecoder : public BarcodeDecoder< T > {
             decoding_probability(0),
             error_probability(1) {
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             this->observation.clear();
             this->decoded = &this->undetermined;
             this->distance = this->nucleotide_cardinality;
@@ -241,7 +241,7 @@ class MDMultiplexDecoder : public MDDecoder< Channel > {
         MDMultiplexDecoder(const Value& ontology) :
             MDDecoder< Channel >(ontology) {
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             MDDecoder< Channel >::decode(input, output);
             output.assign_RG(this->decoded->rg);
             output.set_multiplex_barcode(this->observation);
@@ -254,7 +254,7 @@ class PAMLMultiplexDecoder : public PAMLDecoder< Channel > {
         PAMLMultiplexDecoder(const Value& ontology) :
             PAMLDecoder< Channel >(ontology) {
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             PAMLDecoder< Channel >::decode(input, output);
             output.assign_RG(this->decoded->rg);
             output.set_multiplex_barcode(this->observation);
@@ -268,7 +268,7 @@ class MDSplitSEQDecoder : public MDDecoder< Barcode > {
         MDSplitSEQDecoder(const Value& ontology) :
             MDDecoder< Barcode >(ontology) {
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             MDDecoder< Barcode >::decode(input, output);
             output.update_raw_splitseq_barcode(this->observation);
             output.update_splitseq_barcode(*this->decoded);
@@ -285,7 +285,7 @@ class PAMLSplitSEQDecoder : public PAMLDecoder< Barcode > {
         PAMLSplitSEQDecoder(const Value& ontology) :
             PAMLDecoder< Barcode >(ontology) {
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             PAMLDecoder< Barcode >::decode(input, output);
             output.update_raw_splitseq_barcode(this->observation);
             output.update_splitseq_barcode(*this->decoded);
@@ -312,7 +312,7 @@ class SimpleMolecularDecoder : public Decoder {
             rule(decode_value_by_key< Rule >("template", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)) {
         };
-        inline void decode(const Read& input, Read& output) {
+        inline void decode(const Read& input, Read& output) override {
             observation.clear();
             rule.apply(input, observation);
             output.update_molecular_barcode(observation);

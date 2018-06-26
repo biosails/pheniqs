@@ -290,9 +290,9 @@ class Demultiplex : public Action {
         };
 
     protected:
-        virtual void compile_instruction();
-        virtual void validate_instruction();
-        virtual void clean_instruction();
+        void compile_instruction() override;
+        void validate_instruction() override;
+        void clean_instruction() override;
 
     private:
         void compile_input_instruction();
@@ -325,8 +325,8 @@ class Interface : public CommandLine {
         };
 
     protected:
-        virtual void load_sub_action(const Value& ontology);
-        virtual ostream& print_version_element(ostream& o) const;
+        void load_sub_action(const Value& ontology)  override;
+        ostream& print_version_element(ostream& o) const  override;
 
     private:
         ProgramAction program_action;

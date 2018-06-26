@@ -84,9 +84,7 @@ class FeedProxy {
             return url.is_stderr();
         };
         inline FormatKind kind() const {
-            if(is_dev_null()) {
-                return FormatKind::DEV_NULL;
-            } else {
+            if(!is_dev_null()) {
                 switch(url.type()) {
                     case FormatType::SAM:
                     case FormatType::BAM:
@@ -108,7 +106,7 @@ class FeedProxy {
                         return FormatKind::UNKNOWN;
                         break;
                 }
-            }
+            } else { return FormatKind::DEV_NULL; }
         };
         void set_capacity(const int& capacity) {
             if(capacity != this->capacity) {
@@ -144,7 +142,7 @@ class FeedProxy {
             }
         };
         void probe() {
-            if(!url.is_dev_null()) {
+            if(!is_dev_null()) {
                 switch(direction) {
                     case IoDirection::IN: {
                         /*  Probe input file

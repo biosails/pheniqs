@@ -32,20 +32,17 @@
 
 class Feed {
     public:
-        // const FeedProxy proxy;
         const int32_t index;
         const URL url;
         const IoDirection direction;
         const uint8_t phred_offset;
         const Platform platform;
         Feed(const FeedProxy& proxy) :
-            // proxy(move(proxy)),
             index(proxy.index),
             url(proxy.url),
             direction(proxy.direction),
             phred_offset(proxy.phred_offset),
             platform(proxy.platform),
-            is_dev_null(proxy.is_dev_null()),
             capacity(proxy.capacity),
             resolution(proxy.resolution),
             exhausted(false),
@@ -64,16 +61,18 @@ class Feed {
         virtual bool peek(Segment& segment, const int& position) = 0;
         virtual inline bool flush() = 0;
         virtual inline bool replenish() = 0;
+        virtual inline bool is_dev_null() {
+            return url.is_dev_null();
+        };
         virtual void calibrate(FeedProxy const * proxy) = 0;
         virtual unique_lock< mutex > acquire_pull_lock() = 0;
         virtual unique_lock< mutex > acquire_push_lock() = 0;
         virtual inline bool opened() = 0;
-        void set_thread_pool(htsThreadPool* pool) {
+        virtual void set_thread_pool(htsThreadPool* pool) {
             thread_pool = pool;
         };
 
     protected:
-        const bool is_dev_null;
         int capacity;
         int resolution;
         bool exhausted;
@@ -87,31 +86,48 @@ class NullFeed : public Feed {
         NullFeed(const FeedProxy& proxy) :
             Feed(proxy) {
         };
-        void join() {
+        void join() override {
         };
-        void start() {
+        void start() override {
         };
-        void stop() {
+        void stop() override {
         };
-        void open() {
+        void open() override {
         };
-        void close() {
+        void close() override {
         };
-        virtual bool pull(Segment& segment) { return true; };
-        virtual void push(const Segment& segment) {};
-        virtual bool peek(Segment& segment, const int& position) { return false; };
-        virtual inline bool flush() { return false; };
-        virtual inline bool replenish() { return false; };
-        virtual void calibrate(FeedProxy const * proxy) {};
-        unique_lock< mutex > acquire_pull_lock() {
+        bool pull(Segment& segment) override {
+            return true;
+        };
+        void push(const Segment& segment) override {
+
+        };
+        bool peek(Segment& segment, const int& position) override {
+            return false;
+        };
+        inline bool flush() override {
+            return false;
+        };
+        inline bool replenish() override {
+            return false;
+        };
+        void calibrate(FeedProxy const * proxy) override {
+
+        };
+        unique_lock< mutex > acquire_pull_lock() override {
             unique_lock< mutex > queue_lock(null_mutex);
             return queue_lock;
         };
-        unique_lock< mutex > acquire_push_lock() {
+        unique_lock< mutex > acquire_push_lock() override {
             unique_lock< mutex > queue_lock(null_mutex);
             return queue_lock;
         };
-        virtual inline bool opened() { return true; }
+        inline bool opened() override {
+            return true;
+        };
+        void set_thread_pool(htsThreadPool* pool) override {
+
+        };
 };
 
 template < class T > class CyclicBuffer {
@@ -265,21 +281,21 @@ template < class T > class BufferedFeed : public Feed {
             delete queue;
             delete buffer;
         };
-        void join() {
+        void join() override {
             feed_thread.join();
         };
-        void start() {
+        void start() override {
             if(!started) {
                 started = true;
                 feed_thread = thread(&BufferedFeed::run, this);
             }
         };
-        void stop() {
+        void stop() override {
             lock_guard< mutex > feed_lock(queue_mutex);
             exhausted = true;
             flushable.notify_one();
         };
-        bool pull(Segment& segment) {
+        bool pull(Segment& segment) override {
             /*  called in a safe context after acquire_pull_lock */
             if(queue->is_not_empty()) {
                 decode(queue->next(), segment);
@@ -293,7 +309,7 @@ template < class T > class BufferedFeed : public Feed {
             }
             return false;
         };
-        void push(const Segment& segment) {
+        void push(const Segment& segment) override {
             encode(queue->vacant(), segment);
             queue->increment();
 
@@ -301,7 +317,7 @@ template < class T > class BufferedFeed : public Feed {
                 flushable.notify_one();
             }
         };
-        bool peek(Segment& segment, const int& position) {
+        bool peek(Segment& segment, const int& position) override {
             if(queue->size() > position) {
                 decode(queue->at(position), segment);
                 return true;
@@ -310,7 +326,7 @@ template < class T > class BufferedFeed : public Feed {
             }
             return false;
         };
-        inline bool flush() {
+        inline bool flush() override {
             /*  used by the consumer to empty the buffer into output */
             unique_lock< mutex > buffer_lock(buffer_mutex);
             flush_buffer();
@@ -327,7 +343,7 @@ template < class T > class BufferedFeed : public Feed {
                 return false;
             }
         };
-        inline bool replenish() {
+        inline bool replenish() override {
             /*  used by the producer to fill the buffer from the input */
             unique_lock< mutex > buffer_lock(buffer_mutex);
             replenish_buffer();
@@ -344,7 +360,7 @@ template < class T > class BufferedFeed : public Feed {
             queue_not_empty.notify_all();
             return !exhausted;
         };
-        void calibrate(FeedProxy const * proxy) {
+        void calibrate(FeedProxy const * proxy) override {
             unique_lock< mutex > buffer_lock(buffer_mutex);
             unique_lock< mutex > queue_lock(queue_mutex);
 
@@ -368,12 +384,12 @@ template < class T > class BufferedFeed : public Feed {
                 }
             }
         };
-        unique_lock< mutex > acquire_pull_lock() {
+        unique_lock< mutex > acquire_pull_lock() override {
             unique_lock< mutex > queue_lock(queue_mutex);
             queue_not_empty.wait(queue_lock, [this]() { return queue->is_not_empty() || exhausted; });
             return queue_lock;
         };
-        unique_lock< mutex > acquire_push_lock() {
+        unique_lock< mutex > acquire_push_lock() override {
             unique_lock< mutex > queue_lock(queue_mutex);
             queue_not_full.wait(queue_lock, [this]() { return queue->is_not_full(); });
             return queue_lock;

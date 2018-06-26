@@ -32,8 +32,6 @@ enum class LeftTokenOperator : uint8_t {
 };
 ostream& operator<<(ostream& o, const LeftTokenOperator& operation);
 
-/* Transform
-*/
 class Token {
     friend ostream& operator<<(ostream& o, const Token& token);
     void operator=(Token const &) = delete;
@@ -191,7 +189,7 @@ class TemplateRule : public Rule {
         TemplateRule(const Rule& other) :
             Rule(other) {
         };
-        virtual ~TemplateRule() {
+        ~TemplateRule() override {
 
         };
         inline void apply(const Read& source, Read& target) const {

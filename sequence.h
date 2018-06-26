@@ -197,7 +197,7 @@ class ObservedSequence : public Sequence {
 
     public:
         uint8_t* quality;
-        inline virtual void increase_to_size(const int32_t& size) {
+        inline void increase_to_size(const int32_t& size) override {
             if(size >= capacity) {
                 capacity = size + 1;
                 kroundup32(capacity);
@@ -209,7 +209,7 @@ class ObservedSequence : public Sequence {
                 }
             }
         };
-        inline virtual void increase_by_size(const int32_t& size) {
+        inline void increase_by_size(const int32_t& size) override {
             if(length + size >= capacity) {
                 capacity = length + size + 1;
                 kroundup32(capacity);
@@ -221,11 +221,11 @@ class ObservedSequence : public Sequence {
                 }
             }
         };
-        inline virtual void terminate() {
+        inline void terminate() override {
             code[length] = '\0';
             quality[length] = '\0';
         };
-        inline virtual void clear() {
+        inline void clear() override {
             length = 0;
             code[length] = '\0';
             quality[length] = '\0';
@@ -247,7 +247,7 @@ class ObservedSequence : public Sequence {
             memcpy(quality, other.quality, length);
             quality[length] = '\0';
         };
-        virtual ~ObservedSequence() {
+        ~ObservedSequence() override {
             free(quality);
         };
         inline int32_t masked_distance_from(const Sequence& other, const uint8_t& quality_masking_threshold) const {
@@ -375,6 +375,21 @@ template < class T > class SequenceArray {
                 // ks_put_character('-', buffer);
             }
         };
+        inline void encode_bam(string& value) const {
+            for(const auto& segment : segment_array) {
+                for(int32_t i(0); i < segment.length; ++i) {
+                    value.push_back(segment.code[i]);
+                }
+            }
+        };
+        inline bool is_iupac_strict() const {
+            for(const auto& segment : segment_array) {
+                if(!segment.is_iupac_strict()) {
+                    return false;
+                }
+            }
+            return true;
+        };
         inline T& front() {
             return segment_array.front();
         };
@@ -445,13 +460,6 @@ class Observation : public SequenceArray< ObservedSequence > {
                 }
             }
             return key;
-        };
-        inline void encode_bam(string& value) const {
-            for(const auto& segment : segment_array) {
-                for(int32_t i(0); i < segment.length; ++i) {
-                    value.push_back(segment.code[i]);
-                }
-            }
         };
 };
 

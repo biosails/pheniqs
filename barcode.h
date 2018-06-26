@@ -59,27 +59,6 @@ class Barcode : public SequenceArray< Sequence > {
             }
             return value;
         };
-        inline bool is_iupac_strict() const {
-            for(const auto& segment : segment_array) {
-                if(!segment.is_iupac_strict()) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        inline void encode_bam(string& value) const {
-            for(const auto& segment : segment_array) {
-                for(int32_t i = 0; i < segment.length; ++i) {
-                    value.push_back(segment.code[i]);
-                }
-            }
-        };
-        inline void encode_iupac_ambiguity(kstring_t& buffer) const {
-            for(const auto& segment : segment_array) {
-                segment.encode_iupac_ambiguity(buffer);
-                // ks_put_character('-', buffer);
-            }
-        };
         inline void decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
             double p(1);
             int32_t d(0);

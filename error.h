@@ -30,14 +30,14 @@ class InternalError : public exception {
         InternalError(const string& error) {
             message.assign(error);
         };
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return ("Internal error : " + message).c_str();
         };
 };
 
 class OutOfMemoryError : public exception {
     public:
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return "Out of memory error";
         };
 };
@@ -48,7 +48,7 @@ class ConfigurationError : public exception {
         ConfigurationError(const string& error) {
             message.assign(error);
         };
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return ("Configuration error: " + message).c_str();
         };
 };
@@ -59,7 +59,7 @@ class CommandLineError : public exception {
         CommandLineError(const string error) {
             message = error;
         };
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return ("Command line error: " + message).c_str();
         };
 };
@@ -70,7 +70,7 @@ class IOError : public exception {
         IOError(const string& error) {
             message.assign(error);
         };
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return ("IO error : " + message).c_str();
         };
 };
@@ -81,7 +81,7 @@ class SequenceError : public exception {
         SequenceError(const string& error) {
             message.assign(error);
         };
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return ("Sequence error : " + message).c_str();
         };
 };
@@ -92,7 +92,7 @@ class OverflowError : public exception {
         OverflowError(const string& error) {
             message.assign(error);
         };
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return ("Identifiers error : " + message).c_str();
         };
 };
@@ -102,7 +102,7 @@ class CorruptAuxiliaryError : public exception {
         CorruptAuxiliaryError(const string& error) {
             message.assign(error);
         };
-        virtual const char* what() const throw() {
+        const char* what() const throw() override {
             return ("Corrupt auxiliary error : " + message).c_str();
         };
 };

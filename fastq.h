@@ -331,7 +331,7 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
             BufferedFeed< FastqRecord >(proxy),
             bgzf_file(NULL) {
         };
-        void open() {
+        void open() override {
             if(!opened()) {
                 switch(direction) {
                     case IoDirection::IN: {
@@ -364,7 +364,7 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
                 }
             }
         };
-        void close() {
+        void close() override {
             if(opened()) {
                 bgzf_close(bgzf_file);
                 bgzf_file = NULL;
@@ -373,20 +373,20 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
                 kseq = NULL;
             }
         };
-        inline bool opened() {
+        inline bool opened() override {
             return bgzf_file != NULL;
         };
 
     protected:
         BGZF* bgzf_file;
         kseq_t* kseq;
-        inline void encode(FastqRecord* record, const Segment& segment) const {
+        inline void encode(FastqRecord* record, const Segment& segment) const override {
             record->decode(segment);
         };
-        inline void decode(const FastqRecord* record, Segment& segment) {
+        inline void decode(const FastqRecord* record, Segment& segment) override {
             record->encode(segment);
         };
-        inline void replenish_buffer() {
+        inline void replenish_buffer() override {
             while(opened() && buffer->is_not_full()) {
              /* >=0  length of the sequence (normal)
                 -1   end-of-file
@@ -400,7 +400,7 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
                 }
             }
         };
-        inline void flush_buffer() {
+        inline void flush_buffer() override {
             /*  encode all fastq records in the buffer to
                 a string buffer and write them together to the stream */
             if(buffer->is_not_empty()) {

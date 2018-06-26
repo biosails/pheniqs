@@ -37,7 +37,7 @@ class Segment : public ObservedSequence {
         kstring_t name;
         uint16_t flag;
         Auxiliary auxiliary;
-        inline virtual void clear() {
+        inline void clear() override {
             ObservedSequence::clear();
             ks_clear(name);
             set_qcfail(false);
@@ -123,7 +123,7 @@ class Segment : public ObservedSequence {
             flag |= uint16_t(HtsFlag::UNMAP);
             flag |= uint16_t(HtsFlag::MUNMAP);
         };
-        virtual ~Segment() {
+        ~Segment() override {
             ks_free(name);
         };
 };

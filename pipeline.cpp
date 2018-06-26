@@ -412,7 +412,7 @@ void Pipeline::populate_multiplex_channel(Channel& channel) {
     channel.output_feed_lock_order.reserve(feed_by_index.size());
     for(auto& record : feed_by_index) {
         /* /dev/null is not really being written to so we don't need to lock it */
-        if(!record.second->url.is_dev_null()) {
+        if(!record.second->is_dev_null()) {
             channel.output_feed_lock_order.push_back(record.second);
         }
     }
