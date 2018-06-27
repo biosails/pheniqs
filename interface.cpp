@@ -315,26 +315,26 @@ void Demultiplex::compile_decoder_group_instruction(const Value::Ch* key) {
 };
 void Demultiplex::compile_decoder_codec(Value& value, const Value& default_instruction_decoder, const Value& default_instruction_codec) {
     if(value.IsObject()) {
-        string buffer;
-
         /* merge the default instruction decoder */
         merge_json_value(default_instruction_decoder, value, instruction);
+        clean_json_value(value, instruction);
 
         /* compute default barcode induced by the codec */
         Value default_codec(kObjectType);
         project_json_value(default_instruction_codec, value, default_codec, instruction);
-        clean_json_value(value, instruction);
 
+        double noise(decode_value_by_key< double >("noise", value));
 
+        string buffer;
         int32_t barcode_index(0);
         double total_concentration(0);
         set< string > unique_barcode_id;
-        double noise(decode_value_by_key< double >("noise", value));
 
         /* apply barcode default on undetermined barcode or create it from the default if one was not explicitly specified */
         Value::MemberIterator reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()){
             merge_json_value(default_codec, reference->value, instruction);
+            clean_json_value(reference->value, instruction);
         } else {
             value.AddMember (
                 Value("undetermined", instruction.GetAllocator()).Move(),
@@ -342,7 +342,6 @@ void Demultiplex::compile_decoder_codec(Value& value, const Value& default_instr
                 instruction.GetAllocator()
             );
         }
-        clean_json_value(reference->value, instruction);
 
         reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()){
@@ -362,9 +361,7 @@ void Demultiplex::compile_decoder_codec(Value& value, const Value& default_instr
                 for(auto& record : codec.GetObject()) {
                     merge_json_value(default_codec, record.value, instruction);
                     clean_json_value(record.value, instruction);
-
                     encode_key_value("index", barcode_index, record.value, instruction);
-
                     if(infer_ID("ID", buffer, record.value)) {
                         if(!unique_barcode_id.count(buffer)) {
                             unique_barcode_id.emplace(buffer);

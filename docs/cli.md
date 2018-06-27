@@ -1,6 +1,6 @@
 <!--
     Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2017  Lior Galanti
+    Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
     Author: Lior Galanti <lior.galanti@nyu.edu>
@@ -48,7 +48,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
     pheniqs version 0.9.d55d65203560ae3719fcbb79ac657189e463ffed
     Lior Galanti < lior.galanti@nyu.edu >
-    NYU Center for Genomics & Systems Biology 2017
+    NYU Center for Genomics & Systems Biology 2018
 
     Usage : pheniqs [-h] [--version] ACTION ...
 
@@ -67,7 +67,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
     pheniqs 1.0.2068ec583e9ad5ab75877cd47ee977565c945d60 I’ll build my own theme park
     Lior Galanti < lior.galanti@nyu.edu >
-    NYU Center for Genomics & Systems Biology 2017
+    NYU Center for Genomics & Systems Biology 2018
 
     Demultiplex and report quality control
 
@@ -103,7 +103,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
     pheniqs 1.0.2068ec583e9ad5ab75877cd47ee977565c945d60 I’ll build my own theme park
     Lior Galanti < lior.galanti@nyu.edu >
-    NYU Center for Genomics & Systems Biology 2017
+    NYU Center for Genomics & Systems Biology 2018
 
     Report quality control
 

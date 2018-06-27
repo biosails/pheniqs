@@ -284,7 +284,7 @@
         "platform": "ILLUMINA",
         "threads": 1
     },
-    "description": "Lior Galanti < lior.galanti@nyu.edu >\nNYU Center for Genomics & Systems Biology 2017\nSee manual at https://biosails.github.io/pheniqs",
+    "description": "Lior Galanti < lior.galanti@nyu.edu >\nNYU Center for Genomics & Systems Biology 2018\nSee manual at https://biosails.github.io/pheniqs",
     "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.",
     "name": "pheniqs",
     "option": [
