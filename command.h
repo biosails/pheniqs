@@ -326,6 +326,7 @@ class Action {
         };
         virtual void clean_instruction() {
             clean_json_value(instruction, instruction);
+            sort_json_value(instruction, instruction);
         };
 };
 

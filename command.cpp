@@ -60,9 +60,10 @@ static inline string get_cwd() {
 };
 static inline string assemble_full_command(const int argc, const char** argv) {
     string value;
-    for(int i = 0; i < argc; ++i) {
-        value.append(argv[i]);
+    value.append(argv[0]);
+    for(int i = 1; i < argc; ++i) {
         value.append(" ");
+        value.append(argv[i]);
     }
     return value;
 };

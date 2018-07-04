@@ -180,6 +180,20 @@ void clean_json_value(Value& ontology, Document& document) {
         };
     }
 };
+void sort_json_value(Value& ontology, Document& document) {
+    if(ontology.IsObject()) {
+        map< string, Value* > dictionary;
+        for(auto& record : ontology.GetObject()) {
+            sort_json_value(record.value, document);
+            dictionary.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
+        }
+        Value clean(kObjectType);
+        for(auto& record : dictionary) {
+            clean.AddMember(Value(record.first.c_str(), record.first.size(), document.GetAllocator()).Move(), record.second->Move(), document.GetAllocator());
+        }
+        ontology.Swap(clean);
+    }
+};
 
 template <> bool decode_value_by_key(const Value::Ch* key, const Value& container) {
     if(container.IsObject()) {
