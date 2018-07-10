@@ -23,11 +23,10 @@
 #define PHENIQS_PROXY_H
 
 #include "include.h"
-
-#include <zlib.h>
-#include <htslib/hfile.h>
 #include "url.h"
 #include "atom.h"
+#include <zlib.h>
+#include <htslib/hfile.h>
 
 const ssize_t PEEK_BUFFER_CAPACITY(4096);
 const int DEFAULT_FEED_CAPACITY(60);
@@ -158,6 +157,8 @@ class FeedProxy {
                             if((buffer = static_cast< unsigned char* >(malloc(buffer_capacity))) == NULL) {
                                 throw OutOfMemoryError();
                             }
+
+                            /* detect input format with htslib and override the type encoded in the url */
                             htsFormat format;
                             if(!hts_detect_format(hfile, &format)) {
                                 switch (format.format) {
@@ -199,6 +200,7 @@ class FeedProxy {
                                         break;
                                 }
                             }
+
                             if(url.type() == FormatType::SAM) {
                                 peeked = hpeek(hfile, buffer, buffer_capacity);
                                 if(peeked > 0) {

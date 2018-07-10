@@ -23,7 +23,6 @@
 #define PHENIQS_ACCUMULATE_H
 
 #include "include.h"
-
 #include "url.h"
 #include "barcode.h"
 #include "read.h"

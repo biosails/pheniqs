@@ -63,7 +63,6 @@ PHENIQS_SOURCES = \
 	auxiliary.cpp \
 	barcode.cpp \
 	channel.cpp \
-	command.cpp \
 	decoder.cpp \
 	environment.cpp \
 	fastq.cpp \
@@ -85,7 +84,6 @@ PHENIQS_OBJECTS = \
 	auxiliary.o \
 	barcode.o \
 	channel.o \
-	command.o \
 	decoder.o \
 	environment.o \
 	fastq.o \
@@ -225,11 +223,11 @@ url.o: \
 	json.o \
 	url.h
 
-command.o: \
+interface.o: \
 	url.o \
 	version.h \
 	configuration.h \
-	command.h
+	interface.h
 
 atom.o: \
 	json.o \
@@ -282,16 +280,6 @@ transform.o: \
 	read.o \
 	transform.h
 
-interface.o: \
-	command.o \
-	barcode.o \
-	transform.o \
-	interface.h
-
-environment.o: \
-	interface.o \
-	environment.h
-
 channel.o: \
 	feed.o \
 	channel.h
@@ -303,11 +291,16 @@ decoder.o: \
 
 pipeline.o: \
 	accumulate.o \
-	environment.o \
 	fastq.o \
 	hts.o \
 	decoder.o \
+	metric.h \
 	pipeline.h
 
+environment.o: \
+	interface.o \
+	pipeline.o \
+	environment.h
+
 pheniqs.o: \
-	pipeline.o
+	environment.o

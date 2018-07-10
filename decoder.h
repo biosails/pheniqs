@@ -23,7 +23,6 @@
 #define PHENIQS_DECODER_H
 
 #include "include.h"
-
 #include "transform.h"
 #include "channel.h"
 

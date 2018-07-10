@@ -23,7 +23,6 @@
 #define PHENIQS_URL_H
 
 #include "include.h"
-
 #include "json.h"
 
 #define STANDARD_STREAM_ALIAS "-"
@@ -68,8 +67,8 @@ bool from_string(const string& value, IoDirection& result);
 ostream& operator<<(ostream& o, const IoDirection& direction);
 void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document);
 
-void expand_shell(string& expression);
-void normaize_standard_stream(string& path, const IoDirection& direction);
+string& expand_shell(string& expression);
+void normalize_standard_stream(string& path, const IoDirection& direction);
 
 class URL {
     friend ostream& operator<<(ostream& o, const URL& url);
@@ -147,9 +146,9 @@ class URL {
             expand_shell(_dirname);
             refresh();
         };
-        void normaize(const IoDirection& direction) {
+        void normalize(const IoDirection& direction) {
             string buffer(_path);
-            normaize_standard_stream(buffer, direction);
+            normalize_standard_stream(buffer, direction);
             parse_file(buffer);
         };
         bool is_readable() const;

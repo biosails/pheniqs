@@ -23,10 +23,9 @@
 #define PHENIQS_FASTQ_H
 
 #include "include.h"
-
+#include "feed.h"
 #include <htslib/bgzf.h>
 #include <htslib/kseq.h>
-#include "feed.h"
 
 KSEQ_INIT(BGZF*, bgzf_read)
 

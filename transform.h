@@ -23,7 +23,6 @@
 #define PHENIQS_TRANSFORM_H
 
 #include "include.h"
-
 #include "read.h"
 
 enum class LeftTokenOperator : uint8_t {

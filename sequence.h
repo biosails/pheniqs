@@ -23,7 +23,6 @@
 #define PHENIQS_SEQUENCE_H
 
 #include "include.h"
-
 #include "json.h"
 #include "phred.h"
 #include "nucleotide.h"

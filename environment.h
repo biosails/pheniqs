@@ -22,8 +22,8 @@
 #define PHENIQS_ENVIRONMENT_H
 
 #include "include.h"
-
 #include "interface.h"
+#include "pipeline.h"
 
 enum class ProgramState : int8_t {
     OK,
@@ -40,11 +40,38 @@ enum class ProgramState : int8_t {
 
 class Environment {
     public:
-        Document instruction;
-        Environment(const int argc, const char** argv);
-        ~Environment(){};
-        inline const ProgramAction program_action() const {
-            return _program_action;
+        const Interface interface;
+        Job* job;
+        Environment(const int argc, const char** argv) :
+            interface(argc, argv),
+            job(NULL),
+            _help_only(interface.help_triggered()),
+            _version_only(interface.version_triggered()) {
+
+            if(!is_help_only() && !is_version_only()) {
+                Document operation(interface.operation());
+
+                Value::MemberIterator reference = operation.FindMember("operation");
+                if(reference != operation.MemberEnd()) {
+                    if(reference->value.IsObject()) {
+                        string name(decode_value_by_key< string >("name", reference->value));
+                        if(name == "demux") {
+                            job = new Demultiplex(operation);
+                        } else {
+                            job = new Job(operation);
+                        }
+                        job->compile();
+                    }
+                }
+            }
+        };
+        ~Environment() {
+            delete job;
+        };
+        void execute() {
+            if(job != NULL) {
+                job->execute();
+            }
         };
         inline const bool is_help_only() const {
             return _help_only;
@@ -52,39 +79,39 @@ class Environment {
         inline const bool is_version_only() const {
             return _version_only;
         };
-        inline const bool is_validate_only() const {
-            return _validate_only;
+        void print_help(ostream& o) const {
+            interface.print_help(o);
         };
-        inline const bool is_lint_only() const {
-            return _lint_only;
+        void print_version(ostream& o) const {
+            interface.print_version(o);
+            #ifdef ZLIB_VERSION
+                o << "zlib " << ZLIB_VERSION << endl;
+            #endif
+
+            #ifdef BZIP2_VERSION
+                o << "bzlib " << BZIP2_VERSION << endl;
+            #endif
+
+            #ifdef XZ_VERSION
+                o << "xzlib " << XZ_VERSION << endl;
+            #endif
+
+            #ifdef LIBDEFLATE_VERSION
+                o << "libdeflate " << LIBDEFLATE_VERSION << endl;
+            #endif
+
+            #ifdef RAPIDJSON_VERSION
+                o << "rapidjson " << RAPIDJSON_VERSION << endl;
+            #endif
+
+            #ifdef HTSLIB_VERSION
+                o << "htslib " << HTSLIB_VERSION << endl;
+            #endif
         };
-        void print_help(ostream& o) const;
-        void print_version(ostream& o) const;
-        void print_instruction_validation(ostream& o) const;
-        void print_linted_instruction(ostream& o) const;
 
     private:
-        const Interface interface;
-        const ProgramAction _program_action;
         const bool _help_only;
         const bool _version_only;
-        bool _validate_only;
-        bool _lint_only;
-        bool _display_distance;
-        HeadPGAtom _pheniqs_pg;
-        void load_pheniqs_pg();
-        void print_feed_instruction(const Value::Ch* key, ostream& o) const;
-        void print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const;
-        void print_codec_instruction(const Value& value, const bool& plural, ostream& o) const;
-        void print_channel_instruction(const Value& value, ostream& o) const;
-        void print_codec_template(const Value& value, ostream& o) const;
-        void print_global_instruction(ostream& o) const;
-        void print_input_instruction(ostream& o) const;
-        void print_template_instruction(ostream& o) const;
-        void print_multiplex_instruction(ostream& o) const;
-        void print_molecular_instruction(ostream& o) const;
-        void print_splitseq_instruction(ostream& o) const;
-        void load_undetermined_barcode(const vector< int32_t >& multiplex_barcode_length);
 };
 
 #endif /* PHENIQS_ENVIRONMENT_H */

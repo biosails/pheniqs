@@ -23,10 +23,17 @@
 #define PHENIQS_FEED_H
 
 #include "include.h"
-
-#include <htslib/thread_pool.h>
 #include "proxy.h"
 #include "read.h"
+#include <htslib/thread_pool.h>
+
+inline int align_to_resolution(const int& capacity, const int& resolution) {
+    int aligned(static_cast< int >(capacity / resolution) * resolution);
+    if(aligned < capacity) {
+        aligned += resolution;
+    }
+    return aligned;
+};
 
 /* IO feed */
 
@@ -64,7 +71,7 @@ class Feed {
         virtual inline bool is_dev_null() {
             return url.is_dev_null();
         };
-        virtual void calibrate(FeedProxy const * proxy) = 0;
+        virtual void calibrate(const int& capacity, const int& resolution) = 0;
         virtual unique_lock< mutex > acquire_pull_lock() = 0;
         virtual unique_lock< mutex > acquire_push_lock() = 0;
         virtual inline bool opened() = 0;
@@ -111,7 +118,7 @@ class NullFeed : public Feed {
         inline bool replenish() override {
             return false;
         };
-        void calibrate(FeedProxy const * proxy) override {
+        void calibrate(const int& capacity, const int& resolution) override {
 
         };
         unique_lock< mutex > acquire_pull_lock() override {
@@ -247,13 +254,6 @@ template < class T > class CyclicBuffer {
         int _vacant;
         vector< T* > cache;
         int index;
-        inline int align_capacity(const int& capacity, const int& resolution) {
-            int aligned(static_cast< int >(capacity / resolution) * resolution);
-            if(aligned < capacity) {
-                aligned += resolution;
-            }
-            return aligned;
-        };
 };
 
 template < class T > class BufferedFeed : public Feed {
@@ -360,16 +360,17 @@ template < class T > class BufferedFeed : public Feed {
             queue_not_empty.notify_all();
             return !exhausted;
         };
-        void calibrate(FeedProxy const * proxy) override {
+        void calibrate(const int& capacity, const int& resolution) override {
             unique_lock< mutex > buffer_lock(buffer_mutex);
             unique_lock< mutex > queue_lock(queue_mutex);
 
-            if(capacity != proxy->capacity || resolution != proxy->resolution) {
-                if(proxy->capacity > capacity) {
-                    capacity = proxy->capacity;
-                    resolution = proxy->resolution;
-                    queue->calibrate(capacity, resolution);
-                    buffer->calibrate(capacity, resolution);
+            int aligned(align_to_resolution(capacity, resolution));
+            if(this->capacity != aligned || this->resolution != resolution) {
+                if(aligned > this->capacity) {
+                    this->capacity = aligned;
+                    this->resolution = resolution;
+                    queue->calibrate(aligned, resolution);
+                    buffer->calibrate(aligned, resolution);
 
                     /*  sync queue
                         move elements from buffer to queue until

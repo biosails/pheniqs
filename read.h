@@ -23,7 +23,6 @@
 #define PHENIQS_READ_H
 
 #include "include.h"
-
 #include "auxiliary.h"
 
 class Segment : public ObservedSequence {

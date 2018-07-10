@@ -23,10 +23,10 @@
 
 void to_string(const FormatKind& value, string& result) {
     switch(value) {
-        case FormatKind::FASTQ: result.assign("FASTQ");      break;
-        case FormatKind::HTS:   result.assign("HTS");        break;
-        case FormatKind::DEV_NULL:   result.assign("DEV_NULL");        break;
-        default:                result.assign("UNKNOWN");    break;
+        case FormatKind::FASTQ:         result.assign("FASTQ");      break;
+        case FormatKind::HTS:           result.assign("HTS");        break;
+        case FormatKind::DEV_NULL:      result.assign("DEV_NULL");   break;
+        default:                        result.assign("UNKNOWN");    break;
     }
 };
 bool from_string(const char* value, FormatKind& result) {
@@ -70,7 +70,6 @@ template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKi
     }
     return false;
 };
-
 
 ostream& operator<<(ostream& o, const FeedProxy& proxy) {
     o << "direction : " << proxy.direction << endl;

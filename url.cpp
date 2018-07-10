@@ -21,7 +21,7 @@
 
 #include "url.h"
 
-void expand_shell(string& expression) {
+string& expand_shell(string& expression) {
     if(!expression.empty()) {
         string resolved;
         string variable;
@@ -101,8 +101,9 @@ void expand_shell(string& expression) {
         }
         expression.assign(resolved);
     }
+    return expression;
 };
-void normaize_standard_stream(string& path, const IoDirection& direction) {
+void normalize_standard_stream(string& path, const IoDirection& direction) {
     if(path == STANDARD_STREAM_ALIAS) {
         switch(direction) {
             case IoDirection::IN: {
@@ -622,10 +623,9 @@ void expand_url_value(Value& container, Document& document, const IoDirection& d
     if(!container.IsNull()) {
         string buffer;
         if(container.IsString()) {
-            buffer.assign(container.GetString(), container.GetStringLength());
-            expand_shell(buffer);
+            expand_shell(buffer.assign(container.GetString(), container.GetStringLength()));
             if(direction != IoDirection::UNKNOWN) {
-                normaize_standard_stream(buffer, direction);
+                normalize_standard_stream(buffer, direction);
             }
             container.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
 
@@ -633,7 +633,7 @@ void expand_url_value(Value& container, Document& document, const IoDirection& d
             if(decode_value_by_key< string >("path", buffer, container)) {
                 expand_shell(buffer);
                 if(direction != IoDirection::UNKNOWN) {
-                    normaize_standard_stream(buffer, direction);
+                    normalize_standard_stream(buffer, direction);
                 }
                 encode_key_value("path", buffer, container, document);
             }

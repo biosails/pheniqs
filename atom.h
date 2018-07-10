@@ -23,9 +23,8 @@
 #define PHENIQS_ATOM_H
 
 #include "include.h"
-
-#include <htslib/hts.h>
 #include "json.h"
+#include <htslib/hts.h>
 
 /*  defined in htslib/hts.h */
 void to_string(const htsFormatCategory& value, string& result);

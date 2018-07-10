@@ -178,7 +178,7 @@ ostream& operator<<(ostream& o, const bam1_t& value) {
 template<> void CyclicBuffer< bam1_t >::calibrate(const int& capacity, const int& resolution) {
     if(_capacity != capacity || _resolution != resolution) {
         if(capacity > _capacity) {
-            if(align_capacity(capacity, resolution) == capacity) {
+            if(align_to_resolution(capacity, resolution) == capacity) {
                 cache.resize(capacity);
                 for(int i = _capacity; i < capacity; ++i) {
                     bam1_t* allocated = bam_init1();

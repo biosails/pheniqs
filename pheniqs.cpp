@@ -19,27 +19,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "pipeline.h"
+#include "environment.h"
 
 int main(int argc, char** argv) {
     try {
         Environment environment(argc, (const char**)argv);
-
         if(environment.is_help_only()) {
             environment.print_help(cerr);
 
         } else if(environment.is_version_only()) {
             environment.print_version(cerr);
 
-        } else if(environment.is_validate_only()) {
-            environment.print_instruction_validation(cerr);
-
-        } else if(environment.is_lint_only()) {
-            environment.print_linted_instruction(cout);
-
         } else {
-            Pipeline pipeline(environment.instruction);
-            pipeline.execute();
+            environment.execute();
+
         }
 
     } catch(InternalError& error) {

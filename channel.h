@@ -23,7 +23,6 @@
 #define PHENIQS_CHANNEL_H
 
 #include "include.h"
-
 #include "feed.h"
 
 class Channel : public Barcode {

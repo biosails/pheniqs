@@ -23,7 +23,6 @@
 #define PHENIQS_BARCODE_H
 
 #include "include.h"
-
 #include "sequence.h"
 
 class Barcode : public SequenceArray< Sequence > {

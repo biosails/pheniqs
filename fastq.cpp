@@ -32,7 +32,7 @@ ostream& operator<<(ostream& o, const FastqRecord& value) {
 template<> void CyclicBuffer< FastqRecord >::calibrate(const int& capacity, const int& resolution) {
     if(_capacity != capacity || _resolution != resolution) {
         if(capacity > _capacity) {
-            if(align_capacity(capacity, resolution) == capacity) {
+            if(align_to_resolution(capacity, resolution) == capacity) {
                 cache.resize(capacity);
                 for(int i = _capacity; i < capacity; ++i) {
                     cache[i] = new FastqRecord();

@@ -19,37 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-/*
-
-switch (value.GetType()) {
-    case Type::kNullType: {
-        break;
-    };
-    case Type::kFalseType: {
-        break;
-    };
-    case Type::kTrueType: {
-        break;
-    };
-    case Type::kObjectType: {
-        break;
-    };
-    case Type::kArrayType: {
-        break;
-    };
-    case Type::kStringType: {
-        break;
-    };
-    case Type::kNumberType: {
-        break;
-    };
-    default:
-        break;
-}
-
-*/
-
 #include "json.h"
 
 void print_json(const Value& node, ostream& o) {
@@ -632,3 +601,31 @@ template<> bool decode_value_by_key< kstring_t >(const Value::Ch* key, kstring_t
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
 };
+
+/*
+    switch (value.GetType()) {
+        case Type::kNullType: {
+            break;
+        };
+        case Type::kFalseType: {
+            break;
+        };
+        case Type::kTrueType: {
+            break;
+        };
+        case Type::kObjectType: {
+            break;
+        };
+        case Type::kArrayType: {
+            break;
+        };
+        case Type::kStringType: {
+            break;
+        };
+        case Type::kNumberType: {
+            break;
+        };
+        default:
+            break;
+    }
+*/

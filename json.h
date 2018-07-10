@@ -23,6 +23,8 @@
 #define PHENIQS_JSON_H
 
 #include "include.h"
+#include "error.h"
+#include "kstring.h"
 
 #define RAPIDJSON_NO_SIZETYPEDEFINE
 namespace rapidjson { typedef ::std::size_t SizeType; }
@@ -30,12 +32,11 @@ namespace rapidjson { typedef ::std::size_t SizeType; }
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
-
-#include "error.h"
-#include "kstring.h"
+#include <rapidjson/pointer.h>
 
 using rapidjson::Type;
 using rapidjson::Value;
+using rapidjson::Pointer;
 using rapidjson::Document;
 using rapidjson::SizeType;
 using rapidjson::StringRef;
@@ -46,12 +47,12 @@ using rapidjson::kObjectType;
 using rapidjson::StringBuffer;
 using rapidjson::PrettyWriter;
 
-void print_json(const Value& node, ostream& o);
+void print_json(const Value& node, ostream& o=cout);
 Document* load_json(const string& path);
 
 /*  Recursively merge two JSON documents.
-    Overlay < other > on < node > and write the result to < container >, using < document > for memory allocation.
-    < container > is first initialized to a null value.
+    Overlay < base > on < ontology >, using < document > for memory allocation.
+    ontology is updated in the process.
 */
 void merge_json_value(const Value& base, Value& ontology, Document& document);
 void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document);
