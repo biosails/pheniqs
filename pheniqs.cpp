@@ -24,16 +24,7 @@
 int main(int argc, char** argv) {
     try {
         Environment environment(argc, (const char**)argv);
-        if(environment.is_help_only()) {
-            environment.print_help(cerr);
-
-        } else if(environment.is_version_only()) {
-            environment.print_version(cerr);
-
-        } else {
-            environment.execute();
-
-        }
+        environment.execute();
 
     } catch(InternalError& error) {
         cerr << error.what() << endl;

@@ -72,6 +72,7 @@ PHENIQS_SOURCES = \
 	json.cpp \
 	pheniqs.cpp \
 	pipeline.cpp \
+	demultiplex.cpp \
 	proxy.cpp \
 	read.cpp \
 	sequence.cpp \
@@ -93,6 +94,7 @@ PHENIQS_OBJECTS = \
 	json.o \
 	pheniqs.o \
 	pipeline.o \
+	demultiplex.o \
 	proxy.o \
 	read.o \
 	sequence.o \
@@ -290,16 +292,22 @@ decoder.o: \
 	decoder.h
 
 pipeline.o: \
+	json.o \
+	url.o \
+	pipeline.h
+
+demultiplex.o: \
 	accumulate.o \
 	fastq.o \
 	hts.o \
 	decoder.o \
 	metric.h \
-	pipeline.h
+	pipeline.h \
+	demultiplex.h
 
 environment.o: \
 	interface.o \
-	pipeline.o \
+	demultiplex.o \
 	environment.h
 
 pheniqs.o: \

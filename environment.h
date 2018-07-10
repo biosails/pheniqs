@@ -23,7 +23,7 @@
 
 #include "include.h"
 #include "interface.h"
-#include "pipeline.h"
+#include "demultiplex.h"
 
 enum class ProgramState : int8_t {
     OK,
@@ -40,39 +40,53 @@ enum class ProgramState : int8_t {
 
 class Environment {
     public:
-        const Interface interface;
-        Job* job;
         Environment(const int argc, const char** argv) :
             interface(argc, argv),
-            job(NULL),
             _help_only(interface.help_triggered()),
             _version_only(interface.version_triggered()) {
 
             if(!is_help_only() && !is_version_only()) {
-                Document operation(interface.operation());
-
-                Value::MemberIterator reference = operation.FindMember("operation");
-                if(reference != operation.MemberEnd()) {
+                Document job_instruction(interface.operation());
+                Value::MemberIterator reference = job_instruction.FindMember("operation");
+                if(reference != job_instruction.MemberEnd()) {
                     if(reference->value.IsObject()) {
+                        Job* job(NULL);
                         string name(decode_value_by_key< string >("name", reference->value));
                         if(name == "demux") {
-                            job = new Demultiplex(operation);
+                            job = new Demultiplex(job_instruction);
                         } else {
-                            job = new Job(operation);
+                            job = new Job(job_instruction);
                         }
                         job->compile();
-                    }
-                }
+                        job_queue.emplace_back(job);
+                    } else { throw ConfigurationError("Job operation element is not a dictionary"); }
+                } else { throw ConfigurationError("Job ontology is missing an operation element"); }
             }
         };
         ~Environment() {
-            delete job;
-        };
-        void execute() {
-            if(job != NULL) {
-                job->execute();
+            for(auto& job : job_queue) {
+                delete job;
             }
         };
+        void execute() {
+            if(is_help_only()) {
+                print_help(cerr);
+
+            } else if(is_version_only()) {
+                print_version(cerr);
+
+            } else if(!job_queue.empty()) {
+                for(auto& job : job_queue) {
+                    job->execute();
+                }
+            }
+        };
+
+    private:
+        const Interface interface;
+        list< Job* > job_queue;
+        const bool _help_only;
+        const bool _version_only;
         inline const bool is_help_only() const {
             return _help_only;
         };
@@ -108,10 +122,6 @@ class Environment {
                 o << "htslib " << HTSLIB_VERSION << endl;
             #endif
         };
-
-    private:
-        const bool _help_only;
-        const bool _version_only;
 };
 
 #endif /* PHENIQS_ENVIRONMENT_H */
