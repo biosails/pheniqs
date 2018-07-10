@@ -804,6 +804,3 @@ class samtoolsPackage(makePackage):
 class pheniqsPackage(makePackage):
     def __init__(self, pipeline, node):
         makePackage.__init__(self, pipeline, node)
-        self.node['make build optional'] = []
-        for package in self.pipeline.execution['package']:
-            self.node['make build optional'].append('{}_VERSION={}'.format(package.name.upper(), package.version))
