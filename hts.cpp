@@ -48,47 +48,47 @@ void HtsHeader::decode(htsFile* hts_file) {
                     uint16_t code = tag_to_code(position);
                     position += 2;
                     switch (code) {
-                        case uint16_t(HtsAuxiliaryCode::HD): {
+                        case uint16_t(HtsTagCode::HD): {
                             position = hd.decode(position, end);
                             break;
                         };
-                        case uint16_t(HtsAuxiliaryCode::RG): {
+                        case uint16_t(HtsTagCode::RG): {
                             HeadRGAtom rg;
                             position = rg.decode(position, end);
                             add_read_group(rg);
                             break;
                         };
-                        case uint16_t(HtsAuxiliaryCode::PG): {
+                        case uint16_t(HtsTagCode::PG): {
                             HeadPGAtom pg;
                             position = pg.decode(position, end);
                             add_program(pg);
                             break;
                         };
-                        case uint16_t(HtsAuxiliaryCode::CO): {
+                        case uint16_t(HtsTagCode::CO): {
                             HeadCOAtom co;
                             position = co.decode(position, end);
                             add_comment(co);
                             break;
                         };
                         /*
-                        case uint16_t(HtsAuxiliaryCode::SQ): {
+                        case uint16_t(HtsTagCode::SQ): {
                             switch (code) {
-                                case uint16_t(HtsAuxiliaryCode::SN): {
+                                case uint16_t(HtsTagCode::SN): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::LN): {
+                                case uint16_t(HtsTagCode::LN): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::AS): {
+                                case uint16_t(HtsTagCode::AS): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::M5): {
+                                case uint16_t(HtsTagCode::M5): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::SP): {
+                                case uint16_t(HtsTagCode::SP): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::UR): {
+                                case uint16_t(HtsTagCode::UR): {
                                     break;
                                 };
                                 default:

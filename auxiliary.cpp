@@ -238,98 +238,98 @@ void Auxiliary::decode(const bam1_t* bam1) {
             position = next + 2;
             if((next = skip_aux(position, end)) != NULL) {
                 switch(code) {
-                    case uint16_t(HtsAuxiliaryCode::FI):
+                    case uint16_t(HtsTagCode::FI):
                         FI = static_cast< uint32_t >(bam_aux2i(position));
                         break;
-                    case uint16_t(HtsAuxiliaryCode::TC):
+                    case uint16_t(HtsTagCode::TC):
                         TC = static_cast< uint32_t >(bam_aux2i(position));
                         break;
-                    case uint16_t(HtsAuxiliaryCode::FS):
+                    case uint16_t(HtsTagCode::FS):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, FS); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::RG):
+                    case uint16_t(HtsTagCode::RG):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, RG); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::PU):
+                    case uint16_t(HtsTagCode::PU):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, PU); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::LB):
+                    case uint16_t(HtsTagCode::LB):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, LB); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::PG):
+                    case uint16_t(HtsTagCode::PG):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, PG); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::CO):
+                    case uint16_t(HtsTagCode::CO):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, CO); }
                         break;
 
                     /*  multiplex barcode */
-                    case uint16_t(HtsAuxiliaryCode::BC):
+                    case uint16_t(HtsTagCode::BC):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, BC); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::QT):
+                    case uint16_t(HtsTagCode::QT):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, QT); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::DQ):
+                    case uint16_t(HtsTagCode::DQ):
                         DQ = bam_aux2f(position);
                         break;
 
                     /*  molecular barcode */
-                    case uint16_t(HtsAuxiliaryCode::RX):
+                    case uint16_t(HtsTagCode::RX):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, RX); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::QX):
+                    case uint16_t(HtsTagCode::QX):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, QX); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::OX):
+                    case uint16_t(HtsTagCode::OX):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, OX); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::BZ):
+                    case uint16_t(HtsTagCode::BZ):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, BZ); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::MI):
+                    case uint16_t(HtsTagCode::MI):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, MI); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XM):
+                    case uint16_t(HtsTagCode::XM):
                         XM = bam_aux2f(position);
                         break;
 
                     /*  Cellular barcode */
-                    case uint16_t(HtsAuxiliaryCode::XR):
+                    case uint16_t(HtsTagCode::XR):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, XR); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XQ):
+                    case uint16_t(HtsTagCode::XQ):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, XQ); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XO):
+                    case uint16_t(HtsTagCode::XO):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, XO); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XZ):
+                    case uint16_t(HtsTagCode::XZ):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, XZ); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XP):
+                    case uint16_t(HtsTagCode::XP):
                         XP = bam_aux2f(position);
                         break;
 
                     /*  Expected Error */
-                    case uint16_t(HtsAuxiliaryCode::EE):
+                    case uint16_t(HtsTagCode::EE):
                         EE = bam_aux2f(position);
                         break;
 
