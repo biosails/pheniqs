@@ -5,12 +5,12 @@
         "alpha": {
             "codec": {
                 "AGGCAGAA": {
-                    "barcode segment": [
+                    "barcode": [
                         "AGGCAGAA"
                     ]
                 },
                 "CGTACTAG": {
-                    "barcode segment": [
+                    "barcode": [
                         "CGTACTAG"
                     ]
                 }
@@ -20,17 +20,17 @@
             "base": "alpha",
             "codec": {
                 "GGACTCCT": {
-                    "barcode segment": [
+                    "barcode": [
                         "GGACTCCT"
                     ]
                 },
                 "TAAGGCGA": {
-                    "barcode segment": [
+                    "barcode": [
                         "TAAGGCGA"
                     ]
                 },
                 "TCCTGAGC": {
-                    "barcode segment": [
+                    "barcode": [
                         "TCCTGAGC"
                     ]
                 }

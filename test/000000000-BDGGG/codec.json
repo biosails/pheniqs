@@ -2,35 +2,30 @@
     "CN": "CGSB",
     "PL": "ILLUMINA",
     "decoder": {
-        "alpha": {
+        "000000000-BDGGG_multiplex": {
             "codec": {
-                "AGGCAGAA": {
-                    "barcode segment": [
+                "@AGGCAGAA": {
+                    "barcode": [
                         "AGGCAGAA"
                     ]
                 },
-                "CGTACTAG": {
-                    "barcode segment": [
+                "@CGTACTAG": {
+                    "barcode": [
                         "CGTACTAG"
                     ]
-                }
-            }
-        },
-        "beta": {
-            "base": "alpha",
-            "codec": {
-                "GGACTCCT": {
-                    "barcode segment": [
+                },
+                "@GGACTCCT": {
+                    "barcode": [
                         "GGACTCCT"
                     ]
                 },
-                "TAAGGCGA": {
-                    "barcode segment": [
+                "@TAAGGCGA": {
+                    "barcode": [
                         "TAAGGCGA"
                     ]
                 },
-                "TCCTGAGC": {
-                    "barcode segment": [
+                "@TCCTGAGC": {
+                    "barcode": [
                         "TCCTGAGC"
                     ]
                 }

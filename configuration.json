@@ -2,19 +2,10 @@
     "action": [
         {
             "default": {
-                "algorithm": "pamld",
-                "disable quality control": false,
-                "display distance": false,
-                "flowcell id": null,
-                "flowcell lane number": null,
-                "input segment cardinality": 0,
-                "lint only": false,
-                "output segment cardinality": 0,
-                "quality masking threshold": 0,
-                "validate only": false,
-                "version only": false
+                "algorithm": "pamld"
             },
             "description": "Demultiplex and report quality control",
+            "implementation": "demultiplex",
             "name": "demux",
             "option": [
                 {
@@ -273,11 +264,9 @@
             ]
         }
     ],
-    "comment": "main pheniqs command line configuration file",
+    "comment": "pheniqs command line configuration file",
     "default": {
         "buffer capacity": 2048,
-        "help only": false,
-        "include filtered": false,
         "input phred offset": 33,
         "leading segment index": 0,
         "output phred offset": 33,
@@ -315,10 +304,11 @@
             "default": null,
             "epilog": null,
             "full command": null,
+            "implementation": "generic",
             "projection": null,
             "working directory": null
         },
-        "codec": {
+        "barcode": {
             "CN": null,
             "DS": null,
             "DT": null,
@@ -355,7 +345,7 @@
             "flowcell lane number": null,
             "noise": 0,
             "output": null,
-            "quality masking threshold": null,
+            "quality masking threshold": 0,
             "random barcode probability": null,
             "segment cardinality": null,
             "undetermined": null

@@ -156,8 +156,8 @@ class Read : public SequenceArray< Segment > {
         inline const uint32_t& molecular_distance() const {
             return leader->auxiliary.molecular_distance;
         };
-        inline const uint32_t& splitseq_distance() const {
-            return leader->auxiliary.splitseq_distance;
+        inline const uint32_t& cellular_distance() const {
+            return leader->auxiliary.cellular_distance;
         };
         inline const double& multiplex_error() const {
             return leader->auxiliary.DQ;
@@ -165,7 +165,7 @@ class Read : public SequenceArray< Segment > {
         inline const double& molecular_error() const {
             return leader->auxiliary.XM;
         };
-        inline const double& splitseq_error() const {
+        inline const double& cellular_error() const {
             return leader->auxiliary.XP;
         };
         inline void validate() const {
@@ -200,39 +200,39 @@ class Read : public SequenceArray< Segment > {
                 segment.auxiliary.set_multiplex_distance(distance);
             }
         };
-        inline void update_splitseq_barcode(const Barcode& barcode) {
+        inline void update_cellular_barcode(const Barcode& barcode) {
             for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_splitseq_barcode(barcode);
+                segment.auxiliary.update_cellular_barcode(barcode);
             }
         };
-        inline void update_splitseq_barcode(const Observation& observation) {
+        inline void update_cellular_barcode(const Observation& observation) {
             for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_splitseq_barcode(observation);
+                segment.auxiliary.update_cellular_barcode(observation);
             }
         };
-        inline void update_raw_splitseq_barcode(const Observation& observation) {
+        inline void update_raw_cellular_barcode(const Observation& observation) {
             for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_raw_splitseq_barcode(observation);
+                segment.auxiliary.update_raw_cellular_barcode(observation);
             }
         };
-        inline void set_splitseq_error_probability(const double& error) {
+        inline void set_cellular_error_probability(const double& error) {
             for(auto& segment : this->segment_array) {
-                segment.auxiliary.set_splitseq_error_probability(error);
+                segment.auxiliary.set_cellular_error_probability(error);
             }
         };
-        inline void update_splitseq_error_probability(const double& error) {
+        inline void update_cellular_error_probability(const double& error) {
             for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_splitseq_error_probability(error);
+                segment.auxiliary.update_cellular_error_probability(error);
             }
         };
-        inline void set_splitseq_distance(const uint32_t& distance) {
+        inline void set_cellular_distance(const uint32_t& distance) {
             for(auto& segment : this->segment_array) {
-                segment.auxiliary.set_splitseq_distance(distance);
+                segment.auxiliary.set_cellular_distance(distance);
             }
         };
-        inline void update_splitseq_distance(const uint32_t& distance) {
+        inline void update_cellular_distance(const uint32_t& distance) {
             for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_splitseq_distance(distance);
+                segment.auxiliary.update_cellular_distance(distance);
             }
         };
         inline void update_molecular_barcode(const Barcode& barcode) {

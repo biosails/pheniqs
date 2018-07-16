@@ -9,9 +9,9 @@
     "channel": [
         {
             "DS": "undetermined description",
+            "ID": "HK5NHBGXX:1:undetermined",
             "LB": "undetermined_library",
             "PU": "HK5NHBGXX:1:undetermined",
-            "ID": "HK5NHBGXX:1:undetermined",
             "SM": "undetermined_sample",
             "output": [
                 "HK5NHBGXX_l01n01_undetermined.cram"
@@ -20,9 +20,9 @@
         },
         {
             "DS": "ntr_1 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
             "LB": "ntr_1_library",
             "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
             "SM": "ntr_1_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -35,9 +35,9 @@
         },
         {
             "DS": "ntr_2 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGTCTTACGC",
             "LB": "ntr_2_library",
             "PU": "HK5NHBGXX:1:CGTACTAGTCTTACGC",
-            "ID": "HK5NHBGXX:1:CGTACTAGTCTTACGC",
             "SM": "ntr_2_sample",
             "barcode": [
                 "CGTACTAG",
@@ -50,9 +50,9 @@
         },
         {
             "DS": "ntr_3 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAATCTTACGC",
             "LB": "ntr_3_library",
             "PU": "HK5NHBGXX:1:AGGCAGAATCTTACGC",
-            "ID": "HK5NHBGXX:1:AGGCAGAATCTTACGC",
             "SM": "ntr_3_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -65,9 +65,9 @@
         },
         {
             "DS": "ntr_4 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCTCTTACGC",
             "LB": "ntr_4_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCTCTTACGC",
-            "ID": "HK5NHBGXX:1:TCCTGAGCTCTTACGC",
             "SM": "ntr_4_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -80,9 +80,9 @@
         },
         {
             "DS": "ntr_5 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTTCTTACGC",
             "LB": "ntr_5_library",
             "PU": "HK5NHBGXX:1:GGACTCCTTCTTACGC",
-            "ID": "HK5NHBGXX:1:GGACTCCTTCTTACGC",
             "SM": "ntr_5_sample",
             "barcode": [
                 "GGACTCCT",
@@ -95,9 +95,9 @@
         },
         {
             "DS": "ntr_6 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGTCTTACGC",
             "LB": "ntr_6_library",
             "PU": "HK5NHBGXX:1:TAGGCATGTCTTACGC",
-            "ID": "HK5NHBGXX:1:TAGGCATGTCTTACGC",
             "SM": "ntr_6_sample",
             "barcode": [
                 "TAGGCATG",
@@ -110,9 +110,9 @@
         },
         {
             "DS": "ntr_7 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACTCTTACGC",
             "LB": "ntr_7_library",
             "PU": "HK5NHBGXX:1:CTCTCTACTCTTACGC",
-            "ID": "HK5NHBGXX:1:CTCTCTACTCTTACGC",
             "SM": "ntr_7_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -125,9 +125,9 @@
         },
         {
             "DS": "ntr_8 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGTCTTACGC",
             "LB": "ntr_8_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGTCTTACGC",
-            "ID": "HK5NHBGXX:1:CAGAGAGGTCTTACGC",
             "SM": "ntr_8_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -140,9 +140,9 @@
         },
         {
             "DS": "ntr_9 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTTCTTACGC",
             "LB": "ntr_9_library",
             "PU": "HK5NHBGXX:1:GCTACGCTTCTTACGC",
-            "ID": "HK5NHBGXX:1:GCTACGCTTCTTACGC",
             "SM": "ntr_9_sample",
             "barcode": [
                 "GCTACGCT",
@@ -155,9 +155,9 @@
         },
         {
             "DS": "ntr_10 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGTCTTACGC",
             "LB": "ntr_10_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGTCTTACGC",
-            "ID": "HK5NHBGXX:1:CGAGGCTGTCTTACGC",
             "SM": "ntr_10_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -170,9 +170,9 @@
         },
         {
             "DS": "ntr_11 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCATCTTACGC",
             "LB": "ntr_11_library",
             "PU": "HK5NHBGXX:1:AAGAGGCATCTTACGC",
-            "ID": "HK5NHBGXX:1:AAGAGGCATCTTACGC",
             "SM": "ntr_11_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -185,9 +185,9 @@
         },
         {
             "DS": "ntr_12 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGATCTTACGC",
             "LB": "ntr_12_library",
             "PU": "HK5NHBGXX:1:GTAGAGGATCTTACGC",
-            "ID": "HK5NHBGXX:1:GTAGAGGATCTTACGC",
             "SM": "ntr_12_sample",
             "barcode": [
                 "GTAGAGGA",
@@ -200,9 +200,9 @@
         },
         {
             "DS": "ntr_13 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGAATAGAGAG",
             "LB": "ntr_13_library",
             "PU": "HK5NHBGXX:1:TAAGGCGAATAGAGAG",
-            "ID": "HK5NHBGXX:1:TAAGGCGAATAGAGAG",
             "SM": "ntr_13_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -215,9 +215,9 @@
         },
         {
             "DS": "ntr_14 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGATAGAGAG",
             "LB": "ntr_14_library",
             "PU": "HK5NHBGXX:1:CGTACTAGATAGAGAG",
-            "ID": "HK5NHBGXX:1:CGTACTAGATAGAGAG",
             "SM": "ntr_14_sample",
             "barcode": [
                 "CGTACTAG",
@@ -230,9 +230,9 @@
         },
         {
             "DS": "ntr_15 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAAATAGAGAG",
             "LB": "ntr_15_library",
             "PU": "HK5NHBGXX:1:AGGCAGAAATAGAGAG",
-            "ID": "HK5NHBGXX:1:AGGCAGAAATAGAGAG",
             "SM": "ntr_15_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -245,9 +245,9 @@
         },
         {
             "DS": "ntr_16 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCATAGAGAG",
             "LB": "ntr_16_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCATAGAGAG",
-            "ID": "HK5NHBGXX:1:TCCTGAGCATAGAGAG",
             "SM": "ntr_16_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -260,9 +260,9 @@
         },
         {
             "DS": "ntr_17 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTATAGAGAG",
             "LB": "ntr_17_library",
             "PU": "HK5NHBGXX:1:GGACTCCTATAGAGAG",
-            "ID": "HK5NHBGXX:1:GGACTCCTATAGAGAG",
             "SM": "ntr_17_sample",
             "barcode": [
                 "GGACTCCT",
@@ -275,9 +275,9 @@
         },
         {
             "DS": "ntr_18 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGATAGAGAG",
             "LB": "ntr_18_library",
             "PU": "HK5NHBGXX:1:TAGGCATGATAGAGAG",
-            "ID": "HK5NHBGXX:1:TAGGCATGATAGAGAG",
             "SM": "ntr_18_sample",
             "barcode": [
                 "TAGGCATG",
@@ -290,9 +290,9 @@
         },
         {
             "DS": "ntr_19 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACATAGAGAG",
             "LB": "ntr_19_library",
             "PU": "HK5NHBGXX:1:CTCTCTACATAGAGAG",
-            "ID": "HK5NHBGXX:1:CTCTCTACATAGAGAG",
             "SM": "ntr_19_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -305,9 +305,9 @@
         },
         {
             "DS": "ntr_20 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGATAGAGAG",
             "LB": "ntr_20_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGATAGAGAG",
-            "ID": "HK5NHBGXX:1:CAGAGAGGATAGAGAG",
             "SM": "ntr_20_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -320,9 +320,9 @@
         },
         {
             "DS": "ntr_21 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTATAGAGAG",
             "LB": "ntr_21_library",
             "PU": "HK5NHBGXX:1:GCTACGCTATAGAGAG",
-            "ID": "HK5NHBGXX:1:GCTACGCTATAGAGAG",
             "SM": "ntr_21_sample",
             "barcode": [
                 "GCTACGCT",
@@ -335,9 +335,9 @@
         },
         {
             "DS": "ntr_22 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGATAGAGAG",
             "LB": "ntr_22_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGATAGAGAG",
-            "ID": "HK5NHBGXX:1:CGAGGCTGATAGAGAG",
             "SM": "ntr_22_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -350,9 +350,9 @@
         },
         {
             "DS": "ntr_23 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCAATAGAGAG",
             "LB": "ntr_23_library",
             "PU": "HK5NHBGXX:1:AAGAGGCAATAGAGAG",
-            "ID": "HK5NHBGXX:1:AAGAGGCAATAGAGAG",
             "SM": "ntr_23_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -365,9 +365,9 @@
         },
         {
             "DS": "ntr_24 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGAATAGAGAG",
             "LB": "ntr_24_library",
             "PU": "HK5NHBGXX:1:GTAGAGGAATAGAGAG",
-            "ID": "HK5NHBGXX:1:GTAGAGGAATAGAGAG",
             "SM": "ntr_24_sample",
             "barcode": [
                 "GTAGAGGA",
@@ -380,9 +380,9 @@
         },
         {
             "DS": "ntr_25 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGAAGAGGATA",
             "LB": "ntr_25_library",
             "PU": "HK5NHBGXX:1:TAAGGCGAAGAGGATA",
-            "ID": "HK5NHBGXX:1:TAAGGCGAAGAGGATA",
             "SM": "ntr_25_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -395,9 +395,9 @@
         },
         {
             "DS": "ntr_26 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGAGAGGATA",
             "LB": "ntr_26_library",
             "PU": "HK5NHBGXX:1:CGTACTAGAGAGGATA",
-            "ID": "HK5NHBGXX:1:CGTACTAGAGAGGATA",
             "SM": "ntr_26_sample",
             "barcode": [
                 "CGTACTAG",
@@ -410,9 +410,9 @@
         },
         {
             "DS": "ntr_27 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAAAGAGGATA",
             "LB": "ntr_27_library",
             "PU": "HK5NHBGXX:1:AGGCAGAAAGAGGATA",
-            "ID": "HK5NHBGXX:1:AGGCAGAAAGAGGATA",
             "SM": "ntr_27_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -425,9 +425,9 @@
         },
         {
             "DS": "ntr_28 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCAGAGGATA",
             "LB": "ntr_28_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCAGAGGATA",
-            "ID": "HK5NHBGXX:1:TCCTGAGCAGAGGATA",
             "SM": "ntr_28_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -440,9 +440,9 @@
         },
         {
             "DS": "ntr_29 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTAGAGGATA",
             "LB": "ntr_29_library",
             "PU": "HK5NHBGXX:1:GGACTCCTAGAGGATA",
-            "ID": "HK5NHBGXX:1:GGACTCCTAGAGGATA",
             "SM": "ntr_29_sample",
             "barcode": [
                 "GGACTCCT",
@@ -455,9 +455,9 @@
         },
         {
             "DS": "ntr_30 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGAGAGGATA",
             "LB": "ntr_30_library",
             "PU": "HK5NHBGXX:1:TAGGCATGAGAGGATA",
-            "ID": "HK5NHBGXX:1:TAGGCATGAGAGGATA",
             "SM": "ntr_30_sample",
             "barcode": [
                 "TAGGCATG",
@@ -470,9 +470,9 @@
         },
         {
             "DS": "ntr_31 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACAGAGGATA",
             "LB": "ntr_31_library",
             "PU": "HK5NHBGXX:1:CTCTCTACAGAGGATA",
-            "ID": "HK5NHBGXX:1:CTCTCTACAGAGGATA",
             "SM": "ntr_31_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -485,9 +485,9 @@
         },
         {
             "DS": "ntr_32 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGAGAGGATA",
             "LB": "ntr_32_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGAGAGGATA",
-            "ID": "HK5NHBGXX:1:CAGAGAGGAGAGGATA",
             "SM": "ntr_32_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -500,9 +500,9 @@
         },
         {
             "DS": "ntr_33 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTAGAGGATA",
             "LB": "ntr_33_library",
             "PU": "HK5NHBGXX:1:GCTACGCTAGAGGATA",
-            "ID": "HK5NHBGXX:1:GCTACGCTAGAGGATA",
             "SM": "ntr_33_sample",
             "barcode": [
                 "GCTACGCT",
@@ -515,9 +515,9 @@
         },
         {
             "DS": "ntr_34 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGAGAGGATA",
             "LB": "ntr_34_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGAGAGGATA",
-            "ID": "HK5NHBGXX:1:CGAGGCTGAGAGGATA",
             "SM": "ntr_34_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -530,9 +530,9 @@
         },
         {
             "DS": "ntr_35 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCAAGAGGATA",
             "LB": "ntr_35_library",
             "PU": "HK5NHBGXX:1:AAGAGGCAAGAGGATA",
-            "ID": "HK5NHBGXX:1:AAGAGGCAAGAGGATA",
             "SM": "ntr_35_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -545,9 +545,9 @@
         },
         {
             "DS": "ntr_36 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGAAGAGGATA",
             "LB": "ntr_36_library",
             "PU": "HK5NHBGXX:1:GTAGAGGAAGAGGATA",
-            "ID": "HK5NHBGXX:1:GTAGAGGAAGAGGATA",
             "SM": "ntr_36_sample",
             "barcode": [
                 "GTAGAGGA",
@@ -560,9 +560,9 @@
         },
         {
             "DS": "ntr_37 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGATCTACTCT",
             "LB": "ntr_37_library",
             "PU": "HK5NHBGXX:1:TAAGGCGATCTACTCT",
-            "ID": "HK5NHBGXX:1:TAAGGCGATCTACTCT",
             "SM": "ntr_37_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -575,9 +575,9 @@
         },
         {
             "DS": "ntr_38 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGTCTACTCT",
             "LB": "ntr_38_library",
             "PU": "HK5NHBGXX:1:CGTACTAGTCTACTCT",
-            "ID": "HK5NHBGXX:1:CGTACTAGTCTACTCT",
             "SM": "ntr_38_sample",
             "barcode": [
                 "CGTACTAG",
@@ -590,9 +590,9 @@
         },
         {
             "DS": "ntr_39 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAATCTACTCT",
             "LB": "ntr_39_library",
             "PU": "HK5NHBGXX:1:AGGCAGAATCTACTCT",
-            "ID": "HK5NHBGXX:1:AGGCAGAATCTACTCT",
             "SM": "ntr_39_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -605,9 +605,9 @@
         },
         {
             "DS": "ntr_40 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCTCTACTCT",
             "LB": "ntr_40_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCTCTACTCT",
-            "ID": "HK5NHBGXX:1:TCCTGAGCTCTACTCT",
             "SM": "ntr_40_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -620,9 +620,9 @@
         },
         {
             "DS": "ntr_41 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTTCTACTCT",
             "LB": "ntr_41_library",
             "PU": "HK5NHBGXX:1:GGACTCCTTCTACTCT",
-            "ID": "HK5NHBGXX:1:GGACTCCTTCTACTCT",
             "SM": "ntr_41_sample",
             "barcode": [
                 "GGACTCCT",
@@ -635,9 +635,9 @@
         },
         {
             "DS": "ntr_42 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGTCTACTCT",
             "LB": "ntr_42_library",
             "PU": "HK5NHBGXX:1:TAGGCATGTCTACTCT",
-            "ID": "HK5NHBGXX:1:TAGGCATGTCTACTCT",
             "SM": "ntr_42_sample",
             "barcode": [
                 "TAGGCATG",
@@ -650,9 +650,9 @@
         },
         {
             "DS": "ntr_43 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACTCTACTCT",
             "LB": "ntr_43_library",
             "PU": "HK5NHBGXX:1:CTCTCTACTCTACTCT",
-            "ID": "HK5NHBGXX:1:CTCTCTACTCTACTCT",
             "SM": "ntr_43_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -665,9 +665,9 @@
         },
         {
             "DS": "ntr_44 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGTCTACTCT",
             "LB": "ntr_44_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGTCTACTCT",
-            "ID": "HK5NHBGXX:1:CAGAGAGGTCTACTCT",
             "SM": "ntr_44_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -680,9 +680,9 @@
         },
         {
             "DS": "ntr_45 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTTCTACTCT",
             "LB": "ntr_45_library",
             "PU": "HK5NHBGXX:1:GCTACGCTTCTACTCT",
-            "ID": "HK5NHBGXX:1:GCTACGCTTCTACTCT",
             "SM": "ntr_45_sample",
             "barcode": [
                 "GCTACGCT",
@@ -695,9 +695,9 @@
         },
         {
             "DS": "ntr_46 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGTCTACTCT",
             "LB": "ntr_46_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGTCTACTCT",
-            "ID": "HK5NHBGXX:1:CGAGGCTGTCTACTCT",
             "SM": "ntr_46_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -710,9 +710,9 @@
         },
         {
             "DS": "ntr_47 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCATCTACTCT",
             "LB": "ntr_47_library",
             "PU": "HK5NHBGXX:1:AAGAGGCATCTACTCT",
-            "ID": "HK5NHBGXX:1:AAGAGGCATCTACTCT",
             "SM": "ntr_47_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -725,9 +725,9 @@
         },
         {
             "DS": "ntr_48 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGATCTACTCT",
             "LB": "ntr_48_library",
             "PU": "HK5NHBGXX:1:GTAGAGGATCTACTCT",
-            "ID": "HK5NHBGXX:1:GTAGAGGATCTACTCT",
             "SM": "ntr_48_sample",
             "barcode": [
                 "GTAGAGGA",
@@ -740,9 +740,9 @@
         },
         {
             "DS": "ntr_49 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGACTCCTTAC",
             "LB": "ntr_49_library",
             "PU": "HK5NHBGXX:1:TAAGGCGACTCCTTAC",
-            "ID": "HK5NHBGXX:1:TAAGGCGACTCCTTAC",
             "SM": "ntr_49_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -755,9 +755,9 @@
         },
         {
             "DS": "ntr_50 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGCTCCTTAC",
             "LB": "ntr_50_library",
             "PU": "HK5NHBGXX:1:CGTACTAGCTCCTTAC",
-            "ID": "HK5NHBGXX:1:CGTACTAGCTCCTTAC",
             "SM": "ntr_50_sample",
             "barcode": [
                 "CGTACTAG",
@@ -770,9 +770,9 @@
         },
         {
             "DS": "ntr_51 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAACTCCTTAC",
             "LB": "ntr_51_library",
             "PU": "HK5NHBGXX:1:AGGCAGAACTCCTTAC",
-            "ID": "HK5NHBGXX:1:AGGCAGAACTCCTTAC",
             "SM": "ntr_51_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -785,9 +785,9 @@
         },
         {
             "DS": "ntr_52 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCCTCCTTAC",
             "LB": "ntr_52_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCCTCCTTAC",
-            "ID": "HK5NHBGXX:1:TCCTGAGCCTCCTTAC",
             "SM": "ntr_52_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -800,9 +800,9 @@
         },
         {
             "DS": "ntr_53 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTCTCCTTAC",
             "LB": "ntr_53_library",
             "PU": "HK5NHBGXX:1:GGACTCCTCTCCTTAC",
-            "ID": "HK5NHBGXX:1:GGACTCCTCTCCTTAC",
             "SM": "ntr_53_sample",
             "barcode": [
                 "GGACTCCT",
@@ -815,9 +815,9 @@
         },
         {
             "DS": "ntr_54 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGCTCCTTAC",
             "LB": "ntr_54_library",
             "PU": "HK5NHBGXX:1:TAGGCATGCTCCTTAC",
-            "ID": "HK5NHBGXX:1:TAGGCATGCTCCTTAC",
             "SM": "ntr_54_sample",
             "barcode": [
                 "TAGGCATG",
@@ -830,9 +830,9 @@
         },
         {
             "DS": "ntr_55 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACCTCCTTAC",
             "LB": "ntr_55_library",
             "PU": "HK5NHBGXX:1:CTCTCTACCTCCTTAC",
-            "ID": "HK5NHBGXX:1:CTCTCTACCTCCTTAC",
             "SM": "ntr_55_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -845,9 +845,9 @@
         },
         {
             "DS": "ntr_56 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGCTCCTTAC",
             "LB": "ntr_56_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGCTCCTTAC",
-            "ID": "HK5NHBGXX:1:CAGAGAGGCTCCTTAC",
             "SM": "ntr_56_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -860,9 +860,9 @@
         },
         {
             "DS": "ntr_57 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTCTCCTTAC",
             "LB": "ntr_57_library",
             "PU": "HK5NHBGXX:1:GCTACGCTCTCCTTAC",
-            "ID": "HK5NHBGXX:1:GCTACGCTCTCCTTAC",
             "SM": "ntr_57_sample",
             "barcode": [
                 "GCTACGCT",
@@ -875,9 +875,9 @@
         },
         {
             "DS": "ntr_58 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGCTCCTTAC",
             "LB": "ntr_58_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGCTCCTTAC",
-            "ID": "HK5NHBGXX:1:CGAGGCTGCTCCTTAC",
             "SM": "ntr_58_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -890,9 +890,9 @@
         },
         {
             "DS": "ntr_59 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCACTCCTTAC",
             "LB": "ntr_59_library",
             "PU": "HK5NHBGXX:1:AAGAGGCACTCCTTAC",
-            "ID": "HK5NHBGXX:1:AAGAGGCACTCCTTAC",
             "SM": "ntr_59_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -905,9 +905,9 @@
         },
         {
             "DS": "ntr_60 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGACTCCTTAC",
             "LB": "ntr_60_library",
             "PU": "HK5NHBGXX:1:GTAGAGGACTCCTTAC",
-            "ID": "HK5NHBGXX:1:GTAGAGGACTCCTTAC",
             "SM": "ntr_60_sample",
             "barcode": [
                 "GTAGAGGA",
@@ -920,9 +920,9 @@
         },
         {
             "DS": "ntr_61 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGATATGCAGT",
             "LB": "ntr_61_library",
             "PU": "HK5NHBGXX:1:TAAGGCGATATGCAGT",
-            "ID": "HK5NHBGXX:1:TAAGGCGATATGCAGT",
             "SM": "ntr_61_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -935,9 +935,9 @@
         },
         {
             "DS": "ntr_62 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGTATGCAGT",
             "LB": "ntr_62_library",
             "PU": "HK5NHBGXX:1:CGTACTAGTATGCAGT",
-            "ID": "HK5NHBGXX:1:CGTACTAGTATGCAGT",
             "SM": "ntr_62_sample",
             "barcode": [
                 "CGTACTAG",
@@ -950,9 +950,9 @@
         },
         {
             "DS": "ntr_63 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAATATGCAGT",
             "LB": "ntr_63_library",
             "PU": "HK5NHBGXX:1:AGGCAGAATATGCAGT",
-            "ID": "HK5NHBGXX:1:AGGCAGAATATGCAGT",
             "SM": "ntr_63_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -965,9 +965,9 @@
         },
         {
             "DS": "ntr_64 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCTATGCAGT",
             "LB": "ntr_64_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCTATGCAGT",
-            "ID": "HK5NHBGXX:1:TCCTGAGCTATGCAGT",
             "SM": "ntr_64_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -980,9 +980,9 @@
         },
         {
             "DS": "ntr_65 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTTATGCAGT",
             "LB": "ntr_65_library",
             "PU": "HK5NHBGXX:1:GGACTCCTTATGCAGT",
-            "ID": "HK5NHBGXX:1:GGACTCCTTATGCAGT",
             "SM": "ntr_65_sample",
             "barcode": [
                 "GGACTCCT",
@@ -995,9 +995,9 @@
         },
         {
             "DS": "ntr_66 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGTATGCAGT",
             "LB": "ntr_66_library",
             "PU": "HK5NHBGXX:1:TAGGCATGTATGCAGT",
-            "ID": "HK5NHBGXX:1:TAGGCATGTATGCAGT",
             "SM": "ntr_66_sample",
             "barcode": [
                 "TAGGCATG",
@@ -1010,9 +1010,9 @@
         },
         {
             "DS": "ntr_67 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACTATGCAGT",
             "LB": "ntr_67_library",
             "PU": "HK5NHBGXX:1:CTCTCTACTATGCAGT",
-            "ID": "HK5NHBGXX:1:CTCTCTACTATGCAGT",
             "SM": "ntr_67_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -1025,9 +1025,9 @@
         },
         {
             "DS": "ntr_68 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGTATGCAGT",
             "LB": "ntr_68_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGTATGCAGT",
-            "ID": "HK5NHBGXX:1:CAGAGAGGTATGCAGT",
             "SM": "ntr_68_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -1040,9 +1040,9 @@
         },
         {
             "DS": "ntr_69 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTTATGCAGT",
             "LB": "ntr_69_library",
             "PU": "HK5NHBGXX:1:GCTACGCTTATGCAGT",
-            "ID": "HK5NHBGXX:1:GCTACGCTTATGCAGT",
             "SM": "ntr_69_sample",
             "barcode": [
                 "GCTACGCT",
@@ -1055,9 +1055,9 @@
         },
         {
             "DS": "ntr_70 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGTATGCAGT",
             "LB": "ntr_70_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGTATGCAGT",
-            "ID": "HK5NHBGXX:1:CGAGGCTGTATGCAGT",
             "SM": "ntr_70_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -1070,9 +1070,9 @@
         },
         {
             "DS": "ntr_71 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCATATGCAGT",
             "LB": "ntr_71_library",
             "PU": "HK5NHBGXX:1:AAGAGGCATATGCAGT",
-            "ID": "HK5NHBGXX:1:AAGAGGCATATGCAGT",
             "SM": "ntr_71_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -1085,9 +1085,9 @@
         },
         {
             "DS": "ntr_72 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGATATGCAGT",
             "LB": "ntr_72_library",
             "PU": "HK5NHBGXX:1:GTAGAGGATATGCAGT",
-            "ID": "HK5NHBGXX:1:GTAGAGGATATGCAGT",
             "SM": "ntr_72_sample",
             "barcode": [
                 "GTAGAGGA",
@@ -1100,9 +1100,9 @@
         },
         {
             "DS": "ntr_73 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGATACTCCTT",
             "LB": "ntr_73_library",
             "PU": "HK5NHBGXX:1:TAAGGCGATACTCCTT",
-            "ID": "HK5NHBGXX:1:TAAGGCGATACTCCTT",
             "SM": "ntr_73_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -1115,9 +1115,9 @@
         },
         {
             "DS": "ntr_74 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGTACTCCTT",
             "LB": "ntr_74_library",
             "PU": "HK5NHBGXX:1:CGTACTAGTACTCCTT",
-            "ID": "HK5NHBGXX:1:CGTACTAGTACTCCTT",
             "SM": "ntr_74_sample",
             "barcode": [
                 "CGTACTAG",
@@ -1130,9 +1130,9 @@
         },
         {
             "DS": "ntr_75 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAATACTCCTT",
             "LB": "ntr_75_library",
             "PU": "HK5NHBGXX:1:AGGCAGAATACTCCTT",
-            "ID": "HK5NHBGXX:1:AGGCAGAATACTCCTT",
             "SM": "ntr_75_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -1145,9 +1145,9 @@
         },
         {
             "DS": "ntr_76 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCTACTCCTT",
             "LB": "ntr_76_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCTACTCCTT",
-            "ID": "HK5NHBGXX:1:TCCTGAGCTACTCCTT",
             "SM": "ntr_76_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -1160,9 +1160,9 @@
         },
         {
             "DS": "ntr_77 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTTACTCCTT",
             "LB": "ntr_77_library",
             "PU": "HK5NHBGXX:1:GGACTCCTTACTCCTT",
-            "ID": "HK5NHBGXX:1:GGACTCCTTACTCCTT",
             "SM": "ntr_77_sample",
             "barcode": [
                 "GGACTCCT",
@@ -1175,9 +1175,9 @@
         },
         {
             "DS": "ntr_78 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGTACTCCTT",
             "LB": "ntr_78_library",
             "PU": "HK5NHBGXX:1:TAGGCATGTACTCCTT",
-            "ID": "HK5NHBGXX:1:TAGGCATGTACTCCTT",
             "SM": "ntr_78_sample",
             "barcode": [
                 "TAGGCATG",
@@ -1190,9 +1190,9 @@
         },
         {
             "DS": "ntr_79 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACTACTCCTT",
             "LB": "ntr_79_library",
             "PU": "HK5NHBGXX:1:CTCTCTACTACTCCTT",
-            "ID": "HK5NHBGXX:1:CTCTCTACTACTCCTT",
             "SM": "ntr_79_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -1205,9 +1205,9 @@
         },
         {
             "DS": "ntr_80 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGTACTCCTT",
             "LB": "ntr_80_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGTACTCCTT",
-            "ID": "HK5NHBGXX:1:CAGAGAGGTACTCCTT",
             "SM": "ntr_80_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -1220,9 +1220,9 @@
         },
         {
             "DS": "ntr_81 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTTACTCCTT",
             "LB": "ntr_81_library",
             "PU": "HK5NHBGXX:1:GCTACGCTTACTCCTT",
-            "ID": "HK5NHBGXX:1:GCTACGCTTACTCCTT",
             "SM": "ntr_81_sample",
             "barcode": [
                 "GCTACGCT",
@@ -1235,9 +1235,9 @@
         },
         {
             "DS": "ntr_82 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGTACTCCTT",
             "LB": "ntr_82_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGTACTCCTT",
-            "ID": "HK5NHBGXX:1:CGAGGCTGTACTCCTT",
             "SM": "ntr_82_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -1250,9 +1250,9 @@
         },
         {
             "DS": "ntr_83 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCATACTCCTT",
             "LB": "ntr_83_library",
             "PU": "HK5NHBGXX:1:AAGAGGCATACTCCTT",
-            "ID": "HK5NHBGXX:1:AAGAGGCATACTCCTT",
             "SM": "ntr_83_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -1265,9 +1265,9 @@
         },
         {
             "DS": "ntr_84 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGATACTCCTT",
             "LB": "ntr_84_library",
             "PU": "HK5NHBGXX:1:GTAGAGGATACTCCTT",
-            "ID": "HK5NHBGXX:1:GTAGAGGATACTCCTT",
             "SM": "ntr_84_sample",
             "barcode": [
                 "GTAGAGGA",
@@ -1280,9 +1280,9 @@
         },
         {
             "DS": "ntr_85 description",
+            "ID": "HK5NHBGXX:1:TAAGGCGAAGGCTTAG",
             "LB": "ntr_85_library",
             "PU": "HK5NHBGXX:1:TAAGGCGAAGGCTTAG",
-            "ID": "HK5NHBGXX:1:TAAGGCGAAGGCTTAG",
             "SM": "ntr_85_sample",
             "barcode": [
                 "TAAGGCGA",
@@ -1295,9 +1295,9 @@
         },
         {
             "DS": "ntr_86 description",
+            "ID": "HK5NHBGXX:1:CGTACTAGAGGCTTAG",
             "LB": "ntr_86_library",
             "PU": "HK5NHBGXX:1:CGTACTAGAGGCTTAG",
-            "ID": "HK5NHBGXX:1:CGTACTAGAGGCTTAG",
             "SM": "ntr_86_sample",
             "barcode": [
                 "CGTACTAG",
@@ -1310,9 +1310,9 @@
         },
         {
             "DS": "ntr_87 description",
+            "ID": "HK5NHBGXX:1:AGGCAGAAAGGCTTAG",
             "LB": "ntr_87_library",
             "PU": "HK5NHBGXX:1:AGGCAGAAAGGCTTAG",
-            "ID": "HK5NHBGXX:1:AGGCAGAAAGGCTTAG",
             "SM": "ntr_87_sample",
             "barcode": [
                 "AGGCAGAA",
@@ -1325,9 +1325,9 @@
         },
         {
             "DS": "ntr_88 description",
+            "ID": "HK5NHBGXX:1:TCCTGAGCAGGCTTAG",
             "LB": "ntr_88_library",
             "PU": "HK5NHBGXX:1:TCCTGAGCAGGCTTAG",
-            "ID": "HK5NHBGXX:1:TCCTGAGCAGGCTTAG",
             "SM": "ntr_88_sample",
             "barcode": [
                 "TCCTGAGC",
@@ -1340,9 +1340,9 @@
         },
         {
             "DS": "ntr_89 description",
+            "ID": "HK5NHBGXX:1:GGACTCCTAGGCTTAG",
             "LB": "ntr_89_library",
             "PU": "HK5NHBGXX:1:GGACTCCTAGGCTTAG",
-            "ID": "HK5NHBGXX:1:GGACTCCTAGGCTTAG",
             "SM": "ntr_89_sample",
             "barcode": [
                 "GGACTCCT",
@@ -1355,9 +1355,9 @@
         },
         {
             "DS": "ntr_90 description",
+            "ID": "HK5NHBGXX:1:TAGGCATGAGGCTTAG",
             "LB": "ntr_90_library",
             "PU": "HK5NHBGXX:1:TAGGCATGAGGCTTAG",
-            "ID": "HK5NHBGXX:1:TAGGCATGAGGCTTAG",
             "SM": "ntr_90_sample",
             "barcode": [
                 "TAGGCATG",
@@ -1370,9 +1370,9 @@
         },
         {
             "DS": "ntr_91 description",
+            "ID": "HK5NHBGXX:1:CTCTCTACAGGCTTAG",
             "LB": "ntr_91_library",
             "PU": "HK5NHBGXX:1:CTCTCTACAGGCTTAG",
-            "ID": "HK5NHBGXX:1:CTCTCTACAGGCTTAG",
             "SM": "ntr_91_sample",
             "barcode": [
                 "CTCTCTAC",
@@ -1385,9 +1385,9 @@
         },
         {
             "DS": "ntr_92 description",
+            "ID": "HK5NHBGXX:1:CAGAGAGGAGGCTTAG",
             "LB": "ntr_92_library",
             "PU": "HK5NHBGXX:1:CAGAGAGGAGGCTTAG",
-            "ID": "HK5NHBGXX:1:CAGAGAGGAGGCTTAG",
             "SM": "ntr_92_sample",
             "barcode": [
                 "CAGAGAGG",
@@ -1400,9 +1400,9 @@
         },
         {
             "DS": "ntr_93 description",
+            "ID": "HK5NHBGXX:1:GCTACGCTAGGCTTAG",
             "LB": "ntr_93_library",
             "PU": "HK5NHBGXX:1:GCTACGCTAGGCTTAG",
-            "ID": "HK5NHBGXX:1:GCTACGCTAGGCTTAG",
             "SM": "ntr_93_sample",
             "barcode": [
                 "GCTACGCT",
@@ -1415,9 +1415,9 @@
         },
         {
             "DS": "ntr_94 description",
+            "ID": "HK5NHBGXX:1:CGAGGCTGAGGCTTAG",
             "LB": "ntr_94_library",
             "PU": "HK5NHBGXX:1:CGAGGCTGAGGCTTAG",
-            "ID": "HK5NHBGXX:1:CGAGGCTGAGGCTTAG",
             "SM": "ntr_94_sample",
             "barcode": [
                 "CGAGGCTG",
@@ -1430,9 +1430,9 @@
         },
         {
             "DS": "ntr_95 description",
+            "ID": "HK5NHBGXX:1:AAGAGGCAAGGCTTAG",
             "LB": "ntr_95_library",
             "PU": "HK5NHBGXX:1:AAGAGGCAAGGCTTAG",
-            "ID": "HK5NHBGXX:1:AAGAGGCAAGGCTTAG",
             "SM": "ntr_95_sample",
             "barcode": [
                 "AAGAGGCA",
@@ -1445,9 +1445,9 @@
         },
         {
             "DS": "ntr_96 description",
+            "ID": "HK5NHBGXX:1:GTAGAGGAAGGCTTAG",
             "LB": "ntr_96_library",
             "PU": "HK5NHBGXX:1:GTAGAGGAAGGCTTAG",
-            "ID": "HK5NHBGXX:1:GTAGAGGAAGGCTTAG",
             "SM": "ntr_96_sample",
             "barcode": [
                 "GTAGAGGA",

@@ -77,12 +77,12 @@
             All reads with the same MI tag represent the group of reads derived from the same source molecule.
     XM  f   Accumulated molecular barcode decoding error probability
 
-    SplitSEQ barcode
-    XR  Z   Sequence bases from the SplitSEQ barcode.
-    XQ  Z   Phred quality of the SplitSEQ barcode sequence in the XR tag. Phred score + 33 encoded.
-    XO  Z   Raw uncorrected SplitSEQ barcode bases, with any quality scores stored in the XZ tag.
-    XZ  Z   Phred quality of the uncorrected SplitSEQ barcode sequence in the XO tag. Phred score + 33 encoded.
-    XP  f   Accumulated SplitSEQ barcode decoding error probability
+    Cellular barcode
+    XR  Z   Sequence bases from the Cellular barcode.
+    XQ  Z   Phred quality of the Cellular barcode sequence in the XR tag. Phred score + 33 encoded.
+    XO  Z   Raw uncorrected Cellular barcode bases, with any quality scores stored in the XZ tag.
+    XZ  Z   Phred quality of the uncorrected Cellular barcode sequence in the XO tag. Phred score + 33 encoded.
+    XP  f   Accumulated Cellular barcode decoding error probability
 
     Specification amendment recommendation
     DQ  f   The probability that the demultiplexing decision was incorrect
@@ -182,7 +182,7 @@ class Auxiliary {
         kstring_t XQ;
         kstring_t XO;
         kstring_t XZ;
-        uint32_t splitseq_distance;
+        uint32_t cellular_distance;
         double XP;
 
         #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
@@ -214,28 +214,28 @@ class Auxiliary {
         inline void set_multiplex_distance(const uint32_t& distance) {
             multiplex_distance = distance;
         };
-        inline void update_splitseq_barcode(const Barcode& barcode) {
+        inline void update_cellular_barcode(const Barcode& barcode) {
             barcode.encode_iupac_ambiguity(XR);
         };
-        inline void update_splitseq_barcode(const Observation& observation) {
+        inline void update_cellular_barcode(const Observation& observation) {
             observation.encode_iupac_ambiguity(XR);
             observation.encode_phred_quality(XQ, SAM_PHRED_DECODING_OFFSET);
         };
-        inline void update_raw_splitseq_barcode(const Observation& observation) {
+        inline void update_raw_cellular_barcode(const Observation& observation) {
             observation.encode_iupac_ambiguity(XO);
             observation.encode_phred_quality(XZ, SAM_PHRED_DECODING_OFFSET);
         };
-        inline void set_splitseq_error_probability(const double& error) {
+        inline void set_cellular_error_probability(const double& error) {
             XP = error;
         };
-        inline void update_splitseq_error_probability(const double& error) {
+        inline void update_cellular_error_probability(const double& error) {
             XP *= error;
         };
-        inline void set_splitseq_distance(const uint32_t& distance) {
-            splitseq_distance = distance;
+        inline void set_cellular_distance(const uint32_t& distance) {
+            cellular_distance = distance;
         };
-        inline void update_splitseq_distance(const uint32_t& distance) {
-            splitseq_distance += distance;
+        inline void update_cellular_distance(const uint32_t& distance) {
+            cellular_distance += distance;
         };
         inline void update_molecular_barcode(const Barcode& barcode) {
             barcode.encode_iupac_ambiguity(RX);
@@ -280,7 +280,7 @@ class Auxiliary {
             ks_clear(OX);
             ks_clear(BZ);
             ks_clear(MI);
-            splitseq_distance = 0;
+            cellular_distance = 0;
             XM = 1;
 
             ks_clear(XR);
@@ -355,7 +355,7 @@ class Auxiliary {
             if(!ks_empty(other.XQ)) ks_put_string(other.XQ, XQ);
             if(!ks_empty(other.XO)) ks_put_string(other.XO, XO);
             if(!ks_empty(other.XZ)) ks_put_string(other.XZ, XZ);
-            splitseq_distance = other.splitseq_distance;
+            cellular_distance = other.cellular_distance;
             XP = other.XP;
 
             #if defined(PHENIQS_EXTENDED_SAM_TAG)

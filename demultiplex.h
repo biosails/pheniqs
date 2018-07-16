@@ -38,8 +38,11 @@ class Demultiplex : public Job {
     void operator=(Demultiplex const &) = delete;
 
     public:
-        Demultiplex(Document& node) :
-            Job(node),
+        Demultiplex(Document& operation) :
+            Job(operation),
+            decoder_projection_query("/projection/decoder"),
+            barcode_projection_query("/projection/barcode"),
+            decoder_repository_query("/decoder"),
             end_of_input(false),
             thread_pool({NULL, 0}){
         };
@@ -60,10 +63,26 @@ class Demultiplex : public Job {
         void describe(ostream& o) const override;
         void populate_decoder(DiscreteDecoder< Channel >& decoder);
         bool pull(Read& read);
+        void print_compiled(ostream& o) const override {
+            Document compiled;
+            compiled.CopyFrom(ontology, compiled.GetAllocator());
+            compiled.RemoveMember("decoder");
+            compiled.RemoveMember("configuration url");
+            compiled.RemoveMember("full command");
+            compiled.RemoveMember("input feed");
+            compiled.RemoveMember("input feed by segment");
+            compiled.RemoveMember("operation");
+            compiled.RemoveMember("output feed");
+            compiled.RemoveMember("program");
+            print_json(compiled, o);
+        };
 
     protected:
+        const Pointer decoder_projection_query;
+        const Pointer barcode_projection_query;
+        const Pointer decoder_repository_query;
+
         void manipulate() override;
-        void clean() override;
         void validate() override;
 
     private:
@@ -74,20 +93,21 @@ class Demultiplex : public Job {
         list< Feed* > output_feed_by_index;
         vector< Feed* > input_feed_by_segment;
         unordered_map< URL, Feed* > output_feed_by_url;
-        void compile_PG_element();
-        void compile_input_instruction();
-        void apply_decoder_inheritence();
-        void compile_decoder_group_instruction(const Value::Ch* key);
-        void compile_output_instruction();
+        void compile_PG();
+        void compile_input();
+        void detect_input();
+        void compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode);
+        void compile_decoder_group(const Value::Ch* key);
+        void compile_output();
         void compile_transformation(Value& value);
-        void compile_decoder_codec(Value& value, const Value& default_instruction_decoder, const Value& default_instruction_codec);
+        void compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode);
         void compile_decoder_transformation(Value& value);
         bool infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
         bool infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
         void pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality);
         void cross_validate_io();
-        void validate_codec_group_sanity(const Value::Ch* key);
-        void validate_codec_sanity(Value& value);
+        void validate_decoder_group(const Value::Ch* key);
+        void validate_decoder(Value& value);
 
         void validate_url_accessibility();
         void load_thread_pool();
@@ -107,7 +127,7 @@ class Demultiplex : public Job {
         void print_codec_template(const Value& value, ostream& o) const;
         void print_multiplex_instruction(ostream& o) const;
         void print_molecular_instruction(ostream& o) const;
-        void print_splitseq_instruction(ostream& o) const;
+        void print_cellular_instruction(ostream& o) const;
 };
 
 class DemultiplexPivot {
@@ -124,7 +144,7 @@ class DemultiplexPivot {
         Read output;
         DiscreteDecoder< Channel >* multiplex;
         vector< Decoder* > molecular;
-        vector< Decoder* > splitseq;
+        vector< Decoder* > cellular;
         InputAccumulator input_accumulator;
         OutputAccumulator output_accumulator;
         DemultiplexPivot(Demultiplex& job, const int32_t& index);
@@ -150,7 +170,7 @@ class DemultiplexPivot {
             for(auto& decoder : molecular) {
                 decoder->decode(input, output);
             }
-            for(auto& decoder : splitseq) {
+            for(auto& decoder : cellular) {
                 decoder->decode(input, output);
             }
         };
@@ -163,7 +183,7 @@ class DemultiplexPivot {
         };
         void load_multiplex_decoder();
         void load_molecular_decoder();
-        void load_splitseq_decoder();
+        void load_cellular_decoder();
         void run();
 };
 

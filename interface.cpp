@@ -911,6 +911,8 @@ ostream& Action::print_help(ostream& o, const string& application_name, const La
 };
 Document Action::operation() {
     Document document(kObjectType);
+    document.CopyFrom(ontology, document.GetAllocator());
+    document.RemoveMember("option");
 
     Value interactive(kObjectType);
     for(auto& record : option_by_name) {
@@ -981,12 +983,8 @@ Document Action::operation() {
             }
         }
     }
+    document.AddMember("interactive", interactive.Move(), document.GetAllocator());
 
-    Value operation(ontology, document.GetAllocator());
-    operation.RemoveMember("option");
-    operation.AddMember("interactive", interactive.Move(), document.GetAllocator());
-
-    document.AddMember("operation", operation.Move(), document.GetAllocator());
     sort_json_value(document, document);
     return document;
 };

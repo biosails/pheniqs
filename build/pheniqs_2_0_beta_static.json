@@ -1,6 +1,6 @@
 {
     "download prefix": "~/.pheniqs/download",
-    "home": "./bin/trunk_static",
+    "home": "./bin/pheniqs_2_0_beta_static",
     "package": [
         {
             "make clean target": "distclean",
@@ -75,7 +75,9 @@
                 "RAPIDJSON_VERSION=1.1.0"
             ],
             "name": "pheniqs",
-            "package url": ".",
+            "remote filename": "pheniqs-8ab67e0cb19d0a5cd08fe522c2d5850f23cb4763.zip",
+            "remote url": "https://codeload.github.com/biosails/pheniqs/zip/8ab67e0cb19d0a5cd08fe522c2d5850f23cb4763",
+            "sha1": "db549c070aa0480efc6b8de00e5aa5f51c1c0bfa",
             "version": "2.0"
         }
     ]

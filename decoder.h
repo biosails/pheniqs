@@ -235,9 +235,9 @@ template < class T > class PAMLDecoder : public BarcodeDecoder< T > {
         };
 };
 
-class MDMultiplexDecoder : public MDDecoder< Channel > {
+class MultiplexMDDecoder : public MDDecoder< Channel > {
     public:
-        MDMultiplexDecoder(const Value& ontology) :
+        MultiplexMDDecoder(const Value& ontology) :
             MDDecoder< Channel >(ontology) {
         };
         inline void decode(const Read& input, Read& output) override {
@@ -248,9 +248,9 @@ class MDMultiplexDecoder : public MDDecoder< Channel > {
         };
 };
 
-class PAMLMultiplexDecoder : public PAMLDecoder< Channel > {
+class MultiplexPAMLDecoder : public PAMLDecoder< Channel > {
     public:
-        PAMLMultiplexDecoder(const Value& ontology) :
+        MultiplexPAMLDecoder(const Value& ontology) :
             PAMLDecoder< Channel >(ontology) {
         };
         inline void decode(const Read& input, Read& output) override {
@@ -262,50 +262,50 @@ class PAMLMultiplexDecoder : public PAMLDecoder< Channel > {
         };
 };
 
-class MDSplitSEQDecoder : public MDDecoder< Barcode > {
+class CellularMDDecoder : public MDDecoder< Barcode > {
     public:
-        MDSplitSEQDecoder(const Value& ontology) :
+        CellularMDDecoder(const Value& ontology) :
             MDDecoder< Barcode >(ontology) {
         };
         inline void decode(const Read& input, Read& output) override {
             MDDecoder< Barcode >::decode(input, output);
-            output.update_raw_splitseq_barcode(this->observation);
-            output.update_splitseq_barcode(*this->decoded);
+            output.update_raw_cellular_barcode(this->observation);
+            output.update_cellular_barcode(*this->decoded);
             if(this->decoded != &this->undetermined) {
-                output.update_splitseq_distance(this->distance);
+                output.update_cellular_distance(this->distance);
             } else {
-                output.set_splitseq_distance(0);
+                output.set_cellular_distance(0);
             }
         };
 };
 
-class PAMLSplitSEQDecoder : public PAMLDecoder< Barcode > {
+class CellularPAMLDecoder : public PAMLDecoder< Barcode > {
     public:
-        PAMLSplitSEQDecoder(const Value& ontology) :
+        CellularPAMLDecoder(const Value& ontology) :
             PAMLDecoder< Barcode >(ontology) {
         };
         inline void decode(const Read& input, Read& output) override {
             PAMLDecoder< Barcode >::decode(input, output);
-            output.update_raw_splitseq_barcode(this->observation);
-            output.update_splitseq_barcode(*this->decoded);
+            output.update_raw_cellular_barcode(this->observation);
+            output.update_cellular_barcode(*this->decoded);
             if(this->decoded != &this->undetermined) {
-                output.update_splitseq_error_probability(this->error_probability);
-                output.update_splitseq_distance(this->distance);
+                output.update_cellular_error_probability(this->error_probability);
+                output.update_cellular_distance(this->distance);
             } else {
-                output.set_splitseq_error_probability(1);
-                output.set_splitseq_distance(0);
+                output.set_cellular_error_probability(1);
+                output.set_cellular_distance(0);
             }
         };
 };
 
-class SimpleMolecularDecoder : public Decoder {
+class MolecularSimpleDecoder : public Decoder {
     protected:
         const int32_t nucleotide_cardinality;
         const Rule rule;
         Observation observation;
 
     public:
-        SimpleMolecularDecoder(const Value& ontology) :
+        MolecularSimpleDecoder(const Value& ontology) :
             Decoder(ontology),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
             rule(decode_value_by_key< Rule >("template", ontology)),

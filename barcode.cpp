@@ -25,7 +25,7 @@ Barcode::Barcode(const Value& ontology) :
     SequenceArray< Sequence >(decode_value_by_key< int32_t >("segment cardinality", ontology)),
     index(decode_value_by_key< int32_t >("index", ontology)),
     concentration(decode_value_by_key< double >("concentration", ontology)) {
-    Value::ConstMemberIterator reference = ontology.FindMember("barcode segment");
+    Value::ConstMemberIterator reference = ontology.FindMember("barcode");
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
             if(reference->value.IsArray()) {
@@ -74,7 +74,7 @@ bool encode_key_value(const string& key, const Barcode& value, Value& container,
         for(auto& segment : value) {
             encode_value(segment, array, document);
         }
-        element.AddMember(Value("barcode segment", document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        element.AddMember(Value("barcode", document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
         return true;
     }
     return false;

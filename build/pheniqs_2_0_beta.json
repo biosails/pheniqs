@@ -1,6 +1,6 @@
 {
     "download prefix": "~/.pheniqs/download",
-    "home": "./bin/trunk_static",
+    "home": "./bin/pheniqs_2_0_beta",
     "package": [
         {
             "make clean target": "distclean",
@@ -22,9 +22,6 @@
             "version": "1.0.6"
         },
         {
-            "configure optional": [
-                "--enable-static"
-            ],
             "name": "xz",
             "remote url": [
                 "https://tukaani.org/xz/xz-5.2.4.tar.bz2",
@@ -43,9 +40,6 @@
             "version": "1.0"
         },
         {
-            "configure optional": [
-                "--disable-libcurl"
-            ],
             "name": "htslib",
             "remote url": [
                 "https://github.com/samtools/htslib/releases/download/1.8/htslib-1.8.tar.bz2",
@@ -54,19 +48,20 @@
             "sha1": "d9d9a1d03991da0738bf2eecb54bfb620cc776b3"
         },
         {
+            "name": "samtools",
+            "remote url": "https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2",
+            "sha1": "de345ebc1fd144d8c6b15ec3bb759c6cd00294c8"
+        },
+        {
             "name": "rapidjson",
             "remote filename": "rapidjson-1.1.0.tar.gz",
-            "remote url": [
-                "https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz",
-                "http://albireo.bio.nyu.edu/~lg/pheniqs/rapidjson-1.1.0.tar.gz"
-            ],
+            "remote url": "https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz",
             "sha1": "a3e0d043ad3c2d7638ffefa3beb30a77c71c869f",
             "version": "1.1.0"
         },
         {
             "include prefix in make": true,
             "make build optional": [
-                "with-static=1",
                 "ZLIB_VERSION=1.2.11",
                 "BZ2_VERSION=1.0.6",
                 "XZ_VERSION=5.2.4",
@@ -75,7 +70,9 @@
                 "RAPIDJSON_VERSION=1.1.0"
             ],
             "name": "pheniqs",
-            "package url": ".",
+            "remote filename": "pheniqs-8ab67e0cb19d0a5cd08fe522c2d5850f23cb4763.zip",
+            "remote url": "https://codeload.github.com/biosails/pheniqs/zip/8ab67e0cb19d0a5cd08fe522c2d5850f23cb4763",
+            "sha1": "db549c070aa0480efc6b8de00e5aa5f51c1c0bfa",
             "version": "2.0"
         }
     ]

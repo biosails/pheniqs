@@ -71,7 +71,7 @@ class Feed {
         virtual inline bool is_dev_null() {
             return url.is_dev_null();
         };
-        virtual void calibrate(const int& capacity, const int& resolution) = 0;
+        virtual void calibrate(const int& resolution) = 0;
         virtual unique_lock< mutex > acquire_pull_lock() = 0;
         virtual unique_lock< mutex > acquire_push_lock() = 0;
         virtual inline bool opened() = 0;
@@ -118,7 +118,7 @@ class NullFeed : public Feed {
         inline bool replenish() override {
             return false;
         };
-        void calibrate(const int& capacity, const int& resolution) override {
+        void calibrate(const int& resolution) override {
 
         };
         unique_lock< mutex > acquire_pull_lock() override {
@@ -360,29 +360,25 @@ template < class T > class BufferedFeed : public Feed {
             queue_not_empty.notify_all();
             return !exhausted;
         };
-        void calibrate(const int& capacity, const int& resolution) override {
+        void calibrate(const int& resolution) override {
             unique_lock< mutex > buffer_lock(buffer_mutex);
             unique_lock< mutex > queue_lock(queue_mutex);
 
             int aligned(align_to_resolution(capacity, resolution));
-            if(this->capacity != aligned || this->resolution != resolution) {
-                if(aligned > this->capacity) {
-                    this->capacity = aligned;
-                    this->resolution = resolution;
-                    queue->calibrate(aligned, resolution);
-                    buffer->calibrate(aligned, resolution);
+            if(capacity != aligned || this->resolution != resolution) {
+                this->capacity = aligned;
+                this->resolution = resolution;
+                queue->calibrate(aligned, resolution);
+                buffer->calibrate(aligned, resolution);
 
-                    /*  sync queue
-                        move elements from buffer to queue until
-                        queue is aligned with the new resolution */
-                    queue->sync(buffer);
+                /*  sync queue
+                    move elements from buffer to queue until
+                    queue is aligned with the new resolution */
+                queue->sync(buffer);
 
-                    /*  sync buffer
-                        now make sure the buffer is filled which will align it */
-                    replenish_buffer();
-                } else {
-                    throw InternalError("can not reduce buffer size");
-                }
+                /*  sync buffer
+                    now make sure the buffer is filled which will align it */
+                replenish_buffer();
             }
         };
         unique_lock< mutex > acquire_pull_lock() override {

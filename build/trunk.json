@@ -1,6 +1,6 @@
 {
     "download prefix": "~/.pheniqs/download",
-    "home": "~/.pheniqs/pheniqs-trunk",
+    "home": "./bin/trunk",
     "package": [
         {
             "make clean target": "distclean",

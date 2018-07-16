@@ -132,7 +132,7 @@ Auxiliary::Auxiliary() :
     XQ({ 0, 0, NULL }),
     XO({ 0, 0, NULL }),
     XZ({ 0, 0, NULL }),
-    splitseq_distance(0),
+    cellular_distance(0),
     XP(1),
 
     #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
@@ -167,7 +167,7 @@ Auxiliary::Auxiliary(const Auxiliary& other) :
     XQ({ 0, 0, NULL }),
     XO({ 0, 0, NULL }),
     XZ({ 0, 0, NULL }),
-    splitseq_distance(other.splitseq_distance),
+    cellular_distance(other.cellular_distance),
     XP(other.XP),
 
     #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
@@ -307,7 +307,7 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         XM = bam_aux2f(position);
                         break;
 
-                    /*  SplitSEQ barcode */
+                    /*  Cellular barcode */
                     case uint16_t(HtsAuxiliaryCode::XR):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, XR); }

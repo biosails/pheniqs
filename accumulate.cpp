@@ -368,7 +368,7 @@ bool encode_value(const ChannelAccumulator& value, Value& container, Document& d
         encode_value(value.rg, container, document);
         if(value.index > 0) {
             encode_key_value("concentration", value.concentration, container, document);
-            encode_key_value("barcode segment", value.barcode, container, document);
+            encode_key_value("barcode", value.barcode, container, document);
         }
         encode_key_value("count", value.count, container, document);
         if(value.index > 0) {

@@ -20,3 +20,57 @@
 */
 
 #include "environment.h"
+
+Job* Environment::pop_from_queue() {
+    if(!job_queue.empty()) {
+        Job* job(job_queue.front());
+        job_queue.pop_front();
+        return job;
+    } else { return NULL;}
+};
+void Environment::push_to_queue(Document operation) {
+    if(operation.IsObject()) {
+        string implementation(decode_value_by_key< string >("implementation", operation));
+        Job* job(NULL);
+        if(implementation == "demultiplex") {
+            job = new Demultiplex(operation);
+        } else {
+            job = new Job(operation);
+        }
+        job->assemble();
+        job_queue.emplace_back(job);
+    } else { throw ConfigurationError("Job operation element is not a dictionary"); }
+};
+void Environment::execute_job(Job* job) {
+    if(job != NULL) {
+        job->compile();
+        if(job->is_validate_only()) {
+            job->describe(cerr);
+
+        } else if(job->is_lint_only()) {
+            job->print_ontology(cout);
+
+        } else {
+            job->execute();
+            job->print_report(cerr);
+
+        }
+    }
+};
+void Environment::execute() {
+    if(is_help_only()) {
+        print_help(cerr);
+
+    } else if(is_version_only()) {
+        print_version(cerr);
+
+    } else {
+        push_to_queue(interface.operation());
+
+        Job* job(NULL);
+        while((job = pop_from_queue()) != NULL) {
+            execute_job(job);
+            delete job;
+        }
+    }
+};

@@ -586,7 +586,7 @@ template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< U
 };
 
 void encode_value(const URL& value, Value& container, Document& document) {
-    if(value.is_standard_stream()) {
+    if(value.is_standard_stream() && !value.is_dev_null()) {
         container.SetObject();
         encode_key_value("path", value.path(), container, document);
         encode_key_value("type", value.type(), container, document);

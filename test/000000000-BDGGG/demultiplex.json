@@ -1,6 +1,8 @@
 {
     "base input url": "./test/000000000-BDGGG",
     "base output url": "./test/000000000-BDGGG",
+    "flowcell id": "000000000-BDGGG",
+    "flowcell lane number": 1,
     "import": [
         "./test/000000000-BDGGG/codec.json"
     ],
@@ -24,43 +26,41 @@
         "PI": "300",
         "PM": "miseq",
         "algorithm": "pamld",
-        "base": "beta",
+        "base": "000000000-BDGGG_multiplex",
         "codec": {
-            "AGGCAGAA": {
+            "@AGGCAGAA": {
                 "DS": "trinidad5 description",
                 "LB": "trinidad5 library",
                 "SM": "trinidad5 sample",
                 "concentration": 1.5
             },
-            "CGTACTAG": {
+            "@CGTACTAG": {
                 "DS": "trinidad4 description",
                 "LB": "trinidad4 library",
                 "SM": "trinidad4 sample",
                 "concentration": 0.5
             },
-            "GGACTCCT": {
+            "@GGACTCCT": {
                 "DS": "trinidad9 description",
                 "LB": "trinidad9 library",
                 "SM": "trinidad9 sample",
                 "concentration": 3
             },
-            "TAAGGCGA": {
+            "@TAAGGCGA": {
                 "DS": "trinidad1 description",
                 "LB": "trinidad1 library",
                 "SM": "trinidad1 sample"
             },
-            "TCCTGAGC": {
+            "@TCCTGAGC": {
                 "DS": "trinidad8 description",
                 "LB": "trinidad8 library",
                 "SM": "trinidad8 sample"
             }
         },
         "confidence threshold": 0.95,
-        "flowcell id": "000000000-BDGGG",
-        "flowcell lane number": 1,
         "noise": 0.02,
         "output": [
-            "000000000-BDGGG.sam"
+            "000000000-BDGGG.cram"
         ],
         "template": {
             "token": [
@@ -77,6 +77,7 @@
         }
     },
     "template": {
+        "comment": "those are the tokens defining the segments in the output read",
         "token": [
             "0::",
             "2::"
