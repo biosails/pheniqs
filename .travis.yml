@@ -20,7 +20,6 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
 
-  include:
     - os: linux
       addons:
         apt:
