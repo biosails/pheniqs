@@ -366,19 +366,19 @@ bool encode_value(const ChannelAccumulator& value, Value& container, Document& d
     if(container.IsObject()) {
         encode_key_value("index", value.index, container, document);
         encode_value(value.rg, container, document);
-        if(value.index > 0) {
+        if(value.is_not_undetermined()) {
             encode_key_value("concentration", value.concentration, container, document);
             encode_key_value("barcode", value.barcode, container, document);
         }
         encode_key_value("count", value.count, container, document);
-        if(value.index > 0) {
+        if(value.is_not_undetermined()) {
             encode_key_value("multiplex distance", value.multiplex_distance, container, document);
             if(value.algorithm == Algorithm::PAMLD) {
                 encode_key_value("multiplex confidence", value.multiplex_confidence, container, document);
             }
         }
         encode_key_value("pf count", value.pf_count, container, document);
-        if(value.index > 0) {
+        if(value.is_not_undetermined()) {
             encode_key_value("pf multiplex distance", value.pf_multiplex_distance, container, document);
             if(value.algorithm == Algorithm::PAMLD) {
                 encode_key_value("pf multiplex confidence", value.pf_multiplex_confidence, container, document);
@@ -387,7 +387,7 @@ bool encode_value(const ChannelAccumulator& value, Value& container, Document& d
         encode_key_value("pf fraction", value.pf_fraction, container, document);
         encode_key_value("pooled fraction", value.pooled_fraction, container, document);
         encode_key_value("pf pooled fraction", value.pf_pooled_fraction, container, document);
-        if(value.index > 0) {
+        if(value.is_not_undetermined()) {
             encode_key_value("pooled multiplex fraction", value.pooled_multiplex_fraction, container, document);
             encode_key_value("pf pooled multiplex fraction", value.pf_pooled_multiplex_fraction, container, document);
         }

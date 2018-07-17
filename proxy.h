@@ -45,7 +45,6 @@ bool from_string(const string& value, FormatKind& result);
 ostream& operator<<(ostream& o, const FormatKind& value);
 void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document);
 
-
 class FeedProxy {
     friend ostream& operator<<(ostream& o, const FeedProxy& proxy);
 
@@ -283,6 +282,7 @@ class FeedProxy {
             }
         };
 };
+bool encode_key_value(const string& key, const FeedProxy& value, Value& container, Document& document);
 ostream& operator<<(ostream& o, const FeedProxy& proxy);
 template<> FeedProxy decode_value< FeedProxy >(const Value& container);
 template<> list< FeedProxy > decode_value_by_key< list< FeedProxy > >(const Value::Ch* key, const Value& container);

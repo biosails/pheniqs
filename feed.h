@@ -36,7 +36,6 @@ inline int align_to_resolution(const int& capacity, const int& resolution) {
 };
 
 /* IO feed */
-
 class Feed {
     public:
         const int32_t index;
@@ -50,13 +49,19 @@ class Feed {
             direction(proxy.direction),
             phred_offset(proxy.phred_offset),
             platform(proxy.platform),
-            capacity(proxy.capacity),
-            resolution(proxy.resolution),
+            _capacity(proxy.capacity),
+            _resolution(proxy.resolution),
             exhausted(false),
             hfile(proxy.hfile),
             thread_pool(NULL) {
         };
         virtual ~Feed() {
+        };
+        const inline int& capacity() const {
+            return _capacity;
+        };
+        const inline int& resolution() const {
+            return _resolution;
         };
         virtual void join() = 0;
         virtual void start() = 0;
@@ -71,7 +76,7 @@ class Feed {
         virtual inline bool is_dev_null() {
             return url.is_dev_null();
         };
-        virtual void calibrate(const int& resolution) = 0;
+        virtual void calibrate_resolution(const int& resolution) = 0;
         virtual unique_lock< mutex > acquire_pull_lock() = 0;
         virtual unique_lock< mutex > acquire_push_lock() = 0;
         virtual inline bool opened() = 0;
@@ -80,8 +85,8 @@ class Feed {
         };
 
     protected:
-        int capacity;
-        int resolution;
+        int _capacity;
+        int _resolution;
         bool exhausted;
         hFILE* hfile;
         htsThreadPool* thread_pool;
@@ -118,7 +123,7 @@ class NullFeed : public Feed {
         inline bool replenish() override {
             return false;
         };
-        void calibrate(const int& resolution) override {
+        void calibrate_resolution(const int& resolution) override {
 
         };
         unique_lock< mutex > acquire_pull_lock() override {
@@ -148,11 +153,11 @@ template < class T > class CyclicBuffer {
 
             _direction(direction),
             _capacity(0),
-            _resolution(0),
+            _resolution(resolution),
             _next(-1),
             _vacant(0) {
 
-            calibrate(capacity, resolution);
+            calibrate_capacity(capacity);
         };
         virtual ~CyclicBuffer() {
         };
@@ -244,7 +249,17 @@ template < class T > class CyclicBuffer {
                 increment();
             }
         };
-        virtual void calibrate(const int& capacity, const int& resolution);
+        virtual int calibrate_capacity(const int& capacity);
+        int calibrate_resolution(const int& resolution) {
+            if(resolution != _resolution) {
+                int aligned_capacity(align_to_resolution(_capacity, resolution));
+                if(aligned_capacity > _capacity) {
+                    calibrate_capacity(aligned_capacity);
+                }
+                _resolution = resolution;
+            }
+            return _capacity;
+        };
 
     private:
         const IoDirection _direction;
@@ -255,6 +270,7 @@ template < class T > class CyclicBuffer {
         vector< T* > cache;
         int index;
 };
+template< typename T > ostream& operator<<(ostream& o, const CyclicBuffer< T >& buffer);
 
 template < class T > class BufferedFeed : public Feed {
     private:
@@ -271,8 +287,8 @@ template < class T > class BufferedFeed : public Feed {
         BufferedFeed(const FeedProxy& proxy) :
             Feed(proxy),
             kbuffer({ 0, 0, NULL }),
-            buffer(new CyclicBuffer< T >(direction, capacity, resolution)),
-            queue(new CyclicBuffer< T >(direction, capacity, resolution)),
+            buffer(new CyclicBuffer< T >(direction, proxy.capacity, proxy.resolution)),
+            queue(new CyclicBuffer< T >(direction, proxy.capacity, proxy.resolution)),
             started(false) {
             ks_terminate(kbuffer);
         };
@@ -360,25 +376,28 @@ template < class T > class BufferedFeed : public Feed {
             queue_not_empty.notify_all();
             return !exhausted;
         };
-        void calibrate(const int& resolution) override {
+        void calibrate_resolution(const int& resolution) override {
             unique_lock< mutex > buffer_lock(buffer_mutex);
             unique_lock< mutex > queue_lock(queue_mutex);
 
-            int aligned(align_to_resolution(capacity, resolution));
-            if(capacity != aligned || this->resolution != resolution) {
-                this->capacity = aligned;
-                this->resolution = resolution;
-                queue->calibrate(aligned, resolution);
-                buffer->calibrate(aligned, resolution);
+            if(resolution != _resolution) {
+                int aligned_capacity(align_to_resolution(_capacity, resolution));
+                if(_capacity != aligned_capacity) {
+                    queue->calibrate_resolution(resolution);
+                    buffer->calibrate_resolution(resolution);
+                    _capacity = aligned_capacity;
+                    _resolution = resolution;
 
-                /*  sync queue
-                    move elements from buffer to queue until
-                    queue is aligned with the new resolution */
-                queue->sync(buffer);
+                    /*  sync queue
+                        move elements from buffer to queue until
+                        queue is aligned with the new resolution */
+                    queue->sync(buffer);
 
-                /*  sync buffer
-                    now make sure the buffer is filled which will align it */
-                replenish_buffer();
+                    /*  sync buffer
+                        now make sure the buffer is filled which will align it */
+                    replenish_buffer();
+
+                } else { _resolution = resolution; }
             }
         };
         unique_lock< mutex > acquire_pull_lock() override {
@@ -425,6 +444,8 @@ template < class T > class BufferedFeed : public Feed {
             }
         };
 };
-template< typename T > ostream& operator<<(ostream& o, const CyclicBuffer< T >& buffer);
+Value encode_value(const Feed& value, Document& document);
+bool encode_key_value(const string& key, const list< Feed* >& value, Value& container, Document& document);
+bool encode_key_value(const string& key, const vector< Feed* >& value, Value& container, Document& document);
 
 #endif /* PHENIQS_FEED_H */

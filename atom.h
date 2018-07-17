@@ -452,6 +452,8 @@ enum class HtsTagCode : uint16_t {
     UQ = 0x5551,
     UR = 0x5552,
     VN = 0x564e,
+    XB = 0x5842,
+    XC = 0x5843,
     XD = 0x5844,
     XL = 0x584c,
     XM = 0x584d,

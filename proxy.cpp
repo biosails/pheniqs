@@ -71,6 +71,22 @@ template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKi
     return false;
 };
 
+bool encode_value(const string& key, const FeedProxy& value, Value& container, Document& document) {
+    if(container.IsObject()) {
+        container.RemoveMember(key.c_str());
+        Value element(kObjectType);
+        encode_key_value("index", value.index, element, document);
+        encode_key_value("url", value.url, element, document);
+        encode_key_value("direction", value.direction, element, document);
+        encode_key_value("platform", value.platform, element, document);
+        encode_key_value("capacity", value.capacity, element, document);
+        encode_key_value("resolution", value.resolution, element, document);
+        encode_key_value("phred offset", value.phred_offset, element, document);
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), element.Move(), document.GetAllocator());
+        return true;
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+    return false;
+};
 ostream& operator<<(ostream& o, const FeedProxy& proxy) {
     o << "direction : " << proxy.direction << endl;
     o << "index : " << proxy.index << endl;

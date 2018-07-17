@@ -56,24 +56,8 @@ class ReadGroupDecoder : public DiscreteDecoder< Channel > {
         unordered_map< string, Channel* > channel_by_rg;
 
     public:
-        ReadGroupDecoder(const Value& ontology) :
-            DiscreteDecoder< Channel >(ontology) {
-
-            channel_by_rg.reserve(element_by_index.size());
-            for(auto& element : element_by_index) {
-                channel_by_rg.emplace(make_pair(string(element.rg.ID.s, element.rg.ID.l), &element));
-            }
-        };
-        inline void decode(const Read& input, Read& output) override {
-            decoded = &undetermined;
-            if(!ks_empty(input.RG())) {
-                key_buffer.assign(input.RG().s, input.RG().l);
-                auto record = channel_by_rg.find(key_buffer);
-                if(record != channel_by_rg.end()) {
-                    decoded = record->second;
-                }
-            }
-        };
+        ReadGroupDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 };
 
 template < class T > class BarcodeDecoder : public DiscreteDecoder< T > {
@@ -81,7 +65,7 @@ template < class T > class BarcodeDecoder : public DiscreteDecoder< T > {
         const Rule rule;
         const int32_t nucleotide_cardinality;
         Observation observation;
-        int32_t distance;
+        int32_t decoding_distance;
 
     public:
         inline const int32_t segment_cardinality() const {
@@ -92,7 +76,7 @@ template < class T > class BarcodeDecoder : public DiscreteDecoder< T > {
             rule(decode_value_by_key< Rule >("template", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
-            distance(0) {
+            decoding_distance(0) {
         };
 };
 
@@ -102,62 +86,12 @@ template < class T > class MDDecoder : public BarcodeDecoder< T > {
         const vector< uint8_t > distance_tolerance;
         unordered_map< string, T* > element_by_sequence;
 
-    private:
-        inline bool match(const T& barcode) {
-            bool result(true);
-            this->distance = 0;
-            if(this->quality_masking_threshold > 0) {
-                for(size_t i(0); i < this->observation.segment_cardinality(); ++i) {
-                    int32_t error(this->observation[i].masked_distance_from(barcode[i], this->quality_masking_threshold));
-                    this->distance += error;
-                    if(error > this->distance_tolerance[i]) {
-                        result = false;
-                    }
-                }
-            } else {
-                for(size_t i(0); i < this->observation.segment_cardinality(); ++i) {
-                    int32_t error(this->observation[i].distance_from(barcode[i]));
-                    this->distance += error;
-                    if(error > this->distance_tolerance[i]) {
-                        result = false;
-                    }
-                }
-            }
-            return result;
-        };
-
     public:
-        MDDecoder(const Value& ontology) :
-            BarcodeDecoder< T >(ontology),
-            quality_masking_threshold(decode_value_by_key< uint8_t >("quality masking threshold", ontology)),
-            distance_tolerance(decode_value_by_key< vector< uint8_t > >("distance tolerance", ontology)) {
+        MDDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 
-            for(auto& element : this->element_by_index) {
-                element_by_sequence.emplace(make_pair(string(element), &element));
-            }
-        };
-        inline void decode(const Read& input, Read& output) override {
-            this->observation.clear();
-            this->decoded = &this->undetermined;
-            this->distance = this->nucleotide_cardinality;
-            this->rule.apply(input, this->observation);
-
-            /* First try a perfect match to the full barcode sequence */
-            auto record = element_by_sequence.find(this->observation);
-            if(record != element_by_sequence.end()) {
-                this->distance = 0;
-                this->decoded = record->second;
-
-            } else {
-                /* If no exact match was found try error correction */
-                for(auto& barcode : this->element_by_index) {
-                    if(match(barcode)) {
-                        this->decoded = &barcode;
-                        break;
-                    }
-                }
-            }
-        };
+    private:
+        inline bool match(T& barcode);
 };
 
 template < class T > class PAMLDecoder : public BarcodeDecoder< T > {
@@ -168,134 +102,34 @@ template < class T > class PAMLDecoder : public BarcodeDecoder< T > {
         const double adjusted_noise_probability;
         double conditioned_decoding_probability;
         double decoding_probability;
-        double error_probability;
 
     public:
-        PAMLDecoder(const Value& ontology) :
-            BarcodeDecoder< T >(ontology),
-            noise(decode_value_by_key< double >("noise", ontology)),
-            confidence_threshold(decode_value_by_key< double >("confidence threshold", ontology)),
-            random_barcode_probability(1.0 / double(pow(4, (this->nucleotide_cardinality)))),
-            adjusted_noise_probability(noise * random_barcode_probability),
-            conditioned_decoding_probability(0),
-            decoding_probability(0),
-            error_probability(1) {
-        };
-        inline void decode(const Read& input, Read& output) override {
-            this->observation.clear();
-            this->decoded = &this->undetermined;
-            this->distance = this->nucleotide_cardinality;
-            conditioned_decoding_probability = 0;
-            decoding_probability = 0;
-            error_probability = 1;
-            this->rule.apply(input, this->observation);
-
-            /*  Compute P(observed|barcode) for each barcode
-                Keep track of the channel that yield the maximal prior adjusted probability.
-                If r is the observed sequence and b is the barcode sequence
-                P(r|b) is the probability that r was observed given b was sequenced.
-                Accumulate all prior adjusted probabilities P(b) * P(r|b), in sigma
-                using the Kahan summation algorithm to minimize floating point drift
-                see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
-            */
-            double adjusted(0);
-            double compensation(0);
-            double sigma(0);
-            double y(0);
-            double t(0);
-            double c(0);
-            double p(0);
-            int32_t d(0);
-            for(auto& barcode : this->element_by_index) {
-                barcode.accurate_decoding_probability(this->observation, c, d);
-                p = c * barcode.concentration;
-                y = p - compensation;
-                t = sigma + y;
-                compensation = (t - sigma) - y;
-                sigma = t;
-                if(p > adjusted) {
-                    this->decoded = &barcode;
-                    conditioned_decoding_probability = c;
-                    this->distance = d;
-                    adjusted = p;
-                }
-            }
-            /*  Compute P(barcode|observed)
-                P(b|r), the probability that b was sequenced given r was observed
-                P(b|r) = P(r|b) * P(b) / ( P(noise) * P(r|noise) + sigma )
-                where sigma = sum of P(r|b) * P(b) over b */
-            decoding_probability = adjusted / (sigma + adjusted_noise_probability);
-
-            /* Check for decoding failure and assign to the undetermined channel if decoding failed */
-            if(conditioned_decoding_probability > random_barcode_probability && decoding_probability > confidence_threshold) {
-                error_probability = 1 - decoding_probability;
-            } else {
-                this->decoded = &this->undetermined;
-            }
-        };
+        PAMLDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 };
 
 class MultiplexMDDecoder : public MDDecoder< Channel > {
     public:
-        MultiplexMDDecoder(const Value& ontology) :
-            MDDecoder< Channel >(ontology) {
-        };
-        inline void decode(const Read& input, Read& output) override {
-            MDDecoder< Channel >::decode(input, output);
-            output.assign_RG(this->decoded->rg);
-            output.set_multiplex_barcode(this->observation);
-            output.set_multiplex_distance(this->distance);
-        };
+        MultiplexMDDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 };
 
 class MultiplexPAMLDecoder : public PAMLDecoder< Channel > {
     public:
-        MultiplexPAMLDecoder(const Value& ontology) :
-            PAMLDecoder< Channel >(ontology) {
-        };
-        inline void decode(const Read& input, Read& output) override {
-            PAMLDecoder< Channel >::decode(input, output);
-            output.assign_RG(this->decoded->rg);
-            output.set_multiplex_barcode(this->observation);
-            output.set_multiplex_error_probability(this->error_probability);
-            output.set_multiplex_distance(this->distance);
-        };
+        MultiplexPAMLDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 };
 
 class CellularMDDecoder : public MDDecoder< Barcode > {
     public:
-        CellularMDDecoder(const Value& ontology) :
-            MDDecoder< Barcode >(ontology) {
-        };
-        inline void decode(const Read& input, Read& output) override {
-            MDDecoder< Barcode >::decode(input, output);
-            output.update_raw_cellular_barcode(this->observation);
-            output.update_cellular_barcode(*this->decoded);
-            if(this->decoded != &this->undetermined) {
-                output.update_cellular_distance(this->distance);
-            } else {
-                output.set_cellular_distance(0);
-            }
-        };
+        CellularMDDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 };
 
 class CellularPAMLDecoder : public PAMLDecoder< Barcode > {
     public:
-        CellularPAMLDecoder(const Value& ontology) :
-            PAMLDecoder< Barcode >(ontology) {
-        };
-        inline void decode(const Read& input, Read& output) override {
-            PAMLDecoder< Barcode >::decode(input, output);
-            output.update_raw_cellular_barcode(this->observation);
-            output.update_cellular_barcode(*this->decoded);
-            if(this->decoded != &this->undetermined) {
-                output.update_cellular_error_probability(this->error_probability);
-                output.update_cellular_distance(this->distance);
-            } else {
-                output.set_cellular_error_probability(1);
-                output.set_cellular_distance(0);
-            }
-        };
+        CellularPAMLDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 };
 
 class MolecularSimpleDecoder : public Decoder {
@@ -305,17 +139,8 @@ class MolecularSimpleDecoder : public Decoder {
         Observation observation;
 
     public:
-        MolecularSimpleDecoder(const Value& ontology) :
-            Decoder(ontology),
-            nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
-            rule(decode_value_by_key< Rule >("template", ontology)),
-            observation(decode_value_by_key< int32_t >("segment cardinality", ontology)) {
-        };
-        inline void decode(const Read& input, Read& output) override {
-            observation.clear();
-            rule.apply(input, observation);
-            output.update_molecular_barcode(observation);
-        };
+        MolecularSimpleDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
 };
 
 #endif /* PHENIQS_DECODER_H */

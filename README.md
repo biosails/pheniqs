@@ -14,7 +14,7 @@ Documentation and examples can be found on the **[Pheniqs website](http://biosai
 
 **Community tags:** Pheniqs also encodes the raw molecular barcode sequence and quality in the corresponding community adopted [RX](http://biosails.github.io/pheniqs/glossary.html#rx_auxiliary_tag) and [QX](http://biosails.github.io/pheniqs/glossary.html#qx_auxiliary_tag) auxiliary tags.
 
-**Proposed tags:** Pheniqs proposes to standardize three new auxiliary tags: [DQ](http://biosails.github.io/pheniqs/glossary.html#dq_auxiliary_tag), [PX](http://biosails.github.io/pheniqs/glossary.html#px_auxiliary_tag) and [EE](http://biosails.github.io/pheniqs/glossary.html#ee_auxiliary_tag) for encoding the multiplex barcode decoding error probability, molecular barcode decoding error probability and the expected number of errors.
+**Proposed tags:** Pheniqs proposes to standardize three new auxiliary tags: [XB](http://biosails.github.io/pheniqs/glossary.html#dq_auxiliary_tag), [PX](http://biosails.github.io/pheniqs/glossary.html#px_auxiliary_tag) and [EE](http://biosails.github.io/pheniqs/glossary.html#ee_auxiliary_tag) for encoding the multiplex barcode decoding error probability, molecular barcode decoding error probability and the expected number of errors.
 
 **Command line friendly:** Written in multi threaded C++ Pheniqs can be deployed as a single compiled binary executable. Pheniqs follows the [POSIX command line syntax](https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html) and even comes with its own [zsh completion](zsh_completion/_pheniqs) script for a more interactive command line experience.
 

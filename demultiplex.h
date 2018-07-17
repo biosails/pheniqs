@@ -50,13 +50,7 @@ class Demultiplex : public Job {
         inline bool display_distance() const {
             return decode_value_by_key< bool >("display distance", ontology);
         };
-        void load() override {
-            validate_url_accessibility();
-            load_thread_pool();
-            load_input();
-            load_output();
-            load_pivot();
-        };
+        void load() override;
         void start();
         void stop();
         void execute() override;
@@ -173,6 +167,7 @@ class DemultiplexPivot {
             for(auto& decoder : cellular) {
                 decoder->decode(input, output);
             }
+            output.flush();
         };
         inline void push() {
             multiplex->decoded->push(output);

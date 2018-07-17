@@ -98,6 +98,13 @@ Demultiplex::~Demultiplex() {
     output_feed_by_index.clear();
 };
 
+void Demultiplex::load() {
+    validate_url_accessibility();
+    load_thread_pool();
+    load_input();
+    load_output();
+    load_pivot();
+};
 void Demultiplex::manipulate() {
     compile_PG();
     compile_input();
@@ -246,16 +253,16 @@ void Demultiplex::compile_PG() {
     ontology.AddMember(Value("program", ontology.GetAllocator()).Move(), PG.Move(), ontology.GetAllocator());
 };
 void Demultiplex::compile_input() {
+    Platform platform(decode_value_by_key< Platform >("platform", ontology));
+    int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
+    uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
+
     expand_url_value_by_key("base input url", ontology, ontology);
     expand_url_array_by_key("input", ontology, ontology, IoDirection::IN);
     URL base(decode_value_by_key< URL >("base input url", ontology));
 
     relocate_url_array_by_key("input", ontology, ontology, base);
     list< URL > feed_url_array(decode_value_by_key< list< URL > >("input", ontology));
-
-    Platform platform(decode_value_by_key< Platform >("platform", ontology));
-    int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
-    uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
 
     /* encode the input segment cardinality */
     int32_t input_segment_cardinality(static_cast< int32_t>(feed_url_array.size()));
@@ -322,9 +329,10 @@ void Demultiplex::detect_input() {
     relocate_url_array_by_key("input", ontology, ontology, base);
     list< URL > feed_url_array(decode_value_by_key< list< URL > >("input", ontology));
 
+    /* create a proxy for each feed */
     int32_t feed_index(0);
     list< FeedProxy > feed_proxy_by_index;
-    map< URL, FeedProxy* > feed_proxy_by_url;
+    unordered_map< URL, FeedProxy* > feed_proxy_by_url;
     for(const auto& url : feed_url_array) {
         if(feed_proxy_by_url.count(url) == 0) {
             Value element(kObjectType);
@@ -337,33 +345,37 @@ void Demultiplex::detect_input() {
             encode_key_value("phred offset", input_phred_offset, element, ontology);
             feed_proxy_by_index.emplace_back(element);
             feed_proxy_by_url.emplace(make_pair(url, &feed_proxy_by_index.back()));
+            ++feed_index;
         }
     }
 
-    vector< Feed* > input_feed_by_index(feed_proxy_by_index.size());
-    map< URL, Feed* > feed_by_url;
+    /* count how many segment record have a read id that is identical to the first */
+    int32_t input_segment_cardinality(0);
+    unordered_map< URL, Feed* > feed_by_url;
+    unordered_map< URL, string > read_id_by_url;
     for(auto& proxy : feed_proxy_by_index) {
         proxy.probe();
-        Segment segment;
         Feed* feed(NULL);
-        int32_t input_segment_cardinality(0);
-
+        Segment segment;
+        int32_t feed_segment_cardinality(0);
+        string feed_read_id;
         switch(proxy.kind()) {
             case FormatKind::FASTQ: {
                 FastqFeed* fastq_feed = new FastqFeed(proxy);
                 fastq_feed->set_thread_pool(&thread_pool);
                 fastq_feed->open();
                 fastq_feed->replenish();
-                if(fastq_feed->peek(segment, input_segment_cardinality)) {
-                    input_segment_cardinality++;
-                    string primary(segment.name.s, segment.name.l);
+
+                if(fastq_feed->peek(segment, feed_segment_cardinality)) {
+                    ++feed_segment_cardinality;
+                    feed_read_id.assign(segment.name.s, segment.name.l);
                     while (
-                        fastq_feed->peek(segment, input_segment_cardinality) &&
-                        primary.size() == segment.name.l &&
-                        strncmp(primary.c_str(), segment.name.s, segment.name.l)
-                    ) { input_segment_cardinality++; }
+                        fastq_feed->peek(segment, feed_segment_cardinality) &&
+                        feed_read_id.size() == segment.name.l &&
+                        strncmp(feed_read_id.c_str(), segment.name.s, segment.name.l)
+                    ) { ++feed_segment_cardinality; }
                 }
-                fastq_feed->calibrate(input_segment_cardinality);
+                fastq_feed->calibrate_resolution(feed_segment_cardinality);
                 feed = fastq_feed;
                 break;
             };
@@ -372,10 +384,12 @@ void Demultiplex::detect_input() {
                 hts_feed->set_thread_pool(&thread_pool);
                 hts_feed->open();
                 hts_feed->replenish();
-                if(hts_feed->peek(segment, input_segment_cardinality)) {
-                    input_segment_cardinality = segment.total_segments();
+
+                if(hts_feed->peek(segment, feed_segment_cardinality)) {
+                    feed_read_id.assign(segment.name.s, segment.name.l);
+                    feed_segment_cardinality = segment.total_segments();
                 }
-                hts_feed->calibrate(input_segment_cardinality);
+                hts_feed->calibrate_resolution(feed_segment_cardinality);
                 /*
                     const HtsHeader& header = ((HtsFeed*)feed)->get_header();
                     for(const auto& record : header.read_group_by_id) {}
@@ -392,9 +406,42 @@ void Demultiplex::detect_input() {
                 break;
             };
         }
+
+        read_id_by_url[proxy.url] = feed_read_id;
         input_feed_by_index.push_back(feed);
         feed_by_url.emplace(make_pair(proxy.url, feed));
+        input_segment_cardinality += feed_segment_cardinality;
     };
+
+    /* check that all first reads have the same read id */
+    if(input_segment_cardinality > 1) {
+        URL first_url;
+        string first_read_id;
+        for(auto& record : read_id_by_url) {
+            if(first_read_id.empty()) {
+                first_url = record.first;
+                first_read_id = record.second;
+            } else if(first_read_id != record.second) {
+                throw ConfigurationError(string(first_url) + " and " + string(record.second) + " are out of sync");
+            }
+        }
+    }
+
+    encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
+    input_feed_by_segment.reserve(input_segment_cardinality);
+    for(auto& feed : input_feed_by_index) {
+        for(int32_t i(0); i < feed->resolution(); ++i) {
+            input_feed_by_segment.push_back(feed);
+        }
+    }
+
+    list< URL > feed_url_by_segment;
+    for(auto& feed : input_feed_by_segment) {
+        feed_url_by_segment.push_back(feed->url);
+    }
+    encode_key_value("input", feed_url_by_segment, ontology, ontology);
+    encode_key_value("input feed", input_feed_by_index, ontology, ontology);
+    encode_key_value("input feed by segment", input_feed_by_segment, ontology, ontology);
 };
 void Demultiplex::compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode) {
     if(value.IsObject()) {
@@ -910,55 +957,57 @@ void Demultiplex::load_thread_pool() {
     if(!thread_pool.pool) { throw InternalError("error creating thread pool"); }
 };
 void Demultiplex::load_input() {
-    /*  Decode feed_proxy_array, a local list of input feed proxy.
-        The list has already been enumerated by the interface
-        and contains only unique url references
-    */
-    list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("input feed", ontology));
+    if(input_feed_by_index.empty()) {
+        /*  Decode feed_proxy_array, a local list of input feed proxy.
+            The list has already been enumerated by the interface
+            and contains only unique url references
+        */
+        list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("input feed", ontology));
 
-    /*  Initialized the hfile reference and verify input format */
-    for(auto& proxy : feed_proxy_array) {
-        proxy.probe();
-    };
+        /*  Initialized the hfile reference and verify input format */
+        for(auto& proxy : feed_proxy_array) {
+            proxy.probe();
+        };
 
-    /*  Load feed_by_url, a local map of input feeds by url, from the proxy.
-        Populate input_feed_by_index used to enumerate threaded access to the input feeds */
-    unordered_map< URL, Feed* > feed_by_url(feed_proxy_array.size());
-    for(auto& proxy : feed_proxy_array) {
-        Feed* feed(NULL);
-        switch(proxy.kind()) {
-            case FormatKind::FASTQ: {
-                feed = new FastqFeed(proxy);
-                break;
-            };
-            case FormatKind::HTS: {
-                feed = new HtsFeed(proxy);
-                break;
-            };
-            case FormatKind::DEV_NULL: {
-                feed = new NullFeed(proxy);
-                break;
-            };
-            default: {
-                throw InternalError("unknown input format " + string(proxy.url));
-                break;
-            };
+        /*  Load feed_by_url, a local map of input feeds by url, from the proxy.
+            Populate input_feed_by_index used to enumerate threaded access to the input feeds */
+        unordered_map< URL, Feed* > feed_by_url(feed_proxy_array.size());
+        for(auto& proxy : feed_proxy_array) {
+            Feed* feed(NULL);
+            switch(proxy.kind()) {
+                case FormatKind::FASTQ: {
+                    feed = new FastqFeed(proxy);
+                    break;
+                };
+                case FormatKind::HTS: {
+                    feed = new HtsFeed(proxy);
+                    break;
+                };
+                case FormatKind::DEV_NULL: {
+                    feed = new NullFeed(proxy);
+                    break;
+                };
+                default: {
+                    throw InternalError("unknown input format " + string(proxy.url));
+                    break;
+                };
+            }
+            feed->set_thread_pool(&thread_pool);
+            input_feed_by_index.push_back(feed);
+            feed_by_url.emplace(make_pair(proxy.url, feed));
         }
-        feed->set_thread_pool(&thread_pool);
-        input_feed_by_index.push_back(feed);
-        feed_by_url.emplace(make_pair(proxy.url, feed));
-    }
 
-    list< URL > url_by_segment(decode_value_by_key< list < URL > >("input", ontology));
+        list< URL > url_by_segment(decode_value_by_key< list < URL > >("input", ontology));
 
-    /*  Populate the input_feed_by_segment array */
-    input_feed_by_segment.reserve(url_by_segment.size());
-    for(auto& url : url_by_segment) {
-        const auto& record = feed_by_url.find(url);
-        if(record != feed_by_url.end()) {
-            input_feed_by_segment.push_back(record->second);
-        } else {
-            throw InternalError("missing feed for URL " + string(url) + " referenced in input proxy segment array");
+        /*  Populate the input_feed_by_segment array */
+        input_feed_by_segment.reserve(url_by_segment.size());
+        for(auto& url : url_by_segment) {
+            const auto& record = feed_by_url.find(url);
+            if(record != feed_by_url.end()) {
+                input_feed_by_segment.push_back(record->second);
+            } else {
+                throw InternalError("missing feed for URL " + string(url) + " referenced in input proxy segment array");
+            }
         }
     }
 };
@@ -985,6 +1034,16 @@ void Demultiplex::load_output() {
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
                 const Value& multiplex(reference->value);
+
+                reference = multiplex.FindMember("undetermined");
+                if(reference != multiplex.MemberEnd()) {
+                    HeadRGAtom rg(reference->value);
+                    list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
+                    for(auto& url : output) {
+                        feed_proxy_by_url[url]->register_rg(rg);
+                    }
+                }
+
                 reference = multiplex.FindMember("codec");
                 if(reference != ontology.MemberEnd()) {
                     for(auto& record : reference->value.GetObject()) {
