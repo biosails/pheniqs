@@ -1,4 +1,7 @@
 Release 2.0.2-beta
+	- Ok NOW adding support for custom PREFIX in the makefile
+
+Release 2.0.2-beta
 	- Adding support for custom PREFIX in the makefile
 
 Release 2.0.1-beta
