@@ -17,25 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# The PHENIQS_VERSION defaults to $(MAJOR_REVISON).$(MINOR_REVISON) if not provided by the environment.
-# git revision checksum is appended if available
-# If available in the environment, dependency version are also included when generating version.h
-
-# providing those to make during build will report them on pheniqs --version
-# this is especially useful when building a static binary
-
-# PHENIQS_VERSION = $(MAJOR_REVISON).$(MINOR_REVISON).$(PHENIQS_GIT_REVISION)
-# ZLIB_VERSION = 1.2.11
-# BZIP2_VERSION = 1.0.6
-# XZ_VERSION = 5.2.3
-# LIBDEFLATE_VERSION = 1.0
-# RAPIDJSON_VERSION = 1.1.0
-# HTSLIB_VERSION = 1.8
-
-# to build with an explicit compiler with set CXX or provide the path on the command line to make
-# for instance to build with gcc 7 from homebrew on MacOS you can install it with `brew install gcc@7`
-# and build with `make CXX=/usr/local/bin/g++-7` or `make CXX=clang++` for explicitly building with clang
-
 MAJOR_REVISON   := 2
 MINOR_REVISON   := 0.3
 PREFIX          := /usr/local
@@ -45,9 +26,30 @@ LIB_PREFIX      = $(PREFIX)/lib
 
 CPPFLAGS        += -Wall -Wsign-compare
 CXXFLAGS        += -std=c++11 -O3
-LDFLAGS         +=
+# LDFLAGS       +=
 LIBS            += -lhts -lz -lbz2 -llzma
 STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
+
+# PHENIQS_VERSION, written into version.h and reported when executing `pheniqs --version`,
+# is taken from the git describe if present. Otherwise it falls back to $(MAJOR_REVISON).$(MINOR_REVISON).
+# Providing PHENIQS_VERSION to make on the command line during compilation will override both.
+#
+# If provided on the command line when executing make, the following dependecy variables will also be reported
+# by `pheniqs --version`. This is mostly useful when building pheniqs statically so the user can tell which version
+# of each dependecy is built into the finaly binary.
+#
+# ZLIB_VERSION
+# BZIP2_VERSION
+# XZ_VERSION
+# LIBDEFLATE_VERSION
+# RAPIDJSON_VERSION
+# HTSLIB_VERSION
+PHENIQS_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
+ifndef PHENIQS_VERSION
+    PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
+endif
+
+PLATFORM := $(shell uname -s)
 
 PHENIQS_SOURCES = \
 	accumulate.cpp \
@@ -95,15 +97,6 @@ PHENIQS_OBJECTS = \
 
 PHENIQS_EXECUTABLE = pheniqs
 
-# version is taken from git if present, otherwise falls back to $(MAJOR_REVISON).$(MINOR_REVISON)
-# providing it on the command line to make will override both.
-PHENIQS_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
-ifndef PHENIQS_VERSION
-    PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
-endif
-
-PLATFORM := $(shell uname -s)
-
 ifdef PREFIX
     CPPFLAGS += -I$(INCLUDE_PREFIX)
     LDFLAGS += -L$(LIB_PREFIX)
@@ -131,6 +124,41 @@ ifeq ($(with-static), 1)
 endif
 
 all: $(PHENIQS_SOURCES) generated $(PHENIQS_EXECUTABLE)
+
+help:
+	@printf '\nBuilding Pheniqs $(PHENIQS_VERSION)\n\
+	\n\
+	Make targets\n\
+	\thelp      : Print this help.\n\
+	\tall       : Build everything. This is the default if no target is specified.\n\
+	\tclean     : Delete all generated and object files.\n\
+	\tinstall   : Install pheniqs to $(PREFIX)\n\
+	\tconfig    : Print the values of the influential variables and exit.\n\
+	\t_pheniqs  : Generate the zsh completion script.\n\
+	\n\
+	Pheniqs depends on the following libraries:\n\
+	\tzlib       : https://zlib.net\n\
+	\tbz2        : http://www.bzip.org\n\
+	\txz         : https://tukaani.org/xz\n\
+	\tlibdeflate : https://github.com/ebiggers/libdeflate (optional)\n\
+	\thtslib     : http://www.htslib.org\n\
+	\trapidjson  : http://rapidjson.org\n\
+	\n\
+	libdeflate is a heavily optimized implementation of the DEFLATE algorithm.\n\
+	Although pheniqs does not directly link to libdeflate, htslib can be optionaly linked to it when built,\n\
+	which can significantly speed up reading and writing gzip compressed fastq files.\n\
+	\n\
+	To build pheniqs with a specific PREFIX, set the PREFIX variable when executing make.\n\
+	Notice that you will need to specify it each time you execute make, not just when building.\n\
+	For instance to build and install Pheniqs to /usr/local execute `make PREFIX=/usr/local && make install PREFIX=/usr/local`.\n\
+	\n\
+	To build pheniqs with a specific compiler, set the CXX variable when executing make.\n\
+	For instance: `make CXX=/usr/local/bin/g++-7`.\n\
+	\n\
+	To build a statically linked binary set the `with-static` variable to 1.\n\
+	This requires libhts.so, libz.so, libbz2.so, liblzma.so and optionally libdeflate.so \n\
+	(libhts.a, libz.a, libbz2.a, liblzma.a and libdeflate.a on MacOS) to be available in LIB_PREFIX.\n\
+	For instance: `make with-static=1`.\n\n'
 
 config:
 	@echo 'PHENIQS_VERSION     :  $(PHENIQS_VERSION)'
@@ -160,7 +188,7 @@ $(PHENIQS_EXECUTABLE): $(PHENIQS_OBJECTS)
 	$(CXX) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(LIBS) -o $(PHENIQS_EXECUTABLE)
 
 # Regenerate version.h when PHENIQS_VERSION changes
-version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),clean.version))
+version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),,clean.version))
 	@echo version.h generated with PHENIQS_VERSION $(PHENIQS_VERSION)
 	$(if $(PHENIQS_VERSION),    @printf '#ifndef PHENIQS_VERSION_H\n'                       		>> $@)
 	$(if $(PHENIQS_VERSION),    @printf '#define PHENIQS_VERSION_H\n\n'                         >> $@)
