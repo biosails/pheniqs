@@ -38,7 +38,7 @@
 
 MAJOR_REVISON  := 2
 MINOR_REVISON  := 0
-PREFIX          = /usr/local
+PREFIX          = $PREFIX | /usr/local
 BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
