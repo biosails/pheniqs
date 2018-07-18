@@ -36,8 +36,8 @@
 # for instance to build with gcc 7 from homebrew on MacOS you can install it with `brew install gcc@7`
 # and build with `make CXX=/usr/local/bin/g++-7` or `make CXX=clang++` for explicitly building with clang
 
-MAJOR_REVISON  := 2
-MINOR_REVISON  := 0
+MAJOR_REVISON   := 2
+MINOR_REVISON   := 0.3
 PREFIX          := /usr/local
 BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
@@ -48,14 +48,6 @@ CXXFLAGS        += -std=c++11 -O3
 LDFLAGS         +=
 LIBS            += -lhts -lz -lbz2 -llzma
 STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
-
-# configuration.h : generated from configuration.json
-# version.h       : generated version header file
-# include.h       : standard library include and using statements
-# error.h         : custom exception objects
-# nucleotide.h    : IUPAC nucleotide encoding and decoding
-# phred.h         : Phred quality scale encoding and decoding
-# kstring.h       : wrapper for the kstring_t object from htslib
 
 PHENIQS_SOURCES = \
 	accumulate.cpp \
@@ -103,17 +95,14 @@ PHENIQS_OBJECTS = \
 
 PHENIQS_EXECUTABLE = pheniqs
 
-PHENIQS_GIT_REVISION := $(shell git describe --abbrev=40 --always 2> /dev/null)
-
-PLATFORM := $(shell uname -s)
-
+# version is taken from git if present, otherwise falls back to $(MAJOR_REVISON).$(MINOR_REVISON)
+# providing it on the command line to make will override both.
+PHENIQS_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
 ifndef PHENIQS_VERSION
     PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
 endif
 
-ifdef PHENIQS_GIT_REVISION
-    override PHENIQS_VERSION := '$(PHENIQS_GIT_REVISION)'
-endif
+PLATFORM := $(shell uname -s)
 
 ifdef PREFIX
     CPPFLAGS += -I$(INCLUDE_PREFIX)
