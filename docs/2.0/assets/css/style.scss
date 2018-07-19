@@ -1,0 +1,274 @@
+---
+---
+
+/*
+    Pheniqs : PHilology ENcoder wIth Quality Statistics
+    Copyright (C) 2017  Lior Galanti
+    NYU Center for Genetics and System Biology
+
+    Author: Lior Galanti <lior.galanti@nyu.edu>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+@import "{{ site.theme }}";
+
+html {
+    font-size: 15px;
+}
+
+body {
+    color: #404c51;
+    background-color: #FFF;
+}
+
+a {
+    color: #1e4ba8;
+}
+
+.page-header .btn {
+    font-size: 0.8rem;
+    margin: 0rem auto 1rem auto;
+    max-width: 10rem;
+    display: none;
+}
+
+.page-header .project-name {
+    padding: 1rem 0rem 0rem 0rem;
+    margin: 0 auto;
+    font-size: 3rem;
+}
+
+.page-header .project-tagline {
+    font-size: 1rem;
+    margin: 0rem auto 1rem auto;
+    padding: 0rem 1rem;
+    opacity: 0.85;
+}
+
+.page-header,
+.main-content {
+    max-width: initial;
+    width: 66rem;
+    margin: 0 auto;
+    border-width: 0rem 1rem;
+    border-color: #FFF;
+    border-style: solid;
+}
+
+.page-header {
+    padding: 0rem 0rem 1rem 0rem;
+    background-color: #993830;
+    background-image: none;
+}
+
+.site-footer {
+    margin-top: 4rem;
+    padding: 2rem;
+    border-width: 0;
+    background-color: rgba(239, 240, 241, 0.7);
+    border-top-right-radius: 0.3rem;
+    border-top-left-radius: 0.3rem;
+}
+
+.main-content {
+    padding: 0rem;
+    font-size: 1rem;
+}
+
+.main-content h1,
+.main-content h2,
+.main-content h3,
+.main-content h4,
+.main-content h5,
+.main-content h6 {
+    color: #333;
+}
+
+.main-content h1 {
+    font-size: 1.8rem;
+    margin-top: 4rem;
+    margin-bottom: 1rem;
+}
+
+.main-content h1.page-title {
+    font-size: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    font-weight: bold;
+    color: rgba(165, 48, 75, 0.9);
+}
+
+.main-content h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.main-content h3 {
+    font-size: 1.25rem;
+}
+
+.main-content p,
+.main-content table {
+    margin: 0rem 0rem 1rem 0rem;
+}
+
+.main-content .example {
+    color: #516168;
+    padding: 1.5rem;
+    margin: 2rem 0rem;
+    background-color: rgba(239, 240, 241, 0.5);
+    border-radius: 0rem 0.3rem 0.3rem 0rem;
+    border-color: rgba(36, 41, 36, 0.75);
+}
+
+.main-content .example code {
+    background-color: transparent;
+}
+
+.main-content .example th,
+.main-content .example td {
+    padding: 0rem 1rem 1rem 0rem;
+    border-color: transparent;
+}
+
+.main-content .example th,
+.main-content .example td,
+.main-content .example p,
+.main-content .example code {
+    font-size: 0.9rem;
+}
+
+.main-content .example p {
+    font-style: italic;
+}
+
+.main-content table th,
+.main-content table td {
+    border-color: #d9dbdc;
+}
+
+.lab-footer {
+    display: block;
+    margin-bottom: 0rem;
+    font-size: 0.8rem;
+    text-align: left;
+    font-weight: bold;
+}
+
+.lab-footer a {
+    white-space: nowrap;
+    font-weight: bold;
+    color: rgba(120, 135, 37, 0.7);
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.lab-footer a.pheniqs {
+    color: rgba(165, 48, 75, 0.9);
+}
+
+.lab-footer a:hover {
+    text-decoration: none;
+    color: rgba(120, 135, 37, 1);
+}
+
+.main-content code {
+    color: #464646;
+    background-color: #f0f0f0;
+}
+
+#navigation {
+    background-color: rgba(36, 41, 36, 0.9);
+    padding: 1.5rem 1rem 0rem 1rem;
+    font-size: 0.8rem;
+    border-bottom-right-radius: 0.3rem;
+    border-bottom-left-radius: 0.3rem;
+    margin-bottom: 4rem;
+}
+
+#navigation a {
+    padding: 0.25rem 0.5rem 0.35rem 0.5rem;
+    float: left;
+    display: block;
+    font-weight: bold;
+    margin: 0rem 0.5rem 0rem 0rem;
+    border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+#navigation a.github {
+    background-color: rgba(153,56,48, 0.85);
+    float: right !important;
+}
+
+#navigation a:link,
+#navigation a:visited {
+    color: #FFF;
+    font-weight: bold;
+}
+
+#navigation a:hover,
+#navigation a.active {
+    text-decoration:none;
+    color: #FFF;
+    font-weight: bold;
+}
+
+#navigation a.active {
+    background-color: rgba(120,135,37,0.6);
+}
+
+#navigation a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#navigation ul {
+    list-style-type: none;
+    list-style-position: inside;
+    display: block;
+}
+
+#markdown-toc {
+    float: right;
+    font-size: 0.8rem;
+    padding: 1rem 1.5rem 1rem 1.5rem;
+    margin: 0 0 2rem 2rem;
+    list-style-type: none;
+    list-style-position: inside;
+    border-radius: 0.3rem;
+    background-color: rgba(36, 41, 36, 0.9);
+}
+
+#markdown-toc a {
+    color: #FFF;
+    font-weight: normal;
+    font-size: 0.8rem;
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+#markdown-toc ul {
+    list-style-type: none;
+    list-style-position: inside;
+    padding: 0rem 0rem 0rem 1rem;
+}
+
+#markdown-toc li {
+    margin: 0 0 0.2rem 0;
+}
+
+.clear {
+    clear: both;
+}
