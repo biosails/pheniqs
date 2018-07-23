@@ -41,11 +41,11 @@
 
 The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing a number of separate sections specifying directives for input and output layout, parsing read segments and run parameters. In the [workflow page](workflow.html) you will find some annotated examples of complete configuration files. If you are new to JSON, a [validator](cli.html#json-validation) can be instrumental for troubleshooting syntax errors. Some parameters are also exposed as command line arguments that override their corresponding configuration file values. A brief description of the command line parameters Pheniqs accepts is always available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to [install the bundled command line completion](cli.html#zsh-completion) script for a more interactive command line experience.
 
-# File Format
+# Supported File Format
 Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq) with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Read manipulation is achieved by means of [tokenization](#tokenization) and [construction](#construction). In the tokenization step Pheniqs consults the token patterns you declared to extract tokens from an [input segment](glossary.html#input_segment). In the construction step [transform patterns](manual.html#transform-pattern) reference the token patterns to construct new segments. The optional construction directive is only necessary when composing output segments from multiple, non continuous, tokens and if omitted each token is assumed to declare a single output segment.
 
-## The input directive
-The simplest configuration can include just an `input` directive. In this example we consider three files that contain synchronized segments from an Illumina MiSEQ instrument. Pheniqs will assemble an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input feed. Relative input and output file paths are resolved against the working directory which defaults to where you execute pheniqs. You may optionally specify the `base input url` and `base output url` directives.
+# The input Directive
+An extremely simple configuration can include nothing more than an `input` directive. In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will assemble an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute pheniqs. You may optionally specify the `base input url` and `base output url` directives.
 
 >```json
 {
@@ -68,7 +68,7 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   77      *       0       0       
 M02455:162:000000000-BDGGG:1:1101:10000:10630   13      *       0       0       *       *       0       0       GGACTCCT        B@CCCFC<        FI:i:2  TC:i:3
 M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       *       *       0       0       GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA     CCCCCGGGGGGGGGGGGGGGGGGGF<FGGGGGGGGGGGGFGFGGGGGGGGG     FI:i:3  TC:i:3
 ```
->**Example 1.2** Output from [interleaving](glossary.html#interleaved_file_layout) the three read segments verbatim into a single SAM formatted stream written to standard output using the configuration file in **Example 1.1**.
+>**Example 1.2** Output header and first 3 records (one complete read) from [interleaving](glossary.html#interleaved_file_layout) the three read segments verbatim into a single SAM formatted stream written to standard output using the configuration file in **Example 1.1**.
 {: .example}
 
 This simple example is very useful for interleaving raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads in a CRAM container also makes archiving your raw data simple. To write the interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
@@ -86,7 +86,7 @@ This simple example is very useful for interleaving raw split read segments into
 >**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
 {: .example}
 
-## Tokenization
+# Tokenization
 The `template` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence and we don't wish to write it to the output we add instructions to assemble an output read from only the first and third segments of the input.
 
 >```json
@@ -109,10 +109,10 @@ The [token patterns](manual.html#tokenization) declared in the `token` array of 
 M02455:162:000000000-BDGGG:1:1101:10000:10630   77      *       0       0       *       *       0       0       CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA     CCCCCGGGFGGGAFDFGFGGFGFGFGGGGGGGDEFDFFGGFEFGCFEFGEG
 M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       *       *       0       0       GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA     CCCCCGGGGGGGGGGGGGGGGGGGF<FGGGGGGGGGGGGFGFGGGGGGGGG
 ```
->**Example 1.5** Output from interleaving the three read segments to a SAM formatted stream using the configuration file in **Example 1.4**. Notice that only the first and third segments were written to the output.
+>**Example 1.5** Output header and first 2 records (one complete read) from interleaving the three read segments to a SAM formatted stream using the configuration file in **Example 1.4**. Notice that only the first and third segments were written to the output.
 {: .example}
 
-## Read Group classification
+# Read Group Classification
 The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them into read groups we need to examine the first 8 nucleotides of the second segment. Decoding the barcode can be as trivial as comparing two strings if we were absolutely confident no errors occurred during sequencing. However in a real world scenario each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. In the `multiplex` directive we declare a single decoder used to classify the reads by examining the segments constructed by the embedded `template` directive and comparing them to the sequence segments declared in the embedded `codec` directive.
 
 >```json
@@ -185,7 +185,7 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 M02455:162:000000000-BDGGG:1:1101:10000:12232   77      *       0       0       *       *       0       0       GTATAGGGGTCACATATAGTTGGTGTGCTTTGTGAACTGCGATCTTGACGG     CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG     RG:Z:000000000-BDGGG:1:GGACTCCT   BC:Z:GGACTCCT   QT:Z:CCCCCGGG   XB:f:1.56086e-06
 M02455:162:000000000-BDGGG:1:1101:10000:12232   141     *       0       0       *       *       0       0       GTCCTATCCTACTCGGCTTCTCCCCATTTTTCAGACATTTTCCTATCAGTC     CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG     RG:Z:000000000-BDGGG:1:GGACTCCT   BC:Z:GGACTCCT   QT:Z:CCCCCGGG   XB:f:1.56086e-06
 ```
->**Example 1.8** Output from demultiplexing using the configuration file in **Example 1.7**. Notice how tags declared globally were added to all read groups. The [RG](glossary.html#rg_auxiliary_tag) and [PU](glossary.html#pu_auxiliary_tag) read group identifiers default to the convention set by [GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472) if you provide the flowcell related directives. The [XB](glossary.html#xb_auxiliary_tag) tag reports the probability the read was incorrectly classified.
+>**Example 1.8** Output header and first 4 records (two complete reads) from demultiplexing using the configuration file in **Example 1.7**. Notice how tags declared globally were added to all read groups. The [RG](glossary.html#rg_auxiliary_tag) and [PU](glossary.html#pu_auxiliary_tag) read group identifiers default to the convention set by [GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472) if you provide the flowcell related directives. The [XB](glossary.html#xb_auxiliary_tag) tag reports the probability the read was incorrectly classified.
 {: .example}
 
 # Providing a Prior
@@ -194,7 +194,7 @@ If the 5 libraries were pooled in non uniform concentrations we will expect the 
 # Minimum Distance Decoding
 Pheniqs can also be instructed to decode the barcodes using the traditional [minimum distance decoder](glossary.html#minimum_distance_decoding), that only consults the edit distance between the expected and observed sequence, by setting the multiplex decoder `algorithm` directive to `mdd`. The MDD decoder however ignores the error probabilities provided by the sequencing instrument and does not compute or report the classification error probability. It is provided for legacy purposes but PAMLD will yield superior results in almost every real world scenario.
 
-# More efficient demultiplexing
+# More Efficient Demultiplexing
 As we mentioned before reading input from CRAM input can be vastly superior to reading from gzip compressed FASTQ files. If your first step was to package the 3 split FASTQ files into a CRAM file, as shown in **Example 1.3**, you can use that file as input.
 
 >```json
