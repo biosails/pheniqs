@@ -32,7 +32,7 @@
         },
         "@HK5NHBGXX_molecular": {
             "algorithm": "naive",
-            "template": { "token": [ "0:8:16" ] }
+            "transform": { "token": [ "0:8:16" ] }
         },
         "@HK5NHBGXX_multiplex": {
             "codec": {
@@ -132,7 +132,7 @@
                 "@TCCTGAGCTCTACTCT": { "barcode": [ "TCCTGAGC", "TCTACTCT" ] },
                 "@TCCTGAGCTCTTACGC": { "barcode": [ "TCCTGAGC", "TCTTACGC" ] }
             },
-            "template": { "token": [ "1::8", "2::8" ] }
+            "transform": { "token": [ "1::8", "2::8" ] }
         }
     },
     "flowcell id": "HK5NHBGXX",
@@ -143,5 +143,5 @@
         "HK5NHBGXX_l01n03.fastq.gz",
         "HK5NHBGXX_l01n04.fastq.gz"
     ],
-    "template": { "token": [ "0::", "3::" ] }
+    "transform": { "token": [ "0::", "3::" ] }
 }

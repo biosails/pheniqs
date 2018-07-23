@@ -131,7 +131,7 @@ template < class T > class ObservationDecoder : public DiscreteDecoder< T > {
         };
         ObservationDecoder(const Value& ontology) try :
             DiscreteDecoder< T >(ontology),
-            rule(decode_value_by_key< Rule >("template", ontology)),
+            rule(decode_value_by_key< Rule >("transform", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
             decoding_distance(0) {

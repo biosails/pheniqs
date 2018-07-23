@@ -4,7 +4,7 @@
     "molecular": [
         {
             "algorithm": "naive",
-            "template": { "token": [ "0:8:16" ] }
+            "transform": { "token": [ "0:8:16" ] }
         }
     ],
     "multiplex": {
@@ -34,7 +34,7 @@
         "noise": 0.02
     },
     "output": [ "BDGGG_annotated.cram" ],
-    "template": {
+    "transform": {
         "comment": "those are the tokens defining the segments in the output read",
         "token": [ "0::", "2::" ]
     },

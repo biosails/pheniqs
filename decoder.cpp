@@ -235,7 +235,7 @@ void CellularPAMLDecoder::decode(const Read& input, Read& output) {
 MolecularNaiveDecoder::MolecularNaiveDecoder(const Value& ontology) try :
     Decoder(ontology),
     nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
-    rule(decode_value_by_key< Rule >("template", ontology)),
+    rule(decode_value_by_key< Rule >("transform", ontology)),
     observation(decode_value_by_key< int32_t >("segment cardinality", ontology)) {
 
     } catch(ConfigurationError& error) {

@@ -154,7 +154,7 @@ void MultiplexJob::validate() {
 void MultiplexJob::describe(ostream& o) const {
     print_global_instruction(o);
     print_input_instruction(o);
-    print_template_instruction(o);
+    print_transform_instruction(o);
     print_multiplex_instruction(o);
     print_molecular_instruction(o);
     print_cellular_instruction(o);
@@ -622,26 +622,26 @@ void MultiplexJob::compile_decoder_group(const Value::Ch* key) {
 void MultiplexJob::compile_output_transformation() {
     const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
 
-    /* if the output template was not defined add an empty dictionary */
-    if(!ontology.HasMember("template")) {
-        ontology.AddMember("template", Value(kObjectType).Move(), ontology.GetAllocator());
+    /* if the output transform was not defined add an empty dictionary */
+    if(!ontology.HasMember("transform")) {
+        ontology.AddMember("transform", Value(kObjectType).Move(), ontology.GetAllocator());
     }
 
-    /* if template does not define a token array route all input segments to the output verbatim */
-    if(!ontology["template"].HasMember("token")) {
+    /* if transform does not define a token array route all input segments to the output verbatim */
+    if(!ontology["transform"].HasMember("token")) {
         Value token_array(kArrayType);
         for(int32_t i(0); i < input_segment_cardinality; ++i) {
             string token(to_string(i) + "::");
             token_array.PushBack(Value(token.c_str(), token.size(), ontology.GetAllocator()), ontology.GetAllocator());
         }
-        ontology["template"].AddMember("token", token_array.Move(), ontology.GetAllocator());
+        ontology["transform"].AddMember("token", token_array.Move(), ontology.GetAllocator());
     }
     compile_transformation(ontology);
 };
 void MultiplexJob::compile_output() {
-    /* load output template */
+    /* load output transform */
     compile_output_transformation();
-    Rule rule(decode_value_by_key< Rule >("template", ontology));
+    Rule rule(decode_value_by_key< Rule >("transform", ontology));
 
     const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
     for(auto& token : rule.token_array) {
@@ -781,36 +781,36 @@ void MultiplexJob::compile_transformation(Value& value) {
     /* add the default observation if one was not specificed.
        default observation will treat every token as a segment */
     if(value.IsObject()) {
-        Value::MemberIterator reference = value.FindMember("template");
+        Value::MemberIterator reference = value.FindMember("transform");
         if(reference != value.MemberEnd()) {
             if(reference->value.IsObject()) {
-                Value& template_element(reference->value);
-                reference = template_element.FindMember("token");
-                if(reference != template_element.MemberEnd()) {
+                Value& transform_element(reference->value);
+                reference = transform_element.FindMember("token");
+                if(reference != transform_element.MemberEnd()) {
                     if(reference->value.IsArray()) {
                         int32_t token_cardinality(reference->value.Size());
 
-                        reference = template_element.FindMember("observation");
-                        if(reference == template_element.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
+                        reference = transform_element.FindMember("segment pattern");
+                        if(reference == transform_element.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
                             Value observation(kArrayType);
                             for(int32_t i(0); i < token_cardinality; ++i) {
                                 string element(to_string(i));
                                 observation.PushBack(Value(element.c_str(), element.size(),ontology.GetAllocator()).Move(), ontology.GetAllocator());
                             }
-                            template_element.RemoveMember("observation");
-                            template_element.AddMember(Value("observation", ontology.GetAllocator()).Move(), observation.Move(), ontology.GetAllocator());
+                            transform_element.RemoveMember("segment pattern");
+                            transform_element.AddMember(Value("segment pattern", ontology.GetAllocator()).Move(), observation.Move(), ontology.GetAllocator());
                         }
-                    } else { throw ConfigurationError("template token element is not an array"); }
-                } else { throw ConfigurationError("template element is missing a token array"); }
+                    } else { throw ConfigurationError("transform token element is not an array"); }
+                } else { throw ConfigurationError("transform element is missing a token array"); }
             }
         }
     }
 };
 void MultiplexJob::compile_decoder_transformation(Value& value) {
-    if(value.HasMember("template")) {
+    if(value.HasMember("transform")) {
         compile_transformation(value);
 
-        Rule rule(decode_value_by_key< Rule >("template", value));
+        Rule rule(decode_value_by_key< Rule >("transform", value));
         int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
 
         /* validate all tokens refer to an existing input segment */
@@ -1210,7 +1210,7 @@ void MultiplexJob::print_global_instruction(ostream& o) const {
 
     int32_t leading_segment_index;
     decode_value_by_key< int32_t >("leading segment index", leading_segment_index, ontology);
-    o << "    Leading template segment                    " << to_string(leading_segment_index) << endl;
+    o << "    Leading segment index                       " << to_string(leading_segment_index) << endl;
 
     int32_t buffer_capacity;
     decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, ontology);
@@ -1249,19 +1249,19 @@ void MultiplexJob::print_codec_instruction(const Value& value, const bool& plura
         }
 
         Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
-        o << "    Decoding algorithm                   " << algorithm << endl;
+        o << "    Decoding algorithm                          " << algorithm << endl;
 
         uint8_t quality_masking_threshold;
         if(decode_value_by_key< uint8_t >("quality masking threshold", quality_masking_threshold, value)) {
             if(quality_masking_threshold > 0) {
-                o << "    Quality masking threshold            " << int32_t(quality_masking_threshold) << endl;
+                o << "    Quality masking threshold                   " << int32_t(quality_masking_threshold) << endl;
             }
         }
 
         if(algorithm == Algorithm::MDD) {
             vector< uint8_t > distance_tolerance;
             if(decode_value_by_key< vector< uint8_t > >("distance tolerance", distance_tolerance, value)) {
-                o << "    Distance tolerance                  ";
+                o << "    Distance tolerance                          ";
                 for(auto& element : distance_tolerance) {
                     o << " " << int32_t(element);
                 }
@@ -1271,25 +1271,25 @@ void MultiplexJob::print_codec_instruction(const Value& value, const bool& plura
 
         if(algorithm == Algorithm::PAMLD) {
             double noise(decode_value_by_key< double >("noise", value));
-            o << "    Noise                                " << noise << endl;
+            o << "    Noise                                       " << noise << endl;
 
             double confidence_threshold(decode_value_by_key< double >("confidence threshold", value));
-            o << "    Confidence threshold                 " << confidence_threshold << endl;
+            o << "    Confidence threshold                        " << confidence_threshold << endl;
         }
 
         int32_t segment_cardinality(decode_value_by_key< int32_t >("segment cardinality", value));
         if(segment_cardinality > 0) {
-            o << "    Segment cardinality                  " << to_string(segment_cardinality) << endl;
+            o << "    Segment cardinality                         " << to_string(segment_cardinality) << endl;
 
             int32_t nucleotide_cardinality;
             if(decode_value_by_key< int32_t >("nucleotide cardinality", nucleotide_cardinality, value)) {
-                o << "    Nucleotide cardinality               " << to_string(nucleotide_cardinality) << endl;
+                o << "    Nucleotide cardinality                      " << to_string(nucleotide_cardinality) << endl;
             }
 
             if(segment_cardinality > 1) {
                 vector< int32_t > barcode_length;
                 if(decode_value_by_key< vector< int32_t > >("barcode length", barcode_length, value)) {
-                    o << "    Barcode segment length               ";
+                    o << "    Barcode segment length                      ";
                     for(const auto& v : barcode_length) {
                         o << to_string(v) << " ";
                     }
@@ -1297,20 +1297,22 @@ void MultiplexJob::print_codec_instruction(const Value& value, const bool& plura
                 }
             }
 
-            if(!ontology.HasMember("template")) {
-                Rule rule(decode_value_by_key< Rule >("template", value));
+            o << endl << "    Transform" << endl;
+
+            if(ontology.HasMember("transform")) {
+                Rule rule(decode_value_by_key< Rule >("transform", value));
                 o << endl;
                 for(auto& token : rule.token_array) {
-                    o << "    Token No." << token.index << endl;
-                    o << "        Length        " << (token.constant() ? to_string(token.length()) : "variable") << endl;
-                    o << "        Pattern       " << string(token) << endl;
-                    o << "        Description   ";
+                    o << "        Token No." << token.index << endl;
+                    o << "            Length        " << (token.constant() ? to_string(token.length()) : "variable") << endl;
+                    o << "            Pattern       " << string(token) << endl;
+                    o << "            Description   ";
                     o << token.description() << endl;
                     o << endl;
                 }
-                o << "    Transform" << endl;
+                o << "        Assembly instruction" << endl;
                 for(const auto& transform : rule.transform_array) {
-                    o << "        " << transform.description() << endl;
+                    o << "            " << transform.description() << endl;
                 }
                 o << endl;
 
@@ -1321,24 +1323,26 @@ void MultiplexJob::print_codec_instruction(const Value& value, const bool& plura
             }
         }
 
+        cout << endl;
         Value::ConstMemberIterator reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()) {
-            print_channel_instruction(reference->value, o);
+            const string key(reference->name.GetString(), reference->name.GetStringLength());
+            print_channel_instruction(key, reference->value, o);
         }
         reference = value.FindMember("codec");
         if(reference != value.MemberEnd()) {
             if(reference->value.IsObject()) {
                 for(const auto& record : reference->value.GetObject()) {
-                    print_channel_instruction(record.value, o);
+                    const string key(record.name.GetString(), record.name.GetStringLength());
+                    print_channel_instruction(key, record.value, o);
                 }
             }
         }
     }
 };
-void MultiplexJob::print_channel_instruction(const Value& value, ostream& o) const {
+void MultiplexJob::print_channel_instruction(const string& key, const Value& value, ostream& o) const {
     if(value.IsObject()) {
-        int32_t index(decode_value_by_key< int32_t >("index", value));
-        o << "    Channel No." << index << endl;
+        o << "    Barcode " << key << endl;
 
         string buffer;
         if(decode_value_by_key< string >("ID", buffer, value)) { o << "        ID : " << buffer << endl; }
@@ -1355,13 +1359,17 @@ void MultiplexJob::print_channel_instruction(const Value& value, ostream& o) con
         if(decode_value_by_key< string >("PI", buffer, value)) { o << "        PI : " << buffer << endl; }
         if(decode_value_by_key< string >("FS", buffer, value)) { o << "        FS : " << buffer << endl; }
         if(decode_value_by_key< string >("CO", buffer, value)) { o << "        CO : " << buffer << endl; }
-        double concentration;
-        if(decode_value_by_key< double >("concentration", concentration, value)) {
-            o << "        Concentration : " << concentration << endl;
-        }
 
-        Barcode barcode(value);
-        if(!barcode.empty()) { o << "        Barcode       : " << barcode.iupac_ambiguity() << endl; }
+        int32_t index(decode_value_by_key< int32_t >("index", value));
+        if(index > 0) {
+            double concentration;
+            if(decode_value_by_key< double >("concentration", concentration, value)) {
+                o << "        Concentration : " << concentration << endl;
+            }
+
+            Barcode barcode(value);
+            if(!barcode.empty()) { o << "        Barcode       : " << barcode.iupac_ambiguity() << endl; }
+        }
 
         int32_t segment_index(0);
         list< URL > output;
@@ -1434,17 +1442,17 @@ void MultiplexJob::print_input_instruction(ostream& o) const {
     }
     print_feed_instruction("input feed", o);
 };
-void MultiplexJob::print_template_instruction(ostream& o) const {
-    o << "Template" << endl << endl;
+void MultiplexJob::print_transform_instruction(ostream& o) const {
+    o << "Output transform" << endl << endl;
 
     int32_t output_segment_cardinality;
     if(decode_value_by_key< int32_t >("output segment cardinality", output_segment_cardinality, ontology)) {
         o << "    Output segment cardinality                  " << to_string(output_segment_cardinality) << endl;
     }
 
-    Rule template_rule(decode_value_by_key< Rule >("template", ontology));
+    Rule rule(decode_value_by_key< Rule >("transform", ontology));
     o << endl;
-    for(auto& token : template_rule.token_array) {
+    for(auto& token : rule.token_array) {
         o << "    Token No." << token.index << endl;
         o << "        Length        " << (token.constant() ? to_string(token.length()) : "variable") << endl;
         o << "        Pattern       " << string(token) << endl;
@@ -1452,21 +1460,21 @@ void MultiplexJob::print_template_instruction(ostream& o) const {
         o << token.description() << endl;
         o << endl;
     }
-    o << "    Transformation" << endl;
-    for(const auto& transform : template_rule.transform_array) {
+    o << "    Assembly instruction" << endl;
+    for(const auto& transform : rule.transform_array) {
         o << "        " << transform.description() << endl;
     }
     o << endl;
 };
 void MultiplexJob::print_multiplex_instruction(ostream& o) const {
-    print_codec_group_instruction("multiplex", "Mutliplexing", o);
+    print_codec_group_instruction("multiplex", "Mutliplex decoding", o);
     print_feed_instruction("output feed", o);
 };
 void MultiplexJob::print_molecular_instruction(ostream& o) const {
-    print_codec_group_instruction("molecular", "Unique Molecular Identifier", o);
+    print_codec_group_instruction("molecular", "Molecular decoding", o);
 };
 void MultiplexJob::print_cellular_instruction(ostream& o) const {
-    print_codec_group_instruction("cellular", "Cellular Identifier", o);
+    print_codec_group_instruction("cellular", "Cellular decoding", o);
 };
 
 MultiplexPivot::MultiplexPivot(MultiplexJob& job, const int32_t& index) try :
@@ -1482,7 +1490,7 @@ MultiplexPivot::MultiplexPivot(MultiplexJob& job, const int32_t& index) try :
     output_accumulator(find_value_by_key("multiplex", job.ontology)),
     job(job),
     disable_quality_control(decode_value_by_key< bool >("disable quality control", job.ontology)),
-    template_rule(decode_value_by_key< Rule >("template", job.ontology)) {
+    template_rule(decode_value_by_key< Rule >("transform", job.ontology)) {
 
     load_multiplex_decoding();
     load_molecular_decoding();

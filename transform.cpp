@@ -175,8 +175,8 @@ template<> vector< Token > decode_value_by_key(const Value::Ch* key, const Value
     } else { throw ConfigurationError(string(key) + " element not found"); }
 };
 
-/*  Transform */
-Transform::Transform(
+/*  EmbeddedToken */
+EmbeddedToken::EmbeddedToken(
     const Token& token,
     const int32_t& output_segment_index,
     const LeftTokenOperator& left) :
@@ -185,12 +185,12 @@ Transform::Transform(
     token(token),
     left(left) {
 };
-Transform::Transform(const Transform& other) :
+EmbeddedToken::EmbeddedToken(const EmbeddedToken& other) :
     output_segment_index(other.output_segment_index),
     token(other.token),
     left(other.left) {
 };
-string Transform::description() const {
+string EmbeddedToken::description() const {
     string o("Append ");
     switch (left) {
         case LeftTokenOperator::NONE:
@@ -207,7 +207,7 @@ string Transform::description() const {
     o.append(to_string(output_segment_index));
     return o;
 };
-Transform::operator string() const {
+EmbeddedToken::operator string() const {
     string o;
     switch (left) {
         case LeftTokenOperator::NONE:
@@ -219,7 +219,7 @@ Transform::operator string() const {
     o.append(to_string(token.index));
     return o;
 };
-ostream& operator<<(ostream& o, const Transform& transform) {
+ostream& operator<<(ostream& o, const EmbeddedToken& transform) {
     switch (transform.left) {
         case LeftTokenOperator::NONE:
             break;
@@ -230,7 +230,7 @@ ostream& operator<<(ostream& o, const Transform& transform) {
     o << transform.token.index;
     return o;
 };
-bool encode_key_value(const string& key, const list< Transform >& value, Value& container, Document& document) {
+bool encode_key_value(const string& key, const list< EmbeddedToken >& value, Value& container, Document& document) {
     if(!value.empty()) {
         Value collection(kArrayType);
         int32_t index(0);
@@ -262,12 +262,12 @@ template<> Rule decode_value_by_key(const Value::Ch* key, const Value& container
         if(!rule_element.IsNull()) {
             if(rule_element.IsObject()) {
                 vector< Token > token_array(decode_value_by_key< vector< Token > >("token", rule_element));
-                reference = rule_element.FindMember("observation");
+                reference = rule_element.FindMember("segment pattern");
                 if(reference != rule_element.MemberEnd()) {
                     const Value& observation_element(reference->value);
                     if(!observation_element.IsNull()) {
                         if(observation_element.IsArray()) {
-                            list< Transform > transform_array;
+                            list< EmbeddedToken > transform_array;
                             int32_t output_segment_cardinality(0);
 
                             for(auto& element : observation_element.GetArray()) {

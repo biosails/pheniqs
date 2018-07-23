@@ -100,33 +100,33 @@ class Token {
 ostream& operator<<(ostream& o, const Token& token);
 template<> vector< Token > decode_value_by_key(const Value::Ch* key, const Value& container);
 
-class Transform {
-    friend ostream& operator<<(ostream& o, const Transform& transform);
-    void operator=(Transform const &) = delete;
+class EmbeddedToken {
+    friend ostream& operator<<(ostream& o, const EmbeddedToken& transform);
+    void operator=(EmbeddedToken const &) = delete;
 
     public:
         const int32_t output_segment_index;
         const Token token;
         const LeftTokenOperator left;
 
-        Transform(const Token& token, const int32_t& output_segment_index, const LeftTokenOperator& left);
-        Transform(const Transform& other);
+        EmbeddedToken(const Token& token, const int32_t& output_segment_index, const LeftTokenOperator& left);
+        EmbeddedToken(const EmbeddedToken& other);
         string description() const;
         operator string() const;
 };
-ostream& operator<<(ostream& o, const Transform& transform);
-bool encode_key_value(const string& key, const list< Transform >& value, Value& container, Document& document);
+ostream& operator<<(ostream& o, const EmbeddedToken& transform);
+bool encode_key_value(const string& key, const list< EmbeddedToken >& value, Value& container, Document& document);
 
 class Rule {
     public:
         const vector< Token > token_array;
         const int32_t output_segment_cardinality;
-        const list< Transform > transform_array;
+        const list< EmbeddedToken > transform_array;
 
         Rule(
             const vector< Token > token_array,
             const int32_t output_segment_cardinality,
-            const list< Transform > transform_array) :
+            const list< EmbeddedToken > transform_array) :
 
             token_array(token_array),
             output_segment_cardinality(output_segment_cardinality),
@@ -179,7 +179,7 @@ class TemplateRule : public Rule {
         TemplateRule(
             const vector< Token > token_array,
             const int32_t output_segment_cardinality,
-            const list< Transform > transform_array) :
+            const list< EmbeddedToken > transform_array) :
             Rule(token_array, output_segment_cardinality, transform_array) {
         };
         TemplateRule(const TemplateRule& other) :

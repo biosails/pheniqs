@@ -4,7 +4,7 @@
             "algorithm": "mdd",
             "base": "@HK5NHBGXX_cellular",
             "quality masking threshold": 8,
-            "template": { "token": [ "0::8", "3:-8:" ] }
+            "transform": { "token": [ "0::8", "3:-8:" ] }
         },
         {
             "algorithm": "pamld",
@@ -15,7 +15,7 @@
             },
             "confidence threshold": 0.95,
             "noise": 0.02,
-            "template": { "token": [ "0:8:16", "3:-16:-8" ] }
+            "transform": { "token": [ "0:8:16", "3:-16:-8" ] }
         }
     ],
     "import": [ "HK5NHBGXX_cram.json" ]
