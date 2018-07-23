@@ -32,9 +32,7 @@ class Job {
         Document ontology;
         Document report;
         Job(Document& operation);
-        virtual ~Job() {
-
-        };
+        virtual ~Job() {};
         inline bool is_lint_only() const {
             return decode_value_by_key< bool >("lint only", ontology);
         };
@@ -43,38 +41,25 @@ class Job {
         };
         virtual void assemble();
         virtual void compile();
-        virtual void load() {
-        };
-        virtual void execute() {
-        };
-        virtual void print_ontology(ostream& o) const {
-            print_json(ontology, o);
-        };
-        virtual void print_compiled(ostream& o) const {
-            print_json(ontology, o);
-        };
-        virtual void print_report(ostream& o) const {
-            print_json(report, o);
-        };
-        virtual void describe(ostream& o) const {
-        };
+        virtual void load() {};
+        virtual void execute() {};
+        virtual void print_ontology(ostream& o) const;
+        virtual void print_compiled(ostream& o) const;
+        virtual void print_report(ostream& o) const;
+        virtual void describe(ostream& o) const;
 
     protected:
-        const Pointer projection_query;
-
-        virtual void remove_disabled();
+        virtual void manipulate() {};
         virtual void clean();
-        virtual void manipulate() {
-
-        };
-        virtual void validate() {
-
-        };
-        void overlay(const Value& value);
+        virtual void validate() {};
+        void overlay(const Value& instruction);
+        const Value* find_projection(const string& key) const;
         Document read_instruction_document(const URL& url) const;
 
     private:
-        void apply_instruction_import(Document& instruction) const;
+        const Pointer projection_query;
+        void remove_disabled();
+        Document load_document_with_import(const URL& url, set< URL >& visited) const;
 };
 
 #endif /* PHENIQS_PIPELINE_H */

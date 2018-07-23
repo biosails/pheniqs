@@ -2,10 +2,21 @@
     "action": [
         {
             "default": {
-                "algorithm": "pamld"
+                "input": [
+                    "/dev/stdin"
+                ],
+                "multiplex": {
+                    "algorithm": "pipe"
+                },
+                "output": [
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                ]
             },
             "description": "Demultiplex and report quality control",
-            "implementation": "demultiplex",
+            "implementation": "multiplex",
             "name": "demux",
             "option": [
                 {
@@ -308,20 +319,48 @@
             "projection": null,
             "working directory": null
         },
-        "barcode": {
+        "cellular:barcode": {
+            "algorithm": null,
+            "concentration": 1,
+            "disable quality control": null,
+            "segment cardinality": null
+        },
+        "cellular:decoder": {
+            "algorithm": "pamld",
+            "codec": null,
+            "confidence threshold": 0.99,
+            "disable quality control": null,
+            "distance tolerance": null,
+            "noise": 0.01,
+            "quality masking threshold": 0,
+            "undetermined": null
+        },
+        "molecular:barcode": {
+            "algorithm": null,
+            "concentration": 1,
+            "disable quality control": null,
+            "segment cardinality": null
+        },
+        "molecular:decoder": {
+            "algorithm": "naive",
+            "codec": null,
+            "confidence threshold": 0.99,
+            "disable quality control": null,
+            "distance tolerance": null,
+            "noise": 0.01,
+            "quality masking threshold": 0,
+            "undetermined": null
+        },
+        "multiplex:barcode": {
+            "include filtered": false,
             "CN": null,
-            "DS": null,
             "DT": null,
-            "FO": null,
-            "ID": null,
-            "KS": null,
             "LB": null,
             "PG": null,
+            "PI": null,
             "PL": null,
             "PM": null,
-            "PU": null,
             "SM": null,
-            "TC": null,
             "algorithm": null,
             "concentration": 1,
             "disable quality control": null,
@@ -330,24 +369,28 @@
             "output": null,
             "segment cardinality": null
         },
-        "decoder": {
-            "adjusted noise probability": null,
-            "algorithm": null,
-            "barcode length": null,
-            "base": null,
+        "multiplex:decoder": {
+            "include filtered": false,
+            "CN": null,
+            "DT": null,
+            "LB": null,
+            "PG": null,
+            "PI": null,
+            "PL": null,
+            "PM": null,
+            "SM": null,
+            "algorithm": "pamld",
             "base output url": null,
             "codec": null,
-            "concatenated barcode length": null,
-            "confidence threshold": null,
+            "confidence threshold": 0.99,
             "disable quality control": null,
             "distance tolerance": null,
             "flowcell id": null,
             "flowcell lane number": null,
-            "noise": 0,
+            "noise": 0.01,
             "output": null,
+            "segment cardinality": 0,
             "quality masking threshold": 0,
-            "random barcode probability": null,
-            "segment cardinality": null,
             "undetermined": null
         }
     },

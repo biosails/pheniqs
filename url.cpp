@@ -160,6 +160,11 @@ void to_string(const FormatType& value, string& result) {
         default:                                             break;
     }
 };
+string to_string(const FormatType& value) {
+    string result;
+    to_string(value, result);
+    return result;
+};
 bool from_string(const char* value, FormatType& result) {
          if(value == NULL)              result = FormatType::UNKNOWN;
     else if(!strcmp(value, "none"))     result = FormatType::NONE;
@@ -466,13 +471,33 @@ void URL::decode_extension(const FormatType& type) {
     _extension.clear();
     to_string(type, _extension);
 };
-void URL::describe(ostream& o) const {
-    o << "path : " << _path << endl;
-    o << "basename : " << _basename << endl;
-    o << "dirname : " << _dirname << endl;
-    o << "extension : " << _extension << endl;
-    o << "compression : " << _compression << endl;
-    o << "type : " << _type << endl;
+string URL::description() const {
+    string description;
+    description.append("Path        : ");
+    description.append(_path);
+    description.append("\n");
+
+    description.append("Basename    : ");
+    description.append(_basename);
+    description.append("\n");
+
+    description.append("Dirname     : ");
+    description.append(_dirname);
+    description.append("\n");
+
+    description.append("Extension   : ");
+    description.append(_extension);
+    description.append("\n");
+
+    description.append("Compression : ");
+    if(!_compression.empty()) { description.append(_compression); } else { description.append("uncompressed"); }
+    description.append("\n");
+
+    description.append("Type        : ");
+    description.append(to_string(_type));
+    description.append("\n");
+
+    return description;
 };
 
 bool operator<(const URL& lhs, const URL& rhs) {

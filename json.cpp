@@ -98,7 +98,7 @@ void project_json_value(const Value& base, const Value& ontology, Value& contain
         container.CopyFrom(ontology, document.GetAllocator());
     }
 };
-void clean_json_value(Value& ontology) {
+void clean_json_value(Value& ontology, Document& document) {
     switch (ontology.GetType()) {
         case Type::kNullType:
         case Type::kTrueType:
@@ -110,33 +110,31 @@ void clean_json_value(Value& ontology) {
             break;
         };
         case Type::kObjectType: {
-            for(Value::MemberIterator iterator = ontology.MemberBegin(); iterator != ontology.MemberEnd(); ++iterator) {
-                clean_json_value(iterator->value);
-                if(iterator->value.IsNull()) {
-                    ontology.RemoveMember(iterator);
+            Value clean(kObjectType);
+            for(auto& record : ontology.GetObject()) {
+                clean_json_value(record.value, document);
+                if(!record.value.IsNull()) {
+                    clean.AddMember(record.name.Move(), record.value.Move(), document.GetAllocator());
                 }
             }
-            if(ontology.ObjectEmpty()) {
-                ontology.SetNull();
-            }
+            if(clean.ObjectEmpty()) { clean.SetNull(); }
+            ontology.Swap(clean);
             break;
         };
         case Type::kArrayType: {
-            for(Value::ValueIterator iterator = ontology.Begin(); iterator != ontology.End(); ++iterator) {
-                clean_json_value(*iterator);
-                if(iterator->IsNull()) {
-                    ontology.Erase(iterator);
+            Value clean(kArrayType);
+            for(auto& element : ontology.GetArray()) {
+                clean_json_value(element, document);
+                if(!element.IsNull()) {
+                    clean.PushBack(element.Move(), document.GetAllocator());
                 }
             }
-            if(ontology.Empty()) {
-                ontology.SetNull();
-            }
+            if(clean.Empty()) { clean.SetNull(); }
+            ontology.Swap(clean);
             break;
         };
         case Type::kStringType: {
-            if(ontology.GetStringLength() < 1) {
-                ontology.SetNull();
-            }
+            if(ontology.GetStringLength() < 1) { ontology.SetNull(); }
             break;
         };
     }
@@ -153,6 +151,11 @@ void sort_json_value(Value& ontology, Document& document) {
             sorted.AddMember(Value(record.first.c_str(), record.first.size(), document.GetAllocator()).Move(), record.second->Move(), document.GetAllocator());
         }
         ontology.Swap(sorted);
+
+    } else if(ontology.IsArray()) {
+        for(auto& element : ontology.GetArray()) {
+            sort_json_value(element, document);
+        }
     }
 };
 

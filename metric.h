@@ -167,7 +167,7 @@ class CodecMetric {
         const size_t segment_cardinality;
         const int32_t nucleotide_cardinality;
         const vector< int32_t > barcode_segment_length;
-        CodecMetric(const Value& ontology) :
+        CodecMetric(const Value& ontology) try :
             ontology(ontology),
             segment_cardinality(decode_value_by_key< int32_t >("segment cardinality", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
@@ -195,6 +195,12 @@ class CodecMetric {
                 }
             }
             load();
+
+            } catch(ConfigurationError& error) {
+                throw ConfigurationError("CodecMetric :: " + error.message);
+
+            } catch(exception& error) {
+                throw InternalError("CodecMetric :: " + string(error.what()));
         };
         inline bool empty() const {
             return concatenated_metric.empty();
@@ -230,7 +236,7 @@ class CodecMetric {
                 if(segment_cardinality > 1) {
                     int32_t index(0);
                     for(auto& segment : segment_metric) {
-                        o << "    Skegment No." << index << endl << endl;
+                        o << "    Segment No." << index << endl << endl;
                         segment.describe(o);
                         ++index;
                     }

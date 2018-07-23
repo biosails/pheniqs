@@ -138,7 +138,6 @@ class Read : public SequenceArray< Segment > {
 
     public:
         const Platform platform;
-
         uint32_t multiplex_distance;
         double multiplex_decoding_confidence;
         uint32_t molecular_distance;

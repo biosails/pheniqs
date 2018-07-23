@@ -21,30 +21,29 @@
 
 #include "barcode.h"
 
-Barcode::Barcode(const Value& ontology) :
+Barcode::Barcode(const Value& ontology) try :
     SequenceArray< Sequence >(decode_value_by_key< int32_t >("segment cardinality", ontology)),
     index(decode_value_by_key< int32_t >("index", ontology)),
     concentration(decode_value_by_key< double >("concentration", ontology)) {
+
     Value::ConstMemberIterator reference = ontology.FindMember("barcode");
     if(reference != ontology.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsArray()) {
-                if(reference->value.Size() == segment_cardinality()) {
-                    size_t segment_index(0);
-                    for(auto& segment : reference->value.GetArray()) {
-                        if(!segment.IsNull()) {
-                            if(segment.IsString()) {
-                                // if(is_iupac_strict_sequence(segment.GetString())) {
-                                    segment_array[segment_index].fill(segment.GetString(), static_cast< int32_t >(segment.GetStringLength()));
-                                    ++segment_index;
-                                // } else { throw ConfigurationError("barcode segment " + to_string(segment_index) + " " + string(segment.GetString(), segment.GetStringLength()) + " is not strict IUPAC encoded"); }
-                            } else { throw ConfigurationError("barcode segment " + to_string(segment_index) + " must be a string"); }
-                        } else { throw ConfigurationError("barcode segment " + to_string(segment_index) + " can not be null"); }
-                    }
-                } else { throw ConfigurationError("barcode must have exactly " + to_string(segment_cardinality()) + " segments"); }
-            } else { throw ConfigurationError("barcode segment element must be an array"); }
-        } else { throw ConfigurationError("barcode segment can not be null"); }
-    } else { throw ConfigurationError("barcode is missing a barcode segment element"); }
+        if(reference->value.Size() == segment_cardinality()) {
+            size_t segment_index(0);
+            for(auto& segment : reference->value.GetArray()) {
+                if(segment.IsString()) {
+                    segment_array[segment_index].fill(segment.GetString(), static_cast< int32_t >(segment.GetStringLength()));
+                    ++segment_index;
+                } else { throw ConfigurationError("barcode segment " + to_string(segment_index) + " must be a string"); }
+            }
+        } else { throw ConfigurationError("barcode must have exactly " + to_string(segment_cardinality()) + " segments"); }
+    }
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Barcode :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Barcode :: " + string(error.what()));
 };
 
 template<> vector< Barcode > decode_value_by_key(const Value::Ch* key, const Value& container) {

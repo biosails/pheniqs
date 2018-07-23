@@ -153,6 +153,9 @@ script:
     - ./pheniqs --version
     - ./pheniqs --help
     - ./pheniqs demux --help
-    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json -VD
-    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json -j
-    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json
+    - ./pheniqs demux --config test/BDGGG/BDGGG_interleave.json -VD >> test/BDGGG/BDGGG.log 2>&1
+    - ./pheniqs demux --config test/BDGGG/BDGGG_interleave.json -j >> test/BDGGG/BDGGG.log 2>&1
+    - ./pheniqs demux --config test/BDGGG/BDGGG_interleave.json >> test/BDGGG/BDGGG.log 2>&1
+    - ./pheniqs demux --config test/BDGGG/BDGGG_annotated.json -VD >> test/BDGGG/BDGGG.log 2>&1
+    - ./pheniqs demux --config test/BDGGG/BDGGG_annotated.json -j >> test/BDGGG/BDGGG.log 2>&1
+    - ./pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log 2>&1

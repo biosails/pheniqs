@@ -30,23 +30,17 @@
 #include "decoder.h"
 #include "metric.h"
 
-class Demultiplex;
-class DemultiplexPivot;
+class MultiplexJob;
+class MultiplexPivot;
 
-class Demultiplex : public Job {
-    Demultiplex(Demultiplex const &) = delete;
-    void operator=(Demultiplex const &) = delete;
+class MultiplexJob : public Job {
+    friend class MultiplexPivot;
+    MultiplexJob(MultiplexJob const &) = delete;
+    void operator=(MultiplexJob const &) = delete;
 
     public:
-        Demultiplex(Document& operation) :
-            Job(operation),
-            decoder_projection_query("/projection/decoder"),
-            barcode_projection_query("/projection/barcode"),
-            decoder_repository_query("/decoder"),
-            end_of_input(false),
-            thread_pool({NULL, 0}){
-        };
-        ~Demultiplex() override;
+        MultiplexJob(Document& operation);
+        ~MultiplexJob() override;
         inline bool display_distance() const {
             return decode_value_by_key< bool >("display distance", ontology);
         };
@@ -55,25 +49,10 @@ class Demultiplex : public Job {
         void stop();
         void execute() override;
         void describe(ostream& o) const override;
-        void populate_decoder(DiscreteDecoder< Channel >& decoder);
         bool pull(Read& read);
-        void print_compiled(ostream& o) const override {
-            Document compiled;
-            compiled.CopyFrom(ontology, compiled.GetAllocator());
-            compiled.RemoveMember("decoder");
-            compiled.RemoveMember("configuration url");
-            compiled.RemoveMember("full command");
-            compiled.RemoveMember("input feed");
-            compiled.RemoveMember("input feed by segment");
-            compiled.RemoveMember("operation");
-            compiled.RemoveMember("output feed");
-            compiled.RemoveMember("program");
-            print_json(compiled, o);
-        };
+        void print_compiled(ostream& o) const override;
 
     protected:
-        const Pointer decoder_projection_query;
-        const Pointer barcode_projection_query;
         const Pointer decoder_repository_query;
 
         void manipulate() override;
@@ -82,7 +61,7 @@ class Demultiplex : public Job {
     private:
         bool end_of_input;
         htsThreadPool thread_pool;
-        list< DemultiplexPivot > pivot_array;
+        list< MultiplexPivot > pivot_array;
         list< Feed* > input_feed_by_index;
         list< Feed* > output_feed_by_index;
         vector< Feed* > input_feed_by_segment;
@@ -93,6 +72,7 @@ class Demultiplex : public Job {
         void compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode);
         void compile_decoder_group(const Value::Ch* key);
         void compile_output();
+        void compile_output_transformation();
         void compile_transformation(Value& value);
         void compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode);
         void compile_decoder_transformation(Value& value);
@@ -118,15 +98,14 @@ class Demultiplex : public Job {
         void print_feed_instruction(const Value::Ch* key, ostream& o) const;
         void print_input_instruction(ostream& o) const;
         void print_template_instruction(ostream& o) const;
-        void print_codec_template(const Value& value, ostream& o) const;
         void print_multiplex_instruction(ostream& o) const;
         void print_molecular_instruction(ostream& o) const;
         void print_cellular_instruction(ostream& o) const;
 };
 
-class DemultiplexPivot {
-    DemultiplexPivot(DemultiplexPivot const &) = delete;
-    void operator=(DemultiplexPivot const &) = delete;
+class MultiplexPivot {
+    MultiplexPivot(MultiplexPivot const &) = delete;
+    void operator=(MultiplexPivot const &) = delete;
 
     public:
         const int32_t index;
@@ -136,28 +115,23 @@ class DemultiplexPivot {
         const int32_t output_segment_cardinality;
         Read input;
         Read output;
-        DiscreteDecoder< Channel >* multiplex;
+        RoutingDecoder< Channel >* multiplex;
         vector< Decoder* > molecular;
         vector< Decoder* > cellular;
         InputAccumulator input_accumulator;
         OutputAccumulator output_accumulator;
-        DemultiplexPivot(Demultiplex& job, const int32_t& index);
+        MultiplexPivot(MultiplexJob& job, const int32_t& index);
         void start() {
-            pivot_thread = thread(&DemultiplexPivot::run, this);
+            pivot_thread = thread(&MultiplexPivot::run, this);
         };
         void join() {
             pivot_thread.join();
         };
-        inline void clear() {
-            input.clear();
-            output.clear();
-        };
 
-    private:
-        Demultiplex& job;
-        thread pivot_thread;
-        const bool disable_quality_control;
-        const TemplateRule template_rule;
+    protected:
+        inline void validate() {
+            input.validate();
+        };
         inline void transform() {
             template_rule.apply(input, output);
             multiplex->decode(input, output);
@@ -176,10 +150,28 @@ class DemultiplexPivot {
             input_accumulator.increment(input);
             output_accumulator.increment(multiplex->decoded->index, output);
         };
-        void load_multiplex_decoder();
-        void load_molecular_decoder();
-        void load_cellular_decoder();
-        void run();
+        inline void clear() {
+            input.clear();
+            output.clear();
+        };
+        void run() {
+            while(job.pull(input)) {
+                validate();
+                transform();
+                push();
+                increment();
+                clear();
+            }
+        };
+
+    private:
+        MultiplexJob& job;
+        thread pivot_thread;
+        const bool disable_quality_control;
+        const TemplateRule template_rule;
+        void load_multiplex_decoding();
+        void load_molecular_decoding();
+        void load_cellular_decoding();
 };
 
 #endif /* PHENIQS_DEMULTIPLEX_H */

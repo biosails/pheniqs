@@ -28,39 +28,97 @@
 
 class Decoder {
     public:
-        Decoder(const Value& ontology) {
-        };
-        virtual ~Decoder() {
-        };
-        virtual void decode(const Read& read, Read& output) = 0;
+        Decoder(const Value& ontology) {};
+        virtual ~Decoder() {};
+        virtual void decode(const Read& read, Read& output) {};
 };
 
-template < class T > class DiscreteDecoder : public Decoder {
+
+template < class T > class RoutingDecoder : public Decoder {
+    public:
+        T unclassified;
+        T* decoded;
+        RoutingDecoder(const Value& ontology) try :
+            Decoder(ontology),
+            unclassified(find_value_by_key("undetermined", ontology)),
+            decoded(NULL) {
+
+            decoded = &unclassified;
+
+            } catch(ConfigurationError& error) {
+                throw ConfigurationError("RoutingDecoder :: " + error.message);
+
+            } catch(exception& error) {
+                throw InternalError("RoutingDecoder :: " + string(error.what()));
+        };
+        void decode(const Read& read, Read& output) override {};
+
+};
+
+template < class T > class PipeDecoder : public RoutingDecoder< T > {
+    public:
+        PipeDecoder(const Value& ontology) try :
+            RoutingDecoder< T >(ontology) {
+
+            } catch(ConfigurationError& error) {
+                throw ConfigurationError("PipeDecoder :: " + error.message);
+
+            } catch(exception& error) {
+                throw InternalError("PipeDecoder :: " + string(error.what()));
+        };
+};
+
+template < class T > class DiscreteDecoder : public RoutingDecoder< T > {
     public:
         vector< T > element_by_index;
-        T undetermined;
-        T* decoded;
-        DiscreteDecoder(const Value& ontology) :
-            Decoder(ontology),
-            element_by_index(decode_value_by_key< vector< T > >("codec", ontology)),
-            undetermined(find_value_by_key("undetermined", ontology)),
-            decoded(NULL) {
+        DiscreteDecoder(const Value& ontology) try :
+            RoutingDecoder< T >(ontology),
+            element_by_index(decode_value_by_key< vector< T > >("codec", ontology)) {
+
+            } catch(ConfigurationError& error) {
+                throw ConfigurationError("DiscreteDecoder :: " + error.message);
+
+            } catch(exception& error) {
+                throw InternalError("DiscreteDecoder :: " + string(error.what()));
         };
 };
 
-class ReadGroupDecoder : public DiscreteDecoder< Channel > {
-    private:
-        string key_buffer;
+template < class T > class ReadGroupDecoder : public DiscreteDecoder< T > {
+    public:
+        ReadGroupDecoder(const Value& ontology) try :
+            DiscreteDecoder< T >(ontology) {
+
+            element_by_rg.reserve(this->element_by_index.size());
+            for(auto& element : this->element_by_index) {
+                element_by_rg.emplace(make_pair(string(element.rg.ID.s, element.rg.ID.l), &element));
+            }
+
+            } catch(ConfigurationError& error) {
+                throw ConfigurationError("ReadGroupDecoder :: " + error.message);
+
+            } catch(exception& error) {
+                throw InternalError("ReadGroupDecoder :: " + string(error.what()));
+        };
+        inline void decode(const Read& input, Read& output) override {
+            this->decoded = &this->unclassified;
+            if(!ks_empty(input.RG())) {
+                rg_id_buffer.assign(input.RG().s, input.RG().l);
+                auto record = element_by_rg.find(rg_id_buffer);
+                if(record != element_by_rg.end()) {
+                    this->decoded = record->second;
+                }
+            }
+        };
 
     protected:
-        unordered_map< string, Channel* > channel_by_rg;
+        unordered_map< string, T* > element_by_rg;
 
-    public:
-        ReadGroupDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
+    private:
+        string rg_id_buffer;
+
 };
 
-template < class T > class BarcodeDecoder : public DiscreteDecoder< T > {
+template < class T > class ObservationDecoder : public DiscreteDecoder< T > {
     protected:
         const Rule rule;
         const int32_t nucleotide_cardinality;
@@ -71,16 +129,22 @@ template < class T > class BarcodeDecoder : public DiscreteDecoder< T > {
         inline const int32_t segment_cardinality() const {
             return static_cast< int32_t >(observation.segment_cardinality());
         };
-        BarcodeDecoder(const Value& ontology) :
+        ObservationDecoder(const Value& ontology) try :
             DiscreteDecoder< T >(ontology),
             rule(decode_value_by_key< Rule >("template", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
             decoding_distance(0) {
+
+            } catch(ConfigurationError& error) {
+                throw ConfigurationError("ObservationDecoder :: " + error.message);
+
+            } catch(exception& error) {
+                throw InternalError("ObservationDecoder :: " + string(error.what()));
         };
 };
 
-template < class T > class MDDecoder : public BarcodeDecoder< T > {
+template < class T > class MDDecoder : public ObservationDecoder< T > {
     protected:
         const uint8_t quality_masking_threshold;
         const vector< uint8_t > distance_tolerance;
@@ -94,7 +158,7 @@ template < class T > class MDDecoder : public BarcodeDecoder< T > {
         inline bool match(T& barcode);
 };
 
-template < class T > class PAMLDecoder : public BarcodeDecoder< T > {
+template < class T > class PAMLDecoder : public ObservationDecoder< T > {
     protected:
         const double noise;
         const double confidence_threshold;
@@ -132,14 +196,15 @@ class CellularPAMLDecoder : public PAMLDecoder< Barcode > {
         inline void decode(const Read& input, Read& output) override;
 };
 
-class MolecularSimpleDecoder : public Decoder {
+
+class MolecularNaiveDecoder : public Decoder {
     protected:
         const int32_t nucleotide_cardinality;
         const Rule rule;
         Observation observation;
 
     public:
-        MolecularSimpleDecoder(const Value& ontology);
+        MolecularNaiveDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
 

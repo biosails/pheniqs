@@ -1,0 +1,42 @@
+{
+    "import": [ "BDGGG_interleave.json" ],
+    "include filtered": false,
+    "molecular": [
+        {
+            "algorithm": "naive",
+            "template": { "token": [ "0:8:16" ] }
+        }
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "000000000-BDGGG_multiplex",
+        "codec": {
+            "@AGGCAGAA": {
+                "LB": "trinidad 5",
+                "concentration": 1.5
+            },
+            "@CGTACTAG": {
+                "LB": "trinidad 4",
+                "concentration": 0.5
+            },
+            "@GGACTCCT": {
+                "LB": "trinidad 9",
+                "concentration": 3
+            },
+            "@TAAGGCGA": {
+                "LB": "trinidad 1"
+            },
+            "@TCCTGAGC": {
+                "LB": "trinidad 8"
+            }
+        },
+        "confidence threshold": 0.95,
+        "noise": 0.02
+    },
+    "output": [ "BDGGG_annotated.cram" ],
+    "template": {
+        "comment": "those are the tokens defining the segments in the output read",
+        "token": [ "0::", "2::" ]
+    },
+    "threads": 4
+}

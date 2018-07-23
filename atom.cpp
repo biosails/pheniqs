@@ -318,7 +318,8 @@ void to_string(const Algorithm& value, string& result) {
         case Algorithm::UNKNOWN:      result.assign("unknown");    break;
         case Algorithm::MDD:          result.assign("mdd");        break;
         case Algorithm::PAMLD:        result.assign("pamld");      break;
-        case Algorithm::SIMPLE:       result.assign("simple");     break;
+        case Algorithm::NAIVE:        result.assign("naive");      break;
+        case Algorithm::PIPE:         result.assign("pipe");       break;
         case Algorithm::BENCHMARK:    result.assign("benchmark");  break;
         default:                                                   break;
     }
@@ -327,7 +328,8 @@ bool from_string(const char* value, Algorithm& result) {
          if(value == NULL)                  result = Algorithm::UNKNOWN;
     else if(!strcmp(value, "mdd"))          result = Algorithm::MDD;
     else if(!strcmp(value, "pamld"))        result = Algorithm::PAMLD;
-    else if(!strcmp(value, "simple"))       result = Algorithm::SIMPLE;
+    else if(!strcmp(value, "naive"))        result = Algorithm::NAIVE;
+    else if(!strcmp(value, "pipe"))         result = Algorithm::PIPE;
     else if(!strcmp(value, "benchmark"))    result = Algorithm::BENCHMARK;
     else                                    result = Algorithm::UNKNOWN;
 
@@ -381,15 +383,20 @@ HeadHDAtom::HeadHDAtom() :
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }) {
 };
-HeadHDAtom::HeadHDAtom(const Value& ontology) :
+HeadHDAtom::HeadHDAtom(const Value& ontology) try :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }) {
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("VN", VN, ontology);
-        decode_value_by_key< kstring_t >("SO", SO, ontology);
-        decode_value_by_key< kstring_t >("GO", GO, ontology);
-    } else { throw ConfigurationError("HD element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("VN", VN, ontology);
+    decode_value_by_key< kstring_t >("SO", SO, ontology);
+    decode_value_by_key< kstring_t >("GO", GO, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadHDAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadHDAtom :: " + string(error.what()));
 };
 
 HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
@@ -492,7 +499,7 @@ HeadSQAtom::HeadSQAtom() :
     UR({ 0, 0, NULL }){
     ks_terminate(SN);
 };
-HeadSQAtom::HeadSQAtom(const Value& ontology) :
+HeadSQAtom::HeadSQAtom(const Value& ontology) try :
     SN({ 0, 0, NULL }),
     LN(0),
     AH({ 0, 0, NULL }),
@@ -501,16 +508,21 @@ HeadSQAtom::HeadSQAtom(const Value& ontology) :
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("SN", SN, ontology);
-        decode_value_by_key< int32_t >("LN", LN, ontology);
-        decode_value_by_key< kstring_t >("AH", AH, ontology);
-        decode_value_by_key< kstring_t >("AN", AN, ontology);
-        decode_value_by_key< kstring_t >("AS", AS, ontology);
-        decode_value_by_key< kstring_t >("M5", M5, ontology);
-        decode_value_by_key< kstring_t >("SP", SP, ontology);
-        decode_value_by_key< kstring_t >("UR", UR, ontology);
-    } else { throw ConfigurationError("SQ element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("SN", SN, ontology);
+    decode_value_by_key< int32_t >("LN", LN, ontology);
+    decode_value_by_key< kstring_t >("AH", AH, ontology);
+    decode_value_by_key< kstring_t >("AN", AN, ontology);
+    decode_value_by_key< kstring_t >("AS", AS, ontology);
+    decode_value_by_key< kstring_t >("M5", M5, ontology);
+    decode_value_by_key< kstring_t >("SP", SP, ontology);
+    decode_value_by_key< kstring_t >("UR", UR, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadSQAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadSQAtom :: " + string(error.what()));
 };
 HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     SN({ 0, 0, NULL }),
@@ -678,7 +690,7 @@ HeadRGAtom::HeadRGAtom() :
     SM({ 0, 0, NULL }) {
     ks_terminate(ID);
 };
-HeadRGAtom::HeadRGAtom(const Value& ontology) :
+HeadRGAtom::HeadRGAtom(const Value& ontology) try :
     ID(decode_value_by_key< kstring_t >("ID", ontology)),
     BC({ 0, 0, NULL }),
     CN({ 0, 0, NULL }),
@@ -707,6 +719,12 @@ HeadRGAtom::HeadRGAtom(const Value& ontology) :
     decode_value_by_key< kstring_t >("PM", PM, ontology);
     decode_value_by_key< kstring_t >("PU", PU, ontology);
     decode_value_by_key< kstring_t >("SM", SM, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadRGAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadRGAtom :: " + string(error.what()));
 };
 HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -1041,7 +1059,7 @@ HeadPGAtom::HeadPGAtom() :
     VN({ 0, 0, NULL }){
     ks_terminate(ID);
 };
-HeadPGAtom::HeadPGAtom(const Value& ontology) :
+HeadPGAtom::HeadPGAtom(const Value& ontology) try :
     ID(decode_value_by_key< kstring_t >("ID", ontology)),
     PN({ 0, 0, NULL }),
     CL({ 0, 0, NULL }),
@@ -1054,6 +1072,12 @@ HeadPGAtom::HeadPGAtom(const Value& ontology) :
     decode_value_by_key< kstring_t >("PP", PP, ontology);
     decode_value_by_key< kstring_t >("DS", DS, ontology);
     decode_value_by_key< kstring_t >("VN", VN, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadPGAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadPGAtom :: " + string(error.what()));
 };
 HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -1189,11 +1213,16 @@ template<> HeadPGAtom decode_value_by_key< HeadPGAtom >(const Value::Ch* key, co
 HeadCOAtom::HeadCOAtom() :
     CO({ 0, 0, NULL }) {
 };
-HeadCOAtom::HeadCOAtom(const Value& ontology) :
+HeadCOAtom::HeadCOAtom(const Value& ontology) try :
     CO({ 0, 0, NULL }) {
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("CO", CO, ontology);
-    } else { throw ConfigurationError("CO element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("CO", CO, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadCOAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadCOAtom :: " + string(error.what()));
 };
 HeadCOAtom::HeadCOAtom(const HeadCOAtom& other) :
     CO({ 0, 0, NULL }){

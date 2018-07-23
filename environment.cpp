@@ -21,6 +21,55 @@
 
 #include "environment.h"
 
+Environment::Environment(const int argc, const char** argv) try :
+    interface(argc, argv),
+    _help_only(interface.help_triggered()),
+    _version_only(interface.version_triggered()) {
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Environment :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Environment :: " + string(error.what()));
+};
+Environment::~Environment() {
+    for(auto& job : job_queue) {
+        delete job;
+    }
+};
+void Environment::print_help(ostream& o) const {
+    interface.print_help(o);
+};
+void Environment::print_version(ostream& o) const {
+    interface.print_version(o);
+
+    /*  This is mostly for when building a static pheniqs binary
+        The --version will report the library versions that were built in. */
+
+    #ifdef ZLIB_VERSION
+    o << "zlib " << ZLIB_VERSION << endl;
+    #endif
+
+    #ifdef BZIP2_VERSION
+    o << "bzlib " << BZIP2_VERSION << endl;
+    #endif
+
+    #ifdef XZ_VERSION
+    o << "xzlib " << XZ_VERSION << endl;
+    #endif
+
+    #ifdef LIBDEFLATE_VERSION
+    o << "libdeflate " << LIBDEFLATE_VERSION << endl;
+    #endif
+
+    #ifdef RAPIDJSON_VERSION
+    o << "rapidjson " << RAPIDJSON_VERSION << endl;
+    #endif
+
+    #ifdef HTSLIB_VERSION
+    o << "htslib " << HTSLIB_VERSION << endl;
+    #endif
+};
 Job* Environment::pop_from_queue() {
     if(!job_queue.empty()) {
         Job* job(job_queue.front());
@@ -28,15 +77,14 @@ Job* Environment::pop_from_queue() {
         return job;
     } else { return NULL;}
 };
-void Environment::push_to_queue(Document operation) {
+void Environment::push_to_queue(Document& operation) {
     if(operation.IsObject()) {
-        string implementation(decode_value_by_key< string >("implementation", operation));
         Job* job(NULL);
-        if(implementation == "demultiplex") {
-            job = new Demultiplex(operation);
-        } else {
-            job = new Job(operation);
-        }
+        string implementation(decode_value_by_key< string >("implementation", operation));
+
+        if(implementation == "multiplex") { job = new MultiplexJob(operation); }
+        else { job = new Job(operation); }
+
         job->assemble();
         job_queue.emplace_back(job);
     } else { throw ConfigurationError("Job operation element is not a dictionary"); }
@@ -65,7 +113,8 @@ void Environment::execute() {
         print_version(cerr);
 
     } else {
-        push_to_queue(interface.operation());
+        Document operation(interface.operation());
+        push_to_queue(operation);
 
         Job* job(NULL);
         while((job = pop_from_queue()) != NULL) {

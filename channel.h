@@ -30,44 +30,36 @@ class Channel : public Barcode {
 
     public:
         const HeadRGAtom rg;
+        const bool include_filtered;
         const bool disable_quality_control;
         const list< URL > output_feed_url_by_segment;
         vector< Feed* > output_feed_lock_order;
         vector< Feed* > output_feed_by_segment;
-        Channel(const Value& ontology) :
-            Barcode(ontology),
-            rg(ontology),
-            disable_quality_control(decode_value_by_key< bool >("disable quality control", ontology)),
-            output_feed_url_by_segment(decode_value_by_key< list< URL > >("output", ontology)) {
-        };
-        Channel(const Channel& other) :
-            Barcode(other),
-            rg(other.rg),
-            disable_quality_control(other.disable_quality_control),
-            output_feed_url_by_segment(other.output_feed_url_by_segment),
-            output_feed_lock_order(other.output_feed_lock_order),
-            output_feed_by_segment(other.output_feed_by_segment) {
-        };
+        Channel(const Value& ontology);
+        Channel(const Channel& other);
         inline void push(const Read& read) {
             if(output_feed_lock_order.size() > 0) {
-                // acquire a push lock for all feeds in a fixed order
-                vector< unique_lock< mutex > > feed_locks;
-                feed_locks.reserve(output_feed_lock_order.size());
-                for(const auto feed : output_feed_lock_order) {
-                    feed_locks.push_back(feed->acquire_push_lock());
-                }
+                if(include_filtered || !read.qcfail()) {
+                    // acquire a push lock for all feeds in a fixed order
+                    vector< unique_lock< mutex > > feed_locks;
+                    feed_locks.reserve(output_feed_lock_order.size());
+                    for(const auto feed : output_feed_lock_order) {
+                        feed_locks.push_back(feed->acquire_push_lock());
+                    }
 
-                // push the segments to the output feeds
-                for(size_t i = 0; i < output_feed_by_segment.size(); ++i) {
-                    output_feed_by_segment[i]->push(read[i]);
-                }
+                    // push the segments to the output feeds
+                    for(size_t i = 0; i < output_feed_by_segment.size(); ++i) {
+                        output_feed_by_segment[i]->push(read[i]);
+                    }
 
-                // release the locks on the feeds in reverse order
-                for(auto feed_lock = feed_locks.rbegin(); feed_lock != feed_locks.rend(); ++feed_lock) {
-                    feed_lock->unlock();
+                    // release the locks on the feeds in reverse order
+                    for(auto feed_lock = feed_locks.rbegin(); feed_lock != feed_locks.rend(); ++feed_lock) {
+                        feed_lock->unlock();
+                    }
                 }
             }
         };
+        void populate(unordered_map< URL, Feed* >& output_feed_by_url);
 };
 
 template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Value& container);

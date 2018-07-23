@@ -1,0 +1,30 @@
+{
+    "CN": "CGSB",
+    "DT": "2018-02-25T07:00:00+00:00",
+    "PI": "300",
+    "PL": "ILLUMINA",
+    "PM": "miseq",
+    "SM": "trinidad",
+    "base input url": "test/BDGGG",
+    "base output url": "test/BDGGG",
+    "flowcell id": "BDGGG",
+    "include filtered": true,
+    "input": [
+        "BDGGG_s01.fastq.gz",
+        "BDGGG_s02.fastq.gz",
+        "BDGGG_s03.fastq.gz"
+    ],
+    "decoder": {
+        "000000000-BDGGG_multiplex": {
+            "template": { "token": [ "1::8" ] },
+            "codec": {
+                "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
+                "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },
+                "@GGACTCCT": { "barcode": [ "GGACTCCT" ] },
+                "@TAAGGCGA": { "barcode": [ "TAAGGCGA" ] },
+                "@TCCTGAGC": { "barcode": [ "TCCTGAGC" ] }
+            }
+        }
+    },
+    "output": [ { "path": "/dev/stdout", "type": "fastq" } ]
+}

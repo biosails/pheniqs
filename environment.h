@@ -23,71 +23,37 @@
 
 #include "include.h"
 #include "interface.h"
-#include "demultiplex.h"
+#include "multiplex.h"
 
+/* Those are possible return values when pheniqs terminates */
 enum class ProgramState : int8_t {
-    OK,
-    UNKNOWN_ERROR,
-    INTERNAL_ERROR,
-    CONFIGURATION_ERROR,
-    OUT_OF_MEMORY_ERROR,
-    COMMAND_LINE_ERROR,
-    IO_ERROR,
-    SEQUENCE_ERROR,
-    OVERFLOW_ERROR,
-    CORRUPT_AUXILIARY_ERROR,
+    OK                         = 0,
+    UNKNOWN_ERROR              = 1,
+    INTERNAL_ERROR             = 2,
+    CONFIGURATION_ERROR        = 3,
+    OUT_OF_MEMORY_ERROR        = 4,
+    COMMAND_LINE_ERROR         = 5,
+    IO_ERROR                   = 6,
+    SEQUENCE_ERROR             = 7,
+    OVERFLOW_ERROR             = 8,
+    CORRUPT_AUXILIARY_ERROR    = 9,
 };
 
 class Environment {
     public:
-        Environment(const int argc, const char** argv) :
-            interface(argc, argv),
-            _help_only(interface.help_triggered()),
-            _version_only(interface.version_triggered()) {
-        };
-        ~Environment() {
-            for(auto& job : job_queue) {
-                delete job;
-            }
-        };
+        Environment(const int argc, const char** argv);
+        ~Environment();
         inline const bool is_help_only() const {
             return _help_only;
         };
         inline const bool is_version_only() const {
             return _version_only;
         };
-        inline void print_help(ostream& o) const {
-            interface.print_help(o);
-        };
-        inline void print_version(ostream& o) const {
-            interface.print_version(o);
-            #ifdef ZLIB_VERSION
-                o << "zlib " << ZLIB_VERSION << endl;
-            #endif
-
-            #ifdef BZIP2_VERSION
-                o << "bzlib " << BZIP2_VERSION << endl;
-            #endif
-
-            #ifdef XZ_VERSION
-                o << "xzlib " << XZ_VERSION << endl;
-            #endif
-
-            #ifdef LIBDEFLATE_VERSION
-                o << "libdeflate " << LIBDEFLATE_VERSION << endl;
-            #endif
-
-            #ifdef RAPIDJSON_VERSION
-                o << "rapidjson " << RAPIDJSON_VERSION << endl;
-            #endif
-
-            #ifdef HTSLIB_VERSION
-                o << "htslib " << HTSLIB_VERSION << endl;
-            #endif
-        };
-        Job* pop_from_queue();
-        void push_to_queue(Document operation);
         void execute();
+        void print_help(ostream& o) const;
+        void print_version(ostream& o) const;
+        void push_to_queue(Document& operation);
+        Job* pop_from_queue();
 
     private:
         const Interface interface;

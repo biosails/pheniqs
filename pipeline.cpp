@@ -21,10 +21,20 @@
 
 #include "pipeline.h"
 
-Job::Job(Document& operation) :
+Job::Job(Document& operation) try :
     operation(move(operation)),
     report(kObjectType),
     projection_query("/projection") {
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Job :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Job :: " + string(error.what()));
+};
+void Job::clean() {
+    clean_json_value(ontology, ontology);
+    sort_json_value(ontology, ontology);
 };
 void Job::assemble() {
     /* if the operation defines a default instruction overlay it on top of the ontology */
@@ -49,40 +59,77 @@ void Job::assemble() {
     }
     clean();
 };
-void Job::remove_disabled() {
-    remove_disabled_from_json_value(ontology);
-};
 void Job::compile() {
     remove_disabled();
     manipulate();
     clean();
     validate();
 };
-void Job::clean() {
-    clean_json_value(ontology);
-    sort_json_value(ontology, ontology);
+void Job::print_ontology(ostream& o) const {
+    print_json(ontology, o);
 };
-void Job::overlay(const Value& value) {
-    if(!value.IsNull()) {
-        if(value.IsObject()) {
-            if(!value.ObjectEmpty()) {
+void Job::print_compiled(ostream& o) const {
+    print_json(ontology, o);
+};
+void Job::print_report(ostream& o) const {
+    print_json(report, o);
+};
+void Job::describe(ostream& o) const {
+
+};
+
+void Job::overlay(const Value& instruction) {
+    if(!instruction.IsNull()) {
+        if(instruction.IsObject()) {
+            if(!instruction.ObjectEmpty()) {
                 Document merged;
-                merged.CopyFrom(value, merged.GetAllocator());
+                merged.CopyFrom(instruction, merged.GetAllocator());
                 merge_json_value(ontology, merged, merged);
                 ontology.Swap(merged);
-                merged.SetNull();
             }
-        } else { throw ConfigurationError("job element must be a dictionary"); }
+        } else { throw ConfigurationError("Job document root must be a dictionary"); }
     }
 };
+void Job::remove_disabled() {
+    remove_disabled_from_json_value(ontology);
+};
 Document Job::read_instruction_document(const URL& url) const {
+    set< URL > visited;
+    Document document(load_document_with_import(url, visited));
+    return document;
+};
+Document Job::load_document_with_import(const URL& url, set< URL >& visited) const {
     Document document(kNullType);
     if(url.is_readable()) {
         ifstream file(url.path());
         const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
         file.close();
+
         if(!document.Parse(content.c_str()).HasParseError()) {
-            apply_instruction_import(document);
+            visited.emplace(url);
+
+            list< string > import;
+            if(decode_value_by_key< list< string > >("import", import, document)) {
+                Document aggregated(kNullType);
+                for(auto& record : import) {
+                    URL import_url(expand_shell(record));
+
+                    /* import url is resolved relative to the dirname of the importing document */
+                    import_url.relocate_sibling(url);
+
+                    /* To avoid cyclical import a url is only visited once,
+                       the first time it is encountered on a depth first recursion.
+                       TODO: This should really use the inode number and not the url */
+                    if(!visited.count(import_url)) {
+                        Document imported(load_document_with_import(import_url, visited));
+                        merge_json_value(aggregated, imported, imported);
+                        aggregated.Swap(imported);
+                    }
+                }
+                merge_json_value(aggregated, document, document);
+            }
+            document.RemoveMember("import");
+
         } else {
             string message(GetParseError_En(document.GetParseError()));
             message += " at position ";
@@ -92,17 +139,16 @@ Document Job::read_instruction_document(const URL& url) const {
     } else { throw ConfigurationError("unable to read job file from " + string(url)); }
     return document;
 };
-void Job::apply_instruction_import(Document& instruction) const {
-    list< string > import;
-    if(decode_value_by_key< list< string > >("import", import, instruction)) {
-        Document aggregated(kNullType);
-        for(auto& record : import) {
-            URL url(expand_shell(record));
-            Document imported(read_instruction_document(url));
-            merge_json_value(aggregated, imported, imported);
-            aggregated.Swap(imported);
+const Value* Job::find_projection(const string& key) const {
+    const Value* element(NULL);
+    const Value* projection_dictionary(projection_query.Get(operation));
+    if(projection_dictionary != NULL && projection_dictionary->IsObject()) {
+        Value::ConstMemberIterator reference = projection_dictionary->FindMember(key.c_str());
+        if(reference != ontology.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                element = &reference->value;
+            }
         }
-        merge_json_value(aggregated, instruction, instruction);
     }
-    instruction.RemoveMember("import");
+    return element;
 };

@@ -25,7 +25,6 @@
 #include "include.h"
 #include "proxy.h"
 #include "read.h"
-#include <htslib/thread_pool.h>
 
 inline int align_to_resolution(const int& capacity, const int& resolution) {
     int aligned(static_cast< int >(capacity / resolution) * resolution);

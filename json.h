@@ -26,27 +26,6 @@
 #include "error.h"
 #include "kstring.h"
 
-#define RAPIDJSON_NO_SIZETYPEDEFINE
-namespace rapidjson { typedef ::std::size_t SizeType; }
-#include <rapidjson/error/en.h>
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/pointer.h>
-
-using rapidjson::Type;
-using rapidjson::Value;
-using rapidjson::Pointer;
-using rapidjson::Document;
-using rapidjson::SizeType;
-using rapidjson::StringRef;
-using rapidjson::kNullType;
-using rapidjson::kArrayType;
-using rapidjson::kStringType;
-using rapidjson::kObjectType;
-using rapidjson::StringBuffer;
-using rapidjson::PrettyWriter;
-
 void print_json(const Value& node, ostream& o=cout);
 Document* load_json(const string& path);
 
@@ -56,7 +35,7 @@ Document* load_json(const string& path);
 */
 void merge_json_value(const Value& base, Value& ontology, Document& document);
 void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document);
-void clean_json_value(Value& ontology);
+void clean_json_value(Value& ontology, Document& document);
 void sort_json_value(Value& ontology, Document& document);
 bool remove_disabled_from_json_value(Value& ontology);
 

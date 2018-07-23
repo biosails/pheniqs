@@ -38,7 +38,6 @@
 
 #include "include.h"
 #include "error.h"
-#include <htslib/kstring.h>
 
 #define tag_to_code(t) static_cast< uint16_t >(*(t)) << 8 | static_cast< uint8_t >(*((t) + 1))
 const char LINE_BREAK('\n');

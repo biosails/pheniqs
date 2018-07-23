@@ -25,7 +25,6 @@
 #include "include.h"
 #include "atom.h"
 #include "barcode.h"
-#include <htslib/sam.h>
 
 // int bam_aux_append(bam1_t *b, const char tag[2], char type, int len, const uint8_t *data)
 

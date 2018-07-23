@@ -157,7 +157,7 @@ AveragePhreadAccumulator& AveragePhreadAccumulator::operator+=(const AveragePhre
 
 /*  SegmentAccumulator */
 
-SegmentAccumulator::SegmentAccumulator(const Value& ontology) :
+SegmentAccumulator::SegmentAccumulator(const Value& ontology) try :
     index(decode_value_by_key< int32_t >("index", ontology)),
     url(decode_value_by_key< URL >("url", ontology)),
     phred_offset(decode_value_by_key< uint8_t >("phred offset", ontology)),
@@ -166,6 +166,12 @@ SegmentAccumulator::SegmentAccumulator(const Value& ontology) :
     capacity(0),
     shortest(numeric_limits< int32_t >::max()),
     nucleic_acid_count_by_code(IUPAC_CODE_SIZE, 0) {
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("SegmentAccumulator :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("SegmentAccumulator :: " + string(error.what()));
 };
 void SegmentAccumulator::finalize() {
     if(shortest == numeric_limits< int32_t >::max()) {
@@ -284,7 +290,7 @@ bool encode_value(const SegmentAccumulator& value, Value& container, Document& d
 
 /*  ChannelAccumulator */
 
-ChannelAccumulator::ChannelAccumulator(const Value& ontology):
+ChannelAccumulator::ChannelAccumulator(const Value& ontology) try :
     index(decode_value_by_key< int32_t >("index", ontology)),
     algorithm(decode_value_by_key< Algorithm >("algorithm", ontology)),
     disable_quality_control(decode_value_by_key< bool >("disable quality control", ontology)),
@@ -307,7 +313,13 @@ ChannelAccumulator::ChannelAccumulator(const Value& ontology):
     accumulated_multiplex_confidence(0),
     accumulated_pf_multiplex_distance(0),
     accumulated_pf_multiplex_confidence(0),
-    segment_by_index(decode_value_by_key< vector< SegmentAccumulator > >("feed by segment", ontology)) {
+    segment_by_index(decode_value_by_key< vector< SegmentAccumulator > >("output feed by segment", ontology)) {
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("ChannelAccumulator :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("ChannelAccumulator :: " + string(error.what()));
 };
 void ChannelAccumulator::finalize(const OutputAccumulator& decoder_accumulator) {
     if(count > 0) {
@@ -348,19 +360,19 @@ ChannelAccumulator& ChannelAccumulator::operator+=(const ChannelAccumulator& rhs
     return *this;
 };
 template<> vector< ChannelAccumulator > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    vector< ChannelAccumulator > value;
     Value::ConstMemberIterator reference = container.FindMember(key);
     if(reference != container.MemberEnd()) {
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
-                vector< ChannelAccumulator > value;
                 value.reserve(reference->value.MemberCount());
                 for(auto& record : reference->value.GetObject()) {
                     value.emplace_back(record.value);
                 }
-                return value;
             } else { throw ConfigurationError(string(key) + " element must be a dictionary"); }
-        } else { throw ConfigurationError(string(key) + " element is null"); }
-    } else { throw ConfigurationError(string(key) + " not found"); }
+        }
+    }
+    return value;
 };
 bool encode_value(const ChannelAccumulator& value, Value& container, Document& document) {
     if(container.IsObject()) {
@@ -414,12 +426,18 @@ bool encode_key_value(const string& key, const ChannelAccumulator& value, Value&
 
 /*  InputAccumulator */
 
-InputAccumulator::InputAccumulator(const Value& ontology) :
+InputAccumulator::InputAccumulator(const Value& ontology) try :
     disable_quality_control(decode_value_by_key< bool >("disable quality control", ontology)),
     count(0),
     pf_count(0),
     pf_fraction(0),
     segment_by_index(decode_value_by_key< vector< SegmentAccumulator > >("input feed by segment", ontology)) {
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("InputAccumulator :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("InputAccumulator :: " + string(error.what()));
 };
 void InputAccumulator::finalize() {
     if(count > 0) {
@@ -460,7 +478,7 @@ bool encode_key_value(const string& key, const InputAccumulator& value, Value& c
 
 /*  OutputAccumulator */
 
-OutputAccumulator::OutputAccumulator(const Value& ontology):
+OutputAccumulator::OutputAccumulator(const Value& ontology) try :
     algorithm(decode_value_by_key< Algorithm >("algorithm", ontology)),
     count(0),
     multiplex_count(0),
@@ -480,6 +498,12 @@ OutputAccumulator::OutputAccumulator(const Value& ontology):
     accumulated_pf_multiplex_confidence(0),
     channel_by_index(decode_value_by_key< vector< ChannelAccumulator > >("codec", ontology)),
     undetermined(find_value_by_key("undetermined", ontology)) {
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("OutputAccumulator :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("OutputAccumulator :: " + string(error.what()));
 };
 void OutputAccumulator::finalize() {
     count += undetermined.count;

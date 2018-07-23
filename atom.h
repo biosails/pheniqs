@@ -24,7 +24,6 @@
 
 #include "include.h"
 #include "json.h"
-#include <htslib/hts.h>
 
 enum class HtsFlag : uint16_t;
 enum class HtsSortOrder : int8_t;
@@ -341,7 +340,8 @@ enum class Algorithm : uint8_t {
     UNKNOWN,
     MDD,
     PAMLD,
-    SIMPLE,
+    NAIVE,
+    PIPE,
     BENCHMARK,
 };
 void to_string(const Algorithm& value, string& result);
