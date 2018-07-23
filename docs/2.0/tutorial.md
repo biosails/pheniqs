@@ -44,8 +44,8 @@ The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wik
 # Supported File Format
 Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq) with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Read manipulation is achieved by means of [tokenization](#tokenization) and [construction](#construction). In the tokenization step Pheniqs consults the token patterns you declared to extract tokens from an [input segment](glossary.html#input_segment). In the construction step [transform patterns](manual.html#transform-pattern) reference the token patterns to construct new segments. The optional construction directive is only necessary when composing output segments from multiple, non continuous, tokens and if omitted each token is assumed to declare a single output segment.
 
-# The *input* Directive
-An extremely simple configuration can include nothing more than an `input` directive. In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will assemble an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute pheniqs. You may optionally specify the `base input url` and `base output url` directives.
+# Declaring Input
+A very simple configuration can include nothing more than an `input` directive. In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will assemble an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute pheniqs. You may optionally specify the `base input url` and `base output url` directives.
 
 >```json
 {
@@ -71,6 +71,7 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 >**Example 1.2** Output header and first 3 records (one complete read) from [interleaving](glossary.html#interleaved_file_layout) the three read segments verbatim into a single SAM formatted stream written to standard output using the configuration file in **Example 1.1**.
 {: .example}
 
+# Declaring Output
 This simple example is very useful for interleaving raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads in a CRAM container also makes archiving your raw data simple. To write the interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
 
 >```json
@@ -86,7 +87,7 @@ This simple example is very useful for interleaving raw split read segments into
 >**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
 {: .example}
 
-# The *template* Directive
+# Output Manipulation
 The `template` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `template` directive to construct an output read from only the first and third segments of the input.
 
 >```json
@@ -112,8 +113,8 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 >**Example 1.5** Output header and first 2 records (one complete read) from interleaving the three read segments to a SAM formatted stream using the configuration file in **Example 1.4**. Notice that only the first and third segments were written to the output.
 {: .example}
 
-# The *multiplex* directive
-The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them into read groups we need to examine the first 8 nucleotides of the second segment. Decoding the barcode can be as trivial as comparing two strings if we were absolutely confident no errors occurred during sequencing. However in a real world scenario each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. In the `multiplex` directive we declare a single decoder used to classify the reads by examining the segments constructed by the embedded `template` directive and comparing them to the sequence segments declared in the embedded `codec` directive.
+# Demultiplexing
+The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them into read groups we need to examine the first 8 nucleotides of the second segment. Decoding the barcode can be as trivial as comparing two strings if we were absolutely confident no errors occurred during sequencing. However in a real world scenario each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. The `multiplex` directive is used to declare a single decoder used to classify the reads by examining the segments constructed by the embedded `template` directive and comparing them to the sequence segments declared in the embedded `codec` directive.
 
 >```json
 {
@@ -189,8 +190,26 @@ M02455:162:000000000-BDGGG:1:1101:10000:12232   141     *       0       0       
 {: .example}
 
 # Providing a Prior
-### The *concentration* Directive
 If the 5 libraries were pooled in non uniform concentrations we will expect the portion of reads classified to each read group to match those proportions. A prior on the barcode prevalence distribution can be provided for each possible code declared in the `codec` directive using the `concentration` parameter. For convenience the priors do not have to be specified as normalized probabilities. Pheniqs will normalize them when compiling the instructions to sum up to 1.0 minus the value of the `noise` parameter.
+
+>```json
+{
+    "multiplex": {
+        "template": { "token": [ "1::8" ] },
+        "codec": {
+            "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ], "concentration": 2 },
+            "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },
+            "@GGACTCCT": { "barcode": [ "GGACTCCT" ] },
+            "@TAAGGCGA": { "barcode": [ "TAAGGCGA" ] },
+            "@TCCTGAGC": { "barcode": [ "TCCTGAGC" ] }
+        }
+        "algorithm": "pamld",
+        "noise": 0.02,
+        "confidence threshold": 0.95,
+    }
+}
+```
+>**Example 1.6** Adding a prior to one of the code words when declaring a `multiplex` decoder directive. Since the priors are automatically normalized and default to 1, this declaration effectively states that we expect twice as many reads to be classified to \@AGGCAGAA than the other 4 read groups.
 
 # Minimum Distance Decoding
 Pheniqs can also be instructed to decode the barcodes using the traditional [minimum distance decoder](glossary.html#minimum_distance_decoding), that only consults the edit distance between the expected and observed sequence, by setting the multiplex decoder `algorithm` directive to `mdd`. The MDD decoder however ignores the error probabilities provided by the sequencing instrument and does not compute or report the classification error probability. It is provided for legacy purposes but PAMLD will yield superior results in almost every real world scenario.
