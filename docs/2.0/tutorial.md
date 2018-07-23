@@ -149,13 +149,10 @@ In this example we declare the decoding algorithm and the parameters it needs: a
     }
 }
 ```
-
-Additional read group metadata can be declared in the individual codec elements or be placed in the top level configuration element to be included in all read groups.
-
 > Demultiplexing with one 8bp barcode on the second segment to an [interleaved](glossary.html#interleaved_file_layout) CRAM file. The [CN](glossary.html#cn_auxiliary_tag), [DT](glossary.html#dt_auxiliary_tag), [PI](glossary.html#pi_auxiliary_tag), [PL](glossary.html#pl_auxiliary_tag) and [PM](glossary.html#pm_auxiliary_tag) tags are declared globally and will be added to all read groups.
 {: .example}
 
-Output from executing the above configuration will look something like this
+Additional read group metadata can be declared in the individual codec elements or be placed in the top level configuration element to be included in all read groups. Output from executing the above configuration will look something like this
 
 ```
 @HD     VN:1.0  SO:unknown      GO:query
