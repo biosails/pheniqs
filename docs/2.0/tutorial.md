@@ -44,7 +44,7 @@ The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wik
 # Supported File Format
 Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq) with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Read manipulation is achieved by means of [tokenization](#tokenization) and [construction](#construction). In the tokenization step Pheniqs consults the token patterns you declared to extract tokens from an [input segment](glossary.html#input_segment). In the construction step [transform patterns](manual.html#transform-pattern) reference the token patterns to construct new segments. The optional construction directive is only necessary when composing output segments from multiple, non continuous, tokens and if omitted each token is assumed to declare a single output segment.
 
-# The input Directive
+# The *input* Directive
 An extremely simple configuration can include nothing more than an `input` directive. In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will assemble an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute pheniqs. You may optionally specify the `base input url` and `base output url` directives.
 
 >```json
@@ -86,8 +86,8 @@ This simple example is very useful for interleaving raw split read segments into
 >**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
 {: .example}
 
-# Tokenization
-The `template` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence and we don't wish to write it to the output we add instructions to assemble an output read from only the first and third segments of the input.
+# The *template* Directive
+The `template` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `template` directive to construct an output read from only the first and third segments of the input.
 
 >```json
 {
@@ -112,7 +112,7 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 >**Example 1.5** Output header and first 2 records (one complete read) from interleaving the three read segments to a SAM formatted stream using the configuration file in **Example 1.4**. Notice that only the first and third segments were written to the output.
 {: .example}
 
-# Read Group Classification
+# The *multiplex* directive
 The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them into read groups we need to examine the first 8 nucleotides of the second segment. Decoding the barcode can be as trivial as comparing two strings if we were absolutely confident no errors occurred during sequencing. However in a real world scenario each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. In the `multiplex` directive we declare a single decoder used to classify the reads by examining the segments constructed by the embedded `template` directive and comparing them to the sequence segments declared in the embedded `codec` directive.
 
 >```json
@@ -189,6 +189,7 @@ M02455:162:000000000-BDGGG:1:1101:10000:12232   141     *       0       0       
 {: .example}
 
 # Providing a Prior
+### The *concentration* Directive
 If the 5 libraries were pooled in non uniform concentrations we will expect the portion of reads classified to each read group to match those proportions. A prior on the barcode prevalence distribution can be provided for each possible code declared in the `codec` directive using the `concentration` parameter. For convenience the priors do not have to be specified as normalized probabilities. Pheniqs will normalize them when compiling the instructions to sum up to 1.0 minus the value of the `noise` parameter.
 
 # Minimum Distance Decoding
