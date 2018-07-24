@@ -88,7 +88,7 @@ This simple example is very useful for interleaving raw split read segments into
 {: .example}
 
 # Output Manipulation
-The `template` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `template` directive to construct an output read from only the first and third segments of the input.
+The `transform` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `transform` directive to construct an output read from only the first and third segments of the input.
 
 >```json
 {
@@ -97,13 +97,13 @@ The `template` directive can be used to manipulate the structure of the output r
         "000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz",
         "000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz"
     ],
-    "template": { "token": [ "0::", "2::" ] }
+    "transform": { "token": [ "0::", "2::" ] }
 }
 ```
->**Example 1.4** Adding a template directive composing the output read from only the untouched first and third input segments. Input segments in pheniqs are indexed and referenced using a [zero based coordinate system](glossary.html#zero_based_coordinate) so the first segment is 0.
+>**Example 1.4** Adding a transform directive composing the output read from only the untouched first and third input segments. Input segments in pheniqs are indexed and referenced using a [zero based coordinate system](glossary.html#zero_based_coordinate) so the first segment is 0.
 {: .example}
 
-The [token patterns](manual.html#tokenization) declared in the `token` array of the `template` directive are made of 3 colon separated integers. The first is the [zero based](glossary.html#zero_based_coordinate) [input segment index](glossary.html#input_segment). The second is an inclusive [zero based](glossary.html#zero_based_coordinate) **start** coordinate to the beginning of the token and it defaults to **0** if omitted. The third is an exclusive [zero based](glossary.html#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. The two colons are always mandatory. Pheniqs token pattern can address segments from either the 5' (left) or 3' (right) end. Since they mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax they are fairly easy to test.
+The [token patterns](manual.html#tokenization) declared in the `token` array of the `transform` directive are made of 3 colon separated integers. The first is the [zero based](glossary.html#zero_based_coordinate) [input segment index](glossary.html#input_segment). The second is an inclusive [zero based](glossary.html#zero_based_coordinate) **start** coordinate to the beginning of the token and it defaults to **0** if omitted. The third is an exclusive [zero based](glossary.html#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. The two colons are always mandatory. Pheniqs token pattern can address segments from either the 5' (left) or 3' (right) end. Since they mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax they are fairly easy to test.
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
@@ -115,12 +115,12 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 {: .example}
 
 # Demultiplexing
-The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them into read groups we need to examine the first 8 nucleotides of the second segment. Decoding the barcode can be as trivial as comparing two strings if we were absolutely confident no errors occurred during sequencing. However in a real world scenario each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. The `multiplex` directive is used to declare a single decoder used to classify the reads by examining the segments constructed by the embedded `template` directive and comparing them to the sequence segments declared in the embedded `codec` directive.
+The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them into read groups we need to examine the first 8 nucleotides of the second segment. Decoding the barcode can be as trivial as comparing two strings if we were absolutely confident no errors occurred during sequencing. However in a real world scenario each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. The `multiplex` directive is used to declare a single decoder used to classify the reads by examining the segments constructed by the embedded `transform` directive and comparing them to the sequence segments declared in the embedded `codec` directive.
 
 >```json
 {
     "multiplex": {
-        "template": { "token": [ "1::8" ] },
+        "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
             "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },
@@ -134,10 +134,10 @@ The reads in our files were sequenced from DNA from 5 individually prepared libr
     }
 }
 ```
->**Example 1.6** A `multiplex` decoder directive declaration using the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The embedded `template` directive is used to extract observed segments from the raw read while the `codec` directive names the possible barcode sequences we expect to find.
+>**Example 1.6** A `multiplex` decoder directive declaration using the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The embedded `transform` directive is used to extract observed segments from the raw read while the `codec` directive names the possible barcode sequences we expect to find.
 {: .example}
 
-In this example we declare a `multiplex` directive that uses the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) algorithm. This algorithm will choose a barcode using a maximum likelihood estimate and reject any classification with a decoding confidence lower than the `confidence threshold` parameter. The `noise` parameter is the prior probability that an observed sequence has not originated from any of the provided barcodes and is often set to the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the solution for reads sequenced on the Illumina platform. In the embedded `codec` directive we provide a discrete set of possible decoding results. All `barcode` segment arrays must match the layout declared in the embedded `template` directive, in this example one 8bp segment. The keys of the `codec` directive can be any unique string. In this example we used the unique barcode nucleotide sequence prefixed with an @ character to remind us this is simply a unique identifier.
+In this example we declare a `multiplex` directive that uses the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) algorithm. This algorithm will choose a barcode using a maximum likelihood estimate and reject any classification with a decoding confidence lower than the `confidence threshold` parameter. The `noise` parameter is the prior probability that an observed sequence has not originated from any of the provided barcodes and is often set to the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the solution for reads sequenced on the Illumina platform. In the embedded `codec` directive we provide a discrete set of possible decoding results. All `barcode` segment arrays must match the layout declared in the embedded `transform` directive, in this example one 8bp segment. The keys of the `codec` directive can be any unique string. In this example we used the unique barcode nucleotide sequence prefixed with an @ character to remind us this is simply a unique identifier.
 
 >```json
 {
@@ -146,9 +146,9 @@ In this example we declare a `multiplex` directive that uses the [phred-adjusted
         "000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz",
         "000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz"
     ],
-    "template": { "token": [ "0::", "2::" ] },
+    "transform": { "token": [ "0::", "2::" ] },
     "multiplex": {
-        "template": { "token": [ "1::8" ] },
+        "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
             "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },
@@ -197,7 +197,7 @@ If the 5 libraries were pooled in non uniform concentrations we will expect the 
 >```json
 {
     "multiplex": {
-        "template": { "token": [ "1::8" ] },
+        "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ], "concentration": 2 },
             "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },
@@ -227,9 +227,9 @@ As we mentioned before reading input from CRAM input can be vastly superior to r
         "000000000-BDGGG_raw.cram",
         "000000000-BDGGG_raw.cram"
     ],
-    "template": { "token": [ "0::", "2::" ] },
+    "transform": { "token": [ "0::", "2::" ] },
     "multiplex": {
-        "template": { "token": [ "1::8" ] },
+        "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
             "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },
