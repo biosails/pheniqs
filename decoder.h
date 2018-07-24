@@ -147,7 +147,7 @@ template < class T > class ObservationDecoder : public DiscreteDecoder< T > {
 template < class T > class MDDecoder : public ObservationDecoder< T > {
     protected:
         const uint8_t quality_masking_threshold;
-        const vector< uint8_t > distance_tolerance;
+        const vector< int32_t > distance_tolerance;
         unordered_map< string, T* > element_by_sequence;
 
     public:

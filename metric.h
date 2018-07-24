@@ -205,28 +205,31 @@ class CodecMetric {
         inline bool empty() const {
             return concatenated_metric.empty();
         };
-        void apply_barcode_tolerance(Value& value, Document& document) {
-            vector< uint8_t > distance_tolerance;
-            if(decode_value_by_key< vector< uint8_t > >("distance tolerance", distance_tolerance, value)) {
+        void compile_barcode_tolerance(Value& value, Document& document) {
+            vector< int32_t > shannon_bound_array(segment_cardinality);
+            for(size_t i(0); i < segment_cardinality; ++i) {
+                shannon_bound_array[i] = segment_metric[i].shannon_bound();
+            }
+            encode_key_value("shannon bound", shannon_bound_array, value, document);
+
+            vector< int32_t > distance_tolerance;
+            if(decode_value_by_key< vector< int32_t > >("distance tolerance", distance_tolerance, value)) {
                 if(distance_tolerance.size() == segment_cardinality) {
-                    for(size_t i = 0; i < segment_cardinality; ++i) {
+                    for(size_t i(0); i < segment_cardinality; ++i) {
                         if(distance_tolerance[i] > segment_metric[i].shannon_bound()) {
-                            throw ConfigurationError(
-                                "barcode tolerance for segment " +
-                                to_string(i) +
-                                " is higher than allowed by shannon bound " +
-                                to_string(segment_metric[i].shannon_bound())
+                            throw ConfigurationError (
+                                "barcode tolerance for segment " + to_string(i) +
+                                " is higher than shannon bound " + to_string(segment_metric[i].shannon_bound())
                             );
                         }
                     }
-                } else { throw ConfigurationError(to_string(distance_tolerance.size()) + " distance tolerance values inconsistant with " + to_string(segment_cardinality) + " barcode segments"); }
-            } else {
-                distance_tolerance.resize(segment_cardinality);
-                for(size_t i = 0; i < segment_cardinality; ++i) {
-                    distance_tolerance[i] = segment_metric[i].shannon_bound();
+                } else {
+                    throw ConfigurationError (
+                        to_string(distance_tolerance.size()) + " distance tolerance cardinality inconsistant with " +
+                        to_string(segment_cardinality) + " barcode segment cardinality"
+                    );
                 }
-                encode_key_value("distance tolerance", distance_tolerance, value, document);
-            }
+            } else { encode_key_value("distance tolerance", shannon_bound_array, value, document); }
         };
         void describe(ostream& o) const {
             if(!concatenated_metric.empty()) {

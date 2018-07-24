@@ -24,7 +24,7 @@
 template < class T > MDDecoder< T >::MDDecoder(const Value& ontology) try :
     ObservationDecoder< T >(ontology),
     quality_masking_threshold(decode_value_by_key< uint8_t >("quality masking threshold", ontology)),
-    distance_tolerance(decode_value_by_key< vector< uint8_t > >("distance tolerance", ontology)) {
+    distance_tolerance(decode_value_by_key< vector< int32_t > >("distance tolerance", ontology)) {
 
     for(auto& element : this->element_by_index) {
         element_by_sequence.emplace(make_pair(string(element), &element));

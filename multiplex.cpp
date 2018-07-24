@@ -863,6 +863,10 @@ void MultiplexJob::compile_decoder_transformation(Value& value) {
                 }
             }
         }
+
+        CodecMetric metric(value);
+        metric.compile_barcode_tolerance(value, ontology);
+
     }
 };
 bool MultiplexJob::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
@@ -963,12 +967,8 @@ void MultiplexJob::validate_decoder_group(const Value::Ch* key) {
     }
 };
 void MultiplexJob::validate_decoder(Value& value) {
-    if(!value.IsObject()) {
+    if(value.IsObject()) {
         if(value.HasMember("codec")) {
-            CodecMetric metric(value);
-            if(!metric.empty()) {
-                metric.apply_barcode_tolerance(value, ontology);
-            }
             double confidence_threshold;
             if(decode_value_by_key< double >("confidence threshold", confidence_threshold, value)) {
                 if(confidence_threshold < 0 || confidence_threshold > 1) {
@@ -1258,13 +1258,18 @@ void MultiplexJob::print_codec_instruction(const Value& value, const bool& plura
             }
         }
 
+        vector< int32_t > shannon_bound;
+        if(decode_value_by_key< vector< int32_t > >("shannon bound", shannon_bound, value)) {
+            o << "    Shannon bound                               ";
+            for(auto& element : shannon_bound) { o << " " << element; }
+            o << endl;
+        }
+
         if(algorithm == Algorithm::MDD) {
-            vector< uint8_t > distance_tolerance;
-            if(decode_value_by_key< vector< uint8_t > >("distance tolerance", distance_tolerance, value)) {
+            vector< int32_t > distance_tolerance;
+            if(decode_value_by_key< vector< int32_t > >("distance tolerance", distance_tolerance, value)) {
                 o << "    Distance tolerance                          ";
-                for(auto& element : distance_tolerance) {
-                    o << " " << int32_t(element);
-                }
+                for(auto& element : distance_tolerance) { o << " " << element; }
                 o << endl;
             }
         }

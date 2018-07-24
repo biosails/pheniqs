@@ -1,0 +1,2303 @@
+{
+    "CN": "CGSB AD",
+    "DT": "2018-06-18T00:00:00+00:00",
+    "PL": "ILLUMINA",
+    "PM": "NextSeq",
+    "base input url": "BCBJLFACXX",
+    "decoder": {
+        "@BCBJLFACXX_multiplex": {
+            "codec": {
+                "@ABHetDay0Well_A1": {
+                    "LB": "ABHetDay0Well_A1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A2": {
+                    "LB": "ABHetDay0Well_A2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A3": {
+                    "LB": "ABHetDay0Well_A3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A4": {
+                    "LB": "ABHetDay0Well_A4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A5": {
+                    "LB": "ABHetDay0Well_A5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A6": {
+                    "LB": "ABHetDay0Well_A6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A7": {
+                    "LB": "ABHetDay0Well_A7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A8": {
+                    "LB": "ABHetDay0Well_A8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_A9": {
+                    "LB": "ABHetDay0Well_A9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay0Well_B1": {
+                    "LB": "ABHetDay0Well_B1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B2": {
+                    "LB": "ABHetDay0Well_B2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B3": {
+                    "LB": "ABHetDay0Well_B3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B4": {
+                    "LB": "ABHetDay0Well_B4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B5": {
+                    "LB": "ABHetDay0Well_B5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B6": {
+                    "LB": "ABHetDay0Well_B6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B7": {
+                    "LB": "ABHetDay0Well_B7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B8": {
+                    "LB": "ABHetDay0Well_B8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_B9": {
+                    "LB": "ABHetDay0Well_B9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay0Well_C1": {
+                    "LB": "ABHetDay0Well_C1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C2": {
+                    "LB": "ABHetDay0Well_C2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C3": {
+                    "LB": "ABHetDay0Well_C3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C4": {
+                    "LB": "ABHetDay0Well_C4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C5": {
+                    "LB": "ABHetDay0Well_C5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C6": {
+                    "LB": "ABHetDay0Well_C6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C7": {
+                    "LB": "ABHetDay0Well_C7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C8": {
+                    "LB": "ABHetDay0Well_C8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_C9": {
+                    "LB": "ABHetDay0Well_C9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay0Well_D1": {
+                    "LB": "ABHetDay0Well_D1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D2": {
+                    "LB": "ABHetDay0Well_D2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D3": {
+                    "LB": "ABHetDay0Well_D3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D4": {
+                    "LB": "ABHetDay0Well_D4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D5": {
+                    "LB": "ABHetDay0Well_D5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D6": {
+                    "LB": "ABHetDay0Well_D6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D7": {
+                    "LB": "ABHetDay0Well_D7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D8": {
+                    "LB": "ABHetDay0Well_D8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_D9": {
+                    "LB": "ABHetDay0Well_D9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay0Well_E1": {
+                    "LB": "ABHetDay0Well_E1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E2": {
+                    "LB": "ABHetDay0Well_E2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E3": {
+                    "LB": "ABHetDay0Well_E3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E4": {
+                    "LB": "ABHetDay0Well_E4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E5": {
+                    "LB": "ABHetDay0Well_E5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E6": {
+                    "LB": "ABHetDay0Well_E6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E7": {
+                    "LB": "ABHetDay0Well_E7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E8": {
+                    "LB": "ABHetDay0Well_E8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_E9": {
+                    "LB": "ABHetDay0Well_E9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay0Well_F1": {
+                    "LB": "ABHetDay0Well_F1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F2": {
+                    "LB": "ABHetDay0Well_F2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F3": {
+                    "LB": "ABHetDay0Well_F3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F4": {
+                    "LB": "ABHetDay0Well_F4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F5": {
+                    "LB": "ABHetDay0Well_F5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F6": {
+                    "LB": "ABHetDay0Well_F6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F7": {
+                    "LB": "ABHetDay0Well_F7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F8": {
+                    "LB": "ABHetDay0Well_F8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_F9": {
+                    "LB": "ABHetDay0Well_F9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay0Well_G1": {
+                    "LB": "ABHetDay0Well_G1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G2": {
+                    "LB": "ABHetDay0Well_G2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G3": {
+                    "LB": "ABHetDay0Well_G3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G4": {
+                    "LB": "ABHetDay0Well_G4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G5": {
+                    "LB": "ABHetDay0Well_G5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G6": {
+                    "LB": "ABHetDay0Well_G6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G7": {
+                    "LB": "ABHetDay0Well_G7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G8": {
+                    "LB": "ABHetDay0Well_G8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_G9": {
+                    "LB": "ABHetDay0Well_G9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay0Well_H1": {
+                    "LB": "ABHetDay0Well_H1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N722",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H2": {
+                    "LB": "ABHetDay0Well_H2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N721",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H3": {
+                    "LB": "ABHetDay0Well_H3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N724",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H4": {
+                    "LB": "ABHetDay0Well_H4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N723",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H5": {
+                    "LB": "ABHetDay0Well_H5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N719",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H6": {
+                    "LB": "ABHetDay0Well_H6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N728",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H7": {
+                    "LB": "ABHetDay0Well_H7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N727",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H8": {
+                    "LB": "ABHetDay0Well_H8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N729",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay0Well_H9": {
+                    "LB": "ABHetDay0Well_H9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N718",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay13Well_A1": {
+                    "LB": "ABHetDay13Well_A1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay13Well_A10": {
+                    "LB": "ABHetDay13Well_A10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay13Well_A11": {
+                    "LB": "ABHetDay13Well_A11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay13Well_A12": {
+                    "LB": "ABHetDay13Well_A12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "CGGAGAGA"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S511"
+                    ]
+                },
+                "@ABHetDay13Well_A2": {
+                    "LB": "ABHetDay13Well_A2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay13Well_A3": {
+                    "LB": "ABHetDay13Well_A3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay13Well_B1": {
+                    "LB": "ABHetDay13Well_B1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S504"
+                    ]
+                },
+                "@ABHetDay13Well_B10": {
+                    "LB": "ABHetDay13Well_B10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay13Well_B11": {
+                    "LB": "ABHetDay13Well_B11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay13Well_B12": {
+                    "LB": "ABHetDay13Well_B12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay13Well_B2": {
+                    "LB": "ABHetDay13Well_B2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S504"
+                    ]
+                },
+                "@ABHetDay13Well_B3": {
+                    "LB": "ABHetDay13Well_B3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S504"
+                    ]
+                },
+                "@ABHetDay13Well_C1": {
+                    "LB": "ABHetDay13Well_C1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay13Well_C10": {
+                    "LB": "ABHetDay13Well_C10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay13Well_C11": {
+                    "LB": "ABHetDay13Well_C11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay13Well_C12": {
+                    "LB": "ABHetDay13Well_C12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay13Well_C2": {
+                    "LB": "ABHetDay13Well_C2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay13Well_C3": {
+                    "LB": "ABHetDay13Well_C3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay13Well_D1": {
+                    "LB": "ABHetDay13Well_D1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay13Well_D10": {
+                    "LB": "ABHetDay13Well_D10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay13Well_D11": {
+                    "LB": "ABHetDay13Well_D11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay13Well_D12": {
+                    "LB": "ABHetDay13Well_D12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S506"
+                    ]
+                },
+                "@ABHetDay13Well_D2": {
+                    "LB": "ABHetDay13Well_D2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay13Well_D3": {
+                    "LB": "ABHetDay13Well_D3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S505"
+                    ]
+                },
+                "@ABHetDay13Well_E1": {
+                    "LB": "ABHetDay13Well_E1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay13Well_E10": {
+                    "LB": "ABHetDay13Well_E10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay13Well_E11": {
+                    "LB": "ABHetDay13Well_E11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay13Well_E12": {
+                    "LB": "ABHetDay13Well_E12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay13Well_E2": {
+                    "LB": "ABHetDay13Well_E2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay13Well_E3": {
+                    "LB": "ABHetDay13Well_E3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay13Well_F1": {
+                    "LB": "ABHetDay13Well_F1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay13Well_F10": {
+                    "LB": "ABHetDay13Well_F10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay13Well_F11": {
+                    "LB": "ABHetDay13Well_F11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay13Well_F12": {
+                    "LB": "ABHetDay13Well_F12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S502"
+                    ]
+                },
+                "@ABHetDay13Well_F2": {
+                    "LB": "ABHetDay13Well_F2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay13Well_F3": {
+                    "LB": "ABHetDay13Well_F3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S507"
+                    ]
+                },
+                "@ABHetDay13Well_G1": {
+                    "LB": "ABHetDay13Well_G1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S517"
+                    ]
+                },
+                "@ABHetDay13Well_G10": {
+                    "LB": "ABHetDay13Well_G10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay13Well_G11": {
+                    "LB": "ABHetDay13Well_G11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay13Well_G12": {
+                    "LB": "ABHetDay13Well_G12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S508"
+                    ]
+                },
+                "@ABHetDay13Well_G2": {
+                    "LB": "ABHetDay13Well_G2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S517"
+                    ]
+                },
+                "@ABHetDay13Well_G3": {
+                    "LB": "ABHetDay13Well_G3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S517"
+                    ]
+                },
+                "@ABHetDay13Well_H1": {
+                    "LB": "ABHetDay13Well_H1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N701",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay13Well_H10": {
+                    "LB": "ABHetDay13Well_H10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N726",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay13Well_H11": {
+                    "LB": "ABHetDay13Well_H11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N720",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay13Well_H12": {
+                    "LB": "ABHetDay13Well_H12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "ATTAGACG"
+                    ],
+                    "barcode reference": [
+                        "N716",
+                        "S510"
+                    ]
+                },
+                "@ABHetDay13Well_H2": {
+                    "LB": "ABHetDay13Well_H2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N702",
+                        "S503"
+                    ]
+                },
+                "@ABHetDay13Well_H3": {
+                    "LB": "ABHetDay13Well_H3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N706",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay0Well_A4": {
+                    "LB": "ABMinusDay0Well_A4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay0Well_A5": {
+                    "LB": "ABMinusDay0Well_A5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay0Well_A6": {
+                    "LB": "ABMinusDay0Well_A6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay0Well_A7": {
+                    "LB": "ABMinusDay0Well_A7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay0Well_A8": {
+                    "LB": "ABMinusDay0Well_A8",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay0Well_B4": {
+                    "LB": "ABMinusDay0Well_B4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay0Well_B5": {
+                    "LB": "ABMinusDay0Well_B5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay0Well_B6": {
+                    "LB": "ABMinusDay0Well_B6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay0Well_B7": {
+                    "LB": "ABMinusDay0Well_B7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay0Well_B8": {
+                    "LB": "ABMinusDay0Well_B8",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay0Well_C4": {
+                    "LB": "ABMinusDay0Well_C4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay0Well_C5": {
+                    "LB": "ABMinusDay0Well_C5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay0Well_C6": {
+                    "LB": "ABMinusDay0Well_C6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay0Well_C7": {
+                    "LB": "ABMinusDay0Well_C7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay0Well_D4": {
+                    "LB": "ABMinusDay0Well_D4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay0Well_D5": {
+                    "LB": "ABMinusDay0Well_D5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay0Well_D6": {
+                    "LB": "ABMinusDay0Well_D6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay0Well_D7": {
+                    "LB": "ABMinusDay0Well_D7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay0Well_E4": {
+                    "LB": "ABMinusDay0Well_E4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay0Well_E5": {
+                    "LB": "ABMinusDay0Well_E5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay0Well_E6": {
+                    "LB": "ABMinusDay0Well_E6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay0Well_E7": {
+                    "LB": "ABMinusDay0Well_E7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay0Well_F4": {
+                    "LB": "ABMinusDay0Well_F4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay0Well_F5": {
+                    "LB": "ABMinusDay0Well_F5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay0Well_F6": {
+                    "LB": "ABMinusDay0Well_F6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay0Well_F7": {
+                    "LB": "ABMinusDay0Well_F7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay0Well_G4": {
+                    "LB": "ABMinusDay0Well_G4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay0Well_G5": {
+                    "LB": "ABMinusDay0Well_G5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay0Well_G6": {
+                    "LB": "ABMinusDay0Well_G6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay0Well_G7": {
+                    "LB": "ABMinusDay0Well_G7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay0Well_H4": {
+                    "LB": "ABMinusDay0Well_H4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N711",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay0Well_H5": {
+                    "LB": "ABMinusDay0Well_H5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N705",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay0Well_H6": {
+                    "LB": "ABMinusDay0Well_H6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N712",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay0Well_H7": {
+                    "LB": "ABMinusDay0Well_H7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N707",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay13Well_A10": {
+                    "LB": "ABMinusDay13Well_A10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay13Well_A11": {
+                    "LB": "ABMinusDay13Well_A11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay13Well_A12": {
+                    "LB": "ABMinusDay13Well_A12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N710",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay13Well_A9": {
+                    "LB": "ABMinusDay13Well_A9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TATGCAGT"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S506"
+                    ]
+                },
+                "@ABMinusDay13Well_B10": {
+                    "LB": "ABMinusDay13Well_B10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay13Well_B11": {
+                    "LB": "ABMinusDay13Well_B11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay13Well_B12": {
+                    "LB": "ABMinusDay13Well_B12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N710",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay13Well_B9": {
+                    "LB": "ABMinusDay13Well_B9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TCTACTCT"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S504"
+                    ]
+                },
+                "@ABMinusDay13Well_C10": {
+                    "LB": "ABMinusDay13Well_C10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay13Well_C11": {
+                    "LB": "ABMinusDay13Well_C11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay13Well_C12": {
+                    "LB": "ABMinusDay13Well_C12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N710",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay13Well_C8": {
+                    "LB": "ABMinusDay13Well_C8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay13Well_C9": {
+                    "LB": "ABMinusDay13Well_C9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "AGGCTTAG"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S508"
+                    ]
+                },
+                "@ABMinusDay13Well_D10": {
+                    "LB": "ABMinusDay13Well_D10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay13Well_D11": {
+                    "LB": "ABMinusDay13Well_D11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay13Well_D12": {
+                    "LB": "ABMinusDay13Well_D12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N710",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay13Well_D8": {
+                    "LB": "ABMinusDay13Well_D8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay13Well_D9": {
+                    "LB": "ABMinusDay13Well_D9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "CTCCTTAC"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S505"
+                    ]
+                },
+                "@ABMinusDay13Well_E10": {
+                    "LB": "ABMinusDay13Well_E10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay13Well_E11": {
+                    "LB": "ABMinusDay13Well_E11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay13Well_E12": {
+                    "LB": "ABMinusDay13Well_E12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N710",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay13Well_E8": {
+                    "LB": "ABMinusDay13Well_E8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay13Well_E9": {
+                    "LB": "ABMinusDay13Well_E9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "ATAGAGAG"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S502"
+                    ]
+                },
+                "@ABMinusDay13Well_F10": {
+                    "LB": "ABMinusDay13Well_F10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay13Well_F11": {
+                    "LB": "ABMinusDay13Well_F11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay13Well_F12": {
+                    "LB": "ABMinusDay13Well_F12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N710",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay13Well_F8": {
+                    "LB": "ABMinusDay13Well_F8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay13Well_F9": {
+                    "LB": "ABMinusDay13Well_F9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TACTCCTT"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S507"
+                    ]
+                },
+                "@ABMinusDay13Well_G10": {
+                    "LB": "ABMinusDay13Well_G10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay13Well_G11": {
+                    "LB": "ABMinusDay13Well_G11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay13Well_G8": {
+                    "LB": "ABMinusDay13Well_G8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay13Well_G9": {
+                    "LB": "ABMinusDay13Well_G9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TCTTACGC"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S517"
+                    ]
+                },
+                "@ABMinusDay13Well_H10": {
+                    "LB": "ABMinusDay13Well_H10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N704",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay13Well_H11": {
+                    "LB": "ABMinusDay13Well_H11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N708",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay13Well_H8": {
+                    "LB": "ABMinusDay13Well_H8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N703",
+                        "S503"
+                    ]
+                },
+                "@ABMinusDay13Well_H9": {
+                    "LB": "ABMinusDay13Well_H9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "AGAGGATA"
+                    ],
+                    "barcode reference": [
+                        "N709",
+                        "S503"
+                    ]
+                }
+            },
+            "transform": { "token": [ "1::8", "2::8" ] }
+        }
+    },
+    "flowcell id": "BCBJLFACXX",
+    "include filtered": true,
+    "input": [
+        "Lane1_S1_L001_I1_001.fastq.gz",
+        "Lane1_S1_L001_I2_001.fastq.gz",
+        "Lane1_S1_L001_R1_001.fastq.gz",
+        "Lane1_S1_L001_R2_001.fastq.gz"
+    ],
+    "threads": 16
+}
