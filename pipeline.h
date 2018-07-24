@@ -33,6 +33,9 @@ class Job {
         Document report;
         Job(Document& operation);
         virtual ~Job() {};
+        inline bool is_compile_only() const {
+            return decode_value_by_key< bool >("compile only", ontology);
+        };
         inline bool is_lint_only() const {
             return decode_value_by_key< bool >("lint only", ontology);
         };

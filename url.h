@@ -79,8 +79,6 @@ class URL {
         URL();
         URL(const URL& other);
         URL(const string& path);
-        URL(const string& path, const bool& is_directory);
-        void parse_directory(const string& path);
         void parse_file(const string& path);
         void parse_file(const string& path, const IoDirection& direction);
         void set_basename(const string& name);

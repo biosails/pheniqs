@@ -46,28 +46,28 @@ void Environment::print_version(ostream& o) const {
     /*  This is mostly for when building a static pheniqs binary
         The --version will report the library versions that were built in. */
 
-    #ifdef ZLIB_VERSION
-    o << "zlib " << ZLIB_VERSION << endl;
+    #ifdef PHENIQS_ZLIB_VERSION
+    o << "zlib " << PHENIQS_ZLIB_VERSION << endl;
     #endif
 
-    #ifdef BZIP2_VERSION
-    o << "bzlib " << BZIP2_VERSION << endl;
+    #ifdef PHENIQS_BZIP2_VERSION
+    o << "bzlib " << PHENIQS_BZIP2_VERSION << endl;
     #endif
 
-    #ifdef XZ_VERSION
-    o << "xzlib " << XZ_VERSION << endl;
+    #ifdef PHENIQS_XZ_VERSION
+    o << "xzlib " << PHENIQS_XZ_VERSION << endl;
     #endif
 
-    #ifdef LIBDEFLATE_VERSION
-    o << "libdeflate " << LIBDEFLATE_VERSION << endl;
+    #ifdef PHENIQS_LIBDEFLATE_VERSION
+    o << "libdeflate " << PHENIQS_LIBDEFLATE_VERSION << endl;
     #endif
 
-    #ifdef RAPIDJSON_VERSION
-    o << "rapidjson " << RAPIDJSON_VERSION << endl;
+    #ifdef PHENIQS_RAPIDJSON_VERSION
+    o << "rapidjson " << PHENIQS_RAPIDJSON_VERSION << endl;
     #endif
 
-    #ifdef HTSLIB_VERSION
-    o << "htslib " << HTSLIB_VERSION << endl;
+    #ifdef PHENIQS_HTSLIB_VERSION
+    o << "htslib " << PHENIQS_HTSLIB_VERSION << endl;
     #endif
 };
 Job* Environment::pop_from_queue() {
@@ -97,6 +97,9 @@ void Environment::execute_job(Job* job) {
 
         } else if(job->is_lint_only()) {
             job->print_ontology(cout);
+
+        } else if(job->is_compile_only()) {
+            job->print_compiled(cout);
 
         } else {
             job->execute();

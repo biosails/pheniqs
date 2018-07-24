@@ -271,26 +271,6 @@ URL::URL(const string& path) :
     _type(FormatType::UNKNOWN) {
     parse_file(path);
 };
-URL::URL(const string& path, const bool& is_directory) :
-    _type(FormatType::UNKNOWN) {
-    if(is_directory) {
-        parse_directory(path);
-    } else {
-        parse_file(path);
-    }
-};
-void URL::parse_directory(const string& path) {
-    clear();
-    if(!path.empty()) {
-        _path.assign(path);
-
-        /* trim trailing file separator if present */
-        if(_path.size() > 1 && _path.back() == PATH_SEPARATOR) {
-            _path.erase(_path.size() - 1);
-        }
-        _dirname.assign(_path);
-    }
-};
 void URL::parse_file(const string& path) {
     clear();
     if(!path.empty()) {
@@ -320,24 +300,27 @@ void URL::parse_file(const string& path) {
             // split extension
             position = _basename.find_last_of(EXTENSION_SEPARATOR);
             if(position != string::npos) {
-                if(position + 1 < _basename.size()) {
-                    _extension.assign(_basename, position + 1, string::npos);
-                }
-                _basename.resize(position);
-
-                // if there is a second extension
-                // and the first is a compression marker
-                position = _basename.find_last_of(EXTENSION_SEPARATOR);
-                if(position != string::npos && (_extension == "gz" || _extension == "bz2" || _extension == "xz")) {
-                    _compression.assign(_extension);
-                    _extension.clear();
-                    if(position + 1 < _basename.size()) {
+                if(position > 0) {
+                    if(position + 2 < _basename.size()) {
                         _extension.assign(_basename, position + 1, string::npos);
+                        _basename.resize(position);
                     }
-                    _basename.resize(position);
+
+                    // if there is a second extension
+                    // and the first is a compression marker
+                    if(_extension == "gz" || _extension == "bz2" || _extension == "xz") {
+                        position = _basename.find_last_of(EXTENSION_SEPARATOR);
+                        if(position != string::npos) {
+                            _compression.assign(_extension);
+                            _extension.clear();
+                            if(position + 2 < _basename.size()) {
+                                _extension.assign(_basename, position + 1, string::npos);
+                                _basename.resize(position);
+                            }
+                        }
+                    }
                 }
             }
-
             if(!_extension.empty() && _type == FormatType::UNKNOWN) {
                 from_string(_extension, _type);
             }
@@ -376,7 +359,7 @@ void URL::set_type(const FormatType type, const bool force) {
     }
 };
 void URL::relocate_child(const URL& base) {
-    if(!base._dirname.empty() && !is_absolute()) {
+    if(!base._path.empty() && !is_absolute()) {
         string joined;
         joined.append(base._path);
         if(!_dirname.empty()) {

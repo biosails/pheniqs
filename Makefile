@@ -38,12 +38,12 @@ STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/lib
 # by `pheniqs --version`. This is mostly useful when building pheniqs statically so the user can tell which version
 # of each dependecy is built into the finaly binary.
 #
-# ZLIB_VERSION
-# BZIP2_VERSION
-# XZ_VERSION
-# LIBDEFLATE_VERSION
-# RAPIDJSON_VERSION
-# HTSLIB_VERSION
+# PHENIQS_ZLIB_VERSION
+# PHENIQS_BZIP2_VERSION
+# PHENIQS_XZ_VERSION
+# PHENIQS_LIBDEFLATE_VERSION
+# PHENIQS_RAPIDJSON_VERSION
+# PHENIQS_HTSLIB_VERSION
 PHENIQS_VERSION := $(shell git describe --abbrev=40 --always 2> /dev/null)
 ifndef PHENIQS_VERSION
     PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
@@ -126,7 +126,9 @@ endif
 all: $(PHENIQS_SOURCES) generated $(PHENIQS_EXECUTABLE)
 
 help:
-	@printf '\nBuilding Pheniqs $(PHENIQS_VERSION)\n\
+	@printf '\nBuilding Pheniqs\n\
+	\n\
+	Code version : $(PHENIQS_VERSION)\n\
 	\n\
 	Make targets\n\
 	\thelp      : Print this help.\n\
@@ -161,25 +163,25 @@ help:
 	For instance: `make with-static=1`.\n\n'
 
 config:
-	@echo 'PHENIQS_VERSION     :  $(PHENIQS_VERSION)'
-	@echo 'PLATFORM            :  $(PLATFORM)'
-	@echo 'PREFIX              :  $(PREFIX)'
-	@echo 'BIN_PREFIX          :  $(BIN_PREFIX)'
-	@echo 'INCLUDE_PREFIX      :  $(INCLUDE_PREFIX)'
-	@echo 'LIB_PREFIX          :  $(LIB_PREFIX)'
-	@echo 'CXX                 :  $(CXX)'
-	@echo 'CPPFLAGS            :  $(CPPFLAGS)'
-	@echo 'CXXFLAGS            :  $(CXXFLAGS)'
-	@echo 'LDFLAGS             :  $(LDFLAGS)'
-	@echo 'LIBS                :  $(LIBS)'
-	@echo 'with-libdeflate     :  $(with-libdeflate)'
-	@echo 'with-static         :  $(with-static)'
-	$(if $(ZLIB_VERSION),        @echo 'ZLIB_VERSION        :  $(ZLIB_VERSION)' )
-	$(if $(BZIP2_VERSION),       @echo 'BZIP2_VERSION       :  $(BZIP2_VERSION)' )
-	$(if $(XZ_VERSION),          @echo 'XZ_VERSION          :  $(XZ_VERSION)' )
-	$(if $(LIBDEFLATE_VERSION),  @echo 'LIBDEFLATE_VERSION  :  $(LIBDEFLATE_VERSION)' )
-	$(if $(RAPIDJSON_VERSION),   @echo 'RAPIDJSON_VERSION   :  $(RAPIDJSON_VERSION)' )
-	$(if $(HTSLIB_VERSION),      @echo 'HTSLIB_VERSION      :  $(HTSLIB_VERSION)' )
+	$(if $(PHENIQS_VERSION),             @echo 'PHENIQS_VERSION             :  $(PHENIQS_VERSION)' )
+	$(if $(PLATFORM),                    @echo 'PLATFORM                    :  $(PLATFORM)' )
+	$(if $(PREFIX),                      @echo 'PREFIX                      :  $(PREFIX)' )
+	$(if $(BIN_PREFIX),                  @echo 'BIN_PREFIX                  :  $(BIN_PREFIX)' )
+	$(if $(INCLUDE_PREFIX),              @echo 'INCLUDE_PREFIX              :  $(INCLUDE_PREFIX)' )
+	$(if $(LIB_PREFIX),                  @echo 'LIB_PREFIX                  :  $(LIB_PREFIX)' )
+	$(if $(CXX),                         @echo 'CXX                         :  $(CXX)' )
+	$(if $(CPPFLAGS),                    @echo 'CPPFLAGS                    :  $(CPPFLAGS)' )
+	$(if $(CXXFLAGS),                    @echo 'CXXFLAGS                    :  $(CXXFLAGS)' )
+	$(if $(LDFLAGS),                     @echo 'LDFLAGS                     :  $(LDFLAGS)' )
+	$(if $(LIBS),                        @echo 'LIBS                        :  $(LIBS)' )
+	$(if $(with-libdeflate),             @echo 'with-libdeflate             :  $(with-libdeflate)' )
+	$(if $(with-static),                 @echo 'with-static                 :  $(with-static)' )
+	$(if $(PHENIQS_ZLIB_VERSION),        @echo 'PHENIQS_ZLIB_VERSION        :  $(PHENIQS_ZLIB_VERSION)' )
+	$(if $(PHENIQS_BZIP2_VERSION),       @echo 'PHENIQS_BZIP2_VERSION       :  $(PHENIQS_BZIP2_VERSION)' )
+	$(if $(PHENIQS_XZ_VERSION),          @echo 'PHENIQS_XZ_VERSION          :  $(PHENIQS_XZ_VERSION)' )
+	$(if $(PHENIQS_LIBDEFLATE_VERSION),  @echo 'PHENIQS_LIBDEFLATE_VERSION  :  $(PHENIQS_LIBDEFLATE_VERSION)' )
+	$(if $(PHENIQS_RAPIDJSON_VERSION),   @echo 'PHENIQS_RAPIDJSON_VERSION   :  $(PHENIQS_RAPIDJSON_VERSION)' )
+	$(if $(PHENIQS_HTSLIB_VERSION),      @echo 'PHENIQS_HTSLIB_VERSION      :  $(PHENIQS_HTSLIB_VERSION)' )
 
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
@@ -190,16 +192,16 @@ $(PHENIQS_EXECUTABLE): $(PHENIQS_OBJECTS)
 # Regenerate version.h when PHENIQS_VERSION changes
 version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),,clean.version))
 	@echo version.h generated with PHENIQS_VERSION $(PHENIQS_VERSION)
-	$(if $(PHENIQS_VERSION),    @printf '#ifndef PHENIQS_VERSION_H\n'                       		>> $@)
-	$(if $(PHENIQS_VERSION),    @printf '#define PHENIQS_VERSION_H\n\n'                         >> $@)
-	$(if $(PHENIQS_VERSION),    @printf '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"\n'        >> $@)
-	$(if $(ZLIB_VERSION),       @printf '#define ZLIB_VERSION "$(ZLIB_VERSION)"\n'              >> $@)
-	$(if $(BZIP2_VERSION),      @printf '#define BZIP2_VERSION "$(BZIP2_VERSION)"\n'            >> $@)
-	$(if $(XZ_VERSION),         @printf '#define XZ_VERSION "$(XZ_VERSION)"\n'                  >> $@)
-	$(if $(LIBDEFLATE_VERSION), @printf '#define LIBDEFLATE_VERSION "$(LIBDEFLATE_VERSION)"\n'  >> $@)
-	$(if $(RAPIDJSON_VERSION),  @printf '#define RAPIDJSON_VERSION "$(RAPIDJSON_VERSION)"\n'    >> $@)
-	$(if $(HTSLIB_VERSION),     @printf '#define HTSLIB_VERSION "$(HTSLIB_VERSION)"\n'          >> $@)
-	$(if $(PHENIQS_VERSION),    @printf '\n#endif /* PHENIQS_VERSION_H */\n'                  	>> $@)
+	$(if $(PHENIQS_VERSION),            @printf '#ifndef PHENIQS_VERSION_H\n'                                           >> $@)
+	$(if $(PHENIQS_VERSION),            @printf '#define PHENIQS_VERSION_H\n\n'                                         >> $@)
+	$(if $(PHENIQS_VERSION),            @printf '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"\n'                        >> $@)
+	$(if $(PHENIQS_ZLIB_VERSION),       @printf '#define PHENIQS_ZLIB_VERSION "$(PHENIQS_ZLIB_VERSION)"\n'              >> $@)
+	$(if $(PHENIQS_BZIP2_VERSION),      @printf '#define PHENIQS_BZIP2_VERSION "$(PHENIQS_BZIP2_VERSION)"\n'            >> $@)
+	$(if $(PHENIQS_XZ_VERSION),         @printf '#define PHENIQS_XZ_VERSION "$(PHENIQS_XZ_VERSION)"\n'                  >> $@)
+	$(if $(PHENIQS_LIBDEFLATE_VERSION), @printf '#define PHENIQS_LIBDEFLATE_VERSION "$(PHENIQS_LIBDEFLATE_VERSION)"\n'  >> $@)
+	$(if $(PHENIQS_RAPIDJSON_VERSION),  @printf '#define PHENIQS_RAPIDJSON_VERSION "$(PHENIQS_RAPIDJSON_VERSION)"\n'    >> $@)
+	$(if $(PHENIQS_HTSLIB_VERSION),     @printf '#define PHENIQS_HTSLIB_VERSION "$(PHENIQS_HTSLIB_VERSION)"\n'          >> $@)
+	$(if $(PHENIQS_VERSION),            @printf '\n#endif /* PHENIQS_VERSION_H */\n'                                    >> $@)
 
 clean.version:
 	-@rm -f version.h

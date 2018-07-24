@@ -48,6 +48,15 @@
                 },
                 {
                     "handle": [
+                        "-C",
+                        "--compile"
+                    ],
+                    "help": "Only compile configuration file",
+                    "name": "compile only",
+                    "type": "boolean"
+                },
+                {
+                    "handle": [
                         "-D",
                         "--distance"
                     ],
@@ -56,11 +65,51 @@
                     "type": "boolean"
                 },
                 {
+                    "cardinality": "*",
+                    "extension": [
+                        "fq",
+                        "fq.gz",
+                        "fastq",
+                        "fastq.gz",
+                        "bam",
+                        "cram",
+                        "sam"
+                    ],
+                    "handle": [
+                        "-i",
+                        "--input"
+                    ],
+                    "help": "Path to input files",
+                    "meta": "PATH",
+                    "name": "input",
+                    "type": "url"
+                },
+                {
+                    "cardinality": "*",
+                    "extension": [
+                        "fq",
+                        "fq.gz",
+                        "fastq",
+                        "fastq.gz",
+                        "bam",
+                        "cram",
+                        "sam"
+                    ],
+                    "handle": [
+                        "-o",
+                        "--output"
+                    ],
+                    "help": "Path to output files",
+                    "meta": "PATH",
+                    "name": "output",
+                    "type": "url"
+                },
+                {
                     "extension": [
                         "json"
                     ],
                     "handle": [
-                        "-C",
+                        "-c",
                         "--config"
                     ],
                     "help": "Path to configuration file",
@@ -71,7 +120,7 @@
                 },
                 {
                     "handle": [
-                        "-c",
+                        "-p",
                         "--multiplex-confidence"
                     ],
                     "help": "Decoding multiplex confidence threshold",
@@ -107,21 +156,21 @@
                 },
                 {
                     "handle": [
-                        "-i",
+                        "-I",
                         "--base-input"
                     ],
                     "help": "Base input url",
                     "name": "base input url",
-                    "type": "directory"
+                    "type": "url"
                 },
                 {
                     "handle": [
-                        "-o",
+                        "-O",
                         "--base-output"
                     ],
                     "help": "Base output url",
                     "name": "base output url",
-                    "type": "directory"
+                    "type": "url"
                 },
                 {
                     "handle": [
@@ -131,25 +180,6 @@
                     "help": "Leading read segment",
                     "name": "leading segment index",
                     "type": "integer"
-                },
-                {
-                    "choice": [
-                        "pamld",
-                        "mdd",
-                        "benchmark"
-                    ],
-                    "choice description": [
-                        "phred adjusted maximum likelihood decoder",
-                        "minimum distance decoder",
-                        "benchmark meta decoder"
-                    ],
-                    "handle": [
-                        "-d",
-                        "--algorithm"
-                    ],
-                    "help": "Barcode decoding algorithm",
-                    "name": "algorithm",
-                    "type": "string"
                 },
                 {
                     "choice": [
@@ -163,7 +193,7 @@
                         "PACBIO"
                     ],
                     "handle": [
-                        "-p",
+                        "-P",
                         "--platform"
                     ],
                     "help": "Sequencing platform",
@@ -247,7 +277,7 @@
                         "PACBIO"
                     ],
                     "handle": [
-                        "-p",
+                        "-P",
                         "--platform"
                     ],
                     "help": "Sequencing platform",
@@ -352,7 +382,6 @@
             "undetermined": null
         },
         "multiplex:barcode": {
-            "include filtered": false,
             "CN": null,
             "DT": null,
             "LB": null,
@@ -366,11 +395,11 @@
             "disable quality control": null,
             "flowcell id": null,
             "flowcell lane number": null,
+            "include filtered": false,
             "output": null,
             "segment cardinality": null
         },
         "multiplex:decoder": {
-            "include filtered": false,
             "CN": null,
             "DT": null,
             "LB": null,
@@ -387,12 +416,12 @@
             "distance tolerance": null,
             "flowcell id": null,
             "flowcell lane number": null,
+            "include filtered": false,
             "noise": 0.01,
             "output": null,
-            "segment cardinality": 0,
             "quality masking threshold": 0,
+            "segment cardinality": 0,
             "undetermined": null
         }
-    },
-    "version comment": "Now with flavor!"
+    }
 }

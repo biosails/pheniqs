@@ -309,11 +309,16 @@ class Package(object):
     def download(self):
         if self.download_url is not None:
             content = None
+            if self.sha1 is None:
+                if os.path.exists(self.download_url):
+                    self.log.warning('removing old real time archive %s', self.download_url)
+                    os.remove(self.download_url)
+
             if os.path.exists(self.download_url):
                 with open(self.download_url, 'rb') as local:
                     content = local.read()
                     checksum = hashlib.sha1(content).hexdigest()
-                    if checksum != self.sha1:
+                    if self.sha1 is not None and checksum != self.sha1:
                         self.log.warning('removing corrupt archive %s', self.download_url)
                         os.remove(self.download_url)
                         content = None
@@ -343,7 +348,7 @@ class Package(object):
                     else:
                         content = response.read()
                         checksum = hashlib.sha1(content).hexdigest()
-                        if checksum != self.sha1:
+                        if self.sha1 is not None and checksum != self.sha1:
                             error = '{} checksum {} differs from {}'.format(self.display_name, checksum, self.sha1)
                             self.log.warning(error)
                         else:

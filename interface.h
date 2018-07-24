@@ -32,7 +32,6 @@ enum class ParameterType : uint8_t {
     DECIMAL,
     STRING,
     URL,
-    DIRECTORY,
     UNKNOWN
 };
 void to_string(const ParameterType& value, string& result);
@@ -144,12 +143,10 @@ class Argument {
         double* get_decimal() const;
         string* get_string() const;
         URL* get_url() const;
-        URL* get_directory() const;
         list< int64_t >* get_integer_array() const;
         list< double >* get_decimal_array() const;
         list< string >* get_string_array() const;
         list< URL >* get_url_array() const;
-        list< URL >* get_directory_array() const;
         uint32_t cardinality() const;
         bool satisfied() const;
 
@@ -256,14 +253,6 @@ class Action {
             }
             return value;
         };
-        URL* get_directory(const string& name) const {
-            URL* value(NULL);
-            Argument* argument = get(name);
-            if(argument) {
-                value = argument->get_directory();
-            }
-            return value;
-        };
         list< int64_t >* get_integer_plural(const string& name) const {
             list< int64_t >* value(NULL);
             Argument* argument = get(name);
@@ -293,14 +282,6 @@ class Action {
             Argument* argument = get(name);
             if(argument) {
                 value = argument->get_url_array();
-            }
-            return value;
-        };
-        list< URL >* get_directory_plural(const string& name) const {
-            list< URL >* value(NULL);
-            Argument* argument = get(name);
-            if(argument) {
-                value = argument->get_directory_array();
             }
             return value;
         };

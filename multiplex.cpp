@@ -1260,7 +1260,7 @@ void MultiplexJob::print_codec_instruction(const Value& value, const bool& plura
 
         vector< int32_t > shannon_bound;
         if(decode_value_by_key< vector< int32_t > >("shannon bound", shannon_bound, value)) {
-            o << "    Shannon bound                               ";
+            o << "    Shannon bound                              ";
             for(auto& element : shannon_bound) { o << " " << element; }
             o << endl;
         }
@@ -1323,12 +1323,12 @@ void MultiplexJob::print_codec_instruction(const Value& value, const bool& plura
 
                 if(display_distance()) {
                     CodecMetric metric(value);
-                    metric.describe(cout);
+                    metric.describe(o);
                 }
             }
         }
+        o << endl;
 
-        cout << endl;
         Value::ConstMemberIterator reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()) {
             const string key(reference->name.GetString(), reference->name.GetStringLength());

@@ -67,12 +67,12 @@
             "include prefix in make": true,
             "make build optional": [
                 "with-static=1",
-                "ZLIB_VERSION=1.2.11",
-                "BZ2_VERSION=1.0.6",
-                "XZ_VERSION=5.2.4",
-                "LIBDEFLATE_VERSION=1.0",
-                "HTSLIB_VERSION=1.8",
-                "RAPIDJSON_VERSION=1.1.0"
+                "PHENIQS_ZLIB_VERSION=1.2.11",
+                "PHENIQS_BZIP2_VERSION=1.0.6",
+                "PHENIQS_XZ_VERSION=5.2.4",
+                "PHENIQS_LIBDEFLATE_VERSION=1.0",
+                "PHENIQS_HTSLIB_VERSION=1.8",
+                "PHENIQS_RAPIDJSON_VERSION=1.1.0"
             ],
             "name": "pheniqs",
             "remote filename": "pheniqs-8ab67e0cb19d0a5cd08fe522c2d5850f23cb4763.zip",

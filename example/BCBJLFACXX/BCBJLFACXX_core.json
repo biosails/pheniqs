@@ -13,10 +13,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A2": {
@@ -25,10 +21,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A3": {
@@ -37,10 +29,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A4": {
@@ -49,10 +37,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A5": {
@@ -61,10 +45,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A6": {
@@ -73,10 +53,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A7": {
@@ -85,10 +61,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A8": {
@@ -97,10 +69,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_A9": {
@@ -109,10 +77,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S511"
                     ]
                 },
                 "@ABHetDay0Well_B1": {
@@ -121,10 +85,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B2": {
@@ -133,10 +93,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B3": {
@@ -145,10 +101,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B4": {
@@ -157,10 +109,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B5": {
@@ -169,10 +117,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B6": {
@@ -181,10 +125,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B7": {
@@ -193,10 +133,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B8": {
@@ -205,10 +141,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_B9": {
@@ -217,10 +149,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S505"
                     ]
                 },
                 "@ABHetDay0Well_C1": {
@@ -229,10 +157,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C2": {
@@ -241,10 +165,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C3": {
@@ -253,10 +173,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C4": {
@@ -265,10 +181,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C5": {
@@ -277,10 +189,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C6": {
@@ -289,10 +197,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C7": {
@@ -301,10 +205,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C8": {
@@ -313,10 +213,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_C9": {
@@ -325,10 +221,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S507"
                     ]
                 },
                 "@ABHetDay0Well_D1": {
@@ -337,10 +229,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D2": {
@@ -349,10 +237,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D3": {
@@ -361,10 +245,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D4": {
@@ -373,10 +253,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D5": {
@@ -385,10 +261,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D6": {
@@ -397,10 +269,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D7": {
@@ -409,10 +277,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D8": {
@@ -421,10 +285,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_D9": {
@@ -433,10 +293,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S506"
                     ]
                 },
                 "@ABHetDay0Well_E1": {
@@ -445,10 +301,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E2": {
@@ -457,10 +309,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E3": {
@@ -469,10 +317,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E4": {
@@ -481,10 +325,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E5": {
@@ -493,10 +333,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E6": {
@@ -505,10 +341,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E7": {
@@ -517,10 +349,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E8": {
@@ -529,10 +357,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_E9": {
@@ -541,10 +365,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S503"
                     ]
                 },
                 "@ABHetDay0Well_F1": {
@@ -553,10 +373,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F2": {
@@ -565,10 +381,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F3": {
@@ -577,10 +389,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F4": {
@@ -589,10 +397,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F5": {
@@ -601,10 +405,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F6": {
@@ -613,10 +413,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F7": {
@@ -625,10 +421,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F8": {
@@ -637,10 +429,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_F9": {
@@ -649,10 +437,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S502"
                     ]
                 },
                 "@ABHetDay0Well_G1": {
@@ -661,10 +445,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G2": {
@@ -673,10 +453,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G3": {
@@ -685,10 +461,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G4": {
@@ -697,10 +469,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G5": {
@@ -709,10 +477,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G6": {
@@ -721,10 +485,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G7": {
@@ -733,10 +493,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G8": {
@@ -745,10 +501,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_G9": {
@@ -757,10 +509,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S508"
                     ]
                 },
                 "@ABHetDay0Well_H1": {
@@ -769,10 +517,6 @@
                     "barcode": [
                         "ATGCGCAG",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N722",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H2": {
@@ -781,10 +525,6 @@
                     "barcode": [
                         "TACGCTGC",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N721",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H3": {
@@ -793,10 +533,6 @@
                     "barcode": [
                         "ACTGAGCG",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N724",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H4": {
@@ -805,10 +541,6 @@
                     "barcode": [
                         "TAGCGCTC",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N723",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H5": {
@@ -817,10 +549,6 @@
                     "barcode": [
                         "GCGTAGTA",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N719",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H6": {
@@ -829,10 +557,6 @@
                     "barcode": [
                         "TGCAGCTA",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N728",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H7": {
@@ -841,10 +565,6 @@
                     "barcode": [
                         "CGATCAGT",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N727",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H8": {
@@ -853,10 +573,6 @@
                     "barcode": [
                         "TCGACGTC",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N729",
-                        "S510"
                     ]
                 },
                 "@ABHetDay0Well_H9": {
@@ -865,10 +581,6 @@
                     "barcode": [
                         "GGAGCTAC",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N718",
-                        "S510"
                     ]
                 },
                 "@ABHetDay13Well_A1": {
@@ -877,10 +589,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S506"
                     ]
                 },
                 "@ABHetDay13Well_A10": {
@@ -889,10 +597,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S511"
                     ]
                 },
                 "@ABHetDay13Well_A11": {
@@ -901,10 +605,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S511"
                     ]
                 },
                 "@ABHetDay13Well_A12": {
@@ -913,10 +613,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "CGGAGAGA"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S511"
                     ]
                 },
                 "@ABHetDay13Well_A2": {
@@ -925,10 +621,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S506"
                     ]
                 },
                 "@ABHetDay13Well_A3": {
@@ -937,10 +629,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S506"
                     ]
                 },
                 "@ABHetDay13Well_B1": {
@@ -949,10 +637,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S504"
                     ]
                 },
                 "@ABHetDay13Well_B10": {
@@ -961,10 +645,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S505"
                     ]
                 },
                 "@ABHetDay13Well_B11": {
@@ -973,10 +653,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S505"
                     ]
                 },
                 "@ABHetDay13Well_B12": {
@@ -985,10 +661,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S505"
                     ]
                 },
                 "@ABHetDay13Well_B2": {
@@ -997,10 +669,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S504"
                     ]
                 },
                 "@ABHetDay13Well_B3": {
@@ -1009,10 +677,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S504"
                     ]
                 },
                 "@ABHetDay13Well_C1": {
@@ -1021,10 +685,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S508"
                     ]
                 },
                 "@ABHetDay13Well_C10": {
@@ -1033,10 +693,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S507"
                     ]
                 },
                 "@ABHetDay13Well_C11": {
@@ -1045,10 +701,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S507"
                     ]
                 },
                 "@ABHetDay13Well_C12": {
@@ -1057,10 +709,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S507"
                     ]
                 },
                 "@ABHetDay13Well_C2": {
@@ -1069,10 +717,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S508"
                     ]
                 },
                 "@ABHetDay13Well_C3": {
@@ -1081,10 +725,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S508"
                     ]
                 },
                 "@ABHetDay13Well_D1": {
@@ -1093,10 +733,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S505"
                     ]
                 },
                 "@ABHetDay13Well_D10": {
@@ -1105,10 +741,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S506"
                     ]
                 },
                 "@ABHetDay13Well_D11": {
@@ -1117,10 +749,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S506"
                     ]
                 },
                 "@ABHetDay13Well_D12": {
@@ -1129,10 +757,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S506"
                     ]
                 },
                 "@ABHetDay13Well_D2": {
@@ -1141,10 +765,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S505"
                     ]
                 },
                 "@ABHetDay13Well_D3": {
@@ -1153,10 +773,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S505"
                     ]
                 },
                 "@ABHetDay13Well_E1": {
@@ -1165,10 +781,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S502"
                     ]
                 },
                 "@ABHetDay13Well_E10": {
@@ -1177,10 +789,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S503"
                     ]
                 },
                 "@ABHetDay13Well_E11": {
@@ -1189,10 +797,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S503"
                     ]
                 },
                 "@ABHetDay13Well_E12": {
@@ -1201,10 +805,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S503"
                     ]
                 },
                 "@ABHetDay13Well_E2": {
@@ -1213,10 +813,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S502"
                     ]
                 },
                 "@ABHetDay13Well_E3": {
@@ -1225,10 +821,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S502"
                     ]
                 },
                 "@ABHetDay13Well_F1": {
@@ -1237,10 +829,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S507"
                     ]
                 },
                 "@ABHetDay13Well_F10": {
@@ -1249,10 +837,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S502"
                     ]
                 },
                 "@ABHetDay13Well_F11": {
@@ -1261,10 +845,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S502"
                     ]
                 },
                 "@ABHetDay13Well_F12": {
@@ -1273,10 +853,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S502"
                     ]
                 },
                 "@ABHetDay13Well_F2": {
@@ -1285,10 +861,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S507"
                     ]
                 },
                 "@ABHetDay13Well_F3": {
@@ -1297,10 +869,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S507"
                     ]
                 },
                 "@ABHetDay13Well_G1": {
@@ -1309,10 +877,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S517"
                     ]
                 },
                 "@ABHetDay13Well_G10": {
@@ -1321,10 +885,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S508"
                     ]
                 },
                 "@ABHetDay13Well_G11": {
@@ -1333,10 +893,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S508"
                     ]
                 },
                 "@ABHetDay13Well_G12": {
@@ -1345,10 +901,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S508"
                     ]
                 },
                 "@ABHetDay13Well_G2": {
@@ -1357,10 +909,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S517"
                     ]
                 },
                 "@ABHetDay13Well_G3": {
@@ -1369,10 +917,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S517"
                     ]
                 },
                 "@ABHetDay13Well_H1": {
@@ -1381,10 +925,6 @@
                     "barcode": [
                         "TAAGGCGA",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N701",
-                        "S503"
                     ]
                 },
                 "@ABHetDay13Well_H10": {
@@ -1393,10 +933,6 @@
                     "barcode": [
                         "CCTAAGAC",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N726",
-                        "S510"
                     ]
                 },
                 "@ABHetDay13Well_H11": {
@@ -1405,10 +941,6 @@
                     "barcode": [
                         "CGGAGCCT",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N720",
-                        "S510"
                     ]
                 },
                 "@ABHetDay13Well_H12": {
@@ -1417,10 +949,6 @@
                     "barcode": [
                         "ACTCGCTA",
                         "ATTAGACG"
-                    ],
-                    "barcode reference": [
-                        "N716",
-                        "S510"
                     ]
                 },
                 "@ABHetDay13Well_H2": {
@@ -1429,10 +957,6 @@
                     "barcode": [
                         "CGTACTAG",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N702",
-                        "S503"
                     ]
                 },
                 "@ABHetDay13Well_H3": {
@@ -1441,10 +965,6 @@
                     "barcode": [
                         "TAGGCATG",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N706",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay0Well_A4": {
@@ -1453,10 +973,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay0Well_A5": {
@@ -1465,10 +981,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay0Well_A6": {
@@ -1477,10 +989,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay0Well_A7": {
@@ -1489,10 +997,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay0Well_A8": {
@@ -1501,10 +1005,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay0Well_B4": {
@@ -1513,10 +1013,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay0Well_B5": {
@@ -1525,10 +1021,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay0Well_B6": {
@@ -1537,10 +1029,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay0Well_B7": {
@@ -1549,10 +1037,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay0Well_B8": {
@@ -1561,10 +1045,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay0Well_C4": {
@@ -1573,10 +1053,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay0Well_C5": {
@@ -1585,10 +1061,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay0Well_C6": {
@@ -1597,10 +1069,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay0Well_C7": {
@@ -1609,10 +1077,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay0Well_D4": {
@@ -1621,10 +1085,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay0Well_D5": {
@@ -1633,10 +1093,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay0Well_D6": {
@@ -1645,10 +1101,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay0Well_D7": {
@@ -1657,10 +1109,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay0Well_E4": {
@@ -1669,10 +1117,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay0Well_E5": {
@@ -1681,10 +1125,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay0Well_E6": {
@@ -1693,10 +1133,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay0Well_E7": {
@@ -1705,10 +1141,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay0Well_F4": {
@@ -1717,10 +1149,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay0Well_F5": {
@@ -1729,10 +1157,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay0Well_F6": {
@@ -1741,10 +1165,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay0Well_F7": {
@@ -1753,10 +1173,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay0Well_G4": {
@@ -1765,10 +1181,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay0Well_G5": {
@@ -1777,10 +1189,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay0Well_G6": {
@@ -1789,10 +1197,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay0Well_G7": {
@@ -1801,10 +1205,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay0Well_H4": {
@@ -1813,10 +1213,6 @@
                     "barcode": [
                         "AAGAGGCA",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N711",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay0Well_H5": {
@@ -1825,10 +1221,6 @@
                     "barcode": [
                         "GGACTCCT",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N705",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay0Well_H6": {
@@ -1837,10 +1229,6 @@
                     "barcode": [
                         "GTAGAGGA",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N712",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay0Well_H7": {
@@ -1849,10 +1237,6 @@
                     "barcode": [
                         "CTCTCTAC",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N707",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay13Well_A10": {
@@ -1861,10 +1245,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay13Well_A11": {
@@ -1873,10 +1253,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay13Well_A12": {
@@ -1885,10 +1261,6 @@
                     "barcode": [
                         "CGAGGCTG",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N710",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay13Well_A9": {
@@ -1897,10 +1269,6 @@
                     "barcode": [
                         "GCTACGCT",
                         "TATGCAGT"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S506"
                     ]
                 },
                 "@ABMinusDay13Well_B10": {
@@ -1909,10 +1277,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay13Well_B11": {
@@ -1921,10 +1285,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay13Well_B12": {
@@ -1933,10 +1293,6 @@
                     "barcode": [
                         "CGAGGCTG",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N710",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay13Well_B9": {
@@ -1945,10 +1301,6 @@
                     "barcode": [
                         "GCTACGCT",
                         "TCTACTCT"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S504"
                     ]
                 },
                 "@ABMinusDay13Well_C10": {
@@ -1957,10 +1309,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay13Well_C11": {
@@ -1969,10 +1317,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay13Well_C12": {
@@ -1981,10 +1325,6 @@
                     "barcode": [
                         "CGAGGCTG",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N710",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay13Well_C8": {
@@ -1993,10 +1333,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay13Well_C9": {
@@ -2005,10 +1341,6 @@
                     "barcode": [
                         "GCTACGCT",
                         "AGGCTTAG"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S508"
                     ]
                 },
                 "@ABMinusDay13Well_D10": {
@@ -2017,10 +1349,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay13Well_D11": {
@@ -2029,10 +1357,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay13Well_D12": {
@@ -2041,10 +1365,6 @@
                     "barcode": [
                         "CGAGGCTG",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N710",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay13Well_D8": {
@@ -2053,10 +1373,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay13Well_D9": {
@@ -2065,10 +1381,6 @@
                     "barcode": [
                         "GCTACGCT",
                         "CTCCTTAC"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S505"
                     ]
                 },
                 "@ABMinusDay13Well_E10": {
@@ -2077,10 +1389,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay13Well_E11": {
@@ -2089,10 +1397,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay13Well_E12": {
@@ -2101,10 +1405,6 @@
                     "barcode": [
                         "CGAGGCTG",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N710",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay13Well_E8": {
@@ -2113,10 +1413,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay13Well_E9": {
@@ -2125,10 +1421,6 @@
                     "barcode": [
                         "GCTACGCT",
                         "ATAGAGAG"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S502"
                     ]
                 },
                 "@ABMinusDay13Well_F10": {
@@ -2137,10 +1429,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay13Well_F11": {
@@ -2149,10 +1437,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay13Well_F12": {
@@ -2161,10 +1445,6 @@
                     "barcode": [
                         "CGAGGCTG",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N710",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay13Well_F8": {
@@ -2173,10 +1453,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay13Well_F9": {
@@ -2185,10 +1461,6 @@
                     "barcode": [
                         "GCTACGCT",
                         "TACTCCTT"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S507"
                     ]
                 },
                 "@ABMinusDay13Well_G10": {
@@ -2197,10 +1469,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay13Well_G11": {
@@ -2209,10 +1477,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay13Well_G8": {
@@ -2221,10 +1485,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay13Well_G9": {
@@ -2233,10 +1493,6 @@
                     "barcode": [
                         "GCTACGCT",
                         "TCTTACGC"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S517"
                     ]
                 },
                 "@ABMinusDay13Well_H10": {
@@ -2245,10 +1501,6 @@
                     "barcode": [
                         "TCCTGAGC",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N704",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay13Well_H11": {
@@ -2257,10 +1509,6 @@
                     "barcode": [
                         "CAGAGAGG",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N708",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay13Well_H8": {
@@ -2269,10 +1517,6 @@
                     "barcode": [
                         "AGGCAGAA",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N703",
-                        "S503"
                     ]
                 },
                 "@ABMinusDay13Well_H9": {
@@ -2281,14 +1525,15 @@
                     "barcode": [
                         "GCTACGCT",
                         "AGAGGATA"
-                    ],
-                    "barcode reference": [
-                        "N709",
-                        "S503"
                     ]
                 }
             },
-            "transform": { "token": [ "1::8", "2::8" ] }
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
+            }
         }
     },
     "flowcell id": "BCBJLFACXX",
