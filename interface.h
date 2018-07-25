@@ -172,7 +172,7 @@ class Action {
         const Value& ontology;
         const string name;
         const string description;
-        const string epilog;
+        const list< string > epilog;
         Action(const Value& ontology, bool root=false);
         virtual ~Action();
         Document operation();

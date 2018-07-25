@@ -459,11 +459,11 @@ bool Argument::satisfied() const {
 
 /*  Action */
 
-Action::Action(const Value& ontology, bool root) :
+Action::Action(const Value& ontology, bool root) try :
     ontology(ontology),
     name(decode_value_by_key< string >("name", ontology)),
     description(decode_value_by_key< string >("description", ontology)),
-    epilog(decode_value_by_key< string >("epilog", ontology)),
+    epilog(decode_value_by_key< list< string > >("epilog", ontology)),
     root(root),
     max_option_handle(0) {
 
@@ -494,6 +494,12 @@ Action::Action(const Value& ontology, bool root) :
             }
         } else { throw ConfigurationError("incorrect syntax"); }
     }
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Action :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Action :: " + string(error.what()));
 };
 Action::~Action() {
     for(auto prototype : optional_by_index) {
@@ -783,6 +789,15 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
         if(!prototype->mandatory) {
             block.append("]");
         }
+        if(prototype->plural) {
+            if(prototype->cardinality > 0) {
+                block.append("{");
+                block.append(to_string(prototype->cardinality));
+                block.append("}");
+            } else {
+                block.append("*");
+            }
+        }
         if(buffer.length() + block.length() > layout.max_line_width) {
             o << buffer << endl << setw(indent) << ' ';
             buffer.clear();
@@ -855,8 +870,11 @@ ostream& Action::print_description_element(ostream& o, const Layout& layout) con
     return o;
 };
 ostream& Action::print_epilog_element(ostream& o, const Layout& layout) const {
-    if(epilog.length() > 0) {
-        o << endl << epilog << endl;
+    if(epilog.size() > 0) {
+        o << endl;
+        for(auto& line : epilog) {
+            o << line << endl;
+        }
     }
     return o;
 };
@@ -956,7 +974,7 @@ Document Action::operation() {
 
 /*  Interface */
 
-Interface::Interface(const size_t argc, const char** argv) :
+Interface::Interface(const size_t argc, const char** argv) try :
     argc(argc),
     argv(argv),
     application_name(argv[0]),
@@ -974,6 +992,12 @@ Interface::Interface(const size_t argc, const char** argv) :
             load_selected_action();
         } else { throw ConfigurationError("interface configuration must be a dictionary"); }
     } else { throw ConfigurationError(string(GetParseError_En(configuration.GetParseError())) + " at position " + to_string(configuration.GetErrorOffset())); }
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Interface :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Interface :: " + string(error.what()));
 };
 Interface::~Interface() {
     for(auto action : action_by_index) {

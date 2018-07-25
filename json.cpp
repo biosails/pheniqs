@@ -351,7 +351,7 @@ template <> list< string > decode_value_by_key(const Value::Ch* key, const Value
                     list< string > value;
                     for(const auto& element : reference->value.GetArray()) {
                         if(element.IsString()) {
-                            value.emplace_back(reference->value.GetString(), reference->value.GetStringLength());
+                            value.emplace_back(element.GetString(), element.GetStringLength());
                             ++index;
                         } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a string"); }
                     }
