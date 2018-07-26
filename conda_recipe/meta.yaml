@@ -1,0 +1,42 @@
+{% set name = "pheniqs" %}
+{% set version = "THIS_VERSION" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/biosails/{{ name }}/archive/master.zip
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - rapidjson
+    - samtools
+    - htslib
+    - python
+    - zlib
+  run:
+    - rapidjson
+    - samtools
+    - htslib
+    - zlib
+
+test:
+  commands:
+    - pheniqs --version
+    - pheniqs --help
+    - pheniqs demux --help
+
+about:
+  home: http://biosails.github.io/pheniqs
+  license: GPL3
+  license_file: LICENSE
+  summary: Pheniqs is a generic high throughput DNA sequence demultiplexer and quality analyzer written in multi threaded C++11. Pheniqs is pronounced phoe·nix and stands for PHilology ENcoder wIth Quality Statistics. This is a build on the latest code, is not versioned, is not guaranteed, and should only be used for dev purposes.
+  dev_url: https://github.com/biosails/pheniqs
+  doc_url: http://biosails.github.io/pheniqs
