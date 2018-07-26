@@ -33,6 +33,8 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 	$WORKSPACE/miniconda/bin/conda clean -y --all
 	rm miniconda.sh
 
+	export PATH=$WORKSPACE/miniconda/bin:$PATH
+	
 	cp -rf conda_recipe /tmp
 	cd /tmp/conda_recipe
 	/tmp/conda_recipe/conda_build.sh
