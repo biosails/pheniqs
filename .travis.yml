@@ -16,6 +16,10 @@ before_install:
 
 install: true
 
+stages:
+  - test
+  - deploy
+
 ####################################################################################
 # NOTE - Conda Recipe
 # Each of the ./pheniqs commands is also used as a test in the conda build
