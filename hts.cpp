@@ -48,47 +48,47 @@ void HtsHeader::decode(htsFile* hts_file) {
                     uint16_t code = tag_to_code(position);
                     position += 2;
                     switch (code) {
-                        case uint16_t(HtsAuxiliaryCode::HD): {
+                        case uint16_t(HtsTagCode::HD): {
                             position = hd.decode(position, end);
                             break;
                         };
-                        case uint16_t(HtsAuxiliaryCode::RG): {
+                        case uint16_t(HtsTagCode::RG): {
                             HeadRGAtom rg;
                             position = rg.decode(position, end);
                             add_read_group(rg);
                             break;
                         };
-                        case uint16_t(HtsAuxiliaryCode::PG): {
+                        case uint16_t(HtsTagCode::PG): {
                             HeadPGAtom pg;
                             position = pg.decode(position, end);
                             add_program(pg);
                             break;
                         };
-                        case uint16_t(HtsAuxiliaryCode::CO): {
+                        case uint16_t(HtsTagCode::CO): {
                             HeadCOAtom co;
                             position = co.decode(position, end);
                             add_comment(co);
                             break;
                         };
                         /*
-                        case uint16_t(HtsAuxiliaryCode::SQ): {
+                        case uint16_t(HtsTagCode::SQ): {
                             switch (code) {
-                                case uint16_t(HtsAuxiliaryCode::SN): {
+                                case uint16_t(HtsTagCode::SN): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::LN): {
+                                case uint16_t(HtsTagCode::LN): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::AS): {
+                                case uint16_t(HtsTagCode::AS): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::M5): {
+                                case uint16_t(HtsTagCode::M5): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::SP): {
+                                case uint16_t(HtsTagCode::SP): {
                                     break;
                                 };
-                                case uint16_t(HtsAuxiliaryCode::UR): {
+                                case uint16_t(HtsTagCode::UR): {
                                     break;
                                 };
                                 default:
@@ -175,46 +175,63 @@ ostream& operator<<(ostream& o, const bam1_t& value) {
     return o;
 };
 
-template<> void CyclicBuffer< bam1_t >::calibrate(const int& capacity, const int& resolution) {
-    if(_capacity != capacity || _resolution != resolution) {
-        if(capacity > _capacity) {
-            if(align_to_resolution(capacity, resolution) == capacity) {
-                cache.resize(capacity);
-                for(int i = _capacity; i < capacity; ++i) {
-                    bam1_t* allocated = bam_init1();
-                    if(_direction == IoDirection::OUT) {
-                        allocated->core.tid = -1;
-                        allocated->core.pos = -1;
-                        allocated->core.mtid = -1;
-                        allocated->core.mpos = -1;
-                        allocated->core.bin = 0;
-                        allocated->core.qual = 0;
-                        allocated->core.n_cigar = 0;
-                        allocated->core.isize = 0;
-                    }
-                    cache[i] = allocated;
+template<> int CyclicBuffer< bam1_t >::calibrate_capacity(const int& capacity) {
+    if(capacity > _capacity) {
+        int aligned_capacity(align_to_resolution(capacity, _resolution));
+        if(aligned_capacity > _capacity) {
+            cache.resize(aligned_capacity);
+            for(int i = _capacity; i < aligned_capacity; ++i) {
+                bam1_t* allocated = bam_init1();
+                if(_direction == IoDirection::OUT) {
+                    allocated->core.tid = -1;
+                    allocated->core.pos = -1;
+                    allocated->core.mtid = -1;
+                    allocated->core.mpos = -1;
+                    allocated->core.bin = 0;
+                    allocated->core.qual = 0;
+                    allocated->core.n_cigar = 0;
+                    allocated->core.isize = 0;
                 }
-                if(_vacant < 0) {
-                    _vacant = _capacity;
-                }
-                _capacity = capacity;
-                _resolution = resolution;
-            } else {
-                throw InternalError("capacity " + to_string(capacity) + " is not aligned to resolution " + to_string(resolution));
+                cache[i] = allocated;
             }
-        } else {
-            throw InternalError("can not reduce buffer size");
+            if(_vacant < 0) {
+                _vacant = _capacity;
+            }
+            _capacity = aligned_capacity;
         }
+        return _capacity;
+    } else { throw InternalError("can not reduce buffer capacity"); }
+
+    if(capacity > _capacity) {
+        cache.resize(capacity);
+        for(int i = _capacity; i < capacity; ++i) {
+            bam1_t* allocated = bam_init1();
+            if(_direction == IoDirection::OUT) {
+                allocated->core.tid = -1;
+                allocated->core.pos = -1;
+                allocated->core.mtid = -1;
+                allocated->core.mpos = -1;
+                allocated->core.bin = 0;
+                allocated->core.qual = 0;
+                allocated->core.n_cigar = 0;
+                allocated->core.isize = 0;
+            }
+            cache[i] = allocated;
+        }
+        if(_vacant < 0) {
+            _vacant = _capacity;
+        }
+        _capacity = capacity;
     }
 };
 template<> CyclicBuffer< bam1_t >::CyclicBuffer(const IoDirection& direction, const int& capacity, const int& resolution) :
     _direction(direction),
     _capacity(0),
-    _resolution(0),
+    _resolution(resolution),
     _next(-1),
     _vacant(0) {
 
-    calibrate(capacity, resolution);
+    calibrate_capacity(capacity);
 };
 template<> CyclicBuffer< bam1_t >::~CyclicBuffer() {
     for(auto record : cache) {

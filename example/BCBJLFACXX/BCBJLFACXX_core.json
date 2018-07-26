@@ -1,0 +1,1548 @@
+{
+    "CN": "CGSB AD",
+    "DT": "2018-06-18T00:00:00+00:00",
+    "PL": "ILLUMINA",
+    "PM": "NextSeq",
+    "base input url": "BCBJLFACXX",
+    "decoder": {
+        "@BCBJLFACXX_multiplex": {
+            "codec": {
+                "@ABHetDay0Well_A1": {
+                    "LB": "ABHetDay0Well_A1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A2": {
+                    "LB": "ABHetDay0Well_A2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A3": {
+                    "LB": "ABHetDay0Well_A3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A4": {
+                    "LB": "ABHetDay0Well_A4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A5": {
+                    "LB": "ABHetDay0Well_A5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A6": {
+                    "LB": "ABHetDay0Well_A6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A7": {
+                    "LB": "ABHetDay0Well_A7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A8": {
+                    "LB": "ABHetDay0Well_A8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_A9": {
+                    "LB": "ABHetDay0Well_A9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay0Well_B1": {
+                    "LB": "ABHetDay0Well_B1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B2": {
+                    "LB": "ABHetDay0Well_B2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B3": {
+                    "LB": "ABHetDay0Well_B3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B4": {
+                    "LB": "ABHetDay0Well_B4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B5": {
+                    "LB": "ABHetDay0Well_B5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B6": {
+                    "LB": "ABHetDay0Well_B6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B7": {
+                    "LB": "ABHetDay0Well_B7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B8": {
+                    "LB": "ABHetDay0Well_B8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_B9": {
+                    "LB": "ABHetDay0Well_B9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay0Well_C1": {
+                    "LB": "ABHetDay0Well_C1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C2": {
+                    "LB": "ABHetDay0Well_C2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C3": {
+                    "LB": "ABHetDay0Well_C3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C4": {
+                    "LB": "ABHetDay0Well_C4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C5": {
+                    "LB": "ABHetDay0Well_C5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C6": {
+                    "LB": "ABHetDay0Well_C6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C7": {
+                    "LB": "ABHetDay0Well_C7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C8": {
+                    "LB": "ABHetDay0Well_C8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_C9": {
+                    "LB": "ABHetDay0Well_C9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay0Well_D1": {
+                    "LB": "ABHetDay0Well_D1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D2": {
+                    "LB": "ABHetDay0Well_D2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D3": {
+                    "LB": "ABHetDay0Well_D3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D4": {
+                    "LB": "ABHetDay0Well_D4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D5": {
+                    "LB": "ABHetDay0Well_D5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D6": {
+                    "LB": "ABHetDay0Well_D6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D7": {
+                    "LB": "ABHetDay0Well_D7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D8": {
+                    "LB": "ABHetDay0Well_D8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_D9": {
+                    "LB": "ABHetDay0Well_D9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay0Well_E1": {
+                    "LB": "ABHetDay0Well_E1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E2": {
+                    "LB": "ABHetDay0Well_E2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E3": {
+                    "LB": "ABHetDay0Well_E3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E4": {
+                    "LB": "ABHetDay0Well_E4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E5": {
+                    "LB": "ABHetDay0Well_E5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E6": {
+                    "LB": "ABHetDay0Well_E6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E7": {
+                    "LB": "ABHetDay0Well_E7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E8": {
+                    "LB": "ABHetDay0Well_E8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_E9": {
+                    "LB": "ABHetDay0Well_E9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay0Well_F1": {
+                    "LB": "ABHetDay0Well_F1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F2": {
+                    "LB": "ABHetDay0Well_F2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F3": {
+                    "LB": "ABHetDay0Well_F3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F4": {
+                    "LB": "ABHetDay0Well_F4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F5": {
+                    "LB": "ABHetDay0Well_F5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F6": {
+                    "LB": "ABHetDay0Well_F6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F7": {
+                    "LB": "ABHetDay0Well_F7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F8": {
+                    "LB": "ABHetDay0Well_F8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_F9": {
+                    "LB": "ABHetDay0Well_F9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay0Well_G1": {
+                    "LB": "ABHetDay0Well_G1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G2": {
+                    "LB": "ABHetDay0Well_G2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G3": {
+                    "LB": "ABHetDay0Well_G3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G4": {
+                    "LB": "ABHetDay0Well_G4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G5": {
+                    "LB": "ABHetDay0Well_G5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G6": {
+                    "LB": "ABHetDay0Well_G6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G7": {
+                    "LB": "ABHetDay0Well_G7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G8": {
+                    "LB": "ABHetDay0Well_G8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_G9": {
+                    "LB": "ABHetDay0Well_G9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay0Well_H1": {
+                    "LB": "ABHetDay0Well_H1",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ATGCGCAG",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H2": {
+                    "LB": "ABHetDay0Well_H2",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TACGCTGC",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H3": {
+                    "LB": "ABHetDay0Well_H3",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "ACTGAGCG",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H4": {
+                    "LB": "ABHetDay0Well_H4",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H5": {
+                    "LB": "ABHetDay0Well_H5",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GCGTAGTA",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H6": {
+                    "LB": "ABHetDay0Well_H6",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TGCAGCTA",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H7": {
+                    "LB": "ABHetDay0Well_H7",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "CGATCAGT",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H8": {
+                    "LB": "ABHetDay0Well_H8",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "TCGACGTC",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay0Well_H9": {
+                    "LB": "ABHetDay0Well_H9",
+                    "SM": "ABHetDay0Well",
+                    "barcode": [
+                        "GGAGCTAC",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay13Well_A1": {
+                    "LB": "ABHetDay13Well_A1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay13Well_A10": {
+                    "LB": "ABHetDay13Well_A10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay13Well_A11": {
+                    "LB": "ABHetDay13Well_A11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay13Well_A12": {
+                    "LB": "ABHetDay13Well_A12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "CGGAGAGA"
+                    ]
+                },
+                "@ABHetDay13Well_A2": {
+                    "LB": "ABHetDay13Well_A2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay13Well_A3": {
+                    "LB": "ABHetDay13Well_A3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay13Well_B1": {
+                    "LB": "ABHetDay13Well_B1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABHetDay13Well_B10": {
+                    "LB": "ABHetDay13Well_B10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay13Well_B11": {
+                    "LB": "ABHetDay13Well_B11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay13Well_B12": {
+                    "LB": "ABHetDay13Well_B12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay13Well_B2": {
+                    "LB": "ABHetDay13Well_B2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABHetDay13Well_B3": {
+                    "LB": "ABHetDay13Well_B3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABHetDay13Well_C1": {
+                    "LB": "ABHetDay13Well_C1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay13Well_C10": {
+                    "LB": "ABHetDay13Well_C10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay13Well_C11": {
+                    "LB": "ABHetDay13Well_C11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay13Well_C12": {
+                    "LB": "ABHetDay13Well_C12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay13Well_C2": {
+                    "LB": "ABHetDay13Well_C2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay13Well_C3": {
+                    "LB": "ABHetDay13Well_C3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay13Well_D1": {
+                    "LB": "ABHetDay13Well_D1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay13Well_D10": {
+                    "LB": "ABHetDay13Well_D10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay13Well_D11": {
+                    "LB": "ABHetDay13Well_D11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay13Well_D12": {
+                    "LB": "ABHetDay13Well_D12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABHetDay13Well_D2": {
+                    "LB": "ABHetDay13Well_D2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay13Well_D3": {
+                    "LB": "ABHetDay13Well_D3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABHetDay13Well_E1": {
+                    "LB": "ABHetDay13Well_E1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay13Well_E10": {
+                    "LB": "ABHetDay13Well_E10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay13Well_E11": {
+                    "LB": "ABHetDay13Well_E11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay13Well_E12": {
+                    "LB": "ABHetDay13Well_E12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay13Well_E2": {
+                    "LB": "ABHetDay13Well_E2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay13Well_E3": {
+                    "LB": "ABHetDay13Well_E3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay13Well_F1": {
+                    "LB": "ABHetDay13Well_F1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay13Well_F10": {
+                    "LB": "ABHetDay13Well_F10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay13Well_F11": {
+                    "LB": "ABHetDay13Well_F11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay13Well_F12": {
+                    "LB": "ABHetDay13Well_F12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABHetDay13Well_F2": {
+                    "LB": "ABHetDay13Well_F2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay13Well_F3": {
+                    "LB": "ABHetDay13Well_F3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABHetDay13Well_G1": {
+                    "LB": "ABHetDay13Well_G1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABHetDay13Well_G10": {
+                    "LB": "ABHetDay13Well_G10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay13Well_G11": {
+                    "LB": "ABHetDay13Well_G11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay13Well_G12": {
+                    "LB": "ABHetDay13Well_G12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABHetDay13Well_G2": {
+                    "LB": "ABHetDay13Well_G2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABHetDay13Well_G3": {
+                    "LB": "ABHetDay13Well_G3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABHetDay13Well_H1": {
+                    "LB": "ABHetDay13Well_H1",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay13Well_H10": {
+                    "LB": "ABHetDay13Well_H10",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CCTAAGAC",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay13Well_H11": {
+                    "LB": "ABHetDay13Well_H11",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay13Well_H12": {
+                    "LB": "ABHetDay13Well_H12",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "ACTCGCTA",
+                        "ATTAGACG"
+                    ]
+                },
+                "@ABHetDay13Well_H2": {
+                    "LB": "ABHetDay13Well_H2",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "CGTACTAG",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABHetDay13Well_H3": {
+                    "LB": "ABHetDay13Well_H3",
+                    "SM": "ABHetDay13Well",
+                    "barcode": [
+                        "TAGGCATG",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay0Well_A4": {
+                    "LB": "ABMinusDay0Well_A4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay0Well_A5": {
+                    "LB": "ABMinusDay0Well_A5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay0Well_A6": {
+                    "LB": "ABMinusDay0Well_A6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay0Well_A7": {
+                    "LB": "ABMinusDay0Well_A7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay0Well_A8": {
+                    "LB": "ABMinusDay0Well_A8",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay0Well_B4": {
+                    "LB": "ABMinusDay0Well_B4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay0Well_B5": {
+                    "LB": "ABMinusDay0Well_B5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay0Well_B6": {
+                    "LB": "ABMinusDay0Well_B6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay0Well_B7": {
+                    "LB": "ABMinusDay0Well_B7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay0Well_B8": {
+                    "LB": "ABMinusDay0Well_B8",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay0Well_C4": {
+                    "LB": "ABMinusDay0Well_C4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay0Well_C5": {
+                    "LB": "ABMinusDay0Well_C5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay0Well_C6": {
+                    "LB": "ABMinusDay0Well_C6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay0Well_C7": {
+                    "LB": "ABMinusDay0Well_C7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay0Well_D4": {
+                    "LB": "ABMinusDay0Well_D4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay0Well_D5": {
+                    "LB": "ABMinusDay0Well_D5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay0Well_D6": {
+                    "LB": "ABMinusDay0Well_D6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay0Well_D7": {
+                    "LB": "ABMinusDay0Well_D7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay0Well_E4": {
+                    "LB": "ABMinusDay0Well_E4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay0Well_E5": {
+                    "LB": "ABMinusDay0Well_E5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay0Well_E6": {
+                    "LB": "ABMinusDay0Well_E6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay0Well_E7": {
+                    "LB": "ABMinusDay0Well_E7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay0Well_F4": {
+                    "LB": "ABMinusDay0Well_F4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay0Well_F5": {
+                    "LB": "ABMinusDay0Well_F5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay0Well_F6": {
+                    "LB": "ABMinusDay0Well_F6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay0Well_F7": {
+                    "LB": "ABMinusDay0Well_F7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay0Well_G4": {
+                    "LB": "ABMinusDay0Well_G4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay0Well_G5": {
+                    "LB": "ABMinusDay0Well_G5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay0Well_G6": {
+                    "LB": "ABMinusDay0Well_G6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay0Well_G7": {
+                    "LB": "ABMinusDay0Well_G7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay0Well_H4": {
+                    "LB": "ABMinusDay0Well_H4",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay0Well_H5": {
+                    "LB": "ABMinusDay0Well_H5",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GGACTCCT",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay0Well_H6": {
+                    "LB": "ABMinusDay0Well_H6",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay0Well_H7": {
+                    "LB": "ABMinusDay0Well_H7",
+                    "SM": "ABMinusDay0Well",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay13Well_A10": {
+                    "LB": "ABMinusDay13Well_A10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay13Well_A11": {
+                    "LB": "ABMinusDay13Well_A11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay13Well_A12": {
+                    "LB": "ABMinusDay13Well_A12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay13Well_A9": {
+                    "LB": "ABMinusDay13Well_A9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TATGCAGT"
+                    ]
+                },
+                "@ABMinusDay13Well_B10": {
+                    "LB": "ABMinusDay13Well_B10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay13Well_B11": {
+                    "LB": "ABMinusDay13Well_B11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay13Well_B12": {
+                    "LB": "ABMinusDay13Well_B12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay13Well_B9": {
+                    "LB": "ABMinusDay13Well_B9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TCTACTCT"
+                    ]
+                },
+                "@ABMinusDay13Well_C10": {
+                    "LB": "ABMinusDay13Well_C10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay13Well_C11": {
+                    "LB": "ABMinusDay13Well_C11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay13Well_C12": {
+                    "LB": "ABMinusDay13Well_C12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay13Well_C8": {
+                    "LB": "ABMinusDay13Well_C8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay13Well_C9": {
+                    "LB": "ABMinusDay13Well_C9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "AGGCTTAG"
+                    ]
+                },
+                "@ABMinusDay13Well_D10": {
+                    "LB": "ABMinusDay13Well_D10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay13Well_D11": {
+                    "LB": "ABMinusDay13Well_D11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay13Well_D12": {
+                    "LB": "ABMinusDay13Well_D12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay13Well_D8": {
+                    "LB": "ABMinusDay13Well_D8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay13Well_D9": {
+                    "LB": "ABMinusDay13Well_D9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "CTCCTTAC"
+                    ]
+                },
+                "@ABMinusDay13Well_E10": {
+                    "LB": "ABMinusDay13Well_E10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay13Well_E11": {
+                    "LB": "ABMinusDay13Well_E11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay13Well_E12": {
+                    "LB": "ABMinusDay13Well_E12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay13Well_E8": {
+                    "LB": "ABMinusDay13Well_E8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay13Well_E9": {
+                    "LB": "ABMinusDay13Well_E9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "ATAGAGAG"
+                    ]
+                },
+                "@ABMinusDay13Well_F10": {
+                    "LB": "ABMinusDay13Well_F10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay13Well_F11": {
+                    "LB": "ABMinusDay13Well_F11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay13Well_F12": {
+                    "LB": "ABMinusDay13Well_F12",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay13Well_F8": {
+                    "LB": "ABMinusDay13Well_F8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay13Well_F9": {
+                    "LB": "ABMinusDay13Well_F9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TACTCCTT"
+                    ]
+                },
+                "@ABMinusDay13Well_G10": {
+                    "LB": "ABMinusDay13Well_G10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay13Well_G11": {
+                    "LB": "ABMinusDay13Well_G11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay13Well_G8": {
+                    "LB": "ABMinusDay13Well_G8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay13Well_G9": {
+                    "LB": "ABMinusDay13Well_G9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "TCTTACGC"
+                    ]
+                },
+                "@ABMinusDay13Well_H10": {
+                    "LB": "ABMinusDay13Well_H10",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "TCCTGAGC",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay13Well_H11": {
+                    "LB": "ABMinusDay13Well_H11",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "CAGAGAGG",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay13Well_H8": {
+                    "LB": "ABMinusDay13Well_H8",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "AGAGGATA"
+                    ]
+                },
+                "@ABMinusDay13Well_H9": {
+                    "LB": "ABMinusDay13Well_H9",
+                    "SM": "ABMinusDay13Well",
+                    "barcode": [
+                        "GCTACGCT",
+                        "AGAGGATA"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
+            }
+        }
+    },
+    "flowcell id": "BCBJLFACXX",
+    "include filtered": true,
+    "input": [
+        "Lane1_S1_L001_I1_001.fastq.gz",
+        "Lane1_S1_L001_I2_001.fastq.gz",
+        "Lane1_S1_L001_R1_001.fastq.gz",
+        "Lane1_S1_L001_R2_001.fastq.gz"
+    ],
+    "threads": 16
+}

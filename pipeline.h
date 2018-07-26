@@ -28,11 +28,13 @@
 
 class Job {
     public:
+        const Document operation;
         Document ontology;
         Document report;
-        Job(Document& node);
-        virtual ~Job() {
-
+        Job(Document& operation);
+        virtual ~Job() {};
+        inline bool is_compile_only() const {
+            return decode_value_by_key< bool >("compile only", ontology);
         };
         inline bool is_lint_only() const {
             return decode_value_by_key< bool >("lint only", ontology);
@@ -40,46 +42,27 @@ class Job {
         inline bool is_validate_only() const {
             return decode_value_by_key< bool >("validate only", ontology);
         };
+        virtual void assemble();
         virtual void compile();
-        virtual void load() {
-        };
-        virtual void execute() {
-            if(is_validate_only()) {
-                describe(cerr);
-
-            } else if(is_lint_only()) {
-                print_ontology(cout);
-            }
-        };
-        virtual void print_ontology(ostream& o) const {
-            print_json(ontology, o);
-        };
-        virtual void print_report(ostream& o) const {
-            print_json(report, o);
-        };
-        virtual void describe(ostream& o) const {
-        };
+        virtual void load() {};
+        virtual void execute() {};
+        virtual void print_ontology(ostream& o) const;
+        virtual void print_compiled(ostream& o) const;
+        virtual void print_report(ostream& o) const;
+        virtual void describe(ostream& o) const;
 
     protected:
-        const Pointer operation_pointer;
-        const Pointer operation_default_pointer;
-        const Pointer operation_interactive_pointer;
-        const Pointer operation_projection_pointer;
-        virtual void compile_default();
-        virtual void compile_from_url();
-        virtual void compile_interactive();
-        virtual void manipulate() {
-
-        };
+        virtual void manipulate() {};
         virtual void clean();
-        virtual void validate() {
-
-        };
+        virtual void validate() {};
+        void overlay(const Value& instruction);
+        const Value* find_projection(const string& key) const;
+        Document read_instruction_document(const URL& url) const;
 
     private:
-        void overlay(const Value& value);
-        Document load_document_from_url(const URL& url);
-        void apply_document_import(Document& document);
+        const Pointer projection_query;
+        void remove_disabled();
+        Document load_document_with_import(const URL& url, set< URL >& visited) const;
 };
 
 #endif /* PHENIQS_PIPELINE_H */

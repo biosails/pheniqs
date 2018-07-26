@@ -58,18 +58,14 @@ void merge_json_value(const Value& base, Value& ontology, Document& document) {
                                 throw ConfigurationError(string(element.name.GetString(), element.name.GetStringLength()) + " " + error.message);
                             }
                         } else {
-                            ontology.AddMember (
-                                Value(element.name, document.GetAllocator()).Move(),
-                                Value(element.value, document.GetAllocator()).Move(),
-                                document.GetAllocator()
-                            );
+                            Value key(element.name, document.GetAllocator());
+                            Value value(element.value, document.GetAllocator());
+                            ontology.AddMember(key.Move(), value.Move(), document.GetAllocator());
                         }
                     }
                 } else { throw ConfigurationError("element is not a dictionary"); }
             }
-        } else {
-            ontology.CopyFrom(base, document.GetAllocator());
-        }
+        } else { ontology.CopyFrom(base, document.GetAllocator()); }
     }
 };
 void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document) {
@@ -121,9 +117,7 @@ void clean_json_value(Value& ontology, Document& document) {
                     clean.AddMember(record.name.Move(), record.value.Move(), document.GetAllocator());
                 }
             }
-            if(clean.ObjectEmpty()) {
-                clean.SetNull();
-            }
+            if(clean.ObjectEmpty()) { clean.SetNull(); }
             ontology.Swap(clean);
             break;
         };
@@ -135,16 +129,12 @@ void clean_json_value(Value& ontology, Document& document) {
                     clean.PushBack(element.Move(), document.GetAllocator());
                 }
             }
-            if(clean.Size() < 1) {
-                clean.SetNull();
-            }
+            if(clean.Empty()) { clean.SetNull(); }
             ontology.Swap(clean);
             break;
         };
         case Type::kStringType: {
-            if(ontology.GetStringLength() < 1) {
-                ontology.SetNull();
-            }
+            if(ontology.GetStringLength() < 1) { ontology.SetNull(); }
             break;
         };
     }
@@ -156,11 +146,16 @@ void sort_json_value(Value& ontology, Document& document) {
             sort_json_value(record.value, document);
             dictionary.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
         }
-        Value clean(kObjectType);
+        Value sorted(kObjectType);
         for(auto& record : dictionary) {
-            clean.AddMember(Value(record.first.c_str(), record.first.size(), document.GetAllocator()).Move(), record.second->Move(), document.GetAllocator());
+            sorted.AddMember(Value(record.first.c_str(), record.first.size(), document.GetAllocator()).Move(), record.second->Move(), document.GetAllocator());
         }
-        ontology.Swap(clean);
+        ontology.Swap(sorted);
+
+    } else if(ontology.IsArray()) {
+        for(auto& element : ontology.GetArray()) {
+            sort_json_value(element, document);
+        }
     }
 };
 
@@ -356,7 +351,7 @@ template <> list< string > decode_value_by_key(const Value::Ch* key, const Value
                     list< string > value;
                     for(const auto& element : reference->value.GetArray()) {
                         if(element.IsString()) {
-                            value.emplace_back(reference->value.GetString(), reference->value.GetStringLength());
+                            value.emplace_back(element.GetString(), element.GetStringLength());
                             ++index;
                         } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a string"); }
                     }
@@ -602,6 +597,27 @@ template<> bool decode_value_by_key< kstring_t >(const Value::Ch* key, kstring_t
     return false;
 };
 
+bool remove_disabled_from_json_value(Value& ontology) {
+    if(ontology.IsObject()) {
+        if(!decode_value_by_key< bool >("disabled", ontology)) {
+            for(Value::MemberIterator iterator = ontology.MemberBegin(); iterator != ontology.MemberEnd(); ++iterator) {
+                if(remove_disabled_from_json_value(iterator->value)) {
+                    ontology.RemoveMember(iterator);
+                }
+            }
+            return ontology.ObjectEmpty();
+        } else { return true; }
+
+    } else if(ontology.IsArray()) {
+        for(Value::ValueIterator iterator = ontology.Begin(); iterator != ontology.End(); ++iterator) {
+            if(remove_disabled_from_json_value(*iterator)) {
+                ontology.Erase(iterator);
+            }
+        }
+        return ontology.Empty();
+    } else { return false; }
+};
+
 /*
     switch (value.GetType()) {
         case Type::kNullType: {
@@ -628,4 +644,56 @@ template<> bool decode_value_by_key< kstring_t >(const Value::Ch* key, kstring_t
         default:
             break;
     }
+*/
+
+/*
+Value project_json_on_namespace(const Value& ontology, Document& document, const string& uri, const unordered_map< string, Value >& namespace_by_uri) {
+    auto ns_record = namespace_by_uri.find(uri);
+    if(ns_record == namespace_by_uri.end()) {
+        const Value& ns(ns_record->second);
+
+        Value projection(kObjectType);
+        Value projection(kNullType);
+        if(!ontology.IsNull()) {
+            Value::ConstMemberIterator reference = ns.FindMember("element");
+            if(reference != ns.MemberEnd()) {
+                const Value& ns_element_dictionary(reference->value);
+                for(auto& ns_element_record : ns_element_dictionary.GetObject()) {
+                    string name(ns_element_record.name.GetString(), ns_element_record.name.GetStringLength());
+                    string type(decode_value_by_key< string >("type", ns_element_record.value));
+                    string plural(decode_value_by_key< bool >("plural", ns_element_record.value));
+
+                    if(!ontology.IsNull()) {
+                        reference = ontology.FindMember(ns_element_record.name);
+                        if(reference != ontology.MemberEnd()) {
+                            Value key(ns_element_record.name.GetString(), ns_element_record.name.GetStringLength(), document.GetAllocator());
+                            if(type == "object") {
+                                string object_namespace_uri(decode_value_by_key< string >("namespace", ns_element_record.value));
+                                Value value(project_json_on_namespace(reference->value, document, object_namespace_uri, namespace_by_uri));
+                                projection.AddMember(key.Move(), value.Move(), document.GetAllocator());
+                            } else {
+                                if(!reference->value.IsNull()) {
+                                    Value value(reference->value, document.GetAllocator());
+                                    projection.AddMember(key.Move(), value.Move(), document.GetAllocator());
+                                } else {
+                                    reference = ns_element_record.value.FindMember("default");
+                                    if(reference != ns_element_record.value.MemberEnd()) {
+                                        Value value(reference->value, document.GetAllocator());
+                                        projection.AddMember(key.Move(), value.Move(), document.GetAllocator());
+                                    }
+                                }
+                            }
+                        } else {
+                            reference = ns_element_record.value.FindMember("default");
+                            if(reference != ns_element_record.value.MemberEnd()) {
+                                Value value(reference->value, document.GetAllocator());
+                                projection.AddMember(key.Move(), value.Move(), document.GetAllocator());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
 */

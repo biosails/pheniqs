@@ -24,8 +24,6 @@
 
 #include "include.h"
 #include "feed.h"
-#include <htslib/bgzf.h>
-#include <htslib/kseq.h>
 
 KSEQ_INIT(BGZF*, bgzf_read)
 

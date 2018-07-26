@@ -1,0 +1,15 @@
+{
+    "base output url": "demultiplexed/HK5NHBGXX/1",
+    "import": [ "HK5NHBGXX_core.json" ],
+    "molecular": [
+        { "base": "@HK5NHBGXX_molecular" }
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "@HK5NHBGXX_multiplex",
+        "confidence threshold": 0.99,
+        "noise": 0.03
+    },
+    "output": [ "HK5NHBGXX_l01.cram" ],
+    "threads": 4
+}

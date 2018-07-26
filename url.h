@@ -51,6 +51,7 @@ enum class FormatType : uint8_t {
     JSON,
 };
 void to_string(const FormatType& value, string& result);
+string to_string(const FormatType& value);
 bool from_string(const char* value, FormatType& result);
 bool from_string(const string& value, FormatType& result);
 ostream& operator<<(ostream& o, const FormatType& value);
@@ -78,8 +79,6 @@ class URL {
         URL();
         URL(const URL& other);
         URL(const string& path);
-        URL(const string& path, const bool& is_directory);
-        void parse_directory(const string& path);
         void parse_file(const string& path);
         void parse_file(const string& path, const IoDirection& direction);
         void set_basename(const string& name);
@@ -158,7 +157,7 @@ class URL {
         bool operator==(const URL& other) const;
         URL& operator=(const URL& other);
         operator string() const;
-        void describe(ostream& o) const;
+        string description() const;
 
     private:
         string _path;

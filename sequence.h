@@ -357,7 +357,7 @@ template < class T > class SequenceArray {
         inline size_t segment_cardinality() const {
             return segment_array.size();
         };
-        inline void clear() {
+        virtual inline void clear() {
             for(auto& segment : segment_array) {
                 segment.clear();
             }

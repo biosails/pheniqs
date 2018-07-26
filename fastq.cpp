@@ -28,27 +28,21 @@ ostream& operator<<(ostream& o, const FastqRecord& value) {
     if(!ks_empty(value.comment))    o << "comment : "   << value.comment.s  << endl;
     return o;
 };
-
-template<> void CyclicBuffer< FastqRecord >::calibrate(const int& capacity, const int& resolution) {
-    if(_capacity != capacity || _resolution != resolution) {
-        if(capacity > _capacity) {
-            if(align_to_resolution(capacity, resolution) == capacity) {
-                cache.resize(capacity);
-                for(int i = _capacity; i < capacity; ++i) {
-                    cache[i] = new FastqRecord();
-                }
-                if(_vacant < 0) {
-                    _vacant = _capacity;
-                }
-                _capacity = capacity;
-                _resolution = resolution;
-            } else {
-                throw InternalError("capacity " + to_string(capacity) + " is not aligned to resolution " + to_string(resolution));
+template<> int CyclicBuffer< FastqRecord >::calibrate_capacity(const int& capacity) {
+    if(capacity > _capacity) {
+        int aligned_capacity(align_to_resolution(capacity, _resolution));
+        if(aligned_capacity > _capacity) {
+            cache.resize(aligned_capacity);
+            for(int i = _capacity; i < aligned_capacity; ++i) {
+                cache[i] = new FastqRecord();
             }
-        } else {
-            throw InternalError("can not reduce buffer size");
+            if(_vacant < 0) {
+                _vacant = _capacity;
+            }
+            _capacity = aligned_capacity;
         }
-    }
+        return _capacity;
+    } else { throw InternalError("can not reduce buffer capacity"); }
 };
 template<> CyclicBuffer< FastqRecord >::CyclicBuffer (
     const IoDirection& direction,
@@ -57,11 +51,11 @@ template<> CyclicBuffer< FastqRecord >::CyclicBuffer (
 
     _direction(direction),
     _capacity(0),
-    _resolution(0),
+    _resolution(resolution),
     _next(-1),
     _vacant(0) {
 
-    calibrate(capacity, resolution);
+    calibrate_capacity(capacity);
 };
 template<> CyclicBuffer< FastqRecord >::~CyclicBuffer() {
     for(auto record : cache) {

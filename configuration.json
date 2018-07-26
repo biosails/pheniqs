@@ -2,19 +2,28 @@
     "action": [
         {
             "default": {
-                "algorithm": "pamld",
-                "disable quality control": false,
-                "display distance": false,
-                "flowcell id": null,
-                "flowcell lane number": null,
-                "input segment cardinality": 0,
-                "lint only": false,
-                "output segment cardinality": 0,
-                "quality masking threshold": 0,
-                "validate only": false,
-                "version only": false
+                "input": [
+                    "/dev/stdin"
+                ],
+                "multiplex": {
+                    "algorithm": "pipe"
+                },
+                "output": [
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                ]
             },
+            "epilog": [
+                "To provide multiple paths to -i/--input and -o/--output repeat the flag before every path,",
+                "i.e. `pheniqs demux -i first_in.fastq -i second_in.fastq -o first_out.fastq -o second_out.fastq`",
+                "",
+                "-i/--input defaults to /dev/stdin, -o/--output default to /dev/stdout and output format default to SAM.",
+                "-I, --base-input and -O, --base-output default to the working directory."
+            ],
             "description": "Demultiplex and report quality control",
+            "implementation": "multiplex",
             "name": "demux",
             "option": [
                 {
@@ -27,6 +36,77 @@
                     "type": "boolean"
                 },
                 {
+                    "cardinality": "*",
+                    "extension": [
+                        "fq",
+                        "fq.gz",
+                        "fastq",
+                        "fastq.gz",
+                        "bam",
+                        "cram",
+                        "sam"
+                    ],
+                    "handle": [
+                        "-i",
+                        "--input"
+                    ],
+                    "help": "Path to input files",
+                    "meta": "PATH",
+                    "name": "input",
+                    "type": "url"
+                },
+                {
+                    "cardinality": "*",
+                    "extension": [
+                        "fq",
+                        "fq.gz",
+                        "fastq",
+                        "fastq.gz",
+                        "bam",
+                        "cram",
+                        "sam"
+                    ],
+                    "handle": [
+                        "-o",
+                        "--output"
+                    ],
+                    "help": "Path to output files",
+                    "meta": "PATH",
+                    "name": "output",
+                    "type": "url"
+                },
+                {
+                    "extension": [
+                        "json"
+                    ],
+                    "handle": [
+                        "-c",
+                        "--config"
+                    ],
+                    "help": "Path to configuration file",
+                    "meta": "PATH",
+                    "name": "configuration url",
+                    "type": "url"
+                },
+                {
+                    "handle": [
+                        "-I",
+                        "--base-input"
+                    ],
+                    "help": "Base input url",
+                    "name": "base input url",
+                    "type": "url"
+                },
+                {
+                    "handle": [
+                        "-O",
+                        "--base-output"
+                    ],
+                    "help": "Base output url",
+                    "name": "base output url",
+                    "type": "url"
+                },
+                {
                     "handle": [
                         "-V",
                         "--validate"
@@ -37,11 +117,11 @@
                 },
                 {
                     "handle": [
-                        "-j",
-                        "--lint"
+                        "-C",
+                        "--compile"
                     ],
-                    "help": "Only lint configuration file",
-                    "name": "lint only",
+                    "help": "Only compile configuration file",
+                    "name": "compile only",
                     "type": "boolean"
                 },
                 {
@@ -54,22 +134,8 @@
                     "type": "boolean"
                 },
                 {
-                    "extension": [
-                        "json"
-                    ],
                     "handle": [
-                        "-C",
-                        "--config"
-                    ],
-                    "help": "Path to configuration file",
-                    "mandatory": true,
-                    "meta": "PATH",
-                    "name": "configuration url",
-                    "type": "url"
-                },
-                {
-                    "handle": [
-                        "-c",
+                        "-p",
                         "--multiplex-confidence"
                     ],
                     "help": "Decoding multiplex confidence threshold",
@@ -105,49 +171,12 @@
                 },
                 {
                     "handle": [
-                        "-i",
-                        "--base-input"
-                    ],
-                    "help": "Base input url",
-                    "name": "base input url",
-                    "type": "directory"
-                },
-                {
-                    "handle": [
-                        "-o",
-                        "--base-output"
-                    ],
-                    "help": "Base output url",
-                    "name": "base output url",
-                    "type": "directory"
-                },
-                {
-                    "handle": [
                         "-l",
                         "--leading"
                     ],
                     "help": "Leading read segment",
                     "name": "leading segment index",
                     "type": "integer"
-                },
-                {
-                    "choice": [
-                        "pamld",
-                        "mdd",
-                        "benchmark"
-                    ],
-                    "choice description": [
-                        "phred adjusted maximum likelihood decoder",
-                        "minimum distance decoder",
-                        "benchmark meta decoder"
-                    ],
-                    "handle": [
-                        "-d",
-                        "--algorithm"
-                    ],
-                    "help": "Barcode decoding algorithm",
-                    "name": "algorithm",
-                    "type": "string"
                 },
                 {
                     "choice": [
@@ -161,7 +190,7 @@
                         "PACBIO"
                     ],
                     "handle": [
-                        "-p",
+                        "-P",
                         "--platform"
                     ],
                     "help": "Sequencing platform",
@@ -173,7 +202,7 @@
                         "-t",
                         "--threads"
                     ],
-                    "help": "IO thread pool size",
+                    "help": "Thread pool size",
                     "name": "threads",
                     "type": "integer"
                 },
@@ -245,7 +274,7 @@
                         "PACBIO"
                     ],
                     "handle": [
-                        "-p",
+                        "-P",
                         "--platform"
                     ],
                     "help": "Sequencing platform",
@@ -273,11 +302,9 @@
             ]
         }
     ],
-    "comment": "main pheniqs command line configuration file",
+    "comment": "pheniqs command line configuration file",
     "default": {
         "buffer capacity": 2048,
-        "help only": false,
-        "include filtered": false,
         "input phred offset": 33,
         "leading segment index": 0,
         "output phred offset": 33,
@@ -285,7 +312,10 @@
         "threads": 1
     },
     "description": "Lior Galanti < lior.galanti@nyu.edu >\nNYU Center for Genomics & Systems Biology 2018\nSee manual at https://biosails.github.io/pheniqs",
-    "epilog": "This program comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to redistribute it under certain conditions.",
+    "epilog": [
+        "This program comes with ABSOLUTELY NO WARRANTY. This is free software,",
+        "and you are welcome to redistribute it under certain conditions."
+    ],
     "name": "pheniqs",
     "option": [
         {
@@ -313,53 +343,85 @@
             "base input url": null,
             "base output url": null,
             "default": null,
-            "epilog": null,
+            "epilog": [],
             "full command": null,
+            "implementation": "generic",
             "projection": null,
             "working directory": null
         },
-        "codec": {
+        "cellular:barcode": {
+            "algorithm": null,
+            "concentration": 1,
+            "disable quality control": null,
+            "segment cardinality": null
+        },
+        "cellular:decoder": {
+            "algorithm": "pamld",
+            "codec": null,
+            "confidence threshold": 0.99,
+            "disable quality control": null,
+            "distance tolerance": null,
+            "noise": 0.01,
+            "quality masking threshold": 0,
+            "undetermined": null
+        },
+        "molecular:barcode": {
+            "algorithm": null,
+            "concentration": 1,
+            "disable quality control": null,
+            "segment cardinality": null
+        },
+        "molecular:decoder": {
+            "algorithm": "naive",
+            "codec": null,
+            "confidence threshold": 0.99,
+            "disable quality control": null,
+            "distance tolerance": null,
+            "noise": 0.01,
+            "quality masking threshold": 0,
+            "undetermined": null
+        },
+        "multiplex:barcode": {
             "CN": null,
-            "DS": null,
             "DT": null,
-            "FO": null,
-            "ID": null,
-            "KS": null,
             "LB": null,
             "PG": null,
+            "PI": null,
             "PL": null,
             "PM": null,
-            "PU": null,
             "SM": null,
-            "TC": null,
             "algorithm": null,
             "concentration": 1,
             "disable quality control": null,
             "flowcell id": null,
             "flowcell lane number": null,
+            "include filtered": false,
             "output": null,
             "segment cardinality": null
         },
-        "decoder": {
-            "adjusted noise probability": null,
-            "algorithm": null,
-            "barcode length": null,
-            "base": null,
+        "multiplex:decoder": {
+            "CN": null,
+            "DT": null,
+            "LB": null,
+            "PG": null,
+            "PI": null,
+            "PL": null,
+            "PM": null,
+            "SM": null,
+            "algorithm": "pamld",
             "base output url": null,
             "codec": null,
-            "concatenated barcode length": null,
-            "confidence threshold": null,
+            "confidence threshold": 0.99,
             "disable quality control": null,
             "distance tolerance": null,
             "flowcell id": null,
             "flowcell lane number": null,
-            "noise": 0,
+            "include filtered": false,
+            "noise": 0.01,
             "output": null,
-            "quality masking threshold": null,
-            "random barcode probability": null,
-            "segment cardinality": null,
+            "quality masking threshold": 0,
+            "segment cardinality": 0,
             "undetermined": null
         }
-    },
-    "version comment": "Now with flavor!"
+    }
 }

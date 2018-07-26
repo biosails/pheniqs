@@ -25,7 +25,6 @@
 #include "include.h"
 #include "atom.h"
 #include "barcode.h"
-#include <htslib/sam.h>
 
 // int bam_aux_append(bam1_t *b, const char tag[2], char type, int len, const uint8_t *data)
 
@@ -56,8 +55,9 @@
     QT  Z   Phred quality of the sample barcode sequence in the BC tag. Phred score + 33 encoded.
             In the case of multiple multiplex barcode segments the recommended implementation
             concatenates all the segments and places a space (‘ ’) seperator.
+    XB  f   The probability that multiplexing barcode decoding is incorrect
 
-    Molecular Barcode (Unique Molecular Identifier)
+    Molecular Barcode
     RX  Z   Sequence bases from the unique molecular identifier.
             These could be either corrected or uncorrected. Unlike MI, the value may be non-unique in the file.
             In the case of multiple unique molecular identifier segments the recommended implementation
@@ -75,18 +75,15 @@
             concatenates all the segments and places a space (‘ ’) seperator.
     MI  Z   Molecular Identifier. A unique ID within the SAM file for the source molecule from which this read is derived.
             All reads with the same MI tag represent the group of reads derived from the same source molecule.
-    XM  f   Accumulated molecular barcode decoding error probability
+    XM  f   The probability that molecular barcode decoding is incorrect
 
-    SplitSEQ barcode
-    XR  Z   Sequence bases from the SplitSEQ barcode.
-    XQ  Z   Phred quality of the SplitSEQ barcode sequence in the XR tag. Phred score + 33 encoded.
-    XO  Z   Raw uncorrected SplitSEQ barcode bases, with any quality scores stored in the XZ tag.
-    XZ  Z   Phred quality of the uncorrected SplitSEQ barcode sequence in the XO tag. Phred score + 33 encoded.
-    XP  f   Accumulated SplitSEQ barcode decoding error probability
+    Cellular barcode
+    CB  Z   cell identifier
+    CR  Z   uncorrected cellular barcode sequence bases
+    CY  Z   phred quality of the cellular barcode sequence in the CR tag
+    XC  f   The probability that cellular barcode decoding is incorrect
 
     Specification amendment recommendation
-    DQ  f   The probability that the demultiplexing decision was incorrect
-    PX  f   The probability that the molecular unique identifier correction was incorrect
     EE  f   Expected number of errors in the segment sequence
 */
 class Tag {
@@ -154,7 +151,6 @@ class Tag {
 class Auxiliary {
     friend ostream& operator<<(ostream& o, const Auxiliary& auxiliary);
     void operator=(Auxiliary const &) = delete;
-
     public:
         uint32_t FI;
         uint32_t TC;
@@ -165,25 +161,24 @@ class Auxiliary {
         kstring_t PG;
         kstring_t CO;
 
+        /* multiplex */
         kstring_t BC;
         kstring_t QT;
-        uint32_t multiplex_distance;
-        double DQ;
+        float XB;
 
+        /* molecular */
         kstring_t RX;
         kstring_t QX;
         kstring_t OX;
         kstring_t BZ;
         kstring_t MI;
-        uint32_t molecular_distance;
-        double XM;
+        float XM;
 
-        kstring_t XR;
-        kstring_t XQ;
-        kstring_t XO;
-        kstring_t XZ;
-        uint32_t splitseq_distance;
-        double XP;
+        /* cellular */
+        kstring_t CB;
+        kstring_t CR;
+        kstring_t CY;
+        float XC;
 
         #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
         uint16_t illumina_control_number;
@@ -193,7 +188,7 @@ class Auxiliary {
         unordered_map< uint16_t, Tag > extended;
         #endif
 
-        double EE;
+        float EE;
 
         Auxiliary();
         Auxiliary(const Auxiliary& other);
@@ -204,61 +199,64 @@ class Auxiliary {
         inline void set_RG(const HeadRGAtom& rg) {
             if(!ks_empty(rg.ID)) ks_put_string(rg.ID, RG);
         };
-        inline void set_multiplex_barcode(const Observation& observation) {
+
+        inline void update_multiplex_barcode(const Barcode& barcode) {
+            if(BC.l > 0) {
+                ks_put_character('-', BC);
+            }
+            barcode.encode_iupac_ambiguity(BC);
+        };
+        inline void update_multiplex_barcode(const Observation& observation) {
+            if(BC.l > 0) {
+                ks_put_character('-', BC);
+                ks_put_character(' ', QT);
+            }
             observation.encode_iupac_ambiguity(BC);
             observation.encode_phred_quality(QT, SAM_PHRED_DECODING_OFFSET);
         };
-        inline void set_multiplex_error_probability(const double& error) {
-            DQ = error;
+
+        inline void update_cellular_barcode(const Barcode& barcode) {
+            if(CB.l > 0) {
+                ks_put_character('-', CB);
+            }
+            barcode.encode_iupac_ambiguity(CB);
         };
-        inline void set_multiplex_distance(const uint32_t& distance) {
-            multiplex_distance = distance;
+        inline void update_cellular_barcode(const Observation& observation) {
+            if(CB.l > 0) {
+                ks_put_character('-', CB);
+            }
+            observation.encode_iupac_ambiguity(CB);
         };
-        inline void update_splitseq_barcode(const Barcode& barcode) {
-            barcode.encode_iupac_ambiguity(XR);
+        inline void update_raw_cellular_barcode(const Observation& observation) {
+            if(CR.l > 0) {
+                ks_put_character('-', CR);
+                ks_put_character(' ', CY);
+            }
+            observation.encode_iupac_ambiguity(CR);
+            observation.encode_phred_quality(CY, SAM_PHRED_DECODING_OFFSET);
         };
-        inline void update_splitseq_barcode(const Observation& observation) {
-            observation.encode_iupac_ambiguity(XR);
-            observation.encode_phred_quality(XQ, SAM_PHRED_DECODING_OFFSET);
-        };
-        inline void update_raw_splitseq_barcode(const Observation& observation) {
-            observation.encode_iupac_ambiguity(XO);
-            observation.encode_phred_quality(XZ, SAM_PHRED_DECODING_OFFSET);
-        };
-        inline void set_splitseq_error_probability(const double& error) {
-            XP = error;
-        };
-        inline void update_splitseq_error_probability(const double& error) {
-            XP *= error;
-        };
-        inline void set_splitseq_distance(const uint32_t& distance) {
-            splitseq_distance = distance;
-        };
-        inline void update_splitseq_distance(const uint32_t& distance) {
-            splitseq_distance += distance;
-        };
+
         inline void update_molecular_barcode(const Barcode& barcode) {
+            if(RX.l > 0) {
+                ks_put_character('-', RX);
+            }
             barcode.encode_iupac_ambiguity(RX);
         };
         inline void update_molecular_barcode(const Observation& observation) {
+            if(RX.l > 0) {
+                ks_put_character('-', RX);
+                ks_put_character(' ', QX);
+            }
             observation.encode_iupac_ambiguity(RX);
             observation.encode_phred_quality(QX, SAM_PHRED_DECODING_OFFSET);
         };
         inline void update_raw_molecular_barcode(const Observation& observation) {
+            if(OX.l > 0) {
+                ks_put_character('-', OX);
+                ks_put_character(' ', BZ);
+            }
             observation.encode_iupac_ambiguity(OX);
             observation.encode_phred_quality(BZ, SAM_PHRED_DECODING_OFFSET);
-        };
-        inline void set_molecular_error_probability(const double& error) {
-            XM = error;
-        };
-        inline void update_molecular_error_probability(const double& error) {
-            XM *= error;
-        };
-        inline void set_molecular_distance(const uint32_t& distance) {
-            molecular_distance = distance;
-        };
-        inline void update_molecular_distance(const uint32_t& distance) {
-            molecular_distance += distance;
         };
 
         inline void clear() {
@@ -272,23 +270,19 @@ class Auxiliary {
 
             ks_clear(BC);
             ks_clear(QT);
-            multiplex_distance = 0;
-            DQ = 0;
+            XB = 0;
 
             ks_clear(RX);
             ks_clear(QX);
             ks_clear(OX);
             ks_clear(BZ);
             ks_clear(MI);
-            splitseq_distance = 0;
-            XM = 1;
+            XM = 0;
 
-            ks_clear(XR);
-            ks_clear(XQ);
-            ks_clear(XO);
-            ks_clear(XZ);
-            molecular_distance = 0;
-            XP = 1;
+            ks_clear(CB);
+            ks_clear(CR);
+            ks_clear(CY);
+            XC = 0;
 
             #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
             illumina_control_number = 0;
@@ -320,10 +314,9 @@ class Auxiliary {
             ks_clear(BZ);
             ks_clear(MI);
 
-            ks_clear(XR);
-            ks_clear(XQ);
-            ks_clear(XO);
-            ks_clear(XZ);
+            ks_clear(CB);
+            ks_clear(CR);
+            ks_clear(CY);
 
             #if defined(PHENIQS_EXTENDED_SAM_TAG)
             for(auto& record : extended) {
@@ -340,23 +333,19 @@ class Auxiliary {
 
             if(!ks_empty(other.BC)) ks_put_string(other.BC, BC);
             if(!ks_empty(other.QT)) ks_put_string(other.QT, QT);
-            multiplex_distance = other.multiplex_distance;
-            DQ = other.DQ;
+            XB = other.XB;
 
             if(!ks_empty(other.RX)) ks_put_string(other.RX, RX);
             if(!ks_empty(other.QX)) ks_put_string(other.QX, QX);
             if(!ks_empty(other.OX)) ks_put_string(other.OX, OX);
             if(!ks_empty(other.BZ)) ks_put_string(other.BZ, BZ);
             if(!ks_empty(other.MI)) ks_put_string(other.MI, MI);
-            molecular_distance = other.molecular_distance;
             XM = other.XM;
 
-            if(!ks_empty(other.XR)) ks_put_string(other.XR, XR);
-            if(!ks_empty(other.XQ)) ks_put_string(other.XQ, XQ);
-            if(!ks_empty(other.XO)) ks_put_string(other.XO, XO);
-            if(!ks_empty(other.XZ)) ks_put_string(other.XZ, XZ);
-            splitseq_distance = other.splitseq_distance;
-            XP = other.XP;
+            if(!ks_empty(other.CB)) ks_put_string(other.CB, CB);
+            if(!ks_empty(other.CR)) ks_put_string(other.CR, CR);
+            if(!ks_empty(other.CY)) ks_put_string(other.CY, CY);
+            XC = other.XC;
 
             #if defined(PHENIQS_EXTENDED_SAM_TAG)
             for(auto& record : other.extended) {

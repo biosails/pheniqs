@@ -318,7 +318,8 @@ void to_string(const Algorithm& value, string& result) {
         case Algorithm::UNKNOWN:      result.assign("unknown");    break;
         case Algorithm::MDD:          result.assign("mdd");        break;
         case Algorithm::PAMLD:        result.assign("pamld");      break;
-        case Algorithm::SIMPLE:       result.assign("simple");     break;
+        case Algorithm::NAIVE:        result.assign("naive");      break;
+        case Algorithm::PIPE:         result.assign("pipe");       break;
         case Algorithm::BENCHMARK:    result.assign("benchmark");  break;
         default:                                                   break;
     }
@@ -327,7 +328,8 @@ bool from_string(const char* value, Algorithm& result) {
          if(value == NULL)                  result = Algorithm::UNKNOWN;
     else if(!strcmp(value, "mdd"))          result = Algorithm::MDD;
     else if(!strcmp(value, "pamld"))        result = Algorithm::PAMLD;
-    else if(!strcmp(value, "simple"))       result = Algorithm::SIMPLE;
+    else if(!strcmp(value, "naive"))        result = Algorithm::NAIVE;
+    else if(!strcmp(value, "pipe"))         result = Algorithm::PIPE;
     else if(!strcmp(value, "benchmark"))    result = Algorithm::BENCHMARK;
     else                                    result = Algorithm::UNKNOWN;
 
@@ -381,15 +383,20 @@ HeadHDAtom::HeadHDAtom() :
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }) {
 };
-HeadHDAtom::HeadHDAtom(const Value& ontology) :
+HeadHDAtom::HeadHDAtom(const Value& ontology) try :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }) {
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("VN", VN, ontology);
-        decode_value_by_key< kstring_t >("SO", SO, ontology);
-        decode_value_by_key< kstring_t >("GO", GO, ontology);
-    } else { throw ConfigurationError("HD element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("VN", VN, ontology);
+    decode_value_by_key< kstring_t >("SO", SO, ontology);
+    decode_value_by_key< kstring_t >("GO", GO, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadHDAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadHDAtom :: " + string(error.what()));
 };
 
 HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
@@ -440,15 +447,15 @@ char* HeadHDAtom::decode(char* position, const char* end) {
         uint16_t tag = tag_to_code(position);
         position += 3;
         switch (tag) {
-            case uint16_t(HtsAuxiliaryCode::VN): {
+            case uint16_t(HtsTagCode::VN): {
                 position = copy_until_tag_end(position, end, VN);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::SO): {
+            case uint16_t(HtsTagCode::SO): {
                 position = copy_until_tag_end(position, end, SO);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::GO): {
+            case uint16_t(HtsTagCode::GO): {
                 position = copy_until_tag_end(position, end, GO);
                 break;
             };
@@ -485,34 +492,43 @@ HeadSQAtom::HeadSQAtom() :
     SN({ 0, 0, NULL }),
     LN(0),
     AH({ 0, 0, NULL }),
+    AN({ 0, 0, NULL }),
     AS({ 0, 0, NULL }),
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
     ks_terminate(SN);
 };
-HeadSQAtom::HeadSQAtom(const Value& ontology) :
+HeadSQAtom::HeadSQAtom(const Value& ontology) try :
     SN({ 0, 0, NULL }),
     LN(0),
     AH({ 0, 0, NULL }),
+    AN({ 0, 0, NULL }),
     AS({ 0, 0, NULL }),
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("SN", SN, ontology);
-        decode_value_by_key< int32_t >("LN", LN, ontology);
-        decode_value_by_key< kstring_t >("AH", AH, ontology);
-        decode_value_by_key< kstring_t >("AS", AS, ontology);
-        decode_value_by_key< kstring_t >("M5", M5, ontology);
-        decode_value_by_key< kstring_t >("SP", SP, ontology);
-        decode_value_by_key< kstring_t >("UR", UR, ontology);
-    } else { throw ConfigurationError("SQ element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("SN", SN, ontology);
+    decode_value_by_key< int32_t >("LN", LN, ontology);
+    decode_value_by_key< kstring_t >("AH", AH, ontology);
+    decode_value_by_key< kstring_t >("AN", AN, ontology);
+    decode_value_by_key< kstring_t >("AS", AS, ontology);
+    decode_value_by_key< kstring_t >("M5", M5, ontology);
+    decode_value_by_key< kstring_t >("SP", SP, ontology);
+    decode_value_by_key< kstring_t >("UR", UR, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadSQAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadSQAtom :: " + string(error.what()));
 };
 HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     SN({ 0, 0, NULL }),
     LN(0),
     AH({ 0, 0, NULL }),
+    AN({ 0, 0, NULL }),
     AS({ 0, 0, NULL }),
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
@@ -521,6 +537,7 @@ HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     if(!ks_empty(other.SN)) ks_put_string(other.SN, SN);
     if(other.LN > 0)   LN = other.LN;
     if(!ks_empty(other.AH)) ks_put_string(other.AH, AH);
+    if(!ks_empty(other.AN)) ks_put_string(other.AN, AN);
     if(!ks_empty(other.AS)) ks_put_string(other.AS, AS);
     if(!ks_empty(other.M5)) ks_put_string(other.M5, M5);
     if(!ks_empty(other.SP)) ks_put_string(other.SP, SP);
@@ -529,6 +546,7 @@ HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
 HeadSQAtom::~HeadSQAtom() {
     ks_free(SN);
     ks_free(AH);
+    ks_free(AN);
     ks_free(AS);
     ks_free(M5);
     ks_free(SP);
@@ -541,6 +559,7 @@ HeadSQAtom& HeadSQAtom::operator=(const HeadSQAtom& other) {
         ks_clear(SN);
         LN = 0;
         ks_clear(AH);
+        ks_clear(AN);
         ks_clear(AS);
         ks_clear(M5);
         ks_clear(SP);
@@ -548,6 +567,7 @@ HeadSQAtom& HeadSQAtom::operator=(const HeadSQAtom& other) {
         if(!ks_empty(other.SN)) ks_put_string(other.SN, SN);
         if(other.LN > 0)   LN = other.LN;
         if(!ks_empty(other.AH)) ks_put_string(other.AH, AH);
+        if(!ks_empty(other.AN)) ks_put_string(other.AN, AN);
         if(!ks_empty(other.AS)) ks_put_string(other.AS, AS);
         if(!ks_empty(other.M5)) ks_put_string(other.M5, M5);
         if(!ks_empty(other.SP)) ks_put_string(other.SP, SP);
@@ -571,6 +591,10 @@ void HeadSQAtom::encode(kstring_t& buffer) const {
     if(!ks_empty(AH)) {
         ks_put_string_("\tAH:", 4, buffer);
         ks_put_string_(AH, buffer);
+    }
+    if(!ks_empty(AN)) {
+        ks_put_string_("\tAN:", 4, buffer);
+        ks_put_string_(AN, buffer);
     }
     if(!ks_empty(AS)) {
         ks_put_string_("\tAS:", 4, buffer);
@@ -596,31 +620,35 @@ char* HeadSQAtom::decode(char* position, const char* end) {
         uint16_t tag = tag_to_code(position);
         position += 3;
         switch (tag) {
-            case uint16_t(HtsAuxiliaryCode::SN): {
+            case uint16_t(HtsTagCode::SN): {
                 position = copy_until_tag_end(position, end, SN);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::LN): {
+            case uint16_t(HtsTagCode::LN): {
                 LN = static_cast< int32_t >(strtol(position, &position, 10));
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::AH): {
+            case uint16_t(HtsTagCode::AH): {
                 position = copy_until_tag_end(position, end, AH);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::AS): {
+            case uint16_t(HtsTagCode::AN): {
+                position = copy_until_tag_end(position, end, AN);
+                break;
+            };
+            case uint16_t(HtsTagCode::AS): {
                 position = copy_until_tag_end(position, end, AS);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::M5): {
+            case uint16_t(HtsTagCode::M5): {
                 position = copy_until_tag_end(position, end, M5);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::SP): {
+            case uint16_t(HtsTagCode::SP): {
                 position = copy_until_tag_end(position, end, SP);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::UR): {
+            case uint16_t(HtsTagCode::UR): {
                 position = copy_until_tag_end(position, end, UR);
                 break;
             };
@@ -636,11 +664,389 @@ ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
     if(!ks_empty(sq.SN)) o << "SN : " << sq.SN.s << endl;
     if(sq.LN   > 0) o << "LN : " << sq.LN   << endl;
     if(!ks_empty(sq.AH)) o << "AH : " << sq.AH.s << endl;
+    if(!ks_empty(sq.AN)) o << "AN : " << sq.AN.s << endl;
     if(!ks_empty(sq.AS)) o << "AS : " << sq.AS.s << endl;
     if(!ks_empty(sq.M5)) o << "M5 : " << sq.M5.s << endl;
     if(!ks_empty(sq.SP)) o << "SP : " << sq.SP.s << endl;
     if(!ks_empty(sq.UR)) o << "UR : " << sq.UR.s << endl;
     return o;
+};
+
+/* @RG Read Group */
+HeadRGAtom::HeadRGAtom() :
+    ID({ 0, 0, NULL }),
+    BC({ 0, 0, NULL }),
+    CN({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
+    DT({ 0, 0, NULL }),
+    FO({ 0, 0, NULL }),
+    KS({ 0, 0, NULL }),
+    LB({ 0, 0, NULL }),
+    PG({ 0, 0, NULL }),
+    PI({ 0, 0, NULL }),
+    PL({ 0, 0, NULL }),
+    PM({ 0, 0, NULL }),
+    PU({ 0, 0, NULL }),
+    SM({ 0, 0, NULL }) {
+    ks_terminate(ID);
+};
+HeadRGAtom::HeadRGAtom(const Value& ontology) try :
+    ID(decode_value_by_key< kstring_t >("ID", ontology)),
+    BC({ 0, 0, NULL }),
+    CN({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
+    DT({ 0, 0, NULL }),
+    FO({ 0, 0, NULL }),
+    KS({ 0, 0, NULL }),
+    LB({ 0, 0, NULL }),
+    PG({ 0, 0, NULL }),
+    PI({ 0, 0, NULL }),
+    PL({ 0, 0, NULL }),
+    PM({ 0, 0, NULL }),
+    PU({ 0, 0, NULL }),
+    SM({ 0, 0, NULL }) {
+
+    decode_value_by_key< kstring_t >("BC", BC, ontology);
+    decode_value_by_key< kstring_t >("CN", CN, ontology);
+    decode_value_by_key< kstring_t >("DS", DS, ontology);
+    decode_value_by_key< kstring_t >("DT", DT, ontology);
+    decode_value_by_key< kstring_t >("FO", FO, ontology);
+    decode_value_by_key< kstring_t >("KS", KS, ontology);
+    decode_value_by_key< kstring_t >("LB", LB, ontology);
+    decode_value_by_key< kstring_t >("PG", PG, ontology);
+    decode_value_by_key< kstring_t >("PI", PI, ontology);
+    decode_value_by_key< kstring_t >("PL", PL, ontology);
+    decode_value_by_key< kstring_t >("PM", PM, ontology);
+    decode_value_by_key< kstring_t >("PU", PU, ontology);
+    decode_value_by_key< kstring_t >("SM", SM, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadRGAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadRGAtom :: " + string(error.what()));
+};
+HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
+    ID({ 0, 0, NULL }),
+    BC({ 0, 0, NULL }),
+    CN({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
+    DT({ 0, 0, NULL }),
+    FO({ 0, 0, NULL }),
+    KS({ 0, 0, NULL }),
+    LB({ 0, 0, NULL }),
+    PG({ 0, 0, NULL }),
+    PI({ 0, 0, NULL }),
+    PL({ 0, 0, NULL }),
+    PM({ 0, 0, NULL }),
+    PU({ 0, 0, NULL }),
+    SM({ 0, 0, NULL }) {
+
+    ks_terminate(ID);
+    if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
+    if(!ks_empty(other.BC)) ks_put_string(other.BC, BC);
+    if(!ks_empty(other.CN)) ks_put_string(other.CN, CN);
+    if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
+    if(!ks_empty(other.DT)) ks_put_string(other.DT, DT);
+    if(!ks_empty(other.FO)) ks_put_string(other.FO, FO);
+    if(!ks_empty(other.KS)) ks_put_string(other.KS, KS);
+    if(!ks_empty(other.LB)) ks_put_string(other.LB, LB);
+    if(!ks_empty(other.PG)) ks_put_string(other.PG, PG);
+    if(!ks_empty(other.PI)) ks_put_string(other.PI, PI);
+    if(!ks_empty(other.PL)) ks_put_string(other.PL, PL);
+    if(!ks_empty(other.PM)) ks_put_string(other.PM, PM);
+    if(!ks_empty(other.PU)) ks_put_string(other.PU, PU);
+    if(!ks_empty(other.SM)) ks_put_string(other.SM, SM);
+};
+HeadRGAtom::~HeadRGAtom() {
+    ks_free(ID);
+    ks_free(BC);
+    ks_free(CN);
+    ks_free(DS);
+    ks_free(DT);
+    ks_free(FO);
+    ks_free(KS);
+    ks_free(LB);
+    ks_free(PG);
+    ks_free(PI);
+    ks_free(PL);
+    ks_free(PM);
+    ks_free(PU);
+    ks_free(SM);
+};
+HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
+    if(&other == this) {
+        return *this;
+    } else {
+        ks_clear(ID);
+        ks_clear(BC);
+        ks_clear(CN);
+        ks_clear(DS);
+        ks_clear(DT);
+        ks_clear(FO);
+        ks_clear(KS);
+        ks_clear(LB);
+        ks_clear(PG);
+        ks_clear(PI);
+        ks_clear(PL);
+        ks_clear(PM);
+        ks_clear(PU);
+        ks_clear(SM);
+        if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
+        if(!ks_empty(other.BC)) ks_put_string(other.BC, BC);
+        if(!ks_empty(other.CN)) ks_put_string(other.CN, CN);
+        if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
+        if(!ks_empty(other.DT)) ks_put_string(other.DT, DT);
+        if(!ks_empty(other.FO)) ks_put_string(other.FO, FO);
+        if(!ks_empty(other.KS)) ks_put_string(other.KS, KS);
+        if(!ks_empty(other.LB)) ks_put_string(other.LB, LB);
+        if(!ks_empty(other.PG)) ks_put_string(other.PG, PG);
+        if(!ks_empty(other.PI)) ks_put_string(other.PI, PI);
+        if(!ks_empty(other.PL)) ks_put_string(other.PL, PL);
+        if(!ks_empty(other.PM)) ks_put_string(other.PM, PM);
+        if(!ks_empty(other.PU)) ks_put_string(other.PU, PU);
+        if(!ks_empty(other.SM)) ks_put_string(other.SM, SM);
+    }
+    return *this;
+};
+HeadRGAtom::operator string() const {
+    return string(ID.s, ID.l);
+};
+void HeadRGAtom::encode(kstring_t& buffer) const {
+    ks_put_string_("@RG", 3, buffer);
+    if(!ks_empty(ID)) {
+        ks_put_string_("\tID:", 4, buffer);
+        ks_put_string_(ID, buffer);
+    }
+    if(!ks_empty(BC)) {
+        ks_put_string_("\tBC:", 4, buffer);
+        ks_put_string_(BC, buffer);
+    }
+    if(!ks_empty(CN)) {
+        ks_put_string_("\tCN:", 4, buffer);
+        ks_put_string_(CN, buffer);
+    }
+    if(!ks_empty(DS)) {
+        ks_put_string_("\tDS:", 4, buffer);
+        ks_put_string_(DS, buffer);
+    }
+    if(!ks_empty(DT)) {
+        ks_put_string_("\tDT:", 4, buffer);
+        ks_put_string_(DT, buffer);
+    }
+    if(!ks_empty(FO)) {
+        ks_put_string_("\tFO:", 4, buffer);
+        ks_put_string_(FO, buffer);
+    }
+    if(!ks_empty(KS)) {
+        ks_put_string_("\tKS:", 4, buffer);
+        ks_put_string_(KS, buffer);
+    }
+    if(!ks_empty(LB)) {
+        ks_put_string_("\tLB:", 4, buffer);
+        ks_put_string_(LB, buffer);
+    }
+    if(!ks_empty(PG)) {
+        ks_put_string_("\tPG:", 4, buffer);
+        ks_put_string_(PG, buffer);
+    }
+    if(!ks_empty(PI)) {
+        ks_put_string_("\tPI:", 4, buffer);
+        ks_put_string_(PI, buffer);
+    }
+    if(!ks_empty(PL)) {
+        ks_put_string_("\tPL:", 4, buffer);
+        ks_put_string_(PL, buffer);
+    }
+    if(!ks_empty(PM)) {
+        ks_put_string_("\tPM:", 4, buffer);
+        ks_put_string_(PM, buffer);
+    }
+    if(!ks_empty(PU)) {
+        ks_put_string_("\tPU:", 4, buffer);
+        ks_put_string_(PU, buffer);
+    }
+    if(!ks_empty(SM)) {
+        ks_put_string_("\tSM:", 4, buffer);
+        ks_put_string_(SM, buffer);
+    }
+    ks_put_character(LINE_BREAK, buffer);
+};
+char* HeadRGAtom::decode(char* position, const char* end) {
+    while(*position == '\t' && position <= end) {
+        ++position;
+        uint16_t tag = tag_to_code(position);
+        position += 3;
+        switch (tag) {
+            case uint16_t(HtsTagCode::ID): {
+                position = copy_until_tag_end(position, end, ID);
+                break;
+            };
+            case uint16_t(HtsTagCode::BC): {
+                position = copy_until_tag_end(position, end, BC);
+                break;
+            };
+            case uint16_t(HtsTagCode::CN): {
+                position = copy_until_tag_end(position, end, CN);
+                break;
+            };
+            case uint16_t(HtsTagCode::DS): {
+                position = copy_until_tag_end(position, end, DS);
+                break;
+            };
+            case uint16_t(HtsTagCode::DT): {
+                position = copy_until_tag_end(position, end, DT);
+                break;
+            };
+            case uint16_t(HtsTagCode::FO): {
+                position = copy_until_tag_end(position, end, FO);
+                break;
+            };
+            case uint16_t(HtsTagCode::KS): {
+                position = copy_until_tag_end(position, end, KS);
+                break;
+            };
+            case uint16_t(HtsTagCode::LB): {
+                position = copy_until_tag_end(position, end, LB);
+                break;
+            };
+            case uint16_t(HtsTagCode::PG): {
+                position = copy_until_tag_end(position, end, PG);
+                break;
+            };
+            case uint16_t(HtsTagCode::PI): {
+                position = copy_until_tag_end(position, end, PI);
+                break;
+            };
+            case uint16_t(HtsTagCode::PL): {
+                position = copy_until_tag_end(position, end, PL);
+                break;
+            };
+            case uint16_t(HtsTagCode::PM): {
+                position = copy_until_tag_end(position, end, PM);
+                break;
+            };
+            case uint16_t(HtsTagCode::PU): {
+                position = copy_until_tag_end(position, end, PU);
+                break;
+            };
+            case uint16_t(HtsTagCode::SM): {
+                position = copy_until_tag_end(position, end, SM);
+                break;
+            };
+            default:
+                position = skip_to_tab(position, end);
+                break;
+        }
+    }
+    return ++position;
+};
+void HeadRGAtom::set_platform(const Platform& value) {
+    to_kstring(value, PL);
+};
+void HeadRGAtom::expand(const HeadRGAtom& other) {
+    if(&other != this) {
+        if(BC.l == 0 && other.BC.l > 0) ks_put_string(other.BC, BC);
+        if(CN.l == 0 && other.CN.l > 0) ks_put_string(other.CN, CN);
+        if(DS.l == 0 && other.DS.l > 0) ks_put_string(other.DS, DS);
+        if(DT.l == 0 && other.DT.l > 0) ks_put_string(other.DT, DT);
+        if(FO.l == 0 && other.FO.l > 0) ks_put_string(other.FO, FO);
+        if(KS.l == 0 && other.KS.l > 0) ks_put_string(other.KS, KS);
+        if(LB.l == 0 && other.LB.l > 0) ks_put_string(other.LB, LB);
+        if(PG.l == 0 && other.PG.l > 0) ks_put_string(other.PG, PG);
+        if(PI.l == 0 && other.PI.l > 0) ks_put_string(other.PI, PI);
+        if(PL.l == 0 && other.PL.l > 0) ks_put_string(other.PL, PL);
+        if(PM.l == 0 && other.PM.l > 0) ks_put_string(other.PM, PM);
+        if(PU.l == 0 && other.PU.l > 0) ks_put_string(other.PU, PU);
+        if(SM.l == 0 && other.SM.l > 0) ks_put_string(other.SM, SM);
+    }
+};
+ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
+    if(!ks_empty(rg.ID)) o << "ID : " << rg.ID.s << endl;
+    if(!ks_empty(rg.BC)) o << "BC : " << rg.BC.s << endl;
+    if(!ks_empty(rg.CN)) o << "CN : " << rg.CN.s << endl;
+    if(!ks_empty(rg.DS)) o << "DS : " << rg.DS.s << endl;
+    if(!ks_empty(rg.DT)) o << "DT : " << rg.DT.s << endl;
+    if(!ks_empty(rg.FO)) o << "FO : " << rg.FO.s << endl;
+    if(!ks_empty(rg.KS)) o << "KS : " << rg.KS.s << endl;
+    if(!ks_empty(rg.LB)) o << "LB : " << rg.LB.s << endl;
+    if(!ks_empty(rg.PG)) o << "PG : " << rg.PG.s << endl;
+    if(!ks_empty(rg.PI)) o << "PI : " << rg.PI.s << endl;
+    if(!ks_empty(rg.PL)) o << "PL : " << rg.PL.s << endl;
+    if(!ks_empty(rg.PM)) o << "PM : " << rg.PM.s << endl;
+    if(!ks_empty(rg.PU)) o << "PU : " << rg.PU.s << endl;
+    if(!ks_empty(rg.SM)) o << "SM : " << rg.SM.s << endl;
+    return o;
+};
+template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container) {
+    if(container.IsObject()) {
+        if( decode_value_by_key< kstring_t >("ID", value.ID, container)) {
+            decode_value_by_key< kstring_t >("BC", value.BC, container);
+            decode_value_by_key< kstring_t >("CN", value.CN, container);
+            decode_value_by_key< kstring_t >("DS", value.DS, container);
+            decode_value_by_key< kstring_t >("DT", value.DT, container);
+            decode_value_by_key< kstring_t >("FO", value.FO, container);
+            decode_value_by_key< kstring_t >("KS", value.KS, container);
+            decode_value_by_key< kstring_t >("LB", value.LB, container);
+            decode_value_by_key< kstring_t >("PG", value.PG, container);
+            decode_value_by_key< kstring_t >("PI", value.PI, container);
+            decode_value_by_key< kstring_t >("PL", value.PL, container);
+            decode_value_by_key< kstring_t >("PM", value.PM, container);
+            decode_value_by_key< kstring_t >("PU", value.PU, container);
+            decode_value_by_key< kstring_t >("SM", value.SM, container);
+            return true;
+        } else { return false; }
+    } else { throw ConfigurationError("Read Group element must be a dictionary"); }
+};
+template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, list< HeadRGAtom >& value, const Value& container) {
+    Value::ConstMemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+        if(reference->value.IsArray()) {
+            if(!reference->value.Empty()) {
+                HeadRGAtom v;
+                for(const auto& e : reference->value.GetArray()) {
+                    if(decode_value< HeadRGAtom >(v, e)) {
+                        value.emplace_back(v);
+                    }
+                }
+                return !value.empty();
+            }
+        } else { throw ConfigurationError(string(key) + " element must be an array"); }
+    }
+    return false;
+};
+bool encode_value(const HeadRGAtom& value, Value& container, Document& document) {
+    if(container.IsObject()) {
+        encode_key_value("ID", value.ID, container, document);
+        encode_key_value("BC", value.BC, container, document);
+        encode_key_value("CN", value.CN, container, document);
+        encode_key_value("DS", value.DS, container, document);
+        encode_key_value("DT", value.DT, container, document);
+        encode_key_value("FO", value.FO, container, document);
+        encode_key_value("KS", value.KS, container, document);
+        encode_key_value("LB", value.LB, container, document);
+        encode_key_value("PG", value.PG, container, document);
+        encode_key_value("PI", value.PI, container, document);
+        encode_key_value("PL", value.PL, container, document);
+        encode_key_value("PM", value.PM, container, document);
+        encode_key_value("PU", value.PU, container, document);
+        encode_key_value("SM", value.SM, container, document);
+        return true;
+    } else { throw ConfigurationError("Read Group element must be a dictionary"); }
+};
+bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value& container, Document& document) {
+    if(!value.empty()) {
+        Value array(kArrayType);
+        for(auto& v : value) {
+            Value c(kObjectType);
+            encode_value(v, c, document);
+            array.PushBack(c.Move(), document.GetAllocator());
+        }
+        container.RemoveMember(key.c_str());
+        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        return true;
+    }
+    return false;
 };
 
 /* @PG program */
@@ -653,7 +1059,7 @@ HeadPGAtom::HeadPGAtom() :
     VN({ 0, 0, NULL }){
     ks_terminate(ID);
 };
-HeadPGAtom::HeadPGAtom(const Value& ontology) :
+HeadPGAtom::HeadPGAtom(const Value& ontology) try :
     ID(decode_value_by_key< kstring_t >("ID", ontology)),
     PN({ 0, 0, NULL }),
     CL({ 0, 0, NULL }),
@@ -666,6 +1072,12 @@ HeadPGAtom::HeadPGAtom(const Value& ontology) :
     decode_value_by_key< kstring_t >("PP", PP, ontology);
     decode_value_by_key< kstring_t >("DS", DS, ontology);
     decode_value_by_key< kstring_t >("VN", VN, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadPGAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadPGAtom :: " + string(error.what()));
 };
 HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -746,27 +1158,27 @@ char* HeadPGAtom::decode(char* position, const char* end) {
         uint16_t tag = tag_to_code(position);
         position += 3;
         switch (tag) {
-            case uint16_t(HtsAuxiliaryCode::ID): {
+            case uint16_t(HtsTagCode::ID): {
                 position = copy_until_tag_end(position, end, ID);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::PN): {
+            case uint16_t(HtsTagCode::PN): {
                 position = copy_until_tag_end(position, end, PN);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::CL): {
+            case uint16_t(HtsTagCode::CL): {
                 position = copy_until_tag_end(position, end, CL);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::PP): {
+            case uint16_t(HtsTagCode::PP): {
                 position = copy_until_tag_end(position, end, PP);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::DS): {
+            case uint16_t(HtsTagCode::DS): {
                 position = copy_until_tag_end(position, end, DS);
                 break;
             };
-            case uint16_t(HtsAuxiliaryCode::VN): {
+            case uint16_t(HtsTagCode::VN): {
                 position = copy_until_tag_end(position, end, VN);
                 break;
             };
@@ -797,366 +1209,20 @@ template<> HeadPGAtom decode_value_by_key< HeadPGAtom >(const Value::Ch* key, co
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
 
-
-/* @RG Read Group */
-HeadRGAtom::HeadRGAtom() :
-    ID({ 0, 0, NULL }),
-    PI({ 0, 0, NULL }),
-    LB({ 0, 0, NULL }),
-    SM({ 0, 0, NULL }),
-    PU({ 0, 0, NULL }),
-    CN({ 0, 0, NULL }),
-    DS({ 0, 0, NULL }),
-    DT({ 0, 0, NULL }),
-    PL({ 0, 0, NULL }),
-    PM({ 0, 0, NULL }),
-    PG({ 0, 0, NULL }),
-    FO({ 0, 0, NULL }),
-    KS({ 0, 0, NULL }){
-    ks_terminate(ID);
-};
-HeadRGAtom::HeadRGAtom(const Value& ontology) :
-    ID(decode_value_by_key< kstring_t >("ID", ontology)),
-    PI({ 0, 0, NULL }),
-    LB({ 0, 0, NULL }),
-    SM({ 0, 0, NULL }),
-    PU({ 0, 0, NULL }),
-    CN({ 0, 0, NULL }),
-    DS({ 0, 0, NULL }),
-    DT({ 0, 0, NULL }),
-    PL({ 0, 0, NULL }),
-    PM({ 0, 0, NULL }),
-    PG({ 0, 0, NULL }),
-    FO({ 0, 0, NULL }),
-    KS({ 0, 0, NULL }) {
-
-    decode_value_by_key< kstring_t >("PI", PI, ontology);
-    decode_value_by_key< kstring_t >("LB", LB, ontology);
-    decode_value_by_key< kstring_t >("SM", SM, ontology);
-    decode_value_by_key< kstring_t >("PU", PU, ontology);
-    decode_value_by_key< kstring_t >("CN", CN, ontology);
-    decode_value_by_key< kstring_t >("DS", DS, ontology);
-    decode_value_by_key< kstring_t >("DT", DT, ontology);
-    decode_value_by_key< kstring_t >("PL", PL, ontology);
-    decode_value_by_key< kstring_t >("PM", PM, ontology);
-    decode_value_by_key< kstring_t >("PG", PG, ontology);
-    decode_value_by_key< kstring_t >("FO", FO, ontology);
-    decode_value_by_key< kstring_t >("KS", KS, ontology);
-};
-HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
-    ID({ 0, 0, NULL }),
-    PI({ 0, 0, NULL }),
-    LB({ 0, 0, NULL }),
-    SM({ 0, 0, NULL }),
-    PU({ 0, 0, NULL }),
-    CN({ 0, 0, NULL }),
-    DS({ 0, 0, NULL }),
-    DT({ 0, 0, NULL }),
-    PL({ 0, 0, NULL }),
-    PM({ 0, 0, NULL }),
-    PG({ 0, 0, NULL }),
-    FO({ 0, 0, NULL }),
-    KS({ 0, 0, NULL }){
-    ks_terminate(ID);
-    if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
-    if(!ks_empty(other.PI)) ks_put_string(other.PI, PI);
-    if(!ks_empty(other.LB)) ks_put_string(other.LB, LB);
-    if(!ks_empty(other.SM)) ks_put_string(other.SM, SM);
-    if(!ks_empty(other.PU)) ks_put_string(other.PU, PU);
-    if(!ks_empty(other.CN)) ks_put_string(other.CN, CN);
-    if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
-    if(!ks_empty(other.DT)) ks_put_string(other.DT, DT);
-    if(!ks_empty(other.PL)) ks_put_string(other.PL, PL);
-    if(!ks_empty(other.PM)) ks_put_string(other.PM, PM);
-    if(!ks_empty(other.PG)) ks_put_string(other.PG, PG);
-    if(!ks_empty(other.FO)) ks_put_string(other.FO, FO);
-    if(!ks_empty(other.KS)) ks_put_string(other.KS, KS);
-};
-HeadRGAtom::~HeadRGAtom() {
-    ks_free(ID);
-    ks_free(PI);
-    ks_free(LB);
-    ks_free(SM);
-    ks_free(PU);
-    ks_free(CN);
-    ks_free(DS);
-    ks_free(DT);
-    ks_free(PL);
-    ks_free(PM);
-    ks_free(PG);
-    ks_free(FO);
-    ks_free(KS);
-};
-HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
-    if(&other == this) {
-        return *this;
-    } else {
-        ks_clear(ID);
-        ks_clear(PI);
-        ks_clear(LB);
-        ks_clear(SM);
-        ks_clear(PU);
-        ks_clear(CN);
-        ks_clear(DS);
-        ks_clear(DT);
-        ks_clear(PL);
-        ks_clear(PM);
-        ks_clear(PG);
-        ks_clear(FO);
-        ks_clear(KS);
-        if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
-        if(!ks_empty(other.PI)) ks_put_string(other.PI, PI);
-        if(!ks_empty(other.LB)) ks_put_string(other.LB, LB);
-        if(!ks_empty(other.SM)) ks_put_string(other.SM, SM);
-        if(!ks_empty(other.PU)) ks_put_string(other.PU, PU);
-        if(!ks_empty(other.CN)) ks_put_string(other.CN, CN);
-        if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
-        if(!ks_empty(other.DT)) ks_put_string(other.DT, DT);
-        if(!ks_empty(other.PL)) ks_put_string(other.PL, PL);
-        if(!ks_empty(other.PM)) ks_put_string(other.PM, PM);
-        if(!ks_empty(other.PG)) ks_put_string(other.PG, PG);
-        if(!ks_empty(other.FO)) ks_put_string(other.FO, FO);
-        if(!ks_empty(other.KS)) ks_put_string(other.KS, KS);
-    }
-    return *this;
-};
-HeadRGAtom::operator string() const {
-    return string(ID.s, ID.l);
-};
-void HeadRGAtom::encode(kstring_t& buffer) const {
-    ks_put_string_("@RG", 3, buffer);
-    if(!ks_empty(ID)) {
-        ks_put_string_("\tID:", 4, buffer);
-        ks_put_string_(ID, buffer);
-    }
-    if(!ks_empty(PI)) {
-        ks_put_string_("\tPI:", 4, buffer);
-        ks_put_string_(PI, buffer);
-    }
-    if(!ks_empty(LB)) {
-        ks_put_string_("\tLB:", 4, buffer);
-        ks_put_string_(LB, buffer);
-    }
-    if(!ks_empty(SM)) {
-        ks_put_string_("\tSM:", 4, buffer);
-        ks_put_string_(SM, buffer);
-    }
-    if(!ks_empty(PU)) {
-        ks_put_string_("\tPU:", 4, buffer);
-        ks_put_string_(PU, buffer);
-    }
-    if(!ks_empty(CN)) {
-        ks_put_string_("\tCN:", 4, buffer);
-        ks_put_string_(CN, buffer);
-    }
-    if(!ks_empty(DS)) {
-        ks_put_string_("\tDS:", 4, buffer);
-        ks_put_string_(DS, buffer);
-    }
-    if(!ks_empty(DT)) {
-        ks_put_string_("\tDT:", 4, buffer);
-        ks_put_string_(DT, buffer);
-    }
-    if(!ks_empty(PL)) {
-        ks_put_string_("\tPL:", 4, buffer);
-        ks_put_string_(PL, buffer);
-    }
-    if(!ks_empty(PM)) {
-        ks_put_string_("\tPM:", 4, buffer);
-        ks_put_string_(PM, buffer);
-    }
-    if(!ks_empty(PG)) {
-        ks_put_string_("\tPG:", 4, buffer);
-        ks_put_string_(PG, buffer);
-    }
-    if(!ks_empty(FO)) {
-        ks_put_string_("\tFO:", 4, buffer);
-        ks_put_string_(FO, buffer);
-    }
-    if(!ks_empty(KS)) {
-        ks_put_string_("\tKS:", 4, buffer);
-        ks_put_string_(KS, buffer);
-    }
-    ks_put_character(LINE_BREAK, buffer);
-};
-char* HeadRGAtom::decode(char* position, const char* end) {
-    while(*position == '\t' && position <= end) {
-        ++position;
-        uint16_t tag = tag_to_code(position);
-        position += 3;
-        switch (tag) {
-            case uint16_t(HtsAuxiliaryCode::ID): {
-                position = copy_until_tag_end(position, end, ID);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::CN): {
-                position = copy_until_tag_end(position, end, CN);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::DS): {
-                position = copy_until_tag_end(position, end, DS);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::DT): {
-                position = copy_until_tag_end(position, end, DT);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::FO): {
-                position = copy_until_tag_end(position, end, FO);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::KS): {
-                position = copy_until_tag_end(position, end, KS);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::LB): {
-                position = copy_until_tag_end(position, end, LB);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::PG): {
-                position = copy_until_tag_end(position, end, PG);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::PI): {
-                position = copy_until_tag_end(position, end, PI);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::PL): {
-                position = copy_until_tag_end(position, end, PL);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::PM): {
-                position = copy_until_tag_end(position, end, PM);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::PU): {
-                position = copy_until_tag_end(position, end, PU);
-                break;
-            };
-            case uint16_t(HtsAuxiliaryCode::SM): {
-                position = copy_until_tag_end(position, end, SM);
-                break;
-            };
-            default:
-                position = skip_to_tab(position, end);
-                break;
-        }
-    }
-    return ++position;
-};
-void HeadRGAtom::set_platform(const Platform& value) {
-    to_kstring(value, PL);
-};
-void HeadRGAtom::expand(const HeadRGAtom& other) {
-    if(&other != this) {
-        if(PI.l == 0 && other.PI.l > 0) ks_put_string(other.PI, PI);
-        if(LB.l == 0 && other.LB.l > 0) ks_put_string(other.LB, LB);
-        if(SM.l == 0 && other.SM.l > 0) ks_put_string(other.SM, SM);
-        if(PU.l == 0 && other.PU.l > 0) ks_put_string(other.PU, PU);
-        if(CN.l == 0 && other.CN.l > 0) ks_put_string(other.CN, CN);
-        if(DS.l == 0 && other.DS.l > 0) ks_put_string(other.DS, DS);
-        if(DT.l == 0 && other.DT.l > 0) ks_put_string(other.DT, DT);
-        if(PL.l == 0 && other.PL.l > 0) ks_put_string(other.PL, PL);
-        if(PM.l == 0 && other.PM.l > 0) ks_put_string(other.PM, PM);
-        if(PG.l == 0 && other.PG.l > 0) ks_put_string(other.PG, PG);
-        if(FO.l == 0 && other.FO.l > 0) ks_put_string(other.FO, FO);
-        if(KS.l == 0 && other.KS.l > 0) ks_put_string(other.KS, KS);
-    }
-};
-ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
-    if(!ks_empty(rg.ID)) o << "ID : " << rg.ID.s << endl;
-    if(!ks_empty(rg.PI)) o << "PI : " << rg.PI.s << endl;
-    if(!ks_empty(rg.LB)) o << "LB : " << rg.LB.s << endl;
-    if(!ks_empty(rg.SM)) o << "SM : " << rg.SM.s << endl;
-    if(!ks_empty(rg.PU)) o << "PU : " << rg.PU.s << endl;
-    if(!ks_empty(rg.CN)) o << "CN : " << rg.CN.s << endl;
-    if(!ks_empty(rg.DS)) o << "DS : " << rg.DS.s << endl;
-    if(!ks_empty(rg.DT)) o << "DT : " << rg.DT.s << endl;
-    if(!ks_empty(rg.PL)) o << "PL : " << rg.PL.s << endl;
-    if(!ks_empty(rg.PM)) o << "PM : " << rg.PM.s << endl;
-    if(!ks_empty(rg.PG)) o << "PG : " << rg.PG.s << endl;
-    if(!ks_empty(rg.FO)) o << "FO : " << rg.FO.s << endl;
-    if(!ks_empty(rg.KS)) o << "KS : " << rg.KS.s << endl;
-    return o;
-};
-template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container) {
-    if(container.IsObject()) {
-        if( decode_value_by_key< kstring_t >("ID", value.ID, container)) {
-            decode_value_by_key< kstring_t >("PI", value.PI, container);
-            decode_value_by_key< kstring_t >("LB", value.LB, container);
-            decode_value_by_key< kstring_t >("SM", value.SM, container);
-            decode_value_by_key< kstring_t >("PU", value.PU, container);
-            decode_value_by_key< kstring_t >("CN", value.CN, container);
-            decode_value_by_key< kstring_t >("DS", value.DS, container);
-            decode_value_by_key< kstring_t >("DT", value.DT, container);
-            decode_value_by_key< kstring_t >("PL", value.PL, container);
-            decode_value_by_key< kstring_t >("PM", value.PM, container);
-            decode_value_by_key< kstring_t >("PG", value.PG, container);
-            decode_value_by_key< kstring_t >("FO", value.FO, container);
-            decode_value_by_key< kstring_t >("KS", value.KS, container);
-            return true;
-        } else { return false; }
-    } else { throw ConfigurationError("Read Group element must be a dictionary"); }
-};
-template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, list< HeadRGAtom >& value, const Value& container) {
-    Value::ConstMemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd() && !reference->value.IsNull()) {
-        if(reference->value.IsArray()) {
-            if(!reference->value.Empty()) {
-                HeadRGAtom v;
-                for(const auto& e : reference->value.GetArray()) {
-                    if(decode_value< HeadRGAtom >(v, e)) {
-                        value.emplace_back(v);
-                    }
-                }
-                return !value.empty();
-            }
-        } else { throw ConfigurationError(string(key) + " element must be an array"); }
-    }
-    return false;
-};
-bool encode_value(const HeadRGAtom& value, Value& container, Document& document) {
-    if(container.IsObject()) {
-        encode_key_value("ID", value.ID, container, document);
-        encode_key_value("PI", value.PI, container, document);
-        encode_key_value("LB", value.LB, container, document);
-        encode_key_value("SM", value.SM, container, document);
-        encode_key_value("PU", value.PU, container, document);
-        encode_key_value("CN", value.CN, container, document);
-        encode_key_value("DS", value.DS, container, document);
-        encode_key_value("DT", value.DT, container, document);
-        encode_key_value("PL", value.PL, container, document);
-        encode_key_value("PM", value.PM, container, document);
-        encode_key_value("PG", value.PG, container, document);
-        encode_key_value("FO", value.FO, container, document);
-        encode_key_value("KS", value.KS, container, document);
-        return true;
-    } else { throw ConfigurationError("Read Group element must be a dictionary"); }
-};
-bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value& container, Document& document) {
-    if(!value.empty()) {
-        Value array(kArrayType);
-        for(auto& v : value) {
-            Value c(kObjectType);
-            encode_value(v, c, document);
-            array.PushBack(c.Move(), document.GetAllocator());
-        }
-        container.RemoveMember(key.c_str());
-        container.AddMember(Value(key.c_str(), key.size(), document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
-        return true;
-    }
-    return false;
-};
-
 /* @CO free text comment */
 HeadCOAtom::HeadCOAtom() :
     CO({ 0, 0, NULL }) {
 };
-HeadCOAtom::HeadCOAtom(const Value& ontology) :
+HeadCOAtom::HeadCOAtom(const Value& ontology) try :
     CO({ 0, 0, NULL }) {
-    if(ontology.IsObject()) {
-        decode_value_by_key< kstring_t >("CO", CO, ontology);
-    } else { throw ConfigurationError("CO element must be a dictionary"); }
+
+    decode_value_by_key< kstring_t >("CO", CO, ontology);
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("HeadCOAtom :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("HeadCOAtom :: " + string(error.what()));
 };
 HeadCOAtom::HeadCOAtom(const HeadCOAtom& other) :
     CO({ 0, 0, NULL }){

@@ -1,148 +1,170 @@
+sudo: required
+
+services:
+  - docker
+
 language: cpp
 env:
   global:
     - LD_LIBRARY_PATH="${HOME}/.pheniqs/travis/install/lib"
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - env:
-      - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 && CXX=g++-7"
-
-  include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-      env:
-         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
-      env:
-         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-      env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-      env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-          packages:
-            - clang-3.6
-      env:
-        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - clang-3.7
-      env:
-        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
-          packages:
-            - clang-3.8
-      env:
-        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-3.9
-          packages:
-            - clang-3.9
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - clang-4.0
-      env:
-        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-
-    - os: osx
-      osx_image: xcode9.3
-      env:
-        - MATRIX_EVAL="CC=clang && CXX=clang++"
-
-    - os: osx
-      osx_image: xcode9.3
-      env:
-        - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9 && CXX=g++-4.9"
-
-    - os: osx
-      osx_image: xcode9.3
-      env:
-        - MATRIX_EVAL="brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5 && CXX=g++-5"
-
-    - os: osx
-      osx_image: xcode9.3
-      env:
-        - MATRIX_EVAL="brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
-
-    - os: osx
-      osx_image: xcode9.3
-      env:
-        - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 && CXX=g++-7"
+    - secure: cfTUcfNqe+ihPlzdzvQ9o1/MakuL5Q2GUmLtzVxfOVNPS/OQBqYQLQ+ENxCvRnYfyoXq/jKVztSqtGeL5UEmrD29UTdCp9ihZ7ZUwHmjXjHHTeHtbFcRKCpjgGDukFPflGY9CGodTTHriRoy3L9ODJXIDv9cfHecSz1LJr0gSik/uDTPrwpGpDLkQoJrqvmZ/gCh/8kFxuLxITu3mD9i+MIN0KjGdv6tsgHsdx60ijmjS7gjc87shS2KujxGo+3+zPIaXjRFarmYYgn2sdEAQko8akd5Kkqfp32bWy/R7oz+yV0NLiKE4a4+PvBC7nEO/M6BAlhGzRU1iMJZ3U0qmO2d+pxpc8+c6yM9XxDCFOVYKMAdgV2COff9+rUm/J9rhPRbciLIOue0RmXrMJvLHYKUH2wnvfeQYssV4doLtXqgDXmwO+tf4f2BrtW8dZcWFVD1S4WPknvvJT/5+Q7yDnn8lvHpqJ0UAy9kMKBCqt68vd+NpCs9cL0bdUZ4kFltk++Pon8BcY+CGEErSD36G19hr0QKBiHcNqraCUURggHdeaIwok4eHSldvz+91WUlyF00CYjCYrCwYHqVPO2ORjMWn3h8BFzp61la3sk/XCTuhecFua7srzFrCTN58zihpp/Exfm97m/UouF5HOif+KL+hSGOWKyYgfL9w6O2kWs=
 
 before_install:
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
-        then brew update > /dev/null 2>&1;
-        brew upgrade python > /dev/null 2>&1;
-      fi
-    - eval "${MATRIX_EVAL}"
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update > /dev/null 2>&1; brew upgrade
+    python > /dev/null 2>&1; fi
+  - eval "${MATRIX_EVAL}"
 
 install: true
 
+####################################################################################
+# NOTE - Conda Recipe
+# Each of the ./pheniqs commands is also used as a test in the conda build
+# If these change please reflect changes in conda_recipe/latest/build.sh
+####################################################################################
 script:
-    - ./tool/pheniqs-tools.py build test/000000000-BDGGG/build.json
-    - make all PREFIX=${HOME}/.pheniqs/travis/install
-    - ./pheniqs --version
-    - ./pheniqs --help
-    - ./pheniqs demux --help
-    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json -VD
-    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json -j
-    - ./pheniqs demux --config test/000000000-BDGGG/demultiplex.json
+  - "./tool/pheniqs-tools.py build test/BDGGG/build.json"
+  - make all PREFIX=${HOME}/.pheniqs/travis/install
+  - "./pheniqs --version"
+  - "./pheniqs --help"
+  - "./pheniqs demux --help"
+  - "./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --validate --distance"
+  - "./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --compile >> test/BDGGG/BDGGG.log
+    2>&1"
+  - "./pheniqs demux --config test/BDGGG/BDGGG_interleave.json >> test/BDGGG/BDGGG.log
+    2>&1"
+  - "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --validate --distance"
+  - "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --compile >> test/BDGGG/BDGGG.log
+    2>&1"
+  - "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log
+    2>&1"
+
+
+#         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh; fi
+#         - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh; fi
+
+stages:
+  - test
+
+jobs:
+  fast_finish: true
+  allow_failures:
+  - env:
+    - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
+      CXX=g++-7"
+  include:
+    stage: test
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            packages:
+            - g++-4.8
+        env:
+        - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            packages:
+            - g++-4.9
+        env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            packages:
+            - g++-5
+        env:
+        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            packages:
+            - g++-6
+        env:
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            packages:
+            - g++-7
+        env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+            packages:
+            - clang-3.6
+        env:
+        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+            packages:
+            - clang-3.7
+        env:
+        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+            packages:
+            - clang-3.8
+        env:
+        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - llvm-toolchain-trusty-3.9
+            packages:
+            - clang-3.9
+        env:
+        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+      - os: linux
+        addons:
+          apt:
+            sources:
+            - llvm-toolchain-trusty-4.0
+            packages:
+            - clang-4.0
+        env:
+        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+      - os: osx
+        osx_image: xcode9.3
+        env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+      - os: osx
+        osx_image: xcode9.3
+        env:
+        - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9
+          && CXX=g++-4.9"
+      - os: osx
+        osx_image: xcode9.3
+        env:
+        - MATRIX_EVAL="brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5 && CXX=g++-5"
+      - os: osx
+        osx_image: xcode9.3
+        env:
+        - MATRIX_EVAL="brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
+      - os: osx
+        osx_image: xcode9.3
+        env:
+        - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
+          CXX=g++-7"

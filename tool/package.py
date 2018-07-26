@@ -309,11 +309,16 @@ class Package(object):
     def download(self):
         if self.download_url is not None:
             content = None
+            if self.sha1 is None:
+                if os.path.exists(self.download_url):
+                    self.log.debug('removing old real time archive %s', self.download_url)
+                    os.remove(self.download_url)
+
             if os.path.exists(self.download_url):
                 with open(self.download_url, 'rb') as local:
                     content = local.read()
                     checksum = hashlib.sha1(content).hexdigest()
-                    if checksum != self.sha1:
+                    if self.sha1 is not None and checksum != self.sha1:
                         self.log.warning('removing corrupt archive %s', self.download_url)
                         os.remove(self.download_url)
                         content = None
@@ -343,7 +348,7 @@ class Package(object):
                     else:
                         content = response.read()
                         checksum = hashlib.sha1(content).hexdigest()
-                        if checksum != self.sha1:
+                        if self.sha1 is not None and checksum != self.sha1:
                             error = '{} checksum {} differs from {}'.format(self.display_name, checksum, self.sha1)
                             self.log.warning(error)
                         else:
@@ -631,7 +636,7 @@ class bz2Package(makePackage):
         dynamic_library_path = os.path.join(self.package_url, 'libbz2.so')
         versioned_dynamic_library_path = '{}.{}'.format(dynamic_library_path, self.version)
 
-        self.log.info('copying %s to %s', versioned_dynamic_library_path, self.lib_prefix)
+        self.log.debug('copying %s to %s', versioned_dynamic_library_path, self.lib_prefix)
         command = [ 'rsync', versioned_dynamic_library_path, self.lib_prefix ]
         process = Popen(
             args=command,
@@ -698,7 +703,7 @@ class libdeflatePackage(makePackage):
             self.build()
             if self.package_url is not None:
                 static_library_path = os.path.join(self.package_url, 'libdeflate.a')
-                self.log.info('copying %s to %s', static_library_path, self.lib_prefix)
+                self.log.debug('copying %s to %s', static_library_path, self.lib_prefix)
                 command = [ 'rsync', static_library_path, self.lib_prefix ]
                 process = Popen(
                     args=command,
@@ -719,7 +724,7 @@ class libdeflatePackage(makePackage):
                     raise CommandFailedError('rsync returned {}'.format(code))
 
                 library_header_path = os.path.join(self.package_url, 'libdeflate.h')
-                self.log.info('copying %s to %s', library_header_path, self.include_prefix)
+                self.log.debug('copying %s to %s', library_header_path, self.include_prefix)
                 command = [ 'rsync', library_header_path, self.include_prefix ]
                 process = Popen(
                     args=command,
@@ -741,7 +746,7 @@ class libdeflatePackage(makePackage):
 
                 if self.platform == 'Linux':
                     dynamic_library_path = os.path.join(self.package_url, 'libdeflate.so')
-                    self.log.info('copying %s to %s', dynamic_library_path, self.lib_prefix)
+                    self.log.debug('copying %s to %s', dynamic_library_path, self.lib_prefix)
                     command = [ 'rsync', dynamic_library_path, self.lib_prefix ]
                     process = Popen(
                         args=command,
@@ -771,7 +776,7 @@ class rapidjsonPackage(Package):
         if not self.node['installed']:
             self.build()
             if self.package_url is not None:
-                self.log.info('copying %s header files to %s', self.display_name, self.include_prefix)
+                self.log.debug('copying %s header files to %s', self.display_name, self.include_prefix)
                 command = [ 'rsync' , '--recursive', os.path.join(self.package_url, 'include/'), self.include_prefix ]
                 process = Popen(
                     args=command,

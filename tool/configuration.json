@@ -36,11 +36,11 @@
                 "flag": [
                     "path"
                 ],
-                "required": true,
                 "parameter": {
                     "help": "path",
                     "metavar": "PATH"
-                }
+                },
+                "required": true
             },
             "verbosity": {
                 "flag": [

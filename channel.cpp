@@ -21,6 +21,53 @@
 
 #include "channel.h"
 
+Channel::Channel(const Value& ontology) try :
+    Barcode(ontology),
+    rg(ontology),
+    include_filtered(decode_value_by_key< bool >("include filtered", ontology)),
+    disable_quality_control(decode_value_by_key< bool >("disable quality control", ontology)),
+    output_feed_url_by_segment(decode_value_by_key< list< URL > >("output", ontology)) {
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Channel :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Channel :: " + string(error.what()));
+};
+Channel::Channel(const Channel& other) :
+    Barcode(other),
+    rg(other.rg),
+    include_filtered(other.include_filtered),
+    disable_quality_control(other.disable_quality_control),
+    output_feed_url_by_segment(other.output_feed_url_by_segment),
+    output_feed_lock_order(other.output_feed_lock_order),
+    output_feed_by_segment(other.output_feed_by_segment) {
+};
+void Channel::populate(unordered_map< URL, Feed* >& feed_by_url) {
+    map< int32_t, Feed* > feed_by_index;
+
+    /* populate the output feed by segment array */
+    output_feed_by_segment.reserve(output_feed_url_by_segment.size());
+    for(const auto& url : output_feed_url_by_segment) {
+        Feed* feed(feed_by_url[url]);
+        output_feed_by_segment.emplace_back(feed);
+        if(feed_by_index.count(feed->index) == 0) {
+            feed_by_index.emplace(make_pair(feed->index, feed));
+        }
+    }
+    output_feed_by_segment.shrink_to_fit();
+
+    /* populate the output feed lock order array */
+    output_feed_lock_order.reserve(feed_by_index.size());
+    for(auto& record : feed_by_index) {
+        /* /dev/null is not really being written to so we don't need to lock it */
+        if(!record.second->is_dev_null()) {
+            output_feed_lock_order.push_back(record.second);
+        }
+    }
+    output_feed_lock_order.shrink_to_fit();
+};
+
 template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Value& container) {
     vector< Channel > value;
     Value::ConstMemberIterator reference = container.FindMember(key);

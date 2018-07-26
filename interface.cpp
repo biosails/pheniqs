@@ -75,7 +75,6 @@ void to_string(const ParameterType& value, string& result) {
         case ParameterType::DECIMAL:    result.assign("decimal");   break;
         case ParameterType::STRING:     result.assign("string");    break;
         case ParameterType::URL:        result.assign("url");       break;
-        case ParameterType::DIRECTORY:  result.assign("directory"); break;
         default:                        result.assign("unknown");   break;
     }
 };
@@ -86,7 +85,6 @@ bool from_string(const char* value, ParameterType& result) {
     else if(!strcmp(value, "decimal"))      result = ParameterType::DECIMAL;
     else if(!strcmp(value, "string"))       result = ParameterType::STRING;
     else if(!strcmp(value, "url"))          result = ParameterType::URL;
-    else if(!strcmp(value, "directory"))    result = ParameterType::DIRECTORY;
     else                                    result = ParameterType::UNKNOWN;
     return (result == ParameterType::UNKNOWN ? false : true);
 };
@@ -160,9 +158,6 @@ Prototype::Prototype(const Value& ontology) :
                     break;
                 case ParameterType::URL:
                     meta.assign("URL");
-                    break;
-                case ParameterType::DIRECTORY:
-                    meta.assign("DIR");
                     break;
                 default:
                     break;
@@ -271,8 +266,7 @@ Argument::Argument(const Prototype* prototype) :
                 string_array_value = new list< string >();
                 break;
             };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
+            case ParameterType::URL: {
                 url_array_value = new list< URL >();
                 break;
             };
@@ -298,8 +292,7 @@ Argument::Argument(const Prototype* prototype) :
                 string_value = new string();
                 break;
             };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
+            case ParameterType::URL: {
                 url_value = new URL();
                 break;
             };
@@ -324,8 +317,7 @@ Argument::~Argument() {
                 delete string_array_value;
                 break;
             };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
+            case ParameterType::URL: {
                 delete url_array_value;
                 break;
             };
@@ -351,8 +343,7 @@ Argument::~Argument() {
                 delete string_value;
                 break;
             };
-            case ParameterType::URL:
-            case ParameterType::DIRECTORY: {
+            case ParameterType::URL: {
                 delete url_value;
                 break;
             };
@@ -397,13 +388,6 @@ URL* Argument::get_url() const {
     }
     return value;
 };
-URL* Argument::get_directory() const {
-    URL* value(NULL);
-    if(prototype.type == ParameterType::DIRECTORY) {
-        value = url_value;
-    }
-    return value;
-};
 list< int64_t >* Argument::get_integer_array() const {
     list< int64_t >* value(NULL);
     if(prototype.type == ParameterType::INTEGER && prototype.plural) {
@@ -432,13 +416,6 @@ list< URL >* Argument::get_url_array() const {
     }
     return value;
 };
-list< URL >* Argument::get_directory_array() const {
-    list< URL >* value(NULL);
-    if(prototype.type == ParameterType::DIRECTORY && prototype.plural) {
-        value = url_array_value;
-    }
-    return value;
-};
 uint32_t Argument::cardinality() const {
     uint32_t value(0);
     if(!prototype.plural) {
@@ -458,7 +435,6 @@ uint32_t Argument::cardinality() const {
                 value = string_array_value->size();
                 break;
             case ParameterType::URL:
-            case ParameterType::DIRECTORY:
                 value = url_array_value->size();
                 break;
             default:
@@ -483,11 +459,11 @@ bool Argument::satisfied() const {
 
 /*  Action */
 
-Action::Action(const Value& ontology, bool root) :
+Action::Action(const Value& ontology, bool root) try :
     ontology(ontology),
     name(decode_value_by_key< string >("name", ontology)),
     description(decode_value_by_key< string >("description", ontology)),
-    epilog(decode_value_by_key< string >("epilog", ontology)),
+    epilog(decode_value_by_key< list< string > >("epilog", ontology)),
     root(root),
     max_option_handle(0) {
 
@@ -518,6 +494,12 @@ Action::Action(const Value& ontology, bool root) :
             }
         } else { throw ConfigurationError("incorrect syntax"); }
     }
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Action :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Action :: " + string(error.what()));
 };
 Action::~Action() {
     for(auto prototype : optional_by_index) {
@@ -572,13 +554,6 @@ Argument* Action::parse_argument(const size_t argc, const char** argv, const Pro
                 argument = get_argument(prototype);
                 string buffer(argv[index]);
                 URL url(expand_shell(buffer));
-                argument->set_value(url);
-                break;
-            };
-            case ParameterType::DIRECTORY: {
-                argument = get_argument(prototype);
-                string buffer(argv[index]);
-                URL url(expand_shell(buffer), true);
                 argument->set_value(url);
                 break;
             };
@@ -804,7 +779,6 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
                 }
                 break;
             case ParameterType::URL:
-            case ParameterType::DIRECTORY:
                 block.append(prototype->handles[0]);
                 block.append(" ");
                 block.append(prototype->meta);
@@ -814,6 +788,15 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
         }
         if(!prototype->mandatory) {
             block.append("]");
+        }
+        if(prototype->plural) {
+            if(prototype->cardinality > 0) {
+                block.append("{");
+                block.append(to_string(prototype->cardinality));
+                block.append("}");
+            } else {
+                block.append("*");
+            }
         }
         if(buffer.length() + block.length() > layout.max_line_width) {
             o << buffer << endl << setw(indent) << ' ';
@@ -833,7 +816,6 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
             case ParameterType::INTEGER:
             case ParameterType::DECIMAL:
             case ParameterType::URL:
-            case ParameterType::DIRECTORY:
                 block.append(prototype->meta);
                 break;
             case ParameterType::STRING: {
@@ -888,8 +870,11 @@ ostream& Action::print_description_element(ostream& o, const Layout& layout) con
     return o;
 };
 ostream& Action::print_epilog_element(ostream& o, const Layout& layout) const {
-    if(epilog.length() > 0) {
-        o << endl << epilog << endl;
+    if(epilog.size() > 0) {
+        o << endl;
+        for(auto& line : epilog) {
+            o << line << endl;
+        }
     }
     return o;
 };
@@ -911,6 +896,8 @@ ostream& Action::print_help(ostream& o, const string& application_name, const La
 };
 Document Action::operation() {
     Document document(kObjectType);
+    document.CopyFrom(ontology, document.GetAllocator());
+    document.RemoveMember("option");
 
     Value interactive(kObjectType);
     for(auto& record : option_by_name) {
@@ -938,8 +925,7 @@ Document Action::operation() {
                         if(reference != NULL) { encode_key_value(key, *reference, interactive, document); }
                         break;
                     };
-                    case ParameterType::URL:
-                    case ParameterType::DIRECTORY: {
+                    case ParameterType::URL: {
                         list< URL >* reference = get_url_plural(key);
                         if(reference != NULL) { encode_key_value(key, *reference, interactive, document); }
                         break;
@@ -969,8 +955,7 @@ Document Action::operation() {
                         if(reference != NULL) { encode_key_value(key, *reference, interactive, document); }
                         break;
                     };
-                    case ParameterType::URL:
-                    case ParameterType::DIRECTORY: {
+                    case ParameterType::URL: {
                         URL* reference(get_url(key));
                         if(reference != NULL) { encode_key_value(key, *reference, interactive, document); }
                         break;
@@ -981,25 +966,21 @@ Document Action::operation() {
             }
         }
     }
+    document.AddMember("interactive", interactive.Move(), document.GetAllocator());
 
-    Value operation(ontology, document.GetAllocator());
-    operation.RemoveMember("option");
-    operation.AddMember("interactive", interactive.Move(), document.GetAllocator());
-
-    document.AddMember("operation", operation.Move(), document.GetAllocator());
     sort_json_value(document, document);
     return document;
 };
 
 /*  Interface */
 
-Interface::Interface(const size_t argc, const char** argv) :
+Interface::Interface(const size_t argc, const char** argv) try :
     argc(argc),
     argv(argv),
     application_name(argv[0]),
     application_version(PHENIQS_VERSION),
     full_command(assemble_full_command(argc, argv)),
-    working_directory(get_cwd(), true),
+    working_directory(get_cwd()),
     command(NULL),
     selected(NULL) {
 
@@ -1011,6 +992,12 @@ Interface::Interface(const size_t argc, const char** argv) :
             load_selected_action();
         } else { throw ConfigurationError("interface configuration must be a dictionary"); }
     } else { throw ConfigurationError(string(GetParseError_En(configuration.GetParseError())) + " at position " + to_string(configuration.GetErrorOffset())); }
+
+    } catch(ConfigurationError& error) {
+        throw ConfigurationError("Interface :: " + error.message);
+
+    } catch(exception& error) {
+        throw InternalError("Interface :: " + string(error.what()));
 };
 Interface::~Interface() {
     for(auto action : action_by_index) {

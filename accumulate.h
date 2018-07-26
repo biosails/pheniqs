@@ -209,21 +209,28 @@ class ChannelAccumulator {
         vector< SegmentAccumulator > segment_by_index;
 
         ChannelAccumulator(const Value& ontology);
+        inline bool is_undetermined() const {
+            /* by convention, enforced by the job configuration loader, channel 0 is always the undetermined */
+            return index == 0;
+        };
+        inline bool is_not_undetermined() const {
+            return index > 0;
+        };
         inline void increment(const Read& read) {
             ++count;
-            if(read.multiplex_distance()) {
-                accumulated_multiplex_distance += static_cast< uint64_t >(read.multiplex_distance());
+            if(read.multiplex_distance) {
+                accumulated_multiplex_distance += static_cast< uint64_t >(read.multiplex_distance);
             }
             if(algorithm == Algorithm::PAMLD) {
-                accumulated_multiplex_confidence += read.multiplex_error();
+                accumulated_multiplex_confidence += read.multiplex_decoding_confidence;
             }
             if(!read.qcfail()) {
                 ++pf_count;
-                if(read.multiplex_distance()) {
-                    accumulated_pf_multiplex_distance += static_cast< uint64_t >(read.multiplex_distance());
+                if(read.multiplex_distance) {
+                    accumulated_pf_multiplex_distance += static_cast< uint64_t >(read.multiplex_distance);
                 }
                 if(algorithm == Algorithm::PAMLD) {
-                    accumulated_pf_multiplex_confidence += read.multiplex_error();
+                    accumulated_pf_multiplex_confidence += read.multiplex_decoding_confidence;
                 }
             }
             for(size_t i(0); i < segment_by_index.size(); ++i) {

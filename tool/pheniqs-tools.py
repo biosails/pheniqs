@@ -307,6 +307,8 @@ class Pipeline(object):
                                     self.log.info('clearing %s', package.display_name)
                                     package.clean_package()
 
+                                self.save_cache()
+
     def execute_zsh_job(self):
         def parse_zsh_completion_option(node, buffer):
             if 'option' in node and node['option']:
@@ -468,6 +470,9 @@ def main():
 
     try:
         pipeline.execute()
+    except DownloadError as e:
+        logging.getLogger('main').critical(e)
+        sys.exit(1)
     except ValueError as e:
         logging.getLogger('main').critical(e)
         sys.exit(1)

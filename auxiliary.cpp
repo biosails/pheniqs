@@ -117,23 +117,19 @@ Auxiliary::Auxiliary() :
     CO({ 0, 0, NULL }),
     BC({ 0, 0, NULL }),
     QT({ 0, 0, NULL }),
-    multiplex_distance(0),
-    DQ(0),
+    XB(0),
 
     RX({ 0, 0, NULL }),
     QX({ 0, 0, NULL }),
     OX({ 0, 0, NULL }),
     BZ({ 0, 0, NULL }),
     MI({ 0, 0, NULL }),
-    molecular_distance(0),
-    XM(1),
+    XM(0),
 
-    XR({ 0, 0, NULL }),
-    XQ({ 0, 0, NULL }),
-    XO({ 0, 0, NULL }),
-    XZ({ 0, 0, NULL }),
-    splitseq_distance(0),
-    XP(1),
+    CB({ 0, 0, NULL }),
+    CR({ 0, 0, NULL }),
+    CY({ 0, 0, NULL }),
+    XC(0),
 
     #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
     illumina_control_number(0),
@@ -152,23 +148,19 @@ Auxiliary::Auxiliary(const Auxiliary& other) :
     CO({ 0, 0, NULL }),
     BC({ 0, 0, NULL }),
     QT({ 0, 0, NULL }),
-    multiplex_distance(other.multiplex_distance),
-    DQ(other.DQ),
+    XB(other.XB),
 
     RX({ 0, 0, NULL }),
     QX({ 0, 0, NULL }),
     OX({ 0, 0, NULL }),
     BZ({ 0, 0, NULL }),
     MI({ 0, 0, NULL }),
-    molecular_distance(other.molecular_distance),
     XM(other.XM),
 
-    XR({ 0, 0, NULL }),
-    XQ({ 0, 0, NULL }),
-    XO({ 0, 0, NULL }),
-    XZ({ 0, 0, NULL }),
-    splitseq_distance(other.splitseq_distance),
-    XP(other.XP),
+    CB({ 0, 0, NULL }),
+    CR({ 0, 0, NULL }),
+    CY({ 0, 0, NULL }),
+    XC(other.XC),
 
     #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
     illumina_control_number(other.illumina_control_number),
@@ -192,10 +184,9 @@ Auxiliary::Auxiliary(const Auxiliary& other) :
     if(!ks_empty(other.BZ)) ks_put_string(other.BZ, BZ);
     if(!ks_empty(other.MI)) ks_put_string(other.MI, MI);
 
-    if(!ks_empty(other.XR)) ks_put_string(other.XR, XR);
-    if(!ks_empty(other.XQ)) ks_put_string(other.XQ, XQ);
-    if(!ks_empty(other.XO)) ks_put_string(other.XO, XO);
-    if(!ks_empty(other.XZ)) ks_put_string(other.XZ, XZ);
+    if(!ks_empty(other.CB)) ks_put_string(other.CB, CB);
+    if(!ks_empty(other.CR)) ks_put_string(other.CR, CR);
+    if(!ks_empty(other.CY)) ks_put_string(other.CY, CY);
 
     #if defined(PHENIQS_EXTENDED_SAM_TAG)
     for(auto& record : other.extended) {
@@ -221,10 +212,9 @@ Auxiliary::~Auxiliary() {
     ks_free(BZ);
     ks_free(MI);
 
-    ks_free(XR);
-    ks_free(XQ);
-    ks_free(XO);
-    ks_free(XZ);
+    ks_free(CB);
+    ks_free(CR);
+    ks_free(CY);
 };
 void Auxiliary::decode(const bam1_t* bam1) {
     if(bam1 != NULL) {
@@ -238,98 +228,94 @@ void Auxiliary::decode(const bam1_t* bam1) {
             position = next + 2;
             if((next = skip_aux(position, end)) != NULL) {
                 switch(code) {
-                    case uint16_t(HtsAuxiliaryCode::FI):
+                    case uint16_t(HtsTagCode::FI):
                         FI = static_cast< uint32_t >(bam_aux2i(position));
                         break;
-                    case uint16_t(HtsAuxiliaryCode::TC):
+                    case uint16_t(HtsTagCode::TC):
                         TC = static_cast< uint32_t >(bam_aux2i(position));
                         break;
-                    case uint16_t(HtsAuxiliaryCode::FS):
+                    case uint16_t(HtsTagCode::FS):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, FS); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::RG):
+                    case uint16_t(HtsTagCode::RG):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, RG); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::PU):
+                    case uint16_t(HtsTagCode::PU):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, PU); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::LB):
+                    case uint16_t(HtsTagCode::LB):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, LB); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::PG):
+                    case uint16_t(HtsTagCode::PG):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, PG); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::CO):
+                    case uint16_t(HtsTagCode::CO):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, CO); }
                         break;
 
                     /*  multiplex barcode */
-                    case uint16_t(HtsAuxiliaryCode::BC):
+                    case uint16_t(HtsTagCode::BC):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, BC); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::QT):
+                    case uint16_t(HtsTagCode::QT):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, QT); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::DQ):
-                        DQ = bam_aux2f(position);
+                    case uint16_t(HtsTagCode::XB):
+                        XB = bam_aux2f(position);
                         break;
 
                     /*  molecular barcode */
-                    case uint16_t(HtsAuxiliaryCode::RX):
+                    case uint16_t(HtsTagCode::RX):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, RX); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::QX):
+                    case uint16_t(HtsTagCode::QX):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, QX); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::OX):
+                    case uint16_t(HtsTagCode::OX):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, OX); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::BZ):
+                    case uint16_t(HtsTagCode::BZ):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, BZ); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::MI):
+                    case uint16_t(HtsTagCode::MI):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, MI); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XM):
+                    case uint16_t(HtsTagCode::XM):
                         XM = bam_aux2f(position);
                         break;
 
-                    /*  SplitSEQ barcode */
-                    case uint16_t(HtsAuxiliaryCode::XR):
+                    /*  Cellular barcode */
+                    case uint16_t(HtsTagCode::CB):
                         value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, XR); }
+                        if(value) { ks_put_string(value, CB); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XQ):
+                    case uint16_t(HtsTagCode::CR):
                         value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, XQ); }
+                        if(value) { ks_put_string(value, CR); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XO):
+                    case uint16_t(HtsTagCode::CY):
                         value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, XO); }
+                        if(value) { ks_put_string(value, CY); }
                         break;
-                    case uint16_t(HtsAuxiliaryCode::XZ):
-                        value = bam_aux2Z(position);
-                        if(value) { ks_put_string(value, XZ); }
-                        break;
-                    case uint16_t(HtsAuxiliaryCode::XP):
-                        XP = bam_aux2f(position);
+                    case uint16_t(HtsTagCode::XC):
+                        XC = bam_aux2f(position);
                         break;
 
                     /*  Expected Error */
-                    case uint16_t(HtsAuxiliaryCode::EE):
+                    case uint16_t(HtsTagCode::EE):
                         EE = bam_aux2f(position);
                         break;
 
@@ -347,7 +333,6 @@ void Auxiliary::decode(const bam1_t* bam1) {
 };
 void Auxiliary::encode(bam1_t* bam1) const {
     if(bam1 != NULL) {
-        float buffer;
 
         // TC and FI are not mandatory when there are 1 or 2 segments in the read
         // In that case the structure can be deduced from the flags alone
@@ -364,26 +349,21 @@ void Auxiliary::encode(bam1_t* bam1) const {
 
         if(!ks_empty(BC)) { bam_aux_append(bam1, "BC", 'Z', static_cast< int >(BC.l + 1), reinterpret_cast< const uint8_t* >(BC.s)); }
         if(!ks_empty(QT)) { bam_aux_append(bam1, "QT", 'Z', static_cast< int >(QT.l + 1), reinterpret_cast< const uint8_t* >(QT.s)); }
-        buffer = static_cast< float >(DQ);
-        if(DQ < 1 && DQ > 0) { bam_aux_append(bam1, "DQ", 'f', sizeof(float),             reinterpret_cast< const uint8_t* >(&buffer)); }
+        if(XB > 0)        { bam_aux_append(bam1, "XB", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&XB)); }
 
         if(!ks_empty(RX)) { bam_aux_append(bam1, "RX", 'Z', static_cast< int >(RX.l + 1), reinterpret_cast< const uint8_t* >(RX.s)); }
         if(!ks_empty(QX)) { bam_aux_append(bam1, "QX", 'Z', static_cast< int >(QX.l + 1), reinterpret_cast< const uint8_t* >(QX.s)); }
         if(!ks_empty(OX)) { bam_aux_append(bam1, "OX", 'Z', static_cast< int >(OX.l + 1), reinterpret_cast< const uint8_t* >(OX.s)); }
         if(!ks_empty(BZ)) { bam_aux_append(bam1, "BZ", 'Z', static_cast< int >(BZ.l + 1), reinterpret_cast< const uint8_t* >(BZ.s)); }
         if(!ks_empty(MI)) { bam_aux_append(bam1, "MI", 'Z', static_cast< int >(MI.l + 1), reinterpret_cast< const uint8_t* >(MI.s)); }
-        buffer = static_cast< float >(XM);
-        if(XM < 1 && XM > 0) { bam_aux_append(bam1, "XM", 'f', sizeof(float),             reinterpret_cast< const uint8_t* >(&buffer)); }
+        if(XM > 0)        { bam_aux_append(bam1, "XM", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&XM)); }
 
-        if(!ks_empty(XR)) { bam_aux_append(bam1, "XR", 'Z', static_cast< int >(XR.l + 1), reinterpret_cast< const uint8_t* >(XR.s)); }
-        if(!ks_empty(XQ)) { bam_aux_append(bam1, "XQ", 'Z', static_cast< int >(XQ.l + 1), reinterpret_cast< const uint8_t* >(XQ.s)); }
-        if(!ks_empty(XO)) { bam_aux_append(bam1, "XO", 'Z', static_cast< int >(XO.l + 1), reinterpret_cast< const uint8_t* >(XO.s)); }
-        if(!ks_empty(XZ)) { bam_aux_append(bam1, "XZ", 'Z', static_cast< int >(XZ.l + 1), reinterpret_cast< const uint8_t* >(XZ.s)); }
-        buffer = static_cast< float >(XP);
-        if(XP < 1 && XP > 0) { bam_aux_append(bam1, "XP", 'f', sizeof(float),             reinterpret_cast< const uint8_t* >(&buffer)); }
+        if(!ks_empty(CB)) { bam_aux_append(bam1, "CB", 'Z', static_cast< int >(CB.l + 1), reinterpret_cast< const uint8_t* >(CB.s)); }
+        if(!ks_empty(CR)) { bam_aux_append(bam1, "CR", 'Z', static_cast< int >(CR.l + 1), reinterpret_cast< const uint8_t* >(CR.s)); }
+        if(!ks_empty(CY)) { bam_aux_append(bam1, "CY", 'Z', static_cast< int >(CY.l + 1), reinterpret_cast< const uint8_t* >(CY.s)); }
+        if(XC > 0)        { bam_aux_append(bam1, "XC", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&XC)); }
 
-        buffer = static_cast< float >(EE);
-        if(EE < 1 && EE > 0) { bam_aux_append(bam1, "EE", 'f', sizeof(float),             reinterpret_cast< const uint8_t* >(&buffer)); }
+        if(EE > 0)        { bam_aux_append(bam1, "EE", 'f', sizeof(float),                reinterpret_cast< const uint8_t* >(&EE)); }
 
         #if defined(PHENIQS_EXTENDED_SAM_TAG)
         for(auto& record : extended) {
@@ -403,7 +383,7 @@ ostream& operator<<(ostream& o, const Auxiliary& auxiliary) {
     if(!ks_empty(auxiliary.LB)) o << "LB : " << auxiliary.LB.s << endl;
     if(!ks_empty(auxiliary.PG)) o << "PG : " << auxiliary.PG.s << endl;
     if(!ks_empty(auxiliary.CO)) o << "CO : " << auxiliary.CO.s << endl;
-    if(auxiliary.DQ   > 0)      o << "DQ : " << auxiliary.DQ   << endl;
+    if(auxiliary.XB   > 0)      o << "XB : " << auxiliary.XB   << endl;
 
     if(!ks_empty(auxiliary.BC)) o << "BC : " << auxiliary.BC.s << endl;
     if(!ks_empty(auxiliary.QT)) o << "QT : " << auxiliary.QT.s << endl;
@@ -415,11 +395,10 @@ ostream& operator<<(ostream& o, const Auxiliary& auxiliary) {
     if(!ks_empty(auxiliary.MI)) o << "MI : " << auxiliary.MI.s << endl;
     if(auxiliary.XM   > 0)      o << "XM : " << auxiliary.XM   << endl;
 
-    if(!ks_empty(auxiliary.XR)) o << "XR : " << auxiliary.XR.s << endl;
-    if(!ks_empty(auxiliary.XQ)) o << "XQ : " << auxiliary.XQ.s << endl;
-    if(!ks_empty(auxiliary.XO)) o << "XO : " << auxiliary.XO.s << endl;
-    if(!ks_empty(auxiliary.XZ)) o << "XZ : " << auxiliary.XZ.s << endl;
-    if(auxiliary.XP   > 0)      o << "XP : " << auxiliary.XP   << endl;
+    if(!ks_empty(auxiliary.CB)) o << "CB : " << auxiliary.CB.s << endl;
+    if(!ks_empty(auxiliary.CR)) o << "CR : " << auxiliary.CR.s << endl;
+    if(!ks_empty(auxiliary.CY)) o << "CY : " << auxiliary.CY.s << endl;
+    if(auxiliary.XC   > 0)      o << "XC : " << auxiliary.XC   << endl;
 
     if(auxiliary.EE   > 0)      o << "EE : " << auxiliary.EE   << endl;
 

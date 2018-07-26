@@ -23,13 +23,16 @@
 #define PHENIQS_INCLUDE_H
 
 /*  Support for accouting for the illumina control number in FASTQ comment field
+    Currently disabled by default
     #define PHENIQS_ILLUMINA_CONTROL_NUMBER
 */
 
 /*  Support for propegating SAM tags pheniqs does not directly interact with
+    Incomplete experimental code pending further reasearch into rules for transforming tags
     #define PHENIQS_EXTENDED_SAM_TAG
 */
 
+/* STL dependencies */
 #include <algorithm>
 #include <cmath>
 #include <condition_variable>
@@ -98,5 +101,46 @@ using std::uint8_t;
 using std::unique_lock;
 using std::unordered_map;
 using std::vector;
+
+/*  zlib dependencies
+    Used for probing gzip compressed files */
+#include <zlib.h>
+
+/* RapidJSON dependencies */
+#define RAPIDJSON_NO_SIZETYPEDEFINE
+namespace rapidjson { typedef ::std::size_t SizeType; }
+
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+#include <rapidjson/pointer.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/stringbuffer.h>
+
+using rapidjson::Document;
+using rapidjson::Pointer;
+using rapidjson::PrettyWriter;
+using rapidjson::SizeType;
+using rapidjson::StringBuffer;
+using rapidjson::StringRef;
+using rapidjson::Type;
+using rapidjson::Value;
+using rapidjson::kArrayType;
+using rapidjson::kNullType;
+using rapidjson::kObjectType;
+using rapidjson::kStringType;
+
+/*  HTSLib dependencies
+    We disable warnings from HTSLib to not litter the output until type comparisson warnings are resolved */
+#ifdef __GNUC__
+#pragma GCC system_header
+#endif
+
+#include <htslib/bgzf.h>
+#include <htslib/hfile.h>
+#include <htslib/hts.h>
+#include <htslib/kseq.h>
+#include <htslib/kstring.h>
+#include <htslib/sam.h>
+#include <htslib/thread_pool.h>
 
 #endif /* PHENIQS_INCLUDE_H */
