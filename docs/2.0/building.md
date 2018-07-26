@@ -46,7 +46,35 @@ Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson
 **coming soon**
 
 ## Installing with conda
-**coming soon**
+
+### One time setup - Install Miniconda
+The easiest way to do this is to head on over to [anaconda](https://conda.io/miniconda.html) and select the correct distribution for python3.
+
+### One time setup - Configure your channels
+Many groups contribute software to conda. Each of these groups corresponds to a different channel. Bioconda is a well known channel for distributing bioinformatics software. It depends on conda-forge, another group for distributing more general software, including R and python packages.
+
+```
+conda config --add channels defaults
+conda config --add channels conda-forge
+conda config --add channels bioconda
+```
+
+### Install Pheniqs
+Simply install pheniqs using the conda package manager
+
+```
+# Installs pheniqs in your 'global' conda install
+conda install pheniqs
+# Installs pheniqs in an isolated environment - recommended
+conda create -n pheniqs pheniqs
+
+```
+
+If you want to live on the bleeding edge, you can also install pheniqs from our anaconda channel, nyuad-cgsb.
+
+```
+conda install -c nyuad-cgsb pheniqs/latest
+```
 
 ## Building with pheniqs-tools
 Pheniqs comes bundled with a python3 helper tool called `pheniqs-tools.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/pheniqs-tools.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with pheniqs-tools does not require elevated permissions and is ideal for building an executable on cluster environments.

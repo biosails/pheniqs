@@ -16,6 +16,10 @@ before_install:
 
 install: true
 
+stages:
+  - test
+  - deploy
+
 ####################################################################################
 # NOTE - Conda Recipe
 # Each of the ./pheniqs commands is also used as a test in the conda build
@@ -56,7 +60,11 @@ jobs:
     - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
       CXX=g++-7"
   include:
+    ############################################################################
+    # Begin test stage
+    ############################################################################
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -66,6 +74,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -75,6 +84,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -84,6 +94,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -93,6 +104,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -102,6 +114,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -112,6 +125,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -122,6 +136,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -132,6 +147,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -141,6 +157,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -150,24 +167,45 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="CC=clang && CXX=clang++"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9
       && CXX=g++-4.9"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5 && CXX=g++-5"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
       CXX=g++-7"
+    ############################################################################
+    # End test stage
+    ############################################################################
+    ############################################################################
+    # Begin deploy stage
+    ############################################################################
+  - os: osx
+    stage: deploy
+    osx_image: xcode9.3
+    script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
+  - os: linux
+    stage: deploy
+    script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
+    ############################################################################
+    # End deploy stage
+    ############################################################################
