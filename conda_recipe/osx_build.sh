@@ -22,7 +22,7 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 	$WORKSPACE/miniconda/bin/conda config --system --add channels nyuad-cgsb
 
 	# step 3: install conda build
-	$WORKSPACE/miniconda/bin/conda install -y conda-build
+	$WORKSPACE/miniconda/bin/conda install -y conda-build anaconda-client
 
 
 	# step 4: configure local channel
@@ -34,7 +34,7 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 	rm miniconda.sh
 
 	export PATH=$WORKSPACE/miniconda/bin:$PATH
-	
+
 	cp -rf conda_recipe /tmp
 	cd /tmp/conda_recipe
 	/tmp/conda_recipe/conda_build.sh

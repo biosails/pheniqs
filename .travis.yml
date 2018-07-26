@@ -44,17 +44,6 @@ script:
 - "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log
   2>&1"
 
-
-# jobs:
-#   include:
-#     - stage: test
-#     - stage: deploy
-#       env:
-#         - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
-#       script:
-#         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh; fi
-#         - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh; fi
-
 jobs:
   fast_finish: true
   allow_failures:
