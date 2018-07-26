@@ -37,6 +37,11 @@ about:
   home: http://biosails.github.io/pheniqs
   license: GPL3
   license_file: LICENSE
-  summary: Pheniqs is a generic high throughput DNA sequence demultiplexer and quality analyzer written in multi threaded C++11. Pheniqs is pronounced phoe·nix and stands for PHilology ENcoder wIth Quality Statistics. This is a build on the latest code, is not versioned, is not guaranteed, and should only be used for dev purposes.
+  summary: |
+    Pheniqs is a generic high throughput DNA sequence demultiplexer and quality
+    analyzer written in multi threaded C++11. Pheniqs is pronounced phoe·nix and
+    stands for PHilology ENcoder wIth Quality Statistics.
+    This is a build on the latest code, is not versioned, is not guaranteed, and
+    should only be used for dev purposes.
   dev_url: https://github.com/biosails/pheniqs
   doc_url: http://biosails.github.io/pheniqs
