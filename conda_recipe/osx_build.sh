@@ -23,6 +23,9 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 	$WORKSPACE/miniconda/bin/conda config --system --add channels bioconda
 	$WORKSPACE/miniconda/bin/conda config --system --add channels nyuad-cgsb
 
+	# step 3: install conda build
+	$WORKSPACE/miniconda/bin/conda -y install conda-build
+
 
 	# step 4: configure local channel
 	$WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
@@ -30,7 +33,6 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 
 	# step 5: cleanup
 	$WORKSPACE/miniconda/bin/conda clean -y --all
-	$WORKSPACE/miniconda/bin/conda -y install conda-build
 	rm miniconda.sh
 
 	cp -rf conda_recipe /tmp
