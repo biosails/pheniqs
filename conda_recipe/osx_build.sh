@@ -6,7 +6,7 @@ set -x -e
 
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	tag="MacOSX"
-	WORKSPACE=/tmp
+	WORKSPACE="/tmp"
 	MINICONDA_VER="latest"
 	THIS_DIR=$(pwd)
 
