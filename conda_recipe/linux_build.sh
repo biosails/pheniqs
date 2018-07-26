@@ -6,6 +6,8 @@ set -x -e
 
 env
 
+chown -R 777 `pwd`/conda_recipe
+
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	docker run \
 		-e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
