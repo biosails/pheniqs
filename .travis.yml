@@ -147,4 +147,4 @@ script:
 - "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log
   2>&1"
 after_success:
-- docker run -e ANACONDA_API_TOKEN=$TOKEN -it -v `pwd`:/bioconda condaforge/linux-anvil /bioconda/conda_build.sh
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  docker run -e ANACONDA_API_TOKEN=$TOKEN -it -v `pwd`:/bioconda condaforge/linux-anvil /bioconda/conda_build.sh; fi
