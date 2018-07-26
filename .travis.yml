@@ -57,6 +57,7 @@ jobs:
       CXX=g++-7"
   include:
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -66,6 +67,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -75,6 +77,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -84,6 +87,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -93,6 +97,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -102,6 +107,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -112,6 +118,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -122,6 +129,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -132,6 +140,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -141,6 +150,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
   - os: linux
+    stage: test
     addons:
       apt:
         sources:
@@ -150,23 +160,28 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="CC=clang && CXX=clang++"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9
       && CXX=g++-4.9"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5 && CXX=g++-5"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
   - os: osx
+    stage: test
     osx_image: xcode9.3
     env:
     - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
