@@ -4,24 +4,32 @@ set -x -e
 
 env | grep TRAVIS
 
+if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+	WORKSPACE='/bioconda'
+else
+	WORKSPACE='/tmp/conda_recipe'
+fi
+
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	DATE=$(date +"%Y%m%d%H%M")
 
-	echo $ANACONDA_API_TOKEN
-
-	cd /bioconda
+	cd $WORKSPACE 
 
 	## Create a latest release
-	sed -i 's/THIS_VERSION/latest/' latest/meta.yaml
+	sed -i.bak 's/THIS_VERSION/latest/' latest/meta.yaml
+	rm latest/meta.yaml.bak
 	conda config --add channels bioconda
 	conda config --set anaconda_upload yes
-	conda build --token $ANACONDA_API_TOKEN /bioconda/latest 
+	conda build --token $ANACONDA_API_TOKEN $WORKSPACE/latest 
+        conda build purge
 	cp meta.yaml latest/
 
 	## Create a version from this datetime
-	sed -i "s/THIS_VERSION/$DATE/" latest/meta.yaml
+	sed -i.bak "s/THIS_VERSION/$DATE/" latest/meta.yaml
+	rm latest/meta.yaml.bak
 	conda config --add channels bioconda
 	conda config --set anaconda_upload yes
-	conda build --token $ANACONDA_API_TOKEN /bioconda/latest 
+        conda build purge
+	conda build --token $ANACONDA_API_TOKEN $WORKSPACE/latest 
 fi
 
