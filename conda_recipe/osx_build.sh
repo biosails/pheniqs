@@ -4,8 +4,6 @@ echo "Building conda package on osx"
 
 set -x -e
 
-env
-
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	tag="MacOSX"
 	WORKSPACE=/tmp
@@ -36,7 +34,9 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 	rm miniconda.sh
 
 	cp -rf conda_recipe /tmp
+	cd /tmp/conda_recipe
 	/tmp/conda_recipe/conda_build.sh
+	
 	exit 0
 else
 	echo "This is not the master branch, no build"

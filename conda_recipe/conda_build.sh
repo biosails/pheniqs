@@ -2,8 +2,6 @@
 
 set -x -e
 
-env | grep TRAVIS
-
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 	WORKSPACE='/bioconda'
 else
@@ -12,7 +10,7 @@ fi
 
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	ls -lahR
-	
+
 	DATE=$(date +"%Y%m%d%H%M")
 
 	cd $WORKSPACE

@@ -4,8 +4,6 @@ echo "Building conda package on linux"
 
 set -x -e
 
-env
-
 chown -R 777 `pwd`/conda_recipe
 
 if [ "$TRAVIS_BRANCH" == "master" ]; then
