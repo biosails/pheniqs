@@ -22,7 +22,7 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 	$WORKSPACE/miniconda/bin/conda config --system --add channels nyuad-cgsb
 
 	# step 3: install conda build
-	$WORKSPACE/miniconda/bin/conda install -y conda-build anaconda-client
+	$WORKSPACE/miniconda/bin/conda install -y conda-build anaconda-client conda-verify
 
 
 	# step 4: configure local channel
