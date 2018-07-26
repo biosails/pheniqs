@@ -56,6 +56,9 @@ jobs:
     - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
       CXX=g++-7"
   include:
+    ############################################################################
+    # Begin test stage
+    ############################################################################
   - os: linux
     stage: test
     addons:
@@ -186,3 +189,19 @@ jobs:
     env:
     - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
       CXX=g++-7"
+    ############################################################################
+    # End test stage
+    ############################################################################
+    ############################################################################
+    # Begin deploy stage
+    ############################################################################
+  - os: osx
+    stage: deploy
+    osx_image: xcode9.3
+    script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
+  - os: linux
+    stage: deploy
+    script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
+    ############################################################################
+    # End deploy stage
+    ############################################################################
