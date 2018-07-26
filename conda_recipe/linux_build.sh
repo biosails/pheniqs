@@ -9,6 +9,7 @@ cd /tmp
 
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	docker run \
+		--user 'root' \
 		-e ANACONDA_API_TOKEN=$ANACONDA_API_TOKEN \
 		-e TRAVIS_OS_NAME=$TRAVIS_OS_NAME \
 		-e TRAVIS_BRANCH=$TRAVIS_BRANCH \
