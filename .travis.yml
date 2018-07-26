@@ -42,6 +42,9 @@ script:
 #         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh; fi
 #         - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh; fi
 
+stages:
+  - test
+
 jobs:
   fast_finish: true
   allow_failures:
