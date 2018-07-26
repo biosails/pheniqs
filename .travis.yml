@@ -203,7 +203,7 @@ jobs:
     ############################################################################
   - os: osx
     stage: deploy
-    osx_image: xcode8.3.3
+    osx_image: xcode8.3
     # env:
     # - MATRIX_EVAL="CC=clang && CXX=clang++"
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh

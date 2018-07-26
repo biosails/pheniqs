@@ -17,7 +17,7 @@ fi
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	ls -lahR
 
-	DATE=$(date +"%Y%m%d%H%M")
+	DATE=$(date +"%Y%m%d")
 
 	cd $WORKSPACE
 
