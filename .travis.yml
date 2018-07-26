@@ -147,5 +147,5 @@ script:
 - "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log
   2>&1"
 after_success:
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then $TRAVIS_BUILD_DIR/conda_recipes/linux_build.sh; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh; fi

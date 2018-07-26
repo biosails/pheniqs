@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+echo "Building conda package on osx"
+
+set -x -e
+
+env
+
 # step 1: download and install miniconda
 
 # https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
