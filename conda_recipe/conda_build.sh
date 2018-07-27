@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x -e
+# set -x -e
 
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 	# WORKSPACE='/bioconda'
@@ -9,34 +9,35 @@ if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 	mkdir -p /tmp/conda_recipe
 	cp -rf /bioconda/* /tmp/conda_recipe
 	cd /tmp/conda_recipe
-	WORKSPACE='/tmp/conda_recipe'
+	WORKSPACE="/tmp/conda_recipe"
 else
-	WORKSPACE='/tmp/conda_recipe'
+	WORKSPACE="/tmp/conda_recipe"
 fi
 
-if [ "$TRAVIS_BRANCH" == "master" ]; then
-	ls -lahR
-
-	DATE=$(date +"%Y%m%d")
-
-	cd $WORKSPACE
-
-	## Create a latest release
-	sed -i.bak 's/THIS_VERSION/latest/' latest/meta.yaml
-	rm latest/meta.yaml.bak
-	conda config --add channels bioconda
+UPLOAD_ARGS=""
+if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_BUILD_STAGE_NAME" == "Deploy" ]; then
+	echo "Uploading package after successful build"
+	UPLOAD_ARGS="--token $ANACONDA_API_TOKEN"
 	conda config --set anaconda_upload yes
-	conda build --token $ANACONDA_API_TOKEN $WORKSPACE/latest
-  conda build purge
-	cp meta.yaml latest/
-
-	## Create a version from this datetime
-	sed -i.bak "s/THIS_VERSION/$DATE/" latest/meta.yaml
-	rm latest/meta.yaml.bak
-	conda config --add channels bioconda
-	conda config --set anaconda_upload yes
-	conda build --token $ANACONDA_API_TOKEN $WORKSPACE/latest
-
-	## Purge all the builds
-  conda build purge
 fi
+
+DATE=$(date +"%Y%m%d")
+
+cd $WORKSPACE
+
+## Create a latest release
+sed -i.bak 's/THIS_VERSION/latest/' latest/meta.yaml
+rm latest/meta.yaml.bak
+conda config --add channels bioconda
+conda build  $UPLOAD_ARGS $WORKSPACE/latest
+conda build purge
+cp meta.yaml latest/
+
+## Create a version from this datetime
+sed -i.bak "s/THIS_VERSION/$DATE/" latest/meta.yaml
+rm latest/meta.yaml.bak
+conda config --add channels bioconda
+conda build $UPLOAD_ARGS $WORKSPACE/latest
+
+## Purge all the builds
+conda build purge

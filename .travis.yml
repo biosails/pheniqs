@@ -20,7 +20,8 @@ install: true
 
 stages:
   - test
-  - deploy
+  - name: deploy
+    if: branch = master
 
 ####################################################################################
 # NOTE - Conda Recipe
@@ -184,6 +185,13 @@ jobs:
     env:
     - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
       CXX=g++-7"
+  - os: osx
+    stage: test
+    osx_image: xcode8.3
+    script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
+  - os: linux
+    stage: test
+    script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
     ############################################################################
     # End test stage
     ################# ###########################################################
@@ -193,8 +201,6 @@ jobs:
   - os: osx
     stage: deploy
     osx_image: xcode8.3
-    # env:
-    # - MATRIX_EVAL="CC=clang && CXX=clang++"
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
   - os: linux
     stage: deploy
