@@ -224,20 +224,20 @@ bool MultiplexJob::pull(Read& read) {
     vector< unique_lock< mutex > > feed_locks;
     feed_locks.reserve(input_feed_by_index.size());
 
-    // acquire a pull lock for all feeds in a fixed order
+    /* acquire a pull lock for all input feeds in a fixed order */
     for(const auto feed : input_feed_by_index) {
         feed_locks.push_back(feed->acquire_pull_lock());
     }
 
-    // pull into pivot input segments from input feeds
-    for(size_t i = 0; i < read.segment_cardinality(); ++i) {
+    /* pull into pivot input segments from input feeds */
+    for(size_t i(0); i < read.segment_cardinality(); ++i) {
         if(!input_feed_by_segment[i]->pull(read[i])) {
             end_of_input = true;
         }
     }
 
-    // release the locks on the feeds in reverse order
-    for(auto feed_lock = feed_locks.rbegin(); feed_lock != feed_locks.rend(); ++feed_lock) {
+    /* release the locks on the input feeds in reverse order */
+    for(auto feed_lock(feed_locks.rbegin()); feed_lock != feed_locks.rend(); ++feed_lock) {
         feed_lock->unlock();
     }
     return !end_of_input;
@@ -843,7 +843,7 @@ void MultiplexJob::compile_decoder_transformation(Value& value) {
 
                 /* explicitly define a null barcode segment for the right dimension in the undetermined */
                 Value barcode(kArrayType);
-                for(size_t i = 0; i < barcode_length.size(); ++i) {
+                for(size_t i(0); i < barcode_length.size(); ++i) {
                     string sequence(barcode_length[i], '=');
                     barcode.PushBack(Value(sequence.c_str(), sequence.size(), ontology.GetAllocator()).Move(), ontology.GetAllocator());
                 }

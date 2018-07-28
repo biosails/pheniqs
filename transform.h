@@ -159,7 +159,7 @@ class Rule {
                             break;
                         };
                         case LeftTokenOperator::REVERSE_COMPLEMENT: {
-                            for(int32_t i = 0; i < size; ++i) {
+                            for(int32_t i(0); i < size; ++i) {
                                 to.code[to.length + i] = BamToReverseComplementBam[from.code[end - i - 1]];
                                 to.quality[to.length + i] = from.quality[end - i - 1];
                             }
@@ -207,7 +207,7 @@ class TemplateRule : public Rule {
                             break;
                         };
                         case LeftTokenOperator::REVERSE_COMPLEMENT: {
-                            for(int32_t i = 0; i < size; ++i) {
+                            for(int32_t i(0); i < size; ++i) {
                                 to.code[to.length + i] = BamToReverseComplementBam[from.code[end - i - 1]];
                                 to.quality[to.length + i] = from.quality[end - i - 1];
                             }

@@ -52,7 +52,7 @@ class Barcode : public SequenceArray< Sequence > {
         inline string iupac_ambiguity() const {
             string value;
             for(const auto& segment : segment_array) {
-                for(int32_t i = 0; i < segment.length; ++i) {
+                for(int32_t i(0); i < segment.length; ++i) {
                     value.push_back(BamToAmbiguousAscii[segment.code[i]]);
                 }
             }
@@ -64,7 +64,7 @@ class Barcode : public SequenceArray< Sequence > {
             for(size_t i(0); i < segment_array.size(); ++i) {
                 const Sequence& reference = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j = 0; j < reference.length; ++j) {
+                for(int32_t j(0); j < reference.length; ++j) {
                     if(observed.code[j] == reference.code[j]) {
                         p *= quality_to_inverse_probability(observed.quality[j]);
                     } else {

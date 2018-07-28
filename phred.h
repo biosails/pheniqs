@@ -581,7 +581,7 @@ const double InverseQuality[128] = {
 
     double* make_phred_64bit_scale(ostream& o) {
         double* scale = new double[PHRED_RANGE * 4];
-        for(uint16_t i = 0; i < PHRED_RANGE; ++i) {
+        for(uint16_t i(0); i < PHRED_RANGE; ++i) {
             scale[i] = pow(10.0, double(i) / -10.0);
             scale[PHRED_RANGE + i] = 1.0 - scale[i];
             scale[PHRED_RANGE * 2 + i] = scale[i] / 3.0;
@@ -589,7 +589,7 @@ const double InverseQuality[128] = {
         }
         o << fixed << setprecision(numeric_limits< double >::digits10 + 1);
         o << "Q" << '\t' << "P" << '\t' << "1-P" << '\t' << "P/3" << '\t' << "inverse Q" << endl;
-        for(uint16_t i = 0; i < PHRED_RANGE; ++i) {
+        for(uint16_t i(0); i < PHRED_RANGE; ++i) {
             o << i << ",\t";
             o << scale[i] << ",\t";
             o << scale[PHRED_RANGE + i] << ",\t";

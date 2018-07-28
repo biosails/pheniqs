@@ -63,7 +63,7 @@ class FastqRecord {
 
             // decode sequence
             ks_increase_to_size(sequence, kseq->seq.l + 2);
-            for(size_t i = 0; i < kseq->seq.l; ++i) {
+            for(size_t i(0); i < kseq->seq.l; ++i) {
                 sequence.s[i] = AsciiToAmbiguousBam[static_cast< uint8_t >(kseq->seq.s[i])];
             }
             sequence.l = kseq->seq.l;
@@ -71,7 +71,7 @@ class FastqRecord {
 
             // decode quality
             ks_increase_to_size(quality, kseq->qual.l + 2);
-            for(size_t i = 0; i < kseq->qual.l; ++i) {
+            for(size_t i(0); i < kseq->qual.l; ++i) {
                 quality.s[i] = kseq->qual.s[i] - phred_offset;
             }
             quality.l = kseq->qual.l;
@@ -146,7 +146,7 @@ class FastqRecord {
 
             // encode sequence
             ks_increase_by_size(buffer, sequence.l + 2);
-            for(size_t i = 0; i < sequence.l; ++i) {
+            for(size_t i(0); i < sequence.l; ++i) {
                 buffer.s[buffer.l + i] = BamToAmbiguousAscii[static_cast< uint8_t >(sequence.s[i])];
             }
             buffer.l += sequence.l;
@@ -158,7 +158,7 @@ class FastqRecord {
 
             // encode quality
             ks_increase_by_size(buffer, quality.l + 2);
-            for(size_t i = 0; i < quality.l; ++i) {
+            for(size_t i(0); i < quality.l; ++i) {
                 buffer.s[buffer.l + i] = quality.s[i] + phred_offset;
             }
             buffer.l += quality.l;
@@ -318,7 +318,6 @@ class FastqRecord {
             offset = position;
         };
 };
-ostream& operator<<(ostream& o, const FastqRecord& value);
 
 class FastqFeed : public BufferedFeed< FastqRecord > {
     friend class Channel;

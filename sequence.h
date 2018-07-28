@@ -90,7 +90,7 @@ class Sequence {
         };
         inline int32_t distance_from(const Sequence& other) const {
             int32_t distance(0);
-            for(int32_t i = 0; i < length; ++i) {
+            for(int32_t i(0); i < length; ++i) {
                 if(code[i] != other.code[i]) {
                     ++distance;
                 }
@@ -100,7 +100,7 @@ class Sequence {
         inline void encode_iupac_ambiguity(kstring_t& buffer) const {
             if(length > 0) {
                 ks_increase_by_size(buffer, length + 2);
-                for(int32_t i = 0; i < length; ++i) {
+                for(int32_t i(0); i < length; ++i) {
                     buffer.s[buffer.l + i] = BamToAmbiguousAscii[code[i]];
                 }
                 buffer.l += length;
@@ -110,7 +110,7 @@ class Sequence {
         inline void encode_iupac_ambiguity(string& buffer) const {
             if(length > 0) {
                 buffer.reserve(buffer.size() + length + 1);
-                for(int32_t i = 0; i < length; ++i) {
+                for(int32_t i(0); i < length; ++i) {
                     buffer.push_back(BamToAmbiguousAscii[code[i]]);
                 }
             }
@@ -120,7 +120,7 @@ class Sequence {
             if((buffer = static_cast< char* >(malloc(length + 1))) == NULL) {
                 throw OutOfMemoryError();
             }
-            for(int32_t i = 0; i < length; ++i) {
+            for(int32_t i(0); i < length; ++i) {
                 buffer[i] = BamToAmbiguousAscii[code[i]];
             }
             buffer[length] = '\0';
@@ -129,13 +129,13 @@ class Sequence {
         inline string iupac_ambiguity() const {
             string value;
             value.reserve(length);
-            for(int32_t i = 0; i < length; ++i) {
+            for(int32_t i(0); i < length; ++i) {
                 value.push_back(BamToAmbiguousAscii[code[i]]);
             }
             return value;
         };
         inline bool is_iupac_strict() const {
-            for(int32_t i = 0; i < length; ++i) {
+            for(int32_t i(0); i < length; ++i) {
                 if(!is_iupac_strict_bam_nucleotide(code[i])) {
                     return false;
                 }
@@ -145,7 +145,7 @@ class Sequence {
         inline void fill(const char* code, const int32_t& size) {
             if(size > 0) {
                 increase_to_size(size);
-                for(int32_t i = 0; i < size; ++i) {
+                for(int32_t i(0); i < size; ++i) {
                     *(this->code + i) = AsciiToAmbiguousBam[static_cast< uint8_t >(code[i])];
                 }
             }

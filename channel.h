@@ -48,12 +48,12 @@ class Channel : public Barcode {
                     }
 
                     // push the segments to the output feeds
-                    for(size_t i = 0; i < output_feed_by_segment.size(); ++i) {
+                    for(size_t i(0); i < output_feed_by_segment.size(); ++i) {
                         output_feed_by_segment[i]->push(read[i]);
                     }
 
                     // release the locks on the feeds in reverse order
-                    for(auto feed_lock = feed_locks.rbegin(); feed_lock != feed_locks.rend(); ++feed_lock) {
+                    for(auto feed_lock(feed_locks.rbegin()); feed_lock != feed_locks.rend(); ++feed_lock) {
                         feed_lock->unlock();
                     }
                 }

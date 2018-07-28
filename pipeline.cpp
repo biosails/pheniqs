@@ -60,8 +60,8 @@ void Job::assemble() {
     clean();
 };
 void Job::compile() {
-    remove_disabled();
     manipulate();
+    remove_disabled();
     clean();
     validate();
 };
@@ -91,7 +91,7 @@ void Job::overlay(const Value& instruction) {
     }
 };
 void Job::remove_disabled() {
-    remove_disabled_from_json_value(ontology);
+    remove_disabled_from_json_value(ontology, ontology);
 };
 Document Job::read_instruction_document(const URL& url) const {
     set< URL > visited;

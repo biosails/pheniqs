@@ -37,7 +37,7 @@ void merge_json_value(const Value& base, Value& ontology, Document& document);
 void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document);
 void clean_json_value(Value& ontology, Document& document);
 void sort_json_value(Value& ontology, Document& document);
-bool remove_disabled_from_json_value(Value& ontology);
+bool remove_disabled_from_json_value(Value& ontology, Document& document);
 
 inline const Value& find_value_by_key(const Value::Ch* key, const Value& container) {
     if(container.IsObject()) {

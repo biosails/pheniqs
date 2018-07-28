@@ -167,44 +167,10 @@ ostream& operator<<(ostream& o, const HtsHeader& header) {
     return o;
 };
 
-ostream& operator<<(ostream& o, const bam1_t& value) {
-    // if(!ks_empty(value.sequence))   o << "sequence : "  << value.sequence.s << endl;
-    // if(!ks_empty(value.quality))    o << "quality : "   << value.quality.s  << endl;
-    // if(!ks_empty(value.name))       o << "name : "      << value.name.s     << endl;
-    // if(!ks_empty(value.comment))    o << "comment : "   << value.comment.s  << endl;
-    return o;
-};
-
-template<> int CyclicBuffer< bam1_t >::calibrate_capacity(const int& capacity) {
-    if(capacity > _capacity) {
-        int aligned_capacity(align_to_resolution(capacity, _resolution));
-        if(aligned_capacity > _capacity) {
-            cache.resize(aligned_capacity);
-            for(int i = _capacity; i < aligned_capacity; ++i) {
-                bam1_t* allocated = bam_init1();
-                if(_direction == IoDirection::OUT) {
-                    allocated->core.tid = -1;
-                    allocated->core.pos = -1;
-                    allocated->core.mtid = -1;
-                    allocated->core.mpos = -1;
-                    allocated->core.bin = 0;
-                    allocated->core.qual = 0;
-                    allocated->core.n_cigar = 0;
-                    allocated->core.isize = 0;
-                }
-                cache[i] = allocated;
-            }
-            if(_vacant < 0) {
-                _vacant = _capacity;
-            }
-            _capacity = aligned_capacity;
-        }
-        return _capacity;
-    } else { throw InternalError("can not reduce buffer capacity"); }
-
+template<> int CyclicBuffer< bam1_t >::increase_capacity(const int& capacity) {
     if(capacity > _capacity) {
         cache.resize(capacity);
-        for(int i = _capacity; i < capacity; ++i) {
+        for(int i(_capacity); i < capacity; ++i) {
             bam1_t* allocated = bam_init1();
             if(_direction == IoDirection::OUT) {
                 allocated->core.tid = -1;
@@ -222,16 +188,8 @@ template<> int CyclicBuffer< bam1_t >::calibrate_capacity(const int& capacity) {
             _vacant = _capacity;
         }
         _capacity = capacity;
-    }
-};
-template<> CyclicBuffer< bam1_t >::CyclicBuffer(const IoDirection& direction, const int& capacity, const int& resolution) :
-    _direction(direction),
-    _capacity(0),
-    _resolution(resolution),
-    _next(-1),
-    _vacant(0) {
-
-    calibrate_capacity(capacity);
+        return _capacity;
+    } else { throw InternalError("can not reduce buffer capacity"); }
 };
 template<> CyclicBuffer< bam1_t >::~CyclicBuffer() {
     for(auto record : cache) {

@@ -44,121 +44,6 @@ Document* load_json(const string& path) {
     return document;
 };
 
-void merge_json_value(const Value& base, Value& ontology, Document& document) {
-    if(!base.IsNull()) {
-        if(!ontology.IsNull()) {
-            if(base.IsObject()) {
-                if(ontology.IsObject()) {
-                    for(auto& element : base.GetObject()) {
-                        Value::MemberIterator reference = ontology.FindMember(element.name);
-                        if(reference != ontology.MemberEnd()) {
-                            try {
-                                merge_json_value(element.value, reference->value, document);
-                            } catch(ConfigurationError& error) {
-                                throw ConfigurationError(string(element.name.GetString(), element.name.GetStringLength()) + " " + error.message);
-                            }
-                        } else {
-                            Value key(element.name, document.GetAllocator());
-                            Value value(element.value, document.GetAllocator());
-                            ontology.AddMember(key.Move(), value.Move(), document.GetAllocator());
-                        }
-                    }
-                } else { throw ConfigurationError("element is not a dictionary"); }
-            }
-        } else { ontology.CopyFrom(base, document.GetAllocator()); }
-    }
-};
-void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document) {
-    container.SetNull();
-    if(!base.IsNull() && !ontology.IsNull()) {
-        if(base.IsObject()) {
-            if(ontology.IsObject()) {
-                container.SetObject();
-                for(auto& record : base.GetObject()) {
-                    Value child;
-                    Value::ConstMemberIterator element = ontology.FindMember(record.name);
-                    if(element != ontology.MemberEnd()) {
-                        project_json_value(record.value, element->value, child, document);
-                    } else {
-                        child.CopyFrom(record.value, document.GetAllocator());
-                    }
-                    container.AddMember(Value(record.name, document.GetAllocator()).Move(), child.Move(), document.GetAllocator());
-                }
-            } else if(ontology.IsArray()) {
-                container.SetArray();
-                for(const auto& element : ontology.GetArray()) {
-                    Value child;
-                    project_json_value(base, element, child, document);
-                    container.PushBack(child.Move(), document.GetAllocator());
-                }
-            }
-        }
-    }
-    if(!ontology.IsNull() && container.IsNull()) {
-        container.CopyFrom(ontology, document.GetAllocator());
-    }
-};
-void clean_json_value(Value& ontology, Document& document) {
-    switch (ontology.GetType()) {
-        case Type::kNullType:
-        case Type::kTrueType:
-        case Type::kNumberType: {
-            break;
-        };
-        case Type::kFalseType: {
-            ontology.SetNull();
-            break;
-        };
-        case Type::kObjectType: {
-            Value clean(kObjectType);
-            for(auto& record : ontology.GetObject()) {
-                clean_json_value(record.value, document);
-                if(!record.value.IsNull()) {
-                    clean.AddMember(record.name.Move(), record.value.Move(), document.GetAllocator());
-                }
-            }
-            if(clean.ObjectEmpty()) { clean.SetNull(); }
-            ontology.Swap(clean);
-            break;
-        };
-        case Type::kArrayType: {
-            Value clean(kArrayType);
-            for(auto& element : ontology.GetArray()) {
-                clean_json_value(element, document);
-                if(!element.IsNull()) {
-                    clean.PushBack(element.Move(), document.GetAllocator());
-                }
-            }
-            if(clean.Empty()) { clean.SetNull(); }
-            ontology.Swap(clean);
-            break;
-        };
-        case Type::kStringType: {
-            if(ontology.GetStringLength() < 1) { ontology.SetNull(); }
-            break;
-        };
-    }
-};
-void sort_json_value(Value& ontology, Document& document) {
-    if(ontology.IsObject()) {
-        map< string, Value* > dictionary;
-        for(auto& record : ontology.GetObject()) {
-            sort_json_value(record.value, document);
-            dictionary.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
-        }
-        Value sorted(kObjectType);
-        for(auto& record : dictionary) {
-            sorted.AddMember(Value(record.first.c_str(), record.first.size(), document.GetAllocator()).Move(), record.second->Move(), document.GetAllocator());
-        }
-        ontology.Swap(sorted);
-
-    } else if(ontology.IsArray()) {
-        for(auto& element : ontology.GetArray()) {
-            sort_json_value(element, document);
-        }
-    }
-};
-
 template <> bool decode_value_by_key(const Value::Ch* key, const Value& container) {
     if(container.IsObject()) {
         Value::ConstMemberIterator reference = container.FindMember(key);
@@ -597,27 +482,145 @@ template<> bool decode_value_by_key< kstring_t >(const Value::Ch* key, kstring_t
     return false;
 };
 
-bool remove_disabled_from_json_value(Value& ontology) {
-    if(ontology.IsObject()) {
-        if(!decode_value_by_key< bool >("disabled", ontology)) {
-            for(Value::MemberIterator iterator = ontology.MemberBegin(); iterator != ontology.MemberEnd(); ++iterator) {
-                if(remove_disabled_from_json_value(iterator->value)) {
-                    ontology.RemoveMember(iterator);
+void merge_json_value(const Value& base, Value& ontology, Document& document) {
+    if(!base.IsNull()) {
+        if(!ontology.IsNull()) {
+            if(base.IsObject()) {
+                if(ontology.IsObject()) {
+                    for(auto& element : base.GetObject()) {
+                        Value::MemberIterator reference = ontology.FindMember(element.name);
+                        if(reference != ontology.MemberEnd()) {
+                            try {
+                                merge_json_value(element.value, reference->value, document);
+                            } catch(ConfigurationError& error) {
+                                throw ConfigurationError(string(element.name.GetString(), element.name.GetStringLength()) + " " + error.message);
+                            }
+                        } else {
+                            Value key(element.name, document.GetAllocator());
+                            Value value(element.value, document.GetAllocator());
+                            ontology.AddMember(key.Move(), value.Move(), document.GetAllocator());
+                        }
+                    }
+                } else { throw ConfigurationError("element is not a dictionary"); }
+            }
+        } else { ontology.CopyFrom(base, document.GetAllocator()); }
+    }
+};
+void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document) {
+    container.SetNull();
+    if(!base.IsNull() && !ontology.IsNull()) {
+        if(base.IsObject()) {
+            if(ontology.IsObject()) {
+                container.SetObject();
+                for(auto& record : base.GetObject()) {
+                    Value child;
+                    Value::ConstMemberIterator element = ontology.FindMember(record.name);
+                    if(element != ontology.MemberEnd()) {
+                        project_json_value(record.value, element->value, child, document);
+                    } else {
+                        child.CopyFrom(record.value, document.GetAllocator());
+                    }
+                    container.AddMember(Value(record.name, document.GetAllocator()).Move(), child.Move(), document.GetAllocator());
+                }
+            } else if(ontology.IsArray()) {
+                container.SetArray();
+                for(const auto& element : ontology.GetArray()) {
+                    Value child;
+                    project_json_value(base, element, child, document);
+                    container.PushBack(child.Move(), document.GetAllocator());
                 }
             }
+        }
+    }
+    if(!ontology.IsNull() && container.IsNull()) {
+        container.CopyFrom(ontology, document.GetAllocator());
+    }
+};
+void clean_json_value(Value& ontology, Document& document) {
+    switch (ontology.GetType()) {
+        case Type::kNullType:
+        case Type::kTrueType:
+        case Type::kNumberType: {
+            break;
+        };
+        case Type::kFalseType: {
+            ontology.SetNull();
+            break;
+        };
+        case Type::kObjectType: {
+            Value clean(kObjectType);
+            for(auto& record : ontology.GetObject()) {
+                clean_json_value(record.value, document);
+                if(!record.value.IsNull()) {
+                    clean.AddMember(record.name.Move(), record.value.Move(), document.GetAllocator());
+                }
+            }
+            if(clean.ObjectEmpty()) { clean.SetNull(); }
+            ontology.Swap(clean);
+            break;
+        };
+        case Type::kArrayType: {
+            Value clean(kArrayType);
+            for(auto& element : ontology.GetArray()) {
+                clean_json_value(element, document);
+                if(!element.IsNull()) {
+                    clean.PushBack(element.Move(), document.GetAllocator());
+                }
+            }
+            if(clean.Empty()) { clean.SetNull(); }
+            ontology.Swap(clean);
+            break;
+        };
+        case Type::kStringType: {
+            if(ontology.GetStringLength() < 1) { ontology.SetNull(); }
+            break;
+        };
+    }
+};
+void sort_json_value(Value& ontology, Document& document) {
+    if(ontology.IsObject()) {
+        map< string, Value* > dictionary;
+        for(auto& record : ontology.GetObject()) {
+            sort_json_value(record.value, document);
+            dictionary.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
+        }
+        Value sorted(kObjectType);
+        for(auto& record : dictionary) {
+            sorted.AddMember(Value(record.first.c_str(), record.first.size(), document.GetAllocator()).Move(), record.second->Move(), document.GetAllocator());
+        }
+        ontology.Swap(sorted);
+
+    } else if(ontology.IsArray()) {
+        for(auto& element : ontology.GetArray()) {
+            sort_json_value(element, document);
+        }
+    }
+};
+bool remove_disabled_from_json_value(Value& ontology, Document& document) {
+    if(ontology.IsObject()) {
+        if(!decode_value_by_key< bool >("disabled", ontology)) {
+            Value clean(kObjectType);
+            for(auto& record : ontology.GetObject()) {
+                if(!remove_disabled_from_json_value(record.value, document)) {
+                    clean.AddMember(record.name.Move(), record.value.Move(), document.GetAllocator());
+                }
+            }
+            ontology.Swap(clean);
             return ontology.ObjectEmpty();
         } else { return true; }
 
     } else if(ontology.IsArray()) {
-        for(Value::ValueIterator iterator = ontology.Begin(); iterator != ontology.End(); ++iterator) {
-            if(remove_disabled_from_json_value(*iterator)) {
-                ontology.Erase(iterator);
+        Value clean(kArrayType);
+        for(auto& element : ontology.GetArray()) {
+            if(!remove_disabled_from_json_value(element, document)) {
+                clean.PushBack(element.Move(), document.GetAllocator());
             }
         }
+        ontology.Swap(clean);
         return ontology.Empty();
+
     } else { return false; }
 };
-
 /*
     switch (value.GetType()) {
         case Type::kNullType: {

@@ -53,8 +53,6 @@
 
 #define bam1_seq_seti(s, i, c) ((s)[(i)>>1] = ((s)[(i)>>1] & 0xf<<(((i)&1)<<2)) | (c)<<((~(i)&1)<<2))
 
-ostream& operator<<(ostream& o, const bam1_t& value);
-
 /*  HTS header */
 class HtsHeader {
     friend ostream& operator<<(ostream& o, const HtsHeader& head);
@@ -242,7 +240,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
             /* copy the sequence */
             uint8_t* bam_seq(bam_get_seq(record));
             segment.increase_to_size(record->core.l_qseq);
-            for(int32_t i = 0; i < record->core.l_qseq; ++i) {
+            for(int32_t i(0); i < record->core.l_qseq; ++i) {
                 /* pad 4bit BAM numeric encoding to 8bit */
                 segment.code[i] = bam_seqi(bam_seq, i);
             }
@@ -260,7 +258,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                 ks_clear(kbuffer);
                 ks_increase_to_size(kbuffer, record->core.l_qseq + 2);
                 uint8_t* position(bam_get_seq(record));
-                for(int32_t i = 0; i < record->core.l_qseq; ++i) {
+                for(int32_t i(0); i < record->core.l_qseq; ++i) {
                     reinterpret_cast< uint8_t* >(kbuffer.s)[i] = bam_seqi(position, i);
                 }
                 kbuffer.l = record->core.l_qseq;

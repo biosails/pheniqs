@@ -26,6 +26,9 @@
 #include "proxy.h"
 #include "read.h"
 
+inline int cyclic_modulo(const int x, const int y) {
+    return x < 0 ? y - (-x % y) : x % y;
+};
 inline int align_to_resolution(const int& capacity, const int& resolution) {
     int aligned(static_cast< int >(capacity / resolution) * resolution);
     if(aligned < capacity) {
@@ -145,18 +148,13 @@ template < class T > class CyclicBuffer {
     template < typename U > friend ostream& operator<<(ostream& o, const CyclicBuffer< U >& buffer);
 
     public:
-        CyclicBuffer (
-            const IoDirection& direction,
-            const int& capacity,
-            const int& resolution) :
-
+        CyclicBuffer(const IoDirection& direction, const int& capacity, const int& resolution) :
             _direction(direction),
             _capacity(0),
             _resolution(resolution),
             _next(-1),
             _vacant(0) {
-
-            calibrate_capacity(capacity);
+            increase_capacity(align_to_resolution(capacity, resolution));
         };
         virtual ~CyclicBuffer() {
         };
@@ -211,7 +209,8 @@ template < class T > class CyclicBuffer {
         inline int size() const {
             if(_next < 0) return 0;
             if(_vacant < 0) return _capacity;
-            return (_vacant - _next) % _capacity;
+            int offset(_vacant - _next);
+            return offset < 0 ? _capacity - (-offset % _capacity) : offset % _capacity;
         };
         inline int available() const {
             if(_next < 0) return _capacity;
@@ -240,20 +239,19 @@ template < class T > class CyclicBuffer {
             return _next >= 0;
         };
         void sync(CyclicBuffer< T >* other) {
-            while(size() % resolution() > 0) {
-                T* switching = other->cache[other->_next];
+            while(size() % _resolution != 0) {
+                T* migrated = other->cache[other->_next];
                 other->cache[other->_next] = cache[_vacant];
+                cache[_vacant] = migrated;
                 other->decrement();
-                cache[_next] = switching;
                 increment();
             }
         };
-        virtual int calibrate_capacity(const int& capacity);
         int calibrate_resolution(const int& resolution) {
             if(resolution != _resolution) {
                 int aligned_capacity(align_to_resolution(_capacity, resolution));
                 if(aligned_capacity > _capacity) {
-                    calibrate_capacity(aligned_capacity);
+                    increase_capacity(aligned_capacity);
                 }
                 _resolution = resolution;
             }
@@ -268,6 +266,7 @@ template < class T > class CyclicBuffer {
         int _vacant;
         vector< T* > cache;
         int index;
+        virtual int increase_capacity(const int& capacity);
 };
 template< typename T > ostream& operator<<(ostream& o, const CyclicBuffer< T >& buffer);
 
@@ -387,13 +386,13 @@ template < class T > class BufferedFeed : public Feed {
                     _capacity = aligned_capacity;
                     _resolution = resolution;
 
-                    /*  sync queue
-                        move elements from buffer to queue until
-                        queue is aligned with the new resolution */
+                    /* make sure the buffer is full */
+                    replenish_buffer();
+
+                    /* move records from buffer to queue until queue is aligned with the new resolution */
                     queue->sync(buffer);
 
-                    /*  sync buffer
-                        now make sure the buffer is filled which will align it */
+                    /*  make sure the buffer is full again */
                     replenish_buffer();
 
                 } else { _resolution = resolution; }

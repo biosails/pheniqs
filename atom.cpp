@@ -444,7 +444,7 @@ void HeadHDAtom::encode(kstring_t& buffer) const {
 char* HeadHDAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
         ++position;
-        uint16_t tag = tag_to_code(position);
+        uint16_t tag(tag_to_code(position));
         position += 3;
         switch (tag) {
             case uint16_t(HtsTagCode::VN): {
@@ -617,7 +617,7 @@ void HeadSQAtom::encode(kstring_t& buffer) const {
 char* HeadSQAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
         ++position;
-        uint16_t tag = tag_to_code(position);
+        uint16_t tag(tag_to_code(position));
         position += 3;
         switch (tag) {
             case uint16_t(HtsTagCode::SN): {
@@ -662,7 +662,7 @@ char* HeadSQAtom::decode(char* position, const char* end) {
 };
 ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
     if(!ks_empty(sq.SN)) o << "SN : " << sq.SN.s << endl;
-    if(sq.LN   > 0) o << "LN : " << sq.LN   << endl;
+    if(sq.LN   > 0)      o << "LN : " << sq.LN   << endl;
     if(!ks_empty(sq.AH)) o << "AH : " << sq.AH.s << endl;
     if(!ks_empty(sq.AN)) o << "AN : " << sq.AN.s << endl;
     if(!ks_empty(sq.AS)) o << "AS : " << sq.AS.s << endl;
@@ -875,7 +875,7 @@ void HeadRGAtom::encode(kstring_t& buffer) const {
 char* HeadRGAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
         ++position;
-        uint16_t tag = tag_to_code(position);
+        uint16_t tag(tag_to_code(position));
         position += 3;
         switch (tag) {
             case uint16_t(HtsTagCode::ID): {
@@ -1155,7 +1155,7 @@ void HeadPGAtom::encode(kstring_t& buffer) const {
 char* HeadPGAtom::decode(char* position, const char* end) {
     while(*position == '\t' && position <= end) {
         ++position;
-        uint16_t tag = tag_to_code(position);
+        uint16_t tag(tag_to_code(position));
         position += 3;
         switch (tag) {
             case uint16_t(HtsTagCode::ID): {

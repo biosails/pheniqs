@@ -35,7 +35,6 @@
     },
     "output": [ "BDGGG_annotated.cram" ],
     "transform": {
-        "comment": "those are the tokens defining the segments in the output read",
         "token": [ "0::", "2::" ]
     },
     "threads": 4

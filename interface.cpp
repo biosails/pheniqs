@@ -61,7 +61,7 @@ static inline string get_cwd() {
 static inline string assemble_full_command(const int argc, const char** argv) {
     string value;
     value.append(argv[0]);
-    for(int i = 1; i < argc; ++i) {
+    for(int i(1); i < argc; ++i) {
         value.append(" ");
         value.append(argv[i]);
     }
@@ -226,7 +226,7 @@ int Prototype::handle_length() const {
 ostream& Prototype::print_help(ostream& o, const int& max_option_handle, const Layout& layout) const {
     o << setw(layout.option_indent) << ' ';
     if(!positional) {
-        for(size_t i = 0; i < handles.size(); ++i) {
+        for(size_t i(0); i < handles.size(); ++i) {
             if(i > 0) {
                 o << ", ";
             }
@@ -768,7 +768,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
                 block.append(prototype->handles[0]);
                 block.append(" ");
                 if(prototype->is_choice()) {
-                    for(size_t i = 0; i < prototype->choices.size(); ++i) {
+                    for(size_t i(0); i < prototype->choices.size(); ++i) {
                         if(i > 0) {
                             block.append("|");
                         }
@@ -820,7 +820,7 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
                 break;
             case ParameterType::STRING: {
                 if(prototype->is_choice()) {
-                    for(size_t i = 0; i < prototype->choices.size(); ++i) {
+                    for(size_t i(0); i < prototype->choices.size(); ++i) {
                         if(i > 0) { block.append("|"); }
                         block.append(prototype->choices[i]);
                     }
@@ -1102,7 +1102,7 @@ void Interface::load_selected_action() {
     /* identify the sub command  */
     if(!action_by_index.empty() && argc > 1) {
         /*  Look for the first argv element that is not a bsd option starting with  - */
-        for(size_t i = 1; i < argc; ++i) {
+        for(size_t i(1); i < argc; ++i) {
             if(argv[i][0] != '-') {
                 string key(argv[i]);
                 auto record = action_by_name.find(key);

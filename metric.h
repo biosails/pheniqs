@@ -65,9 +65,9 @@ class WordMetric {
         void describe(ostream& o) const {
             o << std::left;
             if(!empty()) {
-                for(int32_t i = 0; i < cardinality(); ++i) {
+                for(int32_t i(0); i < cardinality(); ++i) {
                     o << "    ";
-                    for(int32_t j = 0; j < cardinality(); ++j) {
+                    for(int32_t j(0); j < cardinality(); ++j) {
                         o << setw(_padding)<< value(i, j);
                     }
                     o << word(i) << ' ' << setw(_padding) << cumulative(i) << endl;
@@ -110,10 +110,10 @@ class WordMetric {
                 _min_distance = numeric_limits< int32_t >::max();
                 _matrix.resize(cardinality());
                 _cumulative.resize(cardinality());
-                for(int32_t i = 0; i < cardinality(); ++i) {
+                for(int32_t i(0); i < cardinality(); ++i) {
                     const string& row = word(i);
                     _matrix[i].resize(cardinality());
-                    for(int32_t j = 0; j < cardinality(); ++j) {
+                    for(int32_t j(0); j < cardinality(); ++j) {
                         const string& column = word(j);
                         if(i == j) {
                             _matrix[i][j] = 0;
@@ -133,7 +133,7 @@ class WordMetric {
                 }
                 _shannon_bound = ((_min_distance - 1) / 2);
 
-                for(size_t i = 0; i < _cumulative.size(); ++i) {
+                for(size_t i(0); i < _cumulative.size(); ++i) {
                     _cumulative[i] /= (cardinality() * 2);
                 }
                 // We want to know how many digits are in the biggest value to be able to align the matrix
@@ -147,7 +147,7 @@ class WordMetric {
         };
         inline int32_t hamming_distance(const string& left, const string& right) const {
             int32_t result(0);
-            for(size_t i = 0; i < left.length(); ++i) {
+            for(size_t i(0); i < left.length(); ++i) {
                 if(left[i] != right[i]) {
                     ++result;
                 }
