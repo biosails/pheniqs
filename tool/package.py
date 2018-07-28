@@ -633,11 +633,13 @@ class bz2Package(makePackage):
         makePackage.__init__(self, pipeline, node)
 
     def install_dynamic(self):
-        dynamic_library_path = os.path.join(self.package_url, 'libbz2.so')
-        versioned_dynamic_library_path = '{}.{}'.format(dynamic_library_path, self.version)
+        so_basename = 'libbz2.so'
+        full_versioned_so_basename = '{}.{}'.format(so_basename, self.version)
+        full_versioned_so_package_path = os.path.join(self.package_url, full_versioned_so_basename)
+        full_versioned_so_install_path = os.path.join(self.lib_prefix, full_versioned_so_basename)
 
-        self.log.debug('copying %s to %s', versioned_dynamic_library_path, self.lib_prefix)
-        command = [ 'rsync', versioned_dynamic_library_path, self.lib_prefix ]
+        self.log.debug('copying %s to %s', full_versioned_so_package_path, full_versioned_so_install_path)
+        command = [ 'rsync', full_versioned_so_package_path, full_versioned_so_install_path ]
         process = Popen(
             args=command,
             env=self.env,
@@ -656,8 +658,15 @@ class bz2Package(makePackage):
             print(error.decode('utf8'))
             raise CommandFailedError('rsync returned {}'.format(code))
 
-        self.log.info('symlinking %s to %s', versioned_dynamic_library_path, dynamic_library_path)
-        os.symlink(versioned_dynamic_library_path, dynamic_library_path)
+        split_version = self.version.split('.')
+        while(len(split_version) > 1):
+            split_version = split_version[:-1]
+            partial_version = '.'.join(split_version)
+            partial_versioned_so_basename = '{}.{}'.format(so_basename, partial_version)
+            partial_versioned_so_install_path = os.path.join(self.lib_prefix, partial_versioned_so_basename)
+
+            self.log.info('symlinking %s to %s', full_versioned_so_basename, partial_versioned_so_install_path)
+            os.symlink(full_versioned_so_basename, partial_versioned_so_install_path)
 
     def build(self):
         if self.platform == 'Linux':

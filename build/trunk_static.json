@@ -34,6 +34,9 @@
         },
         {
             "name": "libdeflate",
+            "make build optional": [
+                "CC=gcc"
+            ],
             "remote filename": "libdeflate-1.0.tar.gz",
             "remote url": [
                 "https://github.com/ebiggers/libdeflate/archive/v1.0.tar.gz",

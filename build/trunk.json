@@ -31,6 +31,9 @@
         },
         {
             "name": "libdeflate",
+            "make build optional": [
+                "CC=gcc"
+            ],
             "remote filename": "libdeflate-1.0.tar.gz",
             "remote url": [
                 "https://github.com/ebiggers/libdeflate/archive/v1.0.tar.gz",
@@ -46,11 +49,6 @@
                 "http://albireo.bio.nyu.edu/~lg/pheniqs/htslib-1.8.tar.bz2"
             ],
             "sha1": "d9d9a1d03991da0738bf2eecb54bfb620cc776b3"
-        },
-        {
-            "name": "samtools",
-            "remote url": "https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2",
-            "sha1": "de345ebc1fd144d8c6b15ec3bb759c6cd00294c8"
         },
         {
             "name": "rapidjson",
