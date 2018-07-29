@@ -23,11 +23,12 @@
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a                  href="/pheniqs/2.0/manual.html">Documentation</a></li>
-        <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
+        <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
+        <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
         <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/cli.html">Command line interface</a></li>
-        <li><a                  href="/pheniqs/2.0/building.html">Building</a></li>
+        <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
+        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a class="active"   href="/pheniqs/2.0/cli.html">CLI</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
