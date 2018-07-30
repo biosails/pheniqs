@@ -42,14 +42,14 @@
 Command line parameters, if specified, override their corresponding values provided in the configuration file.
 
 # zsh completion
-
-If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install the [bundled zsh command line completion script]({{ site.github.repository_url }}/blob/master/zsh/_pheniqs) for a more interactive command line experience. It will interactively complete the command line arguments for you and makes learning the interface more intuitive. It should be placed or symlinked in a folder that is in your **fpath**.
+If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install the bundled zsh command line completion script for a more interactive command line experience. It will interactively complete the command line arguments for you and makes learning the interface more intuitive. The zsh completion script, `_pheniqs`, is generated when building pheniqs with `make` but you can also generate it by invoking the corresponding `make` target `make _pheniqs` or with `pheniqs-tools.py` by executing `pheniqs-tools.py zsh configuration.json > _pheniqs`. The script should be placed in one of the folders referenced in your in your **fpath**.
 
 # Global command line help
 
-    pheniqs version 0.9.d55d65203560ae3719fcbb79ac657189e463ffed
+    pheniqs version 2.0.3-beta-70-g3b6cb6d7a727ca0ad09c1c663d137c5f2719b74f
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2018
+    See manual at https://biosails.github.io/pheniqs
 
     Usage : pheniqs [-h] [--version] ACTION ...
 
@@ -66,39 +66,42 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
 # Demux sub command help
 
-    pheniqs 1.0.2068ec583e9ad5ab75877cd47ee977565c945d60 I’ll build my own theme park
+    pheniqs version 2.0.3-beta-70-g3b6cb6d7a727ca0ad09c1c663d137c5f2719b74f
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2018
+    See manual at https://biosails.github.io/pheniqs
 
     Demultiplex and report quality control
 
-    Usage : pheniqs demux [-h] [-V] [-j] [-D] -C PATH [-c FLOAT] [-f] [-q]
-                          [-n FLOAT] [-m INT] [-i STRING] [-o STRING] [-l INT] [-d pamld|mdd|benchmark]
-                          [-p CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-t INT]
-                          [-T INT] [-L] [-B INT]
+    Usage : pheniqs demux [-h] [-i PATH]* [-o PATH]* [-c PATH] [-I URL] [-O URL]
+                          [-V] [-C] [-D] [-p FLOAT] [-f] [-q] [-n FLOAT] [-l INT]
+                          [-P CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-t INT]
+                          [-B INT]
 
     Optional:
-      -h, --help                  Show this help
-      -V, --validate              Only validate configuration
-      -j, --lint                  Only lint configuration file
-      -D, --distance              Display pairwise barcode distance
-      -C, --config PATH           Path to configuration file
-      -c, --confidence FLOAT      Decoding confidence threshold
-      -f, --filtered              Include filtered reads
-      -q, --quality               Disable quality control
-      -n, --noise FLOAT           Noise prior probability
-      -m, --mask INT              Phred masking threshold
-      -i, --base-input STRING     Base input path
-      -o, --base-output STRING    Base output path
-      -l, --leading INT           Leading read segment
-      -d, --decoder STRING        Barcode decoder
-      -p, --platform STRING       Sequencing platform
-      -t, --threads INT           IO thread pool size
-      -T, --transforms INT        Number of transforming threads
-      -B, --buffer INT            Records per resolution in feed buffer
+      -h, --help                          Show this help
+      -i, --input PATH                    Path to input files
+      -o, --output PATH                   Path to output files
+      -c, --config PATH                   Path to configuration file
+      -I, --base-input URL                Base input url
+      -O, --base-output URL               Base output url
+      -V, --validate                      Only validate configuration
+      -C, --compile                       Only compile configuration file
+      -D, --distance                      Display pairwise barcode distance
+      -p, --multiplex-confidence FLOAT    Decoding multiplex confidence threshold
+      -f, --filtered                      Include filtered reads
+      -q, --quality                       Disable quality control
+      -n, --multiplex-noise FLOAT         Multiplex noise prior probability
+      -l, --leading INT                   Leading read segment
+      -P, --platform STRING               Sequencing platform
+      -t, --threads INT                   Thread pool size
+      -B, --buffer INT                    Records per resolution in feed buffer
 
-    This program comes with ABSOLUTELY NO WARRANTY. This is free software,
-    and you are welcome to redistribute it under certain conditions.
+    To provide multiple paths to -i/--input and -o/--output repeat the flag before every path,
+    i.e. `pheniqs demux -i first_in.fastq -i second_in.fastq -o first_out.fastq -o second_out.fastq`
+
+    -i/--input defaults to /dev/stdin, -o/--output default to /dev/stdout and output format default to SAM.
+    -I, --base-input and -O, --base-output default to the working directory.
 
 # Quality sub command
 
@@ -128,6 +131,8 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 # JSON validation
 
 JSON can be a little picky about syntax and a good JSON linter can make identifying offending syntax much easier. Plenty of tools for validating JSON syntax are out there but a simple good and readily available linter is available with the python programing language.
+
+You will find a small [JSON linting python script]({{ site.github.repository_url }}/blob/master/tool/json_lint.py) in the tool directory that is somewhat customized for the pheniqs config file.
 
 For **python 2** use:
 

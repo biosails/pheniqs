@@ -43,10 +43,40 @@
 The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing a number of separate sections specifying directives for input and output layout, parsing read segments and run parameters. In the [workflow page](workflow.html) you will find some annotated examples of complete configuration files. If you are new to JSON, a [validator](cli.html#json-validation) can be instrumental for troubleshooting syntax errors. Some parameters are also exposed as command line arguments that override their corresponding configuration file values. A brief description of the command line parameters Pheniqs accepts is always available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to [install the bundled command line completion](cli.html#zsh-completion) script for a more interactive command line experience.
 
 # Supported File Format
-Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq) with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Read manipulation is achieved by means of [tokenization](#tokenization) and [construction](#construction). In the tokenization step Pheniqs consults the token patterns you declared to extract tokens from an [input segment](glossary.html#input_segment). In the construction step [transform patterns](manual.html#transform-pattern) reference the token patterns to construct new segments. The optional construction directive is only necessary when composing output segments from multiple, non continuous, tokens and if omitted each token is assumed to declare a single output segment.
+Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq) with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Read manipulation is achieved by means of [tokenization](#tokenization) and [construction](#construction). In the tokenization step Pheniqs consults the token patterns you declared to extract tokens from an [input segment](glossary.html#input_segment). In the construction step [transform patterns](manual.html#transform-pattern) reference the token patterns to construct new segments. The optional construction directive is only necessary when composing output segments from multiple, non continuous, tokens or if token need to be reverse complemented. If omitted each token is assumed to declare a single output segment.
 
 # Declaring Input
 A very simple configuration can include nothing more than an `input` directive. In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will assemble an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute pheniqs. You may optionally specify the `base input url` and `base output url` directives.
+
+Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed illumina MiSeq run.
+
+The first four lines of each of the files are
+
+**000000000-BDGGG_Lane1_S1_L001_R1_001.fastq.gz**
+```
+@M02455:162:000000000-BDGGG:1:1101:10000:10630 1:N:0:
+CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
++
+CCCCCGGGFGGGAFDFGFGGFGFGFGGGGGGGDEFDFFGGFEFGCFEFGEG
+```
+
+**000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz**
+```
+@M02455:162:000000000-BDGGG:1:1101:10000:10630 2:N:0:
+GGACTCCT
++
+B@CCCFC<
+```
+
+**000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz**
+```
+@M02455:162:000000000-BDGGG:1:1101:10000:10630 3:N:0:
+GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA
++
+CCCCCGGGGGGGGGGGGGGGGGGGF<FGGGGGGGGGGGGFGFGGGGGGGGG
+```
+
+We declare those files as input with an input directive
 
 >```json
 {
