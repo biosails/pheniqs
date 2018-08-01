@@ -103,31 +103,6 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
     -i/--input defaults to /dev/stdin, -o/--output default to /dev/stdout and output format default to SAM.
     -I, --base-input and -O, --base-output default to the working directory.
 
-# Quality sub command
-
-    pheniqs 1.0.2068ec583e9ad5ab75877cd47ee977565c945d60 I’ll build my own theme park
-    Lior Galanti < lior.galanti@nyu.edu >
-    NYU Center for Genomics & Systems Biology 2018
-
-    Report quality control
-
-    Usage : pheniqs quality [-h] [-V] -i PATH [-f] [-L]
-                            [-p CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-t INT]
-                            [-T INT] [-B INT]
-
-    Optional:
-      -h, --help               Show this help
-      -V, --validate           Only validate configuration
-      -i, --input PATH         Path to input file
-      -f, --filtered           Include filtered reads
-      -p, --platform STRING    Sequencing platform
-      -t, --threads INT        IO thread pool size
-      -T, --transforms INT     Number of transforming threads
-      -B, --buffer INT         Records per resolution in feed buffer
-
-    This program comes with ABSOLUTELY NO WARRANTY. This is free software,
-    and you are welcome to redistribute it under certain conditions.
-
 # JSON validation
 
 JSON can be a little picky about syntax and a good JSON linter can make identifying offending syntax much easier. Plenty of tools for validating JSON syntax are out there but a simple good and readily available linter is available with the python programing language.
