@@ -273,3 +273,15 @@ a {
 .clear {
     clear: both;
 }
+
+section.notice_2_0 {
+    background-color: rgba(153,56, 48, 1);
+    color: #FEFEFE;
+    font-weight: bold;
+    padding: 1em 2em;
+    border-radius: 0rem;
+    border-color: rgba(36,41,36,0.9);
+    border-width: 0.2em;
+    border-style: solid;
+    text-align: center;
+}

@@ -34,6 +34,8 @@
     <div class="clear" />
 </section>
 
+<section class="notice_2_0">Please excuse us as we update the documentation for the new Pheniqs 2.0 API.</section>
+
 # Installing
 {:.page-title}
 
