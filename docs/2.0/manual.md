@@ -40,76 +40,127 @@
 * placeholder
 {:toc}
 
-The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file. Some parameters are also exposed as command line arguments that override their corresponding configuration file values. The configuration file contains a number of separate sections specifying directives for input and output layout, parsing read segments and run parameters. The different sections of the configuration file are described bellow. The [workflow page](workflow.html) contains some annotated examples of complete configuration files.
+# Configuration
+For most non trivial scenarios Pheniqs requires a [JSON](https://en.wikipedia.org/wiki/JSON) encoded instruction file. Some parameters you can interactively override with [command line](cli.html) arguments and almost all instruction directives have a default value. The instruction file contains a number of separate sections specifying directives for declaring input and output layout, read segment manipulation, barcode decoding and run parameters. Since barcode decoding often relies on verbose configuration semantics, Pheniqs supports a sophisticated instruction inheritance mechanism and can also import additional instruction files when compiling your job. While you may certainly ignore this added complexity at first, separating different aspects of your experimental design into reusable instruction files can significantly simplify day to day use.
 
-Pheniqs achieves arbitrary read manipulation in two steps: [tokenization](#tokenization) and [construction](#construction). In the tokenization step you define token patterns that extract a token from an [input segment](glossary.html#input_segment). In the construction step you reference the tokens in [transform patterns](#transform-pattern) to construct either an [output](glossary.html#output_segment), a [multiplex barcode](glossary.html#multiplex_barcode) or a [molecular barcode](glossary.html#molecular_barcode) segment.
+# Format support and performance
+Pheniqs can arbitrarily manipulate reads stored in either the advanced [HTS](glossary.html#htslib) containers SAM, BAM and CRAM or the legacy [FASTQ](glossary.html#fastq) format with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Some features are only supported with HTS containers, since FASTQ records have no standardized method of associating metadata with read segments. Pheniqs is written in highly optimized multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11) and interfaces directly with the low level [HTSlib](glossary.html#htslib) API. It can be installed from many popular package managers or compiled from source into a single portable executable binary using the provided `pheniqs-tools` python script.
 
-# File Format
-Both input and output [FASTQ](glossary.html#fastq), [SAM, BAM and CRAM](glossary.html#htslib) encoded files are supported. FASTQ can be either uncompressed or gzip compressed. The configuration syntax is sufficiently flexible to manipulate [split](glossary.html#split_file_layout), [interleaved](glossary.html#interleaved_file_layout) and [combined](glossary.html#combined_file_layout) file layouts.
+Pheniqs execution speed will normally scale linearly with the number of cores available for computation. However since the ancient gzip compression algorithm does not scale well in multi threaded environments, reading or writing from gzip compressed FASTQ files will often be I/O bound. You can use Pheniqs to easily repack legacy data stored in FASTQ files into an efficient, interleaved, CRAM container. CRAM offers significant improvements in both performance and storage requirements as well as support for associating extensible metadata with read segments.
 
-# Layout
-To declare a layout you define the top level configuration `input`, `token`, `template` and `channel` arrays. If you are demultiplexing you should also define the `multiplex barcode` array. To extract molecular barcodes you can use the `molecular barcode` array.
+Pheniqs aims to fill the gap between advanced HTS containers and legacy analysis tools that only supports FASTQ. By efficiently converting between HTS and FASTQ over [standard streams](https://en.wikipedia.org/wiki/Standard_streams), it allows you to feed legacy analysis software with FASTQ directly from annotated HTS files, without additional storage requirements.
 
-
-## Input
-
-The top level configuration `input` array is an ordered list of input file paths. Pheniqs assembles an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input feed.
+# The `input` directive
+The instruction `input` directive is an ordered list of file paths. Pheniqs assembles an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file.
 
 >```json
 {
     "input": [
-        "HK5NHBGXX_l01n01.fastq.gz",
-        "HK5NHBGXX_l01n02.fastq.gz",
-        "HK5NHBGXX_l01n03.fastq.gz",
-        "HK5NHBGXX_l01n04.fastq.gz"
+        "HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
+        "HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
+        "HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
+        "HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
->Assembling an input read from four segments [split](glossary.html#split_file_layout) over four gzip compressed FASTQ files.
+>**Example 2.1** Declaring an input read that is [split](glossary.html#split_file_layout) over four gzip compressed FASTQ files.
 {: .example}
 
-[Interleaved](glossary.html#interleaved_file_layout) files contain multiple consecutive segments of the same read. To assemble an input read from an interleaved feed simply repeat the path to reference the same feed multiple times, once for each [segment](glossary.html#segment).
+[Interleaved](glossary.html#interleaved_file_layout) files contain multiple consecutive segments of the same read. To explicitly assemble an input read from interleaved files simply repeat the path to reference the same file multiple times, once for each [segment](glossary.html#segment).
 
 >```json
 {
     "input": [
-        "HK5NHBGXX_l01.bam",
-        "HK5NHBGXX_l01.bam",
-        "HK5NHBGXX_l01.bam",
-        "HK5NHBGXX_l01.bam"
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram"
     ]
 }
 ```
->Constructing an input read from four segments [interleaved](glossary.html#interleaved_file_layout) into a single BAM file.
+>**Example 2.2** Declaring a 4 segment input read [interleaved](glossary.html#split_file_layout) into a single CRAM file.
 {: .example}
->
+
+You can even mix-and-match the two layout styles
+
 >```json
 {
     "input": [
-        "HK5NHBGXX_l01n01.fastq.gz",
-        "HK5NHBGXX_l01n02.fastq.gz",
-        "HK5NHBGXX_l01n02.fastq.gz",
-        "HK5NHBGXX_l01n01.fastq.gz"
+        "HK5NHBGXX_Lane1_biological.fastq.gz",
+        "HK5NHBGXX_Lane1_technical.fastq.gz",
+        "HK5NHBGXX_Lane1_technical.fastq.gz",
+        "HK5NHBGXX_Lane1_biological.fastq.gz",
     ]
 }
 ```
-> Constructing an input read from four segments. Segments 0 and 3 are [interleaved](glossary.html#interleaved_file_layout) in `HK5NHBGXX_l01n01.fastq.gz` and segments 1 and 2 are interleaved into `HK5NHBGXX_l01n02.fastq.gz`.
+>**Example 2.3** Constructing a four segment  input read from a mixed style layout. The two biological segments, 0 and 3, are [interleaved](glossary.html#interleaved_file_layout) in `HK5NHBGXX_Lane1_biological.fastq.gz` while the two technical segments, 1 and 2, are interleaved into `HK5NHBGXX_Lane1_technical.fastq.gz`.
 {: .example}
 
-## Tokenization
-
-A token pattern is made of 3 colon separated integers. The first is the mandatory [zero based](glossary.html#zero_based_coordinate) [input segment index](glossary.html#input_segment) enumerated by `input`. The second is an inclusive [zero based](glossary.html#zero_based_coordinate) **start** coordinate to the beginning of the token and it defaults to **0** if omitted. The third is an exclusive [zero based](glossary.html#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. **start** coordinate and **end** coordinate can take positive or negative values to access the segment from either the 5' (left) or 3' (right) end and mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax. The two colons are always mandatory.
+The `input` directive defaults to expecting an interleaved SAM file provided on standard input
 
 >```json
 {
-    "token": [
-        "0:0:",
-        "1:0:8"
-    ]
+    "input": [ "/dev/stdin" ]
 }
 ```
->
->The first token spans the entire first input segment. The second spans the first 8 cycles of the second segment.
+>**Example 2.4** Pheniqs implicitly expects input on standard input if not instructed otherwise. The format and layout will be automatically detected.
+{: .example}
+
+## Automatic `input` sensing
+Pheniqs will automatically detect the format of the input you provide it by examining the first few bytes. Once the input format is established, Pheniqs decodes the first few segment records from the feed to detect the feed's `resolution`, or the number of consecutive segments in the feed that have the same read identifier. Pheniqs will assume that to assemble a read it will have to read that many segments from each input feed.
+
+>```
+@M02455:162:000000000-BDGGG:1:1101:10000:10630 1:N:0:
+CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
++
+CCCCCGGGFGGGAFDFGFGGFGFGFGGGGGGGDEFDFFGGFEFGCFEFGEG
+@M02455:162:000000000-BDGGG:1:1101:10000:10630 2:N:0:
+GGACTCCT
++
+B@CCCFC<
+@M02455:162:000000000-BDGGG:1:1101:10000:10630 3:N:0:
+GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA
++
+CCCCCGGGGGGGGGGGGGGGGGGGF<FGGGGGGGGGGGGFGFGGGGGGGGG
+@M02455:162:000000000-BDGGG:1:1101:10000:12232 1:N:0:
+GTATAGGGGTCACATATAGTTGGTGTGCTTTGTGAACTGCGATCTTGACGG
++
+CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+@M02455:162:000000000-BDGGG:1:1101:10000:12232 2:N:0:
+GGACTCCT
++
+CCCCCGGG
+@M02455:162:000000000-BDGGG:1:1101:10000:12232 3:N:0:
+GTCCTATCCTACTCGGCTTCTCCCCATTTTTCAGACATTTTCCTATCAGTC
++
+CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+```
+>**Example 2.5** This interleaved FASTQ file has a resolution value of **3**.
+{: .example}
+
+# The `transform` directive
+Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the embedded `token` directive and [construction](#construction) with the `segment pattern` directive. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). In the construction step a [segment pattern](manual.html#transform-pattern) references the tokens to construct a new segment. The optional `segment pattern` directive is only necessary when composing output segments from multiple, non continuous, tokens or if a token needs to be reverse complemented. If the `segment pattern` directive is omitted from `transform`, each token is implicitly declares a single segment.
+
+## The `token` directive
+A token pattern is made of 3 colon separated integers. The first is the mandatory [zero based](glossary.html#zero_based_coordinate) [input segment index](glossary.html#input_segment) enumerated by `input`. The second is an inclusive [zero based](glossary.html#zero_based_coordinate) **start** coordinate to the beginning of the token and defaults to **0** if omitted. The third is an exclusive [zero based](glossary.html#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. **start** coordinate and **end** coordinate can take positive or negative values to access the segment from either the 5' (left) or 3' (right) end and mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax. The two colons are always mandatory.
+
+>```json
+{
+    "transform": { "token": [ "0::", "1::8" ] }
+}
+```
+>**Example 2.6** In this `transform` directive the first token spans the entire first input segment. The second spans the first 8 cycles of the second segment. Since the `segment pattern` directive is omitted each token declares a segment.   
+{: .example}
+
+>```json
+{
+    "transform": {
+        "token": [ "0:0:", "1:0:8" ],
+        "segment pattern": [ "0", "1" ]
+    }
+}
+```
+>**Example 2.7** This `transform` directive is identical to the one provided in **Example 2.6** but explicitly declares the `segment pattern` directive.   
 {: .example}
 
 >| **Cycle**      | `012345678` |
@@ -124,12 +175,11 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
 >| `0:-5:-1` | `0`       | `4`     | `8`   | `TCCT`      | `----++++-` | Cycles 1 to 5 from the 3' end         |
 >| `0:3:-2`  | `0`       | `3`     | `7`   | `CTCC`      | `---++++--` | All but the first 3 cycles and last 2 |
 >
-> Some examples of tokenization of a hypothetical segment with index 0 and 9 cycles.
+>**Example 2.7** Some examples of tokenizing a hypothetical segment with index 0 and 9 cycles.
 {: .example}
 
-## Transform pattern
-
-A transform pattern is made of one or more token references separated by the **:** concatenation operator. A token reference is the [zero based](glossary.html#zero_based_coordinate) index of the token pattern in the `token` array. Appending the left hand side reverse complementarity **~** operator will concatenate the reverse complemented sequence of the token. Each token reference is evaluated before concatenation so **~** evaluation precedes **:** evaluation.
+## The `segment pattern` directive
+A `segment pattern` is made of one or more token references separated by the **:** concatenation operator. A token reference is the [zero based](glossary.html#zero_based_coordinate) index of the token pattern in the corresponding `transform` `token` directive. Appending the left hand side reverse complementarity **~** operator will concatenate the reverse complemented sequence of the token. Each token reference is evaluated before concatenation so **~** evaluation precedes **:** evaluation.
 
 >| Pattern | Description                                                                                        |
 >| ------- | :------------------------------------------------------------------------------------------------- |
@@ -138,54 +188,142 @@ A transform pattern is made of one or more token references separated by the **:
 >| `0:1`   | Assemble a segment by concatenating token 0 and token 1                                            |
 >| `~0:1`  | Assemble a segment by concatenating the reverse complement of token 0 and token 1.                 |
 >
-> Several examples of transform patterns for constructing new segments.
+>**Example 2.8** Several examples of `segment pattern` syntax for constructing new segments.
 {: .example}
 
 Notice that a negative token **start** coordinate is equivalent to the corresponding positive token **end** coordinate on the reverse complemented strand and vice verse. More formally the token `0:-x:-y` is equivalent to `0:y:x` if applied to the reverse complement of the segment. For instance to concatenate to the first output segment the first 6 bases of the reverse complemented strand of the first input segment you would define token `0:-6:` and then reference it in the transform pattern for output segment 0 as `~0`.
 
-## Construction
-
-To construct an [output segment](glossary.html#output_segment) declare a transform pattern in the top level configuration `template` array. To construct a [multiplex barcode](glossary.html#multiplex_barcode) segment declare a a transform pattern in the top level configuration `multiplex barcode` array. To construct a [molecular barcode](glossary.html#molecular_barcode) segment declare a a transform pattern in the top level configuration `molecular barcode` array.
-
-The size of the `template` and `multiplex barcode` arrays implicitly defines the number of segments in an output read and the number of barcode sets, respectively.
+## Contextual `transform` directives
+A `transform` directive declared in the root of the instruction constructs the [output read segments](glossary.html#output_segment) and implicitly defines the `output segment cardinality`. When declared inside a barcode decoder directive a `transform` constructs the segmented sequence that is matched against the possible barcode values.
 
 >```json
 {
-    "token": [
-        "0:6:",
-        "3::-6",
-        "1::8",
-        "2::8",
-        "0::6",
-        "3:-6:"
+    "input": [
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram"
     ],
-    "template": [
-        "0",
-        "1"
-    ],
-    "multiplex barcode": [
-        "2",
-        "3"
-    ],
-    "molecular barcode": [
-        "4",
-        "~5"
+    "transform": {
+        "token": [ "0:6:", "3::-6" ]
+    },
+    "multiplex": {
+        "transform": { "token": [ "1::8", "2::8" ] }
+    },
+    "molecular": [
+        {
+            "transform": {
+                "token": [ "0::6", "3:-6:" ],
+                "segment pattern": [ "4", "~5" ]
+            }
+        }
     ]
 }
 ```
->Consider a dual indexed paired end read with two 8 cycle multiplex barcode segments on the second and third input segments and two molecular barcodes, with one on the first 6 cycles of the first segment and another, reverse complemented, on the last 6 cycles of the last segment. We want to extract both molecular barcodes and remove the them from the segments.
+>**Example 2.9** Consider that the input we declared in **Example 2.2**, is a dual indexed paired end read with two 8 cycle multiplex barcode segments on the second and third input segments and two molecular barcode segments, one on the first 6 cycles of the first segment and another, reverse complemented, on the last 6 cycles of the last segment. We extract both molecular barcode segments and remove them from the output segments.
 {: .example}
 
-## Output
+## The `output` directive
+The instruction `output` directive is an ordered list of output file paths. If the output directive contains the same number of file paths as the `output segment cardinality` each segment will be written to the corresponding enumerated output file. If only one file path is declared segments will be interleaved into that file. Declaring a number of files paths different than **1** or `output segment cardinality` will result in a validation error. Read segments are guaranteed to be written contiguously and in-order. The order of the reads in the output is **not** guaranteed to be consistent with their order in the input or to be stable between successive executions when the `thread` directive is bigger than **1**.
 
-Output layout is defined by the top level `channel` configuration array. Each channel element defines [read group](glossary.html#read_group) classification, output layout and [auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf). If you wish to retain undetermined reads you must explicitly define an undetermined channel and set the nested channel specification `undetermined` property to `true`. You may also set some of the read group properties [globally](#global-auxiliary-tags) and they will be assigned to all read group decelerations that do not already provide a value for those properties.
+# Barcode decoding
+Pheniqs can decode `multiplex`, `molecular` and `cellular` barcodes and populate the related standardized SAM auxiliary tags adhering to the [recommendations outlined in the SAM specification](https://samtools.github.io/hts-specs/SAMtags.pdf). We distinguish between [discrete decoding algorithms](glossary.html#discrete_decoding), when the list of possible values is known in advance and so a prior distribution is available, and [unconstrained decoders](glossary.html#unconstrained_decoding), when every possible nucleotides sequence can occur and no prior distribution is known. When declaring a decoder directive you may specify a decoding strategy by setting the `algorithm` property.
 
-### Read Group
+Pheniqs 2.0 offers a choice of two discrete decoding strategies: the widespread [minimum distance decoder](glossary.html#minimum_distance_decoding) (**MDD**) and a more refined probabilistic [Phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) (**PAMLD**). PAMLD consults base calling quality scores and a set of user provided priors to compute an accurate decoding probability. The probability of an incorrect barcode assignment is then made available in SAM auxiliary tags reserved for local use, for downstream analysis consideration.
 
-Read groups can be either explicitly declared in the top level `read group` array or implicitly in the channel element. Separating the read group declaration from the channel is beneficial when multiple channels are assigned the same read group. The `read group` array is interpreted before the `channel` array and both are interpreted in the order the elements are present in the configuration file. If a channel `RG` property does not reference a previously declared read group, either implicitly or explicitly, it is assumed to be an implicit read group declaration and read group properties are decoded from the channel element, so both read group declaration styles can coexist.
+Pheniqs currently does not support degenerate [IUPAC](https://en.wikipedia.org/wiki/Nucleic_acid_notation) bases in discrete barcode instances, but the probabilistic model underlaying the Phred-adjusted maximum likelihood decoding algorithm can be extended to support them if a demand arises.
 
-Explicitly declared [read groups](glossary.html#read_group) are defined in the the top level `read group` configuration array. A channel can reference the read group by setting its nested `RG` property to the value of the `ID` property.
+For unconstrained decoding Pheniqs 2.0 only supports a [naive](glossary.html#naive_decoding) decoder that will simply populate the relevant raw, uncorrected, SAM auxiliary tags. In the case of an unconstrained molecular barcode, all reads associated with a unique molecular identifier are expected to be tagging the same DNA molecule. For that reason, error correction strategies often involve examining the corresponding biological sequence and aligning it to a consensus sequence of a group of reads that have already been associated with that barcode. A specialized error correcting molecular barcode decoder is planned to be included in a future release.
 
+## Handling decoding failure
+Every discrete decoder declaration implicitly defines an `undetermined` directive, if one is not explicitly provided, with instructions for handling reads that fail decoding. `undetermined` inherits global or decoder directives in the same way specific barcodes do, with some omitted parameters that are irrelevant for this special case. You may choose to explicitly override them if you require a different behavior or wish to completely discard such reads. When populating nucleotide and quality sequences in SAM auxiliary tags for corrected decoded barcode segments, a placeholder sequence of **=** character of the correct layout is used to denote a decoding failure.
+
+## Phred-adjusted maximum likelihood decoding
+Pheniqs implements a probabilistic discrete [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) that directly estimates the decoding likelihood from the base calling error probabilities provided by the sequencing platform. When output is SAM encoded Pheniqs will write the decoding error probability to the [XB](glossary.html#dq_auxiliary_tag) auxiliary tag for a multiplex barcode,  the [XM](glossary.html#xm_auxiliary_tag) tag for a molecular barcode and the [XC](glossary.html#xc_auxiliary_tag) tag for a cellular barcode. Since Pheniqs allows to declare multiple molecular and cellular decoders the probability reported in that case will be the result of multiplying all probability values. In the case of decoding failure no error probability is reported.
+
+The dominant parameter to set when decoding with PAMLD is the `confidence threshold`, which is a lower bound on the decoding probability for the decoder to declare a successful classification. The value of `confidence threashold` defaults to **0.99** but in practice depends on the application. Since the barcode decoding error probability is written to the a SAM auxiliary tag you can set `confidence threshold` to a relatively lax value and leave the decision to exclude the read for downstream analysis.
+
+PAMLD also consults prior barcode instance and decoding failure frequencies, specified in the corresponding `concentration` and `noise` properties. For the Illumina platform the most common value for `noise` will be the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the pooled solution, which is usually **1%** and corresponds to a value of **0.01**. Assays with low base diversity sometimes use a higher concentration to compensate for low base diversity and some applications can go as high as **50%**. If you know a priori that some amount of sequences present in the pool represent contamination or multiplexed libraries you are not declaring in the configuration, their concentration can be factored into this parameter.
+
+The `concentration` barcode instance property defaults to **1** if omitted. The values for all barcode instances in a decoder are normalized so that their sum equals **1.0** - `noise`. Notice that unlike `concentration` the `noise` value is specified as a probability value between **0** and **1**, and it rarely make sense to set it to **0**. If the `concentration` property is omitted from all barcodes the result is an implicit uniformly distributed prior.
+
+## Minimum distance decoding
+Pheniqs also implements the more traditional discrete [minimum distance decoder](glossary.html#minimum_distance_decoding) that consults the edit distance between the expected and observed sequence. MDD consults the `distance tolerance` property, which is a list of upper bounds on the edit distance between each segment of the expected and observed barcode to still be considered a match. Setting this property to a value higher than the [Shannon bound](glossary.html#shannon_bound), which also serves as the default value, will result in a validation error.
+
+Since MDD effectively ignores the Phred encoded quality scores, it may be consulting extremely unreliable base calls. To mitigate that effect you may set the `quality masking threshold` property, which is a lower bound on permissible base call quality. Bases with quality lower than this threshold will be considered as **N** by the minimum distance decoder. `quality masking threshold` defaults to **0** which effectively disables quality masking.
+
+## The `multiplex` directive
+A single barcode decoder can be declared in the `multiplex` directive. When decoding multiplex barcodes Pheniqs will write the nucleotide barcode sequence to the [BC](glossary.html#bc_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [QT](glossary.html#qt_auxiliary_tag) tag. Pheniqs will also write the [RG](glossary.html#rg_auxiliary_tag) tag, identify the read group declared in SAM header and the decoding error probability to the [XB](glossary.html#xb_auxiliary_tag) tag.
+
+>```json
+{
+    "input": [
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram"
+    ],
+    "multiplex": {
+        "transform": { "token": [ "1::8", "2::8" ] },
+        "codec": {
+            "@AAGAGGCAAGAGGATA": { "barcode": [ "AAGAGGCA", "AGAGGATA" ] },
+            "@AGGCAGAAAGAGGATA": { "barcode": [ "AGGCAGAA", "AGAGGATA" ] },
+            "@CAGAGAGGAGAGGATA": { "barcode": [ "CAGAGAGG", "AGAGGATA" ] },
+            "@CGTACTAGTCTTACGC": { "barcode": [ "CGTACTAG", "TCTTACGC" ] }
+        }
+    }
+}
+```
+>**Example 2.10** Expanding **Example 2.9** we declare 4 discrete barcode entries for the multiplex decoder to be matched against the segmented sequence extracted by the `transform`. The keys of the `codec` dictionary directive have no special meaning and you may choose them as you see fit, as long as they uniquely identify the barcode.
+{: .example}
+
+Since each barcode decoded by a multiplex decoder corresponds to a read group you define any read group related attributes in the corresponding barcode entry in the `codec` directive. Reads classified to the the read group will be tagged with the corresponding [RG auxiliary tag](glossary.html#rg_auxiliary_tag).
+
+>```json
+{
+    "flowcell id": "HK5NHBGXX",
+    "flowcell lane number": 1,
+    "input": [
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram",
+        "HK5NHBGXX_Lane1.cram"
+    ],
+    "multiplex": {
+        "CN": "NYU CGSB",
+        "DT": "2016-07-15T07:00:00+00:00",
+        "PI": "500",
+        "PL": "ILLUMINA",
+        "PM": "HiSeq 2500",
+        "transform": { "token": [ "1::8", "2::8" ] },
+        "codec": {
+            "@AAGAGGCAAGAGGATA": {
+                "barcode": [ "AAGAGGCA", "AGAGGATA" ],
+                "SM": "c57bl6 mouse 1",
+                "LB": "pre b fetal liver technical replicant 1"
+            },
+            "@AGGCAGAAAGAGGATA": {
+                "barcode": [ "AGGCAGAA", "AGAGGATA" ],
+                "SM": "c57bl6 mouse 1",
+                "LB": "pre b fetal liver technical replicant 2"
+            },
+            "@CAGAGAGGAGAGGATA": {
+                "barcode": [ "CAGAGAGG", "AGAGGATA" ],
+                "SM": "c57bl6 mouse 1",
+                "LB": "pre b fetal liver technical replicant 3"
+            },
+            "@CGTACTAGTCTTACGC": {
+                "barcode": [ "CGTACTAG", "TCTTACGC" ],
+                "SM": "c57bl6 mouse 2",
+                "LB": "follicular spleen technical replicant 1",
+                "PI": "300"
+            }
+        }
+    }
+}
+```
+>**Example 2.11** Further expanding **Example 2.10** with properties related the read group SAM header tags. Properties declared in the `multiplex` directive will apply to all barcode entries in the `codec` directive unless explicitly overriden in the entry. For instance all except **@CGTACTAGTCTTACGC**, that locally overrides PI to be 300, will have their PI tag set to 500.
+{: .example}
 
 | Name                                      | Description                                      | Type   |
 | :---------------------------------------- | :----------------------------------------------- | :----- |
@@ -195,253 +333,31 @@ Explicitly declared [read groups](glossary.html#read_group) are defined in the t
 | **[PU](glossary.html#pu_auxiliary_tag)**  | Platform unit unique identifier                  | string |
 | **CN**                                    | Name of sequencing center producing the read     | string |
 | **DS**                                    | Description                                      | string |
-| **DT**                                    | ISO8601 date the run was produced                | string |
+| **DT**                                    | [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date the run was produced                | string |
 | **PI**                                    | Predicted median insert size                     | string |
 | **[PL](glossary.html#pl_auxiliary_tag)**  | Platform or technology used to produce the reads | string |
 | **PM**                                    | Platform model                                   | string |
 | **PG**                                    | Programs used for processing the read group      | string |
 
+* Properties that apply to all multiplex barcodes can be declared in the `multiplex` directive, or even at the root instruction, instead of being repeated in each barcode.
+* **ID** defaults to the value of **PU** if not explicitly specified. If explicitly declared it must be unique within the `codec` directive.
+* **PU**, following the [convention established by GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472), defaults to `flowcell id`:`flowcell lane number`: `barcode` is not explicitly specified. If `flowcell id` or `flowcell lane number` are not specified they are omitted along with their trailing `:`. If explicitly declared it must be unique within the `codec` directive.
+* **PL**, as defined in the SAM specification, is one of *CAPILLARY*, *LS454*, *ILLUMINA*, *SOLID*, *HELICOS*, *IONTORRENT*, *ONT*, *PACBIO*.
 
-The **PL** property is one of *CAPILLARY*, *LS454*, *ILLUMINA*, *SOLID*, *HELICOS*, *IONTORRENT*, *ONT*, *PACBIO*
 
-The **ID** is mandatory and must be unique among all read groups.
+## Contextual `output` directives
+The `output` directive can be declared in the root of the configuration, in the `multiplex` decoder declaration or in each of the individual barcode entries in the `codec` directive embedded in the `multiplex` decoder declaration. As always, directives declared deeper in the hierarchy override directives declared upstream. When interleaving reads from multiple read groups into the same output it is sufficient, and less verbose, to declare the output directive upstream. When splitting reads from different read groups to different output files you explicitly declare it individually for the read group. You may also mix-and-match the two styles. A corresponding [@RG header tag](glossary.html#rg_header_tag) will be added to the header of an output file if at least one segment of reads tagged with that read group are written to that file.
 
->```json
-{
-    "read group": [
-        {
-            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "LB": "TAAGGCGATCTTACGC read group library name",
-            "SM": "TAAGGCGATCTTACGC read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "CN": "NYU CGSB",
-            "DS": "TAAGGCGATCTTACGC read group description",
-            "DT": "2016-07-15T07:00:00+00:00",
-            "PI": "1500",
-            "PL": "ILLUMINA",
-            "PM": "HiSeq 2500"
-        },
-        {
-            "ID": "HK5NHBGXX:1:undetermined",
-            "LB": "undetermined read group library name",
-            "SM": "undetermined read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "CN": "NYU CGSB",
-            "DS": "undetermined read group description",
-            "DT": "2016-07-15T07:00:00+00:00",
-            "PI": "1500",
-            "PL": "ILLUMINA",
-            "PM": "HiSeq 2500"
-        }
-    ]
-}
-```
-> Declaring one read group for a multiplexed channel and one for undetermined reads.
-{: .example}
+## The `molecular` directive
+The `molecular` directive can be used to declare either a single decoder or and array containing multiple decoders. When decoding molecular barcodes Pheniqs will write the nucleotide barcode sequence to the [RX](glossary.html#rx_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [OX](glossary.html#ox_auxiliary_tag) tag. A molecular identifier is written to the [MI](glossary.html#mi_auxiliary_tag) tag.
 
-### Channel
-Multiple channels can write to the same concrete output file to create a [combined](glossary.html#combined_file_layout) output layout. Channels are guaranteed to write all segments of a read contiguously and in-order. The order of the reads in the output is **not** guaranteed to be consistent with their order in the input or to be stable between successive executions.
+If error correction is applied to the barcode the raw, uncorrected, nucleotide and quality sequences are written to the [QX](glossary.html#qx_auxiliary_tag) and [BZ](glossary.html#bz_auxiliary_tag) tags and the decoding error probability to the [XM](glossary.html#xm_auxiliary_tag) tag. Pheniqs 2.0 does not support molecular barcode error correction and so will not populate the QX, BZ and XM tags, but support is expected to be introduced at a later stage.
 
-The nested channel `barcode` array is an ordered list of multiplex barcode [technical sequences](glossary.html#technical_sequence). Degenerate [IUPAC](https://en.wikipedia.org/wiki/Nucleic_acid_notation) bases are currently not allowed in the [multiplex barcode](glossary.html#multiplex_barcode) sequence and will be replaced with the **N** (any nucleotide) symbol before decoding. The size of the `barcode` array must be the same as the size to the top level `multiplex barcode` array and corresponds to the number of multiplex barcode sets.
+## The `cellular` directive
+The `cellular` directive can be used to declare either a single decoder or and array containing multiple decoders. When decoding cellular barcodes Pheniqs will write the raw, uncorrected, nucleotide barcode sequence to the [CR](glossary.html#cr_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [CY](glossary.html#cy_auxiliary_tag) tag, while The decoded cellular barcode is written to the [CB](glossary.html#cb_auxiliary_tag) tag. The decoding error probability is written to the [XC](glossary.html#cr_auxiliary_tag) tag.
 
-The nested channel `output` array is an ordered list of output file paths that Pheniqs can use as output feeds. Pheniqs writes one [segment](glossary.html#segment) from the output read to each output feed. When writing an [interleaved](glossary.html#interleaved_file_layout) output simply repeat the path to reference the same feed multiple times, once for each [segment](glossary.html#segment). The size of the `output` array must be the same as the size of the top level `template` array and corresponds to the number of segments in an output read. One syntactical shortcut to this rule is when all segments are interleaved into the same feed, in which case you may specify the path only once.
 
-The nested channel `concentration` property is only used by the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) and can be used to provide a prior probability of observing a read from this channel. `concentration` values for all channels are normalized so that their normalized sum equals `1.0 - noise`. This allows the user to directly specify the pooled concentration and it will be converted to a corresponding prior probability. The `concentration` element must be either specified on all non-undetermined channels or on none of them. If `concentration` values are not specified they default to **1** on all non undetermined channels and so result in a uniform prior distribution. Notice that unlike `concentration` the `noise` value is specified as a probability value between 0 and 1.
-
-The nested channel `RG` property is a reference to a read group `ID`. A corresponding [@RG header tag](glossary.html#rg_header_tag) will be added to the header of every output feed. Reads in the read group will be tagged with the corresponding [RG auxiliary tag](glossary.html#rg_auxiliary_tag).
-
-Setting the nested channel `undetermined` property to `true` identifies that channel as the destination for reads that fail to be classified. Setting the `undetermined` property to `true` in more than one channel will result in a validation error. The undetermined channel may optionally omit the `barcode` element. If omitted the `undetermined` property defaults to `false`.
-
->```json
-{
-    "read group": [
-        {
-            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "LB": "TAAGGCGATCTTACGC read group library name",
-            "SM": "TAAGGCGATCTTACGC read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "CN": "NYU CGSB",
-            "DS": "TAAGGCGATCTTACGC read group description",
-            "DT": "2016-07-15T07:00:00+00:00",
-            "PI": "1500",
-            "PL": "ILLUMINA",
-            "PM": "HiSeq 2500"
-        },
-        {
-            "ID": "HK5NHBGXX:1:undetermined",
-            "LB": "undetermined read group library name",
-            "SM": "undetermined read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "CN": "NYU CGSB",
-            "DS": "undetermined read group description",
-            "DT": "2016-07-15T07:00:00+00:00",
-            "PI": "1500",
-            "PL": "ILLUMINA",
-            "PM": "HiSeq 2500"
-        }
-    ],
-    "channel": [
-        {
-            "RG": "HCJFNBCXX:1:TAAGGCGATCTTACGC",
-            "barcode": [
-                "TAAGGCGA",
-                "CTCTCTAT"
-            ],
-            "concentration": 1,
-            "output": [
-                "HG7CVAFXX_l01s01_TAAGGCGATCTTACGC.cram"
-            ]
-        },
-        {
-            "RG": "HCJFNBCXX:1:undetermined",
-            "output": [
-                "HG7CVAFXX_l01s01_undetermined.fastq.gz",
-                "HG7CVAFXX_l01s02_undetermined.fastq.gz",
-            ],
-            "undetermined": true
-        }
-    ]
-}
-```
-> Defining one standard output channel and one for undetermined reads with explicitly declared read groups. Notice how the first channel writes to an [interleaved](glossary.html#interleaved_file_layout) CRAM file while the second [splits](glossary.html#split_file_layout) the read to two FASTQ files.
->
->```json
-{
-    "channel": [
-        {
-            "RG": "HCJFNBCXX:1:TAAGGCGATCTTACGC",
-            "LB": "TAAGGCGATCTTACGC read group library name",
-            "SM": "TAAGGCGATCTTACGC read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "CN": "NYU CGSB",
-            "DS": "TAAGGCGATCTTACGC read group description",
-            "DT": "2016-07-15T07:00:00+00:00",
-            "PI": "1500",
-            "PL": "ILLUMINA",
-            "PM": "HiSeq 2500",
-            "barcode": [
-                "TAAGGCGA",
-                "CTCTCTAT"
-            ],
-            "concentration": 1,
-            "output": [
-                "HG7CVAFXX_l01s01_TAAGGCGATCTTACGC.cram"
-            ]
-        },
-        {
-            "RG": "HCJFNBCXX:1:undetermined",
-            "LB": "undetermined read group library name",
-            "SM": "undetermined read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "CN": "NYU CGSB",
-            "DS": "undetermined read group description",
-            "DT": "2016-07-15T07:00:00+00:00",
-            "PI": "1500",
-            "PL": "ILLUMINA",
-            "PM": "HiSeq 2500",
-            "output": [
-                "HG7CVAFXX_l01s01_undetermined.fastq.gz",
-                "HG7CVAFXX_l01s02_undetermined.fastq.gz",
-            ],
-            "undetermined": true
-        }
-    ]
-}
-```
-> This declaration is equivalent to the previous one but the read groups are implicitly declared in the channels.
->
-```json
-{
-    "CN": "NYU CGSB",
-    "DT": "2016-07-15T07:00:00+00:00",
-    "PI": "1500",
-    "PL": "ILLUMINA",
-    "PM": "HiSeq 2500",
-    "channel": [
-        {
-            "RG": "HCJFNBCXX:1:TAAGGCGATCTTACGC",
-            "LB": "TAAGGCGATCTTACGC read group library name",
-            "SM": "TAAGGCGATCTTACGC read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "DS": "TAAGGCGATCTTACGC read group description",
-            "barcode": [
-                "TAAGGCGA",
-                "CTCTCTAT"
-            ],
-            "concentration": 1,
-            "output": [
-                "HG7CVAFXX_l01s01_TAAGGCGATCTTACGC.cram"
-            ]
-        },
-        {
-            "RG": "HCJFNBCXX:1:undetermined",
-            "LB": "undetermined read group library name",
-            "SM": "undetermined read group sample name",
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
-            "DS": "undetermined read group description",
-            "output": [
-                "HG7CVAFXX_l01s01_undetermined.fastq.gz",
-                "HG7CVAFXX_l01s02_undetermined.fastq.gz",
-            ],
-            "undetermined": true
-        }
-    ]
-}
-```
-> In this equivalent declaration the [CN](glossary.html#cn_auxiliary_tag), [DT](glossary.html#dt_auxiliary_tag), [PI](glossary.html#pi_auxiliary_tag), [PL](glossary.html#pl_auxiliary_tag) and [PM](glossary.html#pm_auxiliary_tag) properties are declared globally and will be added to both read groups.
-{: .example}
-
-# Decoding
-
-Pheniqs implements a novel [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) that directly estimates the decoding likelihood from the base calling error probabilities provided by the sequencing platform. When output is SAM encoded Pheniqs will write the multiplex barcode decoding error probability to the [XB](glossary.html#dq_auxiliary_tag) auxiliary tag. Pheniqs also implements a traditional [minimum distance decoder](glossary.html#minimum_distance_decoding) that consults the edit distance between the expected and observed sequence. To select a decoder set the top level configuration `decoder` property to either `pamld` or `mdd`. The default decoder is `pamld`.
-
->```json
-{ "decoder": "mdd" }
-```
-> The default decoder is the phred-adjusted maximum likelihood decoder. Set the `decoder` property to `mdd` to use minimum distance decoding.
-{: .example}
-
-A third "meta" decoder called `benchmark` will decode using both `pamld` and `mdd` and report the results of the comparison in some custom user space SAM auxiliary tags; this option is primarily used for evaluation.
-
-When using the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) you may want to set the `confidence` and `noise` properties. The `confidence` property is the threshold on the decoding probability for the decoder to declare a successful classification. If the decoder fails to classify the read it is considered undetermined. The value of `confidence` defaults to **0.99** but in practice depends on the application. Since the multiplex barcode decoding error probability is written to the [XB](glossary.html#dq_auxiliary_tag) auxiliary tag you can set `confidence` to a relatively lax value and leave the decision to exclude the read for downstream analysis.
-
->```json
-{ "confidence": 0.99 }
-```
-> Setting the confidence to 0.99 is equivalent to a 1% error probability.
-{: .example}
-
-The `noise` property is only used by the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) and takes a floating point value between 0 and 1. It is the probability that a read is background noise and does not belong to any of the multiplexed libraries. For the Illumina platform the most common value will be the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the solution, which is usually 1% and corresponds to a value of **0.01**. Assays with low base diversity sometimes use a higher concentration to compensate and some applications can go as high as 50%. If you know a priori that some amount of sequences present in the pool represent contamination or multiplexed libraries you are not declaring in the configuration, their concentration can be factored into this parameter. The `noise` property defaults to **0**.
-
->```json
-{ "noise": 0.01 }
-```
-> Setting the noise prior to 0.01 when 1% of PhiX control was spiked in to the solution.
-{: .example}
-
-The `distance tolerance` array is a list of integers considered only by the [minimum distance decoder](glossary.html#minimum_distance_decoding). The size of the `distance tolerance` array must be the same as the size of the `multiplex barcode` array and is the maximum edit distance allowed for each barcode set to still be considered a match. If omitted, it defaults to the maximum number of correctable errors computed from the pairwise Hamming distance for each barcode set. If set to a value larger than the maximum number of correctable errors it will be ignored.
-
->```json
-{
-    "distance tolerance": [
-        2,
-        1
-    ]
-}
-```
->Setting a maximum edit distance of 2 for the first barcode and 1 for the second.
-{: .example}
-
-The `decoder masking threshold` is considered by both the [minimum distance decoder](glossary.html#minimum_distance_decoding) and the [phred-adjusted maximum likelihood decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) but is more suitable for using with minimum distance decoding. If set to a value larger than 0, any cycle on a multiplex barcode with a quality lower than `decoder masking threshold` will be set to **N** before decoding.
-
->```json
-{ "decoder masking threshold": 8 }
-```
->Any cycle with a quality of less than 8 will be set to **N**, the "any nucleotide" symbol.
-{: .example}
-
-# Relative paths
-
+# URL handling
 Setting global path prefixes makes the configuration files more portable. If specified, the `base input path` and `base output path` are used as a prefix to **relative** paths defined in the `input` and `output` elements respectively. A path is considered relative if it **does not** begin with a **/** character.
 
 >```json
@@ -500,7 +416,6 @@ All paths specified in a configuration file can be made relative to your home di
 {: .example}
 
 # Phred offset
-
 The `input phred offset` and `output phred offset` are applicable only to [FASTQ](glossary.html#fastq) files and specify the Phred scale decoding and encoding [offset](https://en.wikipedia.org/wiki/FASTQ_format#Encoding), respectively. The default value for both is **33**, knowns as the [Sanger format](glossary.html#sanger_format). The binary [HTSlib](glossary.html#htslib) formats BAM and CRAM encode the quality value numerically and so require no further manipulation. The [sequence alignment map format specification](https://samtools.github.io/hts-specs/SAMv1.pdf) states that text encoded SAM records always use the Sanger format.
 
 >```json
@@ -509,11 +424,10 @@ The `input phred offset` and `output phred offset` are applicable only to [FASTQ
     "input phred offset": 33
 }
 ```
-> Setting the `input phred offset` and `output phred offset` to 33 which is the default.
+> Both the `input phred offset` and `output phred offset` default to 33, known as the Sanger format.
 {: .example}
 
 # Leading Segment
-
 Pheniqs constructs new segments for the output read and must generate corresponding identifiers and replicate metadata from the input to the output segments. Since segments can potentially disagree on metadata, one input segment is elected as the leader and used as a template when constructing the output segments. The leading segment property is a reference to an [input segment index](glossary.html#input_segment) and defaults to **0** if omitted.
 
 >```json
@@ -523,7 +437,6 @@ Pheniqs constructs new segments for the output read and must generate correspond
 {: .example}
 
 # Pass filter reads
-
 Some reads are marked by the sequencing platform as not passing the vendor quality control. For instance Illumina sequencers perform an internal [quality filtering procedure](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-x-percent-pf-technical-note-770-2014-043.pdf) called chastity filter, and reads that pass this filter are called PF for pass-filter. This can be [signaled](https://en.wikipedia.org/wiki/FASTQ_format#Illumina_sequence_identifiers) on the comment portion of the read identifier in [FASTQ](glossary.html#fastq) files or the **512** flag on an [HTSlib](glossary.html#htslib) flag. Setting this parameter to **true** will allow Pheniqs to decode those unfiltered reads and include them in the output. If the paramter is set to **false** those reads are dropped. If omitted `include filtered` defaults to **false**.
 
 >```json
@@ -547,16 +460,13 @@ The following tags are allowed globally in the root element:
 
 
 # Configuration validation
-
 The `--validate` flag makes Pheniqs evaluate the supplied configuration and emit an exhaustive report without actually executing. It is sometimes useful to inspect the report before executing to make sure all implicit parameters are allocated the desired values. The validation report also prints a pairwise Hamming distance matrix for each [multiplex barcode](glossary.html#multiplex barcode) set and one for the concatenated barcode sequences. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate. For each barcode set [minimum distance decoder](glossary.html#minimum_distance_decoding) is limited by the smallest value in the bottom half of the matrix.
 
 
 # Demultiplexing report
-
 Pheniqs emits a comprehensive demultiplexing report with statistics about both inputs and outputs.
 
 ## Input statistics
-
 A quality statistics report for every segment in the input is provided in the `demultiplex input report` element.
 
 | JSON field                                      | Description
@@ -566,11 +476,9 @@ A quality statistics report for every segment in the input is provided in the `d
 | **pf fraction**                                 | **pf count** / **count**
 
 ## Output statistics
-
 A quality statistics report for every segment in every output read group is provided in the `demultiplex output report` element as well as global statistics for the entire pipeline.
 
 ### Read Group statistics
-
 Counters in each element of the `read group quality reports` array apply only to reads that were classified to the respective read group.
 
 | JSON field                                      | Description
@@ -589,7 +497,6 @@ Counters in each element of the `read group quality reports` array apply only to
 
 
 ### Pipeline statistics
-
 Counters found directly in the `demultiplex output report` element are for the output of the entire pipeline.
 
 | JSON field                                      | Counter incrementing criteria
@@ -609,12 +516,10 @@ Counters found directly in the `demultiplex output report` element are for the o
 
 
 # Performance tuning
-
 Pheniqs will initialize a thread pool used by [HTSlib](glossary.html#htslib) for IO and an equivalent number or processing threads. Factors affecting the optimal configuration are the length and number of input and output segments, the number of multiplexed libraries, the file format of both input and output files, whether quality tracking has been enabled and the layout of both input and output reads. Reading and writing gzip compressed [FASTQ](glossary.html#fastq) files, for instance, is a bottleneck since gzip is a very old compression algorithm that scales poorly when parallelized. In some scenarios, depending on disk IO speed and space constraints it might be overall more efficient to base call to uncompressed FASTQ files and feed Pheniqs uncompressed FASTQ input. Binary [HTSlib](glossary.html#htslib) formats are generally much faster to encode and decode and should be preferred for both input and output where possible.
 
 | Name                      | Description                                                   | Type    |
 | :------------------------ | :------------------------------------------------------------ | :------ |
 | `threads`                 | IO thread pool size                                           | integer |
-| `transforms`              | number of transforming threads                                | integer |
 | `buffer capacity`         | set feed buffer capacity                                      | integer |
 | `disable quality control` | do not track quality when processing reads                    | boolean |
