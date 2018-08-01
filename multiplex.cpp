@@ -1546,43 +1546,61 @@ void MultiplexPivot::load_multiplex_decoding() {
 void MultiplexPivot::load_molecular_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("molecular");
     if(reference != job.ontology.MemberEnd()) {
-        molecular.reserve(reference->value.Size());
-        for(const auto& element : reference->value.GetArray()) {
-            Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", element));
-            switch (algorithm) {
-                case Algorithm::NAIVE: {
-                    MolecularNaiveDecoder* naive_decoder(new MolecularNaiveDecoder(element));
-                    molecular.emplace_back(naive_decoder);
-                    break;
-                };
-                default:
-                    throw ConfigurationError("unknown molecular decoder algorithm");
-                    break;
+        if(reference->value.IsObject()) {
+            molecular.reserve(1);
+            load_molecular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            molecular.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_molecular_decoder(element);
             }
         }
+    }
+    molecular.shrink_to_fit();
+};
+void MultiplexPivot::load_molecular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch (algorithm) {
+        case Algorithm::NAIVE: {
+            MolecularNaiveDecoder* naive_decoder(new MolecularNaiveDecoder(value));
+            molecular.emplace_back(naive_decoder);
+            break;
+        };
+        default:
+            break;
     }
 };
 void MultiplexPivot::load_cellular_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("cellular");
     if(reference != job.ontology.MemberEnd()) {
-        cellular.reserve(reference->value.Size());
-        for(const auto& element : reference->value.GetArray()) {
-            Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", element));
-            switch (algorithm) {
-                case Algorithm::PAMLD: {
-                    CellularPAMLDecoder* paml_decoder(new CellularPAMLDecoder(element));
-                    cellular.emplace_back(paml_decoder);
-                    break;
-                };
-                case Algorithm::MDD: {
-                    CellularMDDecoder* md_decoder(new CellularMDDecoder(element));
-                    cellular.emplace_back(md_decoder);
-                    break;
-                };
-                default:
-                    throw ConfigurationError("unknown cellular decoder algorithm");
-                    break;
+        if(reference->value.IsObject()) {
+            molecular.reserve(1);
+            load_cellular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            molecular.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_cellular_decoder(element);
             }
         }
+    }
+    cellular.shrink_to_fit();
+};
+void MultiplexPivot::load_cellular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch (algorithm) {
+        case Algorithm::PAMLD: {
+            CellularPAMLDecoder* paml_decoder(new CellularPAMLDecoder(value));
+            cellular.emplace_back(paml_decoder);
+            break;
+        };
+        case Algorithm::MDD: {
+            CellularMDDecoder* md_decoder(new CellularMDDecoder(value));
+            cellular.emplace_back(md_decoder);
+            break;
+        };
+        default:
+            break;
     }
 };

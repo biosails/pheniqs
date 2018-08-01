@@ -171,7 +171,10 @@ class MultiplexPivot {
         const TemplateRule template_rule;
         void load_multiplex_decoding();
         void load_molecular_decoding();
+        void load_molecular_decoder(const Value& value);
         void load_cellular_decoding();
+        void load_cellular_decoder(const Value& value);
+
 };
 
 #endif /* PHENIQS_DEMULTIPLEX_H */

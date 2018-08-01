@@ -1,12 +1,10 @@
 {
     "import": [ "BDGGG_interleave.json" ],
     "include filtered": false,
-    "molecular": [
-        {
-            "algorithm": "naive",
-            "transform": { "token": [ "0:8:16" ] }
-        }
-    ],
+    "molecular": {
+        "algorithm": "naive",
+        "transform": { "token": [ "0:8:16" ] }
+    },
     "multiplex": {
         "algorithm": "pamld",
         "base": "000000000-BDGGG_multiplex",
