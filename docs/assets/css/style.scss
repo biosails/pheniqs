@@ -185,8 +185,9 @@ a {
 }
 
 .main-content code {
-    color: #464646;
-    background-color: #f0f0f0;
+    color: inherit;
+    background-color: transparent;
+    font-size: 1em;
 }
 
 #navigation {
