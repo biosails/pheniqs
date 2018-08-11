@@ -1,0 +1,14 @@
+{
+    "flowcell lane number": 4,
+    "import": [
+        "CBJLFACXX.json"
+    ],
+    "input": [
+        "Lane4_S4_L004_R1_001.fastq.gz",
+        "Lane4_S4_L004_I1_001.fastq.gz",
+        "Lane4_S4_L004_R2_001.fastq.gz"
+    ],
+    "multiplex": {
+        "base": "@CBJLFACXX_multiplex_lane_4"
+    }
+}
