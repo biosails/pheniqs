@@ -4,10 +4,6 @@
     "package": [
         {
             "make clean target": "distclean",
-            "make build optional": [
-                "CC=/usr/local/Cellar/gcc@7/7.3.0/bin/gcc-7",
-                "CXX=/usr/local/Cellar/gcc@7/7.3.0/bin/g++-7"
-            ],
             "name": "zlib",
             "remote url": [
                 "https://zlib.net/zlib-1.2.11.tar.gz",
@@ -17,10 +13,6 @@
         },
         {
             "include prefix in make": true,
-            "make build optional": [
-                "CC=/usr/local/Cellar/gcc@7/7.3.0/bin/gcc-7",
-                "CXX=/usr/local/Cellar/gcc@7/7.3.0/bin/g++-7"
-            ],
             "name": "bz2",
             "remote url": [
                 "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz",
@@ -31,10 +23,6 @@
         },
         {
             "name": "xz",
-            "make build optional": [
-                "CC=/usr/local/Cellar/gcc@7/7.3.0/bin/gcc-7",
-                "CXX=/usr/local/Cellar/gcc@7/7.3.0/bin/g++-7"
-            ],
             "remote url": [
                 "https://tukaani.org/xz/xz-5.2.4.tar.bz2",
                 "http://albireo.bio.nyu.edu/~lg/pheniqs/xz-5.2.4.tar.bz2"
@@ -43,10 +31,6 @@
         },
         {
             "name": "libdeflate",
-            "make build optional": [
-                "CC=/usr/local/Cellar/gcc@7/7.3.0/bin/gcc-7",
-                "CXX=/usr/local/Cellar/gcc@7/7.3.0/bin/g++-7"
-            ],
             "remote filename": "libdeflate-1.0.tar.gz",
             "remote url": [
                 "https://github.com/ebiggers/libdeflate/archive/v1.0.tar.gz",
@@ -57,10 +41,6 @@
         },
         {
             "name": "htslib",
-            "make build optional": [
-                "CC=/usr/local/Cellar/gcc@7/7.3.0/bin/gcc-7",
-                "CXX=/usr/local/Cellar/gcc@7/7.3.0/bin/g++-7"
-            ],
             "remote url": [
                 "https://github.com/samtools/htslib/releases/download/1.8/htslib-1.8.tar.bz2",
                 "http://albireo.bio.nyu.edu/~lg/pheniqs/htslib-1.8.tar.bz2"
@@ -70,10 +50,6 @@
         {
             "name": "rapidjson",
             "remote filename": "rapidjson-1.1.0.tar.gz",
-            "make build optional": [
-                "CC=/usr/local/Cellar/gcc@7/7.3.0/bin/gcc-7",
-                "CXX=/usr/local/Cellar/gcc@7/7.3.0/bin/g++-7"
-            ],
             "remote url": [
                 "https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz",
                 "http://albireo.bio.nyu.edu/~lg/pheniqs/rapidjson-1.1.0.tar.gz"
