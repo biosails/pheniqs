@@ -29,7 +29,7 @@ stages:
 # If these change please reflect changes in conda_recipe/latest/build.sh
 ####################################################################################
 script:
-- "./tool/pheniqs-tools.py build test/BDGGG/build.json"
+- "./tool/pheniqs-tools.py -v debug build test/BDGGG/build.json"
 - make all PREFIX=${HOME}/.pheniqs/travis/install
 - "./pheniqs --version"
 - "./pheniqs --help"
