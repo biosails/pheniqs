@@ -109,7 +109,7 @@ The `input` directive defaults to expecting an interleaved SAM file provided on 
 {: .example}
 
 ## Automatic `input` sensing
-Pheniqs will automatically detect the format of the input you provide it by examining the first few bytes. Once the input format is established, Pheniqs decodes the first few segment records from the feed to detect the feed's resolution, or the number of consecutive segments in the feed that have the same read identifier. Pheniqs will assume that to assemble a read it will have to read that many segments from each input feed.
+The `-s/--sense-input` command line flag will make Pheniqs automatically detect the format of the input you provide it by examining the first few bytes. Once the input format is established, Pheniqs decodes the first few segment records from the feed to detect the feed's resolution, or the number of consecutive segments in the feed that have the same read identifier. Pheniqs will assume that to assemble a read it will have to read that many segments from each input feed.
 
 >```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 1:N:0:

@@ -60,49 +60,53 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
     available action
       demux      Demultiplex and report quality control
-      quality    Report quality control
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.
 
 # Demux sub command help
 
-    pheniqs version 2.0.3-beta-70-g3b6cb6d7a727ca0ad09c1c663d137c5f2719b74f
+    pheniqs version 2.0.3-beta-81-g078604a30475f3909c998a5cc43c6dbf4dca2205
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2018
     See manual at https://biosails.github.io/pheniqs
 
-    Demultiplex and report quality control
+    Demultiplex and Report Quality Control
 
     Usage : pheniqs demux [-h] [-i PATH]* [-o PATH]* [-c PATH] [-I URL] [-O URL]
-                          [-V] [-C] [-D] [-p FLOAT] [-f] [-q] [-n FLOAT] [-l INT]
+                          [-s] [-V] [-C] [-S] [-D] [-f] [-q] [-l INT]
                           [-P CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-t INT]
                           [-B INT]
 
     Optional:
-      -h, --help                          Show this help
-      -i, --input PATH                    Path to input files
-      -o, --output PATH                   Path to output files
-      -c, --config PATH                   Path to configuration file
-      -I, --base-input URL                Base input url
-      -O, --base-output URL               Base output url
-      -V, --validate                      Only validate configuration
-      -C, --compile                       Only compile configuration file
-      -D, --distance                      Display pairwise barcode distance
-      -p, --multiplex-confidence FLOAT    Decoding multiplex confidence threshold
-      -f, --filtered                      Include filtered reads
-      -q, --quality                       Disable quality control
-      -n, --multiplex-noise FLOAT         Multiplex noise prior probability
-      -l, --leading INT                   Leading read segment
-      -P, --platform STRING               Sequencing platform
-      -t, --threads INT                   Thread pool size
-      -B, --buffer INT                    Records per resolution in feed buffer
+      -h, --help               Show this help
+      -i, --input PATH         Path to an input file
+      -o, --output PATH        Path to an output file
+      -c, --config PATH        Path to configuration file
+      -I, --base-input URL     Base input url
+      -O, --base-output URL    Base output url
+      -s, --sense-input        Sense input segment layout
+      -V, --validate           Validate configuration file and emit a report
+      -C, --compile            Compile configuration file and emit as JSON
+      -S, --static             Assemble a static configuration file and emit as JSON
+      -D, --distance           Display pairwise barcode distance
+      -f, --filtered           Include reads not passing vendor QC
+      -q, --quality            Disable quality control for a minor speed gain
+      -l, --leading INT        Leading read segment index
+      -P, --platform STRING    Sequencing platform
+      -t, --threads INT        Thread pool size
+      -B, --buffer INT         Feed buffer capacity
 
     To provide multiple paths to -i/--input and -o/--output repeat the flag before every path,
     i.e. `pheniqs demux -i first_in.fastq -i second_in.fastq -o first_out.fastq -o second_out.fastq`
 
-    -i/--input defaults to /dev/stdin, -o/--output default to /dev/stdout and output format default to SAM.
-    -I, --base-input and -O, --base-output default to the working directory.
+    -i/--input defaults to /dev/stdin with inputing layout sensing.
+    -o/--output default to /dev/stdout with SAM format.
+    -I/--base-input and -O/--base-output default to the working directory.
+    -V/--validate, -C/--compile and -S/--static disable job excution and only emit information.
+    -s/--sense-input will analyze the first few reads of each input file to guess input layout.
+    The static configuration file emited by -S/--static resolves all imports into a single portable file.
+    The compiled configuration file emited by -C/--compile is ready for execution and all implicit attributes have been resolved.
 
 # JSON validation
 
