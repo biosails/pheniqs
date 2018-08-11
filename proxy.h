@@ -75,15 +75,7 @@ class FeedProxy {
                 switch(url.type()) {
                     case FormatType::SAM:
                     case FormatType::BAM:
-                    case FormatType::BAI:
                     case FormatType::CRAM:
-                    case FormatType::CRAI:
-                    case FormatType::VCF:
-                    case FormatType::BCF:
-                    case FormatType::CSI:
-                    case FormatType::GZI:
-                    case FormatType::TBI:
-                    case FormatType::BED:
                         return FormatKind::HTS;
                         break;
                     case FormatType::FASTQ:
@@ -95,8 +87,6 @@ class FeedProxy {
                 }
             } else { return FormatKind::DEV_NULL; }
         };
-        void set_capacity(const int& capacity);
-        void set_resolution(const int& resolution);
         void register_rg(const HeadRGAtom& rg);
         void register_pg(const HeadPGAtom& pg);
         void probe();

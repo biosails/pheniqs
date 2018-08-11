@@ -495,11 +495,9 @@ Action::Action(const Value& ontology, bool root) try :
         } else { throw ConfigurationError("incorrect syntax"); }
     }
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("Action :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("Action :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("Action");
+        throw;
 };
 Action::~Action() {
     for(auto prototype : optional_by_index) {
@@ -987,17 +985,16 @@ Interface::Interface(const size_t argc, const char** argv) try :
     /* load the interface configuration */
     if(!configuration.Parse(configuration_json, configuration_json_len).HasParseError()) {
         if(configuration.IsObject()) {
+            remove_disabled_from_json_value(configuration, configuration);
             apply_action_base();
             load_action_array();
             load_selected_action();
         } else { throw ConfigurationError("interface configuration must be a dictionary"); }
     } else { throw ConfigurationError(string(GetParseError_En(configuration.GetParseError())) + " at position " + to_string(configuration.GetErrorOffset())); }
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("Interface :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("Interface :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("Interface");
+        throw;
 };
 Interface::~Interface() {
     for(auto action : action_by_index) {

@@ -108,12 +108,14 @@ using std::vector;
 
 /* RapidJSON dependencies */
 #define RAPIDJSON_NO_SIZETYPEDEFINE
+#define RAPIDJSON_SCHEMA_USE_INTERNALREGEX 0
 namespace rapidjson { typedef ::std::size_t SizeType; }
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 #include <rapidjson/pointer.h>
 #include <rapidjson/prettywriter.h>
+#include <rapidjson/schema.h>
 #include <rapidjson/stringbuffer.h>
 
 using rapidjson::Document;
@@ -124,6 +126,8 @@ using rapidjson::StringBuffer;
 using rapidjson::StringRef;
 using rapidjson::Type;
 using rapidjson::Value;
+using rapidjson::SchemaDocument;
+using rapidjson::SchemaValidator;
 using rapidjson::kArrayType;
 using rapidjson::kNullType;
 using rapidjson::kObjectType;

@@ -341,7 +341,7 @@ enum class Algorithm : uint8_t {
     MDD,
     PAMLD,
     NAIVE,
-    PIPE,
+    TRANSPARENT,
     BENCHMARK,
 };
 void to_string(const Algorithm& value, string& result);

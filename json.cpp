@@ -21,6 +21,12 @@
 
 #include "json.h"
 
+#include <cstdio>
+#include <rapidjson/encodedstream.h>
+#include <rapidjson/filereadstream.h>
+
+using namespace rapidjson;
+
 void print_json(const Value& node, ostream& o) {
     StringBuffer buffer;
     PrettyWriter< StringBuffer > writer(buffer);
@@ -42,6 +48,44 @@ Document* load_json(const string& path) {
         }
     }
     return document;
+};
+
+Document encode_validation_error(const SchemaValidator& validator, const Value& schema, const Value& container) {
+    Document error(kObjectType);
+    StringBuffer buffer;
+
+    Value violation(kObjectType);
+
+    Pointer invalid_element_pointer(validator.GetInvalidDocumentPointer());
+    invalid_element_pointer.Stringify(buffer);
+    string invalid_element_path(buffer.GetString());
+    buffer.Clear();
+    encode_key_value("invalid element path", invalid_element_path, violation, error);
+
+    const Value* element_reference(invalid_element_pointer.Get(container));
+    if(element_reference != NULL) {
+        Value invalid_element(*element_reference, error.GetAllocator());
+        violation.AddMember(Value("element").Move(), invalid_element.Move(), error.GetAllocator());
+    }
+
+    Pointer invalid_schema_pointer(validator.GetInvalidSchemaPointer());
+    invalid_schema_pointer.Stringify(buffer);
+    string invalid_schema_path(buffer.GetString());
+    buffer.Clear();
+    encode_key_value("invalid schema path", invalid_schema_path, violation, error);
+
+    const Value* schema_reference(invalid_schema_pointer.Get(schema));
+    if(schema_reference != NULL) {
+        Value invalid_schema(*schema_reference, error.GetAllocator());
+        violation.AddMember(Value("schema").Move(), invalid_schema.Move(), error.GetAllocator());
+    }
+
+    string keyword(validator.GetInvalidSchemaKeyword());
+    encode_key_value("keyword", keyword, violation, error);
+
+    error.AddMember(Value("violation").Move(), violation.Move(), error.GetAllocator());
+
+    return error;
 };
 
 template <> bool decode_value_by_key(const Value::Ch* key, const Value& container) {
@@ -480,6 +524,247 @@ template<> bool decode_value_by_key< kstring_t >(const Value::Ch* key, kstring_t
         }
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return false;
+};
+
+void ValidationError::compile() {
+    message.clear();
+    message += name;
+    string example;
+    Value::ConstMemberIterator reference = ontology.FindMember("violation");
+    if(reference != ontology.MemberEnd()) {
+        const Value& violation(reference->value);
+
+        try {
+            string invalid_element_path(decode_value_by_key< string >("invalid element path", violation));
+            string invalid_schema_path(decode_value_by_key< string >("invalid schema path", violation));
+
+            try {
+                const Value& schema(find_value_by_key("schema", violation));
+
+                string title;
+                if(decode_value_by_key< string >("title", title, schema)) {
+                    message += " in ";
+                    message += title;
+                    message += " directive";
+                }
+                message += "\n";
+
+                string description;
+                if(decode_value_by_key< string >("description", description, schema)) {
+                    message += "Directive description: ";
+                    message += description;
+                    message += "\n";
+                }
+
+                string keyword(decode_value_by_key< string >("keyword", violation));
+                const Value& schema_keyword_value(find_value_by_key(keyword.c_str(), schema));
+                const Value& element_value(find_value_by_key("element", violation));
+
+                message += "Error description: ";
+
+                if(keyword == "type") {
+                    message += "Expected type ";
+                    message += string(schema_keyword_value.GetString(), schema_keyword_value.GetStringLength());
+                    message += " but actual is ";
+                    switch (element_value.GetType()) {
+                        case Type::kNullType: {
+                            message += "null";
+                            break;
+                        };
+                        case Type::kFalseType:
+                        case Type::kTrueType: {
+                            message += "boolean";
+                            break;
+                        };
+                        case Type::kObjectType: {
+                            message += "object";
+                            break;
+                        };
+                        case Type::kArrayType: {
+                            message += "array";
+                            break;
+                        };
+                        case Type::kStringType: {
+                            message += "string";
+                            break;
+                        };
+                        case Type::kNumberType: {
+                            message += "number";
+                            break;
+                        };
+                        default:
+                            break;
+                    }
+
+                } else if(keyword == "required") {
+                    list< string > expected(decode_value_by_key< list< string > >(keyword.c_str(), schema));
+                    if(expected.size() > 0) {
+                        message += "Missing ";
+                        if(expected.size() > 1) {
+                            message += " one or more mandatory elements: ";
+                            for(auto& option : expected) {
+                                message += " ";
+                                message += option;
+                            }
+                        } else {
+                            message += "mandatory element: ";
+                            message += expected.front();
+                        }
+                        message += ".";
+                    }
+
+                } else if(keyword == "pattern") {
+                    string actual(decode_value_by_key< string >("element", violation));
+                    string expected(decode_value_by_key< string >(keyword.c_str(), schema));
+                    message += actual;
+                    message += " does not match pattern ";
+                    message += expected;
+
+                } else if(keyword == "enum") {
+                    string actual(decode_value_by_key< string >("element", violation));
+                    list< string > expected(decode_value_by_key< list< string > >(keyword.c_str(), schema));
+                    message += actual;
+                    message += " is not one of:";
+                    for(auto& option : expected) {
+                        message += " ";
+                        message += option;
+                    }
+                    message += ".";
+
+                } else if(keyword == "minimum") {
+                    string type(decode_value_by_key< string >("type", schema));
+                    if(type == "integer") {
+                        int64_t actual(decode_value_by_key< int64_t >("element", violation));
+                        int64_t expected(decode_value_by_key< int64_t >(keyword.c_str(), schema));
+                        message += to_string(actual);
+                        message += " is smaller than ";
+                        message += to_string(expected);
+                    } else {
+                        double actual(decode_value_by_key< double >("element", violation));
+                        double expected(decode_value_by_key< double >(keyword.c_str(), schema));
+                        message += to_string(actual);
+                        message += " is smaller than ";
+                        message += to_string(expected);
+                    }
+                    message += ".";
+
+                } else if(keyword == "maximum") {
+                    string type(decode_value_by_key< string >("type", schema));
+                    if(type == "integer") {
+                        int64_t actual(decode_value_by_key< int64_t >("element", violation));
+                        int64_t expected(decode_value_by_key< int64_t >(keyword.c_str(), schema));
+                        message += to_string(actual);
+                        message += " is bigger than ";
+                        message += to_string(expected);
+                    } else {
+                        double actual(decode_value_by_key< double >("element", violation));
+                        double expected(decode_value_by_key< double >(keyword.c_str(), schema));
+                        message += to_string(actual);
+                        message += " is bigger than ";
+                        message += to_string(expected);
+                    }
+                    message += ".";
+
+                } else if(keyword == "minLength") {
+                    int64_t actual(element_value.GetStringLength());
+                    int64_t expected(decode_value_by_key< int64_t >(keyword.c_str(), schema));
+                    message += "Expected at least ";
+                    message += to_string(expected);
+                    if(expected > 1) {
+                        message += " characters";
+                    } else {
+                        message += " character";
+                    }
+                    message += " in the string but found ";
+                    message += to_string(actual);
+                    message += ".";
+
+                } else if(keyword == "maxLength") {
+                    int64_t actual(element_value.GetStringLength());
+                    int64_t expected(decode_value_by_key< int64_t >(keyword.c_str(), schema));
+                    message += "Expected at most ";
+                    message += to_string(expected);
+                    if(expected > 1) {
+                        message += " characters";
+                    } else {
+                        message += " character";
+                    }
+                    message += " in the string but found ";
+                    message += to_string(actual);
+                    message += ".";
+
+                } else if(keyword == "minItems") {
+                    int64_t actual(element_value.Size());
+                    int64_t expected(decode_value_by_key< int64_t >(keyword.c_str(), schema));
+                    message += "Expected at least ";
+                    message += to_string(expected);
+                    if(expected > 1) {
+                        message += " items";
+                    } else {
+                        message += " item";
+                    }
+                    message += " in the array but found ";
+                    message += to_string(actual);
+                    message += ".";
+
+                } else if(keyword == "maxItems") {
+                    int64_t actual(element_value.Size());
+                    int64_t expected(decode_value_by_key< int64_t >(keyword.c_str(), schema));
+                    message += "Expected no more than ";
+                    message += to_string(expected);
+                    if(expected > 1) {
+                        message += " items";
+                    } else {
+                        message += " item";
+                    }
+                    message += " in array but found ";
+                    message += to_string(actual);
+                    message += ".";
+
+                } else {
+                    message += " uknown.";
+                }
+
+                reference = schema.FindMember("examples");
+                if(reference != ontology.MemberEnd()) {
+                    if(reference->value.IsArray() && !reference->value.Empty()) {
+                        example += "\nExample:";
+                        for(auto& e : reference->value.GetArray()) {
+                            example += "\n";
+                            StringBuffer string_buffer;
+                            PrettyWriter< StringBuffer > writer(string_buffer);
+                            e.Accept(writer);
+                            example += string(string_buffer.GetString());
+                        }
+                    }
+                }
+
+            } catch(ConfigurationError& error) {
+                // too bad...
+            }
+
+            message += "\nPath in document: ";
+            message += invalid_element_path;
+
+            string url;
+            if(decode_value_by_key< string >("url", url, ontology)) {
+                message += "\nDocument URL: ";
+                message += url;
+            }
+
+            if(!example.empty()) {
+                message += example;
+            }
+        } catch(ConfigurationError& error) {
+            message += " : unknown JSON schema violation";
+        }
+    } else {
+        message += " : unknown JSON schema violation";
+    }
+};
+ostream& ValidationError::describe(ostream& o) const {
+    o << message << endl;
+    return o;
 };
 
 void merge_json_value(const Value& base, Value& ontology, Document& document) {

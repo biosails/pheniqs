@@ -40,51 +40,6 @@ static int32_t compute_inheritence_depth(const string& key, const unordered_map<
     } else { throw ConfigurationError("referencing an unknown parent " + key); }
     return depth;
 };
-static void apply_inheritence_by_key(const Value::Ch* key, Value& container, Document& document) {
-    Value::MemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd()) {
-        if(reference->value.IsObject()) {
-
-            /*  map each object by key */
-            unordered_map< string, Value* > object_by_key;
-            for(auto& record : reference->value.GetObject()) {
-                if(!record.value.IsNull()) {
-                    record.value.RemoveMember("depth");
-                    object_by_key.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
-                }
-            }
-
-            /* compute the inheritence depth of each object and keep track of the max depth */
-            int32_t max_depth(0);
-            for(auto& record : object_by_key) {
-                try {
-                    max_depth = max(max_depth, compute_inheritence_depth(record.first, object_by_key, document));
-                } catch(ConfigurationError& error) {
-                    throw CommandLineError(record.first + " is " + error.message);
-                }
-            }
-
-            /* apply object inheritence down the tree */
-            int32_t depth(0);
-            for(int32_t i(1); i <= max_depth; ++i) {
-                for(auto& record : object_by_key) {
-                    Value* value = record.second;
-                    if(decode_value_by_key("depth", depth, *value) && depth == i) {
-                        string base;
-                        if(decode_value_by_key< string >("base", base, *value)) {
-                            merge_json_value(*object_by_key[base], *value, document);
-                            value->RemoveMember("base");
-                        }
-                    }
-                }
-            }
-
-            for(auto& record : object_by_key) {
-                record.second->RemoveMember("depth");
-            }
-        }
-    }
-};
 
 MultiplexJob::MultiplexJob(Document& operation) try :
     Job(operation),
@@ -92,11 +47,9 @@ MultiplexJob::MultiplexJob(Document& operation) try :
     end_of_input(false),
     thread_pool({NULL, 0}) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("MultiplexJob :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("MultiplexJob :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("MultiplexJob");
+        throw;
 };
 MultiplexJob::~MultiplexJob() {
     if(thread_pool.pool != NULL) {
@@ -112,23 +65,29 @@ MultiplexJob::~MultiplexJob() {
     input_feed_by_index.clear();
     output_feed_by_index.clear();
 };
-
-void MultiplexJob::load() {
-    validate_url_accessibility();
-    load_thread_pool();
-    load_input();
-    load_output();
-    load_pivot();
+void MultiplexJob::assemble() {
+    Job::assemble();
+    apply_inheritance();
+    clean();
 };
-void MultiplexJob::manipulate() {
+void MultiplexJob::compile() {
+    /* overlay on top of the default configuration */
+    apply_default();
+
+    /* overlay interactive parameters on top of the configuration */
+    apply_interactive();
+
+    /* compile a PG SAM header ontology with details about pheniqs */
     compile_PG();
+
     compile_input();
-    apply_inheritence_by_key("decoder", ontology, ontology);
-    compile_decoder_group("multiplex");
-    compile_decoder_group("molecular");
-    compile_decoder_group("cellular");
+    compile_barcode_decoding();
     compile_output();
+
+    /* Remove the decoder repository, it is no longer needed in the compiled instruction */
     ontology.RemoveMember("decoder");
+
+    Job::compile();
 };
 void MultiplexJob::validate() {
     Job::validate();
@@ -151,13 +110,12 @@ void MultiplexJob::validate() {
     validate_decoder_group("molecular");
     validate_decoder_group("cellular");
 };
-void MultiplexJob::describe(ostream& o) const {
-    print_global_instruction(o);
-    print_input_instruction(o);
-    print_transform_instruction(o);
-    print_multiplex_instruction(o);
-    print_molecular_instruction(o);
-    print_cellular_instruction(o);
+void MultiplexJob::load() {
+    validate_url_accessibility();
+    load_thread_pool();
+    load_input();
+    load_output();
+    load_pivot();
 };
 void MultiplexJob::execute() {
     load();
@@ -165,6 +123,7 @@ void MultiplexJob::execute() {
     stop();
     finalize();
 };
+
 void MultiplexJob::start() {
     for(auto feed : input_feed_by_index) {
         feed->open();
@@ -242,18 +201,107 @@ bool MultiplexJob::pull(Read& read) {
     }
     return !end_of_input;
 };
-void MultiplexJob::print_compiled(ostream& o) const {
-    Document compiled;
-    compiled.CopyFrom(ontology, compiled.GetAllocator());
-    compiled.RemoveMember("decoder");
-    compiled.RemoveMember("configuration url");
-    compiled.RemoveMember("full command");
-    compiled.RemoveMember("input feed");
-    compiled.RemoveMember("input feed by segment");
-    compiled.RemoveMember("operation");
-    compiled.RemoveMember("output feed");
-    compiled.RemoveMember("program");
-    print_json(compiled, o);
+void MultiplexJob::describe(ostream& o) const {
+    print_global_instruction(o);
+    print_input_instruction(o);
+    print_transform_instruction(o);
+    print_multiplex_instruction(o);
+    print_molecular_instruction(o);
+    print_cellular_instruction(o);
+};
+
+void MultiplexJob::apply_inheritance() {
+    apply_repository_inheritence("decoder", ontology, ontology);
+    apply_topic_inheritance("multiplex");
+    apply_topic_inheritance("molecular");
+    apply_topic_inheritance("cellular");
+};
+void MultiplexJob::apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document) {
+    Value::MemberIterator reference = container.FindMember(key);
+    if(reference != container.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            /*  map each object by key */
+            unordered_map< string, Value* > object_by_key;
+            for(auto& record : reference->value.GetObject()) {
+                if(!record.value.IsNull()) {
+                    record.value.RemoveMember("depth");
+                    object_by_key.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
+                }
+            }
+
+            /* compute the inheritence depth of each object and keep track of the max depth */
+            int32_t max_depth(0);
+            for(auto& record : object_by_key) {
+                try {
+                    max_depth = max(max_depth, compute_inheritence_depth(record.first, object_by_key, document));
+                } catch(ConfigurationError& error) {
+                    throw CommandLineError(record.first + " is " + error.message);
+                }
+            }
+
+            /* apply object inheritence down the tree */
+            int32_t depth(0);
+            for(int32_t i(1); i <= max_depth; ++i) {
+                for(auto& record : object_by_key) {
+                    Value* value = record.second;
+                    if(decode_value_by_key("depth", depth, *value) && depth == i) {
+                        string base;
+                        if(decode_value_by_key< string >("base", base, *value)) {
+                            merge_json_value(*object_by_key[base], *value, document);
+                            value->RemoveMember("base");
+                        }
+                    }
+                }
+            }
+
+            for(auto& record : object_by_key) {
+                record.second->RemoveMember("depth");
+            }
+        }
+    }
+};
+void MultiplexJob::apply_topic_inheritance(const Value::Ch* key) {
+    Value::MemberIterator reference = ontology.FindMember(key);
+    if(reference != ontology.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                try {
+                    apply_decoder_inheritance(reference->value);
+                } catch(ConfigurationError& error) {
+                    error.message.insert(0, string(key) + " decoder : ");
+                    throw error;
+                }
+            } else if(reference->value.IsArray()) {
+                int32_t index(0);
+                try {
+                    for(auto& element : reference->value.GetArray()) {
+                        apply_decoder_inheritance(element);
+                        ++index;
+                    }
+                } catch(ConfigurationError& error) {
+                    error.message.insert(0, string(key) + " decoder at " + to_string(index) + " : ");
+                    throw error;
+                }
+            }
+        }
+    }
+};
+void MultiplexJob::apply_decoder_inheritance(Value& value) {
+    if(value.IsObject()) {
+        string base;
+        Value::ConstMemberIterator reference;
+        if(decode_value_by_key< string >("base", base, value)) {
+            const Value* decoder_repository(decoder_repository_query.Get(ontology));
+            if(decoder_repository != NULL) {
+                reference = decoder_repository->FindMember(base.c_str());
+                if(reference != decoder_repository->MemberEnd()) {
+                    merge_json_value(reference->value, value, ontology);
+                } else { throw ConfigurationError("reference to an unknown base " + base); }
+            }
+        }
+        value.RemoveMember("base");
+        clean_json_value(value, ontology);
+    }
 };
 
 void MultiplexJob::compile_PG() {
@@ -281,212 +329,253 @@ void MultiplexJob::compile_PG() {
     ontology.AddMember(Value("program", ontology.GetAllocator()).Move(), PG.Move(), ontology.GetAllocator());
 };
 void MultiplexJob::compile_input() {
+    /* Populate the input_feed_by_index and input_feed_by_segment arrays */
+
     Platform platform(decode_value_by_key< Platform >("platform", ontology));
     int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
     uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
 
     expand_url_value_by_key("base input url", ontology, ontology);
-    expand_url_array_by_key("input", ontology, ontology, IoDirection::IN);
     URL base(decode_value_by_key< URL >("base input url", ontology));
 
+    expand_url_array_by_key("input", ontology, ontology, IoDirection::IN);
     relocate_url_array_by_key("input", ontology, ontology, base);
-    list< URL > feed_url_array(decode_value_by_key< list< URL > >("input", ontology));
+    list< URL > explicit_url_array(decode_value_by_key< list< URL > >("input", ontology));
 
-    /* encode the input segment cardinality */
-    int32_t input_segment_cardinality(static_cast< int32_t>(feed_url_array.size()));
-    encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
+    int32_t feed_index(0);
+    int32_t input_segment_cardinality(0);
+    if(sense_input_layout()) {
+        /*  create a proxy for each unique feed
+            feed_proxy_by_index is ordered by the first appearance of the url */
+        list< FeedProxy > feed_proxy_by_index;
+        unordered_map< URL, FeedProxy* > feed_proxy_by_url;
+        for(const auto& url : explicit_url_array) {
+            if(feed_proxy_by_url.count(url) == 0) {
+                Value element(kObjectType);
+                encode_key_value("index", feed_index, element, ontology);
+                encode_key_value("url", url, element, ontology);
+                encode_key_value("direction", IoDirection::IN, element, ontology);
+                encode_key_value("platform", platform, element, ontology);
+                encode_key_value("capacity", buffer_capacity, element, ontology);
+                encode_key_value("resolution", 1, element, ontology);
+                encode_key_value("phred offset", input_phred_offset, element, ontology);
+                feed_proxy_by_index.emplace_back(element);
+                feed_proxy_by_url.emplace(make_pair(url, &feed_proxy_by_index.back()));
+                ++feed_index;
+            }
+        }
+
+        /*  Detect the resolution of every feed
+            Count the number or consecutive reads with identical read id
+            The resolution is the number of segments of each read interleaved into the file
+            the read id of all interleaved blocks from all input feeds must match.
+            The sum of all uniqe input feed resolutions is the input segment cardinality */
+        unordered_map< URL, Feed* > feed_by_url;
+        unordered_map< URL, string > read_id_by_url;
+        for(auto& proxy : feed_proxy_by_index) {
+            Feed* feed(NULL);
+            int32_t resolution(0);
+            proxy.probe();
+            Segment segment;
+            string feed_read_id;
+            switch(proxy.kind()) {
+                case FormatKind::FASTQ: {
+                    FastqFeed* fastq_feed = new FastqFeed(proxy);
+                    fastq_feed->set_thread_pool(&thread_pool);
+                    fastq_feed->open();
+                    fastq_feed->replenish();
+                    if(fastq_feed->peek(segment, resolution)) {
+                        ++resolution;
+                        feed_read_id.assign(segment.name.s, segment.name.l);
+                        while (
+                            fastq_feed->peek(segment, resolution) &&
+                            feed_read_id.size() == segment.name.l &&
+                            strncmp(feed_read_id.c_str(), segment.name.s, segment.name.l)
+                        ) { ++resolution; }
+                    }
+                    fastq_feed->calibrate_resolution(resolution);
+                    feed = fastq_feed;
+                    break;
+                };
+                case FormatKind::HTS: {
+                    HtsFeed* hts_feed = new HtsFeed(proxy);
+                    hts_feed->set_thread_pool(&thread_pool);
+                    hts_feed->open();
+                    hts_feed->replenish();
+                    if(hts_feed->peek(segment, resolution)) {
+                        feed_read_id.assign(segment.name.s, segment.name.l);
+                        resolution = segment.total_segments();
+                    }
+                    hts_feed->calibrate_resolution(resolution);
+                    /*
+                        const HtsHeader& header = ((HtsFeed*)feed)->get_header();
+                        for(const auto& record : header.read_group_by_id) {}
+                    */
+                    feed = hts_feed;
+                    break;
+                };
+                case FormatKind::DEV_NULL: {
+                    throw ConfigurationError("/dev/null can not be used for input");
+                    break;
+                };
+                default: {
+                    throw ConfigurationError("unknown input format " + string(proxy.url));
+                    break;
+                };
+            }
+
+            read_id_by_url[proxy.url] = feed_read_id;
+            input_feed_by_index.push_back(feed);
+            feed_by_url.emplace(make_pair(proxy.url, feed));
+            input_segment_cardinality += resolution;
+        };
+
+        /* Check that the read id of all interleaved blocks from all input feeds match. */
+        if(input_segment_cardinality > 1) {
+            string anchor_read_id;
+            URL anchor_url;
+            for(auto& record : read_id_by_url) {
+                if(anchor_read_id.empty()) {
+                    anchor_url = record.first;
+                    anchor_read_id = record.second;
+                } else if(anchor_read_id != record.second) {
+                    throw ConfigurationError(string(anchor_url) + " and " + string(record.second) + " are out of sync");
+                }
+            }
+        }
+        encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
+
+        input_feed_by_segment.reserve(input_segment_cardinality);
+        for(auto& feed : input_feed_by_index) {
+            for(int32_t i(0); i < feed->resolution(); ++i) {
+                input_feed_by_segment.push_back(feed);
+            }
+        }
+
+        list< URL > feed_url_by_segment;
+        for(auto& feed : input_feed_by_segment) {
+            feed_url_by_segment.push_back(feed->url);
+        }
+        encode_key_value("input", feed_url_by_segment, ontology, ontology);
+        encode_key_value("input feed", input_feed_by_index, ontology, ontology);
+        encode_key_value("input feed by segment", input_feed_by_segment, ontology, ontology);
+
+    } else {
+        /* encode the input segment cardinality */
+        input_segment_cardinality = static_cast< int32_t>(explicit_url_array.size());
+        encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
+
+        list< URL > feed_url_by_index;
+        map< URL, int > feed_resolution;
+        for(const auto& url : explicit_url_array) {
+            auto record = feed_resolution.find(url);
+            if(record == feed_resolution.end()) {
+                feed_resolution[url] = 1;
+                feed_url_by_index.push_back(url);
+            } else { ++(record->second); }
+        }
+
+        unordered_map< URL, Value > feed_ontology_by_url;
+        for(const auto& url : feed_url_by_index) {
+            Value element(kObjectType);
+            int resolution(feed_resolution[url]);
+            encode_key_value("index", feed_index, element, ontology);
+            encode_key_value("url", url, element, ontology);
+            encode_key_value("direction", IoDirection::IN, element, ontology);
+            encode_key_value("platform", platform, element, ontology);
+            encode_key_value("capacity", buffer_capacity, element, ontology);
+            encode_key_value("resolution", resolution, element, ontology);
+            encode_key_value("phred offset", input_phred_offset, element, ontology);
+            feed_ontology_by_url.emplace(make_pair(url, move(element)));
+            ++feed_index;
+        }
+
+        Value feed_by_segment_array(kArrayType);
+        for(const auto& url : explicit_url_array) {
+            Value feed_ontology(feed_ontology_by_url[url], ontology.GetAllocator());
+            feed_by_segment_array.PushBack(feed_ontology.Move(), ontology.GetAllocator());
+        }
+        ontology.RemoveMember("input feed by segment");
+        ontology.AddMember("input feed by segment", feed_by_segment_array.Move(), ontology.GetAllocator());
+
+        Value feed_by_index_array(kArrayType);
+        for(const auto& url : feed_url_by_index) {
+            feed_by_index_array.PushBack(feed_ontology_by_url[url].Move(), ontology.GetAllocator());
+        }
+        feed_ontology_by_url.clear();
+
+        ontology.RemoveMember("input feed");
+        ontology.AddMember("input feed", feed_by_index_array.Move(), ontology.GetAllocator());
+    }
 
     /*  validate leading_segment_index */
     int32_t leading_segment_index(decode_value_by_key< int32_t >("leading segment index", leading_segment_index, ontology));
     if(leading_segment_index >= input_segment_cardinality) {
         throw ConfigurationError("leading segment index " + to_string(leading_segment_index) + " references non existing input segment");
     }
-
-    list< URL > feed_url_by_index;
-    map< URL, int > feed_resolution;
-    for(const auto& url : feed_url_array) {
-        auto record = feed_resolution.find(url);
-        if(record != feed_resolution.end()) {
-            ++(record->second);
-        } else {
-            feed_resolution[url] = 1;
-            feed_url_by_index.push_back(url);
-        }
-    }
-
-    int32_t feed_index(0);
-    unordered_map< URL, Value > feed_ontology_by_url;
-    for(const auto& url : feed_url_by_index) {
-        Value proxy(kObjectType);
-        int resolution(feed_resolution[url]);
-        encode_key_value("index", feed_index, proxy, ontology);
-        encode_key_value("url", url, proxy, ontology);
-        encode_key_value("direction", IoDirection::IN, proxy, ontology);
-        encode_key_value("platform", platform, proxy, ontology);
-        encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
-        encode_key_value("resolution", resolution, proxy, ontology);
-        encode_key_value("phred offset", input_phred_offset, proxy, ontology);
-        feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
-        ++feed_index;
-    }
-
-    Value feed_by_segment(kArrayType);
-    for(const auto& url : feed_url_array) {
-        const Value& proxy(feed_ontology_by_url[url]);
-        feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
-    }
-    ontology.RemoveMember("input feed by segment");
-    ontology.AddMember("input feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
-
-    Value feed_array(kArrayType);
-    for(const auto& url : feed_url_by_index) {
-        feed_array.PushBack(feed_ontology_by_url[url].Move(), ontology.GetAllocator());
-    }
-    ontology.RemoveMember("input feed");
-    ontology.AddMember("input feed", feed_array.Move(), ontology.GetAllocator());
 };
-void MultiplexJob::detect_input() {
-    Platform platform(decode_value_by_key< Platform >("platform", ontology));
-    int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
-    uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
+void MultiplexJob::compile_barcode_decoding() {
+    compile_topic("multiplex");
+    compile_topic("molecular");
+    compile_topic("cellular");
+};
+void MultiplexJob::compile_topic(const Value::Ch* key) {
+    Value::MemberIterator reference = ontology.FindMember(key);
+    if(reference != ontology.MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            /* aseemble a default decoder */
+            string decoder_projection_uri(key);
+            decoder_projection_uri.append(":decoder");
+            const Value* decoder_projection(find_projection(decoder_projection_uri));
 
-    expand_url_value_by_key("base input url", ontology, ontology);
-    URL base(decode_value_by_key< URL >("base input url", ontology));
-
-    expand_url_array_by_key("input", ontology, ontology, IoDirection::IN);
-    relocate_url_array_by_key("input", ontology, ontology, base);
-    list< URL > feed_url_array(decode_value_by_key< list< URL > >("input", ontology));
-
-    /* create a proxy for each feed */
-    int32_t feed_index(0);
-    list< FeedProxy > feed_proxy_by_index;
-    unordered_map< URL, FeedProxy* > feed_proxy_by_url;
-    for(const auto& url : feed_url_array) {
-        if(feed_proxy_by_url.count(url) == 0) {
-            Value element(kObjectType);
-            encode_key_value("index", feed_index, element, ontology);
-            encode_key_value("url", url, element, ontology);
-            encode_key_value("direction", IoDirection::IN, element, ontology);
-            encode_key_value("platform", platform, element, ontology);
-            encode_key_value("capacity", buffer_capacity, element, ontology);
-            encode_key_value("resolution", 1, element, ontology);
-            encode_key_value("phred offset", input_phred_offset, element, ontology);
-            feed_proxy_by_index.emplace_back(element);
-            feed_proxy_by_url.emplace(make_pair(url, &feed_proxy_by_index.back()));
-            ++feed_index;
-        }
-    }
-
-    /* count how many segment record have a read id that is identical to the first */
-    int32_t input_segment_cardinality(0);
-    unordered_map< URL, Feed* > feed_by_url;
-    unordered_map< URL, string > read_id_by_url;
-    for(auto& proxy : feed_proxy_by_index) {
-        proxy.probe();
-        Feed* feed(NULL);
-        Segment segment;
-        int32_t feed_segment_cardinality(0);
-        string feed_read_id;
-        switch(proxy.kind()) {
-            case FormatKind::FASTQ: {
-                FastqFeed* fastq_feed = new FastqFeed(proxy);
-                fastq_feed->set_thread_pool(&thread_pool);
-                fastq_feed->open();
-                fastq_feed->replenish();
-
-                if(fastq_feed->peek(segment, feed_segment_cardinality)) {
-                    ++feed_segment_cardinality;
-                    feed_read_id.assign(segment.name.s, segment.name.l);
-                    while (
-                        fastq_feed->peek(segment, feed_segment_cardinality) &&
-                        feed_read_id.size() == segment.name.l &&
-                        strncmp(feed_read_id.c_str(), segment.name.s, segment.name.l)
-                    ) { ++feed_segment_cardinality; }
-                }
-                fastq_feed->calibrate_resolution(feed_segment_cardinality);
-                feed = fastq_feed;
-                break;
-            };
-            case FormatKind::HTS: {
-                HtsFeed* hts_feed = new HtsFeed(proxy);
-                hts_feed->set_thread_pool(&thread_pool);
-                hts_feed->open();
-                hts_feed->replenish();
-
-                if(hts_feed->peek(segment, feed_segment_cardinality)) {
-                    feed_read_id.assign(segment.name.s, segment.name.l);
-                    feed_segment_cardinality = segment.total_segments();
-                }
-                hts_feed->calibrate_resolution(feed_segment_cardinality);
-                /*
-                    const HtsHeader& header = ((HtsFeed*)feed)->get_header();
-                    for(const auto& record : header.read_group_by_id) {}
-                */
-                feed = hts_feed;
-                break;
-            };
-            case FormatKind::DEV_NULL: {
-                throw ConfigurationError("can not use /dev/null for input");
-                break;
-            };
-            default: {
-                throw ConfigurationError("unknown input format " + string(proxy.url));
-                break;
-            };
-        }
-
-        read_id_by_url[proxy.url] = feed_read_id;
-        input_feed_by_index.push_back(feed);
-        feed_by_url.emplace(make_pair(proxy.url, feed));
-        input_segment_cardinality += feed_segment_cardinality;
-    };
-
-    /* check that all first reads have the same read id */
-    if(input_segment_cardinality > 1) {
-        URL first_url;
-        string first_read_id;
-        for(auto& record : read_id_by_url) {
-            if(first_read_id.empty()) {
-                first_url = record.first;
-                first_read_id = record.second;
-            } else if(first_read_id != record.second) {
-                throw ConfigurationError(string(first_url) + " and " + string(record.second) + " are out of sync");
+            Value decoder_template(kObjectType);
+            if(decoder_projection != NULL && !decoder_projection->IsNull()) {
+                decoder_template.CopyFrom(*decoder_projection, ontology.GetAllocator());
             }
+
+            /* project decoder attributes from the ontology root */
+            Value default_decoder(kObjectType);
+            project_json_value(decoder_template, ontology, default_decoder, ontology);
+
+            /* aseemble a default barcode */
+            string barcode_projection_uri(key);
+            barcode_projection_uri.append(":barcode");
+            const Value* barcode_projection(find_projection(barcode_projection_uri));
+
+            Value barcode_template(kObjectType);
+            if(barcode_projection != NULL && !barcode_projection->IsNull()) {
+                barcode_template.CopyFrom(*barcode_projection, ontology.GetAllocator());
+            }
+
+            /* project barcode attributes from the ontology root */
+            Value default_barcode(kObjectType);
+            project_json_value(barcode_template, ontology, default_barcode, ontology);
+
+            int32_t index(0);
+            if(reference->value.IsObject()) {
+                try {
+                    compile_decoder(reference->value, index, default_decoder, default_barcode);
+                } catch(ConfigurationError& error) {
+                    error.message.insert(0, string(key) + " decoder : ");
+                    throw error;
+                }
+            } else if(reference->value.IsArray()) {
+                try {
+                    for(auto& element : reference->value.GetArray()) {
+                        compile_decoder(element, index, default_decoder, default_barcode);
+                    }
+                } catch(ConfigurationError& error) {
+                    error.message.insert(0, string(key) + " decoder at " + to_string(index) + " : ");
+                    throw error;
+                }
+            }
+            clean_json_value(reference->value, ontology);
         }
     }
-
-    encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
-    input_feed_by_segment.reserve(input_segment_cardinality);
-    for(auto& feed : input_feed_by_index) {
-        for(int32_t i(0); i < feed->resolution(); ++i) {
-            input_feed_by_segment.push_back(feed);
-        }
-    }
-
-    list< URL > feed_url_by_segment;
-    for(auto& feed : input_feed_by_segment) {
-        feed_url_by_segment.push_back(feed->url);
-    }
-    encode_key_value("input", feed_url_by_segment, ontology, ontology);
-    encode_key_value("input feed", input_feed_by_index, ontology, ontology);
-    encode_key_value("input feed by segment", input_feed_by_segment, ontology, ontology);
 };
 void MultiplexJob::compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode) {
     if(value.IsObject()) {
-        string base;
-        if(decode_value_by_key< string >("base", base, value)) {
-            const Value* decoder_repository(decoder_repository_query.Get(ontology));
-            if(decoder_repository != NULL) {
-                Value::ConstMemberIterator reference = decoder_repository->FindMember(base.c_str());
-                if(reference != decoder_repository->MemberEnd()) {
-                    merge_json_value(reference->value, value, ontology);
-                } else { throw ConfigurationError("referencing an unknown base decoder " + base); }
-            }
-        }
-        value.RemoveMember("base");
         encode_key_value("index", index, value, ontology);
-        clean_json_value(value, ontology);
-
         compile_codec(value, default_decoder, default_barcode);
         compile_decoder_transformation(value);
         ++index;
@@ -567,56 +656,67 @@ void MultiplexJob::compile_codec(Value& value, const Value& default_decoder, con
         }
     }
 };
-void MultiplexJob::compile_decoder_group(const Value::Ch* key) {
-    Value::MemberIterator reference = ontology.FindMember(key);
-    if(reference != ontology.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            Value decoder_template(kObjectType);
-            string decoder_projection_uri(key);
-            decoder_projection_uri.append(":decoder");
+void MultiplexJob::compile_decoder_transformation(Value& value) {
+    if(value.HasMember("transform")) {
+        compile_transformation(value);
 
-            const Value* decoder_projection(find_projection(decoder_projection_uri));
-            if(decoder_projection != NULL && !decoder_projection->IsNull()) {
-                decoder_template.CopyFrom(*decoder_projection, ontology.GetAllocator());
+        Rule rule(decode_value_by_key< Rule >("transform", value));
+        int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
+
+        /* validate all tokens refer to an existing input segment */
+        for(auto& token : rule.token_array) {
+            if(!(token.input_segment_index < input_segment_cardinality)) {
+                throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
             }
-
-            Value barcode_template(kObjectType);
-            string barcode_projection_uri(key);
-            barcode_projection_uri.append(":barcode");
-
-            const Value* barcode_projection(find_projection(barcode_projection_uri));
-            if(barcode_projection != NULL && !barcode_projection->IsNull()) {
-                barcode_template.CopyFrom(*barcode_projection, ontology.GetAllocator());
-            }
-
-            /* project decoder attributes from the ontology root to create the default decoder */
-            Value default_decoder(kObjectType);
-            project_json_value(decoder_template, ontology, default_decoder, ontology);
-
-            /* project barcode attributes from the ontology root */
-            Value default_barcode(kObjectType);
-            project_json_value(barcode_template, ontology, default_barcode, ontology);
-
-            int32_t index(0);
-            if(reference->value.IsObject()) {
-                try {
-                    compile_decoder(reference->value, index, default_decoder, default_barcode);
-                } catch(ConfigurationError& error) {
-                    error.message.insert(0, string(key) + " decoder is ");
-                    throw error;
-                }
-            } else if(reference->value.IsArray()) {
-                try {
-                    for(auto& element : reference->value.GetArray()) {
-                        compile_decoder(element, index, default_decoder, default_barcode);
-                    }
-                } catch(ConfigurationError& error) {
-                    error.message.insert(0, string(key) + " decoder with index " + to_string(index) + " is ");
-                    throw error;
-                }
-            }
-            clean_json_value(reference->value, ontology);
         }
+
+        /* annotate the decoder with cardinality information from the transfortmation */
+        int32_t nucleotide_cardinality(0);
+        vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
+        for(auto& transform : rule.transform_array) {
+            if(transform.token.constant()) {
+                if(!transform.token.empty()) {
+                    barcode_length[transform.output_segment_index] += transform.token.length();
+                    nucleotide_cardinality += transform.token.length();
+                } else { throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty"); }
+            } else { throw ConfigurationError("barcode token " + string(transform.token) + " is not fixed width"); }
+        }
+        encode_key_value("segment cardinality", rule.output_segment_cardinality, value, ontology);
+        encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, ontology);
+        encode_key_value("barcode length", barcode_length, value, ontology);
+
+        /* annotate each barcode element with the barcode segment cardinality */
+        Value::MemberIterator reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                Value& undetermined(reference->value);
+
+                /* explicitly define a null barcode segment for the right dimension in the undetermined */
+                Value barcode(kArrayType);
+                for(size_t i(0); i < barcode_length.size(); ++i) {
+                    string sequence(barcode_length[i], '=');
+                    barcode.PushBack(Value(sequence.c_str(), sequence.size(), ontology.GetAllocator()).Move(), ontology.GetAllocator());
+                }
+                undetermined.RemoveMember("barcode");
+                undetermined.AddMember(Value("barcode", ontology.GetAllocator()).Move(), barcode.Move(), ontology.GetAllocator());
+                encode_key_value("segment cardinality", rule.output_segment_cardinality, undetermined, ontology);
+            }
+        }
+
+        reference = value.FindMember("codec");
+        if(reference != value.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    for(auto& record : reference->value.GetObject()) {
+                        encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, ontology);
+                    }
+                }
+            }
+        }
+
+        CodecMetric metric(value);
+        metric.compile_barcode_tolerance(value, ontology);
+
     }
 };
 void MultiplexJob::compile_output_transformation() {
@@ -804,69 +904,6 @@ void MultiplexJob::compile_transformation(Value& value) {
                 } else { throw ConfigurationError("transform element is missing a token array"); }
             }
         }
-    }
-};
-void MultiplexJob::compile_decoder_transformation(Value& value) {
-    if(value.HasMember("transform")) {
-        compile_transformation(value);
-
-        Rule rule(decode_value_by_key< Rule >("transform", value));
-        int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
-
-        /* validate all tokens refer to an existing input segment */
-        for(auto& token : rule.token_array) {
-            if(!(token.input_segment_index < input_segment_cardinality)) {
-                throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
-            }
-        }
-
-        /* annotate the decoder with cardinality information from the transfortmation */
-        int32_t nucleotide_cardinality(0);
-        vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
-        for(auto& transform : rule.transform_array) {
-            if(transform.token.constant()) {
-                if(!transform.token.empty()) {
-                    barcode_length[transform.output_segment_index] += transform.token.length();
-                    nucleotide_cardinality += transform.token.length();
-                } else { throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty"); }
-            } else { throw ConfigurationError("barcode token " + string(transform.token) + " is not fixed width"); }
-        }
-        encode_key_value("segment cardinality", rule.output_segment_cardinality, value, ontology);
-        encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, ontology);
-        encode_key_value("barcode length", barcode_length, value, ontology);
-
-        /* annotate each barcode element with the barcode segment cardinality */
-        Value::MemberIterator reference = value.FindMember("undetermined");
-        if(reference != value.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                Value& undetermined(reference->value);
-
-                /* explicitly define a null barcode segment for the right dimension in the undetermined */
-                Value barcode(kArrayType);
-                for(size_t i(0); i < barcode_length.size(); ++i) {
-                    string sequence(barcode_length[i], '=');
-                    barcode.PushBack(Value(sequence.c_str(), sequence.size(), ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                }
-                undetermined.RemoveMember("barcode");
-                undetermined.AddMember(Value("barcode", ontology.GetAllocator()).Move(), barcode.Move(), ontology.GetAllocator());
-                encode_key_value("segment cardinality", rule.output_segment_cardinality, undetermined, ontology);
-            }
-        }
-
-        reference = value.FindMember("codec");
-        if(reference != value.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                if(reference->value.IsObject()) {
-                    for(auto& record : reference->value.GetObject()) {
-                        encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, ontology);
-                    }
-                }
-            }
-        }
-
-        CodecMetric metric(value);
-        metric.compile_barcode_tolerance(value, ontology);
-
     }
 };
 bool MultiplexJob::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
@@ -1502,11 +1539,9 @@ MultiplexPivot::MultiplexPivot(MultiplexJob& job, const int32_t& index) try :
     load_cellular_decoding();
     clear();
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("MultiplexPivot :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("MultiplexPivot :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("MultiplexPivot");
+        throw;
 };
 void MultiplexPivot::load_multiplex_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("multiplex");
@@ -1531,10 +1566,10 @@ void MultiplexPivot::load_multiplex_decoding() {
                 multiplex = mdd_decoder;
                 break;
             };
-            case Algorithm::PIPE: {
-                PipeDecoder< Channel >* pipe_decoder(new PipeDecoder< Channel >(reference->value));
-                pipe_decoder->unclassified.populate(job.output_feed_by_url);
-                multiplex = pipe_decoder;
+            case Algorithm::TRANSPARENT: {
+                TransparentDecoder< Channel >* transparent_decoder(new TransparentDecoder< Channel >(reference->value));
+                transparent_decoder->unclassified.populate(job.output_feed_by_url);
+                multiplex = transparent_decoder;
                 break;
             };
             default:

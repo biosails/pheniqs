@@ -44,19 +44,21 @@ class MultiplexJob : public Job {
         inline bool display_distance() const {
             return decode_value_by_key< bool >("display distance", ontology);
         };
+        void assemble() override;
+        void compile() override;
+        void validate() override;
         void load() override;
-        void start();
-        void stop();
         void execute() override;
         void describe(ostream& o) const override;
+        void start();
+        void stop();
         bool pull(Read& read);
-        void print_compiled(ostream& o) const override;
 
     protected:
         const Pointer decoder_repository_query;
-
-        void manipulate() override;
-        void validate() override;
+        inline bool sense_input_layout() const {
+            return decode_value_by_key< bool >("sense input layout", interactive);
+        };
 
     private:
         bool end_of_input;
@@ -68,14 +70,19 @@ class MultiplexJob : public Job {
         unordered_map< URL, Feed* > output_feed_by_url;
         void compile_PG();
         void compile_input();
-        void detect_input();
+        void apply_inheritance();
+        void compile_barcode_decoding();
+
+        void apply_topic_inheritance(const Value::Ch* key);
+        void apply_decoder_inheritance(Value& value);
+        void compile_topic(const Value::Ch* key);
         void compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode);
-        void compile_decoder_group(const Value::Ch* key);
+        void compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode);
+        void compile_decoder_transformation(Value& value);
+        void apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document);
         void compile_output();
         void compile_output_transformation();
         void compile_transformation(Value& value);
-        void compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode);
-        void compile_decoder_transformation(Value& value);
         bool infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
         bool infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
         void pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality);

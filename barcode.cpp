@@ -39,11 +39,9 @@ Barcode::Barcode(const Value& ontology) try :
         } else { throw ConfigurationError("barcode must have exactly " + to_string(segment_cardinality()) + " segments"); }
     }
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("Barcode :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("Barcode :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("Barcode");
+        throw;
 };
 
 template<> vector< Barcode > decode_value_by_key(const Value::Ch* key, const Value& container) {

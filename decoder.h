@@ -33,7 +33,6 @@ class Decoder {
         virtual void decode(const Read& read, Read& output) {};
 };
 
-
 template < class T > class RoutingDecoder : public Decoder {
     public:
         T unclassified;
@@ -45,26 +44,22 @@ template < class T > class RoutingDecoder : public Decoder {
 
             decoded = &unclassified;
 
-            } catch(ConfigurationError& error) {
-                throw ConfigurationError("RoutingDecoder :: " + error.message);
-
-            } catch(exception& error) {
-                throw InternalError("RoutingDecoder :: " + string(error.what()));
+            } catch(Error& error) {
+                error.push("RoutingDecoder");
+                throw;
         };
         void decode(const Read& read, Read& output) override {};
 
 };
 
-template < class T > class PipeDecoder : public RoutingDecoder< T > {
+template < class T > class TransparentDecoder : public RoutingDecoder< T > {
     public:
-        PipeDecoder(const Value& ontology) try :
+        TransparentDecoder(const Value& ontology) try :
             RoutingDecoder< T >(ontology) {
 
-            } catch(ConfigurationError& error) {
-                throw ConfigurationError("PipeDecoder :: " + error.message);
-
-            } catch(exception& error) {
-                throw InternalError("PipeDecoder :: " + string(error.what()));
+            } catch(Error& error) {
+                error.push("TransparentDecoder");
+                throw;
         };
 };
 
@@ -75,11 +70,9 @@ template < class T > class DiscreteDecoder : public RoutingDecoder< T > {
             RoutingDecoder< T >(ontology),
             element_by_index(decode_value_by_key< vector< T > >("codec", ontology)) {
 
-            } catch(ConfigurationError& error) {
-                throw ConfigurationError("DiscreteDecoder :: " + error.message);
-
-            } catch(exception& error) {
-                throw InternalError("DiscreteDecoder :: " + string(error.what()));
+            } catch(Error& error) {
+                error.push("DiscreteDecoder");
+                throw;
         };
 };
 
@@ -93,11 +86,9 @@ template < class T > class ReadGroupDecoder : public DiscreteDecoder< T > {
                 element_by_rg.emplace(make_pair(string(element.rg.ID.s, element.rg.ID.l), &element));
             }
 
-            } catch(ConfigurationError& error) {
-                throw ConfigurationError("ReadGroupDecoder :: " + error.message);
-
-            } catch(exception& error) {
-                throw InternalError("ReadGroupDecoder :: " + string(error.what()));
+            } catch(Error& error) {
+                error.push("ReadGroupDecoder");
+                throw;
         };
         inline void decode(const Read& input, Read& output) override {
             this->decoded = &this->unclassified;
@@ -136,11 +127,9 @@ template < class T > class ObservationDecoder : public DiscreteDecoder< T > {
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
             decoding_distance(0) {
 
-            } catch(ConfigurationError& error) {
-                throw ConfigurationError("ObservationDecoder :: " + error.message);
-
-            } catch(exception& error) {
-                throw InternalError("ObservationDecoder :: " + string(error.what()));
+            } catch(Error& error) {
+                error.push("ObservationDecoder");
+                throw;
         };
 };
 
@@ -195,7 +184,6 @@ class CellularPAMLDecoder : public PAMLDecoder< Barcode > {
         CellularPAMLDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
-
 
 class MolecularNaiveDecoder : public Decoder {
     protected:

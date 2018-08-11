@@ -30,11 +30,9 @@ template < class T > MDDecoder< T >::MDDecoder(const Value& ontology) try :
         element_by_sequence.emplace(make_pair(string(element), &element));
     }
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("MDDecoder :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("MDDecoder :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("MDDecoder");
+        throw;
 };
 template < class T > bool MDDecoder< T >::match(T& barcode) {
     bool result(true);
@@ -99,11 +97,9 @@ template < class T > PAMLDecoder< T >::PAMLDecoder(const Value& ontology) try :
     conditioned_decoding_probability(0),
     decoding_probability(0) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("PAMLDecoder :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("PAMLDecoder :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("PAMLDecoder");
+        throw;
 };
 template < class T > void PAMLDecoder< T >::decode(const Read& input, Read& output) {
     this->observation.clear();
@@ -160,11 +156,9 @@ template < class T > void PAMLDecoder< T >::decode(const Read& input, Read& outp
 MultiplexMDDecoder::MultiplexMDDecoder(const Value& ontology) try :
     MDDecoder< Channel >(ontology) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("MultiplexMDDecoder :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("MultiplexMDDecoder :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("MultiplexMDDecoder");
+        throw;
 };
 void MultiplexMDDecoder::decode(const Read& input, Read& output) {
     MDDecoder< Channel >::decode(input, output);
@@ -176,11 +170,9 @@ void MultiplexMDDecoder::decode(const Read& input, Read& output) {
 MultiplexPAMLDecoder::MultiplexPAMLDecoder(const Value& ontology) try :
     PAMLDecoder< Channel >(ontology) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("MultiplexPAMLDecoder :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("MultiplexPAMLDecoder :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("MultiplexPAMLDecoder");
+        throw;
 };
 void MultiplexPAMLDecoder::decode(const Read& input, Read& output) {
     PAMLDecoder< Channel >::decode(input, output);
@@ -193,11 +185,9 @@ void MultiplexPAMLDecoder::decode(const Read& input, Read& output) {
 CellularMDDecoder::CellularMDDecoder(const Value& ontology) try :
     MDDecoder< Barcode >(ontology) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("CellularMDDecoder :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("CellularMDDecoder :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("CellularMDDecoder");
+        throw;
 };
 void CellularMDDecoder::decode(const Read& input, Read& output) {
     MDDecoder< Barcode >::decode(input, output);
@@ -213,11 +203,9 @@ void CellularMDDecoder::decode(const Read& input, Read& output) {
 CellularPAMLDecoder::CellularPAMLDecoder(const Value& ontology) try :
     PAMLDecoder< Barcode >(ontology) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("CellularPAMLDecoder :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("CellularPAMLDecoder :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("CellularPAMLDecoder");
+        throw;
 };
 void CellularPAMLDecoder::decode(const Read& input, Read& output) {
     PAMLDecoder< Barcode >::decode(input, output);
@@ -238,11 +226,9 @@ MolecularNaiveDecoder::MolecularNaiveDecoder(const Value& ontology) try :
     rule(decode_value_by_key< Rule >("transform", ontology)),
     observation(decode_value_by_key< int32_t >("segment cardinality", ontology)) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("MolecularNaiveDecoder :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("MolecularNaiveDecoder :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("MolecularNaiveDecoder");
+        throw;
 };
 void MolecularNaiveDecoder::decode(const Read& input, Read& output) {
     observation.clear();

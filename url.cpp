@@ -522,22 +522,6 @@ template<> URL decode_value_by_key(const Value::Ch* key, const Value& container)
         } else { throw ConfigurationError(string(key) + " not found"); }
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
-template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container) {
-    if(container.IsObject()) {
-        Value::ConstMemberIterator reference = container.FindMember(key);
-        if(reference != container.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                list< URL > value;
-                if(reference->value.IsArray()) {
-                    for(const auto& element : reference->value.GetArray()) {
-                        value.emplace_back(decode_value< URL >(element));
-                    }
-                }
-                return value;
-            } else { throw ConfigurationError(string(key) + " is null"); }
-        } else { throw ConfigurationError(string(key) + " not found"); }
-    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
-};
 template<> bool decode_value< URL >(URL& value, const Value& container) {
     if(!container.IsNull()) {
         if(container.IsString() || container.IsObject()) {
@@ -566,6 +550,25 @@ template<> bool decode_value< URL >(URL& value, const Value& container) {
         } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
     }
     return false;
+};
+
+template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container) {
+    if(container.IsObject()) {
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                list< URL > value;
+                if(reference->value.IsArray()) {
+                    for(const auto& element : reference->value.GetArray()) {
+                        value.emplace_back(decode_value< URL >(element));
+                    }
+                } else if(reference->value.IsString() || reference->value.IsObject()) {
+                    value.emplace_back(decode_value< URL >(reference->value));
+                }
+                return value;
+            } else { throw ConfigurationError(string(key) + " is null"); }
+        } else { throw ConfigurationError(string(key) + " not found"); }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
 template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container) {
     if(container.IsObject()) {

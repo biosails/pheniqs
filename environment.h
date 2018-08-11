@@ -25,20 +25,6 @@
 #include "interface.h"
 #include "multiplex.h"
 
-/* Those are possible return values when pheniqs terminates */
-enum class ProgramState : int8_t {
-    OK                         = 0,
-    UNKNOWN_ERROR              = 1,
-    INTERNAL_ERROR             = 2,
-    CONFIGURATION_ERROR        = 3,
-    OUT_OF_MEMORY_ERROR        = 4,
-    COMMAND_LINE_ERROR         = 5,
-    IO_ERROR                   = 6,
-    SEQUENCE_ERROR             = 7,
-    OVERFLOW_ERROR             = 8,
-    CORRUPT_AUXILIARY_ERROR    = 9,
-};
-
 class Environment {
     public:
         Environment(const int argc, const char** argv);

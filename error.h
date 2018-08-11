@@ -24,86 +24,106 @@
 
 #include "include.h"
 
-class InternalError : public exception {
-    public:
-        string message;
-        InternalError(const string& error) {
-            message.assign(error);
+/* Those are possible return values when pheniqs terminates */
+enum class ErrorCode : int8_t {
+    OK                         = 0,
+    UNKNOWN_ERROR              = 1,
+    INTERNAL_ERROR             = 2,
+    CONFIGURATION_ERROR        = 3,
+    OUT_OF_MEMORY_ERROR        = 4,
+    COMMAND_LINE_ERROR         = 5,
+    IO_ERROR                   = 6,
+    SEQUENCE_ERROR             = 7,
+    OVERFLOW_ERROR             = 8,
+    CORRUPT_AUXILIARY_ERROR    = 9,
+    JSON_VALIDATION_ERROR      = 10,
+};
+
+class Error : public exception {
+    protected:
+        Error(const string& name, const ErrorCode& code) :
+            name(name),
+            code(code) {
         };
-        const char* what() const throw() override {
-            return ("Internal error : " + message).c_str();
+        Error(const string& name, const ErrorCode& code, const string& message) :
+            name(name),
+            code(code),
+            message(message) {
+        };
+
+    public:
+        const string name;
+        const ErrorCode code;
+        list< string > stack;
+        string message;
+        void push(const string& where) {
+            stack.emplace_back(where);
+        };
+        const char* what() const noexcept override {
+            return name.c_str();
+        };
+        virtual ostream& describe(ostream& o) const {
+            o << name;
+            o << " : ";
+            o << message;
+            o << endl;
+            return o;
         };
 };
 
-class OutOfMemoryError : public exception {
+class OutOfMemoryError : public Error {
     public:
-        const char* what() const throw() override {
-            return "Out of memory error";
+        OutOfMemoryError() :
+            Error("Out of memory error", ErrorCode::OUT_OF_MEMORY_ERROR) {
         };
 };
 
-class ConfigurationError : public exception {
+class InternalError : public Error {
     public:
-        string message;
-        ConfigurationError(const string& error) {
-            message.assign(error);
-        };
-        const char* what() const throw() override {
-            return ("Configuration error: " + message).c_str();
+        InternalError(const string& message) :
+            Error("Internal error", ErrorCode::INTERNAL_ERROR, message) {
         };
 };
 
-class CommandLineError : public exception {
+class ConfigurationError : public Error {
     public:
-        string message;
-        CommandLineError(const string error) {
-            message = error;
-        };
-        const char* what() const throw() override {
-            return ("Command line error: " + message).c_str();
+        ConfigurationError(const string& message) :
+            Error("Configuration error", ErrorCode::CONFIGURATION_ERROR, message) {
         };
 };
 
-class IOError : public exception {
+class CommandLineError : public Error {
     public:
-        string message;
-        IOError(const string& error) {
-            message.assign(error);
-        };
-        const char* what() const throw() override {
-            return ("IO error : " + message).c_str();
+        CommandLineError(const string& message) :
+            Error("Command line error", ErrorCode::COMMAND_LINE_ERROR, message) {
         };
 };
 
-class SequenceError : public exception {
+class IOError : public Error {
     public:
-        string message;
-        SequenceError(const string& error) {
-            message.assign(error);
-        };
-        const char* what() const throw() override {
-            return ("Sequence error : " + message).c_str();
+        IOError(const string& message) :
+            Error("IO error", ErrorCode::IO_ERROR, message) {
         };
 };
 
-class OverflowError : public exception {
+class SequenceError : public Error {
     public:
-        string message;
-        OverflowError(const string& error) {
-            message.assign(error);
-        };
-        const char* what() const throw() override {
-            return ("Identifiers error : " + message).c_str();
+        SequenceError(const string& message) :
+            Error("Sequence error", ErrorCode::SEQUENCE_ERROR, message) {
         };
 };
-class CorruptAuxiliaryError : public exception {
+
+class OverflowError : public Error {
     public:
-        string message;
-        CorruptAuxiliaryError(const string& error) {
-            message.assign(error);
+        OverflowError(const string& message) :
+            Error("Overflow error", ErrorCode::OVERFLOW_ERROR, message) {
         };
-        const char* what() const throw() override {
-            return ("Corrupt auxiliary error : " + message).c_str();
+};
+
+class CorruptAuxiliaryError : public Error {
+    public:
+        CorruptAuxiliaryError(const string& message) :
+            Error("Corrupt auxiliary error", ErrorCode::CORRUPT_AUXILIARY_ERROR, message) {
         };
 };
 

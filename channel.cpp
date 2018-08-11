@@ -28,11 +28,9 @@ Channel::Channel(const Value& ontology) try :
     disable_quality_control(decode_value_by_key< bool >("disable quality control", ontology)),
     output_feed_url_by_segment(decode_value_by_key< list< URL > >("output", ontology)) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("Channel :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("Channel :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("Channel");
+        throw;
 };
 Channel::Channel(const Channel& other) :
     Barcode(other),

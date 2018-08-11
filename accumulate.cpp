@@ -167,11 +167,9 @@ SegmentAccumulator::SegmentAccumulator(const Value& ontology) try :
     shortest(numeric_limits< int32_t >::max()),
     nucleic_acid_count_by_code(IUPAC_CODE_SIZE, 0) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("SegmentAccumulator :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("SegmentAccumulator :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("SegmentAccumulator");
+        throw;
 };
 void SegmentAccumulator::finalize() {
     if(shortest == numeric_limits< int32_t >::max()) {
@@ -315,11 +313,9 @@ ChannelAccumulator::ChannelAccumulator(const Value& ontology) try :
     accumulated_pf_multiplex_confidence(0),
     segment_by_index(decode_value_by_key< vector< SegmentAccumulator > >("output feed by segment", ontology)) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("ChannelAccumulator :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("ChannelAccumulator :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("ChannelAccumulator");
+        throw;
 };
 void ChannelAccumulator::finalize(const OutputAccumulator& decoder_accumulator) {
     if(count > 0) {
@@ -433,11 +429,9 @@ InputAccumulator::InputAccumulator(const Value& ontology) try :
     pf_fraction(0),
     segment_by_index(decode_value_by_key< vector< SegmentAccumulator > >("input feed by segment", ontology)) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("InputAccumulator :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("InputAccumulator :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("InputAccumulator");
+        throw;
 };
 void InputAccumulator::finalize() {
     if(count > 0) {
@@ -499,11 +493,9 @@ OutputAccumulator::OutputAccumulator(const Value& ontology) try :
     channel_by_index(decode_value_by_key< vector< ChannelAccumulator > >("codec", ontology)),
     undetermined(find_value_by_key("undetermined", ontology)) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("OutputAccumulator :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("OutputAccumulator :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("OutputAccumulator");
+        throw;
 };
 void OutputAccumulator::finalize() {
     count += undetermined.count;

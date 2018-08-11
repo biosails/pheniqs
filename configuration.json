@@ -6,7 +6,7 @@
                     "/dev/stdin"
                 ],
                 "multiplex": {
-                    "algorithm": "pipe"
+                    "algorithm": "transparent"
                 },
                 "output": [
                     {
@@ -15,14 +15,19 @@
                     }
                 ]
             },
+            "description": "Demultiplex and Report Quality Control",
             "epilog": [
                 "To provide multiple paths to -i/--input and -o/--output repeat the flag before every path,",
                 "i.e. `pheniqs demux -i first_in.fastq -i second_in.fastq -o first_out.fastq -o second_out.fastq`",
                 "",
-                "-i/--input defaults to /dev/stdin, -o/--output default to /dev/stdout and output format default to SAM.",
-                "-I, --base-input and -O, --base-output default to the working directory."
+                "-i/--input defaults to /dev/stdin with inputing layout sensing.",
+                "-o/--output default to /dev/stdout with SAM format.",
+                "-I/--base-input and -O/--base-output default to the working directory.",
+                "-V/--validate, -C/--compile and -S/--static disable job excution and only emit information.",
+                "-s/--sense-input will analyze the first few reads of each input file to guess input layout.",
+                "The static configuration file emited by -S/--static resolves all imports into a single portable file.",
+                "The compiled configuration file emited by -C/--compile is ready for execution and all implicit attributes have been resolved."
             ],
-            "description": "Demultiplex and report quality control",
             "implementation": "multiplex",
             "name": "demux",
             "option": [
@@ -50,7 +55,7 @@
                         "-i",
                         "--input"
                     ],
-                    "help": "Path to input files",
+                    "help": "Path to an input file",
                     "meta": "PATH",
                     "name": "input",
                     "type": "url"
@@ -70,7 +75,7 @@
                         "-o",
                         "--output"
                     ],
-                    "help": "Path to output files",
+                    "help": "Path to an output file",
                     "meta": "PATH",
                     "name": "output",
                     "type": "url"
@@ -108,10 +113,19 @@
                 },
                 {
                     "handle": [
+                        "-s",
+                        "--sense-input"
+                    ],
+                    "help": "Sense input segment layout",
+                    "name": "sense input layout",
+                    "type": "boolean"
+                },
+                {
+                    "handle": [
                         "-V",
                         "--validate"
                     ],
-                    "help": "Only validate configuration",
+                    "help": "Validate configuration file and emit a report",
                     "name": "validate only",
                     "type": "boolean"
                 },
@@ -120,8 +134,17 @@
                         "-C",
                         "--compile"
                     ],
-                    "help": "Only compile configuration file",
+                    "help": "Compile configuration file and emit as JSON",
                     "name": "compile only",
+                    "type": "boolean"
+                },
+                {
+                    "handle": [
+                        "-S",
+                        "--static"
+                    ],
+                    "help": "Assemble a static configuration file and emit as JSON",
+                    "name": "static only",
                     "type": "boolean"
                 },
                 {
@@ -135,19 +158,10 @@
                 },
                 {
                     "handle": [
-                        "-p",
-                        "--multiplex-confidence"
-                    ],
-                    "help": "Decoding multiplex confidence threshold",
-                    "name": "multiplex confidence",
-                    "type": "decimal"
-                },
-                {
-                    "handle": [
                         "-f",
                         "--filtered"
                     ],
-                    "help": "Include filtered reads",
+                    "help": "Include reads not passing vendor QC",
                     "name": "include filtered",
                     "type": "boolean"
                 },
@@ -156,27 +170,34 @@
                         "-q",
                         "--quality"
                     ],
-                    "help": "Disable quality control",
+                    "help": "Disable quality control for a minor speed gain",
                     "name": "disable quality control",
                     "type": "boolean"
-                },
-                {
-                    "handle": [
-                        "-n",
-                        "--multiplex-noise"
-                    ],
-                    "help": "Multiplex noise prior probability",
-                    "name": "multiplex noise",
-                    "type": "decimal"
                 },
                 {
                     "handle": [
                         "-l",
                         "--leading"
                     ],
-                    "help": "Leading read segment",
+                    "help": "Leading read segment index",
                     "name": "leading segment index",
                     "type": "integer"
+                },
+                {
+                    "choice": [
+                        "fastq",
+                        "sam",
+                        "bam",
+                        "cram"
+                    ],
+                    "disabled": true,
+                    "handle": [
+                        "-F",
+                        "--format"
+                    ],
+                    "help": "Defult output format",
+                    "name": "format type",
+                    "type": "string"
                 },
                 {
                     "choice": [
@@ -211,91 +232,7 @@
                         "-B",
                         "--buffer"
                     ],
-                    "help": "Records per resolution in feed buffer",
-                    "name": "buffer capacity",
-                    "type": "integer"
-                }
-            ]
-        },
-        {
-            "default": {
-                "input url": null
-            },
-            "description": "Report quality control",
-            "name": "quality",
-            "option": [
-                {
-                    "handle": [
-                        "-h",
-                        "--help"
-                    ],
-                    "help": "Show this help",
-                    "name": "help only",
-                    "type": "boolean"
-                },
-                {
-                    "extension": [
-                        "fq",
-                        "fq.gz",
-                        "fastq",
-                        "fastq.gz",
-                        "bam",
-                        "cram",
-                        "sam"
-                    ],
-                    "handle": [
-                        "-i",
-                        "--input"
-                    ],
-                    "help": "Path to input file",
-                    "mandatory": true,
-                    "meta": "PATH",
-                    "name": "input url",
-                    "type": "url"
-                },
-                {
-                    "handle": [
-                        "-f",
-                        "--filtered"
-                    ],
-                    "help": "Include filtered reads",
-                    "name": "filtered",
-                    "type": "boolean"
-                },
-                {
-                    "choice": [
-                        "CAPILLARY",
-                        "LS454",
-                        "ILLUMINA",
-                        "SOLID",
-                        "HELICOS",
-                        "IONTORRENT",
-                        "ONT",
-                        "PACBIO"
-                    ],
-                    "handle": [
-                        "-P",
-                        "--platform"
-                    ],
-                    "help": "Sequencing platform",
-                    "name": "platform",
-                    "type": "string"
-                },
-                {
-                    "handle": [
-                        "-t",
-                        "--threads"
-                    ],
-                    "help": "IO thread pool size",
-                    "name": "threads",
-                    "type": "integer"
-                },
-                {
-                    "handle": [
-                        "-B",
-                        "--buffer"
-                    ],
-                    "help": "Records per resolution in feed buffer",
+                    "help": "Feed buffer capacity",
                     "name": "buffer capacity",
                     "type": "integer"
                 }
@@ -347,6 +284,7 @@
             "full command": null,
             "implementation": "generic",
             "projection": null,
+            "schema": null,
             "working directory": null
         },
         "cellular:barcode": {
@@ -422,6 +360,836 @@
             "quality masking threshold": 0,
             "segment cardinality": 0,
             "undetermined": null
+        }
+    },
+    "schema": {
+        "instruction:lax": {
+            "$ref": "#/definitions/instruction",
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "definitions": {
+                "barcode_length": {
+                    "examples": [
+                        [
+                            8,
+                            8
+                        ]
+                    ],
+                    "items": {
+                        "description": "Number of IUPAC encoded nucleotides in the technical sequence.",
+                        "examples": [
+                            16
+                        ],
+                        "minimum": 0,
+                        "title": "Barcode segment length",
+                        "type": "integer"
+                    },
+                    "minItems": 1,
+                    "title": "Barcode length array",
+                    "type": "array"
+                },
+                "barcode_sequence": {
+                    "examples": [
+                        [
+                            "CGAGGCTG",
+                            "AGAGGATA"
+                        ]
+                    ],
+                    "items": {
+                        "description": "IUPAC encoded DNA sequence. Degenerate nucleotides are not allowed.",
+                        "examples": [
+                            "CGAGGCTG"
+                        ],
+                        "format": "regex",
+                        "pattern": "^[ATCG=]+$",
+                        "title": "Barcode segment sequence",
+                        "type": "string"
+                    },
+                    "minItems": 1,
+                    "title": "Barcode sequence array",
+                    "type": "array"
+                },
+                "buffer_capacity": {
+                    "description": "Number of buffered records in an input or output feed.",
+                    "minimum": 16,
+                    "title": "Feed buffer capacity",
+                    "type": "integer"
+                },
+                "buffer_resolution": {
+                    "description": "Number of segments of each read interleaved into the feed.",
+                    "minimum": 1,
+                    "title": "Feed buffer resolution",
+                    "type": "integer"
+                },
+                "compile_only": {
+                    "type": "boolean"
+                },
+                "concentration": {
+                    "description": "Prior probability that a read will match the barcode.",
+                    "minimum": 0,
+                    "title": "Barcode concentration",
+                    "type": "number"
+                },
+                "confidence_threshold": {
+                    "description": "The non inclusive lower bound on the accepted decoding probability to be considered sucessful.",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "title": "Confidence threshold",
+                    "type": "number"
+                },
+                "decoder": {
+                    "properties": {
+                        "CN": {
+                            "$ref": "#/definitions/rg_cn"
+                        },
+                        "DS": {
+                            "$ref": "#/definitions/rg_ds"
+                        },
+                        "DT": {
+                            "$ref": "#/definitions/rg_dt"
+                        },
+                        "FO": {
+                            "$ref": "#/definitions/rg_fo"
+                        },
+                        "KS": {
+                            "$ref": "#/definitions/rg_ks"
+                        },
+                        "LB": {
+                            "$ref": "#/definitions/rg_lb"
+                        },
+                        "PG": {
+                            "$ref": "#/definitions/rg_pg"
+                        },
+                        "PI": {
+                            "$ref": "#/definitions/rg_pi"
+                        },
+                        "PL": {
+                            "$ref": "#/definitions/rg_pl"
+                        },
+                        "PM": {
+                            "$ref": "#/definitions/rg_pm"
+                        },
+                        "SM": {
+                            "$ref": "#/definitions/rg_sm"
+                        },
+                        "algorithm": {
+                            "$ref": "#/definitions/decoding_algorithm"
+                        },
+                        "barcode length": {
+                            "$ref": "#/definitions/barcode_length"
+                        },
+                        "base": {
+                            "description": "Reference to the name of a base decoder to inherit from in the decoder directive",
+                            "minLength": 1,
+                            "title": "Base",
+                            "type": "string"
+                        },
+                        "base output url": {
+                            "$ref": "#/definitions/url"
+                        },
+                        "codec": {
+                            "additionalProperties": {
+                                "$ref": "#/definitions/decoder_class"
+                            },
+                            "type": "object"
+                        },
+                        "confidence threshold": {
+                            "$ref": "#/definitions/confidence_threshold"
+                        },
+                        "distance tolerance": {
+                            "$ref": "#/definitions/distance_tolerance"
+                        },
+                        "flowcell id": {
+                            "$ref": "#/definitions/flowcell_id"
+                        },
+                        "flowcell lane number": {
+                            "$ref": "#/definitions/flowcell_lane_number"
+                        },
+                        "index": {
+                            "$ref": "#/definitions/index"
+                        },
+                        "noise": {
+                            "$ref": "#/definitions/noise"
+                        },
+                        "nucleotide cardinality": {
+                            "$ref": "#/definitions/nucleotide_cardinality"
+                        },
+                        "quality masking threshold": {
+                            "$ref": "#/definitions/quality_masking_threshold"
+                        },
+                        "segment cardinality": {
+                            "$ref": "#/definitions/segment_cardinality"
+                        },
+                        "shannon bound": {
+                            "$ref": "#/definitions/shannon_bound"
+                        },
+                        "transform": {
+                            "$ref": "#/definitions/transform"
+                        },
+                        "undetermined": {
+                            "$ref": "#/definitions/decoder_class"
+                        }
+                    },
+                    "type": "object"
+                },
+                "decoder_class": {
+                    "properties": {
+                        "BC": {
+                            "$ref": "#/definitions/rg_bc"
+                        },
+                        "CN": {
+                            "$ref": "#/definitions/rg_cn"
+                        },
+                        "DS": {
+                            "$ref": "#/definitions/rg_ds"
+                        },
+                        "DT": {
+                            "$ref": "#/definitions/rg_dt"
+                        },
+                        "FO": {
+                            "$ref": "#/definitions/rg_fo"
+                        },
+                        "ID": {
+                            "$ref": "#/definitions/rg_id"
+                        },
+                        "KS": {
+                            "$ref": "#/definitions/rg_ks"
+                        },
+                        "LB": {
+                            "$ref": "#/definitions/rg_lb"
+                        },
+                        "PG": {
+                            "$ref": "#/definitions/rg_pg"
+                        },
+                        "PI": {
+                            "$ref": "#/definitions/rg_pi"
+                        },
+                        "PL": {
+                            "$ref": "#/definitions/rg_pl"
+                        },
+                        "PM": {
+                            "$ref": "#/definitions/rg_pm"
+                        },
+                        "PU": {
+                            "$ref": "#/definitions/rg_pu"
+                        },
+                        "SM": {
+                            "$ref": "#/definitions/rg_sm"
+                        },
+                        "algorithm": {
+                            "$ref": "#/definitions/decoding_algorithm"
+                        },
+                        "barcode": {
+                            "$ref": "#/definitions/barcode_sequence"
+                        },
+                        "concentration": {
+                            "$ref": "#/definitions/concentration"
+                        },
+                        "disable quality control": {
+                            "$ref": "#/definitions/disable_quality_control"
+                        },
+                        "flowcell id": {
+                            "$ref": "#/definitions/flowcell_id"
+                        },
+                        "flowcell lane number": {
+                            "$ref": "#/definitions/flowcell_lane_number"
+                        },
+                        "include filtered": {
+                            "$ref": "#/definitions/include_filtered"
+                        },
+                        "index": {
+                            "$ref": "#/definitions/index"
+                        },
+                        "output": {
+                            "$ref": "#/definitions/url_array"
+                        },
+                        "output feed by segment": {
+                            "$ref": "#/definitions/feed_array"
+                        },
+                        "segment cardinality": {
+                            "$ref": "#/definitions/segment_cardinality"
+                        }
+                    },
+                    "type": "object"
+                },
+                "decoding_algorithm": {
+                    "description": "The decoding algorithm used by the decoder.",
+                    "enum": [
+                        "unknown",
+                        "mdd",
+                        "pamld",
+                        "naive",
+                        "transparent"
+                    ],
+                    "title": "Decoding algorithm",
+                    "type": "string"
+                },
+                "decoding_topic": {
+                    "items": {
+                        "$ref": "#/definitions/decoder"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "disable_quality_control": {
+                    "description": "Do not update Quality Control accumulators for a minor speed gain.",
+                    "title": "Disable quality control",
+                    "type": "boolean"
+                },
+                "distance_tolerance": {
+                    "description": "The maximum Hammig distance a minimum distance decoder will tolerate on each barcode segment",
+                    "items": {
+                        "description": "The maximum Hammig distance a minimum distance decoder will tolerate on the barcode segment",
+                        "minimum": 0,
+                        "title": "Segment distance tolerance",
+                        "type": "integer"
+                    },
+                    "minItems": 1,
+                    "title": "Distance tolerance array",
+                    "type": "array"
+                },
+                "feed": {
+                    "properties": {
+                        "capacity": {
+                            "$ref": "#/definitions/buffer_capacity"
+                        },
+                        "direction": {
+                            "$ref": "#/definitions/io_direction"
+                        },
+                        "index": {
+                            "$ref": "#/definitions/index"
+                        },
+                        "phred offset": {
+                            "$ref": "#/definitions/phred_offset"
+                        },
+                        "platform": {
+                            "$ref": "#/definitions/rg_pl"
+                        },
+                        "resolution": {
+                            "$ref": "#/definitions/buffer_resolution"
+                        },
+                        "url": {
+                            "$ref": "#/definitions/url"
+                        }
+                    },
+                    "type": "object"
+                },
+                "feed_array": {
+                    "items": {
+                        "$ref": "#/definitions/feed"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "flowcell_id": {
+                    "description": "A unique identifier of the flowcel used to deduce read group identifiers.",
+                    "minLength": 1,
+                    "title": "Flowcell ID",
+                    "type": "string"
+                },
+                "flowcell_lane_number": {
+                    "description": "The flowcel lane number used to deduce read group identifiers.",
+                    "minimum": 0,
+                    "title": "Flowcell lane number",
+                    "type": "integer"
+                },
+                "hd": {
+                    "GO": {
+                        "$ref": "#/definitions/hd_go"
+                    },
+                    "SO": {
+                        "$ref": "#/definitions/hd_so"
+                    },
+                    "VN": {
+                        "$ref": "#/definitions/hd_vn"
+                    }
+                },
+                "hd_go": {
+                    "description": "Grouping of alignments, indicating that similar alignment records are grouped together but the file is not necessarily sorted overall.",
+                    "enum": [
+                        "none",
+                        "query",
+                        "reference"
+                    ],
+                    "title": "Grouping order",
+                    "type": "string"
+                },
+                "hd_so": {
+                    "description": "Sorting order of alignments. For coordinate sort, the major sort key is the RNAME field, with order defined by the order of @SQ lines in the header. The minor sort key is the POS field. For alignments with equal RNAME and POS, order is arbitrary. All alignments with * in RNAME field follow alignments with some other value but otherwise are in arbitrary order.",
+                    "enum": [
+                        "unknown",
+                        "unsorted",
+                        "queryname",
+                        "coordinate"
+                    ],
+                    "title": "Sorting order",
+                    "type": "string"
+                },
+                "hd_vn": {
+                    "description": "HTS format version",
+                    "format": "regex",
+                    "pattern": "^[0-9]+\\.[0-9]+$",
+                    "title": "Format version",
+                    "type": "string"
+                },
+                "include_filtered": {
+                    "type": "boolean"
+                },
+                "index": {
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "instruction": {
+                    "properties": {
+                        "CN": {
+                            "$ref": "#/definitions/rg_cn"
+                        },
+                        "DS": {
+                            "$ref": "#/definitions/rg_ds"
+                        },
+                        "DT": {
+                            "$ref": "#/definitions/rg_dt"
+                        },
+                        "FO": {
+                            "$ref": "#/definitions/rg_fo"
+                        },
+                        "KS": {
+                            "$ref": "#/definitions/rg_ks"
+                        },
+                        "LB": {
+                            "$ref": "#/definitions/rg_lb"
+                        },
+                        "PG": {
+                            "$ref": "#/definitions/rg_pg"
+                        },
+                        "PI": {
+                            "$ref": "#/definitions/rg_pi"
+                        },
+                        "PL": {
+                            "$ref": "#/definitions/rg_pl"
+                        },
+                        "PM": {
+                            "$ref": "#/definitions/rg_pm"
+                        },
+                        "SM": {
+                            "$ref": "#/definitions/rg_sm"
+                        },
+                        "base input url": {
+                            "$ref": "#/definitions/url"
+                        },
+                        "base output url": {
+                            "$ref": "#/definitions/url"
+                        },
+                        "buffer capacity": {
+                            "$ref": "#/definitions/buffer_capacity"
+                        },
+                        "cellular": {
+                            "items": {
+                                "$ref": "#/definitions/decoder"
+                            },
+                            "minItems": 1,
+                            "title": "Cellular barcode decoder array",
+                            "type": "array"
+                        },
+                        "compile only": {
+                            "$ref": "#/definitions/compile_only"
+                        },
+                        "decoder": {
+                            "additionalProperties": {
+                                "$ref": "#/definitions/decoder"
+                            },
+                            "title": "Barcode decoder repository",
+                            "type": "object"
+                        },
+                        "disable quality control": {
+                            "$ref": "#/definitions/disable_quality_control"
+                        },
+                        "flowcell id": {
+                            "$ref": "#/definitions/flowcell_id"
+                        },
+                        "flowcell lane number": {
+                            "$ref": "#/definitions/flowcell_lane_number"
+                        },
+                        "import": {
+                            "description": "Array or URL paths to import. Relative paths are resolved relative to the importing file.",
+                            "items": {
+                                "$ref": "#/definitions/url"
+                            },
+                            "minItems": 1,
+                            "title": "Import",
+                            "type": "array"
+                        },
+                        "include filtered": {
+                            "$ref": "#/definitions/include_filtered"
+                        },
+                        "input": {
+                            "$ref": "#/definitions/url_array"
+                        },
+                        "input feed": {
+                            "$ref": "#/definitions/feed_array"
+                        },
+                        "input feed by segment": {
+                            "$ref": "#/definitions/feed_array"
+                        },
+                        "input phred offset": {
+                            "$ref": "#/definitions/phred_offset"
+                        },
+                        "input segment cardinality": {
+                            "$ref": "#/definitions/segment_cardinality"
+                        },
+                        "leading segment index": {
+                            "$ref": "#/definitions/leading_segment_index"
+                        },
+                        "molecular": {
+                            "items": {
+                                "$ref": "#/definitions/decoder"
+                            },
+                            "minItems": 1,
+                            "title": "Molecular barcode decoder array",
+                            "type": "array"
+                        },
+                        "multiplex": {
+                            "$ref": "#/definitions/decoder",
+                            "title": "Multiplex barcode decoder"
+                        },
+                        "output": {
+                            "$ref": "#/definitions/url_array"
+                        },
+                        "output feed": {
+                            "$ref": "#/definitions/feed_array"
+                        },
+                        "output phred offset": {
+                            "$ref": "#/definitions/phred_offset"
+                        },
+                        "output segment cardinality": {
+                            "$ref": "#/definitions/segment_cardinality"
+                        },
+                        "program": {
+                            "$ref": "#/definitions/pg"
+                        },
+                        "threads": {
+                            "$ref": "#/definitions/threads"
+                        },
+                        "transform": {
+                            "$ref": "#/definitions/transform"
+                        },
+                        "working directory": {
+                            "$ref": "#/definitions/url"
+                        }
+                    },
+                    "type": "object"
+                },
+                "io_direction": {
+                    "enum": [
+                        "in",
+                        "out"
+                    ],
+                    "type": "string"
+                },
+                "leading_segment_index": {
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "noise": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                },
+                "nucleotide_cardinality": {
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "pg": {
+                    "CL": {
+                        "$ref": "#/definitions/pg_cl"
+                    },
+                    "ID": {
+                        "$ref": "#/definitions/pg_id"
+                    },
+                    "PN": {
+                        "$ref": "#/definitions/pg_pn"
+                    },
+                    "VN": {
+                        "$ref": "#/definitions/pg_vn"
+                    }
+                },
+                "pg_cl": {
+                    "minLength": 1,
+                    "type": "string"
+                },
+                "pg_id": {
+                    "minLength": 1,
+                    "type": "string"
+                },
+                "pg_pn": {
+                    "minLength": 1,
+                    "type": "string"
+                },
+                "pg_vn": {
+                    "minLength": 1,
+                    "type": "string"
+                },
+                "phred_offset": {
+                    "Description": "The offset to add or remove to the ordinal of the Phred encoded quality score",
+                    "maximum": 128,
+                    "minimum": 0,
+                    "title": "Phred offset",
+                    "type": "integer"
+                },
+                "quality_masking_threshold": {
+                    "Description": "Lower bound on a nucloetide quality score to be considered for barcode evaluation.",
+                    "maximum": 128,
+                    "minimum": 0,
+                    "title": "Quality masking threshold",
+                    "type": "integer"
+                },
+                "rg": {
+                    "properties": {
+                        "BC": {
+                            "$ref": "#/definitions/rg_bc"
+                        },
+                        "CN": {
+                            "$ref": "#/definitions/rg_cn"
+                        },
+                        "DS": {
+                            "$ref": "#/definitions/rg_ds"
+                        },
+                        "DT": {
+                            "$ref": "#/definitions/rg_dt"
+                        },
+                        "FO": {
+                            "$ref": "#/definitions/rg_fo"
+                        },
+                        "ID": {
+                            "$ref": "#/definitions/rg_id"
+                        },
+                        "KS": {
+                            "$ref": "#/definitions/rg_ks"
+                        },
+                        "LB": {
+                            "$ref": "#/definitions/rg_lb"
+                        },
+                        "PG": {
+                            "$ref": "#/definitions/rg_pg"
+                        },
+                        "PI": {
+                            "$ref": "#/definitions/rg_pi"
+                        },
+                        "PL": {
+                            "$ref": "#/definitions/rg_pl"
+                        },
+                        "PM": {
+                            "$ref": "#/definitions/rg_pm"
+                        },
+                        "PU": {
+                            "$ref": "#/definitions/rg_pu"
+                        },
+                        "SM": {
+                            "$ref": "#/definitions/rg_sm"
+                        }
+                    }
+                },
+                "rg_bc": {
+                    "description": "Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors. If there are several barcodes, the recommended implementation concatenates all the barcodes separating them with hyphens.",
+                    "format": "regex",
+                    "pattern": "^[ATCG=-]+$",
+                    "title": "Read group barcode sequence",
+                    "type": "string"
+                },
+                "rg_cn": {
+                    "description": "Name of sequencing center producing the read.",
+                    "minLength": 1,
+                    "title": "Read group sequencing center",
+                    "type": "string"
+                },
+                "rg_ds": {
+                    "description": "Description. UTF-8 encoding may be used.",
+                    "minLength": 1,
+                    "title": "Read group description",
+                    "type": "string"
+                },
+                "rg_dt": {
+                    "description": "Date the run was produced (ISO8601 date or date/time).",
+                    "format": "date-time",
+                    "minLength": 1,
+                    "title": "Read group run date",
+                    "type": "string"
+                },
+                "rg_fo": {
+                    "description": "The array of nucleotide bases that correspond to the nucleotides used for each flow of each read. Multi-base flows are encoded in IUPAC format, and non-nucleotide flows by various other characters.",
+                    "fortmat": "regex",
+                    "pattern": "\\*|[ACMGRSVTWYHKDBN]+",
+                    "title": "Read group flow order",
+                    "type": "string"
+                },
+                "rg_id": {
+                    "description": "Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section. Read group IDs may be modified when merging SAM files in order to handle collisions.",
+                    "minLength": 1,
+                    "title": "Read group identifier",
+                    "type": "string"
+                },
+                "rg_ks": {
+                    "description": "The array of nucleotide bases that correspond to the key sequence of each read.",
+                    "minLength": 1,
+                    "title": "Read group key sequence",
+                    "type": "string"
+                },
+                "rg_lb": {
+                    "minLength": 1,
+                    "title": "Read group library",
+                    "type": "string"
+                },
+                "rg_pg": {
+                    "description": "Programs used for processing the read group.",
+                    "minLength": 1,
+                    "title": "Read group program",
+                    "type": "string"
+                },
+                "rg_pi": {
+                    "description": "Predicted median insert size.",
+                    "minLength": 1,
+                    "title": "Read group predicted insert size",
+                    "type": "string"
+                },
+                "rg_pl": {
+                    "description": "Platform or technology used to produce the reads.",
+                    "enum": [
+                        "UNKNOWN",
+                        "CAPILLARY",
+                        "LS454",
+                        "ILLUMINA",
+                        "SOLID",
+                        "HELICOS",
+                        "IONTORRENT",
+                        "ONT",
+                        "PACBIO"
+                    ],
+                    "title": "Read group platform",
+                    "type": "string"
+                },
+                "rg_pm": {
+                    "description": "Free-form text providing further details of the platform/technology used.",
+                    "minLength": 1,
+                    "title": "Platform model",
+                    "type": "string"
+                },
+                "rg_pu": {
+                    "description": "Platform unit Unique identifier.",
+                    "minLength": 1,
+                    "title": "Platform unit",
+                    "type": "string"
+                },
+                "rg_sm": {
+                    "description": "Use pool name where a pool is being sequenced.",
+                    "minLength": 1,
+                    "title": "Read group sample",
+                    "type": "string"
+                },
+                "segment_cardinality": {
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "segment_pattern": {
+                    "Description": "Pattern made of token references to assemble a segment",
+                    "format": "regex",
+                    "pattern": "^(~)?[0-9]+(:(~)?[0-9]+)*$",
+                    "title": "Segment pattern",
+                    "type": "string"
+                },
+                "segment_token": {
+                    "Description": "Token to extract from a segment",
+                    "format": "regex",
+                    "pattern": "^[0-9]+:(-?[0-9]+)?:(-?[0-9]+)?$",
+                    "title": "Segment token",
+                    "type": "string"
+                },
+                "shannon_bound": {
+                    "description": "The Shannon bound is a lower bound on the Hammig distance a minimum distance decoder can tolerate on each barcode segment",
+                    "items": {
+                        "description": "A lower bound on the Hammig distance a minimum distance decoder can tolerate on the barcode segment",
+                        "minimum": 0,
+                        "title": "Segment shannon bound",
+                        "type": "integer"
+                    },
+                    "minItems": 1,
+                    "title": "Shannon bound array",
+                    "type": "array"
+                },
+                "threads": {
+                    "description": "Number of parallel processing threads used by the pipeline.",
+                    "minimum": 1,
+                    "title": "Threads",
+                    "type": "integer"
+                },
+                "transform": {
+                    "Tile": "Transform",
+                    "properties": {
+                        "segment pattern": {
+                            "items": {
+                                "$ref": "#/definitions/segment_pattern"
+                            },
+                            "minItems": 1,
+                            "type": "array"
+                        },
+                        "token": {
+                            "items": {
+                                "$ref": "#/definitions/segment_token"
+                            },
+                            "minItems": 1,
+                            "type": "array"
+                        }
+                    },
+                    "required": [
+                        "token"
+                    ],
+                    "type": "object"
+                },
+                "url": {
+                    "description": "Either provide a file path as a string or a dictionary with a path and type attributes.",
+                    "oneOf": [
+                        {
+                            "properties": {
+                                "compression": {
+                                    "enum": [
+                                        "gz"
+                                    ],
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "enum": [
+                                        "fq",
+                                        "fastq",
+                                        "bam",
+                                        "cram",
+                                        "sam",
+                                        "json"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "path"
+                            ],
+                            "type": "object"
+                        },
+                        {
+                            "minLength": 1,
+                            "type": "string"
+                        }
+                    ],
+                    "title": "URL"
+                },
+                "url_array": {
+                    "items": {
+                        "$ref": "#/definitions/url"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                }
+            }
         }
     }
 }

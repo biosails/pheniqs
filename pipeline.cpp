@@ -24,43 +24,38 @@
 Job::Job(Document& operation) try :
     operation(move(operation)),
     report(kObjectType),
-    projection_query("/projection") {
+    interactive(this->operation["interactive"]),
+    schema_repository(this->operation["schema"]),
+    projection_repository(this->operation["projection"]) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("Job :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("Job :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("Job");
+        throw;
 };
 void Job::clean() {
     clean_json_value(ontology, ontology);
     sort_json_value(ontology, ontology);
 };
-void Job::assemble() {
+void Job::apply_default() {
     /* if the operation defines a default instruction overlay it on top of the ontology */
     Value::ConstMemberIterator reference = operation.FindMember("default");
     if(reference != operation.MemberEnd()) {
-        overlay(reference->value);
+        merge_json_value(reference->value, ontology, ontology);
     }
-
-    reference = operation.FindMember("interactive");
-    if(reference != operation.MemberEnd()) {
-        const Value& interactive(reference->value);
-
-        /* if a URL to an instruction file was provided in the interactive instruction, load it and overlay on top of the ontology */
-        URL configuration_url;
-        if(decode_value_by_key< URL >("configuration url", configuration_url, interactive)) {
-            configuration_url.normalize(IoDirection::IN);
-            overlay(read_instruction_document(configuration_url));
-        }
-
-        /* overlay the interactive instruction provided on the command line */
-        overlay(interactive);
+};
+void Job::apply_interactive() {
+    overlay(interactive);
+};
+void Job::assemble() {
+    /* if a URL to an instruction file was provided in the interactive instruction, load it and overlay on top of the ontology */
+    URL configuration_url;
+    if(decode_value_by_key< URL >("configuration url", configuration_url, interactive)) {
+        configuration_url.normalize(IoDirection::IN);
+        overlay(read_instruction_document(configuration_url));
     }
     clean();
 };
 void Job::compile() {
-    manipulate();
     remove_disabled();
     clean();
     validate();
@@ -93,42 +88,51 @@ void Job::overlay(const Value& instruction) {
 void Job::remove_disabled() {
     remove_disabled_from_json_value(ontology, ontology);
 };
-Document Job::read_instruction_document(const URL& url) const {
+Document Job::read_instruction_document(const URL& url) {
     set< URL > visited;
     Document document(load_document_with_import(url, visited));
     return document;
 };
-Document Job::load_document_with_import(const URL& url, set< URL >& visited) const {
+Document Job::load_document_with_import(const URL& url, set< URL >& visited) {
     Document document(kNullType);
     if(url.is_readable()) {
         ifstream file(url.path());
         const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
         file.close();
-
         if(!document.Parse(content.c_str()).HasParseError()) {
-            visited.emplace(url);
+            const SchemaDocument* schema_document(get_schema_document("instruction:lax"));
+            if(schema_document != NULL) {
+                SchemaValidator validator(*schema_document);
+                if(document.Accept(validator)) {
+                    visited.emplace(url);
+                    list< string > import;
+                    if(decode_value_by_key< list< string > >("import", import, document)) {
+                        Document aggregated(kNullType);
+                        for(auto& record : import) {
+                            URL import_url(expand_shell(record));
 
-            list< string > import;
-            if(decode_value_by_key< list< string > >("import", import, document)) {
-                Document aggregated(kNullType);
-                for(auto& record : import) {
-                    URL import_url(expand_shell(record));
+                            /* import url is resolved relative to the dirname of the importing document */
+                            import_url.relocate_sibling(url);
 
-                    /* import url is resolved relative to the dirname of the importing document */
-                    import_url.relocate_sibling(url);
-
-                    /* To avoid cyclical import a url is only visited once,
-                       the first time it is encountered on a depth first recursion.
-                       TODO: This should really use the inode number and not the url */
-                    if(!visited.count(import_url)) {
-                        Document imported(load_document_with_import(import_url, visited));
-                        merge_json_value(aggregated, imported, imported);
-                        aggregated.Swap(imported);
+                            /* To avoid cyclical import a url is only visited once,
+                               the first time it is encountered on a depth first recursion.
+                               TODO: This should really use the inode number and not the url */
+                            if(!visited.count(import_url)) {
+                                Document imported(load_document_with_import(import_url, visited));
+                                merge_json_value(aggregated, imported, imported);
+                                aggregated.Swap(imported);
+                            }
+                        }
+                        merge_json_value(aggregated, document, document);
                     }
+                    document.RemoveMember("import");
+
+                } else {
+                    Document error(encode_validation_error(validator, *find_schema("instruction:lax"), document));
+                    encode_key_value("url", url, error, error);
+                    throw ValidationError(error);
                 }
-                merge_json_value(aggregated, document, document);
-            }
-            document.RemoveMember("import");
+            } else { throw InternalError("no schema instruction:lax"); }
 
         } else {
             string message(GetParseError_En(document.GetParseError()));
@@ -141,14 +145,42 @@ Document Job::load_document_with_import(const URL& url, set< URL >& visited) con
 };
 const Value* Job::find_projection(const string& key) const {
     const Value* element(NULL);
-    const Value* projection_dictionary(projection_query.Get(operation));
-    if(projection_dictionary != NULL && projection_dictionary->IsObject()) {
-        Value::ConstMemberIterator reference = projection_dictionary->FindMember(key.c_str());
-        if(reference != ontology.MemberEnd()) {
+    if(projection_repository.IsObject()) {
+        Value::ConstMemberIterator reference = projection_repository.FindMember(key.c_str());
+        if(reference != projection_repository.MemberEnd()) {
             if(reference->value.IsObject()) {
                 element = &reference->value;
             }
         }
     }
     return element;
+};
+const Value* Job::find_schema(const string& key) const {
+    const Value* element(NULL);
+    if(schema_repository.IsObject()) {
+        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
+        if(reference != schema_repository.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                element = &reference->value;
+            }
+        }
+    }
+    return element;
+};
+const SchemaDocument* Job::get_schema_document(const string& key) {
+    const SchemaDocument* schema_document(NULL);
+    auto record = schema_document_by_name.find(key);
+    if(record != schema_document_by_name.end()) {
+        schema_document = &record->second;
+    } else {
+        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
+        if(reference != schema_repository.MemberEnd()) {
+            schema_document_by_name.emplace(make_pair(key, SchemaDocument(reference->value)));
+            record = schema_document_by_name.find(key);
+            if(record != schema_document_by_name.end()) {
+                schema_document = &record->second;
+            }
+        }
+    }
+    return schema_document;
 };

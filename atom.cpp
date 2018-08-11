@@ -315,13 +315,13 @@ template <> Platform decode_value_by_key(const Value::Ch* key, const Value& cont
 
 void to_string(const Algorithm& value, string& result) {
     switch(value) {
-        case Algorithm::UNKNOWN:      result.assign("unknown");    break;
-        case Algorithm::MDD:          result.assign("mdd");        break;
-        case Algorithm::PAMLD:        result.assign("pamld");      break;
-        case Algorithm::NAIVE:        result.assign("naive");      break;
-        case Algorithm::PIPE:         result.assign("pipe");       break;
-        case Algorithm::BENCHMARK:    result.assign("benchmark");  break;
-        default:                                                   break;
+        case Algorithm::UNKNOWN:      result.assign("unknown");     break;
+        case Algorithm::MDD:          result.assign("mdd");         break;
+        case Algorithm::PAMLD:        result.assign("pamld");       break;
+        case Algorithm::NAIVE:        result.assign("naive");       break;
+        case Algorithm::TRANSPARENT:  result.assign("transparent"); break;
+        case Algorithm::BENCHMARK:    result.assign("benchmark");   break;
+        default:                                                    break;
     }
 };
 bool from_string(const char* value, Algorithm& result) {
@@ -329,7 +329,7 @@ bool from_string(const char* value, Algorithm& result) {
     else if(!strcmp(value, "mdd"))          result = Algorithm::MDD;
     else if(!strcmp(value, "pamld"))        result = Algorithm::PAMLD;
     else if(!strcmp(value, "naive"))        result = Algorithm::NAIVE;
-    else if(!strcmp(value, "pipe"))         result = Algorithm::PIPE;
+    else if(!strcmp(value, "transparent"))  result = Algorithm::TRANSPARENT;
     else if(!strcmp(value, "benchmark"))    result = Algorithm::BENCHMARK;
     else                                    result = Algorithm::UNKNOWN;
 
@@ -392,11 +392,9 @@ HeadHDAtom::HeadHDAtom(const Value& ontology) try :
     decode_value_by_key< kstring_t >("SO", SO, ontology);
     decode_value_by_key< kstring_t >("GO", GO, ontology);
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("HeadHDAtom :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("HeadHDAtom :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("HeadHDAtom");
+        throw;
 };
 
 HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
@@ -518,11 +516,9 @@ HeadSQAtom::HeadSQAtom(const Value& ontology) try :
     decode_value_by_key< kstring_t >("SP", SP, ontology);
     decode_value_by_key< kstring_t >("UR", UR, ontology);
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("HeadSQAtom :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("HeadSQAtom :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("HeadSQAtom");
+        throw;
 };
 HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     SN({ 0, 0, NULL }),
@@ -720,11 +716,9 @@ HeadRGAtom::HeadRGAtom(const Value& ontology) try :
     decode_value_by_key< kstring_t >("PU", PU, ontology);
     decode_value_by_key< kstring_t >("SM", SM, ontology);
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("HeadRGAtom :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("HeadRGAtom :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("HeadRGAtom");
+        throw;
 };
 HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -1073,11 +1067,9 @@ HeadPGAtom::HeadPGAtom(const Value& ontology) try :
     decode_value_by_key< kstring_t >("DS", DS, ontology);
     decode_value_by_key< kstring_t >("VN", VN, ontology);
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("HeadPGAtom :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("HeadPGAtom :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("HeadPGAtom");
+        throw;
 };
 HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     ID({ 0, 0, NULL }),
@@ -1218,11 +1210,9 @@ HeadCOAtom::HeadCOAtom(const Value& ontology) try :
 
     decode_value_by_key< kstring_t >("CO", CO, ontology);
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("HeadCOAtom :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("HeadCOAtom :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("HeadCOAtom");
+        throw;
 };
 HeadCOAtom::HeadCOAtom(const HeadCOAtom& other) :
     CO({ 0, 0, NULL }){

@@ -26,11 +26,9 @@ Environment::Environment(const int argc, const char** argv) try :
     _help_only(interface.help_triggered()),
     _version_only(interface.version_triggered()) {
 
-    } catch(ConfigurationError& error) {
-        throw ConfigurationError("Environment :: " + error.message);
-
-    } catch(exception& error) {
-        throw InternalError("Environment :: " + string(error.what()));
+    } catch(Error& error) {
+        error.push("Environment");
+        throw;
 };
 Environment::~Environment() {
     for(auto& job : job_queue) {
@@ -91,20 +89,24 @@ void Environment::push_to_queue(Document& operation) {
 };
 void Environment::execute_job(Job* job) {
     if(job != NULL) {
-        job->compile();
-        if(job->is_validate_only()) {
-            job->describe(cerr);
+        if(job->is_static_only()) {
+            job->print_ontology(cout);
 
         } else if(job->is_lint_only()) {
             job->print_ontology(cout);
 
+        } else if(job->is_validate_only()) {
+            job->compile();
+            job->describe(cerr);
+
         } else if(job->is_compile_only()) {
-            job->print_compiled(cout);
+            job->compile();
+            job->print_ontology(cout);
 
         } else {
+            job->compile();
             job->execute();
             job->print_report(cerr);
-
         }
     }
 };

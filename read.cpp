@@ -23,10 +23,8 @@
 
 ostream& operator<<(ostream& o, const Segment& segment) {
     o << "Index : "     << segment.index << endl;
-    // o << "Platform : "  << segment.platform << endl;
     o << "Name : "      << segment.name.s << endl;
     o << "Flag : "      << segment.flag << endl;
-    // o << "Auxiliary : " << endl << segment.auxiliary << endl;
 
     string buffer;
     segment.encode_iupac_ambiguity(buffer);

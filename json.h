@@ -26,6 +26,27 @@
 #include "error.h"
 #include "kstring.h"
 
+class ValidationError : public Error {
+    public:
+        Document ontology;
+        ValidationError(Document& ontology) :
+            Error("JSON directive validation error", ErrorCode::JSON_VALIDATION_ERROR),
+            ontology(move(ontology)) {
+            compile();
+        };
+        ValidationError(const ValidationError& other) :
+            Error("JSON directive validation error", ErrorCode::JSON_VALIDATION_ERROR),
+            ontology(kObjectType) {
+            ontology.CopyFrom(other.ontology, ontology.GetAllocator());
+            compile();
+        };
+        ostream& describe(ostream& o) const override;
+
+    private:
+        void compile();
+};
+Document encode_validation_error(const SchemaValidator& validator, const Value& schema, const Value& container);
+
 void print_json(const Value& node, ostream& o=cout);
 Document* load_json(const string& path);
 

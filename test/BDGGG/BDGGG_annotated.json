@@ -1,10 +1,12 @@
 {
     "import": [ "BDGGG_interleave.json" ],
     "include filtered": false,
-    "molecular": {
-        "algorithm": "naive",
-        "transform": { "token": [ "0:8:16" ] }
-    },
+    "molecular": [
+        {
+            "algorithm": "naive",
+            "transform": { "token": [ "0:8:16" ] }
+        }
+    ],
     "multiplex": {
         "algorithm": "pamld",
         "base": "000000000-BDGGG_multiplex",
@@ -31,7 +33,6 @@
         "confidence threshold": 0.95,
         "noise": 0.02
     },
-    "output": [ "BDGGG_annotated.cram" ],
     "transform": {
         "token": [ "0::", "2::" ]
     },

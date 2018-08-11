@@ -33,17 +33,21 @@ class Job {
         Document report;
         Job(Document& operation);
         virtual ~Job() {};
-        inline bool is_compile_only() const {
-            return decode_value_by_key< bool >("compile only", ontology);
+        inline bool is_static_only() const {
+            return decode_value_by_key< bool >("static only", interactive);
         };
         inline bool is_lint_only() const {
-            return decode_value_by_key< bool >("lint only", ontology);
+            return decode_value_by_key< bool >("lint only", interactive);
         };
         inline bool is_validate_only() const {
-            return decode_value_by_key< bool >("validate only", ontology);
+            return decode_value_by_key< bool >("validate only", interactive);
+        };
+        inline bool is_compile_only() const {
+            return decode_value_by_key< bool >("compile only", interactive);
         };
         virtual void assemble();
         virtual void compile();
+        virtual void validate() {};
         virtual void load() {};
         virtual void execute() {};
         virtual void print_ontology(ostream& o) const;
@@ -52,17 +56,22 @@ class Job {
         virtual void describe(ostream& o) const;
 
     protected:
-        virtual void manipulate() {};
+        const Value& interactive;
+        const Value& schema_repository;
+        const Value& projection_repository;
+        void apply_default();
+        void apply_interactive();
         virtual void clean();
-        virtual void validate() {};
         void overlay(const Value& instruction);
         const Value* find_projection(const string& key) const;
-        Document read_instruction_document(const URL& url) const;
+        const Value* find_schema(const string& key) const;
+        const SchemaDocument* get_schema_document(const string& key);
+        Document read_instruction_document(const URL& url);
 
     private:
-        const Pointer projection_query;
+        unordered_map< string, const SchemaDocument > schema_document_by_name;
         void remove_disabled();
-        Document load_document_with_import(const URL& url, set< URL >& visited) const;
+        Document load_document_with_import(const URL& url, set< URL >& visited);
 };
 
 #endif /* PHENIQS_PIPELINE_H */

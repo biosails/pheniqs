@@ -196,11 +196,9 @@ class CodecMetric {
             }
             load();
 
-            } catch(ConfigurationError& error) {
-                throw ConfigurationError("CodecMetric :: " + error.message);
-
-            } catch(exception& error) {
-                throw InternalError("CodecMetric :: " + string(error.what()));
+            } catch(Error& error) {
+                error.push("CodecMetric");
+                throw;
         };
         inline bool empty() const {
             return concatenated_metric.empty();

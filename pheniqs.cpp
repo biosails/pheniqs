@@ -22,48 +22,21 @@
 #include "environment.h"
 
 int main(int argc, char** argv) {
-    int return_code(static_cast< int >(ProgramState::OK));
+    int return_code(static_cast< int >(ErrorCode::OK));
 
     try {
         Environment environment(argc, (const char**)argv);
         environment.execute();
 
-    } catch(InternalError& error) {
-        cerr << error.what() << endl;
-        return_code = static_cast< int >(ProgramState::INTERNAL_ERROR);
-
-    } catch(ConfigurationError& error) {
-        cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::CONFIGURATION_ERROR);
-
-    } catch(OutOfMemoryError& error) {
-        cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::OUT_OF_MEMORY_ERROR);
-
-    } catch(CommandLineError& error) {
-        cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::COMMAND_LINE_ERROR);
-
-    } catch(IOError& error) {
-        cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::IO_ERROR);
-
-    } catch(SequenceError& error) {
-        cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::SEQUENCE_ERROR);
-
-    } catch(OverflowError& error) {
-        cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::OVERFLOW_ERROR);
-
-    } catch(CorruptAuxiliaryError& error) {
-        cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::CORRUPT_AUXILIARY_ERROR);
+    } catch(Error& error) {
+        error.describe(cerr) << endl;
+        return_code = static_cast< int >(error.code);
 
     } catch(exception& error) {
         cerr << error.what() << endl;
-        return_code =  static_cast< int >(ProgramState::UNKNOWN_ERROR);
+        return_code =  static_cast< int >(ErrorCode::UNKNOWN_ERROR);
 
     }
+
     return return_code;
 };
