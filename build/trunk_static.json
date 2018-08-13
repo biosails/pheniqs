@@ -51,10 +51,10 @@
             ],
             "name": "htslib",
             "remote url": [
-                "https://github.com/samtools/htslib/releases/download/1.8/htslib-1.8.tar.bz2",
-                "http://albireo.bio.nyu.edu/~lg/pheniqs/htslib-1.8.tar.bz2"
+                "https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2",
+                "http://albireo.bio.nyu.edu/~lg/pheniqs/htslib-1.9.tar.bz2"
             ],
-            "sha1": "d9d9a1d03991da0738bf2eecb54bfb620cc776b3"
+            "sha1": "21be5187203df30637dda2e1133cae2e833ef050"
         },
         {
             "name": "rapidjson",
