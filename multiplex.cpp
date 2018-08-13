@@ -217,70 +217,74 @@ void MultiplexJob::apply_inheritance() {
     apply_topic_inheritance("cellular");
 };
 void MultiplexJob::apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document) {
-    Value::MemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            /*  map each object by key */
-            unordered_map< string, Value* > object_by_key;
-            for(auto& record : reference->value.GetObject()) {
-                if(!record.value.IsNull()) {
-                    record.value.RemoveMember("depth");
-                    object_by_key.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
+    if(container.IsObject()) {
+        Value::MemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                /*  map each object by key */
+                unordered_map< string, Value* > object_by_key;
+                for(auto& record : reference->value.GetObject()) {
+                    if(!record.value.IsNull()) {
+                        record.value.RemoveMember("depth");
+                        object_by_key.emplace(make_pair(string(record.name.GetString(), record.name.GetStringLength()), &record.value));
+                    }
                 }
-            }
 
-            /* compute the inheritence depth of each object and keep track of the max depth */
-            int32_t max_depth(0);
-            for(auto& record : object_by_key) {
-                try {
-                    max_depth = max(max_depth, compute_inheritence_depth(record.first, object_by_key, document));
-                } catch(ConfigurationError& error) {
-                    throw CommandLineError(record.first + " is " + error.message);
-                }
-            }
-
-            /* apply object inheritence down the tree */
-            int32_t depth(0);
-            for(int32_t i(1); i <= max_depth; ++i) {
+                /* compute the inheritence depth of each object and keep track of the max depth */
+                int32_t max_depth(0);
                 for(auto& record : object_by_key) {
-                    Value* value = record.second;
-                    if(decode_value_by_key("depth", depth, *value) && depth == i) {
-                        string base;
-                        if(decode_value_by_key< string >("base", base, *value)) {
-                            merge_json_value(*object_by_key[base], *value, document);
-                            value->RemoveMember("base");
+                    try {
+                        max_depth = max(max_depth, compute_inheritence_depth(record.first, object_by_key, document));
+                    } catch(ConfigurationError& error) {
+                        throw CommandLineError(record.first + " is " + error.message);
+                    }
+                }
+
+                /* apply object inheritence down the tree */
+                int32_t depth(0);
+                for(int32_t i(1); i <= max_depth; ++i) {
+                    for(auto& record : object_by_key) {
+                        Value* value = record.second;
+                        if(decode_value_by_key("depth", depth, *value) && depth == i) {
+                            string base;
+                            if(decode_value_by_key< string >("base", base, *value)) {
+                                merge_json_value(*object_by_key[base], *value, document);
+                                value->RemoveMember("base");
+                            }
                         }
                     }
                 }
-            }
 
-            for(auto& record : object_by_key) {
-                record.second->RemoveMember("depth");
+                for(auto& record : object_by_key) {
+                    record.second->RemoveMember("depth");
+                }
             }
         }
     }
 };
 void MultiplexJob::apply_topic_inheritance(const Value::Ch* key) {
-    Value::MemberIterator reference = ontology.FindMember(key);
-    if(reference != ontology.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                try {
-                    apply_decoder_inheritance(reference->value);
-                } catch(ConfigurationError& error) {
-                    error.message.insert(0, string(key) + " decoder : ");
-                    throw error;
-                }
-            } else if(reference->value.IsArray()) {
-                int32_t index(0);
-                try {
-                    for(auto& element : reference->value.GetArray()) {
-                        apply_decoder_inheritance(element);
-                        ++index;
+    if(ontology.IsObject()) {
+        Value::MemberIterator reference = ontology.FindMember(key);
+        if(reference != ontology.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                if(reference->value.IsObject()) {
+                    try {
+                        apply_decoder_inheritance(reference->value);
+                    } catch(ConfigurationError& error) {
+                        error.message.insert(0, string(key) + " decoder : ");
+                        throw error;
                     }
-                } catch(ConfigurationError& error) {
-                    error.message.insert(0, string(key) + " decoder at " + to_string(index) + " : ");
-                    throw error;
+                } else if(reference->value.IsArray()) {
+                    int32_t index(0);
+                    try {
+                        for(auto& element : reference->value.GetArray()) {
+                            apply_decoder_inheritance(element);
+                            ++index;
+                        }
+                    } catch(ConfigurationError& error) {
+                        error.message.insert(0, string(key) + " decoder at " + to_string(index) + " : ");
+                        throw error;
+                    }
                 }
             }
         }

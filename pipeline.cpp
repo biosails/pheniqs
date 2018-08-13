@@ -23,6 +23,7 @@
 
 Job::Job(Document& operation) try :
     operation(move(operation)),
+    ontology(kObjectType),
     report(kObjectType),
     interactive(this->operation["interactive"]),
     schema_repository(this->operation["schema"]),
@@ -53,7 +54,6 @@ void Job::assemble() {
         configuration_url.normalize(IoDirection::IN);
         overlay(read_instruction_document(configuration_url));
     }
-    clean();
 };
 void Job::compile() {
     remove_disabled();
