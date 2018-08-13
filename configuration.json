@@ -410,17 +410,25 @@
                 },
                 "buffer_capacity": {
                     "description": "Number of buffered records in an input or output feed.",
+                    "examples": [
+                        2048
+                    ],
                     "minimum": 16,
                     "title": "Feed buffer capacity",
                     "type": "integer"
                 },
                 "buffer_resolution": {
                     "description": "Number of segments of each read interleaved into the feed.",
+                    "examples": [
+                        4
+                    ],
                     "minimum": 1,
                     "title": "Feed buffer resolution",
                     "type": "integer"
                 },
                 "compile_only": {
+                    "description": "Compile instructions and emit as JSON without executing.",
+                    "title": "Compile instruction",
                     "type": "boolean"
                 },
                 "concentration": {
@@ -430,7 +438,7 @@
                     "type": "number"
                 },
                 "confidence_threshold": {
-                    "description": "The non inclusive lower bound on the accepted decoding probability to be considered sucessful.",
+                    "description": "Non inclusive lower bound on the accepted decoding probability to be considered sucessful.",
                     "maximum": 1,
                     "minimum": 0,
                     "title": "Confidence threshold",
@@ -478,10 +486,7 @@
                             "$ref": "#/definitions/barcode_length"
                         },
                         "base": {
-                            "description": "Reference to the name of a base decoder to inherit from in the decoder directive",
-                            "minLength": 1,
-                            "title": "Base",
-                            "type": "string"
+                            "$ref": "#/definitions/decoder_base"
                         },
                         "base output url": {
                             "$ref": "#/definitions/url"
@@ -530,6 +535,12 @@
                         }
                     },
                     "type": "object"
+                },
+                "decoder_base": {
+                    "description": "Reference to the name of a base decoder to inherit from in the decoder directive",
+                    "minLength": 1,
+                    "title": "Base",
+                    "type": "string"
                 },
                 "decoder_class": {
                     "properties": {
@@ -612,9 +623,8 @@
                     "type": "object"
                 },
                 "decoding_algorithm": {
-                    "description": "The decoding algorithm used by the decoder.",
+                    "description": "The decoding algorithm used by the decoder. MDD is the miniumum distance decoder, PAMLD is the Phred-Adjusted Maximum Likelihood decoder. The Naive decoder will populate SAM auxiliary tags without attempting error correction and the transparent simply route all read to the default output.",
                     "enum": [
-                        "unknown",
                         "mdd",
                         "pamld",
                         "naive",
@@ -637,8 +647,17 @@
                 },
                 "distance_tolerance": {
                     "description": "The maximum Hammig distance a minimum distance decoder will tolerate on each barcode segment",
+                    "examples": [
+                        [
+                            2,
+                            1
+                        ]
+                    ],
                     "items": {
                         "description": "The maximum Hammig distance a minimum distance decoder will tolerate on the barcode segment",
+                        "examples": [
+                            1
+                        ],
                         "minimum": 0,
                         "title": "Segment distance tolerance",
                         "type": "integer"
@@ -682,12 +701,18 @@
                 },
                 "flowcell_id": {
                     "description": "A unique identifier of the flowcel used to deduce read group identifiers.",
+                    "examples": [
+                        "CBJLFACXX"
+                    ],
                     "minLength": 1,
                     "title": "Flowcell ID",
                     "type": "string"
                 },
                 "flowcell_lane_number": {
                     "description": "The flowcel lane number used to deduce read group identifiers.",
+                    "examples": [
+                        3
+                    ],
                     "minimum": 0,
                     "title": "Flowcell lane number",
                     "type": "integer"
@@ -732,6 +757,8 @@
                     "type": "string"
                 },
                 "include_filtered": {
+                    "description": "Include reads not passing vendor Quality Control filter in the output.",
+                    "title": "Include filtered",
                     "type": "boolean"
                 },
                 "index": {
@@ -886,12 +913,16 @@
                     "type": "string"
                 },
                 "leading_segment_index": {
+                    "description": "The index of the default segment to query for metadata for tagging output reads.",
                     "minimum": 0,
+                    "title": "Leading segment index",
                     "type": "integer"
                 },
                 "noise": {
+                    "description": "The prior on the expected probability that a read did not originate from any of the classes defined in the decoder. This is a probability value used by PAMLD decoders when computing the Baysian decoding probability.",
                     "maximum": 1,
                     "minimum": 0,
+                    "title": "Noise",
                     "type": "number"
                 },
                 "nucleotide_cardinality": {
@@ -1085,7 +1116,9 @@
                     "type": "string"
                 },
                 "segment_cardinality": {
+                    "Description": "Total number of segments in the read.",
                     "minimum": 0,
+                    "title": "Segment cardinality",
                     "type": "integer"
                 },
                 "segment_pattern": {
