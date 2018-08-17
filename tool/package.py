@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Pheniqs : PHilology ENcoder wIth Quality Statistics
@@ -19,91 +20,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import io
-import os
-import re
-import sys
-import json
-import logging
-import hashlib
-from datetime import datetime
-from subprocess import Popen, PIPE
 import urllib.request, urllib.parse, urllib.error
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from http.client import BadStatusLine
 
-from error import *
-
-def to_json(node):
-    return json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4)
-
-split_class = lambda x: (x[0:x.rfind('.')], x[x.rfind('.') + 1:])
-
-def remove_directory(directory, log):
-    if os.path.exists(directory):
-        log.info('removing {}'.format(directory))
-        command = [ 'rm', '-rf' ]
-        command.append(directory)
-        process = Popen(
-            args=command,
-            stdout=PIPE,
-            stderr=PIPE
-        )
-        output, error = process.communicate()
-        code = process.returncode
-        if code is not 0:
-            print(output, error, code)
-            raise CommandFailedError('failed to remove directory {}'.format(directory))
-
-def prepare_path(path, log, overwrite=True):
-    def check_permission(path):
-        directory = os.path.dirname(path)
-        writable = os.access(directory, os.W_OK)
-        present = os.path.exists(directory)
-
-        if writable and present:
-            # this hirarchy exists and is writable
-            return directory
-
-        elif not (writable or present):
-            # try the next one up
-            return check_permission(directory)
-
-        elif present and not writable:
-            # directory exists but it not writable
-            raise PermissionDeniedError(path)
-
-    available = check_permission(path)
-    if os.path.exists(path):
-        if not overwrite: raise NoOverwriteError(path)
-    else:
-        directory = os.path.dirname(path)
-        if directory != available:
-            log.debug('creating directory %s', directory)
-            os.makedirs(directory)
-
-def prepare_directory(directory, log):
-    def check_permission(directory):
-        writable = os.access(directory, os.W_OK)
-        present = os.path.exists(directory)
-
-        if writable and present:
-            # this hirarchy exists and is writable
-            return directory
-
-        elif not (writable or present):
-            # try the next one up
-            return check_permission(os.path.dirname(directory))
-
-        elif present and not writable:
-            # directory exists but it not writable
-            raise PermissionDeniedError(directory)
-
-    available = check_permission(directory)
-    if available != directory:
-       log.debug('creating directory %s', directory)
-       os.makedirs(directory)
+from core import *
 
 class Package(object):
     def __init__(self, pipeline, node):
@@ -187,11 +109,8 @@ class Package(object):
     def create(cls, pipeline, ontology):
         instance = None
         if pipeline and ontology:
-            if 'name' in ontology:
-                if not('implementation' in ontology and ontology['implementation']):
-                    ontology['implementation'] = 'package.{}Package'.format(ontology['name'])
-
-                module, name  = split_class(ontology['implementation'])
+            if 'job implementation' in ontology:
+                module, name  = split_class(ontology['job implementation'])
                 try:
                     implementation_module = __import__(module, fromlist=[name])
                     implementation_class = getattr(implementation_module, name)
@@ -205,7 +124,8 @@ class Package(object):
                 except Exception as e:
                     pipeline.log.error('%s %s', type(e), e)
             else:
-                pipeline.log.error('make job missing a name')
+                pipeline.log.error('unknown job implementation')
+
         return instance
 
     @property
@@ -434,7 +354,7 @@ class Package(object):
             self.build()
             self.node['installed'] = True
 
-class makePackage(Package):
+class Make(Package):
     def __init__(self, pipeline, node):
         Package.__init__(self, pipeline, node)
         for key in [
@@ -620,17 +540,9 @@ class makePackage(Package):
                     print(error.decode('utf8'))
                     raise CommandFailedError('make install returned {}'.format(code))
 
-class zlibPackage(makePackage):
+class BZip2(Make):
     def __init__(self, pipeline, node):
-        makePackage.__init__(self, pipeline, node)
-
-class xzPackage(makePackage):
-    def __init__(self, pipeline, node):
-        makePackage.__init__(self, pipeline, node)
-
-class bz2Package(makePackage):
-    def __init__(self, pipeline, node):
-        makePackage.__init__(self, pipeline, node)
+        Make.__init__(self, pipeline, node)
 
     def install_dynamic(self):
         so_basename = 'libbz2.so'
@@ -694,18 +606,18 @@ class bz2Package(makePackage):
                         self.stdout.write(output.decode('utf8'))
                         self.stderr.write(error.decode('utf8'))
                         self.install_dynamic()
-                        makePackage.build(self)
+                        Make.build(self)
                     else:
                         print(code)
                         print(output.decode('utf8'))
                         print(error.decode('utf8'))
                         raise CommandFailedError('make returned {}'.format(code))
         else:
-            makePackage.build(self)
+            Make.build(self)
 
-class libdeflatePackage(makePackage):
+class LibDeflate(Make):
     def __init__(self, pipeline, node):
-        makePackage.__init__(self, pipeline, node)
+        Make.__init__(self, pipeline, node)
 
     def install(self):
         if not self.node['installed']:
@@ -777,7 +689,7 @@ class libdeflatePackage(makePackage):
 
                 self.node['installed'] = True
 
-class rapidjsonPackage(Package):
+class RapidJSON(Package):
     def __init__(self, pipeline, node):
         Package.__init__(self, pipeline, node)
 
@@ -806,15 +718,199 @@ class rapidjsonPackage(Package):
                     print(error.decode('utf8'))
                     raise CommandFailedError('rsync returned {}'.format(code))
 
-class htslibPackage(makePackage):
+class SAMTools(Make):
     def __init__(self, pipeline, node):
-        makePackage.__init__(self, pipeline, node)
-
-class samtoolsPackage(makePackage):
-    def __init__(self, pipeline, node):
-        makePackage.__init__(self, pipeline, node)
+        Make.__init__(self, pipeline, node)
         self.node['configure optional'] = [ '--with-htslib={}'.format(self.install_prefix) ]
 
-class pheniqsPackage(makePackage):
-    def __init__(self, pipeline, node):
-        makePackage.__init__(self, pipeline, node)
+class PackagePipeline(Pipeline):
+    def __init__(self):
+        Pipeline.__init__(self, 'package')
+        self.package = None
+        self.cache = None
+
+    def load_cache(self):
+        if 'cache path' in self.instruction:
+            if os.path.exists(self.cache_path):
+                with io.open(self.cache_path, 'rb') as file:
+                    self.cache = json.loads(file.read().decode('utf8'))
+
+            if self.cache is None:
+                self.cache = {
+                    'environment': {},
+                    'created': str(datetime.now()),
+                }
+
+            self.cache['loaded'] = str(datetime.now())
+
+    def save_cache(self):
+        if 'cache path' in self.ontology:
+            self.log.debug('persisting cache')
+            with io.open(self.cache_path, 'wb') as file:
+                self.cache['saved'] = str(datetime.now())
+                content = json.dumps(self.cache, sort_keys=True, ensure_ascii=False, indent=4).encode('utf8')
+                file.write(content)
+
+    @property
+    def package_implementation(self):
+        return self.ontology['package implementation']
+
+    @property
+    def cache_path(self):
+        return self.instruction['cache path']
+
+    @property
+    def install_prefix(self):
+        return self.instruction['install prefix']
+
+    @property
+    def download_prefix(self):
+        return self.instruction['download prefix']
+
+    @property
+    def package_prefix(self):
+        return self.instruction['package prefix']
+
+    @property
+    def bin_prefix(self):
+        return self.instruction['bin prefix']
+
+    @property
+    def include_prefix(self):
+        return self.instruction['include prefix']
+
+    @property
+    def lib_prefix(self):
+        return self.instruction['lib prefix']
+
+    @property
+    def filter(self):
+        return self.instruction['filter']
+
+    @property
+    def force(self):
+        return self.instruction['force']
+
+    def execute(self):
+        if 'path' in self.instruction:
+            self.instruction['path'] = os.path.abspath(os.path.realpath(os.path.expanduser(os.path.expandvars(self.instruction['path']))))
+            if os.path.exists(self.instruction['path']):
+                self.log.debug('loading %s', self.instruction['path'])
+                with io.open(self.instruction['path'], 'rb') as file:
+                    ontology = json.loads(file.read().decode('utf8'))
+                    for key in [
+                        'home',
+                        'platform',
+                        'package',
+                        'cache path',
+                        'install prefix',
+                        'download prefix',
+                        'package prefix',
+                        'bin prefix',
+                        'include prefix',
+                        'lib prefix',
+                    ]:
+                        if key not in ontology: ontology[key] = None
+
+                    if not ontology['home']:            ontology['home'] =              '~/.pheniqs'
+                    if not ontology['platform']:        ontology['platform'] =          platform.system()
+                    if not ontology['cache path']:      ontology['cache path'] =        os.path.join(ontology['home'], 'cache.json')
+                    if not ontology['install prefix']:  ontology['install prefix'] =    os.path.join(ontology['home'], 'install')
+                    if not ontology['download prefix']: ontology['download prefix'] =   os.path.join(ontology['home'], 'download')
+                    if not ontology['package prefix']:  ontology['package prefix'] =    os.path.join(ontology['home'], 'package')
+                    if not ontology['bin prefix']:      ontology['bin prefix'] =        os.path.join(ontology['install prefix'], 'bin')
+                    if not ontology['include prefix']:  ontology['include prefix'] =    os.path.join(ontology['install prefix'], 'include')
+                    if not ontology['lib prefix']:      ontology['lib prefix'] =        os.path.join(ontology['install prefix'], 'lib')
+
+                    for path in [
+                        'home',
+                        'cache path',
+                        'install prefix',
+                        'download prefix',
+                        'package prefix',
+                        'bin prefix',
+                        'include prefix',
+                        'lib prefix',
+                    ]:
+                        ontology[path] = os.path.abspath(os.path.expanduser(os.path.expandvars(ontology[path])))
+
+                    ontology['document sha1 digest'] = hashlib.sha1(self.instruction['path'].encode('utf8')).hexdigest()
+                    self.ontology['instruction'] = merge(self.instruction, ontology)
+                    self.load_cache()
+                    if self.instruction['document sha1 digest'] not in self.cache['environment']:
+                        self.cache['environment'][self.instruction['document sha1 digest']] = { 'package': {} }
+
+                self.persisted_instruction = self.cache['environment'][self.instruction['document sha1 digest']]
+
+                if self.instruction['package']:
+                    self.execution['package'] = []
+                    prepare_directory(self.home, self.log)
+                    prepare_directory(self.install_prefix, self.log)
+                    prepare_directory(self.download_prefix, self.log)
+                    prepare_directory(self.package_prefix, self.log)
+                    self.stdout = io.open(os.path.join(self.home, 'output'), 'a')
+                    self.stderr = io.open(os.path.join(self.home, 'error'), 'a')
+
+                    for o in self.instruction['package']:
+                        key = o['name']
+                        if key in self.package_implementation:
+                            o = merge(o, self.package_implementation[key])
+
+                        if self.filter is None or key in self.filter:
+                            package = Package.create(self, o)
+                            if package:
+                                self.execution['package'].append(package)
+                                if self.action == 'clean':
+                                    self.log.info('cleaning %s', package.display_name)
+                                    package.clean()
+
+                                elif self.action == 'build':
+                                    if not package.installed:
+                                        package.install()
+                                    else:
+                                        self.log.info('%s is already installed', package.display_name)
+
+                                elif self.action == 'clean.package':
+                                    self.log.info('clearing %s', package.display_name)
+                                    package.clean_package()
+
+                                self.save_cache()
+
+    def close(self):
+        self.save_cache()
+        Pipeline.close(self)
+
+def main():
+    logging.basicConfig()
+    logging.getLogger().setLevel(logging.INFO)
+
+    pipeline = None
+    try:
+        pipeline = PackagePipeline()
+        pipeline.execute()
+
+    except DownloadError as e:
+        logging.getLogger('main').critical(e)
+        sys.exit(1)
+
+    except ValueError as e:
+        logging.getLogger('main').critical(e)
+        sys.exit(1)
+
+    except CommandFailedError as e:
+        logging.getLogger('main').critical(e)
+        sys.exit(1)
+
+    except(KeyboardInterrupt, SystemExit) as e:
+        if e.code != 0:
+            logging.getLogger('main').critical(e)
+            sys.exit(1)
+
+    finally:
+        if pipeline:
+            pipeline.close()
+
+    sys.exit(0)
+
+if __name__ == '__main__':
+    main()

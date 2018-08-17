@@ -74,13 +74,13 @@
                 "PHENIQS_BZIP2_VERSION=1.0.6",
                 "PHENIQS_XZ_VERSION=5.2.4",
                 "PHENIQS_LIBDEFLATE_VERSION=1.0",
-                "PHENIQS_HTSLIB_VERSION=1.8",
+                "PHENIQS_HTSLIB_VERSION=1.9",
                 "PHENIQS_RAPIDJSON_VERSION=1.1.0"
             ],
             "name": "pheniqs",
             "remote filename": "pheniqs-HEAD.zip",
             "remote url": "https://codeload.github.com/biosails/pheniqs/zip/HEAD",
-            "version": "2.0.3-trunk"
+            "version": "2.0-trunk"
         }
     ]
 }

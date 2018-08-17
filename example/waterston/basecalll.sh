@@ -1,56 +1,30 @@
 #!/bin/zsh
 
-time bcl2fastq \
---adapter-stringency 1 \
---minimum-trimmed-read-length 1 \
---mask-short-adapter-reads 1 \
--R 170115_NS500488_0313_AHGGKLBGX2 \
--o FASTQ/170115_NS500488_0313_AHGGKLBGX2 \
---sample-sheet FASTQ/170115_NS500488_0313_AHGGKLBGX2_sample_sheet.csv \
---create-fastq-for-index-reads \
---with-failed-reads \
--p 24
+WORK_DIRECTORY="/net/albireo.bio.nyu.edu/Volumes/waverly/waterston"
+ILLUMINA_DIRECTORY="$WORK_DIRECTORY/illumina"
+FASTQ_DIRECTORY="$WORK_DIRECTORY/fastq"
 
-time bcl2fastq \
---adapter-stringency 1 \
---minimum-trimmed-read-length 1 \
---mask-short-adapter-reads 1 \
--R 170120_NS500488_0317_AHCFJ2BGX2 \
--o FASTQ/170120_NS500488_0317_AHCFJ2BGX2 \
---sample-sheet FASTQ/170120_NS500488_0317_AHCFJ2BGX2_sample_sheet.csv \
+BCL2FASTQ_DEFAULT_ARGS="\
+--adapter-stringency 0 \
+--minimum-trimmed-read-length 0 \
+--mask-short-adapter-reads 0 \
 --create-fastq-for-index-reads \
---with-failed-reads \
--p 24
+--with-failed-reads"
 
-time bcl2fastq \
---adapter-stringency 1 \
---minimum-trimmed-read-length 1 \
---mask-short-adapter-reads 1 \
--R 170123_NS500272_0238_AHGGN5BGX2 \
--o FASTQ/170123_NS500272_0238_AHGGN5BGX2 \
---sample-sheet FASTQ/170123_NS500272_0238_AHGGN5BGX2_sample_sheet.csv \
---create-fastq-for-index-reads \
---with-failed-reads \
--p 24
+echo "rm -rf  \"$FASTQ_DIRECTORY/170115_NS500488_0313_AHGGKLBGX2\""
+echo "rm -rf  \"$FASTQ_DIRECTORY/170120_NS500488_0317_AHCFJ2BGX2\""
+echo "rm -rf  \"$FASTQ_DIRECTORY/170123_NS500272_0238_AHGGN5BGX2\""
+echo "rm -rf  \"$FASTQ_DIRECTORY/170124_NS500272_0239_AH7HYGBGX2\""
+echo "rm -rf  \"$FASTQ_DIRECTORY/170125_NS500488_0321_AHHJYJBGX2\""
 
-time bcl2fastq \
---adapter-stringency 1 \
---minimum-trimmed-read-length 1 \
---mask-short-adapter-reads 1 \
--R 170124_NS500272_0239_AH7HYGBGX2 \
--o FASTQ/170124_NS500272_0239_AH7HYGBGX2 \
---sample-sheet FASTQ/170124_NS500272_0239_AH7HYGBGX2_sample_sheet.csv \
---create-fastq-for-index-reads \
---with-failed-reads \
--p 24
+echo "mkdir -p \"$FASTQ_DIRECTORY/170115_NS500488_0313_AHGGKLBGX2\""
+echo "mkdir -p \"$FASTQ_DIRECTORY/170120_NS500488_0317_AHCFJ2BGX2\""
+echo "mkdir -p \"$FASTQ_DIRECTORY/170123_NS500272_0238_AHGGN5BGX2\""
+echo "mkdir -p \"$FASTQ_DIRECTORY/170124_NS500272_0239_AH7HYGBGX2\""
+echo "mkdir -p \"$FASTQ_DIRECTORY/170125_NS500488_0321_AHHJYJBGX2\""
 
-time bcl2fastq \
---adapter-stringency 1 \
---minimum-trimmed-read-length 1 \
---mask-short-adapter-reads 1 \
--R 170125_NS500488_0321_AHHJYJBGX2 \
--o FASTQ/170125_NS500488_0321_AHHJYJBGX2 \
---sample-sheet FASTQ/170125_NS500488_0321_AHHJYJBGX2_sample_sheet.csv \
---create-fastq-for-index-reads \
---with-failed-reads \
--p 24
+echo "time  bcl2fastq -R \"$ILLUMINA_DIRECTORY/170115_NS500488_0313_AHGGKLBGX2\" -o \"$FASTQ_DIRECTORY/170115_NS500488_0313_AHGGKLBGX2\" $BCL2FASTQ_DEFAULT_ARGS > $FASTQ_DIRECTORY/170115_NS500488_0313_AHGGKLBGX2/bcl2fastq.log 2>&1"
+echo "time  bcl2fastq -R \"$ILLUMINA_DIRECTORY/170120_NS500488_0317_AHCFJ2BGX2\" -o \"$FASTQ_DIRECTORY/170120_NS500488_0317_AHCFJ2BGX2\" $BCL2FASTQ_DEFAULT_ARGS > $FASTQ_DIRECTORY/170120_NS500488_0317_AHCFJ2BGX2/bcl2fastq.log 2>&1"
+echo "time  bcl2fastq -R \"$ILLUMINA_DIRECTORY/170123_NS500272_0238_AHGGN5BGX2\" -o \"$FASTQ_DIRECTORY/170123_NS500272_0238_AHGGN5BGX2\" $BCL2FASTQ_DEFAULT_ARGS > $FASTQ_DIRECTORY/170123_NS500272_0238_AHGGN5BGX2/bcl2fastq.log 2>&1"
+echo "time  bcl2fastq -R \"$ILLUMINA_DIRECTORY/170124_NS500272_0239_AH7HYGBGX2\" -o \"$FASTQ_DIRECTORY/170124_NS500272_0239_AH7HYGBGX2\" $BCL2FASTQ_DEFAULT_ARGS > $FASTQ_DIRECTORY/170124_NS500272_0239_AH7HYGBGX2/bcl2fastq.log 2>&1"
+echo "time  bcl2fastq -R \"$ILLUMINA_DIRECTORY/170125_NS500488_0321_AHHJYJBGX2\" -o \"$FASTQ_DIRECTORY/170125_NS500488_0321_AHHJYJBGX2\" $BCL2FASTQ_DEFAULT_ARGS > $FASTQ_DIRECTORY/170125_NS500488_0321_AHHJYJBGX2/bcl2fastq.log 2>&1"

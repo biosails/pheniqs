@@ -222,10 +222,13 @@ clean.generated: clean.version
 	-@rm -f configuration.h
 	-@rm -f _pheniqs
 
+clean.bin:
+	-@rm -rf ./bin
+
 clean.object:
 	-@rm -f $(PHENIQS_OBJECTS)
 
-clean: clean.generated clean.object
+clean: clean.generated clean.object clean.bin
 	-@rm -f $(PHENIQS_EXECUTABLE)
 
 install: pheniqs

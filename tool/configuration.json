@@ -1,127 +1,377 @@
 {
-    "interface": {
-        "global": {
-            "argument": [
-                "version",
-                "verbosity"
-            ]
-        },
-        "instruction": {
-            "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-        },
-        "prototype": {
-            "filter": {
-                "flag": [
-                    "-f",
-                    "--filter"
-                ],
-                "parameter": {
-                    "help": "list of packages",
-                    "metavar": "PACKAGE",
-                    "nargs": "*"
-                }
+    "illumina": {
+        "interface": {
+            "global": {
+                "argument": [
+                    "version",
+                    "verbosity"
+                ]
             },
-            "force": {
-                "flag": [
-                    "-F",
-                    "--force"
-                ],
-                "parameter": {
-                    "help": "list of packages to force",
-                    "metavar": "PACKAGE",
-                    "nargs": "*"
-                }
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
             },
-            "path": {
-                "flag": [
-                    "path"
-                ],
-                "parameter": {
-                    "help": "path",
-                    "metavar": "PATH"
-                },
-                "required": true
-            },
-            "verbosity": {
-                "flag": [
-                    "-v",
-                    "--verbosity"
-                ],
-                "parameter": {
-                    "choices": [
-                        "debug",
-                        "info",
-                        "warning",
-                        "error",
-                        "critical"
+            "prototype": {
+                "illumina run directory": {
+                    "flag": [
+                        "illumina run directory"
                     ],
-                    "dest": "verbosity",
-                    "help": "logging verbosity level",
-                    "metavar": "LEVEL"
+                    "parameter": {
+                        "help": "illumina run directory",
+                        "metavar": "PATH"
+                    },
+                    "required": true
+                },
+                "selected_lane_number": {
+                    "flag": [
+                        "--lane-number",
+                        "-l"
+                    ],
+                    "parameter": {
+                        "default": 0,
+                        "help": "selected lane number",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
                 }
             },
-            "version": {
-                "flag": [
-                    "--version"
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "illumina run directory"
+                        ],
+                        "implementation": "bcl2fastq",
+                        "instruction": {
+                            "help": "Generate bcl2fastq command",
+                            "name": "bcl2fastq"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina run directory"
+                        ],
+                        "implementation": "interleave_from_illumina",
+                        "instruction": {
+                            "help": "Interleaving both template and index segments to SAM",
+                            "name": "interleave"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina run directory"
+                        ],
+                        "implementation": "interleave_from_illumina",
+                        "instruction": {
+                            "help": "core configuration with a decoder directive from the sample sheet",
+                            "name": "core"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina run directory",
+                            "selected_lane_number"
+                        ],
+                        "implementation": "demultiplex_from_illumina",
+                        "instruction": {
+                            "help": "demultiplex configuration with a multiplex directive from the sample sheet for a single lane",
+                            "name": "demultiplex"
+                        }
+                    }
                 ],
-                "parameter": {
-                    "action": "version",
-                    "version": "%[prog]s 1.0"
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
                 }
             }
         },
-        "section": {
-            "action": [
-                {
-                    "argument": [
-                        "path"
-                    ],
-                    "implementation": "zsh_completion",
-                    "instruction": {
-                        "help": "generate zsh completion script",
-                        "name": "zsh"
+        "namespace": {
+            "sample sheet": {
+                "Data": {
+                    "column": {
+                        "Description": {},
+                        "I5_index_ID": {},
+                        "I7_Index_ID": {},
+                        "Lane": {},
+                        "Sample_ID": {},
+                        "Sample_Name": {},
+                        "Sample_Plate": {},
+                        "Sample_Project": {},
+                        "Sample_Well": {},
+                        "index": {},
+                        "index2": {}
                     }
                 },
-                {
-                    "argument": [
-                        "filter",
-                        "path"
-                    ],
-                    "implementation": "clean",
-                    "instruction": {
-                        "help": "clean build root environment",
-                        "name": "clean"
-                    }
+                "Header": {
+                    "Date": {}
                 },
-                {
-                    "argument": [
-                        "filter",
-                        "path"
+                "Reads": {},
+                "Settings": {}
+            }
+        },
+        "preset": {
+            "default": {
+                "sample sheet record": {
+                    "key": [
+                        "@{Sample_ID}",
+                        "{flowcell id}:{lane number}:{concatenated barcode}",
+                        "{flowcell id}:{concatenated barcode}"
                     ],
-                    "implementation": "build",
-                    "instruction": {
-                        "help": "build build root environment",
-                        "name": "build"
-                    }
-                },
-                {
-                    "argument": [
-                        "filter",
-                        "path"
-                    ],
-                    "implementation": "clean.package",
-                    "instruction": {
-                        "help": "delete exploded package",
-                        "name": "clean.package"
+                    "value": {
+                        "DS": "{Description}",
+                        "LB": [
+                            "{Sample_Name}",
+                            "{Sample_ID}"
+                        ],
+                        "SM": "{Sample_Project}"
                     }
                 }
-            ],
+            }
+        }
+    },
+    "package": {
+        "interface": {
+            "global": {
+                "argument": [
+                    "version",
+                    "verbosity"
+                ]
+            },
             "instruction": {
-                "description": "",
-                "dest": "action",
-                "help": null,
-                "metavar": "ACTION",
-                "title": "pipeline operations"
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "filter": {
+                    "flag": [
+                        "-f",
+                        "--filter"
+                    ],
+                    "parameter": {
+                        "help": "list of packages",
+                        "metavar": "PACKAGE",
+                        "nargs": "*"
+                    }
+                },
+                "force": {
+                    "flag": [
+                        "-F",
+                        "--force"
+                    ],
+                    "parameter": {
+                        "help": "list of packages to force",
+                        "metavar": "PACKAGE",
+                        "nargs": "*"
+                    }
+                },
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    },
+                    "required": true
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "filter",
+                            "path"
+                        ],
+                        "implementation": "clean",
+                        "instruction": {
+                            "help": "clean build root environment",
+                            "name": "clean"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "filter",
+                            "path"
+                        ],
+                        "implementation": "build",
+                        "instruction": {
+                            "help": "build build root environment",
+                            "name": "build"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "filter",
+                            "path"
+                        ],
+                        "implementation": "clean.package",
+                        "instruction": {
+                            "help": "delete exploded package",
+                            "name": "clean.package"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        },
+        "package implementation": {
+            "bz2": {
+                "job implementation": "package.BZip2"
+            },
+            "htslib": {
+                "job implementation": "package.Make"
+            },
+            "libdeflate": {
+                "job implementation": "package.LibDeflate"
+            },
+            "pheniqs": {
+                "job implementation": "package.Make"
+            },
+            "rapidjson": {
+                "job implementation": "package.RapidJSON"
+            },
+            "samtools": {
+                "job implementation": "package.SAMTools"
+            },
+            "xz": {
+                "job implementation": "package.Make"
+            },
+            "zlib": {
+                "job implementation": "package.Make"
+            }
+        }
+    },
+    "shell": {
+        "interface": {
+            "global": {
+                "argument": [
+                    "version",
+                    "verbosity"
+                ]
+            },
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    },
+                    "required": true
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "path"
+                        ],
+                        "implementation": "zsh_completion",
+                        "instruction": {
+                            "help": "generate zsh completion script",
+                            "name": "zsh"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
             }
         }
     }

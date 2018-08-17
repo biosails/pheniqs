@@ -29,16 +29,13 @@ import logging
 import hashlib
 import platform
 from copy import deepcopy
-from datetime import datetime
-from subprocess import Popen, PIPE
+from datetime import datetime, date
 from argparse import ArgumentParser
-import urllib.request, urllib.parse, urllib.error
-from urllib.request import Request, urlopen
-from urllib.error import URLError, HTTPError
-from http.client import BadStatusLine
+from subprocess import Popen, PIPE
 
 from error import *
-from package import prepare_directory, Package
+
+split_class = lambda x: (x[0:x.rfind('.')], x[x.rfind('.') + 1:])
 
 log_levels = {
     'debug': logging.DEBUG,
@@ -74,38 +71,111 @@ def merge(this, other):
                 result = other
     return result
 
-class CommandLineParser(object):
-    def __init__(self):
-        def add_argument(parser, name):
-            node = self.node['prototype'][name]
-            parser.add_argument(*node['flag'], **node['parameter'])
+def remove_directory(directory, log):
+    if os.path.exists(directory):
+        log.info('removing {}'.format(directory))
+        command = [ 'rm', '-rf' ]
+        command.append(directory)
+        process = Popen(
+            args=command,
+            stdout=PIPE,
+            stderr=PIPE
+        )
+        output, error = process.communicate()
+        code = process.returncode
+        if code is not 0:
+            print(output, error, code)
+            raise CommandFailedError('failed to remove directory {}'.format(directory))
 
-        self.ontology = None;
-        self.node = None
-        configuration_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'configuration.json')
-        with io.open(configuration_path, 'rb') as file:
-            self.ontology = json.loads(file.read().decode('utf8'))
-            self.node = self.ontology['interface']
-        self.parser = ArgumentParser(**self.node['instruction'])
-        self._instruction = None
+def prepare_path(path, log, overwrite=True):
+    def check_permission(path):
+        directory = os.path.dirname(path)
+        writable = os.access(directory, os.W_OK)
+        present = os.path.exists(directory)
+
+        if writable and present:
+            # this hirarchy exists and is writable
+            return directory
+
+        elif not (writable or present):
+            # try the next one up
+            return check_permission(directory)
+
+        elif present and not writable:
+            # directory exists but it not writable
+            raise PermissionDeniedError(path)
+
+    available = check_permission(path)
+    if os.path.exists(path):
+        if not overwrite: raise NoOverwriteError(path)
+    else:
+        directory = os.path.dirname(path)
+        if directory != available:
+            log.debug('creating directory %s', directory)
+            os.makedirs(directory)
+
+def prepare_directory(directory, log):
+    def check_permission(directory):
+        writable = os.access(directory, os.W_OK)
+        present = os.path.exists(directory)
+
+        if writable and present:
+            # this hirarchy exists and is writable
+            return directory
+
+        elif not (writable or present):
+            # try the next one up
+            return check_permission(os.path.dirname(directory))
+
+        elif present and not writable:
+            # directory exists but it not writable
+            raise PermissionDeniedError(directory)
+
+    available = check_permission(directory)
+    if available != directory:
+       log.debug('creating directory %s', directory)
+       os.makedirs(directory)
+
+class CommandLineParser(object):
+    def __init__(self, name):
+        self.ontology = {
+            'name': name,
+            'configuration path': os.path.join(os.path.dirname(os.path.realpath(__file__)), 'configuration.json'),
+            'interface': {},
+            'instruction': {}
+        }
+        self.parser = None
+        self.load()
+
+    def add_argument(self, parser, name):
+        prototype = self.interface['prototype'][name]
+        parser.add_argument(*prototype['flag'], **prototype['parameter'])
+
+    def load(self):
+        with io.open(self.ontology['configuration path'], 'rb') as file:
+            content = json.loads(file.read().decode('utf8'))
+            self.ontology = merge(self.ontology, content[self.ontology['name']])
+
+        self.parser = ArgumentParser(**self.interface['instruction'])
 
         # evaluate the type for each prototype
-        for argument in self.node['prototype'].values():
+        for argument in self.interface['prototype'].values():
             if 'type' in argument['parameter']:
                 argument['parameter']['type'] = eval(argument['parameter']['type'])
 
         # add global arguments
-        for argument in self.node['global']['argument']:
-            add_argument(self.parser, argument)
+        for argument in self.interface['global']['argument']:
+            self.add_argument(self.parser, argument)
 
         if self.sectioned:
             # Add individual command sections
-            sub = self.parser.add_subparsers(**self.node['section']['instruction'])
-            for action in self.node['section']['action']:
+            sub = self.parser.add_subparsers(**self.interface['section']['instruction'])
+            for action in self.interface['section']['action']:
+                key = action['instruction']['name']
                 action_parser = sub.add_parser(**action['instruction'])
                 if 'argument' in action:
                     for argument in action['argument']:
-                        add_argument(action_parser, argument)
+                        self.add_argument(action_parser, argument)
 
                 # Add groups of arguments, if any.
                 if 'group' in action:
@@ -113,17 +183,26 @@ class CommandLineParser(object):
                         group_parser = action_parser.add_argument_group(**group['instruction'])
                         if 'argument' in group:
                             for argument in group['argument']:
-                                add_argument(group_parser, argument)
+                                self.add_argument(group_parser, argument)
+
+        self.ontology['instruction'] = vars(self.parser.parse_args())
+
+
+    @property
+    def help_triggered(self):
+        return self.sectioned and self.action is None
+
+    @property
+    def interface(self):
+        return self.ontology['interface']
 
     @property
     def sectioned(self):
-        return 'section' in self.node and 'action' in self.node['section'] and self.node['section']['action']
+        return 'section' in self.interface and 'action' in self.interface['section'] and self.interface['section']['action']
 
     @property
     def instruction(self):
-        if self._instruction == None:
-            self._instruction = vars(self.parser.parse_args())
-        return self._instruction
+        return self.ontology['instruction']
 
     @property
     def action(self):
@@ -133,181 +212,57 @@ class CommandLineParser(object):
         self.parser.print_help()
 
 class Pipeline(object):
-    def __init__(self, environment):
+    def __init__(self, name):
         self.log = logging.getLogger('Pipeline')
-        self.environment = environment
-        self.ontology = self.environment.instruction
+        self.ontology = {
+            'instruction': {
+                'utility name': name,
+                'platform': platform.system(),
+                'home': '~/.pheniqs',
+            }
+        }
         self.execution = {}
         self.stdout = None
         self.stderr = None
-        self.package = None
-        self.cache = None
 
-    def load_cache(self):
-        if 'cache path' in self.ontology:
-            if os.path.exists(self.cache_path):
-                with io.open(self.cache_path, 'rb') as file:
-                    self.cache = json.loads(file.read().decode('utf8'))
+        command = CommandLineParser(name)
+        if command.help_triggered:
+            command.help()
+            exit(0)
+        else:
+            self.ontology = merge(self.ontology, command.ontology)
+            del self.ontology['interface']
 
-            if self.cache is None:
-                self.cache = {
-                    'environment': {},
-                    'created': str(datetime.now()),
-                }
+            self.ontology['platform'] = platform.system()
 
-            self.cache['loaded'] = str(datetime.now())
+            if 'verbosity' in self.ontology and self.ontology['verbosity']:
+                logging.getLogger().setLevel(log_levels[self.ontology['verbosity']])
 
-    def save_cache(self):
-        if 'cache path' in self.ontology:
-            self.log.debug('persisting cache')
-            with io.open(self.cache_path, 'wb') as file:
-                self.cache['saved'] = str(datetime.now())
-                content = json.dumps(self.cache, sort_keys=True, ensure_ascii=False, indent=4).encode('utf8')
-                file.write(content)
+    @property
+    def instruction(self):
+        return self.ontology['instruction']
 
     @property
     def platform(self):
-        return self.ontology['platform']
+        return self.instruction['platform']
 
     @property
     def home(self):
-        return self.ontology['home']
+        return self.instruction['home']
 
     @property
     def action(self):
-        return self.ontology['action']
-
-    @property
-    def cache_path(self):
-        return self.ontology['cache path']
-
-    @property
-    def install_prefix(self):
-        return self.ontology['install prefix']
-
-    @property
-    def download_prefix(self):
-        return self.ontology['download prefix']
-
-    @property
-    def package_prefix(self):
-        return self.ontology['package prefix']
-
-    @property
-    def bin_prefix(self):
-        return self.ontology['bin prefix']
-
-    @property
-    def include_prefix(self):
-        return self.ontology['include prefix']
-
-    @property
-    def lib_prefix(self):
-        return self.ontology['lib prefix']
-
-    @property
-    def filter(self):
-        return self.ontology['filter']
-
-    @property
-    def force(self):
-        return self.ontology['force']
+        return self.instruction['action']
 
     def execute(self):
-        if self.action in [ 'clean', 'build', 'clean.package' ]:
-            self.execute_make_job()
-
-        elif self.action == 'zsh':
+        if self.action == 'zsh':
             self.execute_zsh_job()
 
     def close(self):
-        self.save_cache()
         if self.stdout:
             self.stdout.close();
         if self.stderr:
             self.stderr.close();
-
-    def execute_make_job(self):
-        if 'path' in self.ontology:
-            self.ontology['path'] = os.path.abspath(os.path.realpath(os.path.expanduser(os.path.expandvars(self.ontology['path']))))
-            if os.path.exists(self.ontology['path']):
-                self.log.debug('loading %s', self.ontology['path'])
-                with io.open(self.ontology['path'], 'rb') as file:
-                    ontology = json.loads(file.read().decode('utf8'))
-                    for key in [
-                        'home',
-                        'platform',
-                        'package',
-                        'cache path',
-                        'install prefix',
-                        'download prefix',
-                        'package prefix',
-                        'bin prefix',
-                        'include prefix',
-                        'lib prefix',
-                    ]:
-                        if key not in ontology: ontology[key] = None
-
-                    if not ontology['home']:            ontology['home'] =              '~/.pheniqs'
-                    if not ontology['platform']:        ontology['platform'] =          platform.system()
-                    if not ontology['cache path']:      ontology['cache path'] =        os.path.join(ontology['home'], 'cache.json')
-                    if not ontology['install prefix']:  ontology['install prefix'] =    os.path.join(ontology['home'], 'install')
-                    if not ontology['download prefix']: ontology['download prefix'] =   os.path.join(ontology['home'], 'download')
-                    if not ontology['package prefix']:  ontology['package prefix'] =    os.path.join(ontology['home'], 'package')
-                    if not ontology['bin prefix']:      ontology['bin prefix'] =        os.path.join(ontology['install prefix'], 'bin')
-                    if not ontology['include prefix']:  ontology['include prefix'] =    os.path.join(ontology['install prefix'], 'include')
-                    if not ontology['lib prefix']:      ontology['lib prefix'] =        os.path.join(ontology['install prefix'], 'lib')
-
-                    for path in [
-                        'home',
-                        'cache path',
-                        'install prefix',
-                        'download prefix',
-                        'package prefix',
-                        'bin prefix',
-                        'include prefix',
-                        'lib prefix',
-                    ]:
-                        ontology[path] = os.path.abspath(os.path.expanduser(os.path.expandvars(ontology[path])))
-
-                    ontology['document sha1 digest'] = hashlib.sha1(self.ontology['path'].encode('utf8')).hexdigest()
-                    self.ontology = merge(self.environment.instruction, ontology)
-                    self.load_cache()
-                    if self.ontology['document sha1 digest'] not in self.cache['environment']:
-                        self.cache['environment'][self.ontology['document sha1 digest']] = { 'package': {} }
-
-                self.persisted_instruction = self.cache['environment'][self.ontology['document sha1 digest']]
-
-                if self.ontology['package']:
-                    self.execution['package'] = []
-                    prepare_directory(self.home, self.log)
-                    prepare_directory(self.install_prefix, self.log)
-                    prepare_directory(self.download_prefix, self.log)
-                    prepare_directory(self.package_prefix, self.log)
-                    self.stdout = io.open(os.path.join(self.home, 'output'), 'a')
-                    self.stderr = io.open(os.path.join(self.home, 'error'), 'a')
-
-                    for o in self.ontology['package']:
-                        key = o['name']
-                        if self.filter is None or key in self.filter:
-                            package = Package.create(self, o)
-                            if package:
-                                self.execution['package'].append(package)
-                                if self.action == 'clean':
-                                    self.log.info('cleaning %s', package.display_name)
-                                    package.clean()
-
-                                elif self.action == 'build':
-                                    if not package.installed:
-                                        package.install()
-                                    else:
-                                        self.log.info('%s is already installed', package.display_name)
-
-                                elif self.action == 'clean.package':
-                                    self.log.info('clearing %s', package.display_name)
-                                    package.clean_package()
-
-                                self.save_cache()
 
     def execute_zsh_job(self):
         def parse_zsh_completion_option(node, buffer):
@@ -430,60 +385,3 @@ class Pipeline(object):
                 buffer.append('_pheniqs \"$@\"')
 
             print('\n'.join(buffer))
-
-class Environment(object):
-    def __init__(self):
-        self.log = logging.getLogger('Environment')
-        self.ontology = {
-            'interface': None,
-            'instruction': None,
-        }
-
-        configuration_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'configuration.json')
-        with io.open(configuration_path, 'rb') as file:
-            content = json.loads(file.read().decode('utf8'))
-            self.ontology = merge(self.ontology, content)
-
-        command = CommandLineParser()
-        if command.sectioned and command.action is None:
-            command.help()
-            exit(0)
-        else:
-            self.ontology['instruction'] = merge(self.ontology['instruction'], command.instruction)
-
-            if 'verbosity' in self.instruction and self.instruction['verbosity']:
-                logging.getLogger().setLevel(log_levels[self.instruction['verbosity']])
-
-    @property
-    def interface(self):
-        return self.ontology['interface']
-
-    @property
-    def instruction(self):
-        return self.ontology['instruction']
-
-def main():
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.INFO)
-    environment = Environment()
-    pipeline = Pipeline(environment)
-
-    try:
-        pipeline.execute()
-    except DownloadError as e:
-        logging.getLogger('main').critical(e)
-        sys.exit(1)
-    except ValueError as e:
-        logging.getLogger('main').critical(e)
-        sys.exit(1)
-    except CommandFailedError as e:
-        logging.getLogger('main').critical(e)
-        sys.exit(1)
-    except(KeyboardInterrupt, SystemExit) as e:
-        pipeline.close()
-        sys.exit(1)
-    pipeline.close()
-    sys.exit(0)
-
-if __name__ == '__main__':
-    main()
