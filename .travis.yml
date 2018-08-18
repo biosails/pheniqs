@@ -181,6 +181,11 @@ jobs:
   - os: osx
     stage: test
     osx_image: xcode8.3
+    env:
+    - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7; CC=gcc-7 && CXX=g++-7"
+  - os: osx
+    stage: test
+    osx_image: xcode8.3
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
   - os: linux
     stage: test
