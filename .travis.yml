@@ -177,7 +177,7 @@ jobs:
     stage: test
     osx_image: xcode9.3
     env:
-    - MATRIX_EVAL="brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
+    - MATRIX_EVAL="brew install gcc@6; brew link --overwrite gcc@6; ls -la /usr/local/bin|grep gcc; CC=gcc-6 && CXX=g++-6"
   - os: osx
     stage: test
     osx_image: xcode8.3
