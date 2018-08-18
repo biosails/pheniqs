@@ -214,7 +214,7 @@ configuration.h: configuration.json
 # Regenerate zsh completion from configuration.json
 _pheniqs: configuration.json
 	@echo zsh completion _pheniqs generated.
-	$(shell ./tool/pheniqs-tools.py zsh configuration.json > _pheniqs)
+	$(shell ./tool/shell.py zsh configuration.json > _pheniqs)
 
 generated: version.h configuration.h _pheniqs
 

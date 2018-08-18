@@ -57,6 +57,7 @@
 #include <unistd.h>
 #include <unordered_map>
 #include <vector>
+#include <stddef.h>
 
 using std::cerr;
 using std::condition_variable;
