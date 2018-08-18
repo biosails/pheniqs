@@ -15,6 +15,7 @@
             "include prefix in make": true,
             "name": "bz2",
             "remote url": [
+                "https://fossies.org/linux/misc/bzip2-1.0.6.tar.gz",
                 "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz",
                 "http://albireo.bio.nyu.edu/~lg/pheniqs/bzip2-1.0.6.tar.gz"
             ],
