@@ -882,7 +882,7 @@ class PackagePipeline(Pipeline):
 
 def main():
     logging.basicConfig()
-    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger().setLevel(logging.DEBUG)
 
     pipeline = None
     try:

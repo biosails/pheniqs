@@ -69,7 +69,7 @@
                         ],
                         "implementation": "bcl2fastq",
                         "instruction": {
-                            "help": "Generate bcl2fastq command",
+                            "help": "bcl2fastq command to write all segments to FASTQ",
                             "name": "bcl2fastq"
                         }
                     },
@@ -77,20 +77,18 @@
                         "argument": [
                             "illumina run directory"
                         ],
-                        "implementation": "interleave_from_illumina",
                         "instruction": {
-                            "help": "Interleaving both template and index segments to SAM",
-                            "name": "interleave"
+                            "help": "Single decoder directive for each lane",
+                            "name": "core"
                         }
                     },
                     {
                         "argument": [
                             "illumina run directory"
                         ],
-                        "implementation": "interleave_from_illumina",
                         "instruction": {
-                            "help": "core configuration with a decoder directive from the sample sheet",
-                            "name": "core"
+                            "help": "Interleave both template and index segments to SAM",
+                            "name": "interleave"
                         }
                     },
                     {
@@ -98,15 +96,14 @@
                             "illumina run directory",
                             "selected_lane_number"
                         ],
-                        "implementation": "demultiplex_from_illumina",
                         "instruction": {
-                            "help": "demultiplex configuration with a multiplex directive from the sample sheet for a single lane",
+                            "help": "Demultiplex a single lane",
                             "name": "demultiplex"
                         }
                     }
                 ],
                 "instruction": {
-                    "description": "",
+                    "description": "Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that RunInfo.xml, RunParameters.xml and SampleSheet.csv files in the directory.",
                     "dest": "action",
                     "help": null,
                     "metavar": "ACTION",
@@ -276,29 +273,32 @@
             }
         },
         "package implementation": {
+            "bcl2fastq": {
+                "job implementation": "ppkg.Bcl2Fastq"
+            },
             "bz2": {
-                "job implementation": "package.BZip2"
+                "job implementation": "ppkg.BZip2"
             },
             "htslib": {
-                "job implementation": "package.Make"
+                "job implementation": "ppkg.Make"
             },
             "libdeflate": {
-                "job implementation": "package.LibDeflate"
+                "job implementation": "ppkg.LibDeflate"
             },
             "pheniqs": {
-                "job implementation": "package.Make"
+                "job implementation": "ppkg.Make"
             },
             "rapidjson": {
-                "job implementation": "package.RapidJSON"
+                "job implementation": "ppkg.RapidJSON"
             },
             "samtools": {
-                "job implementation": "package.SAMTools"
+                "job implementation": "ppkg.SAMTools"
             },
             "xz": {
-                "job implementation": "package.Make"
+                "job implementation": "ppkg.Make"
             },
             "zlib": {
-                "job implementation": "package.Make"
+                "job implementation": "ppkg.Make"
             }
         }
     },

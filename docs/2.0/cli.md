@@ -106,6 +106,45 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
     The static configuration file emited by -S/--static resolves all imports into a single portable file.
     The compiled configuration file emited by -C/--compile is ready for execution and all implicit attributes have been resolved.
 
+# Pheniqs tools
+In the tool folder you will find several python scripts to assist with Pheniqs deployment and interfacing with existing tools.
+
+## `illumina2pheniqs.py`
+
+Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that `RunInfo.xml`, `RunParameters.xml` and `SampleSheet.csv` files in the directory. The `Data` section of the `SampleSheet.csv` must either have all records declare a `Lane` or none.
+
+    usage: illumina2pheniqs.py [-h] [--version] [-v LEVEL] ACTION ...
+
+    Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show program's version number and exit
+      -v LEVEL, --verbosity LEVEL
+                            logging verbosity level
+
+    pipeline operations:
+      Generate pheniqs configuration files or a bcl2fastq command from an
+      illumina run directory. This tool parses that RunInfo.xml,
+      RunParameters.xml and SampleSheet.csv files in the directory.
+
+      ACTION
+        bcl2fastq           bcl2fastq command to write all segments to FASTQ
+        core                Single decoder directive for each lane
+        interleave          Interleave both template and index segments to SAM
+        demultiplex         Demultiplex a single lane
+
+The `core` sub command generates a configuration that contains a single multiplex decoder directive in the global `decoder` directive for each lane
+in the sample sheet or just one if the integer `Lane` column is missing from the sample sheet.
+Those declarations are not used in the `multiplex` directive but are merely made available for other configurations to import, where the exact output layout and possible additional decoders can be declared.
+
+The `demultiplex` sub command will declare an inline multiplex decoder for a single lane, specified with the `-l/--lane-number` command line parameter.
+not specifying a lane will create a multiplex decoder with all records for sample sheets that do not declare a `Lane`, like the MiSeq.
+
+The `interleave` sub command generates a configuration file that will interleave all FASTQ files containing the segments of the read into a single stream. By default this will emit the segments to stdout in SAM format but you may explicitly specify an output file path in any other format.
+
+The `bcl2fastq` sub command generates a shell command for executing `bcl2fastq 2.x` that will disable all post processing and demultiplexing done with bcl2fastq and only convert the data in the bcl files into a FASTQ file for each segment.
+
 # JSON validation
 
 JSON can be a little picky about syntax and a good JSON linter can make identifying offending syntax much easier. Plenty of tools for validating JSON syntax are out there but a simple good and readily available linter is available with the python programing language.

@@ -57,7 +57,6 @@ class IlluminaPipeline(Pipeline):
                 self.assemble_demultiplex_instruction()
                 print(to_json(self.demultiplex))
 
-
     @property
     def namespace(self):
         return self.ontology['namespace']
