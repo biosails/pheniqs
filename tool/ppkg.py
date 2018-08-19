@@ -723,6 +723,290 @@ class SAMTools(Make):
         Make.__init__(self, pipeline, node)
         self.node['configure optional'] = [ '--with-htslib={}'.format(self.install_prefix) ]
 
+class Boost(Make):
+    def __init__(self, pipeline, node):
+        Make.__init__(self, pipeline, node)
+
+    def configure(self):
+        if not self.node['configured']:
+            if self.package_url is not None:
+                self.unpack()
+                if os.path.exists(os.path.join(self.package_url, 'configure')):
+                    self.log.info('bootstrapping %s', self.display_name)
+                    command = [ './bootstrap.sh ', '--prefix={}'.format(self.install_prefix) ]
+
+                    self.log.debug(' '.join([str(i) for i in command]))
+
+                    process = Popen(
+                        args=command,
+                        env=self.env,
+                        cwd=self.package_url,
+                        stdout=PIPE,
+                        stderr=PIPE
+                    )
+                    output, error = process.communicate()
+                    code = process.returncode
+                    if code == 0:
+                        self.node['configured'] = True
+                        self.stdout.write(output.decode('utf8'))
+                        self.stderr.write(error.decode('utf8'))
+                    else:
+                        print(code)
+                        print(output.decode('utf8'))
+                        print(error.decode('utf8'))
+                        raise CommandFailedError('configure returned {}'.format(code))
+                else:
+                    self.node['configured'] = True
+
+    def build(self):
+        if not self.node['built']:
+            self.configure()
+            if self.package_url is not None:
+                self.log.info('building with b2 %s', self.display_name)
+                command = [ './b2 ', '--prefix={}'.format(self.install_prefix) ]
+
+                self.log.debug(' '.join([str(i) for i in command]))
+
+                process = Popen(
+                    args=command,
+                    env=self.env,
+                    cwd=self.package_url,
+                    stdout=PIPE,
+                    stderr=PIPE
+                )
+                output, error = process.communicate()
+                code = process.returncode
+                if code == 0:
+                    self.node['built'] = True
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
+                else:
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
+                    raise CommandFailedError('make returned {}'.format(code))
+
+class Bcl2Fastq(Make):
+    def __init__(self, pipeline, node):
+        Make.__init__(self, pipeline, node)
+
+    def unpack(self):
+        if not self.node['unpacked']:
+            self.clean_package()
+            if self.download_url is not None:
+                self.download()
+
+                self.log.info('extracting %s', self.display_name)
+                # bcl2fastq is packaged as a zip archive that contains a gz compressed tarball
+
+                command = []
+                command.append('unzip')
+                command.append('-p')
+                command.append(self.download_url)
+                unzip_process = Popen(
+                    args=command,
+                    env=self.env,
+                    cwd=self.package_prefix,
+                    stdout=PIPE,
+                    stderr=PIPE
+                )
+
+                command = []
+                command.append('tar')
+                command.append('-xzf')
+                command.append('-')
+                tar_process = Popen(
+                    args=command,
+                    env=self.env,
+                    cwd=self.package_prefix,
+                    stdin=unzip_process.stdout,
+                    stdout=PIPE,
+                    stderr=PIPE
+                )
+
+                output, error = tar_process.communicate()
+                code = tar_process.returncode
+                if code == 0:
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
+
+                else:
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
+                    raise CommandFailedError('unzip returned {}'.format(code))
+
+    @property
+    def patch_sha1(self):
+        return self.node['patch sha1']
+
+    @property
+    def patch_url(self):
+        return self.node['patch url']
+
+    @property
+    def remote_patch_url(self):
+        return self.node['remote patch url']
+
+    @property
+    def package_source_url(self):
+        return self.node['package source url']
+
+    @property
+    def package_build_url(self):
+        return self.node['package build url']
+
+    def patch(self):
+        if self.remote_patch_url is not None:
+            self.node['patch url'] = os.path.join(self.package_build_url, 'bcl2fastq2_2_20_0_xml_writer_make_settings.patch')
+            content = None
+            if os.path.exists(self.patch_url):
+                with open(self.patch_url, 'rb') as local:
+                    content = local.read()
+                    checksum = hashlib.sha1(content).hexdigest()
+                    if self.patch_sha1 is not None and checksum != self.patch_sha1:
+                        self.log.warning('removing corrupt patch %s', self.patch_url)
+                        os.remove(self.patch_url)
+                        content = None
+
+            if content is None:
+                remote_url = self.remote_patch_url
+                if not isinstance(self.remote_patch_url, list):
+                    remote_url = [ self.remote_patch_url ]
+
+                error = None
+                success = False
+                for url in remote_url:
+                    self.log.debug('fetching %s', url)
+                    request = Request(url, None)
+                    try:
+                        response = urlopen(request)
+                    except BadStatusLine as e:
+                        error = 'Bad http status error when requesting {}'.format(url)
+                        self.log.warning(error)
+                    except HTTPError as e:
+                        error = 'Server returned an error when requesting {}: {}'.format(url, e.code)
+                        self.log.warning(error)
+                    except URLError as e:
+                        error = 'Could not reach server when requesting {}: {}'.format(url, e.reason)
+                        self.log.warning(error)
+                    else:
+                        content = response.read()
+                        checksum = hashlib.sha1(content).hexdigest()
+                        if self.patch_sha1 is not None and checksum != self.patch_sha1:
+                            error = '{} checksum {} differs from {}'.format(self.patch_url, checksum, self.patch_sha1)
+                            self.log.warning(error)
+                        else:
+                            prepare_path(self.patch_url, self.log)
+                            with open(self.patch_url, 'wb') as local:
+                                local.write(content)
+                            self.log.info('downloaded patch saved %s %s', self.patch_url, self.patch_sha1)
+
+                            command = ['patch' ]
+                            process = Popen(
+                                args=command,
+                                env=self.env,
+                                cwd=os.path.join(self.package_source_url, 'cxx/lib/io'),
+                                stdin=PIPE,
+                                stdout=PIPE,
+                                stderr=PIPE
+                            )
+                            output, error = process.communicate(input=content)
+                            code = process.returncode
+                            if code == 0:
+                                self.node['patched'] = True
+                                self.stdout.write(output.decode('utf8'))
+                                self.stderr.write(error.decode('utf8'))
+                            else:
+                                print(code)
+                                print(output.decode('utf8'))
+                                print(error.decode('utf8'))
+                                raise CommandFailedError('configure returned {}'.format(code))
+                            success = True
+                            break
+
+                if not success:
+                    raise DownloadError(error)
+
+    def configure(self):
+        if not self.node['configured']:
+            if self.package_url is not None:
+                self.unpack()
+                self.node['package source url'] = os.path.join(self.package_url, 'src')
+                self.node['package build url'] = os.path.join(self.package_url, 'build')
+                prepare_directory(self.package_build_url, self.log)
+                self.patch()
+
+                configure_script_url = os.path.join(self.package_source_url, 'configure')
+                if os.path.exists(configure_script_url):
+                    self.log.info('configuring make environment %s', self.display_name)
+                    command = [ configure_script_url, '--prefix={}'.format(self.install_prefix) ]
+
+                    if self.configure_optional:
+                        command.extend(self.configure_optional)
+
+                    self.log.debug(' '.join([str(i) for i in command]))
+
+                    print(to_json(self.node))
+                    process = Popen(
+                        args=command,
+                        env=self.env,
+                        cwd=self.package_build_url,
+                        stdout=PIPE,
+                        stderr=PIPE
+                    )
+                    output, error = process.communicate()
+                    code = process.returncode
+                    if code == 0:
+                        self.node['configured'] = True
+                        self.stdout.write(output.decode('utf8'))
+                        self.stderr.write(error.decode('utf8'))
+                    else:
+                        print(code)
+                        print(output.decode('utf8'))
+                        print(error.decode('utf8'))
+                        raise CommandFailedError('configure returned {}'.format(code))
+                else:
+                    self.node['configured'] = True
+
+    def build(self):
+        if not self.node['built']:
+            self.configure()
+            if self.package_build_url is not None:
+                self.log.info('building with make %s', self.display_name)
+                command = [ 'make' ]
+
+                if self.make_build_target:
+                    command.append(self.make_build_target)
+
+                if self.include_prefix_in_make:
+                    command.append('PREFIX={}'.format(self.install_prefix))
+
+                if self.make_build_optional:
+                    command.extend(self.make_build_optional)
+
+                self.log.debug(' '.join([str(i) for i in command]))
+
+                process = Popen(
+                    args=command,
+                    env=self.env,
+                    cwd=self.package_build_url,
+                    stdout=PIPE,
+                    stderr=PIPE
+                )
+                output, error = process.communicate()
+                code = process.returncode
+                if code == 0:
+                    self.node['built'] = True
+                    # self.pipeline.save_cache()
+                    self.stdout.write(output.decode('utf8'))
+                    self.stderr.write(error.decode('utf8'))
+                else:
+                    print(code)
+                    print(output.decode('utf8'))
+                    print(error.decode('utf8'))
+                    raise CommandFailedError('make returned {}'.format(code))
+
 class PackagePipeline(Pipeline):
     def __init__(self):
         Pipeline.__init__(self, 'package')
