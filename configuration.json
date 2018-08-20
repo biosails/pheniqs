@@ -200,6 +200,17 @@
                     "type": "string"
                 },
                 {
+                    "cardinality": "*",
+                    "handle": [
+                        "-T",
+                        "--token"
+                    ],
+                    "help": "Output read token",
+                    "meta": "SEGMENT:START:END",
+                    "name": "template token",
+                    "type": "string"
+                },
+                {
                     "choice": [
                         "CAPILLARY",
                         "LS454",

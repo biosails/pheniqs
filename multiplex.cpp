@@ -123,6 +123,18 @@ void MultiplexJob::execute() {
     stop();
     finalize();
 };
+void MultiplexJob::apply_interactive() {
+    Document adjusted;
+    adjusted.CopyFrom(interactive, adjusted.GetAllocator());
+    Value::MemberIterator reference = adjusted.FindMember("template token");
+    if(reference != adjusted.MemberEnd()) {
+        Value transform(kObjectType);
+        transform.AddMember("token", Value(reference->value, adjusted.GetAllocator()).Move(), adjusted.GetAllocator());
+        adjusted.RemoveMember("template token");
+        adjusted.AddMember("transform", transform.Move(), adjusted.GetAllocator());
+    }
+    overlay(adjusted);
+};
 
 void MultiplexJob::start() {
     for(auto feed : input_feed_by_index) {

@@ -59,6 +59,7 @@ class MultiplexJob : public Job {
         inline bool sense_input_layout() const {
             return decode_value_by_key< bool >("sense input layout", interactive);
         };
+        void apply_interactive() override;
 
     private:
         bool end_of_input;

@@ -60,7 +60,7 @@ class Job {
         const Value& schema_repository;
         const Value& projection_repository;
         void apply_default();
-        void apply_interactive();
+        virtual void apply_interactive();
         virtual void clean();
         void overlay(const Value& instruction);
         const Value* find_projection(const string& key) const;
