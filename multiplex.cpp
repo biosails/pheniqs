@@ -513,7 +513,7 @@ void MultiplexJob::compile_input() {
     }
 
     /*  validate leading_segment_index */
-    int32_t leading_segment_index(decode_value_by_key< int32_t >("leading segment index", leading_segment_index, ontology));
+    int32_t leading_segment_index(decode_value_by_key< int32_t >("leading segment index", ontology));
     if(leading_segment_index >= input_segment_cardinality) {
         throw ConfigurationError("leading segment index " + to_string(leading_segment_index) + " references non existing input segment");
     }
