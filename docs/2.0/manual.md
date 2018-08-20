@@ -277,10 +277,11 @@ A single closed class decoder can be declared in the `multiplex` directive. When
     }
 }
 ```
->**Example 2.10** Expanding **Example 2.9** we declare 4 classes for the multiplex decoder to be matched against the segmented sequence extracted by the `transform`. The keys of the `codec` dictionary directive have no special meaning and you may choose them as you see fit, as long as they are unique within the `codec` dictionary.
+>**Example 2.10** Expanding **Example 2.9** we declare 4 classes for the multiplex decoder which will be be matched against the segmented sequence extracted by the `transform`. 
+NOTE: The keys of the `codec` dictionary directive have no special meaning and you may choose them as you see fit, as long as they are unique within the `codec` dictionary. As a default we define them as the concatenation of all barcodes for each respective class.
 {: .example}
 
-Since each class decoded by the multiplex decoder corresponds to a read group you may define read group related attributes in each class entry in the `codec` dictionary. Read group attributes that apply to all read groups may be declared upstream, in either the multiplex decoder directive or the root of the instruction document.
+Since each class decoded by the multiplex decoder corresponds to a read group you may define read group related attributes in each class entry in the `codec` dictionary. Read group attributes that apply to all read groups may be declared upstream in either the multiplex decoder directive or the root of the instruction document.
 
 >```json
 {
@@ -348,18 +349,18 @@ Since each class decoded by the multiplex decoder corresponds to a read group yo
 
 
 ## Contextual `output` directives
-The `output` attribute can be declared in the root of the instruction, in the `multiplex` decoder directive or in each of the individual `multiplex` decoder class directives. As always, attributes declared deeper in the hierarchy override attributes declared upstream. When interleaving reads from multiple read groups into the same output it is sufficient, and less verbose, to declare the output attribute upstream. When splitting reads from different read groups to different output files you declare the `output` attribute individually for the read group. You may also mix-and-match the two styles. A corresponding [@RG header tag](glossary.html#rg_header_tag) will be added to the header of an output file if at least one segment of reads tagged with that read group are written to it.
+The `output` attribute can be declared in the root of the instruction, in the `multiplex` decoder directive or in each of the individual `multiplex` decoder class directives. As always, attributes declared lower in the hierarchy override attributes declared upstream. When interleaving reads from multiple read groups into the same output it is sufficient, and less verbose, to declare the output attribute upstream. When splitting reads from different read groups to different output files you declare the `output` attribute individually for the read group. You may also mix-and-match the two styles. A corresponding [@RG header tag](glossary.html#rg_header_tag) will be added to the header of an output file if at least one segment of reads tagged with that read group are written to it.
 
 ## The `molecular` directive
-The `molecular` directive can be used to declare either a single decoder or and array containing multiple decoders. When decoding molecular barcodes Pheniqs will write the nucleotide barcode sequence to the [RX](glossary.html#rx_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [OX](glossary.html#ox_auxiliary_tag) tag. A molecular identifier is written to the [MI](glossary.html#mi_auxiliary_tag) tag.
+The `molecular` directive can be used to declare either a single decoder or an array containing multiple decoders. When decoding molecular barcodes Pheniqs will write the nucleotide barcode sequence to the [RX](glossary.html#rx_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [OX](glossary.html#ox_auxiliary_tag) tag. A molecular identifier is written to the [MI](glossary.html#mi_auxiliary_tag) tag.
 
-If error correction is applied to the barcode the raw, uncorrected, nucleotide and quality sequences are written to the [QX](glossary.html#qx_auxiliary_tag) and [BZ](glossary.html#bz_auxiliary_tag) tags and the decoding error probability to the [XM](glossary.html#xm_auxiliary_tag) tag.
+If error correction is applied to the barcode the raw, uncorrected, nucleotide, and quality sequences are written to the [QX](glossary.html#qx_auxiliary_tag) and [BZ](glossary.html#bz_auxiliary_tag) tags and the decoding error probability to the [XM](glossary.html#xm_auxiliary_tag) tag.
 
 ## The `cellular` directive
 The `cellular` directive can be used to declare either a single decoder or an array containing multiple decoders. When decoding cellular barcodes Pheniqs will write the raw, uncorrected, nucleotide barcode sequence to the [CR](glossary.html#cr_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [CY](glossary.html#cy_auxiliary_tag) tag, while The decoded cellular barcode is written to the [CB](glossary.html#cb_auxiliary_tag) tag. The decoding error probability is written to the [XC](glossary.html#cr_auxiliary_tag) tag.
 
 # URL handling
-Setting global URL prefixes make your instruction file more portable. If specified, the `base input url` and `base output url` are used as a prefix to **relative** URLs defined in the `input` and `output` directives respectively. A URL is considered relative if it **does not** begin with a **/** character. Environment variables in URLs will be resolved by Pheniqs when it compiles your instruction file. `base input url` and `base output url` default to the `working directory` which is the directory where pheniqs was executed. **relative** URLs are resolved against the `working directory`.
+Setting global URL prefixes make your instruction file more portable. If specified, the `base input url` and `base output url` are used as a prefix to **relative** URLs defined in the `input` and `output` directives, respectively. A URL is considered relative if it **does not** begin with a **/** character. Environment variables in URLs will be resolved by Pheniqs when it compiles your instruction file. `base input url` and `base output url` default to the `working directory` which is the directory where Pheniqs was executed. **relative** URLs are resolved against the `working directory`.
 
 >```json
 {
@@ -399,7 +400,7 @@ Setting global URL prefixes make your instruction file more portable. If specifi
     ]
 }
 ```
->**Example 2.14** `base input path` and `base output path` do not have to be **absolute** URLs and may contain environment variables enclosed in curly brackets. The `~` character in the beginning of a URL is interpreted as the `HOME` environment variable on most POSIX shells and resolves to the home directory of the currently logged in user. **relative** URLs are resolved against the `working directory` which is the directory where pheniqs was executed.
+>**Example 2.14** `base input path` and `base output path` do not have to be **absolute** URLs and may contain environment variables enclosed in curly brackets. The `~` character in the beginning of a URL is interpreted as the `HOME` environment variable on most POSIX shells and resolves to the home directory of the currently logged in user. **relative** URLs are resolved against the `working directory` which is the directory where Pheniqs was executed.
 {: .example}
 
 ## Standard streams
@@ -428,7 +429,9 @@ The `input phred offset` and `output phred offset` are applicable only to [FASTQ
 {: .example}
 
 # Leading Segment
-Pheniqs constructs new segments for the output read and must generate corresponding identifiers and replicate metadata from the input to the output segments. Since segments can potentially disagree on metadata, one input segment is elected as the leader and used as a template when constructing the output segments. The leading segment property is a reference to an [input segment index](glossary.html#input_segment) and defaults to **0** if omitted.
+Pheniqs constructs new segments for the output read and must generate corresponding identifiers and replicate metadata from the input. Since segments can potentially disagree on metadata, one input segment is elected as the leader and used as a template when constructing the output segments. The leading segment property is a reference to an [input segment index](glossary.html#input_segment) and defaults to **0** if omitted.
+
+**EXAMPLE OF WHEN THIS WOULD BE USEFUL**
 
 >```json
 { "leading segment": 0 }
@@ -437,13 +440,17 @@ Pheniqs constructs new segments for the output read and must generate correspond
 {: .example}
 
 # Pass filter reads
-Some reads are marked by the sequencing platform as not passing the vendor quality control. For instance Illumina sequencers perform an internal [quality filtering procedure](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-x-percent-pf-technical-note-770-2014-043.pdf) called chastity filter, and reads that pass this filter are called **PF** for **pass-filter**. This can be [signaled](https://en.wikipedia.org/wiki/FASTQ_format#Illumina_sequence_identifiers) on the comment portion of the read identifier in [FASTQ](glossary.html#fastq) files or the **512** flag on a SAM record flag. Setting this attribute to **true** will instruct Pheniqs to decode those unfiltered reads and include them in the output. If the attribute is set to **false** those reads are dropped. `include filtered` defaults to **false**.
+Some reads are marked by the sequencing platform as not passing the vendor quality control. For instance, Illumina sequencers perform an internal [quality filtering procedure](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-x-percent-pf-technical-note-770-2014-043.pdf) called chastity filter, and reads that pass this filter are called **PF** for **pass-filter**. This can be [signaled](https://en.wikipedia.org/wiki/FASTQ_format#Illumina_sequence_identifiers) on the comment portion of the read identifier in [FASTQ](glossary.html#fastq) files or the **512** flag on a SAM record flag. Setting this attribute to **true** will instruct Pheniqs to decode those unfiltered reads and include them in the output. If the attribute is set to **false** those reads are dropped. `include filtered` defaults to **false**.
+
+**I think this would be clearer if the key was "include only pf reads" or something like that. When I talk about filtered reads I generally refer to those that passed a particular filter, not those that did not pass.**
 
 # Configuration validation
-The `-V/--validate` command line flag makes Pheniqs evaluate the supplied instruction and emit a human readable description of the instruction without actually executing it. It is sometimes useful to inspect this description before executing to make sure all implicit parameters are allocated the desired values. To also print out the barcode distance metric for each closed class decoder you may additionally set the `-D/--distance` command line flag. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate, known as the Shannon bound.
+The `-V/--validate` command line flag makes Pheniqs evaluate the supplied instruction and emit a human readable description of the instruction without actually executing it. It is sometimes useful to inspect this description before executing to make sure all implicit parameters are allocated the desired values. To also print out the barcode distance metric for each closed class decoder you may additionally set the `-D/--distance` command line flag. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate, known as the [Shannon bound](https://en.wikipedia.org/wiki/Shannon%E2%80%93Hartley_theorem).
 
 # Demultiplexing statistics
 Pheniqs emits a comprehensive demultiplexing report with statistics about both inputs and outputs.
+
+**Will this be where we put Mohammed's MultiQC Report?**
 
 ## Input
 A quality statistics report for every segment in the input is provided in the `demultiplex input report` element.
@@ -452,7 +459,7 @@ A quality statistics report for every segment in the input is provided in the `d
 | : --------------------------------------------- | :---------------------------------------------------------------------
 | **count**                                       | all input reads
 | **pf count**                                    | input reads that *passed vendor quality control*
-| **pf fraction**                                 | **pf count** / **count**
+| **pf fraction**                                 | **pf count** / ** (pf count + non-pf count)**
 
 ## Output
 A quality statistics report for every segment in every output read group is provided in the `demultiplex output report` element as well as global statistics for the entire pipeline.
