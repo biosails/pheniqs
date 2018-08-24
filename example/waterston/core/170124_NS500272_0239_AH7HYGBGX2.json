@@ -7,7 +7,7 @@
     "PM": "NextSeq NS500272 2.1.0.31",
     "cellular": [
         {
-            "base": "RT"
+            "base": "rt_c_elegans"
         },
         {
             "base": "HGGN5BGX2_multiplex",
@@ -2021,5 +2021,11 @@
         "token": [
             "3::"
         ]
-    }
+    },
+    "input": [
+        "Undetermined_S0_L001_R1_001.fastq.gz",
+        "Undetermined_S0_L001_I1_001.fastq.gz",
+        "Undetermined_S0_L001_I2_001.fastq.gz",
+        "Undetermined_S0_L001_R2_001.fastq.gz"
+    ]
 }

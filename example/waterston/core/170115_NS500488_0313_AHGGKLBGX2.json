@@ -7,7 +7,7 @@
     "PM": "NextSeq NS500488 2.1.0.31",
     "cellular": [
         {
-            "base": "RT"
+            "base": "rt_c_elegans"
         },
         {
             "base": "HGGKLBGX2_multiplex",

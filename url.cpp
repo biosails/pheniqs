@@ -141,7 +141,8 @@ void normalize_standard_stream(string& path, const IoDirection& direction) {
     }
 };
 
-void to_string(const FormatType& value, string& result) {
+string to_string(const FormatType& value) {
+    string result;
     switch (value) {
         case FormatType::NONE:      result.assign("none");   break;
         case FormatType::FASTQ:     result.assign("fastq");  break;
@@ -159,10 +160,6 @@ void to_string(const FormatType& value, string& result) {
         case FormatType::JSON:      result.assign("json");   break;
         default:                                             break;
     }
-};
-string to_string(const FormatType& value) {
-    string result;
-    to_string(value, result);
     return result;
 };
 bool from_string(const char* value, FormatType& result) {
@@ -188,15 +185,11 @@ bool from_string(const string& value, FormatType& result) {
     return from_string(value.c_str(), result);
 };
 ostream& operator<<(ostream& o, const FormatType& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 void encode_key_value(const string& key, const FormatType& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
-    encode_key_value(key, string_value, container, document);
+    encode_key_value(key, to_string(value), container, document);
 };
 template<> bool decode_value_by_key< FormatType >(const Value::Ch* key, FormatType& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
@@ -213,12 +206,14 @@ template <> FormatType decode_value_by_key(const Value::Ch* key, const Value& co
     return value;
 };
 
-void to_string(const IoDirection& value, string& result) {
+string to_string(const IoDirection& value) {
+    string result;
     switch (value) {
         case IoDirection::IN:   result.assign("in");    break;
         case IoDirection::OUT:  result.assign("out");   break;
         default:                                        break;
     }
+    return result;
 };
 bool from_string(const char* value, IoDirection& result) {
          if(value == NULL)          result = IoDirection::UNKNOWN;
@@ -231,15 +226,11 @@ bool from_string(const string& value, IoDirection& result) {
     return from_string(value.c_str(), result);
 };
 ostream& operator<<(ostream& o, const IoDirection& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
-    encode_key_value(key, string_value, container, document);
+    encode_key_value(key, to_string(value), container, document);
 };
 template<> bool decode_value_by_key< IoDirection >(const Value::Ch* key, IoDirection& value, const Value& container) {
     Value::ConstMemberIterator element = container.FindMember(key);
@@ -452,7 +443,7 @@ void URL::refresh() {
 };
 void URL::decode_extension(const FormatType& type) {
     _extension.clear();
-    to_string(type, _extension);
+    _extension = to_string(type);
 };
 string URL::description() const {
     string description;

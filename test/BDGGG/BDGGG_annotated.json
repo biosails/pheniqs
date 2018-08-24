@@ -30,8 +30,8 @@
                 "LB": "trinidad 8"
             }
         },
-        "confidence threshold": 0.95,
-        "noise": 0.02
+        "confidence threshold": 0.99,
+        "noise": 0.05
     },
     "transform": {
         "token": [ "0::", "2::" ]

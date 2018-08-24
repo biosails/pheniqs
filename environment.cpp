@@ -80,7 +80,7 @@ void Environment::push_to_queue(Document& operation) {
         Job* job(NULL);
         string implementation(decode_value_by_key< string >("implementation", operation));
 
-        if(implementation == "multiplex") { job = new MultiplexJob(operation); }
+        if(implementation == "multiplex") { job = new Multiplex(operation); }
         else { job = new Job(operation); }
 
         job->assemble();

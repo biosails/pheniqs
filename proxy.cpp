@@ -21,13 +21,15 @@
 
 #include "proxy.h"
 
-void to_string(const FormatKind& value, string& result) {
+string to_string(const FormatKind& value) {
+    string result;
     switch(value) {
         case FormatKind::FASTQ:         result.assign("FASTQ");      break;
         case FormatKind::HTS:           result.assign("HTS");        break;
         case FormatKind::DEV_NULL:      result.assign("DEV_NULL");   break;
         default:                        result.assign("UNKNOWN");    break;
     }
+    return result;
 };
 bool from_string(const char* value, FormatKind& result) {
          if(value == NULL)              result = FormatKind::UNKNOWN;
@@ -40,22 +42,18 @@ bool from_string(const char* value, FormatKind& result) {
 };
 void to_kstring(const FormatKind& value, kstring_t& result) {
     ks_clear(result);
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     ks_put_string(string_value.c_str(), string_value.size(), result);
 };
 bool from_string(const string& value, FormatKind& result) {
     return from_string(value.c_str(), result);
 };
 ostream& operator<<(ostream& o, const FormatKind& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
     Value k(key.c_str(), key.size(), document.GetAllocator());
     container.RemoveMember(key.c_str());

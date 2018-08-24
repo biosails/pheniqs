@@ -50,7 +50,7 @@ enum class FormatType : uint8_t {
     BED,
     JSON,
 };
-void to_string(const FormatType& value, string& result);
+string to_string(const FormatType& value);
 string to_string(const FormatType& value);
 bool from_string(const char* value, FormatType& result);
 bool from_string(const string& value, FormatType& result);
@@ -62,7 +62,7 @@ enum class IoDirection : uint8_t {
     OUT,
     UNKNOWN,
 };
-void to_string(const IoDirection& value, string& result);
+string to_string(const IoDirection& value);
 bool from_string(const char* value, IoDirection& result);
 bool from_string(const string& value, IoDirection& result);
 ostream& operator<<(ostream& o, const IoDirection& direction);

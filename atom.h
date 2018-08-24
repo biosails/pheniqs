@@ -298,7 +298,7 @@ enum class HtsSortOrder : int8_t {
     QUERYNAME  =  1,
     COORDINATE =  2,
 };
-void to_string(const HtsSortOrder& value, string& result);
+string to_string(const HtsSortOrder& value);
 bool from_string(const char* value, HtsSortOrder& result);
 void to_kstring(const HtsSortOrder& value, kstring_t& result);
 bool from_string(const string& value, HtsSortOrder& result);
@@ -311,7 +311,7 @@ enum class HtsGrouping : int8_t {
     QUERY     =  1,
     REFERENCE =  2,
 };
-void to_string(const HtsGrouping& value, string& result);
+string to_string(const HtsGrouping& value);
 bool from_string(const char* value, HtsGrouping& result);
 bool from_string(const string& value, HtsGrouping& result);
 void to_kstring(const HtsGrouping& value, kstring_t& result);
@@ -329,7 +329,7 @@ enum class Platform : uint8_t {
     ONT,
     PACBIO,
 };
-void to_string(const Platform& value, string& result);
+string to_string(const Platform& value);
 bool from_string(const char* value, Platform& result);
 void to_kstring(const Platform& value, kstring_t& result);
 bool from_string(const string& value, Platform& result);
@@ -344,7 +344,7 @@ enum class Algorithm : uint8_t {
     TRANSPARENT,
     BENCHMARK,
 };
-void to_string(const Algorithm& value, string& result);
+string to_string(const Algorithm& value);
 bool from_string(const char* value, Algorithm& result);
 void to_kstring(const Algorithm& value, kstring_t& result);
 bool from_string(const string& value, Algorithm& result);
@@ -352,15 +352,15 @@ ostream& operator<<(ostream& o, const Algorithm& value);
 bool encode_key_value(const string& key, const Algorithm& value, Value& container, Document& document);
 
 /*  defined in htslib/hts.h */
-void to_string(const htsFormatCategory& value, string& result);
+string to_string(const htsFormatCategory& value);
 bool from_string(const char* value, htsFormatCategory& result);
 ostream& operator<<(ostream& o, const htsFormatCategory& hts_format_category);
 
-void to_string(const htsExactFormat& value, string& result);
+string to_string(const htsExactFormat& value);
 bool from_string(const char* value, htsExactFormat& result);
 ostream& operator<<(ostream& o, const htsExactFormat& hts_exact_format);
 
-void to_string(const htsCompression& value, string& result);
+string to_string(const htsCompression& value);
 bool from_string(const char* value, htsCompression& result);
 ostream& operator<<(ostream& o, const htsCompression& hts_compression);
 

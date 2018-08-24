@@ -57,13 +57,15 @@ static inline char* skip_to_tab(char* source, const char* end) {
     return position;
 };
 
-void to_string(const HtsSortOrder& value, string& result) {
+string to_string(const HtsSortOrder& value) {
+    string result;
     switch(value) {
         case HtsSortOrder::UNSORTED:    result.assign("unsorted");   break;
         case HtsSortOrder::QUERYNAME:   result.assign("queryname");  break;
         case HtsSortOrder::COORDINATE:  result.assign("coordinate"); break;
         default:                        result.assign("unknown");    break;
     }
+    return result;
 };
 bool from_string(const char* value, HtsSortOrder& result) {
          if(value == NULL)                  result = HtsSortOrder::UNKNOWN;
@@ -79,19 +81,15 @@ bool from_string(const string& value, HtsSortOrder& result) {
 };
 void to_kstring(const HtsSortOrder& value, kstring_t& result) {
     ks_clear(result);
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     ks_put_string(string_value.c_str(), string_value.size(), result);
 };
 ostream& operator<<(ostream& o, const HtsSortOrder& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 void encode_key_value(const string& key, const HtsSortOrder& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
     Value k(key.c_str(), key.size(), document.GetAllocator());
     container.RemoveMember(key.c_str());
@@ -107,12 +105,14 @@ template<> bool decode_value_by_key< HtsSortOrder >(const Value::Ch* key, HtsSor
     return false;
 };
 
-void to_string(const HtsGrouping& value, string& result) {
+string to_string(const HtsGrouping& value) {
+    string result;
     switch(value) {
         case HtsGrouping::QUERY:        result.assign("query");      break;
         case HtsGrouping::REFERENCE:    result.assign("reference");  break;
         default:                        result.assign("none");       break;
     }
+    return result;
 };
 bool from_string(const char* value, HtsGrouping& result) {
          if(value == NULL)                  result = HtsGrouping::NONE;
@@ -124,22 +124,18 @@ bool from_string(const char* value, HtsGrouping& result) {
 };
 void to_kstring(const HtsGrouping& value, kstring_t& result) {
     ks_clear(result);
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     ks_put_string(string_value.c_str(), string_value.size(), result);
 };
 bool from_string(const string& value, HtsGrouping& result) {
     return from_string(value.c_str(), result);
 };
 ostream& operator<<(ostream& o, const HtsGrouping& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 void encode_key_value(const string& key, const HtsGrouping& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
     Value k(key.c_str(), key.size(), document.GetAllocator());
     container.RemoveMember(key.c_str());
@@ -155,7 +151,8 @@ template<> bool decode_value_by_key< HtsGrouping >(const Value::Ch* key, HtsGrou
     return false;
 };
 
-void to_string(const htsFormatCategory& value, string& result) {
+string to_string(const htsFormatCategory& value) {
+    string result;
     switch(value) {
         case htsFormatCategory::sequence_data:  result.assign("sequence data"); break;
         case htsFormatCategory::variant_data:   result.assign("variant data");  break;
@@ -163,6 +160,7 @@ void to_string(const htsFormatCategory& value, string& result) {
         case htsFormatCategory::region_list:    result.assign("region list");   break;
         default:                                result.assign("unknown");       break;
     }
+    return result;
 };
 bool from_string(const char* value, htsFormatCategory& result) {
          if(value == NULL)                      result = htsFormatCategory::unknown_category;
@@ -174,13 +172,12 @@ bool from_string(const char* value, htsFormatCategory& result) {
     return (result == htsFormatCategory::unknown_category ? false : true);
 };
 ostream& operator<<(ostream& o, const htsFormatCategory& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 
-void to_string(const htsExactFormat& value, string& result) {
+string to_string(const htsExactFormat& value) {
+    string result;
     switch(value) {
         case htsExactFormat::binary_format: result.assign("binary format"); break;
         case htsExactFormat::text_format:   result.assign("text format");   break;
@@ -198,6 +195,7 @@ void to_string(const htsExactFormat& value, string& result) {
         case htsExactFormat::htsget:        result.assign("htsget");        break;
         default:                            result.assign("unknown");       break;
     }
+    return result;
 };
 bool from_string(const char* value, htsExactFormat& result) {
          if(value == NULL)                      result = htsExactFormat::unknown_format;
@@ -219,19 +217,19 @@ bool from_string(const char* value, htsExactFormat& result) {
     return (result == htsExactFormat::unknown_format ? false : true);
 };
 ostream& operator<<(ostream& o, const htsExactFormat& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 
-void to_string(const htsCompression& value, string& result) {
+string to_string(const htsCompression& value) {
+    string result;
     switch(value) {
         case htsCompression::gzip:      result.assign("gzip");              break;
         case htsCompression::bgzf:      result.assign("bgzf");              break;
         case htsCompression::custom:    result.assign("custom");            break;
         default:                        result.assign("no compression");    break;
     }
+    return result;
 };
 bool from_string(const char* value, htsCompression& result) {
          if(value == NULL)              result = htsCompression::no_compression;
@@ -242,13 +240,12 @@ bool from_string(const char* value, htsCompression& result) {
     return (result == htsCompression::no_compression ? false : true);
 };
 ostream& operator<<(ostream& o, const htsCompression& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 
-void to_string(const Platform& value, string& result) {
+string to_string(const Platform& value) {
+    string result;
     switch(value) {
         case Platform::CAPILLARY:   result.assign("CAPILLARY");  break;
         case Platform::LS454:       result.assign("LS454");      break;
@@ -260,6 +257,7 @@ void to_string(const Platform& value, string& result) {
         case Platform::PACBIO:      result.assign("PACBIO");     break;
         default:                    result.assign("UNKNOWN");    break;
     }
+    return result;
 };
 bool from_string(const char* value, Platform& result) {
          if(value == NULL)                  result = Platform::UNKNOWN;
@@ -277,22 +275,18 @@ bool from_string(const char* value, Platform& result) {
 };
 void to_kstring(const Platform& value, kstring_t& result) {
     ks_clear(result);
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     ks_put_string(string_value.c_str(), string_value.size(), result);
 };
 bool from_string(const string& value, Platform& result) {
     return from_string(value.c_str(), result);
 };
 ostream& operator<<(ostream& o, const Platform& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 void encode_key_value(const string& key, const Platform& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
     Value k(key.c_str(), key.size(), document.GetAllocator());
     container.RemoveMember(key.c_str());
@@ -313,7 +307,8 @@ template <> Platform decode_value_by_key(const Value::Ch* key, const Value& cont
     return value;
 };
 
-void to_string(const Algorithm& value, string& result) {
+string to_string(const Algorithm& value) {
+    string result;
     switch(value) {
         case Algorithm::UNKNOWN:      result.assign("unknown");     break;
         case Algorithm::MDD:          result.assign("mdd");         break;
@@ -323,6 +318,7 @@ void to_string(const Algorithm& value, string& result) {
         case Algorithm::BENCHMARK:    result.assign("benchmark");   break;
         default:                                                    break;
     }
+    return result;
 };
 bool from_string(const char* value, Algorithm& result) {
          if(value == NULL)                  result = Algorithm::UNKNOWN;
@@ -337,23 +333,19 @@ bool from_string(const char* value, Algorithm& result) {
 };
 void to_kstring(const Algorithm& value, kstring_t& result) {
     ks_clear(result);
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     ks_put_string(string_value.c_str(), string_value.size(), result);
 };
 bool from_string(const string& value, Algorithm& result) {
     return from_string(value.c_str(), result);
 };
 ostream& operator<<(ostream& o, const Algorithm& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 bool encode_key_value(const string& key, const Algorithm& value, Value& container, Document& document) {
     if(value != Algorithm::UNKNOWN) {
-        string string_value;
-        to_string(value, string_value);
+        string string_value(to_string(value));
         Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
         Value k(key.c_str(), key.size(), document.GetAllocator());
         container.RemoveMember(key.c_str());

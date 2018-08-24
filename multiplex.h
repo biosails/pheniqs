@@ -30,17 +30,17 @@
 #include "decoder.h"
 #include "metric.h"
 
-class MultiplexJob;
+class Multiplex;
 class MultiplexPivot;
 
-class MultiplexJob : public Job {
+class Multiplex : public Job {
     friend class MultiplexPivot;
-    MultiplexJob(MultiplexJob const &) = delete;
-    void operator=(MultiplexJob const &) = delete;
+    Multiplex(Multiplex const &) = delete;
+    void operator=(Multiplex const &) = delete;
 
     public:
-        MultiplexJob(Document& operation);
-        ~MultiplexJob() override;
+        Multiplex(Document& operation);
+        ~Multiplex() override;
         inline bool display_distance() const {
             return decode_value_by_key< bool >("display distance", ontology);
         };
@@ -60,6 +60,7 @@ class MultiplexJob : public Job {
             return decode_value_by_key< bool >("sense input layout", interactive);
         };
         void apply_interactive() override;
+        Multiplex& operator+=(const MultiplexPivot& pivot);
 
     private:
         bool end_of_input;
@@ -69,6 +70,10 @@ class MultiplexJob : public Job {
         list< Feed* > output_feed_by_index;
         vector< Feed* > input_feed_by_segment;
         unordered_map< URL, Feed* > output_feed_by_url;
+        RoutingDecoder< Channel >* multiplex;
+        vector< RoutingDecoder< Barcode >* > molecular;
+        vector< RoutingDecoder< Barcode >* > cellular;
+
         void compile_PG();
         void compile_input();
         void apply_inheritance();
@@ -93,11 +98,18 @@ class MultiplexJob : public Job {
 
         void validate_url_accessibility();
         void load_thread_pool();
+        void load_decoding();
         void load_input();
         void load_output();
         void load_pivot();
         void populate_channel(Channel& channel);
         void finalize();
+
+        void load_multiplex_decoding();
+        void load_molecular_decoding();
+        void load_molecular_decoder(const Value& value);
+        void load_cellular_decoding();
+        void load_cellular_decoder(const Value& value);
 
         void print_global_instruction(ostream& o) const;
         void print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const;
@@ -124,16 +136,31 @@ class MultiplexPivot {
         Read input;
         Read output;
         RoutingDecoder< Channel >* multiplex;
-        vector< Decoder* > molecular;
-        vector< Decoder* > cellular;
-        InputAccumulator input_accumulator;
-        OutputAccumulator output_accumulator;
-        MultiplexPivot(MultiplexJob& job, const int32_t& index);
+        vector< RoutingDecoder< Barcode >* > molecular;
+        vector< RoutingDecoder< Barcode >* > cellular;
+        // InputAccumulator input_accumulator;
+        // OutputAccumulator output_accumulator;
+        MultiplexPivot(Multiplex& job, const int32_t& index);
         void start() {
             pivot_thread = thread(&MultiplexPivot::run, this);
         };
         void join() {
             pivot_thread.join();
+        };
+        void finalize() {
+            if(multiplex != NULL) {
+                multiplex->finalize();
+            }
+            if(!molecular.empty()) {
+                for(auto& decoder : molecular) {
+                    decoder->finalize();
+                }
+            }
+            if(!cellular.empty()) {
+                for(auto& decoder : cellular) {
+                    decoder->finalize();
+                }
+            }
         };
 
     protected:
@@ -155,8 +182,8 @@ class MultiplexPivot {
             multiplex->decoded->push(output);
         };
         inline void increment() {
-            input_accumulator.increment(input);
-            output_accumulator.increment(multiplex->decoded->index, output);
+            // input_accumulator.increment(input);
+            // output_accumulator.increment(multiplex->decoded->index, output);
         };
         inline void clear() {
             input.clear();
@@ -173,16 +200,16 @@ class MultiplexPivot {
         };
 
     private:
-        MultiplexJob& job;
+        Multiplex& job;
         thread pivot_thread;
         const bool disable_quality_control;
         const TemplateRule template_rule;
+        void load_decoding();
         void load_multiplex_decoding();
         void load_molecular_decoding();
         void load_molecular_decoder(const Value& value);
         void load_cellular_decoding();
         void load_cellular_decoder(const Value& value);
-
 };
 
 #endif /* PHENIQS_DEMULTIPLEX_H */

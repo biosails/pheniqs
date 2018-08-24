@@ -68,7 +68,8 @@ static inline string assemble_full_command(const int argc, const char** argv) {
     return value;
 };
 
-void to_string(const ParameterType& value, string& result) {
+string to_string(const ParameterType& value) {
+    string result;
     switch(value) {
         case ParameterType::BOOLEAN:    result.assign("boolean");   break;
         case ParameterType::INTEGER:    result.assign("integer");   break;
@@ -77,6 +78,7 @@ void to_string(const ParameterType& value, string& result) {
         case ParameterType::URL:        result.assign("url");       break;
         default:                        result.assign("unknown");   break;
     }
+    return result;
 };
 bool from_string(const char* value, ParameterType& result) {
          if(value == NULL)                  result = ParameterType::UNKNOWN;
@@ -92,14 +94,11 @@ bool from_string(const string& value, ParameterType& result) {
     return from_string(value.c_str(), result);
 };
 ostream& operator<<(ostream& o, const ParameterType& value) {
-    string string_value;
-    to_string(value, string_value);
-    o << string_value;
+    o << to_string(value);
     return o;
 };
 void encode_key_value(const string& key, const ParameterType& value, Value& container, Document& document) {
-    string string_value;
-    to_string(value, string_value);
+    string string_value(to_string(value));
     Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
     Value k(key.c_str(), key.size(), document.GetAllocator());
     container.RemoveMember(key.c_str());

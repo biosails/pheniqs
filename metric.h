@@ -174,23 +174,49 @@ class CodecMetric {
             barcode_segment_length(decode_value_by_key< vector< int32_t > >("barcode length", ontology)),
             concatenated_metric(nucleotide_cardinality) {
 
-            for(auto& segment : barcode_segment_length) {
-                segment_metric.emplace_back(segment);
+            for(auto& segment_length : barcode_segment_length) {
+                segment_metric.emplace_back(segment_length);
             }
 
             Value::ConstMemberIterator reference = ontology.FindMember("codec");
             if(reference != ontology.MemberEnd()) {
-                if(!reference->value.IsNull()) {
-                    for(auto& record : reference->value.GetObject()) {
-                        if(!record.value.IsNull()) {
-                            try {
-                                Barcode barcode(record.value);
-                                add(barcode);
-                            } catch(ConfigurationError& error) {
-                                string barcode_key(record.name.GetString(), record.name.GetStringLength());
-                                throw ConfigurationError("barcode " + barcode_key + " : " + error.message);
+                const Value& codec(reference->value);
+                for(auto& record : codec.GetObject()) {
+                    int32_t barcode_index(decode_value_by_key< int32_t >("index", record.value));
+                    list< string > sequence_array(decode_value_by_key< list< string > >("barcode", record.value));
+                    if(sequence_array.size() == segment_cardinality) {
+                        string concatenated_sequence;
+                        int32_t segment_index(0);
+                        for(auto& sequence : sequence_array) {
+                            if(static_cast< int32_t >(sequence.size()) == barcode_segment_length[segment_index]) {
+                                concatenated_sequence += sequence;
+                                segment_metric[segment_index].add(sequence);
+
+                            } else {
+                                string message;
+                                message += " expected ";
+                                message += to_string(barcode_segment_length[segment_index]);
+                                message += " nucleotides in segment ";
+                                message += to_string(segment_index);
+                                message += " of barcode ";
+                                message += to_string(barcode_index);
+                                message += " but found ";
+                                message += to_string(sequence.size());
+                                throw ConfigurationError(message);
                             }
+                            ++segment_index;
                         }
+                        concatenated_metric.add(concatenated_sequence);
+
+                    } else {
+                        string message;
+                        message += " expected ";
+                        message += to_string(segment_cardinality);
+                        message += " in barcode ";
+                        message += to_string(barcode_index);
+                        message += " but found ";
+                        message += to_string(sequence_array.size());
+                        throw ConfigurationError(message);
                     }
                 }
             }
@@ -248,24 +274,6 @@ class CodecMetric {
     private:
         WordMetric concatenated_metric;
         vector< WordMetric > segment_metric;
-        void add(const Barcode& barcode) {
-            if(segment_cardinality == barcode.segment_cardinality()) {
-                for(size_t i(0); i < barcode.segment_cardinality(); ++i) {
-                    try {
-                        segment_metric[i].add(barcode[i].iupac_ambiguity());
-                    } catch(ConfigurationError& error) {
-                        throw ConfigurationError("segment " + to_string(i) + " is " + error.message);
-                    }
-                }
-                try {
-                    concatenated_metric.add(barcode.iupac_ambiguity());
-                } catch(ConfigurationError& error) {
-                    throw ConfigurationError("concatenated is " + error.message);
-                }
-            } else {
-                throw ConfigurationError("barcode must have " + to_string(segment_cardinality) + " segments");
-            }
-        };
         void load() {
             concatenated_metric.load();
             for(auto& segment : segment_metric) {

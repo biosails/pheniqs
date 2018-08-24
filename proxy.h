@@ -36,7 +36,7 @@ enum class FormatKind : uint8_t {
     FASTQ,
     HTS,
 };
-void to_string(const FormatKind& value, string& result);
+string to_string(const FormatKind& value);
 bool from_string(const char* value, FormatKind& result);
 void to_kstring(const FormatKind& value, kstring_t& result);
 bool from_string(const string& value, FormatKind& result);
