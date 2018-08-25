@@ -47,7 +47,7 @@ class ValidationError : public Error {
 };
 Document encode_validation_error(const SchemaValidator& validator, const Value& schema, const Value& container);
 
-void print_json(const Value& node, ostream& o=cout);
+void print_json(const Value& node, ostream& o=cout, const int32_t& precision=324);
 Document* load_json(const string& path);
 
 /*  Recursively merge two JSON documents.

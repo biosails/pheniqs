@@ -72,13 +72,13 @@ void Job::finalize() {
 };
 
 void Job::print_ontology(ostream& o) const {
-    print_json(ontology, o);
+    print_json(ontology, o, float_precision());
 };
 void Job::print_compiled(ostream& o) const {
-    print_json(ontology, o);
+    print_json(ontology, o, float_precision());
 };
 void Job::print_report(ostream& o) const {
-    print_json(report, o);
+    print_json(report, o, float_precision());
 };
 void Job::describe(ostream& o) const {
 

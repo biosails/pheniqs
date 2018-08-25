@@ -45,6 +45,9 @@ class Job {
         inline bool is_compile_only() const {
             return decode_value_by_key< bool >("compile only", interactive);
         };
+        inline int32_t float_precision() const {
+            return decode_value_by_key< int32_t >("float precision", ontology);
+        };
         virtual void assemble();
         virtual void compile();
         virtual void validate() {};

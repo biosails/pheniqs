@@ -255,6 +255,14 @@
                     "help": "Feed buffer capacity",
                     "name": "buffer capacity",
                     "type": "integer"
+                },
+                {
+                    "handle": [
+                        "--precision"
+                    ],
+                    "help": "Floating point precision in output",
+                    "name": "float precision",
+                    "type": "integer"
                 }
             ]
         }
@@ -262,6 +270,7 @@
     "comment": "pheniqs command line configuration file",
     "default": {
         "buffer capacity": 2048,
+        "float precision": 324,
         "input phred offset": 33,
         "leading segment index": 0,
         "output phred offset": 33,
