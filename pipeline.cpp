@@ -60,6 +60,17 @@ void Job::compile() {
     clean();
     validate();
 };
+void Job::finalize() {
+    if(decode_value_by_key< bool >("include compiled job", ontology)) {
+        /*  add a copy of the job document */
+        report.AddMember(
+            Value("job", report.GetAllocator()).Move(),
+            Value(ontology, report.GetAllocator()).Move(),
+            report.GetAllocator()
+        );
+    }
+};
+
 void Job::print_ontology(ostream& o) const {
     print_json(ontology, o);
 };

@@ -184,7 +184,7 @@ class Channel : public Barcode {
     public:
         const HeadRGAtom rg;
         const bool include_filtered;
-        const bool disable_quality_control;
+        const bool enable_quality_control;
         const list< URL > output_feed_url_by_segment;
         vector< Feed* > output_feed_lock_order;
         vector< Feed* > output_feed_by_segment;
@@ -214,8 +214,8 @@ class Channel : public Barcode {
                 }
             }
 
-            // only if QC is enabled update the QC accumulators
-            if(!disable_quality_control) {
+            /* only if QC is enabled update the QC accumulators */
+            if(enable_quality_control) {
                 for(size_t i(0); i < segment_accumulator_by_index.size(); ++i) {
                     segment_accumulator_by_index[i].increment(read[i]);
                 }

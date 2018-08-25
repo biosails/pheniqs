@@ -174,18 +174,20 @@ void Multiplex::stop() {
     }
 };
 void Multiplex::finalize() {
-    Value value;
-    value.CopyFrom(ontology, report.GetAllocator());
-    report.AddMember(Value("job", report.GetAllocator()).Move(), value.Move(), report.GetAllocator());
+    Job::finalize();
+
+    /*  collect statistics from the accumulators on all pivot threads */
     for(auto& pivot : pivot_array) {
         *this += pivot;
     }
+
     if(multiplex != NULL) {
         multiplex->finalize();
         Value element(kObjectType);
         multiplex->encode(element, report);
         report.AddMember("multiplex", element.Move(), report.GetAllocator());
     }
+
     if(!molecular.empty()) {
         Value array(kArrayType);
         for(auto& decoder : molecular) {
@@ -196,6 +198,7 @@ void Multiplex::finalize() {
         }
         report.AddMember("molecular", array.Move(), report.GetAllocator());
     }
+
     if(!cellular.empty()) {
         Value array(kArrayType);
         for(auto& decoder : cellular) {
@@ -206,7 +209,6 @@ void Multiplex::finalize() {
         }
         report.AddMember("cellular", array.Move(), report.GetAllocator());
     }
-    // encode_key_value("demultiplex input report", input_accumulator, report, report);
 
     clean_json_value(report, report);
     sort_json_value(report, report);
@@ -1354,9 +1356,9 @@ void Multiplex::print_global_instruction(ostream& o) const {
     decode_value_by_key< Platform >("platform", platform, ontology);
     o << "    Platform                                    " << platform << endl;
 
-    bool disable_quality_control;
-    decode_value_by_key< bool >("disable quality control", disable_quality_control, ontology);
-    o << "    Quality tracking                            " << (disable_quality_control ? "disabled" : "enabled") << endl;
+    bool enable_quality_control;
+    decode_value_by_key< bool >("enable quality control", enable_quality_control, ontology);
+    o << "    Quality tracking                            " << (enable_quality_control ? "enabled" : "disabled") << endl;
 
     bool include_filtered;
     decode_value_by_key< bool >("include filtered", include_filtered, ontology);
@@ -1672,7 +1674,7 @@ MultiplexPivot::MultiplexPivot(Multiplex& job, const int32_t& index) try :
     // input_accumulator(job.ontology),
     // output_accumulator(find_value_by_key("multiplex", job.ontology)),
     job(job),
-    disable_quality_control(decode_value_by_key< bool >("disable quality control", job.ontology)),
+    enable_quality_control(decode_value_by_key< bool >("enable quality control", job.ontology)),
     template_rule(decode_value_by_key< Rule >("transform", job.ontology)) {
 
     load_decoding();

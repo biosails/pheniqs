@@ -220,8 +220,8 @@ bool encode_value(const SegmentAccumulator& value, Value& container, Document& d
         encode_key_value("url", value.url, container, document);
         encode_key_value("min sequence length", value.shortest, container, document);
         encode_key_value("max sequence length", value.capacity, container, document);
-        Value cycle_quality_report(kObjectType);
-        Value cycle_nucleotide_quality_reports(kArrayType);
+        Value quality_control_by_cycle(kObjectType);
+        Value quality_control_by_nucleotide(kArrayType);
         for(uint8_t n(0); n < value.nucleic_acid_count_by_code.size(); ++n) {
             if(value.nucleic_acid_count_by_code[n] > 0) {
                 Value cycle_quality_distribution(kObjectType);
@@ -262,14 +262,14 @@ bool encode_value(const SegmentAccumulator& value, Value& container, Document& d
                     encode_key_value("nucleotide count", value.nucleic_acid_count_by_code[n], cycle_nucleotide_quality_report, document);
                     encode_key_value("nucleotide", string(1, BamToAmbiguousAscii[n]), cycle_nucleotide_quality_report, document);
                     cycle_nucleotide_quality_report.AddMember("cycle quality distribution", cycle_quality_distribution, allocator);
-                    cycle_nucleotide_quality_reports.PushBack(cycle_nucleotide_quality_report, allocator);
+                    quality_control_by_nucleotide.PushBack(cycle_nucleotide_quality_report, allocator);
                 } else {
-                    cycle_quality_report.AddMember("cycle quality distribution", cycle_quality_distribution, allocator);
+                    quality_control_by_cycle.AddMember("cycle quality distribution", cycle_quality_distribution, allocator);
                 }
             }
         }
-        container.AddMember("cycle nucleotide quality reports", cycle_nucleotide_quality_reports, allocator);
-        container.AddMember("cycle nucleotide quality report", cycle_quality_report, allocator);
+        container.AddMember("quality control by nucleotide", quality_control_by_nucleotide, allocator);
+        container.AddMember("quality control by cycle", quality_control_by_cycle, allocator);
 
         Value average_phred_report(kObjectType);
         encode_key_value("average phred score min", value.average_phred.min_value, average_phred_report, document);
@@ -292,7 +292,7 @@ Channel::Channel(const Value& ontology) try :
     Barcode(ontology),
     rg(ontology),
     include_filtered(decode_value_by_key< bool >("include filtered", ontology)),
-    disable_quality_control(decode_value_by_key< bool >("disable quality control", ontology)),
+    enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology)),
     output_feed_url_by_segment(decode_value_by_key< list< URL > >("output", ontology)),
     segment_accumulator_by_index(decode_value_by_key< vector< SegmentAccumulator > >("output feed by segment", ontology)) {
 
@@ -304,7 +304,7 @@ Channel::Channel(const Channel& other) :
     Barcode(other),
     rg(other.rg),
     include_filtered(other.include_filtered),
-    disable_quality_control(other.disable_quality_control),
+    enable_quality_control(other.enable_quality_control),
     output_feed_url_by_segment(other.output_feed_url_by_segment),
     output_feed_lock_order(other.output_feed_lock_order),
     output_feed_by_segment(other.output_feed_by_segment) {
@@ -335,7 +335,7 @@ void Channel::populate(unordered_map< URL, Feed* >& feed_by_url) {
 };
 void Channel::finalize(const AccumulatingDecoder& parent) {
     BarcodeAccumulator::finalize(parent);
-    if(!disable_quality_control) {
+    if(enable_quality_control) {
         for(auto& segment_accumulator : segment_accumulator_by_index) {
             segment_accumulator.finalize();
         }
@@ -345,15 +345,14 @@ void Channel::encode(Value& container, Document& document) const {
     Barcode::encode(container, document);
     if(container.IsObject()) {
         encode_value(rg, container, document);
-
-        if(!disable_quality_control) {
-            Value feed_report_array(kArrayType);
+        if(enable_quality_control) {
+            Value quality_control_by_segment(kArrayType);
             for(auto& accumulator : segment_accumulator_by_index) {
                 Value feed_report(kObjectType);
                 encode_value(accumulator, feed_report, document);
-                feed_report_array.PushBack(feed_report.Move(), document.GetAllocator());
+                quality_control_by_segment.PushBack(feed_report.Move(), document.GetAllocator());
             }
-            container.AddMember("segment quality reports", feed_report_array.Move(), document.GetAllocator());
+            container.AddMember("quality control by segment", quality_control_by_segment.Move(), document.GetAllocator());
         }
     } else { throw ConfigurationError("element must be a dictionary"); }
 };
@@ -364,7 +363,7 @@ Channel& Channel::operator+=(const Channel& rhs) {
     accumulated_confidence += rhs.accumulated_confidence;
     accumulated_pf_distance += rhs.accumulated_pf_distance;
     accumulated_pf_confidence += rhs.accumulated_pf_confidence;
-    if(!disable_quality_control) {
+    if(enable_quality_control) {
         for(size_t index(0); index < segment_accumulator_by_index.size(); ++index) {
             segment_accumulator_by_index[index] += rhs.segment_accumulator_by_index[index];
         }

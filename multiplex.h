@@ -60,6 +60,7 @@ class Multiplex : public Job {
             return decode_value_by_key< bool >("sense input layout", interactive);
         };
         void apply_interactive() override;
+        void finalize() override;
         Multiplex& operator+=(const MultiplexPivot& pivot);
 
     private:
@@ -103,7 +104,6 @@ class Multiplex : public Job {
         void load_output();
         void load_pivot();
         void populate_channel(Channel& channel);
-        void finalize();
 
         void load_multiplex_decoding();
         void load_molecular_decoding();
@@ -202,7 +202,7 @@ class MultiplexPivot {
     private:
         Multiplex& job;
         thread pivot_thread;
-        const bool disable_quality_control;
+        const bool enable_quality_control;
         const TemplateRule template_rule;
         void load_decoding();
         void load_multiplex_decoding();

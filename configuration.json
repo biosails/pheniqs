@@ -171,7 +171,16 @@
                         "--quality"
                     ],
                     "help": "Disable quality control for a minor speed gain",
-                    "name": "disable quality control",
+                    "name": "enable quality control",
+                    "type": "boolean"
+                },
+                {
+                    "handle": [
+                        "-j",
+                        "--job"
+                    ],
+                    "help": "Include a copy of the compiled job in the report",
+                    "name": "include compiled job",
                     "type": "boolean"
                 },
                 {
@@ -294,6 +303,7 @@
             "epilog": [],
             "full command": null,
             "implementation": "generic",
+            "include compiled job": null,
             "projection": null,
             "schema": null,
             "working directory": null
@@ -301,15 +311,15 @@
         "cellular:barcode": {
             "algorithm": null,
             "concentration": 1,
-            "disable quality control": null,
+            "enable quality control": null,
             "segment cardinality": null
         },
         "cellular:decoder": {
             "algorithm": "pamld",
             "codec": null,
             "confidence threshold": 0.99,
-            "disable quality control": null,
             "distance tolerance": null,
+            "enable quality control": null,
             "noise": 0.01,
             "quality masking threshold": 0,
             "undetermined": null
@@ -317,15 +327,15 @@
         "molecular:barcode": {
             "algorithm": null,
             "concentration": 1,
-            "disable quality control": null,
+            "enable quality control": null,
             "segment cardinality": null
         },
         "molecular:decoder": {
             "algorithm": "naive",
             "codec": null,
             "confidence threshold": 0.99,
-            "disable quality control": null,
             "distance tolerance": null,
+            "enable quality control": null,
             "noise": 0.01,
             "quality masking threshold": 0,
             "undetermined": null
@@ -341,7 +351,7 @@
             "SM": null,
             "algorithm": null,
             "concentration": 1,
-            "disable quality control": null,
+            "enable quality control": null,
             "flowcell id": null,
             "flowcell lane number": null,
             "include filtered": false,
@@ -361,8 +371,8 @@
             "base output url": null,
             "codec": null,
             "confidence threshold": 0.99,
-            "disable quality control": null,
             "distance tolerance": null,
+            "enable quality control": null,
             "flowcell id": null,
             "flowcell lane number": null,
             "include filtered": false,
@@ -606,8 +616,8 @@
                         "concentration": {
                             "$ref": "#/definitions/concentration"
                         },
-                        "disable quality control": {
-                            "$ref": "#/definitions/disable_quality_control"
+                        "enable quality control": {
+                            "$ref": "#/definitions/enable_quality_control"
                         },
                         "flowcell id": {
                             "$ref": "#/definitions/flowcell_id"
@@ -651,11 +661,6 @@
                     "minItems": 1,
                     "type": "array"
                 },
-                "disable_quality_control": {
-                    "description": "Do not update Quality Control accumulators for a minor speed gain.",
-                    "title": "Disable quality control",
-                    "type": "boolean"
-                },
                 "distance_tolerance": {
                     "description": "The maximum Hammig distance a minimum distance decoder will tolerate on each barcode segment",
                     "examples": [
@@ -676,6 +681,11 @@
                     "minItems": 1,
                     "title": "Distance tolerance array",
                     "type": "array"
+                },
+                "enable_quality_control": {
+                    "description": "Do not update Quality Control accumulators for a minor speed gain.",
+                    "title": "Disable quality control",
+                    "type": "boolean"
                 },
                 "feed": {
                     "properties": {
@@ -838,8 +848,8 @@
                             "title": "Barcode decoder repository",
                             "type": "object"
                         },
-                        "disable quality control": {
-                            "$ref": "#/definitions/disable_quality_control"
+                        "enable quality control": {
+                            "$ref": "#/definitions/enable_quality_control"
                         },
                         "flowcell id": {
                             "$ref": "#/definitions/flowcell_id"

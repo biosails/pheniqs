@@ -50,6 +50,8 @@ class Job {
         virtual void validate() {};
         virtual void load() {};
         virtual void execute() {};
+        virtual void finalize();
+        virtual void clean();
         virtual void print_ontology(ostream& o) const;
         virtual void print_compiled(ostream& o) const;
         virtual void print_report(ostream& o) const;
@@ -61,7 +63,6 @@ class Job {
         const Value& projection_repository;
         void apply_default();
         virtual void apply_interactive();
-        virtual void clean();
         void overlay(const Value& instruction);
         const Value* find_projection(const string& key) const;
         const Value* find_schema(const string& key) const;
