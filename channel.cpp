@@ -160,9 +160,6 @@ AveragePhreadAccumulator& AveragePhreadAccumulator::operator+=(const AveragePhre
 SegmentAccumulator::SegmentAccumulator(const Value& ontology) try :
     index(decode_value_by_key< int32_t >("index", ontology)),
     url(decode_value_by_key< URL >("url", ontology)),
-    phred_offset(decode_value_by_key< uint8_t >("phred offset", ontology)),
-    platform(decode_value_by_key< Platform >("platform", ontology)),
-    resolution(decode_value_by_key< int32_t >("resolution", ontology)),
     capacity(0),
     shortest(numeric_limits< int32_t >::max()),
     nucleic_acid_count_by_code(IUPAC_CODE_SIZE, 0) {

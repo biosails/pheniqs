@@ -138,9 +138,6 @@ class SegmentAccumulator {
     public:
         const int32_t index;
         const URL url;
-        const uint8_t phred_offset;
-        const Platform platform;
-        const int32_t resolution;
         int32_t capacity;
         int32_t shortest;
         vector < uint64_t > nucleic_acid_count_by_code;
@@ -150,9 +147,6 @@ class SegmentAccumulator {
         SegmentAccumulator(const SegmentAccumulator& other) :
             index(other.index),
             url(other.url),
-            phred_offset(other.phred_offset),
-            platform(other.platform),
-            resolution(other.resolution),
             capacity(other.capacity),
             shortest(other.shortest),
             nucleic_acid_count_by_code(other.nucleic_acid_count_by_code) {

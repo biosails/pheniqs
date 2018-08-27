@@ -21,54 +21,6 @@
 
 #include "proxy.h"
 
-string to_string(const FormatKind& value) {
-    string result;
-    switch(value) {
-        case FormatKind::FASTQ:         result.assign("FASTQ");      break;
-        case FormatKind::HTS:           result.assign("HTS");        break;
-        case FormatKind::DEV_NULL:      result.assign("DEV_NULL");   break;
-        default:                        result.assign("UNKNOWN");    break;
-    }
-    return result;
-};
-bool from_string(const char* value, FormatKind& result) {
-         if(value == NULL)              result = FormatKind::UNKNOWN;
-    else if(!strcmp(value, "FASTQ"))    result = FormatKind::FASTQ;
-    else if(!strcmp(value, "HTS"))      result = FormatKind::HTS;
-    else if(!strcmp(value, "DEV_NULL"))      result = FormatKind::DEV_NULL;
-    else                                result = FormatKind::UNKNOWN;
-
-    return (result == FormatKind::UNKNOWN ? false : true);
-};
-void to_kstring(const FormatKind& value, kstring_t& result) {
-    ks_clear(result);
-    string string_value(to_string(value));
-    ks_put_string(string_value.c_str(), string_value.size(), result);
-};
-bool from_string(const string& value, FormatKind& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const FormatKind& value) {
-    o << to_string(value);
-    return o;
-};
-void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document) {
-    string string_value(to_string(value));
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKind& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-
 FeedProxy::FeedProxy(const Value& ontology) try :
     index(decode_value_by_key< int32_t >("index", ontology)),
     url(decode_value_by_key< URL >("url", ontology)),

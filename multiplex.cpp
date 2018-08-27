@@ -929,30 +929,31 @@ void Multiplex::compile_output() {
                     }
                 }
             }
-
             if(feed_resolution.size() > 0) {
                 unordered_map< URL, Value > feed_ontology_by_url;
                 int32_t index(0);
                 for(const auto& url_record : feed_resolution) {
                     const URL& url = url_record.first;
-                    int resolution(0);
-                    for(const auto& record : url_record.second) {
-                        if(resolution == 0) {
-                            resolution = record.second;
-                        } else if(resolution != record.second) {
-                            throw ConfigurationError("inconsistent resolution for " + string(url));
+                    if(url.kind() != FormatKind::UNKNOWN) {
+                        int resolution(0);
+                        for(const auto& record : url_record.second) {
+                            if(resolution == 0) {
+                                resolution = record.second;
+                            } else if(resolution != record.second) {
+                                throw ConfigurationError("inconsistent resolution for " + string(url));
+                            }
                         }
-                    }
-                    Value proxy(kObjectType);
-                    encode_key_value("index", index, proxy, ontology);
-                    encode_key_value("url", url, proxy, ontology);
-                    encode_key_value("direction", IoDirection::OUT, proxy, ontology);
-                    encode_key_value("platform", platform, proxy, ontology);
-                    encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
-                    encode_key_value("resolution", resolution, proxy, ontology);
-                    encode_key_value("phred offset", phred_offset, proxy, ontology);
-                    feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
-                    ++index;
+                        Value proxy(kObjectType);
+                        encode_key_value("index", index, proxy, ontology);
+                        encode_key_value("url", url, proxy, ontology);
+                        encode_key_value("direction", IoDirection::OUT, proxy, ontology);
+                        encode_key_value("platform", platform, proxy, ontology);
+                        encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
+                        encode_key_value("resolution", resolution, proxy, ontology);
+                        encode_key_value("phred offset", phred_offset, proxy, ontology);
+                        feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
+                        ++index;
+                    } else { throw ConfigurationError("could not establish output format for " + string(url)); }
                 }
 
                 reference = value.FindMember("undetermined");
@@ -1303,7 +1304,7 @@ void Multiplex::load_output() {
                     break;
                 };
                 default: {
-                    throw InternalError("unknown output format " + string(proxy.url));
+                    throw ConfigurationError("unknown output format " + string(proxy.url));
                     break;
                 };
             }

@@ -30,19 +30,6 @@ const ssize_t PEEK_BUFFER_CAPACITY(4096);
 const int DEFAULT_FEED_CAPACITY(60);
 const int DEFAULT_FEED_RESOLUTION(60);
 
-enum class FormatKind : uint8_t {
-    UNKNOWN,
-    DEV_NULL,
-    FASTQ,
-    HTS,
-};
-string to_string(const FormatKind& value);
-bool from_string(const char* value, FormatKind& result);
-void to_kstring(const FormatKind& value, kstring_t& result);
-bool from_string(const string& value, FormatKind& result);
-ostream& operator<<(ostream& o, const FormatKind& value);
-void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document);
-
 class FeedProxy {
     friend ostream& operator<<(ostream& o, const FeedProxy& proxy);
 
@@ -71,21 +58,7 @@ class FeedProxy {
             return url.is_stderr();
         };
         inline FormatKind kind() const {
-            if(!is_dev_null()) {
-                switch(url.type()) {
-                    case FormatType::SAM:
-                    case FormatType::BAM:
-                    case FormatType::CRAM:
-                        return FormatKind::HTS;
-                        break;
-                    case FormatType::FASTQ:
-                        return FormatKind::FASTQ;
-                        break;
-                    default:
-                        return FormatKind::UNKNOWN;
-                        break;
-                }
-            } else { return FormatKind::DEV_NULL; }
+            return url.kind();
         };
         void register_rg(const HeadRGAtom& rg);
         void register_pg(const HeadPGAtom& pg);

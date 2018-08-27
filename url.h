@@ -57,6 +57,19 @@ bool from_string(const string& value, FormatType& result);
 ostream& operator<<(ostream& o, const FormatType& value);
 void encode_key_value(const string& key, const FormatType& value, Value& container, Document& document);
 
+enum class FormatKind : uint8_t {
+    UNKNOWN,
+    DEV_NULL,
+    FASTQ,
+    HTS,
+};
+string to_string(const FormatKind& value);
+bool from_string(const char* value, FormatKind& result);
+void to_kstring(const FormatKind& value, kstring_t& result);
+bool from_string(const string& value, FormatKind& result);
+ostream& operator<<(ostream& o, const FormatKind& value);
+void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document);
+
 enum class IoDirection : uint8_t {
     IN,
     OUT,
@@ -105,6 +118,23 @@ class URL {
         };
         inline const FormatType& type() const {
             return _type;
+        };
+        inline FormatKind kind() const {
+            if(!is_dev_null()) {
+                switch(_type) {
+                    case FormatType::SAM:
+                    case FormatType::BAM:
+                    case FormatType::CRAM:
+                        return FormatKind::HTS;
+                        break;
+                    case FormatType::FASTQ:
+                        return FormatKind::FASTQ;
+                        break;
+                    default:
+                        return FormatKind::UNKNOWN;
+                        break;
+                }
+            } else { return FormatKind::DEV_NULL; }
         };
         inline bool empty() const {
             return _path.empty();
