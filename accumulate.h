@@ -67,7 +67,7 @@ class AccumulatingDecoder {
         double accumulated_pf_classified_confidence;
 
         double pf_fraction;                         // pf_count / count
-        double classified_fraction;                 // classified_count / count)
+        double classified_fraction;                 // classified_count / count
         double average_classified_distance;         // accumulated_classified_distance / classified_count
         double average_classified_confidence;       // accumulated_classified_confidence / classified_count
         double pf_classified_fraction;              // pf_classified_count / pf_count

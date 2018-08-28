@@ -424,7 +424,7 @@ The `input phred offset` and `output phred offset` are applicable only to [FASTQ
     "input phred offset": 33
 }
 ```
-> Both the `input phred offset` and `output phred offset` default to 33, known as the Sanger format.
+>**Example 2.16** Both the `input phred offset` and `output phred offset` default to 33, known as the Sanger format.
 {: .example}
 
 # Leading Segment
@@ -433,7 +433,7 @@ Pheniqs constructs new segments for the output read and must generate correspond
 >```json
 { "leading segment": 0 }
 ```
->The leading segment defaults to be the first input segment.
+>**Example 2.17** The leading segment defaults to be the first input segment.
 {: .example}
 
 # Pass filter reads
@@ -442,52 +442,282 @@ Some reads are marked by the sequencing platform as not passing the vendor quali
 # Configuration validation
 The `-V/--validate` command line flag makes Pheniqs evaluate the supplied instruction and emit a human readable description of the instruction without actually executing it. It is sometimes useful to inspect this description before executing to make sure all implicit parameters are allocated the desired values. To also print out the barcode distance metric for each closed class decoder you may additionally set the `-D/--distance` command line flag. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate, known as the Shannon bound.
 
-# Demultiplexing statistics
-Pheniqs emits a comprehensive demultiplexing report with statistics about both inputs and outputs.
+# Quality Control and Statistics
+Pheniqs emits a statistical report. If you specify the `-q/--quality` command line flag the report will also include a comprehensive quality control report.
 
-## Input
-A quality statistics report for every segment in the input is provided in the `demultiplex input report` element.
-
-| JSON field                                      | Description
-| : --------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | all input reads
-| **pf count**                                    | input reads that *passed vendor quality control*
-| **pf fraction**                                 | **pf count** / **count**
-
-## Output
-A quality statistics report for every segment in every output read group is provided in the `demultiplex output report` element as well as global statistics for the entire pipeline.
-
-### Read Group
-Counters in each element of the `read group quality reports` array apply only to reads that were classified to the respective read group.
+## Decoder statistics
+For every `multiplex`, `molecular` and `cellular` decoder the following statistics is reported, if applicable.
 
 | JSON field                                      | Description
 | : --------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | all reads classified to the read group
-| **multiplex distance**                          | average multiplex distance
-| **multiplex confidence**                        | average multiplex confidence
-| **pf count**                                    | reads that *passed vendor quality control*
-| **pf multiplex distance**                       | average multiplex distance in reads that *passed vendor quality control*
-| **pf multiplex confidence**                     | average multiplex confidence in reads that *passed vendor quality control*
+| **count**                                       | count for all reads processed by the pipeline, both classified and unclassified.
+| **classified count**                            | count of all reads classified to some barcode
+| **classified fraction**                         | **classified count** / **count**
+| **average classified distance**                 | average hamming distance when decoding classified reads
+| **average classified confidence**               | average confidence when decoding classified reads
+| **pf count**                                    | count of reads processed by the pipeline that *passed vendor quality control*
 | **pf fraction**                                 | **pf count** / **count**
-| **pooled fraction**                             | **count** / **pipeline :: count**
-| **pf pooled fraction**                          | **pf count** / **pipeline :: pf count**
-| **pooled multiplex fraction**                   | **count** / **pipeline :: multiplex count**
-| **pf pooled multiplex fraction**                | **pf count** / **pipeline :: pf multiplex count**
+| **pf classified count**                         | count of all reads classified to some barcode that *passed vendor quality control*
+| **pf classified fraction**                      | **pf classified count** / **pf count**
+| **classified pf fraction**                      | **pf classified count** / **classified count**
+| **average pf classified distance**              | average hamming distance when decoding classified reads that *passed vendor quality control*
+| **average pf classified confidence**            | average confidence when decoding classified reads that *passed vendor quality control*
 
-### Pipeline statistics
-Counters found directly in the `demultiplex output report` element are for the output of the entire pipeline.
+## Barcode statistics
+In every decoder statistics the `unclassified` element reports statistics about reads that failed to be classified, while each element in the `classified` array reports statistics for one of the barcodes.
+The `decoder::` prefix in the table refers to the attribute in the parent decoder statistics.
 
-| JSON field                                      | Counter incrementing criteria
-| :---------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | sum of **count** in all read groups
-| **multiplex count**                             | sum of **count** in all read groups, excluding undetermined.
-| **multiplex fraction**                          | **multiplex count** / **count**
-| **multiplex distance**                          | average multiplex distance, excluding undetermined.
-| **multiplex confidence**                        | average multiplex confidence, excluding undetermined.
-| **pf count**                                    | sum of **pf count** in all read groups.
+| JSON field                                      | Description
+| : --------------------------------------------- | :---------------------------------------------------------------------
+| **count**                                       | count of reads classified to the barcode
+| **average distance**                            | average hamming distance between observed and decoded barcode
+| **average confidence**                          | average confidence of decoding a barcode
+| **pooled fraction**                             | **count** / **decoder::count**
+| **pooled classified fraction**                  | **count** / **decoder::classified count**
+| **pf count**                                    | count of reads classified to the barcode that *passed vendor quality control*
 | **pf fraction**                                 | **pf count** / **count**
-| **pf multiplex count**                          | sum of **pf count** in read groups, excluding undetermined.
-| **pf multiplex fraction**                       | **pf multiplex count** / **pf count**
-| **pf multiplex distance**                       | average multiplex distance in pf reads, excluding undetermined.
-| **pf multiplex confidence**                     | average multiplex confidence in pf reads, excluding undetermined.
-| **multiplex pf fraction**                       | **pf multiplex count** / **multiplex count**
+| **average pf distance**                         | average hamming distance between observed and decoded barcode in reads that *passed vendor quality control*
+| **average pf confidence**                       | average confidence of decoding a barcode in reads that *passed vendor quality control*
+| **pf pooled fraction**                          | **pf count** / **decoder::pf count**
+| **pf pooled multiplex fraction**                | **pf count** / **decoder::pf classified count**
+
+>```json
+{
+    "multiplex": {
+        "average classified confidence": 0.9999766864884027,
+        "average classified distance": 0.01468791896320572,
+        "average pf classified confidence": 0.999980549273765,
+        "average pf classified distance": 0.00811558561328005,
+        "classified": [
+            {
+                "CN": "CGSB",
+                "DT": "2018-02-25T07:00:00+00:00",
+                "ID": "BDGGG:AGGCAGAA",
+                "LB": "trinidad 5",
+                "PI": "300",
+                "PL": "ILLUMINA",
+                "PM": "miseq",
+                "PU": "BDGGG:AGGCAGAA",
+                "SM": "trinidad",
+                "average confidence": 0.9999677414000366,
+                "average distance": 0.01726894787336105,
+                "average pf confidence": 0.9999696078665885,
+                "average pf distance": 0.010310965630114567,
+                "barcode": [
+                    "AGGCAGAA"
+                ],
+                "concentration": 0.20357142857142858,
+                "count": 6254,
+                "index": 1,
+                "pf count": 6110,
+                "pf fraction": 0.9769747361688519,
+                "pf pooled classified fraction": 0.18782662158007994,
+                "pf pooled fraction": 0.18343390675192892,
+                "pooled classified fraction": 0.18632504096529124,
+                "pooled fraction": 0.18180761068635718
+            }
+        ],
+        "classified count": 33565,
+        "classified fraction": 0.97575510916015,
+        "classified pf fraction": 0.96916430805899,
+        "count": 34399,
+        "pf classified count": 32530,
+        "pf classified fraction": 0.976612927437029,
+        "pf count": 33309,
+        "pf fraction": 0.9683130323555917,
+        "unclassified": {
+            "CN": "CGSB",
+            "DT": "2018-02-25T07:00:00+00:00",
+            "ID": "BDGGG:undetermined",
+            "PI": "300",
+            "PL": "ILLUMINA",
+            "PM": "miseq",
+            "PU": "BDGGG:undetermined",
+            "SM": "trinidad",
+            "count": 834,
+            "index": 0,
+            "pf count": 779,
+            "pf fraction": 0.934052757793765,
+            "pf pooled classified fraction": 0.023947125730095298,
+            "pf pooled fraction": 0.02338707256297097,
+            "pooled classified fraction": 0.024847311187248624,
+            "pooled fraction": 0.024244890839849998
+        }
+    }
+}
+```
+>**Example 2.18** Partial example of a multiplex decoder statistics report
+{: .example}
+
+## Quality Control
+
+>```json
+{
+    "multiplex": {
+        "classified count": 0,
+        "classified fraction": 0.0,
+        "classified pf fraction": 0.0,
+        "count": 34399,
+        "pf classified count": 0,
+        "pf classified fraction": 0.0,
+        "pf count": 33309,
+        "pf fraction": 0.9683130323555917,
+        "unclassified": {
+            "CN": "CGSB",
+            "DT": "2018-02-25T07:00:00+00:00",
+            "ID": "BDGGG:undetermined",
+            "PI": "300",
+            "PL": "ILLUMINA",
+            "PM": "miseq",
+            "PU": "BDGGG:undetermined",
+            "SM": "trinidad",
+            "count": 34399,
+            "index": 0,
+            "pf count": 33309,
+            "pf fraction": 0.9683130323555917,
+            "pf pooled fraction": 1.0,
+            "pooled fraction": 1.0,
+            "quality control by segment": [
+                {
+                    "average phred score report": {
+                        "average phred score distribution": [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 75, 100, 146, 115, 99, 95, 71, 74, 69, 65, 45, 48, 81, 69, 58, 53, 76, 113, 112, 153, 225, 340, 883, 31178, 0, 0, 0, 0, 0, 0 ],
+                        "average phred score max": 35.5,
+                        "average phred score mean": 34.69170978807524,
+                        "average phred score min": 0.0
+                    },
+                    "max sequence length": 8,
+                    "min sequence length": 8,
+                    "quality control by cycle": {
+                        "cycle quality distribution": {
+                            "cycle count": [ 34399, 34399, 34399, 34399, 34399, 34399, 34399, 34399 ],
+                            "cycle quality first quartile": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                            "cycle quality interquartile range": [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+                            "cycle quality left whisker": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                            "cycle quality max": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                            "cycle quality mean": [
+                                33.19076135934184,
+                                33.330213087589758,
+                                33.32413732957353,
+                                33.33056193493997,
+                                33.32210238669729,
+                                37.09950870664845,
+                                37.06901363411727,
+                                36.86737986569377
+                            ],
+                            "cycle quality median": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                            "cycle quality min": [ 12, 12, 12, 12, 12, 10, 10, 10 ],
+                            "cycle quality right whisker": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                            "cycle quality third quartile": [ 34, 34, 34, 34, 34, 38, 38, 38 ]
+                        }
+                    },
+                    "quality control by nucleotide": [
+                        {
+                            "cycle quality distribution": {
+                                "cycle count": [ 6397, 7845, 15238, 6792, 6444, 5988, 13037, 14189 ],
+                                "cycle quality first quartile": [ 34, 34, 34, 34, 34, 38, 38, 37 ],
+                                "cycle quality interquartile range": [ 0, 0, 0, 0, 0, 0, 0, 1 ],
+                                "cycle quality left whisker": [ 34, 34, 34, 34, 34, 38, 38, 35 ],
+                                "cycle quality max": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality mean": [
+                                    32.93950289198062,
+                                    33.33142128744423,
+                                    33.456227851424078,
+                                    33.05005889281507,
+                                    33.08628181253879,
+                                    36.72227788911156,
+                                    37.06251438214313,
+                                    36.85340756924378
+                                ],
+                                "cycle quality median": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality min": [ 12, 12, 12, 12, 12, 10, 10, 10 ],
+                                "cycle quality right whisker": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality third quartile": [ 34, 34, 34, 34, 34, 38, 38, 38 ]
+                            },
+                            "nucleotide": "A",
+                            "nucleotide count": 75930
+                        },
+                        {
+                            "cycle quality distribution": {
+                                "cycle count": [ 6798, 5944, 6034, 13875, 6802, 15286, 7626, 5989 ],
+                                "cycle quality first quartile": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality interquartile range": [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+                                "cycle quality left whisker": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality max": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality mean": [
+                                    33.03147984701383,
+                                    33.1771534320323,
+                                    33.09247596950613,
+                                    33.431423423423428,
+                                    33.279917671273157,
+                                    37.35313358628811,
+                                    36.97521636506688,
+                                    36.64601769911504
+                                ],
+                                "cycle quality median": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality min": [ 12, 12, 12, 12, 12, 10, 10, 10 ],
+                                "cycle quality right whisker": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality third quartile": [ 34, 34, 34, 34, 34, 38, 38, 38 ]
+                            },
+                            "nucleotide": "C",
+                            "nucleotide count": 68354
+                        },
+                        {
+                            "cycle quality distribution": {
+                                "cycle count": [ 7410, 20367, 6345, 7765, 13446, 6370, 13500, 6616 ],
+                                "cycle quality first quartile": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality interquartile range": [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+                                "cycle quality left whisker": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality max": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality mean": [
+                                    33.35681511470985,
+                                    33.585162272303239,
+                                    33.3117415287628,
+                                    33.511912427559568,
+                                    33.62152312955526,
+                                    37.0265306122449,
+                                    37.4762962962963,
+                                    37.18636638452237
+                                ],
+                                "cycle quality median": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality min": [ 12, 12, 12, 12, 12, 10, 10, 10 ],
+                                "cycle quality right whisker": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality third quartile": [ 34, 34, 34, 34, 34, 38, 38, 38 ]
+                            },
+                            "nucleotide": "G",
+                            "nucleotide count": 81819
+                        },
+                        {
+                            "cycle quality distribution": {
+                                "cycle count": [ 13794, 243, 6782, 5967, 7707, 6755, 236, 7605 ],
+                                "cycle quality first quartile": [ 34, 12, 34, 34, 34, 38, 11, 38 ],
+                                "cycle quality interquartile range": [ 0, 0, 0, 0, 0, 0, 13, 0 ],
+                                "cycle quality left whisker": [ 34, 12, 34, 34, 34, 38, 10, 38 ],
+                                "cycle quality max": [ 34, 34, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality mean": [
+                                    33.29657822241554,
+                                    15.666666666666666,
+                                    33.24506045414332,
+                                    33.179319591084297,
+                                    33.03412482159076,
+                                    36.92879348630644,
+                                    17.161016949152545,
+                                    36.79026955950033
+                                ],
+                                "cycle quality median": [ 34, 12, 34, 34, 34, 38, 11, 38 ],
+                                "cycle quality min": [ 12, 12, 12, 12, 12, 10, 10, 10 ],
+                                "cycle quality right whisker": [ 34, 12, 34, 34, 34, 38, 38, 38 ],
+                                "cycle quality third quartile": [ 34, 12, 34, 34, 34, 38, 24, 38 ]
+                            },
+                            "nucleotide": "T",
+                            "nucleotide count": 49089
+                        }
+                    ],
+                    "url": "/dev/null"
+                }
+            ]
+        }
+    }
+}
+```
+>**Example 2.18** Partial example of a multiplex decoder statistics report with QC
+{: .example}
