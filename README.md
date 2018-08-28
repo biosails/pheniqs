@@ -1,7 +1,5 @@
 # Pheniqs
 
-**NOTICE: Documentation for pheniqs 2.0 is undergoing and is expected to be avialbale in the next few days.**
-
 Documentation and examples can be found on the **[Pheniqs website](http://biosails.github.io/pheniqs)**.
 
 Pheniqs is a generic DNA sequence multiplexer, demultiplexer and quality analyzer that caters to a wide variety of experimental layouts and written in highly optimized multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11). Pheniqs is pronounced  ***phoe·nix*** and stands for **PH**ilology **EN**coder w**I**th **Q**uality **S**tatistics.
