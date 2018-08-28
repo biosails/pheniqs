@@ -328,24 +328,23 @@ Since each class decoded by the multiplex decoder corresponds to a read group yo
 >**Example 2.11** Further expanding **Example 2.10** with attributes related the read group SAM header tags. Attributes declared in the decoder directive will apply to all barcode entries in the `codec` dictionary unless explicitly overridden in the entry. For instance all except **@CGTACTAGTCTTACGC**, that locally overrides **PI** to be **300**, will have their **PI** tag set to **500**.
 {: .example}
 
-| Name                                      | Description                                      | Type   |
-| :---------------------------------------- | :----------------------------------------------- | :----- |
-| **ID**                                    | Read group identifier                            | string |
-| **[LB](glossary.html#lb_auxiliary_tag)**  | Library name                                     | string |
-| **[SM](glossary.html#sm_auxiliary_tag)**  | Sample name                                      | string |
-| **[PU](glossary.html#pu_auxiliary_tag)**  | Platform unit unique identifier                  | string |
-| **CN**                                    | Name of sequencing center producing the read     | string |
-| **DS**                                    | Description                                      | string |
-| **DT**                                    | [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date the run was produced                | string |
-| **PI**                                    | Predicted median insert size                     | string |
-| **[PL](glossary.html#pl_auxiliary_tag)**  | Platform or technology used to produce the reads | string |
-| **PM**                                    | Platform model                                   | string |
-| **PG**                                    | Programs used for processing the read group      | string |
+| Name                                      | Description                                                                   | Type   |
+| :---------------------------------------- | :---------------------------------------------------------------------------- | :----- |
+| **ID**                                    | Read group identifier                                                         | string |
+| **[LB](glossary.html#lb_auxiliary_tag)**  | Library name                                                                  | string |
+| **[SM](glossary.html#sm_auxiliary_tag)**  | Sample name                                                                   | string |
+| **[PU](glossary.html#pu_auxiliary_tag)**  | Platform unit unique identifier                                               | string |
+| **CN**                                    | Name of sequencing center producing the read                                  | string |
+| **DS**                                    | Description                                                                   | string |
+| **DT**                                    | [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date the run was produced   | string |
+| **PI**                                    | Predicted median insert size                                                  | string |
+| **[PL](glossary.html#pl_auxiliary_tag)**  | Platform or technology used to produce the reads                              | string |
+| **PM**                                    | Platform model                                                                | string |
+| **PG**                                    | Programs used for processing the read group                                   | string |
 
 * **ID** defaults to the value of **PU** if not explicitly specified. If explicitly declared it must be unique within the `codec` dictionary.
 * **PU**, following the [convention established by GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472), defaults to `flowcell id`:`flowcell lane number`: `barcode`. If `flowcell id` or `flowcell lane number` are not specified they are omitted along with their trailing `:`. If explicitly declared **PU** must be unique within the `codec` dictionary.
 * **PL**, as defined in the SAM specification, is one of *CAPILLARY*, *LS454*, *ILLUMINA*, *SOLID*, *HELICOS*, *IONTORRENT*, *ONT*, *PACBIO*.
-
 
 ## Contextual `output` directives
 The `output` attribute can be declared in the root of the instruction, in the `multiplex` decoder directive or in each of the individual `multiplex` decoder class directives. As always, attributes declared deeper in the hierarchy override attributes declared upstream. When interleaving reads from multiple read groups into the same output it is sufficient, and less verbose, to declare the output attribute upstream. When splitting reads from different read groups to different output files you declare the `output` attribute individually for the read group. You may also mix-and-match the two styles. A corresponding [@RG header tag](glossary.html#rg_header_tag) will be added to the header of an output file if at least one segment of reads tagged with that read group are written to it.
@@ -448,38 +447,38 @@ Pheniqs emits a statistical report. If you specify the `-q/--quality` command li
 ## Decoder statistics
 For every `multiplex`, `molecular` and `cellular` decoder the following statistics is reported, if applicable.
 
-| JSON field                                      | Description
-| : --------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | count for all reads processed by the pipeline, both classified and unclassified.
-| **classified count**                            | count of all reads classified to some barcode
-| **classified fraction**                         | **classified count** / **count**
-| **average classified distance**                 | average hamming distance when decoding classified reads
-| **average classified confidence**               | average confidence when decoding classified reads
-| **pf count**                                    | count of reads processed by the pipeline that *passed vendor quality control*
-| **pf fraction**                                 | **pf count** / **count**
-| **pf classified count**                         | count of all reads classified to some barcode that *passed vendor quality control*
-| **pf classified fraction**                      | **pf classified count** / **pf count**
-| **classified pf fraction**                      | **pf classified count** / **classified count**
-| **average pf classified distance**              | average hamming distance when decoding classified reads that *passed vendor quality control*
-| **average pf classified confidence**            | average confidence when decoding classified reads that *passed vendor quality control*
+| JSON field                                      | Description                                                                                     |
+| :---------------------------------------------- | :---------------------------------------------------------------------------------------------- |
+| **count**                                       | count for all reads processed by the pipeline, both classified and unclassified.                |
+| **classified count**                            | count of all reads classified to some barcode.                                                  |
+| **classified fraction**                         | **classified count** / **count**                                                                |
+| **average classified distance**                 | average hamming distance when decoding classified reads.                                        |
+| **average classified confidence**               | average confidence when decoding classified reads.                                              |
+| **pf count**                                    | count of reads processed by the pipeline that *passed vendor quality control*.                  |
+| **pf fraction**                                 | **pf count** / **count**                                                                        |
+| **pf classified count**                         | count of all reads classified to some barcode that *passed vendor quality control*.             |
+| **pf classified fraction**                      | **pf classified count** / **pf count**                                                          |
+| **classified pf fraction**                      | **pf classified count** / **classified count**                                                  |
+| **average pf classified distance**              | average hamming distance when decoding classified reads that *passed vendor quality control*.   |
+| **average pf classified confidence**            | average confidence when decoding classified reads that *passed vendor quality control*.         |
 
 ## Barcode statistics
 In every decoder statistics the `unclassified` element reports statistics about reads that failed to be classified, while each element in the `classified` array reports statistics for one of the barcodes.
 The `decoder::` prefix in the table refers to the attribute in the parent decoder statistics.
 
-| JSON field                                      | Description
-| : --------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | count of reads classified to the barcode
-| **average distance**                            | average hamming distance between observed and decoded barcode
-| **average confidence**                          | average confidence of decoding a barcode
-| **pooled fraction**                             | **count** / **decoder::count**
-| **pooled classified fraction**                  | **count** / **decoder::classified count**
-| **pf count**                                    | count of reads classified to the barcode that *passed vendor quality control*
-| **pf fraction**                                 | **pf count** / **count**
-| **average pf distance**                         | average hamming distance between observed and decoded barcode in reads that *passed vendor quality control*
-| **average pf confidence**                       | average confidence of decoding a barcode in reads that *passed vendor quality control*
-| **pf pooled fraction**                          | **pf count** / **decoder::pf count**
-| **pf pooled multiplex fraction**                | **pf count** / **decoder::pf classified count**
+| JSON field                                      | Description                                                                                                     |
+| :---------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
+| **count**                                       | count of reads classified to the barcode.                                                                       |
+| **average distance**                            | average hamming distance between observed and decoded barcode.                                                  |
+| **average confidence**                          | average confidence of decoding a barcode.                                                                       |
+| **pooled fraction**                             | **count** / **decoder::count**                                                                                  |
+| **pooled classified fraction**                  | **count** / **decoder::classified count**                                                                       |
+| **pf count**                                    | count of reads classified to the barcode that *passed vendor quality control*.                                  |
+| **pf fraction**                                 | **pf count** / **count**                                                                                        |
+| **average pf distance**                         | average hamming distance between observed and decoded barcode in reads that *passed vendor quality control*.    |
+| **average pf confidence**                       | average confidence of decoding a barcode in reads that *passed vendor quality control*.                         |
+| **pf pooled fraction**                          | **pf count** / **decoder::pf count**                                                                            |
+| **pf pooled multiplex fraction**                | **pf count** / **decoder::pf classified count**                                                                 |
 
 >```json
 {
