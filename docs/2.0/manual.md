@@ -27,6 +27,7 @@
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
         <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
+        <li><a                  href="/pheniqs/2.0/best_practices.html">Best Practice</a></li>
         <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
         <li><a class="active"   href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
