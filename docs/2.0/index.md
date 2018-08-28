@@ -61,4 +61,5 @@ Pheniqs configuration files provide a powerful tool for manipulating the SAM [he
 **Open Source:** Pheniqs is released under the terms of the [AGPL 3.0 license agreement](http://opensource.org/licenses/AGPL-3.0).
 
 ## Getting started
-To get you started, the [quick tutorial](tutorial.md) will walk you though a basic scenario of using Pheniqs. In the [manual](manual.md) you will find a more detailed discussion of each of the configuration parameters. Finally the [workflow](workflow.md) section demonstrates more involved read manipulation.
+You can [install](https://biosails.github.io/pheniqs/2.0/install.html) Phniqs from many common package managers or [build](https://biosails.github.io/pheniqs/2.0/build.html) it from source.
+The [quick tutorial](tutorial.md) will walk you though a basic scenario of using Pheniqs. In the [manual](manual.md) you will find a more detailed discussion of each of the configuration parameters.

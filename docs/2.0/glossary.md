@@ -92,21 +92,45 @@
 : Read group identifier. The value must be consistent with the ID property of an [@RG](#rg_header_tag) header tag.
 
 <a name="bc_auxiliary_tag" />BC auxiliary tag
-: Multiplex barcode sequence, with quality scores stored in the [QT](#qt_auxiliary_tag) tag.
+: Raw uncorrected multiplex barcode sequence with any quality scores stored in the [QT](#qt_auxiliary_tag) tag. The BC tag should match the QT tag in length. In the case of multiple multiplex barcode segments, all segments are concatenated with a hyphen (‘-’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
 
 <a name="qt_auxiliary_tag" />QT auxiliary tag
-: [Phred](#sanger_format) encoded quality of the multiplex barcode sequence in the [BC](#bc_auxiliary_tag) tag.
+: [Phred](#sanger_format) quality of the sample barcode sequence in the [BC](#bc_auxiliary_tag) tag. Phred score is + 33 encoded. In the case of multiple multiplex barcode segments, all segments are concatenated with a space (‘ ’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
+
+<a name="xb_auxiliary_tag" />XB auxiliary tag
+: The probability that the decoding of the multiplexing barcode stored in [BC](#bc_auxiliary_tag) tag was incorrect.
 
 <a name="rx_auxiliary_tag" />RX auxiliary tag
-: [Molecular barcode](#molecular_barcode) sequence, with quality scores stored in the [QX](#qx_auxiliary_tag) tag.
+: Sequence bases from the [unique molecular identifier](#molecular_barcode) with any quality scores stored in the [QX](#qx_auxiliary_tag) tag. The RX tag should match the QX tag in length. These could be either corrected or uncorrected. Unlike [MI](#mi_auxiliary_tag) tag, the value may be non-unique in the file. In the case of multiple molecular barcode segments, all segments are concatenated with a hyphen (‘-’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf). If the bases represent corrected bases, the original sequence can be stored in [OX](#ox_auxiliary_tag) tag.
 
 <a name="qx_auxiliary_tag" />QX auxiliary tag
-: [Phred](#sanger_format) encoded quality of the [molecular barcode](#molecular_barcode) sequence in the [RX](#rx_auxiliary_tag) tag.
+: [Phred](#sanger_format) quality of the [unique molecular identifier](#molecular_barcode) sequence in the [RX](#rx_auxiliary_tag) tag. Phred score + 33 encoded. The qualities here may have been corrected with raw bases and qualities stored in [OX](#ox_auxiliary_tag) tag and [BZ](#bz_auxiliary_tag) tag respectively. In the case of multiple molecular barcode segments, all segments are concatenated with a space (‘ ’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf). If the qualities represent corrected values, the original values can be stored in [BZ](#bz_auxiliary_tag) tag.
 
-<a name="dq_auxiliary_tag" />XB auxiliary tag
-: A proposed auxiliary tag of type float to store the [multiplex barcode](#multiplex_barcode) decoding error probability.
+<a name="ox_auxiliary_tag" />OX auxiliary tag
+: Raw uncorrected [unique molecular identifier](#molecular_barcode) bases, with any quality scores stored in the [BZ](#bz_auxiliary_tag) tag. In the case of multiple molecular barcode segments, all  segments are concatenated with a space (‘ ’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
 
-<a name="ee_auxiliary_tag" />EE auxiliary tag
+<a name="bz_auxiliary_tag" />BZ auxiliary tag
+: [Phred](#sanger_format) quality of the uncorrected unique molecular identifier sequence in the [OX](#ox_auxiliary_tag) tag. Phred score + 33 encoded. In the case of multiple molecular barcode segments, all segments are concatenated with a space (‘ ’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
+
+<a name="mi_auxiliary_tag" />MI auxiliary tag
+: Molecular Identifier. A unique ID within the SAM file for the source molecule from which this read is derived. All reads with the same MI tag represent the group of reads derived from the same source molecule.
+
+<a name="xm_auxiliary_tag" />XM auxiliary tag
+: The probability that the decoding of the molecular barcode stored in [RX](#rx_auxiliary_tag) tag was incorrect.
+
+<a name="cb_auxiliary_tag" />CB auxiliary tag
+: Unique cell identifier. Pheniqs populates this tag with the corrected sequence bases of the cellular barcode.
+
+<a name="cr_auxiliary_tag" />CR auxiliary tag
+: Raw uncorrected cellular identifier bases, with any quality scores stored in the [CY](#cy_auxiliary_tag) tag. In the case of multiple cellular barcode segments, all segments are concatenated with a hyphen (‘-’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
+
+<a name="cy_auxiliary_tag" />CY auxiliary tag
+: [Phred](#sanger_format) quality of the uncorrected cellular identifier sequence in the [CY](#cy_auxiliary_tag) tag. Phred score + 33 encoded. In the case of multiple cellular barcode segments, all segments are concatenated with a space (‘ ’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
+
+<a name="xc_auxiliary_tag" />XC auxiliary tag
+: The probability that the decoding of the cellular barcode stored in [CB](#cb_auxiliary_tag) tag was incorrect.
+
+<a name="xe_auxiliary_tag" />XE auxiliary tag
 : The expected number of base call errors in the [segment](#segment) as computed from the quality scores.
 
 <a name="lb_auxiliary_tag" />LB auxiliary tag

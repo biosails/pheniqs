@@ -22,7 +22,6 @@
 <section id="navigation">
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
-        <li><a                  href="/pheniqs/2.0/best_practices.html">Tips and Best Practices</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
