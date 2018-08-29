@@ -65,7 +65,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
 # Demux sub command help
 
-    pheniqs version 2.0.3-beta-81-g078604a30475f3909c998a5cc43c6dbf4dca2205
+    pheniqs version 2.0.3-beta-135-g3b73c4e7db49ddc5bd558f3564482b375193bcd2
     Lior Galanti < lior.galanti@nyu.edu >
     NYU Center for Genomics & Systems Biology 2018
     See manual at https://biosails.github.io/pheniqs
@@ -73,28 +73,31 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
     Demultiplex and Report Quality Control
 
     Usage : pheniqs demux [-h] [-i PATH]* [-o PATH]* [-c PATH] [-I URL] [-O URL]
-                          [-s] [-V] [-C] [-S] [-D] [-f] [-q] [-l INT]
+                          [-s] [-V] [-C] [-S] [-D] [-f] [-q] [-j] [-l INT] [-T SEGMENT:START:END]*
                           [-P CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-t INT]
-                          [-B INT]
+                          [-B INT] [--precision INT]
 
     Optional:
-      -h, --help               Show this help
-      -i, --input PATH         Path to an input file
-      -o, --output PATH        Path to an output file
-      -c, --config PATH        Path to configuration file
-      -I, --base-input URL     Base input url
-      -O, --base-output URL    Base output url
-      -s, --sense-input        Sense input segment layout
-      -V, --validate           Validate configuration file and emit a report
-      -C, --compile            Compile configuration file and emit as JSON
-      -S, --static             Assemble a static configuration file and emit as JSON
-      -D, --distance           Display pairwise barcode distance
-      -f, --filtered           Include reads not passing vendor QC
-      -q, --quality            Disable quality control for a minor speed gain
-      -l, --leading INT        Leading read segment index
-      -P, --platform STRING    Sequencing platform
-      -t, --threads INT        Thread pool size
-      -B, --buffer INT         Feed buffer capacity
+      -h, --help                       Show this help
+      -i, --input PATH                 Path to an input file
+      -o, --output PATH                Path to an output file
+      -c, --config PATH                Path to configuration file
+      -I, --base-input URL             Base input url
+      -O, --base-output URL            Base output url
+      -s, --sense-input                Sense input segment layout
+      -V, --validate                   Validate configuration file and emit a report
+      -C, --compile                    Compile configuration file and emit as JSON
+      -S, --static                     Assemble a static configuration file and emit as JSON
+      -D, --distance                   Display pairwise barcode distance
+      -f, --filtered                   Include reads not passing vendor QC
+      -q, --quality                    Disable quality control for a minor speed gain
+      -j, --job                        Include a copy of the compiled job in the report
+      -l, --leading INT                Leading read segment index
+      -T, --token SEGMENT:START:END    Output read token
+      -P, --platform STRING            Sequencing platform
+      -t, --threads INT                Thread pool size
+      -B, --buffer INT                 Feed buffer capacity
+      --precision INT                  Floating point precision in output
 
     To provide multiple paths to -i/--input and -o/--output repeat the flag before every path,
     i.e. `pheniqs demux -i first_in.fastq -i second_in.fastq -o first_out.fastq -o second_out.fastq`
@@ -106,6 +109,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
     -s/--sense-input will analyze the first few reads of each input file to guess input layout.
     The static configuration file emited by -S/--static resolves all imports into a single portable file.
     The compiled configuration file emited by -C/--compile is ready for execution and all implicit attributes have been resolved.
+
 
 # Pheniqs tools
 In the tool folder you will find several python scripts to assist with Pheniqs deployment and interfacing with existing tools.
