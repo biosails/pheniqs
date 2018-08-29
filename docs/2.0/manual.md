@@ -277,7 +277,7 @@ A single closed class decoder can be declared in the `multiplex` directive. When
     }
 }
 ```
->**Example 2.10** Expanding **Example 2.9** we declare 4 classes for the multiplex decoder which will be be matched against the segmented sequence extracted by the `transform`. 
+>**Example 2.10** Expanding **Example 2.9** we declare 4 classes for the multiplex decoder which will be be matched against the segmented sequence extracted by the `transform`.
 NOTE: The keys of the `codec` dictionary directive have no special meaning and you may choose them as you see fit, as long as they are unique within the `codec` dictionary. As a default we define them as the concatenation of all barcodes for each respective class.
 {: .example}
 
@@ -441,57 +441,6 @@ Some reads are marked by the sequencing platform as not passing the vendor quali
 
 # Configuration validation
 The `-V/--validate` command line flag makes Pheniqs evaluate the supplied instruction and emit a human readable description of the instruction without actually executing it. It is sometimes useful to inspect this description before executing to make sure all implicit parameters are allocated the desired values. To also print out the barcode distance metric for each closed class decoder you may additionally set the `-D/--distance` command line flag. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate, known as the [Shannon bound](https://en.wikipedia.org/wiki/Shannon%E2%80%93Hartley_theorem).
-
-
-# Demultiplexing statistics
-Pheniqs emits a comprehensive demultiplexing report with statistics about both inputs and outputs.
-
-## Input
-A quality statistics report for every segment in the input is provided in the `demultiplex input report` element.
-
-| JSON field                                      | Description
-| : --------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | all input reads
-| **pf count**                                    | input reads that *passed vendor quality control*
-| **pf fraction**                                 | **pf count** / **count**
-
-## Output
-A quality statistics report for every segment in every output read group is provided in the `demultiplex output report` element as well as global statistics for the entire pipeline.
-
-### Read Group
-Counters in each element of the `read group quality reports` array apply only to reads that were classified to the respective read group.
-
-| JSON field                                      | Description
-| : --------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | all reads classified to the read group
-| **multiplex distance**                          | average multiplex distance
-| **multiplex confidence**                        | average multiplex confidence
-| **pf count**                                    | reads that *passed vendor quality control*
-| **pf multiplex distance**                       | average multiplex distance in reads that *passed vendor quality control*
-| **pf multiplex confidence**                     | average multiplex confidence in reads that *passed vendor quality control*
-| **pf fraction**                                 | **pf count** / **count**
-| **pooled fraction**                             | **count** / **pipeline :: count**
-| **pf pooled fraction**                          | **pf count** / **pipeline :: pf count**
-| **pooled multiplex fraction**                   | **count** / **pipeline :: multiplex count**
-| **pf pooled multiplex fraction**                | **pf count** / **pipeline :: pf multiplex count**
-
-### Pipeline statistics
-Counters found directly in the `demultiplex output report` element are for the output of the entire pipeline.
-
-| JSON field                                      | Counter incrementing criteria
-| :---------------------------------------------- | :---------------------------------------------------------------------
-| **count**                                       | sum of **count** in all read groups
-| **multiplex count**                             | sum of **count** in all read groups, excluding undetermined.
-| **multiplex fraction**                          | **multiplex count** / **count**
-| **multiplex distance**                          | average multiplex distance, excluding undetermined.
-| **multiplex confidence**                        | average multiplex confidence, excluding undetermined.
-| **pf count**                                    | sum of **pf count** in all read groups.
-| **pf fraction**                                 | **pf count** / **count**
-| **pf multiplex count**                          | sum of **pf count** in read groups, excluding undetermined.
-| **pf multiplex fraction**                       | **pf multiplex count** / **pf count**
-| **pf multiplex distance**                       | average multiplex distance in pf reads, excluding undetermined.
-| **pf multiplex confidence**                     | average multiplex confidence in pf reads, excluding undetermined.
-| **multiplex pf fraction**                       | **pf multiplex count** / **multiplex count**
 
 # Quality Control and Statistics
 Pheniqs emits a statistical report. If you specify the `-q/--quality` command line flag the report will also include a comprehensive quality control report.
@@ -770,6 +719,5 @@ The `decoder::` prefix in the table refers to the attribute in the parent decode
     }
 }
 ```
->**Example 2.18** Partial example of a multiplex decoder statistics report with QC
+>**Example 2.19** Partial example of a multiplex decoder statistics report with QC
 {: .example}
-
