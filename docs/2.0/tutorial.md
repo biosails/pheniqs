@@ -26,6 +26,7 @@
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
         <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
+        <li><a                  href="/pheniqs/2.0/best_practices.html">Best Practice</a></li>
         <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
         <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
@@ -46,7 +47,7 @@ The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wik
 Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq) with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many.
 
 # Read Layout Manipulation
-Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the embedded `token` directive and [construction](#construction) with the `segment pattern` directive. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). In the construction step a [segment pattern](manual.html#transform-pattern) references the tokens to construct a new segment. The optional `segment pattern` directive is only necessary when composing output segments from multiple, non continuous, tokens or if a token needs to be reverse complemented. If the `segment pattern` directive is omitted from `transform`, each token is assumed to declare a single segment.
+Read manipulation is achieved with the `transform` directive by means of [tokenization](manual.html#tokenization) with the embedded `token` directive and [construction](manual.html#segment-assembly) with the `segment pattern` directive. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). In the construction step a [segment pattern](manual.html#transform-pattern) references the tokens to construct a new segment. The optional `segment pattern` directive is only necessary when composing output segments from multiple, non continuous, tokens or if a token needs to be reverse complemented. If the `segment pattern` directive is omitted from `transform`, each token is assumed to declare a single segment.
 
 A `transform` can construct [output](glossary.html#output_segment) read segments, when declared in the root of the job instruction, or a segmented sequence that will be used by a barcode decoder.
 

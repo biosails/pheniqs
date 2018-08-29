@@ -25,22 +25,19 @@
 #include "include.h"
 #include "transform.h"
 #include "channel.h"
+#include "accumulate.h"
 
-class Decoder {
+template < class T > class RoutingDecoder : public AccumulatingDecoder {
     public:
-        Decoder(const Value& ontology) {};
-        virtual ~Decoder() {};
-        virtual void decode(const Read& read, Read& output) {};
-};
-
-template < class T > class RoutingDecoder : public Decoder {
-    public:
-        T unclassified;
         T* decoded;
+        T unclassified;
+        vector< T > element_by_index;
+
         RoutingDecoder(const Value& ontology) try :
-            Decoder(ontology),
+            AccumulatingDecoder(),
+            decoded(NULL),
             unclassified(find_value_by_key("undetermined", ontology)),
-            decoded(NULL) {
+            element_by_index(decode_value_by_key< vector< T > >("codec", ontology)) {
 
             decoded = &unclassified;
 
@@ -48,38 +45,57 @@ template < class T > class RoutingDecoder : public Decoder {
                 error.push("RoutingDecoder");
                 throw;
         };
-        void decode(const Read& read, Read& output) override {};
+        virtual inline void decode(const Read& input, Read& output) {
+            ++(decoded->count);
+            if(!input.qcfail()) {
+                ++(decoded->pf_count);
+            }
+        };
+        inline void finalize() override {
+            for(auto& element : element_by_index) {
+                this->classified_count += element.count;
+                this->pf_classified_count += element.pf_count;
+            }
+            this->count += this->classified_count + unclassified.count;
+            this->pf_count += this->pf_classified_count + unclassified.pf_count;
 
-};
+            for(auto& element : element_by_index) {
+                element.finalize(*this);
+            }
+            unclassified.finalize(*this);
+            AccumulatingDecoder::finalize();
+        };
+        RoutingDecoder< T >& operator+=(const RoutingDecoder< T >& rhs) {
+            AccumulatingDecoder::operator+=(rhs);
+            unclassified += rhs.unclassified;
+            for(size_t index(0); index < element_by_index.size(); ++index) {
+                element_by_index[index] += rhs.element_by_index[index];
+            }
+            return *this;
+        };
+        void encode(Value& container, Document& document) const override {
+            AccumulatingDecoder::encode(container, document);
 
-template < class T > class TransparentDecoder : public RoutingDecoder< T > {
-    public:
-        TransparentDecoder(const Value& ontology) try :
-            RoutingDecoder< T >(ontology) {
+            Value unclassified_report(kObjectType);
+            unclassified.encode(unclassified_report, document);
+            container.AddMember("unclassified", unclassified_report.Move(), document.GetAllocator());
 
-            } catch(Error& error) {
-                error.push("TransparentDecoder");
-                throw;
+            if(!element_by_index.empty()) {
+                Value element_report_array(kArrayType);
+                for(auto& element : element_by_index) {
+                    Value element_report(kObjectType);
+                    element.encode(element_report, document);
+                    element_report_array.PushBack(element_report.Move(), document.GetAllocator());
+                }
+                container.AddMember("classified", element_report_array.Move(), document.GetAllocator());
+            }
         };
 };
 
-template < class T > class DiscreteDecoder : public RoutingDecoder< T > {
-    public:
-        vector< T > element_by_index;
-        DiscreteDecoder(const Value& ontology) try :
-            RoutingDecoder< T >(ontology),
-            element_by_index(decode_value_by_key< vector< T > >("codec", ontology)) {
-
-            } catch(Error& error) {
-                error.push("DiscreteDecoder");
-                throw;
-        };
-};
-
-template < class T > class ReadGroupDecoder : public DiscreteDecoder< T > {
+template < class T > class ReadGroupDecoder : public RoutingDecoder< T > {
     public:
         ReadGroupDecoder(const Value& ontology) try :
-            DiscreteDecoder< T >(ontology) {
+            RoutingDecoder< T >(ontology) {
 
             element_by_rg.reserve(this->element_by_index.size());
             for(auto& element : this->element_by_index) {
@@ -109,45 +125,61 @@ template < class T > class ReadGroupDecoder : public DiscreteDecoder< T > {
 
 };
 
-template < class T > class ObservationDecoder : public DiscreteDecoder< T > {
+template < class T > class ObservingDecoder : public RoutingDecoder< T > {
     protected:
         const Rule rule;
         const int32_t nucleotide_cardinality;
         Observation observation;
-        int32_t decoding_distance;
+        int32_t hamming_distance;
 
     public:
         inline const int32_t segment_cardinality() const {
             return static_cast< int32_t >(observation.segment_cardinality());
         };
-        ObservationDecoder(const Value& ontology) try :
-            DiscreteDecoder< T >(ontology),
+        ObservingDecoder(const Value& ontology) try :
+            RoutingDecoder< T >(ontology),
             rule(decode_value_by_key< Rule >("transform", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
-            decoding_distance(0) {
+            hamming_distance(0) {
 
             } catch(Error& error) {
-                error.push("ObservationDecoder");
+                error.push("ObservingDecoder");
                 throw;
+        };
+        inline void decode(const Read& input, Read& output) override {
+            if(this->decoded->is_classified() && hamming_distance) {
+                this->decoded->accumulated_distance += static_cast< uint64_t >(hamming_distance);
+                if(!input.qcfail()) {
+                    this->decoded->accumulated_pf_distance += static_cast< uint64_t >(hamming_distance);
+                }
+            }
+            RoutingDecoder< T >::decode(input, output);
+        };
+        inline void finalize() override {
+            for(auto& element : this->element_by_index) {
+                this->accumulated_classified_distance += element.accumulated_distance;
+                this->accumulated_pf_classified_distance += element.accumulated_pf_distance;
+            }
+            RoutingDecoder< T >::finalize();
         };
 };
 
-template < class T > class MDDecoder : public ObservationDecoder< T > {
+template < class T > class MinimumDistanceDecoder : public ObservingDecoder< T > {
     protected:
         const uint8_t quality_masking_threshold;
         const vector< int32_t > distance_tolerance;
         unordered_map< string, T* > element_by_sequence;
 
     public:
-        MDDecoder(const Value& ontology);
+        MinimumDistanceDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 
     private:
         inline bool match(T& barcode);
 };
 
-template < class T > class PAMLDecoder : public ObservationDecoder< T > {
+template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public ObservingDecoder< T > {
     protected:
         const double noise;
         const double confidence_threshold;
@@ -157,42 +189,47 @@ template < class T > class PAMLDecoder : public ObservationDecoder< T > {
         double decoding_probability;
 
     public:
-        PAMLDecoder(const Value& ontology);
+        PhredAdjustedMaximumLikelihoodDecoder(const Value& ontology);
+        inline void decode(const Read& input, Read& output) override;
+        inline void finalize() override {
+            for(auto& element : this->element_by_index) {
+                this->accumulated_classified_confidence += element.accumulated_confidence;
+                this->accumulated_pf_classified_confidence += element.accumulated_pf_confidence;
+            }
+            ObservingDecoder< T >::finalize();
+        };
+};
+
+/* Multiplex */
+class MDMultiplexDecoder : public MinimumDistanceDecoder< Channel > {
+    public:
+        MDMultiplexDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
 
-class MultiplexMDDecoder : public MDDecoder< Channel > {
+class PAMLMultiplexDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Channel > {
     public:
-        MultiplexMDDecoder(const Value& ontology);
+        PAMLMultiplexDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
 
-class MultiplexPAMLDecoder : public PAMLDecoder< Channel > {
+/* Molecular */
+class NaiveMolecularDecoder : public ObservingDecoder< Barcode > {
     public:
-        MultiplexPAMLDecoder(const Value& ontology);
+        NaiveMolecularDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
 
-class CellularMDDecoder : public MDDecoder< Barcode > {
+/* Cellular */
+class MDCellularDecoder : public MinimumDistanceDecoder< Barcode > {
     public:
-        CellularMDDecoder(const Value& ontology);
+        MDCellularDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
 
-class CellularPAMLDecoder : public PAMLDecoder< Barcode > {
+class PAMLCellularDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Barcode > {
     public:
-        CellularPAMLDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
-};
-
-class MolecularNaiveDecoder : public Decoder {
-    protected:
-        const int32_t nucleotide_cardinality;
-        const Rule rule;
-        Observation observation;
-
-    public:
-        MolecularNaiveDecoder(const Value& ontology);
+        PAMLCellularDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
 

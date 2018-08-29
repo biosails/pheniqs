@@ -27,9 +27,10 @@
 
 using namespace rapidjson;
 
-void print_json(const Value& node, ostream& o) {
+void print_json(const Value& node, ostream& o, const int& precision) {
     StringBuffer buffer;
     PrettyWriter< StringBuffer > writer(buffer);
+    writer.SetMaxDecimalPlaces(precision);
     node.Accept(writer);
     o << buffer.GetString() << endl;
 };

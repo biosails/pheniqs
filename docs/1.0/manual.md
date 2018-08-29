@@ -1,4 +1,4 @@
-<!-- 
+<!--
     Pheniqs : PHilology ENcoder wIth Quality Statistics
     Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
@@ -39,7 +39,7 @@
 * placeholder
 {:toc}
 
-The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file. Some parameters are also exposed as command line arguments that override their corresponding configuration file values. The configuration file contains a number of separate sections specifying directives for input and output layout, parsing read segments and run parameters. The different sections of the configuration file are described bellow. The [workflow page](workflow.html) contains some annotated examples of complete configuration files. 
+The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file. Some parameters are also exposed as command line arguments that override their corresponding configuration file values. The configuration file contains a number of separate sections specifying directives for input and output layout, parsing read segments and run parameters. The different sections of the configuration file are described bellow. The [workflow page](workflow.html) contains some annotated examples of complete configuration files.
 
 Pheniqs achieves arbitrary read manipulation in two steps: [tokenization](#tokenization) and [construction](#construction). In the tokenization step you define token patterns that extract a token from an [input segment](glossary.html#input_segment). In the construction step you reference the tokens in [transform patterns](#transform-pattern) to construct either an [output](glossary.html#output_segment), a [multiplex barcode](glossary.html#multiplex_barcode) or a [molecular barcode](glossary.html#molecular_barcode) segment.
 
@@ -58,9 +58,9 @@ The top level configuration `input` array is an ordered list of input file paths
 >```json
 {
     "input": [
-        "HK5NHBGXX_l01n01.fastq.gz", 
-        "HK5NHBGXX_l01n02.fastq.gz", 
-        "HK5NHBGXX_l01n03.fastq.gz", 
+        "HK5NHBGXX_l01n01.fastq.gz",
+        "HK5NHBGXX_l01n02.fastq.gz",
+        "HK5NHBGXX_l01n03.fastq.gz",
         "HK5NHBGXX_l01n04.fastq.gz"
     ]
 }
@@ -73,9 +73,9 @@ The top level configuration `input` array is an ordered list of input file paths
 >```json
 {
     "input": [
-        "HK5NHBGXX_l01.bam", 
-        "HK5NHBGXX_l01.bam", 
-        "HK5NHBGXX_l01.bam", 
+        "HK5NHBGXX_l01.bam",
+        "HK5NHBGXX_l01.bam",
+        "HK5NHBGXX_l01.bam",
         "HK5NHBGXX_l01.bam"
     ]
 }
@@ -86,10 +86,10 @@ The top level configuration `input` array is an ordered list of input file paths
 >```json
 {
     "input": [
-        "HK5NHBGXX_l01n01.fastq.gz", 
-        "HK5NHBGXX_l01n02.fastq.gz", 
-        "HK5NHBGXX_l01n02.fastq.gz", 
-        "HK5NHBGXX_l01n01.fastq.gz" 
+        "HK5NHBGXX_l01n01.fastq.gz",
+        "HK5NHBGXX_l01n02.fastq.gz",
+        "HK5NHBGXX_l01n02.fastq.gz",
+        "HK5NHBGXX_l01n01.fastq.gz"
     ]
 }
 ```
@@ -103,7 +103,7 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
 >```json
 {
     "token": [
-        "0:0:", 
+        "0:0:",
         "1:0:8"
     ]
 }
@@ -138,7 +138,7 @@ A transform pattern is made of one or more token references separated by the **:
 >| `0:1`   | Assemble a segment by concatenating token 0 and token 1                                            |
 >| `~0:1`  | Assemble a segment by concatenating the reverse complement of token 0 and token 1.                 |
 >
-> Several examples of transform patterns for constructing new segments. 
+> Several examples of transform patterns for constructing new segments.
 {: .example}
 
 Notice that a negative token **start** coordinate is equivalent to the corresponding positive token **end** coordinate on the reverse complemented strand and vice verse. More formally the token `0:-x:-y` is equivalent to `0:y:x` if applied to the reverse complement of the segment. For instance to concatenate to the first output segment the first 6 bases of the reverse complemented strand of the first input segment you would define token `0:-6:` and then reference it in the transform pattern for output segment 0 as `~0`.
@@ -152,19 +152,19 @@ The size of the `template` and `multiplex barcode` arrays implicitly defines the
 >```json
 {
     "token": [
-        "0:6:", 
+        "0:6:",
         "3::-6",
-        "1::8", 
+        "1::8",
         "2::8",
         "0::6",
         "3:-6:"
     ],
     "template": [
-        "0", 
+        "0",
         "1"
     ],
     "multiplex barcode": [
-        "2", 
+        "2",
         "3"
     ],
     "molecular barcode": [
@@ -182,10 +182,10 @@ Output layout is defined by the top level `channel` configuration array. Each ch
 
 ### Read Group
 
-Read groups can be either explicitly declared in the top level `read group` array or implicitly in the channel element. Separating the read group declaration from the channel is beneficial when multiple channels are assigned the same read group. The `read group` array is interpreted before the `channel` array and both are interpreted in the order the elements are present in the configuration file. If a channel `RG` property does not reference a previously declared read group, either implicitly or explicitly, it is assumed to be an implicit read group declaration and read group properties are decoded from the channel element, so both read group declaration styles can coexist. 
+Read groups can be either explicitly declared in the top level `read group` array or implicitly in the channel element. Separating the read group declaration from the channel is beneficial when multiple channels are assigned the same read group. The `read group` array is interpreted before the `channel` array and both are interpreted in the order the elements are present in the configuration file. If a channel `RG` property does not reference a previously declared read group, either implicitly or explicitly, it is assumed to be an implicit read group declaration and read group properties are decoded from the channel element, so both read group declaration styles can coexist.
 
-Explicitly declared [read groups](glossary.html#read_group) are defined in the the top level `read group` configuration array. A channel can reference the read group by setting its nested `RG` property to the value of the `ID` property. 
- 
+Explicitly declared [read groups](glossary.html#read_group) are defined in the the top level `read group` configuration array. A channel can reference the read group by setting its nested `RG` property to the value of the `ID` property.
+
 
 | Name                                      | Description                                      | Type   |
 | :---------------------------------------- | :----------------------------------------------- | :----- |
@@ -210,24 +210,24 @@ The **ID** is mandatory and must be unique among all read groups.
 {
     "read group": [
         {
-            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "LB": "TAAGGCGATCTTACGC read group library name", 
-            "SM": "TAAGGCGATCTTACGC read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "CN": "NYU CGSB", 
-            "DS": "TAAGGCGATCTTACGC read group description", 
+            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "LB": "TAAGGCGATCTTACGC read group library name",
+            "SM": "TAAGGCGATCTTACGC read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "CN": "NYU CGSB",
+            "DS": "TAAGGCGATCTTACGC read group description",
             "DT": "2016-07-15T07:00:00+00:00",
             "PI": "1500",
             "PL": "ILLUMINA",
             "PM": "HiSeq 2500"
         },
         {
-            "ID": "HK5NHBGXX:1:undetermined", 
-            "LB": "undetermined read group library name", 
-            "SM": "undetermined read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "CN": "NYU CGSB", 
-            "DS": "undetermined read group description", 
+            "ID": "HK5NHBGXX:1:undetermined",
+            "LB": "undetermined read group library name",
+            "SM": "undetermined read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "CN": "NYU CGSB",
+            "DS": "undetermined read group description",
             "DT": "2016-07-15T07:00:00+00:00",
             "PI": "1500",
             "PL": "ILLUMINA",
@@ -256,24 +256,24 @@ Setting the nested channel `undetermined` property to `true` identifies that cha
 {
     "read group": [
         {
-            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "LB": "TAAGGCGATCTTACGC read group library name", 
-            "SM": "TAAGGCGATCTTACGC read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "CN": "NYU CGSB", 
-            "DS": "TAAGGCGATCTTACGC read group description", 
+            "ID": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "LB": "TAAGGCGATCTTACGC read group library name",
+            "SM": "TAAGGCGATCTTACGC read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "CN": "NYU CGSB",
+            "DS": "TAAGGCGATCTTACGC read group description",
             "DT": "2016-07-15T07:00:00+00:00",
             "PI": "1500",
             "PL": "ILLUMINA",
             "PM": "HiSeq 2500"
         },
         {
-            "ID": "HK5NHBGXX:1:undetermined", 
-            "LB": "undetermined read group library name", 
-            "SM": "undetermined read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "CN": "NYU CGSB", 
-            "DS": "undetermined read group description", 
+            "ID": "HK5NHBGXX:1:undetermined",
+            "LB": "undetermined read group library name",
+            "SM": "undetermined read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "CN": "NYU CGSB",
+            "DS": "undetermined read group description",
             "DT": "2016-07-15T07:00:00+00:00",
             "PI": "1500",
             "PL": "ILLUMINA",
@@ -310,11 +310,11 @@ Setting the nested channel `undetermined` property to `true` identifies that cha
     "channel": [
         {
             "RG": "HCJFNBCXX:1:TAAGGCGATCTTACGC",
-            "LB": "TAAGGCGATCTTACGC read group library name", 
-            "SM": "TAAGGCGATCTTACGC read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "CN": "NYU CGSB", 
-            "DS": "TAAGGCGATCTTACGC read group description", 
+            "LB": "TAAGGCGATCTTACGC read group library name",
+            "SM": "TAAGGCGATCTTACGC read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "CN": "NYU CGSB",
+            "DS": "TAAGGCGATCTTACGC read group description",
             "DT": "2016-07-15T07:00:00+00:00",
             "PI": "1500",
             "PL": "ILLUMINA",
@@ -330,11 +330,11 @@ Setting the nested channel `undetermined` property to `true` identifies that cha
         },
         {
             "RG": "HCJFNBCXX:1:undetermined",
-            "LB": "undetermined read group library name", 
-            "SM": "undetermined read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "CN": "NYU CGSB", 
-            "DS": "undetermined read group description", 
+            "LB": "undetermined read group library name",
+            "SM": "undetermined read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "CN": "NYU CGSB",
+            "DS": "undetermined read group description",
             "DT": "2016-07-15T07:00:00+00:00",
             "PI": "1500",
             "PL": "ILLUMINA",
@@ -352,7 +352,7 @@ Setting the nested channel `undetermined` property to `true` identifies that cha
 >
 ```json
 {
-    "CN": "NYU CGSB", 
+    "CN": "NYU CGSB",
     "DT": "2016-07-15T07:00:00+00:00",
     "PI": "1500",
     "PL": "ILLUMINA",
@@ -360,10 +360,10 @@ Setting the nested channel `undetermined` property to `true` identifies that cha
     "channel": [
         {
             "RG": "HCJFNBCXX:1:TAAGGCGATCTTACGC",
-            "LB": "TAAGGCGATCTTACGC read group library name", 
-            "SM": "TAAGGCGATCTTACGC read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "DS": "TAAGGCGATCTTACGC read group description", 
+            "LB": "TAAGGCGATCTTACGC read group library name",
+            "SM": "TAAGGCGATCTTACGC read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "DS": "TAAGGCGATCTTACGC read group description",
             "barcode": [
                 "TAAGGCGA",
                 "CTCTCTAT"
@@ -375,10 +375,10 @@ Setting the nested channel `undetermined` property to `true` identifies that cha
         },
         {
             "RG": "HCJFNBCXX:1:undetermined",
-            "LB": "undetermined read group library name", 
-            "SM": "undetermined read group sample name", 
-            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC", 
-            "DS": "undetermined read group description", 
+            "LB": "undetermined read group library name",
+            "SM": "undetermined read group sample name",
+            "PU": "HK5NHBGXX:1:TAAGGCGATCTTACGC",
+            "DS": "undetermined read group description",
             "output": [
                 "HG7CVAFXX_l01s01_undetermined.fastq.gz",
                 "HG7CVAFXX_l01s02_undetermined.fastq.gz",
@@ -446,24 +446,24 @@ Setting global path prefixes makes the configuration files more portable. If spe
 
 >```json
 {
-    "base input path": "/volume/alpha/HK5NHBGXX/lane_01", 
+    "base input path": "/volume/alpha/HK5NHBGXX/lane_01",
     "input": [
-        "HK5NHBGXX_l01n01.fastq.gz", 
-        "HK5NHBGXX_l01n02.fastq.gz", 
-        "HK5NHBGXX_l01n02.fastq.gz", 
-        "HK5NHBGXX_l01n01.fastq.gz" 
+        "HK5NHBGXX_l01n01.fastq.gz",
+        "HK5NHBGXX_l01n02.fastq.gz",
+        "HK5NHBGXX_l01n02.fastq.gz",
+        "HK5NHBGXX_l01n01.fastq.gz"
     ]
 }
 ```
 >
-> will resolve to 
+> will resolve to
 >
 >```json
 {
     "input": [
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_l01n01.fastq.gz", 
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_l01n02.fastq.gz", 
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_l01n02.fastq.gz", 
+        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_l01n01.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_l01n02.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_l01n02.fastq.gz",
         "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_l01n01.fastq.gz"
     ]
 }
@@ -474,24 +474,24 @@ All paths specified in a configuration file can be made relative to your home di
 
 >```json
 {
-    "base input path": "~/HK5NHBGXX", 
+    "base input path": "~/HK5NHBGXX",
     "input": [
-        "HK5NHBGXX_l01n01.fastq.gz", 
-        "HK5NHBGXX_l01n02.fastq.gz", 
-        "HK5NHBGXX_l01n02.fastq.gz", 
-        "HK5NHBGXX_l01n01.fastq.gz" 
+        "HK5NHBGXX_l01n01.fastq.gz",
+        "HK5NHBGXX_l01n02.fastq.gz",
+        "HK5NHBGXX_l01n02.fastq.gz",
+        "HK5NHBGXX_l01n01.fastq.gz"
     ]
 }
 ```
 >
-> will resolve to 
+> will resolve to
 >
 >```json
 {
     "input": [
-        "/home/lg/HK5NHBGXX/HK5NHBGXX_l01n01.fastq.gz", 
-        "/home/lg/HK5NHBGXX/HK5NHBGXX_l01n02.fastq.gz", 
-        "/home/lg/HK5NHBGXX/HK5NHBGXX_l01n02.fastq.gz", 
+        "/home/lg/HK5NHBGXX/HK5NHBGXX_l01n01.fastq.gz",
+        "/home/lg/HK5NHBGXX/HK5NHBGXX_l01n02.fastq.gz",
+        "/home/lg/HK5NHBGXX/HK5NHBGXX_l01n02.fastq.gz",
         "/home/lg/HK5NHBGXX/HK5NHBGXX_l01n01.fastq.gz"
     ]
 }
@@ -505,7 +505,7 @@ The `input phred offset` and `output phred offset` are applicable only to [FASTQ
 
 >```json
 {
-    "output phred offset": 33, 
+    "output phred offset": 33,
     "input phred offset": 33
 }
 ```
@@ -563,7 +563,7 @@ A quality statistics report for every segment in the input is provided in the `d
 | :---------------------------------------------- | :----------------------------------------------------------------------
 | **count**                                       | Number of input reads
 | **pf count**                                    | Number of input reads that [passed vendor quality control](#pass-filter-reads)
-| **pf fraction**                                 | **pf count** / **count** 
+| **pf fraction**                                 | **pf count** / **count**
 
 ## Output statistics
 
@@ -581,7 +581,7 @@ Counters in each element of the `read group quality reports` array apply only to
 | **pf count**                                    | Number of reads that [passed vendor quality control](#pass-filter-reads)
 | **pf multiplex distance**                       | Average multiplex distance in reads that [passed vendor quality control](#pass-filter-reads)
 | **pf multiplex confidence**                     | average multiplex confidence in reads that [passed vendor quality control](#pass-filter-reads) **([pamld](glossary.html#phred_adjusted_maximum_likelihood_decoding) only)**
-| **pf fraction**                                 | **pf count** / **count** 
+| **pf fraction**                                 | **pf count** / **count**
 | **pooled fraction**                             | **count** / **pipeline :: count**
 | **pf pooled fraction**                          | **pf count** / **pipeline :: pf count**
 | **pooled multiplex fraction**                   | **count** / **pipeline :: multiplex count**
@@ -592,7 +592,7 @@ Counters in each element of the `read group quality reports` array apply only to
 
 Counters found directly in the `demultiplex output report` element are for the output of the entire pipeline.
 
-| JSON field                                      | Counter incrementing criteria 
+| JSON field                                      | Counter incrementing criteria
 | :---------------------------------------------- | :---------------------------------------------------------------------
 | **count**                                       | Sum of **count** in all read groups, including undetermined
 | **multiplex count**                             | Sum of **count** in all read groups, excluding undetermined
@@ -600,12 +600,12 @@ Counters found directly in the `demultiplex output report` element are for the o
 | **multiplex distance**                          | Average multiplex distance, excluding undetermined
 | **multiplex confidence**                        | Average multiplex confidence, excluding undetermined **([pamld](glossary.html#phred_adjusted_maximum_likelihood_decoding) only)**
 | **pf count**                                    | Sum of **pf count** in all read groups
-| **pf fraction**                                 | **pf count** / **count** 
+| **pf fraction**                                 | **pf count** / **count**
 | **pf multiplex count**                          | Sum of **pf count** in read groups, excluding undetermined
 | **pf multiplex fraction**                       | **pf multiplex count** / **pf count**
 | **pf multiplex distance**                       | Average multiplex distance in pf reads, excluding undetermined
 | **pf multiplex confidence**                     | Average multiplex confidence in pf reads, excluding undetermined **([pamld](glossary.html#phred_adjusted_maximum_likelihood_decoding) only)**
-| **multiplex pf fraction**                       | **pf multiplex count** / **multiplex count** 
+| **multiplex pf fraction**                       | **pf multiplex count** / **multiplex count**
 
 
 # Performance tuning
@@ -617,4 +617,4 @@ Pheniqs will initialize a thread pool used by [HTSlib](glossary.html#htslib) for
 | `threads`                 | IO thread pool size                                           | integer |
 | `transforms`              | number of transforming threads                                | integer |
 | `buffer capacity`         | set feed buffer capacity                                      | integer |
-| `disable quality control` | do not track quality when processing reads                    | boolean |
+| `enable quality control`  | track quality when processing reads                           | boolean |

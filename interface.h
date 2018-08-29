@@ -34,7 +34,7 @@ enum class ParameterType : uint8_t {
     URL,
     UNKNOWN
 };
-void to_string(const ParameterType& value, string& result);
+string to_string(const ParameterType& value);
 bool from_string(const char* value, ParameterType& result);
 bool from_string(const string& value, ParameterType& result);
 ostream& operator<<(ostream& o, const ParameterType& value);

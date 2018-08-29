@@ -16,7 +16,7 @@
     ],
     "decoder": {
         "000000000-BDGGG_multiplex": {
-            "transform": { "token": [ "1::8" ], "segment pattern": [ "~0" ] },
+            "transform": { "token": [ "1::8" ], "segment pattern": [ "0" ] },
             "codec": {
                 "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
                 "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },

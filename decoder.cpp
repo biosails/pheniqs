@@ -21,8 +21,8 @@
 
 #include "decoder.h"
 
-template < class T > MDDecoder< T >::MDDecoder(const Value& ontology) try :
-    ObservationDecoder< T >(ontology),
+template < class T > MinimumDistanceDecoder< T >::MinimumDistanceDecoder(const Value& ontology) try :
+    ObservingDecoder< T >(ontology),
     quality_masking_threshold(decode_value_by_key< uint8_t >("quality masking threshold", ontology)),
     distance_tolerance(decode_value_by_key< vector< int32_t > >("distance tolerance", ontology)) {
 
@@ -31,12 +31,12 @@ template < class T > MDDecoder< T >::MDDecoder(const Value& ontology) try :
     }
 
     } catch(Error& error) {
-        error.push("MDDecoder");
+        error.push("MinimumDistanceDecoder");
         throw;
 };
-template < class T > bool MDDecoder< T >::match(T& barcode) {
+template < class T > bool MinimumDistanceDecoder< T >::match(T& barcode) {
     bool result(true);
-    int32_t hamming_distance(0);
+    int32_t distance(0);
 
     if(this->quality_masking_threshold > 0) {
         for(size_t i(0); i < this->observation.segment_cardinality(); ++i) {
@@ -45,7 +45,7 @@ template < class T > bool MDDecoder< T >::match(T& barcode) {
                 result = false;
                 break;
             } else {
-                hamming_distance += error;
+                distance += error;
             }
         }
     } else {
@@ -55,27 +55,27 @@ template < class T > bool MDDecoder< T >::match(T& barcode) {
                 result = false;
                 break;
             } else {
-                hamming_distance += error;
+                distance += error;
             }
         }
     }
 
     if(result) {
-        this->decoding_distance = hamming_distance;
+        this->hamming_distance = distance;
         this->decoded = &barcode;
     }
     return result;
 };
-template < class T > void MDDecoder< T >::decode(const Read& input, Read& output) {
+template < class T > void MinimumDistanceDecoder< T >::decode(const Read& input, Read& output) {
     this->observation.clear();
     this->decoded = &this->unclassified;
-    this->decoding_distance = 0;
+    this->hamming_distance = 0;
     this->rule.apply(input, this->observation);
 
     /* First try a perfect match to the full barcode sequence */
     auto record = element_by_sequence.find(this->observation);
     if(record != element_by_sequence.end()) {
-        this->decoding_distance = 0;
+        this->hamming_distance = 0;
         this->decoded = record->second;
 
     } else {
@@ -86,10 +86,11 @@ template < class T > void MDDecoder< T >::decode(const Read& input, Read& output
             }
         }
     }
+    ObservingDecoder< T >::decode(input, output);
 };
 
-template < class T > PAMLDecoder< T >::PAMLDecoder(const Value& ontology) try :
-    ObservationDecoder< T >(ontology),
+template < class T > PhredAdjustedMaximumLikelihoodDecoder< T >::PhredAdjustedMaximumLikelihoodDecoder(const Value& ontology) try :
+    ObservingDecoder< T >(ontology),
     noise(decode_value_by_key< double >("noise", ontology)),
     confidence_threshold(decode_value_by_key< double >("confidence threshold", ontology)),
     random_barcode_probability(1.0 / double(pow(4, (this->nucleotide_cardinality)))),
@@ -98,13 +99,13 @@ template < class T > PAMLDecoder< T >::PAMLDecoder(const Value& ontology) try :
     decoding_probability(0) {
 
     } catch(Error& error) {
-        error.push("PAMLDecoder");
+        error.push("PhredAdjustedMaximumLikelihoodDecoder");
         throw;
 };
-template < class T > void PAMLDecoder< T >::decode(const Read& input, Read& output) {
+template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::decode(const Read& input, Read& output) {
     this->observation.clear();
     this->decoded = &this->unclassified;
-    this->decoding_distance = 0;
+    this->hamming_distance = 0;
     this->decoding_probability = 0;
     this->conditioned_decoding_probability = 0;
     this->rule.apply(input, this->observation);
@@ -135,7 +136,7 @@ template < class T > void PAMLDecoder< T >::decode(const Read& input, Read& outp
         if(p > adjusted) {
             this->decoded = &barcode;
             conditioned_decoding_probability = c;
-            this->decoding_distance = d;
+            this->hamming_distance = d;
             adjusted = p;
         }
     }
@@ -147,91 +148,100 @@ template < class T > void PAMLDecoder< T >::decode(const Read& input, Read& outp
 
     /* Check for decoding failure and assign to the unclassified channel if decoding failed */
     if(!(conditioned_decoding_probability > random_barcode_probability && decoding_probability > confidence_threshold)) {
-        this->decoding_distance = 0;
+        this->hamming_distance = 0;
         this->decoding_probability = 0;
         this->decoded = &this->unclassified;
     }
+
+    if(this->decoded->is_classified()) {
+        this->decoded->accumulated_confidence += decoding_probability;
+        if(!input.qcfail()) {
+            this->decoded->accumulated_pf_confidence += decoding_probability;
+        }
+    }
+    ObservingDecoder< T >::decode(input, output);
 };
 
-MultiplexMDDecoder::MultiplexMDDecoder(const Value& ontology) try :
-    MDDecoder< Channel >(ontology) {
-
-    } catch(Error& error) {
-        error.push("MultiplexMDDecoder");
-        throw;
-};
-void MultiplexMDDecoder::decode(const Read& input, Read& output) {
-    MDDecoder< Channel >::decode(input, output);
-    output.assign_RG(this->decoded->rg);
-    output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->decoding_distance);
-};
-
-MultiplexPAMLDecoder::MultiplexPAMLDecoder(const Value& ontology) try :
-    PAMLDecoder< Channel >(ontology) {
+/* Multiplex */
+MDMultiplexDecoder::MDMultiplexDecoder(const Value& ontology) try :
+    MinimumDistanceDecoder< Channel >(ontology) {
 
     } catch(Error& error) {
-        error.push("MultiplexPAMLDecoder");
+        error.push("MDMultiplexDecoder");
         throw;
 };
-void MultiplexPAMLDecoder::decode(const Read& input, Read& output) {
-    PAMLDecoder< Channel >::decode(input, output);
+void MDMultiplexDecoder::decode(const Read& input, Read& output) {
+    MinimumDistanceDecoder< Channel >::decode(input, output);
     output.assign_RG(this->decoded->rg);
     output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->decoding_distance);
+    output.update_multiplex_distance(this->hamming_distance);
+};
+
+PAMLMultiplexDecoder::PAMLMultiplexDecoder(const Value& ontology) try :
+    PhredAdjustedMaximumLikelihoodDecoder< Channel >(ontology) {
+
+    } catch(Error& error) {
+        error.push("PAMLMultiplexDecoder");
+        throw;
+};
+void PAMLMultiplexDecoder::decode(const Read& input, Read& output) {
+    PhredAdjustedMaximumLikelihoodDecoder< Channel >::decode(input, output);
+    output.assign_RG(this->decoded->rg);
+    output.update_multiplex_barcode(this->observation);
+    output.update_multiplex_distance(this->hamming_distance);
     output.update_multiplex_decoding_confidence(this->decoding_probability);
 };
 
-CellularMDDecoder::CellularMDDecoder(const Value& ontology) try :
-    MDDecoder< Barcode >(ontology) {
+/* Molecular */
+NaiveMolecularDecoder::NaiveMolecularDecoder(const Value& ontology) try :
+    ObservingDecoder< Barcode >(ontology) {
 
     } catch(Error& error) {
-        error.push("CellularMDDecoder");
+        error.push("NaiveMolecularDecoder");
         throw;
 };
-void CellularMDDecoder::decode(const Read& input, Read& output) {
-    MDDecoder< Barcode >::decode(input, output);
+void NaiveMolecularDecoder::decode(const Read& input, Read& output) {
+    this->observation.clear();
+    this->rule.apply(input, this->observation);
+    output.update_molecular_barcode(observation);
+    ObservingDecoder< Barcode >::decode(input, output);
+};
+
+/* Cellular */
+MDCellularDecoder::MDCellularDecoder(const Value& ontology) try :
+    MinimumDistanceDecoder< Barcode >(ontology) {
+
+    } catch(Error& error) {
+        error.push("MDCellularDecoder");
+        throw;
+};
+void MDCellularDecoder::decode(const Read& input, Read& output) {
+    MinimumDistanceDecoder< Barcode >::decode(input, output);
     output.update_cellular_barcode(*this->decoded);
     output.update_raw_cellular_barcode(this->observation);
     if(this->decoded != &this->unclassified) {
-        output.update_cellular_distance(this->decoding_distance);
+        output.update_cellular_distance(this->hamming_distance);
     } else {
         output.set_cellular_distance(0);
     }
 };
 
-CellularPAMLDecoder::CellularPAMLDecoder(const Value& ontology) try :
-    PAMLDecoder< Barcode >(ontology) {
+PAMLCellularDecoder::PAMLCellularDecoder(const Value& ontology) try :
+    PhredAdjustedMaximumLikelihoodDecoder< Barcode >(ontology) {
 
     } catch(Error& error) {
-        error.push("CellularPAMLDecoder");
+        error.push("PAMLCellularDecoder");
         throw;
 };
-void CellularPAMLDecoder::decode(const Read& input, Read& output) {
-    PAMLDecoder< Barcode >::decode(input, output);
+void PAMLCellularDecoder::decode(const Read& input, Read& output) {
+    PhredAdjustedMaximumLikelihoodDecoder< Barcode >::decode(input, output);
     output.update_raw_cellular_barcode(this->observation);
     output.update_cellular_barcode(*this->decoded);
     if(this->decoded != &this->unclassified) {
         output.update_cellular_decoding_confidence(this->decoding_probability);
-        output.update_cellular_distance(this->decoding_distance);
+        output.update_cellular_distance(this->hamming_distance);
     } else {
         output.set_cellular_decoding_confidence(0);
         output.set_cellular_distance(0);
     }
-};
-
-MolecularNaiveDecoder::MolecularNaiveDecoder(const Value& ontology) try :
-    Decoder(ontology),
-    nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
-    rule(decode_value_by_key< Rule >("transform", ontology)),
-    observation(decode_value_by_key< int32_t >("segment cardinality", ontology)) {
-
-    } catch(Error& error) {
-        error.push("MolecularNaiveDecoder");
-        throw;
-};
-void MolecularNaiveDecoder::decode(const Read& input, Read& output) {
-    observation.clear();
-    rule.apply(input, observation);
-    output.update_molecular_barcode(observation);
 };

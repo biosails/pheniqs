@@ -265,6 +265,7 @@ sequence.o: \
 
 barcode.o: \
 	sequence.o \
+	accumulate.o \
 	barcode.h
 
 auxiliary.o: \
@@ -277,9 +278,7 @@ read.o: \
 	read.h
 
 accumulate.o: \
-	url.o \
-	read.o \
-	barcode.o \
+	json.o \
 	accumulate.h
 
 proxy.o: \
@@ -306,11 +305,13 @@ transform.o: \
 
 channel.o: \
 	feed.o \
+	accumulate.o \
 	channel.h
 
 decoder.o: \
 	transform.o \
 	channel.o \
+	accumulate.o \
 	decoder.h
 
 pipeline.o: \

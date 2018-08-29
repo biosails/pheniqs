@@ -45,11 +45,16 @@ class Job {
         inline bool is_compile_only() const {
             return decode_value_by_key< bool >("compile only", interactive);
         };
+        inline int32_t float_precision() const {
+            return decode_value_by_key< int32_t >("float precision", ontology);
+        };
         virtual void assemble();
         virtual void compile();
         virtual void validate() {};
         virtual void load() {};
         virtual void execute() {};
+        virtual void finalize();
+        virtual void clean();
         virtual void print_ontology(ostream& o) const;
         virtual void print_compiled(ostream& o) const;
         virtual void print_report(ostream& o) const;
@@ -60,8 +65,7 @@ class Job {
         const Value& schema_repository;
         const Value& projection_repository;
         void apply_default();
-        void apply_interactive();
-        virtual void clean();
+        virtual void apply_interactive();
         void overlay(const Value& instruction);
         const Value* find_projection(const string& key) const;
         const Value* find_schema(const string& key) const;

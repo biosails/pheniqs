@@ -23,6 +23,7 @@
 
 Barcode::Barcode(const Value& ontology) try :
     SequenceArray< Sequence >(decode_value_by_key< int32_t >("segment cardinality", ontology)),
+    BarcodeAccumulator(),
     index(decode_value_by_key< int32_t >("index", ontology)),
     concentration(decode_value_by_key< double >("concentration", ontology)) {
 
@@ -43,38 +44,42 @@ Barcode::Barcode(const Value& ontology) try :
         error.push("Barcode");
         throw;
 };
+Barcode::Barcode(const Barcode& other) :
+    SequenceArray< Sequence >(other),
+    BarcodeAccumulator(other),
+    index(other.index),
+    concentration(other.concentration) {
+};
+void Barcode::encode(Value& container, Document& document) const {
+    BarcodeAccumulator::encode(container, document);
+    if(container.IsObject()) {
+        encode_key_value("index", index, container, document);
+        if(is_classified()) {
+            encode_key_value("concentration", concentration, container, document);
+            Value array(kArrayType);
+            for(auto& segment : *this) {
+                encode_value(segment, array, document);
+            }
+            container.AddMember(Value("barcode", document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
+        }
+    } else { throw ConfigurationError("element must be a dictionary"); }
+};
+Barcode& Barcode::operator+=(const Barcode& rhs) {
+    BarcodeAccumulator::operator+=(rhs);
+    return *this;
+};
 
 template<> vector< Barcode > decode_value_by_key(const Value::Ch* key, const Value& container) {
     vector< Barcode > value;
     Value::ConstMemberIterator reference = container.FindMember(key);
     if(reference != container.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                value.reserve(reference->value.MemberCount());
-                for(auto& record : reference->value.GetObject()) {
-                    value.emplace_back(record.value);
-                }
-                value.shrink_to_fit();
-            } else { throw ConfigurationError(string(key) + " element must be a dictionary"); }
-        } else { throw ConfigurationError(string(key) + " element is null"); }
-    } else { throw ConfigurationError(string(key) + " not found"); }
-    return value;
-};
-
-bool encode_key_value(const string& key, const Barcode& value, Value& container, Document& document) {
-    if(!value.empty()) {
-        Value element(kObjectType);
-        encode_key_value("index", value.index, element, document);
-        encode_key_value("segment cardinality", static_cast< int32_t >(value.segment_cardinality()), element, document);
-        encode_key_value("concentration", value.concentration, element, document);
-        Value array(kArrayType);
-        for(auto& segment : value) {
-            encode_value(segment, array, document);
+        value.reserve(reference->value.MemberCount());
+        for(auto& record : reference->value.GetObject()) {
+            value.emplace_back(record.value);
         }
-        element.AddMember(Value("barcode", document.GetAllocator()).Move(), array.Move(), document.GetAllocator());
-        return true;
+        value.shrink_to_fit();
     }
-    return false;
+    return value;
 };
 ostream& operator<<(ostream& o, const Barcode& barcode) {
     o << barcode.iupac_ambiguity() << endl;

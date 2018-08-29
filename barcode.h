@@ -24,8 +24,9 @@
 
 #include "include.h"
 #include "sequence.h"
+#include "accumulate.h"
 
-class Barcode : public SequenceArray< Sequence > {
+class Barcode : public SequenceArray< Sequence >, public BarcodeAccumulator {
     friend ostream& operator<<(ostream& o, const Barcode& barcode);
     friend bool encode_key_value(const string& key, const Barcode& value, Value& node, Document& document);
     void operator=(Barcode const &) = delete;
@@ -34,10 +35,13 @@ class Barcode : public SequenceArray< Sequence > {
         const int32_t index;
         const double concentration;
         Barcode(const Value& ontology);
-        Barcode(const Barcode& other) :
-            SequenceArray< Sequence >(other),
-            index(other.index),
-            concentration(other.concentration) {
+        Barcode(const Barcode& other);
+        inline const bool is_classified() const {
+            /* by convention, enforced by the job configuration loader, barcode 0 is always the unclassified */
+            return index > 0;
+        };
+        inline const bool is_unclassified() const {
+            return index == 0;
         };
         operator string() const {
             /* NOTICE this is in BAM encoding not iupac and will not look as expected when printed */
@@ -134,10 +138,11 @@ class Barcode : public SequenceArray< Sequence > {
             distance = d;
             probability = pow(10.0, sigma * -0.1);
         };
+        void encode(Value& container, Document& document) const override;
+        Barcode& operator+=(const Barcode& rhs);
 };
 
 ostream& operator<<(ostream& o, const Barcode& barcode);
 template<> vector< Barcode > decode_value_by_key(const Value::Ch* key, const Value& container);
-bool encode_key_value(const string& key, const Barcode& value, Value& container, Document& document);
 
 #endif /* PHENIQS_BARCODE_H */
