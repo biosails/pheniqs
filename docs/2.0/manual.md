@@ -431,8 +431,6 @@ The `input phred offset` and `output phred offset` are applicable only to [FASTQ
 # Leading Segment
 Pheniqs constructs new segments for the output read and must generate corresponding identifiers and replicate metadata from the input. Since segments can potentially disagree on metadata, one input segment is elected as the leader and used as a template when constructing the output segments. The leading segment property is a reference to an [input segment index](glossary.html#input_segment) and defaults to **0** if omitted.
 
-**EXAMPLE OF WHEN THIS WOULD BE USEFUL**
-
 >```json
 { "leading segment": 0 }
 ```
@@ -442,15 +440,11 @@ Pheniqs constructs new segments for the output read and must generate correspond
 # Pass filter reads
 Some reads are marked by the sequencing platform as not passing the vendor quality control. For instance, Illumina sequencers perform an internal [quality filtering procedure](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-x-percent-pf-technical-note-770-2014-043.pdf) called chastity filter, and reads that pass this filter are called **PF** for **pass-filter**. This can be [signaled](https://en.wikipedia.org/wiki/FASTQ_format#Illumina_sequence_identifiers) on the comment portion of the read identifier in [FASTQ](glossary.html#fastq) files or the **512** flag on a SAM record flag. Setting this attribute to **true** will instruct Pheniqs to decode those unfiltered reads and include them in the output. If the attribute is set to **false** those reads are dropped. `include filtered` defaults to **false**.
 
-**I think this would be clearer if the key was "include only pf reads" or something like that. When I talk about filtered reads I generally refer to those that passed a particular filter, not those that did not pass.**
-
 # Configuration validation
 The `-V/--validate` command line flag makes Pheniqs evaluate the supplied instruction and emit a human readable description of the instruction without actually executing it. It is sometimes useful to inspect this description before executing to make sure all implicit parameters are allocated the desired values. To also print out the barcode distance metric for each closed class decoder you may additionally set the `-D/--distance` command line flag. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate, known as the [Shannon bound](https://en.wikipedia.org/wiki/Shannon%E2%80%93Hartley_theorem).
 
 # Demultiplexing statistics
 Pheniqs emits a comprehensive demultiplexing report with statistics about both inputs and outputs.
-
-**Will this be where we put Mohammed's MultiQC Report?**
 
 ## Input
 A quality statistics report for every segment in the input is provided in the `demultiplex input report` element.
