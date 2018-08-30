@@ -12,8 +12,8 @@ def to_json(node):
 
 total_segment = 4
 i7_seq_tag = 'XI'
-i7_qual_tag = 'XJ'
-i5_seq_tag = 'YI'
+i7_qual_tag = 'YI'
+i5_seq_tag = 'XJ'
 i5_qual_tag = 'YJ'
 
 sam_tag_ex = re.compile(r'^(?P<TAG>[A-Za-z0-9]{2}):(?P<TYPE>[AifZHB]):(?P<VALUE>.+)$')
