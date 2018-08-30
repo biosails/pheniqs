@@ -67,46 +67,49 @@ def process_sam_tuple():
         segment_index = None
 
         for line in sys.stdin:
-            record = parse_sam_tuple(line)
+            if not line[0] == '@':
+                record = parse_sam_tuple(line)
 
-            if not QNAME == record['tuple'][0]:
-                segment_index = 1
-                QNAME = record['tuple'][0]
-                AUX = record['AUX']
+                if not QNAME == record['tuple'][0]:
+                    segment_index = 1
+                    QNAME = record['tuple'][0]
+                    AUX = record['AUX']
+                else:
+                    segment_index += 1
+
+                record['FI'] = segment_index
+                print(format_segment_tuple(record))
+
+                # if this is the first segmentm, print the two index segments
+                if AUX is not None:
+                    # first turn off 0x40 and 0x80 / first and last segment
+                    record['tuple'][1] = str(int(record['tuple'][1]) & ~0xc0)
+
+                    # print i7
+                    segment_index += 1
+                    record['tuple'][9] = AUX[i7_seq_tag]['VALUE']
+                    record['tuple'][10] = AUX[i7_qual_tag]['VALUE']
+                    record['FI'] = segment_index
+                    print(format_segment_tuple(record))
+
+                    # print i5
+                    segment_index += 1
+                    record['tuple'][9] = AUX[i5_seq_tag]['VALUE']
+                    record['tuple'][10] = AUX[i5_qual_tag]['VALUE']
+                    record['FI'] = segment_index
+                    print(format_segment_tuple(record))
+
+                    AUX = None
             else:
-                segment_index += 1
-
-            record['FI'] = segment_index
-            print(format_segment_tuple(record))
-
-            # if this is the first segmentm, print the two index segments
-            if AUX is not None:
-                # first turn off 0x40 and 0x80 / first and last segment
-                record['tuple'][1] = str(int(record['tuple'][1]) & ~0xc0)
-
-                # print i7
-                segment_index += 1
-                record['tuple'][9] = AUX[i7_seq_tag]['VALUE']
-                record['tuple'][10] = AUX[i7_qual_tag]['VALUE']
-                record['FI'] = segment_index
-                print(format_segment_tuple(record))
-
-                # print i5
-                segment_index += 1
-                record['tuple'][9] = AUX[i5_seq_tag]['VALUE']
-                record['tuple'][10] = AUX[i5_qual_tag]['VALUE']
-                record['FI'] = segment_index
-                print(format_segment_tuple(record))
-
-                AUX = None
-
-            # print(to_json(record))
-
+                # header line
+                print(line.strip())
     except json.decoder.JSONDecodeError as e:
         print(e)
         sys.exit(1)
 
     sys.exit(0)
+
+process_sam_tuple()
 
 # parsing the SAM record as a dictionary
 def parse_sam_record(line):
@@ -114,6 +117,7 @@ def parse_sam_record(line):
     sam_match = sam_record_ex.search(line)
     if sam_match:
         record = sam_match.groupdict()
+        record['TC'] = total_segment
         if record['AUX']:
             AUX = {}
             for tag in record['AUX'].split('\t'):
@@ -129,47 +133,49 @@ def parse_sam_record(line):
 def format_segment(record):
     return '{QNAME}\t{FLAG}\t{RNAME}\t{POS}\t{MAPQ}\t{CIGAR}\t{RNEXT}\t{PNEXT}\t{TLEN}\t{SEQ}\t{QUAL}\tFI:i:{FI}\tTC:i:{TC}'.format(**record)
 
-def process_sam_input():
+def process_sam():
     try:
         AUX = None
         QNAME = None
         segment_index = None
 
         for line in sys.stdin:
-            record = parse_sam_record(line)
+            if not line[0] == '@':
+                record = parse_sam_record(line)
 
-            if not QNAME == record['QNAME']:
-                segment_index = 1
-                QNAME = record['QNAME']
-                AUX = record['AUX']
+                if not QNAME == record['QNAME']:
+                    segment_index = 1
+                    QNAME = record['QNAME']
+                    AUX = record['AUX']
+                else:
+                    segment_index += 1
+
+                record['FI'] = segment_index
+                print(format_segment(record))
+
+                # if this is the first segmentm, print the two index segments
+                if AUX is not None:
+                    # first turn off 0x40 and 0x80 / first and last segment
+                    record['FLAG'] = str(int(record['FLAG']) & ~0xc0)
+
+                    # print i7
+                    segment_index += 1
+                    record['SEQ'] = AUX[i7_seq_tag]['VALUE']
+                    record['QUAL'] = AUX[i7_qual_tag]['VALUE']
+                    record['FI'] = segment_index
+                    print(format_segment(record))
+
+                    # print i5
+                    segment_index += 1
+                    record['SEQ'] = AUX[i5_seq_tag]['VALUE']
+                    record['QUAL'] = AUX[i5_qual_tag]['VALUE']
+                    record['FI'] = segment_index
+                    print(format_segment(record))
+
+                    AUX = None
             else:
-                segment_index += 1
-
-            record['FI'] = segment_index
-            print(format_segment(record))
-
-            # if this is the first segmentm, print the two index segments
-            if AUX is not None:
-                # first turn off 0x40 and 0x80 / first and last segment
-                record['FLAG'] = str(int(record['FLAG']) & ~0xc0)
-
-                # print i7
-                segment_index += 1
-                record['SEQ'] = AUX[i7_seq_tag]['VALUE']
-                record['QUAL'] = AUX[i7_qual_tag]['VALUE']
-                record['FI'] = segment_index
-                print(format_segment(record))
-
-                # print i5
-                segment_index += 1
-                record['SEQ'] = AUX[i5_seq_tag]['VALUE']
-                record['QUAL'] = AUX[i5_qual_tag]['VALUE']
-                record['FI'] = segment_index
-                print(format_segment(record))
-
-                AUX = None
-
-            # print(to_json(record))
+                # header line
+                print(line.strip())
 
     except json.decoder.JSONDecodeError as e:
         print(e)
@@ -177,4 +183,4 @@ def process_sam_input():
 
     sys.exit(0)
 
-process_sam_tuple()
+# process_sam()
