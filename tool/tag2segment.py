@@ -10,6 +10,7 @@ import re
 def to_json(node):
     return json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4)
 
+total_segment = 4
 i7_seq_tag = 'XI'
 i7_qual_tag = 'XJ'
 i5_seq_tag = 'YI'
@@ -43,7 +44,10 @@ def parse_sam_tuple(line):
     record = None
     if line:
         tuple = line.split('\t')
-        record = { 'tuple': tuple[0:11] }
+        record = {
+            'tuple': tuple[0:11],
+            'TC': total_segment
+        }
         if len(tuple) > 11:
             record['AUX'] = {}
             for tag in tuple[11:]:
@@ -54,7 +58,7 @@ def parse_sam_tuple(line):
     return record
 
 def format_segment_tuple(record):
-    return '{}\tTC:i:{}'.format('\t'.join(record['tuple']), str(record['TC']))
+    return '{}\tFI:i:{}\tTC:i:{}'.format('\t'.join(record['tuple']), str(record['FI']), str(record['TC']))
 
 def process_sam_tuple():
     try:
@@ -72,7 +76,7 @@ def process_sam_tuple():
             else:
                 segment_index += 1
 
-            record['TC'] = segment_index
+            record['FI'] = segment_index
             print(format_segment_tuple(record))
 
             # if this is the first segmentm, print the two index segments
@@ -84,14 +88,14 @@ def process_sam_tuple():
                 segment_index += 1
                 record['tuple'][9] = AUX[i7_seq_tag]['VALUE']
                 record['tuple'][10] = AUX[i7_qual_tag]['VALUE']
-                record['TC'] = segment_index
+                record['FI'] = segment_index
                 print(format_segment_tuple(record))
 
                 # print i5
                 segment_index += 1
                 record['tuple'][9] = AUX[i5_seq_tag]['VALUE']
                 record['tuple'][10] = AUX[i5_qual_tag]['VALUE']
-                record['TC'] = segment_index
+                record['FI'] = segment_index
                 print(format_segment_tuple(record))
 
                 AUX = None
@@ -123,7 +127,7 @@ def parse_sam_record(line):
     return record
 
 def format_segment(record):
-    return '{QNAME}\t{FLAG}\t{RNAME}\t{POS}\t{MAPQ}\t{CIGAR}\t{RNEXT}\t{PNEXT}\t{TLEN}\t{SEQ}\t{QUAL}\tTC:i:{TC}'.format(**record)
+    return '{QNAME}\t{FLAG}\t{RNAME}\t{POS}\t{MAPQ}\t{CIGAR}\t{RNEXT}\t{PNEXT}\t{TLEN}\t{SEQ}\t{QUAL}\tFI:i:{FI}\tTC:i:{TC}'.format(**record)
 
 def process_sam_input():
     try:
@@ -141,7 +145,7 @@ def process_sam_input():
             else:
                 segment_index += 1
 
-            record['TC'] = segment_index
+            record['FI'] = segment_index
             print(format_segment(record))
 
             # if this is the first segmentm, print the two index segments
@@ -153,14 +157,14 @@ def process_sam_input():
                 segment_index += 1
                 record['SEQ'] = AUX[i7_seq_tag]['VALUE']
                 record['QUAL'] = AUX[i7_qual_tag]['VALUE']
-                record['TC'] = segment_index
+                record['FI'] = segment_index
                 print(format_segment(record))
 
                 # print i5
                 segment_index += 1
                 record['SEQ'] = AUX[i5_seq_tag]['VALUE']
                 record['QUAL'] = AUX[i5_qual_tag]['VALUE']
-                record['TC'] = segment_index
+                record['FI'] = segment_index
                 print(format_segment(record))
 
                 AUX = None
