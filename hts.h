@@ -234,8 +234,14 @@ class HtsFeed : public BufferedFeed< bam1_t > {
             } else { throw OverflowError("qname must not exceed 255 characters"); }
         };
         inline void decode(const bam1_t* record, Segment& segment) override {
-            /* copy the identifier to the segment */
-            ks_put_string(bam_get_qname(record), record->core.l_qname, segment.name);
+            /*  copy the identifier to the segment
+                l_qname is :
+                    the number of characters in qname +
+                    1 for a terminating \0 +
+                    l_extranul which pads it to modulo 4 so is 0 to 3
+                    in total we need to copy: l_qname - (l_extranul + 1) characters
+            */
+            ks_put_string(bam_get_qname(record), record->core.l_qname - record->core.l_extranul - 1, segment.name);
 
             /* copy the sequence */
             uint8_t* bam_seq(bam_get_seq(record));
