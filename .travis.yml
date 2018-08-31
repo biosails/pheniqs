@@ -18,6 +18,8 @@ before_install:
 
 install: true
 
+## All osx_image tags should be 8.3
+
 stages:
   - test
   - name: deploy
@@ -160,27 +162,27 @@ jobs:
     - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
   - os: osx
     stage: test
-    osx_image: xcode9.4
+    osx_image: xcode8.3
     env:
     - MATRIX_EVAL="CC=clang && CXX=clang++"
   - os: osx
     stage: test
-    osx_image: xcode9.4
+    osx_image: xcode8.3
     env:
     - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9 && CXX=g++-4.9"
   - os: osx
     stage: test
-    osx_image: xcode9.4
+    osx_image: xcode8.3
     env:
     - MATRIX_EVAL="brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5 && CXX=g++-5"
   - os: osx
     stage: test
-    osx_image: xcode9.4
+    osx_image: xcode8.3
     env:
     - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
   - os: osx
     stage: test
-    osx_image: xcode9.4
+    osx_image: xcode8.3
     env:
     - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@7; brew link --overwrite gcc@7; CC=gcc-7 && CXX=g++-7"
   - os: osx
