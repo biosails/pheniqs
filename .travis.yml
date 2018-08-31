@@ -18,6 +18,8 @@ before_install:
 
 install: true
 
+## All osx_image tags should be 8.3
+
 stages:
   - test
   - name: deploy
