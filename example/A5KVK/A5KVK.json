@@ -11,6 +11,9 @@
     "transform": { "token": [ "0::", "3::" ] },
     "flowcell id": "A5KVK",
     "multiplex": {
+        "algorithm": "pamld",
+        "confidence threshold": 0.98,
+        "noise": 0.02,
         "transform": { "token": [ "1::7", "2::7" ] },
         "codec": {
             "@RG1": { "barcode": [ "AATTCAA", "CATCCGG" ] },
