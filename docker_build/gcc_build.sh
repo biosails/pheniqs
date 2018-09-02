@@ -11,6 +11,8 @@ set -x -e
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b
 
+cd $(pwd)
+
 ##Begin pheniqs install
 export PREFIX=/tmp/pheniqs
 export LD_LIBRARY_PATH="${PREFIX}/lib"
@@ -28,5 +30,5 @@ EOF
 chmod 777 install.sh
 
 docker run \
-	-it -v $(pwd)/$(pwd) gcc:4.9 \
+	-it -v $(pwd):$(pwd) gcc:4.9 \
 	$(pwd)/install.sh

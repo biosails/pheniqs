@@ -11,3 +11,4 @@
 **/__pycache__
 **/.gcc-flags.json
 **/*.h.gch
+install.sh

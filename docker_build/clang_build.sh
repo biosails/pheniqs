@@ -31,5 +31,5 @@ EOF
 chmod 777 install.sh
 
 docker run \
-	-it -v $(pwd)/$(pwd) ubuntu \
+	-it -v $(pwd):$(pwd) ubuntu \
 	$(pwd)/install.sh
