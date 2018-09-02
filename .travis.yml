@@ -192,6 +192,9 @@ jobs:
   - os: linux
     stage: test
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
+  - os: linux
+    stage: test
+    script: bash $TRAVIS_BUILD_DIR/docker_build/linux_build.sh
     ############################################################################
     # End test stage
     ################# ###########################################################
