@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Building conda package on linux"
+echo "Building with gcc"
 
 set -x -e
 
@@ -12,6 +12,7 @@ wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b
 
 ##Begin pheniqs install
+export PREFIX=/tmp/pheniqs
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 make all PREFIX=${PREFIX}
 make install PREFIX=${PREFIX}
