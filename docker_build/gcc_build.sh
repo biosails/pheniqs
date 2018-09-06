@@ -5,7 +5,7 @@ echo "Building with gcc"
 set -x -e
 
 rm -rf install.sh || echo "No install file found"
-export PREFIX=/tmp/pheniqs
+#export PREFIX=/tmp/pheniqs
 export PWD=$(pwd)
 
 cat <<EOF >>install.sh
@@ -24,19 +24,22 @@ bash Miniconda3-latest-Linux-x86_64.sh -b -p /tmp/miniconda3
 
 echo "Beginning pheniqs install"
 cd $PWD
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+
+LD_LIBRARY_PATH="\${HOME}/.pheniqs/travis/install/lib"
 export PATH=/tmp/miniconda3/bin/:\$PATH
 
 ./tool/ppkg.py -v debug build test/build.json
-make PREFIX=${PREFIX}
-make install PREFIX=${PREFIX}
+make all PREFIX="\${HOME}/.pheniqs/travis/install"
+./pheniqs --version
+./pheniqs --help
+./pheniqs demux --help
+./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --validate --distance
+./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --compile >> test/BDGGG/BDGGG.log 2>&1
+./pheniqs demux --config test/BDGGG/BDGGG_interleave.json >> test/BDGGG/BDGGG.log 2>&1
+./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --validate --distance
+./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --compile >> test/BDGGG/BDGGG.log 2>&1
+./pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log 2>&1
 
-pheniqs demux --config test/BDGGG/BDGGG_interleave.json --validate --distance
-pheniqs demux --config test/BDGGG/BDGGG_interleave.json --compile >> test/BDGGG/BDGGG.log 2>&1
-pheniqs demux --config test/BDGGG/BDGGG_interleave.json >> test/BDGGG/BDGGG.log 2>&1
-pheniqs demux --config test/BDGGG/BDGGG_annotated.json --validate --distance
-pheniqs demux --config test/BDGGG/BDGGG_annotated.json --compile >> test/BDGGG/BDGGG.log 2>&1
-pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log 2>&1
 EOF
 
 chmod 777 install.sh
