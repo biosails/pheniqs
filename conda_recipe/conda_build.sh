@@ -28,6 +28,7 @@ cd $WORKSPACE
 ## Create a latest release
 sed -i.bak 's/THIS_VERSION/latest/' latest/meta.yaml
 rm latest/meta.yaml.bak
+conda config --add channels conda-forge
 conda config --add channels bioconda
 conda build  $UPLOAD_ARGS $WORKSPACE/latest
 conda build purge
@@ -36,6 +37,7 @@ cp meta.yaml latest/
 ## Create a version from this datetime
 sed -i.bak "s/THIS_VERSION/$DATE/" latest/meta.yaml
 rm latest/meta.yaml.bak
+conda config --add channels conda-forge
 conda config --add channels bioconda
 conda build $UPLOAD_ARGS $WORKSPACE/latest
 
