@@ -9,6 +9,8 @@
         "Lane8_S8_L008_R2_001.fastq.gz"
     ],
     "multiplex": {
-        "base": "@CBJLFACXX_multiplex_lane_8"
+        "base": "@CBJLFACXX_multiplex_lane_8",
+        "output": [ "CBJLFACXX_l08.cram" ],
+        "undetermined": { "output": [ "CBJLFACXX_l06_unclassified.cram" ] }
     }
 }
