@@ -4,31 +4,48 @@ echo "Building with gcc"
 
 set -x -e
 
-echo <<EOF >> install.sh
+rm -rf install.sh || echo "No install file found"
+#export PREFIX=/tmp/pheniqs
+export PWD=$(pwd)
+
+cat <<EOF >>install.sh
 #!/usr/bin/env bash
 
 set -x -e
+
+echo "Installing system packages"
+apt-get update -y
+apt-get install -y rsync
+
+echo "Installing miniconda"
+cd /tmp
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh -b
+bash Miniconda3-latest-Linux-x86_64.sh -b -p /tmp/miniconda3
 
-cd $(pwd)
+echo "Beginning pheniqs install"
+cd $PWD
 
-##Begin pheniqs install
-export PREFIX=/tmp/pheniqs
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-make all PREFIX=${PREFIX}
-make install PREFIX=${PREFIX}
+LD_LIBRARY_PATH="\${HOME}/.pheniqs/travis/install/lib"
+export PATH=/tmp/miniconda3/bin/:\$PATH
 
-pheniqs demux --config test/BDGGG/BDGGG_interleave.json --validate --distance
-pheniqs demux --config test/BDGGG/BDGGG_interleave.json --compile >> test/BDGGG/BDGGG.log 2>&1
-pheniqs demux --config test/BDGGG/BDGGG_interleave.json >> test/BDGGG/BDGGG.log 2>&1
-pheniqs demux --config test/BDGGG/BDGGG_annotated.json --validate --distance
-pheniqs demux --config test/BDGGG/BDGGG_annotated.json --compile >> test/BDGGG/BDGGG.log 2>&1
-pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log 2>&1
+./tool/ppkg.py -v debug build test/build.json
+make all PREFIX="\${HOME}/.pheniqs/travis/install"
+./pheniqs --version
+./pheniqs --help
+./pheniqs demux --help
+./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --validate --distance
+./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --compile >> test/BDGGG/BDGGG.log 2>&1
+./pheniqs demux --config test/BDGGG/BDGGG_interleave.json >> test/BDGGG/BDGGG.log 2>&1
+./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --validate --distance
+./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --compile >> test/BDGGG/BDGGG.log 2>&1
+./pheniqs demux --config test/BDGGG/BDGGG_annotated.json >> test/BDGGG/BDGGG.log 2>&1
+
 EOF
 
 chmod 777 install.sh
 
+
 docker run \
+ 	--rm \
 	-it -v $(pwd):$(pwd) gcc:4.9 \
 	$(pwd)/install.sh

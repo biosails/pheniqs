@@ -4,7 +4,12 @@ echo "Building clang 3.9 from ubuntu"
 
 set -x -e
 
-echo <<EOF >>install.sh
+rm -rf install.sh || echo "No install file found"
+export PREFIX=/tmp/pheniqs
+export PWD=$(pwd)
+
+cat <<EOF >>install.sh
+cd /tmp
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b
 
@@ -15,7 +20,6 @@ apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 ma
 apt-get install -y clang-3.9 libclang-3.9-dev 
 
 ##Begin pheniqs install
-export PREFIX=/tmp/pheniqs
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 make all PREFIX=${PREFIX}
 make install PREFIX=${PREFIX}
