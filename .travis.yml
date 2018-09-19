@@ -192,14 +192,14 @@ jobs:
   - os: linux
     stage: test
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
-  - os: linux
-    stage: test
-    script: bash $TRAVIS_BUILD_DIR/docker_build/gcc_build.sh
-    env:
-    - MATRIX_EVAL="DOCKER_IMAGE=gcc:4.9 CC=gcc-4.9 && CXX=g++-4.9"
-  - os: linux
-    stage: test
-    script: bash $TRAVIS_BUILD_DIR/docker_build/clang_build.sh
+  #- os: linux
+  #  stage: test
+  #  script: bash $TRAVIS_BUILD_DIR/docker_build/gcc_build.sh
+  #  env:
+  #  - MATRIX_EVAL="DOCKER_IMAGE=gcc:4.9 CC=gcc-4.9 && CXX=g++-4.9"
+  #- os: linux
+  #  stage: test
+  #  script: bash $TRAVIS_BUILD_DIR/docker_build/clang_build.sh
     ############################################################################
     # End test stage
     ############################################################################
