@@ -9,6 +9,8 @@
         "Lane5_S5_L005_R2_001.fastq.gz"
     ],
     "multiplex": {
-        "base": "@CBJLFACXX_multiplex_lane_5"
+        "base": "@CBJLFACXX_multiplex_lane_5",
+        "output": [ "CBJLFACXX_l05.cram" ],
+        "undetermined": { "output": [ "CBJLFACXX_l05_unclassified.cram" ] }
     }
 }
