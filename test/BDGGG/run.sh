@@ -21,6 +21,13 @@
 
 source "test/BDGGG/function.sh"
 
+if [ ! -x "$PHENIQS_BIN" ]; then
+    printf "no executable pheniqs at $PHENIQS_BIN\n";
+    exit 10;
+else
+    $PHENIQS_BIN --version
+fi
+
 [ -d $PHENIQS_TEST_HOME/result ] && rm -rf $PHENIQS_TEST_HOME/result;
 mkdir $PHENIQS_TEST_HOME/result
 
