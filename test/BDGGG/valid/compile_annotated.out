@@ -1,0 +1,541 @@
+{
+    "CN": "CGSB",
+    "DT": "2018-02-25T07:00:00+00:00",
+    "PI": "300",
+    "PL": "ILLUMINA",
+    "PM": "miseq",
+    "SM": "trinidad",
+    "application name": "./pheniqs",
+    "application version": "2.0.3-beta-161-g8bfe770a2b850cded0fc7db3c181d36a25311554",
+    "base input url": "test/BDGGG",
+    "base output url": "test/BDGGG",
+    "buffer capacity": 2048,
+    "compile only": true,
+    "configuration url": "test/BDGGG/BDGGG_annotated.json",
+    "float precision": 10,
+    "flowcell id": "BDGGG",
+    "full command": "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --precision 10 --compile",
+    "input": [
+        "test/BDGGG/BDGGG_s01.fastq.gz",
+        "test/BDGGG/BDGGG_s02.fastq.gz",
+        "test/BDGGG/BDGGG_s03.fastq.gz"
+    ],
+    "input feed": [
+        {
+            "capacity": 2048,
+            "direction": "in",
+            "index": 0,
+            "phred offset": 33,
+            "platform": "ILLUMINA",
+            "resolution": 1,
+            "url": "test/BDGGG/BDGGG_s01.fastq.gz"
+        },
+        {
+            "capacity": 2048,
+            "direction": "in",
+            "index": 1,
+            "phred offset": 33,
+            "platform": "ILLUMINA",
+            "resolution": 1,
+            "url": "test/BDGGG/BDGGG_s02.fastq.gz"
+        },
+        {
+            "capacity": 2048,
+            "direction": "in",
+            "index": 2,
+            "phred offset": 33,
+            "platform": "ILLUMINA",
+            "resolution": 1,
+            "url": "test/BDGGG/BDGGG_s03.fastq.gz"
+        }
+    ],
+    "input feed by segment": [
+        {
+            "capacity": 2048,
+            "direction": "in",
+            "index": 0,
+            "phred offset": 33,
+            "platform": "ILLUMINA",
+            "resolution": 1,
+            "url": "test/BDGGG/BDGGG_s01.fastq.gz"
+        },
+        {
+            "capacity": 2048,
+            "direction": "in",
+            "index": 1,
+            "phred offset": 33,
+            "platform": "ILLUMINA",
+            "resolution": 1,
+            "url": "test/BDGGG/BDGGG_s02.fastq.gz"
+        },
+        {
+            "capacity": 2048,
+            "direction": "in",
+            "index": 2,
+            "phred offset": 33,
+            "platform": "ILLUMINA",
+            "resolution": 1,
+            "url": "test/BDGGG/BDGGG_s03.fastq.gz"
+        }
+    ],
+    "input phred offset": 33,
+    "input segment cardinality": 3,
+    "leading segment index": 0,
+    "molecular": [
+        {
+            "algorithm": "naive",
+            "barcode length": [
+                8
+            ],
+            "confidence threshold": 0.99,
+            "distance tolerance": [
+                0
+            ],
+            "index": 0,
+            "noise": 0.01,
+            "nucleotide cardinality": 8,
+            "quality masking threshold": 0,
+            "segment cardinality": 1,
+            "shannon bound": [
+                0
+            ],
+            "transform": {
+                "segment pattern": [
+                    "0"
+                ],
+                "token": [
+                    "0:8:16"
+                ]
+            },
+            "undetermined": {
+                "ID": "undetermined",
+                "PU": "undetermined",
+                "algorithm": "naive",
+                "barcode": [
+                    "========"
+                ],
+                "concentration": 0.01,
+                "index": 0,
+                "segment cardinality": 1
+            }
+        }
+    ],
+    "multiplex": {
+        "CN": "CGSB",
+        "DT": "2018-02-25T07:00:00+00:00",
+        "PI": "300",
+        "PL": "ILLUMINA",
+        "PM": "miseq",
+        "SM": "trinidad",
+        "algorithm": "pamld",
+        "barcode length": [
+            8
+        ],
+        "base output url": "test/BDGGG",
+        "codec": {
+            "@AGGCAGAA": {
+                "CN": "CGSB",
+                "DT": "2018-02-25T07:00:00+00:00",
+                "ID": "BDGGG:AGGCAGAA",
+                "LB": "trinidad 5",
+                "PI": "300",
+                "PL": "ILLUMINA",
+                "PM": "miseq",
+                "PU": "BDGGG:AGGCAGAA",
+                "SM": "trinidad",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA"
+                ],
+                "concentration": 0.20357142857142858,
+                "flowcell id": "BDGGG",
+                "index": 1,
+                "output": [
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    },
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                ],
+                "output feed by segment": [
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    },
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    }
+                ],
+                "segment cardinality": 1
+            },
+            "@CGTACTAG": {
+                "CN": "CGSB",
+                "DT": "2018-02-25T07:00:00+00:00",
+                "ID": "BDGGG:CGTACTAG",
+                "LB": "trinidad 4",
+                "PI": "300",
+                "PL": "ILLUMINA",
+                "PM": "miseq",
+                "PU": "BDGGG:CGTACTAG",
+                "SM": "trinidad",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG"
+                ],
+                "concentration": 0.06785714285714285,
+                "flowcell id": "BDGGG",
+                "index": 2,
+                "output": [
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    },
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                ],
+                "output feed by segment": [
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    },
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    }
+                ],
+                "segment cardinality": 1
+            },
+            "@GGACTCCT": {
+                "CN": "CGSB",
+                "DT": "2018-02-25T07:00:00+00:00",
+                "ID": "BDGGG:GGACTCCT",
+                "LB": "trinidad 9",
+                "PI": "300",
+                "PL": "ILLUMINA",
+                "PM": "miseq",
+                "PU": "BDGGG:GGACTCCT",
+                "SM": "trinidad",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT"
+                ],
+                "concentration": 0.40714285714285716,
+                "flowcell id": "BDGGG",
+                "index": 3,
+                "output": [
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    },
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                ],
+                "output feed by segment": [
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    },
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    }
+                ],
+                "segment cardinality": 1
+            },
+            "@TAAGGCGA": {
+                "CN": "CGSB",
+                "DT": "2018-02-25T07:00:00+00:00",
+                "ID": "BDGGG:TAAGGCGA",
+                "LB": "trinidad 1",
+                "PI": "300",
+                "PL": "ILLUMINA",
+                "PM": "miseq",
+                "PU": "BDGGG:TAAGGCGA",
+                "SM": "trinidad",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA"
+                ],
+                "concentration": 0.1357142857142857,
+                "flowcell id": "BDGGG",
+                "index": 4,
+                "output": [
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    },
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                ],
+                "output feed by segment": [
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    },
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    }
+                ],
+                "segment cardinality": 1
+            },
+            "@TCCTGAGC": {
+                "CN": "CGSB",
+                "DT": "2018-02-25T07:00:00+00:00",
+                "ID": "BDGGG:TCCTGAGC",
+                "LB": "trinidad 8",
+                "PI": "300",
+                "PL": "ILLUMINA",
+                "PM": "miseq",
+                "PU": "BDGGG:TCCTGAGC",
+                "SM": "trinidad",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TCCTGAGC"
+                ],
+                "concentration": 0.1357142857142857,
+                "flowcell id": "BDGGG",
+                "index": 5,
+                "output": [
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    },
+                    {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                ],
+                "output feed by segment": [
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    },
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    }
+                ],
+                "segment cardinality": 1
+            }
+        },
+        "confidence threshold": 0.99,
+        "distance tolerance": [
+            2
+        ],
+        "flowcell id": "BDGGG",
+        "index": 0,
+        "noise": 0.05,
+        "nucleotide cardinality": 8,
+        "output": [
+            {
+                "path": "/dev/stdout",
+                "type": "sam"
+            }
+        ],
+        "quality masking threshold": 0,
+        "segment cardinality": 1,
+        "shannon bound": [
+            2
+        ],
+        "transform": {
+            "segment pattern": [
+                "0"
+            ],
+            "token": [
+                "1::8"
+            ]
+        },
+        "undetermined": {
+            "CN": "CGSB",
+            "DT": "2018-02-25T07:00:00+00:00",
+            "ID": "BDGGG:undetermined",
+            "PI": "300",
+            "PL": "ILLUMINA",
+            "PM": "miseq",
+            "PU": "BDGGG:undetermined",
+            "SM": "trinidad",
+            "TC": 2,
+            "algorithm": "pamld",
+            "barcode": [
+                "========"
+            ],
+            "concentration": 0.05,
+            "flowcell id": "BDGGG",
+            "index": 0,
+            "output": [
+                {
+                    "path": "/dev/stdout",
+                    "type": "sam"
+                },
+                {
+                    "path": "/dev/stdout",
+                    "type": "sam"
+                }
+            ],
+            "output feed by segment": [
+                {
+                    "capacity": 4096,
+                    "direction": "out",
+                    "index": 0,
+                    "phred offset": 33,
+                    "platform": "ILLUMINA",
+                    "resolution": 2,
+                    "url": {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                },
+                {
+                    "capacity": 4096,
+                    "direction": "out",
+                    "index": 0,
+                    "phred offset": 33,
+                    "platform": "ILLUMINA",
+                    "resolution": 2,
+                    "url": {
+                        "path": "/dev/stdout",
+                        "type": "sam"
+                    }
+                }
+            ],
+            "segment cardinality": 1
+        }
+    },
+    "output": [
+        {
+            "path": "/dev/stdout",
+            "type": "sam"
+        }
+    ],
+    "output feed": [
+        {
+            "capacity": 4096,
+            "direction": "out",
+            "index": 0,
+            "phred offset": 33,
+            "platform": "ILLUMINA",
+            "resolution": 2,
+            "url": {
+                "path": "/dev/stdout",
+                "type": "sam"
+            }
+        }
+    ],
+    "output phred offset": 33,
+    "output segment cardinality": 2,
+    "platform": "ILLUMINA",
+    "program": {
+        "CL": "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --precision 10 --compile",
+        "ID": "./pheniqs",
+        "PN": "./pheniqs",
+        "VN": "2.0.3-beta-161-g8bfe770a2b850cded0fc7db3c181d36a25311554"
+    },
+    "threads": 1,
+    "transform": {
+        "segment pattern": [
+            "0",
+            "1"
+        ],
+        "token": [
+            "0::",
+            "2::"
+        ]
+    },
+    "working directory": "/Users/lg/code/pheniqs"
+}

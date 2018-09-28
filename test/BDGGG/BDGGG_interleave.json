@@ -15,7 +15,7 @@
         "BDGGG_s03.fastq.gz"
     ],
     "decoder": {
-        "000000000-BDGGG_multiplex": {
+        "BDGGG_multiplex": {
             "transform": { "token": [ "1::8" ], "segment pattern": [ "0" ] },
             "codec": {
                 "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
@@ -26,5 +26,6 @@
             }
         }
     },
-    "output": [ { "path": "/dev/stdout", "type": "sam" } ]
+    "output": [ { "path": "/dev/stdout", "type": "sam" } ],
+    "threads": 1
 }

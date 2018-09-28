@@ -1341,7 +1341,7 @@ void Multiplex::populate_channel(Channel& channel) {
     channel.output_feed_lock_order.shrink_to_fit();
 };
 void Multiplex::print_global_instruction(ostream& o) const {
-    o << setprecision(16);
+    o << setprecision(float_precision());
     o << "Environment " << endl << endl;
     // o << "    Version                                     " << interface.application_version << endl;
 

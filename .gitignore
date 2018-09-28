@@ -12,3 +12,4 @@
 **/.gcc-flags.json
 **/*.h.gch
 install.sh
+/test/*/result

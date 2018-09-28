@@ -9,7 +9,7 @@
     ],
     "multiplex": {
         "algorithm": "pamld",
-        "base": "000000000-BDGGG_multiplex",
+        "base": "BDGGG_multiplex",
         "codec": {
             "@AGGCAGAA": {
                 "LB": "trinidad 5",
@@ -35,6 +35,5 @@
     },
     "transform": {
         "token": [ "0::", "2::" ]
-    },
-    "threads": 4
+    }
 }
