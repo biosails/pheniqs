@@ -75,7 +75,12 @@ void Job::print_ontology(ostream& o) const {
     print_json(ontology, o);
 };
 void Job::print_compiled(ostream& o) const {
-    print_json(ontology, o);
+    Document compiled;
+    compiled.CopyFrom(ontology, compiled.GetAllocator());
+    compiled.RemoveMember("application version");
+    compiled.RemoveMember("program");
+    compiled.RemoveMember("working directory");
+    print_json(compiled, o);
 };
 void Job::print_report(ostream& o) const {
     print_json(report, o, float_precision());

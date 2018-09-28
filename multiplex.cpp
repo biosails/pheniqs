@@ -86,7 +86,6 @@ void Multiplex::compile() {
 
     /* Remove the decoder repository, it is no longer needed in the compiled instruction */
     ontology.RemoveMember("decoder");
-
     Job::compile();
 };
 void Multiplex::validate() {

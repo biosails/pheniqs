@@ -101,7 +101,7 @@ void Environment::execute_job(Job* job) {
 
         } else if(job->is_compile_only()) {
             job->compile();
-            job->print_ontology(cout);
+            job->print_compiled(cout);
 
         } else {
             job->compile();

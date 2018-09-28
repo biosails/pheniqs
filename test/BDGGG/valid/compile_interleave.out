@@ -6,7 +6,7 @@
     "PM": "miseq",
     "SM": "trinidad",
     "application name": "./pheniqs",
-    "application version": "2.0.3-beta-161-g8bfe770a2b850cded0fc7db3c181d36a25311554",
+    "threads": 1,
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
@@ -197,13 +197,6 @@
     "output phred offset": 33,
     "output segment cardinality": 3,
     "platform": "ILLUMINA",
-    "program": {
-        "CL": "./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --precision 10 --compile",
-        "ID": "./pheniqs",
-        "PN": "./pheniqs",
-        "VN": "2.0.3-beta-161-g8bfe770a2b850cded0fc7db3c181d36a25311554"
-    },
-    "threads": 1,
     "transform": {
         "segment pattern": [
             "0",
@@ -215,6 +208,5 @@
             "1::",
             "2::"
         ]
-    },
-    "working directory": "/Users/lg/code/pheniqs"
+    }
 }
