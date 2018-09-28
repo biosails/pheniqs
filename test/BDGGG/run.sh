@@ -19,41 +19,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PHENIQS_PRECISION="10"
-PHENIQS_BIN="./pheniqs"
-[ -d test/BDGGG/result ] && rm -rf test/BDGGG/result; mkdir test/BDGGG/result
+source "test/BDGGG/function.sh"
 
-run_test() {
-    PHENIQS_TEST_HOME="$1"
-    PHENIQS_TEST_NAME="$2"
-    PHENIQS_TEST_COMMAND="$3"
-
-    PHENIQS_TEST_STDOUT="$PHENIQS_TEST_HOME/result/$PHENIQS_TEST_NAME.out"
-    PHENIQS_TEST_STDERR="$PHENIQS_TEST_HOME/result/$PHENIQS_TEST_NAME.err"
-    PHENIQS_VALID_STDOUT="$PHENIQS_TEST_HOME/valid/$PHENIQS_TEST_NAME.out"
-    PHENIQS_VALID_STDERR="$PHENIQS_TEST_HOME/valid/$PHENIQS_TEST_NAME.err"
-
-    # execute
-    $PHENIQS_BIN $PHENIQS_TEST_COMMAND > $PHENIQS_TEST_STDOUT 2> $PHENIQS_TEST_STDERR
-
-    PHENIQS_TEST_RETURN_CODE=$?
-    if [ "$PHENIQS_TEST_RETURN_CODE" == "0" ]; then
-        if [ "$(diff -q $PHENIQS_VALID_STDOUT $PHENIQS_TEST_STDOUT)" ]; then
-            printf "$PHENIQS_TEST_NAME : Unexpected Pheniqs stdout\n";
-            diff $PHENIQS_VALID_STDOUT $PHENIQS_TEST_STDOUT
-            return 1
-        fi
-
-        if [ "$(diff -q $PHENIQS_TEST_STDERR $PHENIQS_VALID_STDERR)" ]; then
-            printf "$PHENIQS_TEST_NAME : Unexpected Pheniqs stderr\n";
-            diff $PHENIQS_TEST_STDERR $PHENIQS_VALID_STDERR
-            return 2
-        fi
-    else
-        printf "Pheniqs returned $PHENIQS_TEST_RETURN_CODE\n";
-        return $PHENIQS_TEST_RETURN_CODE
-    fi
-}
+[ -d $PHENIQS_TEST_HOME/result ] && rm -rf $PHENIQS_TEST_HOME/result;
+mkdir $PHENIQS_TEST_HOME/result
 
 run_test \
 "test/BDGGG" \

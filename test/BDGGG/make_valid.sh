@@ -19,15 +19,33 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PHENIQS_PRECISION="10"
-PHENIQS_BIN="./pheniqs"
-PHENIQS_TEST_HOME="test/BDGGG"
+source "test/BDGGG/function.sh"
 
 [ -d $PHENIQS_TEST_HOME/valid ] && rm -rf $PHENIQS_TEST_HOME/valid;
 mkdir $PHENIQS_TEST_HOME/valid
 
-$PHENIQS_BIN demux --config $PHENIQS_TEST_HOME/BDGGG_interleave.json --precision $PHENIQS_PRECISION --validate             > $PHENIQS_TEST_HOME/valid/validate_interleave.out 2> $PHENIQS_TEST_HOME/valid/validate_interleave.err
-$PHENIQS_BIN demux --config $PHENIQS_TEST_HOME/BDGGG_interleave.json --precision $PHENIQS_PRECISION --compile              > $PHENIQS_TEST_HOME/valid/compile_interleave.out  2> $PHENIQS_TEST_HOME/valid/compile_interleave.err
-$PHENIQS_BIN demux --config $PHENIQS_TEST_HOME/BDGGG_annotated.json  --precision $PHENIQS_PRECISION --validate --distance  > $PHENIQS_TEST_HOME/valid/validate_annotated.out  2> $PHENIQS_TEST_HOME/valid/validate_annotated.err
-$PHENIQS_BIN demux --config $PHENIQS_TEST_HOME/BDGGG_annotated.json  --precision $PHENIQS_PRECISION --compile              > $PHENIQS_TEST_HOME/valid/compile_annotated.out   2> $PHENIQS_TEST_HOME/valid/compile_annotated.err
-$PHENIQS_BIN demux --config $PHENIQS_TEST_HOME/BDGGG_annotated.json  --precision $PHENIQS_PRECISION                        > $PHENIQS_TEST_HOME/valid/annotated.out           2> $PHENIQS_TEST_HOME/valid/annotated.err
+
+make_valid_test \
+"test/BDGGG" \
+"validate_interleave" \
+"demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --validate"
+
+make_valid_test \
+"test/BDGGG" \
+"compile_interleave" \
+"demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --compile"
+
+make_valid_test \
+"test/BDGGG" \
+"validate_annotated" \
+"demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --validate --distance"
+
+make_valid_test \
+"test/BDGGG" \
+"compile_annotated" \
+"demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --compile"
+
+make_valid_test \
+"test/BDGGG" \
+"annotated" \
+"demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION"
