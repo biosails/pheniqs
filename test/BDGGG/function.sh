@@ -64,16 +64,19 @@ run_test() {
 
     PHENIQS_TEST_RETURN_CODE=$?
     if [ "$PHENIQS_TEST_RETURN_CODE" == "0" ]; then
+        PHENIQS_DIFF_FAIL="0"
         if [ "$(diff -q $PHENIQS_VALID_STDOUT $PHENIQS_TEST_STDOUT)" ]; then
             printf "$PHENIQS_TEST_NAME : Unexpected Pheniqs stdout\n";
             diff $PHENIQS_VALID_STDOUT $PHENIQS_TEST_STDOUT
-            return 1
+            PHENIQS_DIFF_FAIL="1"
         fi
-
         if [ "$(diff -q $PHENIQS_TEST_STDERR $PHENIQS_VALID_STDERR)" ]; then
             printf "$PHENIQS_TEST_NAME : Unexpected Pheniqs stderr\n";
             diff $PHENIQS_TEST_STDERR $PHENIQS_VALID_STDERR
-            return 2
+            PHENIQS_DIFF_FAIL="1"
+        fi
+        if [ "$PHENIQS_DIFF_FAIL" != "0" ]; then
+            return 1
         fi
     else
         printf "Pheniqs returned $PHENIQS_TEST_RETURN_CODE\n";
