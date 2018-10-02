@@ -31,7 +31,7 @@ stages:
 # If these change please reflect changes in conda_recipe/latest/build.sh
 ####################################################################################
 script:
-- "./tool/ppkg.py -v debug build test/build.json"
+- "./tool/ppkg.py -v error build test/build.json"
 - make all PREFIX=${HOME}/.pheniqs/travis/install
 - "./pheniqs --version"
 - "./pheniqs --help"
