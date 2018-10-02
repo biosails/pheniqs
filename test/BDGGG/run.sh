@@ -63,12 +63,12 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     exit $PHENIQS_TEST_RETURN_CODE;
 fi
 
-run_test $PHENIQS_TEST_HOME "annotated" \
-"demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION"
-PHENIQS_TEST_RETURN_CODE="$?"
-if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
-    printf "annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";
-    exit $PHENIQS_TEST_RETURN_CODE;
-fi
+# run_test $PHENIQS_TEST_HOME "annotated" \
+# "demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION"
+# PHENIQS_TEST_RETURN_CODE="$?"
+# if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
+#     printf "annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";
+#     exit $PHENIQS_TEST_RETURN_CODE;
+# fi
 
 exit 0
