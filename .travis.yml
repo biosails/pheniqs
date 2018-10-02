@@ -32,7 +32,7 @@ stages:
 ####################################################################################
 script:
 - "./tool/ppkg.py -v error build test/build.json"
-- make all PREFIX=${HOME}/.pheniqs/travis/install
+- make all PREFIX=${HOME}/.pheniqs/travis/install 2> >(./test/filter_warning.py)
 - "./pheniqs --version"
 - "./pheniqs --help"
 - "./pheniqs demux --help"
