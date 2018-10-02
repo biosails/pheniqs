@@ -118,6 +118,7 @@ namespace rapidjson { typedef ::std::size_t SizeType; }
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/schema.h>
 #include <rapidjson/stringbuffer.h>
+#include <rapidjson/filewritestream.h>
 
 using rapidjson::Document;
 using rapidjson::Pointer;

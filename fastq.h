@@ -341,7 +341,7 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
                         break;
                     };
                     case IoDirection::OUT: {
-                        if(url.compression() == "gz") {
+                        if(url.compression() == FormatCompression::GZIP) {
                             bgzf_file = bgzf_hopen(hfile, "wg");
                         } else {
                             bgzf_file = bgzf_hopen(hfile, "wu");

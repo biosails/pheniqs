@@ -206,6 +206,47 @@ template <> FormatType decode_value_by_key(const Value::Ch* key, const Value& co
     return value;
 };
 
+string to_string(const FormatCompression& value) {
+    string result;
+    switch (value) {
+        case FormatCompression::NONE:      result.assign("none");   break;
+        case FormatCompression::GZIP:      result.assign("gz");     break;
+        default:                                                    break;
+    }
+    return result;
+};
+bool from_string(const char* value, FormatCompression& result) {
+         if(value == NULL)              result = FormatCompression::UNKNOWN;
+    else if(!strcmp(value, "none"))     result = FormatCompression::NONE;
+    else if(!strcmp(value, "gz"))       result = FormatCompression::GZIP;
+    else                                result = FormatCompression::UNKNOWN;
+    return (result == FormatCompression::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, FormatCompression& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const FormatCompression& value) {
+    o << to_string(value);
+    return o;
+};
+void encode_key_value(const string& key, const FormatCompression& value, Value& container, Document& document) {
+    encode_key_value(key, to_string(value), container, document);
+};
+template<> bool decode_value_by_key< FormatCompression >(const Value::Ch* key, FormatCompression& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> FormatCompression decode_value_by_key(const Value::Ch* key, const Value& container) {
+    FormatCompression value(FormatCompression::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
+};
+
 string to_string(const FormatKind& value) {
     string result;
     switch(value) {
@@ -296,6 +337,7 @@ template <> IoDirection decode_value_by_key(const Value::Ch* key, const Value& c
 };
 
 URL::URL() :
+    _compression(FormatCompression::NONE),
     _type(FormatType::UNKNOWN) {
 };
 URL::URL(const URL& other) :
@@ -346,11 +388,11 @@ void URL::parse_file(const string& path) {
                     }
 
                     // if there is a second extension
-                    // and the first is a compression marker
-                    if(_extension == "gz" || _extension == "bz2" || _extension == "xz") {
+                    if(_extension == "gz") {
+                        // and the first is a compression marker
                         position = _basename.find_last_of(EXTENSION_SEPARATOR);
                         if(position != string::npos) {
-                            _compression.assign(_extension);
+                            from_string(_extension, _compression);
                             _extension.clear();
                             if(position + 2 < _basename.size()) {
                                 _extension.assign(_basename, position + 1, string::npos);
@@ -375,24 +417,17 @@ void URL::set_dirname(const string& directory) {
     _dirname.assign(directory);
     refresh();
 };
-void URL::set_compression(const string& compression) {
-    _compression.assign(compression);
-    refresh();
-};
-void URL::set_type(const string& type) {
-    from_string(type, _type);
+void URL::set_compression(const FormatCompression& compression) {
+    _compression = compression;
     if(!is_standard_stream()) {
-        if(_type != FormatType::UNKNOWN && _extension.empty()) {
-            decode_extension(_type);
-        }
         refresh();
     }
 };
-void URL::set_type(const FormatType type, const bool force) {
+void URL::set_type(const FormatType type) {
     _type = type;
     if(!is_standard_stream()) {
-        if(_type != FormatType::UNKNOWN && (force || _extension.empty())) {
-            decode_extension(_type);
+        if(_type != FormatType::UNKNOWN && _extension.empty()) {
+            _extension = to_string(_type);
         }
         refresh();
     }
@@ -459,7 +494,7 @@ URL& URL::operator=(const URL& other) {
         _basename.assign(other._basename);
         _dirname.assign(other._dirname);
         _extension.assign(other._extension);
-        _compression.assign(other._compression);
+        _compression = other._compression;
         _type = other._type;
     }
     return *this;
@@ -483,15 +518,11 @@ void URL::refresh() {
             _path.push_back(EXTENSION_SEPARATOR);
             _path.append(_extension);
         }
-        if(!_compression.empty()) {
+        if(_compression != FormatCompression::NONE && _compression != FormatCompression::UNKNOWN) {
             _path.push_back(EXTENSION_SEPARATOR);
-            _path.append(_compression);
+            _path.append(to_string(_compression));
         }
     }
-};
-void URL::decode_extension(const FormatType& type) {
-    _extension.clear();
-    _extension = to_string(type);
 };
 string URL::description() const {
     string description;
@@ -512,7 +543,7 @@ string URL::description() const {
     description.append("\n");
 
     description.append("Compression : ");
-    if(!_compression.empty()) { description.append(_compression); } else { description.append("uncompressed"); }
+    description.append(to_string(_compression));
     description.append("\n");
 
     description.append("Type        : ");
@@ -541,11 +572,15 @@ template<> URL decode_value(const Value& container) {
             } else {
                 if(decode_value_by_key< string >("path", buffer, container)) {
                     value.parse_file(buffer);
-                    if(decode_value_by_key< string >("type", buffer, container)) {
-                        value.set_type(buffer);
+
+                    FormatType type(FormatType::UNKNOWN);
+                    if(decode_value_by_key< FormatType >("type", type, container)) {
+                        value.set_type(type);
                     }
-                    if(decode_value_by_key< string >("compression", buffer, container   )) {
-                        value.set_compression(buffer);
+
+                    FormatCompression compression(FormatCompression::UNKNOWN);
+                    if(decode_value_by_key< FormatCompression >("compression", compression, container   )) {
+                        value.set_compression(compression);
                     }
                 } else { throw ConfigurationError("URL element must contain a non empty path element"); }
             }
@@ -573,13 +608,16 @@ template<> bool decode_value< URL >(URL& value, const Value& container) {
                     string buffer;
                     if(decode_value_by_key< string >("path", buffer, container)) {
                         value.parse_file(buffer);
-                        if(decode_value_by_key< string >("type", buffer, container)) {
-                            value.set_type(buffer);
+
+                        FormatType type(FormatType::UNKNOWN);
+                        if(decode_value_by_key< FormatType >("type", type, container)) {
+                            value.set_type(type);
                         }
-                        if(decode_value_by_key< string >("compression", buffer, container   )) {
-                            value.set_compression(buffer);
+
+                        FormatCompression compression(FormatCompression::UNKNOWN);
+                        if(decode_value_by_key< FormatCompression >("compression", compression, container   )) {
+                            value.set_compression(compression);
                         }
-                        return true;
                     } else { throw ConfigurationError("URL element must contain a non empty path element"); }
                 }
             } catch(ConfigurationError& e) {
@@ -640,6 +678,7 @@ void encode_value(const URL& value, Value& container, Document& document) {
         container.SetObject();
         encode_key_value("path", value.path(), container, document);
         encode_key_value("type", value.type(), container, document);
+        encode_key_value("compression", value.compression(), container, document);
     } else {
         container.SetString(value.c_str(), value.size(), document.GetAllocator());
     }

@@ -128,6 +128,15 @@ template<> ParameterType decode_value_by_key< ParameterType >(const Value::Ch* k
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
 
+void Layout::load_action(const Action& action) {
+    for(const auto& prototype : action.optional_by_index) {
+        max_option_handle = max(max_option_handle, prototype->handle_length());
+    }
+    for(const auto& prototype : action.positional_by_index) {
+        max_option_handle = max(max_option_handle, prototype->handle_length());
+    }
+};
+
 /*  Prototype */
 
 Prototype::Prototype(const Value& ontology) :
@@ -222,7 +231,7 @@ int Prototype::handle_length() const {
     }
     return length;
 };
-ostream& Prototype::print_help(ostream& o, const int& max_option_handle, const Layout& layout) const {
+ostream& Prototype::print_help(ostream& o, const Layout& layout) const {
     o << setw(layout.option_indent) << ' ';
     if(!positional) {
         for(size_t i(0); i < handles.size(); ++i) {
@@ -241,7 +250,7 @@ ostream& Prototype::print_help(ostream& o, const int& max_option_handle, const L
         }
     }
     o << meta;
-    o << setw(layout.complement_handle(max_option_handle, handle_length())) << ' ';
+    o << setw(layout.pad_option_handle(handle_length())) << ' ';
     o << help << endl;
     return o;
 };
@@ -462,9 +471,7 @@ Action::Action(const Value& ontology, bool root) try :
     ontology(ontology),
     name(decode_value_by_key< string >("name", ontology)),
     description(decode_value_by_key< string >("description", ontology)),
-    epilog(decode_value_by_key< list< string > >("epilog", ontology)),
-    root(root),
-    max_option_handle(0) {
+    root(root) {
 
     Value::ConstMemberIterator reference = ontology.FindMember("option");
     if(reference != ontology.MemberEnd()) {
@@ -486,7 +493,6 @@ Action::Action(const Value& ontology, bool root) try :
                             } else {
                                 optional_by_index.push_back(prototype);
                             }
-                            max_option_handle = max(max_option_handle, prototype->handle_length());
                         } else { throw ConfigurationError("redefining option " + prototype->name); }
                     }
                 } else { throw ConfigurationError("option element must be a dictionary"); }
@@ -860,35 +866,81 @@ ostream& Action::print_usage(ostream& o, const string& application_name, const L
     o << buffer;
     return o;
 };
-ostream& Action::print_description_element(ostream& o, const Layout& layout) const {
+ostream& Action::print_description(ostream& o, const Layout& layout) const {
     if(description.length() > 0) {
-        o << description << endl << endl;
-    }
-    return o;
-};
-ostream& Action::print_epilog_element(ostream& o, const Layout& layout) const {
-    if(epilog.size() > 0) {
+        o << description << endl;
         o << endl;
-        for(auto& line : epilog) {
-            o << line << endl;
+    }
+    return o;
+};
+ostream& Action::print_prolog(ostream& o, const Layout& layout) const {
+    list< string > prolog;
+    if(decode_value_by_key< list< string > >("prolog", prolog, ontology)) {
+        if(prolog.size() > 0) {
+            for(auto& line : prolog) {
+                o << line << endl;
+            }
+        }
+        o << endl;
+    }
+    return o;
+};
+ostream& Action::print_epilog(ostream& o, const Layout& layout) const {
+    list< string > epilog;
+    if(decode_value_by_key< list< string > >("epilog", epilog, ontology)) {
+        if(epilog.size() > 0) {
+            for(auto& line : epilog) {
+                o << line << endl;
+            }
+        }
+        o << endl;
+    }
+    return o;
+};
+ostream& Action::print_license(ostream& o, const Layout& layout) const {
+    list< string > license;
+    if(decode_value_by_key< list< string > >("license", license, ontology)) {
+        if(license.size() > 0) {
+            for(auto& line : license) {
+                o << line << endl;
+            }
         }
     }
     return o;
 };
-ostream& Action::print_help(ostream& o, const string& application_name, const Layout& layout) const {
-    print_usage(o, application_name, layout);
+ostream& Action::print_positional(ostream& o, const Layout& layout) const {
     if(!positional_by_index.empty()) {
-        o << endl << endl << "Positional:" << endl;
+        o << endl << "Positional :" << endl;
         for(const auto option : positional_by_index) {
-            option->print_help(o, max_option_handle, layout);
+            option->print_help(o, layout);
         }
+        o << endl;
     }
+    return o;
+};
+ostream& Action::print_optional(ostream& o, const Layout& layout) const {
     if(!optional_by_index.empty()) {
-        o << endl << endl << "Optional:" << endl;
+        o << endl << "Optional :" << endl;
         for(const auto option : optional_by_index) {
-            option->print_help(o, max_option_handle, layout);
+            option->print_help(o, layout);
         }
+        o << endl;
     }
+    return o;
+};
+ostream& Action::print_action_dictionary_item(ostream& o, const Layout& layout) const {
+    o << setw(layout.option_indent) << ' ';
+    o << name;
+    o << setw(layout.pad_action_name(name_length())) << ' ';
+    o << description;
+    return o;
+};
+
+ostream& Action::print_help(ostream& o, const string& application_name, const Layout& layout) const {
+    print_description(o, layout);
+    print_usage(o, application_name, layout);
+    print_positional(o, layout);
+    print_optional(o, layout);
     return o;
 };
 Document Action::operation() {
@@ -1112,33 +1164,32 @@ void Interface::load_selected_action() {
         }
     }
     selected->load(action_argc, action_argv);
+    layout.load_action(*selected);
 };
 ostream& Interface::print_help(ostream& o) const {
-    o << endl;
     print_version(o);
-    if(!selected->is_root()) {
-        command->print_description_element(o, layout);
-    }
-    selected->print_description_element(o, layout);
+    selected->print_prolog(o, layout);
+
     selected->print_help(o, name(), layout);
     if(selected->is_root()) {
-        print_action_element(o);
+        print_action_dictionary(o);
     }
-    selected->print_epilog_element(o, layout);
-    o << endl;
+
+    selected->print_epilog(o, layout);
+    selected->print_license(o, layout);
     return o;
 };
 ostream& Interface::print_version(ostream& o) const {
     o << name() << " version " << application_version << endl;
     return o;
 };
-ostream& Interface::print_action_element(ostream& o) const {
-    o << endl << "available action" << endl;
-    for(const auto action : action_by_index) {
-        o << setw(layout.option_indent) << ' ';
-        o << action->name;
-        o << setw(layout.complement_action(action->name_length())) << ' ';
-        o << action->description;
+ostream& Interface::print_action_dictionary(ostream& o) const {
+    if(!action_by_index.empty()) {
+        o << endl << "Action :" << endl;
+        for(const auto action : action_by_index) {
+            action->print_action_dictionary_item(o, layout);
+            o << endl;
+        }
         o << endl;
     }
     return o;

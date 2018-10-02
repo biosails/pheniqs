@@ -26,6 +26,5 @@
             }
         }
     },
-    "output": [ { "path": "/dev/stdout", "type": "sam" } ],
     "threads": 1
 }

@@ -31,9 +31,7 @@ fi
 [ -d $PHENIQS_TEST_HOME/result ] && rm -rf $PHENIQS_TEST_HOME/result;
 mkdir $PHENIQS_TEST_HOME/result
 
-run_test \
-"test/BDGGG" \
-"validate_interleave" \
+run_test $PHENIQS_TEST_HOME "validate_interleave" \
 "demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --validate"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
@@ -41,9 +39,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     exit $PHENIQS_TEST_RETURN_CODE;
 fi
 
-run_test \
-"test/BDGGG" \
-"compile_interleave" \
+run_test $PHENIQS_TEST_HOME "compile_interleave" \
 "demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --compile"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
@@ -51,9 +47,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     exit $PHENIQS_TEST_RETURN_CODE;
 fi
 
-run_test \
-"test/BDGGG" \
-"validate_annotated" \
+run_test $PHENIQS_TEST_HOME "validate_annotated" \
 "demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --validate --distance"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
@@ -61,9 +55,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     exit $PHENIQS_TEST_RETURN_CODE;
 fi
 
-run_test \
-"test/BDGGG" \
-"compile_annotated" \
+run_test $PHENIQS_TEST_HOME "compile_annotated" \
 "demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --compile"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
@@ -71,9 +63,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     exit $PHENIQS_TEST_RETURN_CODE;
 fi
 
-run_test \
-"test/BDGGG" \
-"annotated" \
+run_test $PHENIQS_TEST_HOME "annotated" \
 "demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then

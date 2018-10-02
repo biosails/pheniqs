@@ -24,28 +24,17 @@ source "test/BDGGG/function.sh"
 [ -d $PHENIQS_TEST_HOME/valid ] && rm -rf $PHENIQS_TEST_HOME/valid;
 mkdir $PHENIQS_TEST_HOME/valid
 
-
-make_valid_test \
-"test/BDGGG" \
-"validate_interleave" \
+make_valid_test $PHENIQS_TEST_HOME "validate_interleave" \
 "demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --validate"
 
-make_valid_test \
-"test/BDGGG" \
-"compile_interleave" \
+make_valid_test $PHENIQS_TEST_HOME "compile_interleave" \
 "demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --compile"
 
-make_valid_test \
-"test/BDGGG" \
-"validate_annotated" \
+make_valid_test $PHENIQS_TEST_HOME "validate_annotated" \
 "demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --validate --distance"
 
-make_valid_test \
-"test/BDGGG" \
-"compile_annotated" \
+make_valid_test $PHENIQS_TEST_HOME "compile_annotated" \
 "demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --compile"
 
-make_valid_test \
-"test/BDGGG" \
-"annotated" \
+make_valid_test $PHENIQS_TEST_HOME "annotated" \
 "demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION"

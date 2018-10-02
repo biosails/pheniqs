@@ -58,6 +58,7 @@ class Job {
         virtual void print_ontology(ostream& o) const;
         virtual void print_compiled(ostream& o) const;
         virtual void print_report(ostream& o) const;
+        virtual void print_report() const;
         virtual void describe(ostream& o) const;
 
     protected:

@@ -29,11 +29,11 @@ int main(int argc, char** argv) {
         environment.execute();
 
     } catch(Error& error) {
-        error.describe(cerr) << endl;
+        error.describe(cerr);
         return_code = static_cast< int >(error.code);
 
     } catch(exception& error) {
-        cerr << error.what() << endl;
+        cerr << error.what();
         return_code =  static_cast< int >(ErrorCode::UNKNOWN_ERROR);
 
     }

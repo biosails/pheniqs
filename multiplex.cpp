@@ -881,6 +881,8 @@ void Multiplex::compile_output() {
     Platform platform(decode_value_by_key< Platform >("platform", ontology));
     int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
     uint8_t phred_offset(decode_value_by_key< uint8_t >("output phred offset", ontology));
+    FormatType default_output_format(decode_value_by_key< FormatType >("default output format", ontology));
+    FormatCompression default_output_compression(decode_value_by_key< FormatCompression >("default output compression", ontology));
 
     Value::MemberIterator reference = ontology.FindMember("multiplex");
     if(reference != ontology.MemberEnd()) {
@@ -902,6 +904,13 @@ void Multiplex::compile_output() {
                     list< URL > feed_url_array;
                     if(decode_value_by_key< list< URL > >("output", feed_url_array, reference->value)) {
                         for(auto& url : feed_url_array) {
+                            /* for now setting format and compression by default is only for standard streams */
+                            if(url.is_standard_stream() && url.type() == FormatType::UNKNOWN) {
+                                url.set_type(default_output_format);
+                                if(url.type() == FormatType::FASTQ) {
+                                    url.set_compression(default_output_compression);
+                                }
+                            }
                             ++(feed_resolution[url][index]);
                         }
                     }
@@ -933,6 +942,7 @@ void Multiplex::compile_output() {
                 int32_t index(0);
                 for(const auto& url_record : feed_resolution) {
                     const URL& url = url_record.first;
+
                     if(url.kind() != FormatKind::UNKNOWN) {
                         int resolution(0);
                         for(const auto& record : url_record.second) {
@@ -1344,44 +1354,40 @@ void Multiplex::print_global_instruction(ostream& o) const {
     o << "Environment " << endl << endl;
     // o << "    Version                                     " << interface.application_version << endl;
 
-    URL base_input_url;
-    decode_value_by_key< URL >("base input url", base_input_url, ontology);
+    URL base_input_url(decode_value_by_key< URL >("base input url", ontology));
     o << "    Base input URL                              " << base_input_url << endl;
 
-    URL base_output_url;
-    decode_value_by_key< URL >("base input url", base_output_url, ontology);
+    URL base_output_url(decode_value_by_key< URL >("base input url", ontology));
     o << "    Base output URL                             " << base_output_url << endl;
 
-    Platform platform;
-    decode_value_by_key< Platform >("platform", platform, ontology);
+    Platform platform(decode_value_by_key< Platform >("platform", ontology));
     o << "    Platform                                    " << platform << endl;
 
-    bool enable_quality_control;
-    decode_value_by_key< bool >("enable quality control", enable_quality_control, ontology);
+    bool enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology));
     o << "    Quality tracking                            " << (enable_quality_control ? "enabled" : "disabled") << endl;
 
-    bool include_filtered;
-    decode_value_by_key< bool >("include filtered", include_filtered, ontology);
+    bool include_filtered(decode_value_by_key< bool >("include filtered", ontology));
     o << "    Include non PF reads                        " << (include_filtered ? "enabled" : "disabled") << endl;
 
-    uint8_t input_phred_offset;
-    decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, ontology);
+    uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
     o << "    Input Phred offset                          " << to_string(input_phred_offset) << endl;
 
-    uint8_t output_phred_offset;
-    decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, ontology);
+    uint8_t output_phred_offset(decode_value_by_key< uint8_t >("output phred offset", ontology));
     o << "    Output Phred offset                         " << to_string(output_phred_offset) << endl;
 
-    int32_t leading_segment_index;
-    decode_value_by_key< int32_t >("leading segment index", leading_segment_index, ontology);
+    int32_t leading_segment_index(decode_value_by_key< int32_t >("leading segment index", ontology));
     o << "    Leading segment index                       " << to_string(leading_segment_index) << endl;
 
-    int32_t buffer_capacity;
-    decode_value_by_key< int32_t >("buffer capacity", buffer_capacity, ontology);
+    FormatType default_output_format(decode_value_by_key< FormatType >("default output format", ontology));
+    o << "    Default output format                       " << default_output_format << endl;
+
+    FormatCompression default_output_compression(decode_value_by_key< FormatCompression >("default output compression", ontology));
+    o << "    Default output compression                  " << default_output_compression << endl;
+
+    int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
     o << "    Feed buffer capacity                        " << to_string(buffer_capacity) << endl;
 
-    int32_t threads;
-    decode_value_by_key< int32_t >("threads", threads, ontology);
+    int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     o << "    Threads                                     " << to_string(threads) << endl;
     o << endl;
 };

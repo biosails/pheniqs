@@ -26,6 +26,12 @@
 #include "version.h"
 #include "url.h"
 
+class Layout;
+class Prototype;
+class Argument;
+class Action;
+class Interface;
+
 enum class ParameterType : uint8_t {
     BOOLEAN,
     INTEGER,
@@ -47,6 +53,7 @@ class Layout {
         const size_t max_line_width;
         const int option_indent;
         int max_action_name;
+        int max_option_handle;
         const int option_handle_spacing;
         const int option_choice_indent;
         Layout() :
@@ -56,15 +63,13 @@ class Layout {
             option_handle_spacing(4),
             option_choice_indent(0) {
         };
-        int complement_handle(const int& max_option_handle, const int& handle_length) const {
+        int pad_option_handle(const int& handle_length) const {
             return max_option_handle - handle_length + option_handle_spacing;
         };
-        int complement_action(const int& action_name_length) const {
+        int pad_action_name(const int& action_name_length) const {
             return max_action_name - action_name_length + option_handle_spacing;
         };
-        int indent_choice(const int& max_option_handle) const {
-            return max_option_handle + option_handle_spacing + option_indent + option_choice_indent;
-        };
+        void load_action(const Action& action);
 };
 
 class Prototype {
@@ -84,7 +89,7 @@ class Prototype {
             return choices.size() > 0;
         };
         int handle_length() const;
-        ostream& print_help(ostream& o, const int& max_option_handle, const Layout& layout) const;
+        ostream& print_help(ostream& o, const Layout& layout) const;
 };
 
 class Argument {
@@ -167,12 +172,12 @@ class Argument {
 };
 
 class Action {
+    friend class Layout;
     friend bool encode_key_value(const string& key, const Action& value, Value& container, Document& document);
     public:
         const Value& ontology;
         const string name;
         const string description;
-        const list< string > epilog;
         Action(const Value& ontology, bool root=false);
         virtual ~Action();
         Document operation();
@@ -192,13 +197,17 @@ class Action {
             return (value == NULL) ? false : *value;
         };
         ostream& print_usage(ostream& o, const string& application_name, const Layout& layout) const;
-        ostream& print_description_element(ostream& o, const Layout& layout) const;
-        ostream& print_epilog_element(ostream& o, const Layout& layout) const;
+        ostream& print_description(ostream& o, const Layout& layout) const;
+        ostream& print_epilog(ostream& o, const Layout& layout) const;
+        ostream& print_prolog(ostream& o, const Layout& layout) const;
+        ostream& print_license(ostream& o, const Layout& layout) const;
+        ostream& print_positional(ostream& o, const Layout& layout) const;
+        ostream& print_optional(ostream& o, const Layout& layout) const;
         ostream& print_help(ostream& o, const string& application_name, const Layout& layout) const;
+        ostream& print_action_dictionary_item(ostream& o, const Layout& layout) const;
 
     private:
         const bool root;
-        int max_option_handle;
         list< Prototype* > optional_by_index;
         vector< Prototype* > positional_by_index;
         unordered_map< string, Prototype* > option_by_handle;
@@ -333,7 +342,7 @@ class Interface {
         Layout layout;
         list< Action* > action_by_index;
         unordered_map< string, Action* > action_by_name;
-        virtual ostream& print_action_element(ostream& o) const;
+        virtual ostream& print_action_dictionary(ostream& o) const;
         virtual void apply_action_base();
         virtual void load_action_array();
         virtual void load_selected_action();

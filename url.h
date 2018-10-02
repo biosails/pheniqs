@@ -51,11 +51,25 @@ enum class FormatType : uint8_t {
     JSON,
 };
 string to_string(const FormatType& value);
-string to_string(const FormatType& value);
 bool from_string(const char* value, FormatType& result);
 bool from_string(const string& value, FormatType& result);
 ostream& operator<<(ostream& o, const FormatType& value);
 void encode_key_value(const string& key, const FormatType& value, Value& container, Document& document);
+template<> bool decode_value_by_key< FormatType >(const Value::Ch* key, FormatType& value, const Value& container);
+template<> FormatType decode_value_by_key< FormatType >(const Value::Ch* key, const Value& container);
+
+enum class FormatCompression : uint8_t {
+    UNKNOWN,
+    NONE,
+    GZIP
+};
+string to_string(const FormatCompression& value);
+bool from_string(const char* value, FormatCompression& result);
+bool from_string(const string& value, FormatCompression& result);
+ostream& operator<<(ostream& o, const FormatCompression& value);
+void encode_key_value(const string& key, const FormatCompression& value, Value& container, Document& document);
+template<> bool decode_value_by_key< FormatCompression >(const Value::Ch* key, FormatCompression& value, const Value& container);
+template<> FormatCompression decode_value_by_key< FormatCompression >(const Value::Ch* key, const Value& container);
 
 enum class FormatKind : uint8_t {
     UNKNOWN,
@@ -96,9 +110,8 @@ class URL {
         void parse_file(const string& path, const IoDirection& direction);
         void set_basename(const string& name);
         void set_dirname(const string& directory);
-        void set_compression(const string& compression);
-        void set_type(const string& type);
-        void set_type(const FormatType type, const bool force = false);
+        void set_compression(const FormatCompression& compression);
+        void set_type(const FormatType type);
         void relocate_child(const URL& base);
         void relocate_sibling(const URL& base);
         inline const string& path() const {
@@ -113,7 +126,7 @@ class URL {
         inline const string& extension() const {
             return _extension;
         };
-        inline const string& compression() const {
+        inline const FormatCompression& compression() const {
             return _compression;
         };
         inline const FormatType& type() const {
@@ -168,7 +181,7 @@ class URL {
             _basename.clear();
             _dirname.clear();
             _extension.clear();
-            _compression.clear();
+            _compression = FormatCompression::UNKNOWN;
         };
         void expand() {
             expand_shell(_basename);
@@ -194,10 +207,9 @@ class URL {
         string _basename;
         string _dirname;
         string _extension;
-        string _compression;
+        FormatCompression _compression;
         FormatType _type;
         void refresh();
-        void decode_extension(const FormatType& type);
 };
 bool operator<(const URL& lhs, const URL& rhs);
 

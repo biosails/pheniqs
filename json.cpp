@@ -27,7 +27,16 @@
 
 using namespace rapidjson;
 
-void print_json(const Value& node, ostream& o, const int& precision) {
+void print_json(const Value& node, const char* path, const int32_t& precision) {
+    FILE* file_handle = fopen(path, "w");
+    char buffer[65536];
+    FileWriteStream output_stream(file_handle, buffer, sizeof(buffer));
+    PrettyWriter< FileWriteStream > writer(output_stream);
+    writer.SetMaxDecimalPlaces(precision);
+    node.Accept(writer);
+    fclose(file_handle);
+};
+void print_json(const Value& node, ostream& o, const int32_t& precision) {
     StringBuffer buffer;
     PrettyWriter< StringBuffer > writer(buffer);
     writer.SetMaxDecimalPlaces(precision);

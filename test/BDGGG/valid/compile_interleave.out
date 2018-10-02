@@ -12,6 +12,8 @@
     "buffer capacity": 2048,
     "compile only": true,
     "configuration url": "test/BDGGG/BDGGG_interleave.json",
+    "default output compression": "none",
+    "default output format": "sam",
     "float precision": 10,
     "flowcell id": "BDGGG",
     "full command": "./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --precision 10 --compile",
@@ -97,10 +99,7 @@
         "index": 0,
         "noise": 0.01,
         "output": [
-            {
-                "path": "/dev/stdout",
-                "type": "sam"
-            }
+            "/dev/stdout"
         ],
         "quality masking threshold": 0,
         "segment cardinality": 0,
@@ -121,16 +120,13 @@
             "index": 0,
             "output": [
                 {
-                    "path": "/dev/stdout",
-                    "type": "sam"
+                    "path": "/dev/stdout"
                 },
                 {
-                    "path": "/dev/stdout",
-                    "type": "sam"
+                    "path": "/dev/stdout"
                 },
                 {
-                    "path": "/dev/stdout",
-                    "type": "sam"
+                    "path": "/dev/stdout"
                 }
             ],
             "output feed by segment": [
@@ -175,10 +171,7 @@
         }
     },
     "output": [
-        {
-            "path": "/dev/stdout",
-            "type": "sam"
-        }
+        "/dev/stdout"
     ],
     "output feed": [
         {
@@ -208,5 +201,6 @@
             "1::",
             "2::"
         ]
-    }
+    },
+    "report url": "/dev/stderr"
 }

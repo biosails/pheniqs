@@ -97,7 +97,7 @@ void Environment::execute_job(Job* job) {
 
         } else if(job->is_validate_only()) {
             job->compile();
-            job->describe(cerr);
+            job->describe(cout);
 
         } else if(job->is_compile_only()) {
             job->compile();
@@ -106,16 +106,16 @@ void Environment::execute_job(Job* job) {
         } else {
             job->compile();
             job->execute();
-            job->print_report(cerr);
+            job->print_report();
         }
     }
 };
 void Environment::execute() {
     if(is_help_only()) {
-        print_help(cerr);
+        print_help(cout);
 
     } else if(is_version_only()) {
-        print_version(cerr);
+        print_version(cout);
 
     } else {
         Document operation(interface.operation());

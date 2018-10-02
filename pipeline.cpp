@@ -82,13 +82,19 @@ void Job::print_compiled(ostream& o) const {
     compiled.RemoveMember("working directory");
     print_json(compiled, o);
 };
+void Job::print_report() const {
+    URL report_url(decode_value_by_key< URL >("report url", ontology));
+    report_url.normalize(IoDirection::OUT);
+    if(!report_url.is_dev_null()) {
+        print_json(report, report_url.c_str(), float_precision());
+    }
+};
 void Job::print_report(ostream& o) const {
     print_json(report, o, float_precision());
 };
 void Job::describe(ostream& o) const {
 
 };
-
 void Job::overlay(const Value& instruction) {
     if(!instruction.IsNull()) {
         if(instruction.IsObject()) {
