@@ -36,6 +36,6 @@ export PATH=$WORKSPACE/miniconda/bin:$PATH
 
 cp -rf conda_recipe /tmp
 cd /tmp/conda_recipe
-/tmp/conda_recipe/conda_build.sh > conda.log 2>&1
+/tmp/conda_recipe/conda_build.sh
 
 exit 0

@@ -13,7 +13,7 @@ if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_BUILD_STAGE_NAME" == "Deploy" 
 		-e TRAVIS_BRANCH=$TRAVIS_BRANCH \
 		-e TRAVIS_BUILD_STAGE_NAME=$TRAVIS_BUILD_STAGE_NAME \
 		-it -v `pwd`/conda_recipe:/bioconda condaforge/linux-anvil \
-		/bioconda/conda_build.sh > conda.log 2>&1
+		/bioconda/conda_build.sh
 else
 	echo "Building pheniqs for linux conda package"
 	docker run \
@@ -22,5 +22,5 @@ else
 		-e TRAVIS_BRANCH=$TRAVIS_BRANCH \
 		-e TRAVIS_BUILD_STAGE_NAME=$TRAVIS_BUILD_STAGE_NAME \
 		-it -v `pwd`/conda_recipe:/bioconda condaforge/linux-anvil \
-		/bioconda/conda_build.sh > conda.log 2>&1
+		/bioconda/conda_build.sh
 fi
