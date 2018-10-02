@@ -26,6 +26,7 @@ hidden = [
     'warning: section',
     'is deprecated',
     'note: change section name to',
+    '.section __TEXT,'
 ]
 
 for line in sys.stdin:
