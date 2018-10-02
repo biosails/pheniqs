@@ -176,6 +176,23 @@ class URL {
         inline bool is_absolute() const {
             return !_dirname.empty() && _dirname[0] == PATH_SEPARATOR;
         };
+        inline const char* const hfile_name() const {
+            if(is_file()) {
+                if(is_stdout() || is_stdin()) {
+                    return STANDARD_STREAM_ALIAS;
+                } else if(is_stderr()) {
+                    return NULL;
+
+                } else if(is_dev_null()) {
+                    return NULL;
+
+                } else {
+                    return _path.c_str();
+                }
+            } else {
+                return NULL;
+            }
+        };
         inline void clear() {
             _path.clear();
             _basename.clear();

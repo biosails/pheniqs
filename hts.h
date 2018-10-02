@@ -97,7 +97,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
             if(!opened()) {
                 switch(direction) {
                     case IoDirection::IN: {
-                        hts_file = hts_hopen(hfile, url.c_str(), "r");
+                        hts_file = hts_hopen(hfile, url.hfile_name(), "r");
                         if(hts_file != NULL) {
                             hts_set_thread_pool(hts_file, thread_pool);
                             header.decode(hts_file);
@@ -109,21 +109,21 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                     case IoDirection::OUT: {
                         switch(url.type()) {
                             case FormatType::SAM:
-                                hts_file = hts_hopen(hfile, url.c_str(), "w");
+                                hts_file = hts_hopen(hfile, url.hfile_name(), "w");
                                 if(hts_file) {
                                     hts_file->format.version.major = 1;
                                     hts_file->format.version.minor = 0;
                                 }
                                 break;
                             case FormatType::BAM:
-                                hts_file = hts_hopen(hfile, url.c_str(), "wb");
+                                hts_file = hts_hopen(hfile, url.hfile_name(), "wb");
                                 if(hts_file) {
                                     hts_file->format.version.major = 1;
                                     hts_file->format.version.minor = 0;
                                 }
                                 break;
                             case FormatType::CRAM:
-                                hts_file = hts_hopen(hfile, url.c_str(), "wc");
+                                hts_file = hts_hopen(hfile, url.hfile_name(), "wc");
                                 if(hts_file) {
                                     hts_file->format.version.major = 3;
                                     hts_file->format.version.minor = 0;
