@@ -85,12 +85,19 @@ void Job::print_compiled(ostream& o) const {
 void Job::print_report() const {
     URL report_url(decode_value_by_key< URL >("report url", ontology));
     report_url.normalize(IoDirection::OUT);
+
     if(!report_url.is_dev_null()) {
-        print_json(report, report_url.c_str(), float_precision());
+        if(report_url.is_stdout()) {
+            print_json(report, cout, float_precision());
+
+        } else if(report_url.is_stderr()) {
+            print_json(report, cerr, float_precision());
+
+        } else {
+            print_json(report, report_url.c_str(), float_precision());
+
+        }
     }
-};
-void Job::print_report(ostream& o) const {
-    print_json(report, o, float_precision());
 };
 void Job::describe(ostream& o) const {
 
