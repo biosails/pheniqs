@@ -221,9 +221,17 @@ namespace std {
     };
 };
 
+template<> URL decode_value(const Value& container);
+template<> URL decode_value_by_key(const Value::Ch* key, const Value& container);
+template<> bool decode_value< URL >(URL& value, const Value& container);
+
+template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container);
+template<> bool decode_value_by_key< URL >(const Value::Ch* key, URL& value, const Value& container);
+template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< URL >& value, const Value& container);
+
+void encode_value(const URL& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document);
-void encode_value(const URL& value, Value& container, Document& document);
 
 void expand_url_value(Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
 void expand_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);

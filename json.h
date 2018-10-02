@@ -73,22 +73,24 @@ inline const Value& find_value_by_key(const Value::Ch* key, const Value& contain
 /* decoding JSON container into an object */
 template < typename T > bool decode_value(T& value, const Value& container);
 template < typename T > bool decode_value_by_key(const Value::Ch* key, T& value, const Value& container);
-template < typename T > T decode_value(const Value& container) {
-    T value;
-    if(!decode_value(value, container)) {
-        throw ConfigurationError("value decoding failed");
-    }
-    return value;
-};
-template < typename T > T decode_value_by_key(const Value::Ch* key, const Value& container) {
-    T value;
-    if(container.IsObject()) {
-        if(!decode_value_by_key(key, value, container)) {
-            throw ConfigurationError("unknown key " + string(key));
-        }
-    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
-    return value;
-};
+template < typename T > T decode_value(const Value& container);
+template < typename T > T decode_value_by_key(const Value::Ch* key, const Value& container);
+// template < typename T > T decode_value(const Value& container) {
+//     T value;
+//     if(!decode_value(value, container)) {
+//         throw ConfigurationError("value decoding failed");
+//     }
+//     return value;
+// };
+// template < typename T > T decode_value_by_key(const Value::Ch* key, const Value& container) {
+//     T value;
+//     if(container.IsObject()) {
+//         if(!decode_value_by_key(key, value, container)) {
+//             throw ConfigurationError("unknown key " + string(key));
+//         }
+//     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+//     return value;
+// };
 
 /* encoding object to JSON container */
 inline bool encode_key_value(const string& key, const bool& value, Value& container, Document& document) {
