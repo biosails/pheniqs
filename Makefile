@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 MAJOR_REVISON   := 2
-MINOR_REVISON   := 0.3
+MINOR_REVISON   := 0.4
 PREFIX          := /usr/local
 BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
