@@ -32,7 +32,7 @@ export PATH=/tmp/miniconda3/bin/:\$PATH
 make all PREFIX="\${HOME}/.pheniqs/travis/install"
 ./pheniqs --version
 ./pheniqs --help
-./pheniqs demux --help
+./pheniqs mux --help
 ./test/BDGGG/run.sh
 
 EOF

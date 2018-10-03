@@ -25,10 +25,10 @@
                 "  -S/--static emits a static configuration file with all imports resolved.",
                 "  -C/--compile emits a compiled configuration file ready for execution with implicit attributes resolved.",
                 "  -i/--input and -o/--output can be repeated to provide multiple paths,",
-                "  i.e. `pheniqs demux -i in_segment_1.fastq -i in_segment_2.fastq -o out_segment_1.fastq -o out_segment_2.fastq`"
+                "  i.e. `pheniqs mux -i in_segment_1.fastq -i in_segment_2.fastq -o out_segment_1.fastq -o out_segment_2.fastq`"
             ],
             "implementation": "multiplex",
-            "name": "demux",
+            "name": "mux",
             "option": [
                 {
                     "handle": [

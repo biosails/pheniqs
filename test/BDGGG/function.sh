@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PHENIQS_TEST_HOME="test/BDGGG"
-PHENIQS_PRECISION="10"
+PHENIQS_PRECISION="15"
 PHENIQS_BIN="./pheniqs"
 
 remove_polymorphic() {

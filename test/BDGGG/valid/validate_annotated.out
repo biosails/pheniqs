@@ -113,7 +113,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.2035714286
+        Concentration : 0.203571428571429
         Barcode       : AGGCAGAA
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -128,7 +128,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.06785714286
+        Concentration : 0.0678571428571429
         Barcode       : CGTACTAG
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -143,7 +143,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.4071428571
+        Concentration : 0.407142857142857
         Barcode       : GGACTCCT
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -158,7 +158,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.1357142857
+        Concentration : 0.135714285714286
         Barcode       : TAAGGCGA
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -173,7 +173,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.1357142857
+        Concentration : 0.135714285714286
         Barcode       : TCCTGAGC
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout

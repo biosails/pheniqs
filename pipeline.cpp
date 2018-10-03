@@ -80,7 +80,7 @@ void Job::print_compiled(ostream& o) const {
     compiled.RemoveMember("application version");
     compiled.RemoveMember("program");
     compiled.RemoveMember("working directory");
-    print_json(compiled, o);
+    print_json(compiled, o, float_precision());
 };
 void Job::print_report() const {
     URL report_url(decode_value_by_key< URL >("report url", ontology));

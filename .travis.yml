@@ -35,7 +35,7 @@ script:
 - make all PREFIX=${HOME}/.pheniqs/travis/install 2> >(./test/filter_warning.py)
 - "./pheniqs --version"
 # - "./pheniqs --help"
-# - "./pheniqs demux --help"
+# - "./pheniqs mux --help"
 - "./test/BDGGG/run.sh"
 
 jobs:

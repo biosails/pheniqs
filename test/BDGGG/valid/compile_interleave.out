@@ -14,9 +14,9 @@
     "configuration url": "test/BDGGG/BDGGG_interleave.json",
     "default output compression": "none",
     "default output format": "sam",
-    "float precision": 10,
+    "float precision": 15,
     "flowcell id": "BDGGG",
-    "full command": "./pheniqs demux --config test/BDGGG/BDGGG_interleave.json --precision 10 --compile",
+    "full command": "./pheniqs mux --config test/BDGGG/BDGGG_interleave.json --precision 15 --compile",
     "include filtered": true,
     "input": [
         "test/BDGGG/BDGGG_s01.fastq.gz",

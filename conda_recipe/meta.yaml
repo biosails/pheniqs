@@ -31,7 +31,7 @@ test:
   commands:
     - pheniqs --version
     - pheniqs --help
-    - pheniqs demux --help
+    - pheniqs mux --help
 
 about:
   home: http://biosails.github.io/pheniqs

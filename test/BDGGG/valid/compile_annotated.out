@@ -14,9 +14,9 @@
     "configuration url": "test/BDGGG/BDGGG_annotated.json",
     "default output compression": "none",
     "default output format": "sam",
-    "float precision": 10,
+    "float precision": 15,
     "flowcell id": "BDGGG",
-    "full command": "./pheniqs demux --config test/BDGGG/BDGGG_annotated.json --precision 10 --compile",
+    "full command": "./pheniqs mux --config test/BDGGG/BDGGG_annotated.json --precision 15 --compile",
     "input": [
         "test/BDGGG/BDGGG_s01.fastq.gz",
         "test/BDGGG/BDGGG_s02.fastq.gz",
@@ -150,7 +150,7 @@
                 "barcode": [
                     "AGGCAGAA"
                 ],
-                "concentration": 0.20357142857142858,
+                "concentration": 0.203571428571428,
                 "flowcell id": "BDGGG",
                 "index": 1,
                 "output": [
@@ -200,7 +200,7 @@
                 "barcode": [
                     "CGTACTAG"
                 ],
-                "concentration": 0.06785714285714285,
+                "concentration": 0.067857142857142,
                 "flowcell id": "BDGGG",
                 "index": 2,
                 "output": [
@@ -250,7 +250,7 @@
                 "barcode": [
                     "GGACTCCT"
                 ],
-                "concentration": 0.40714285714285716,
+                "concentration": 0.407142857142857,
                 "flowcell id": "BDGGG",
                 "index": 3,
                 "output": [
@@ -300,7 +300,7 @@
                 "barcode": [
                     "TAAGGCGA"
                 ],
-                "concentration": 0.1357142857142857,
+                "concentration": 0.135714285714285,
                 "flowcell id": "BDGGG",
                 "index": 4,
                 "output": [
@@ -350,7 +350,7 @@
                 "barcode": [
                     "TCCTGAGC"
                 ],
-                "concentration": 0.1357142857142857,
+                "concentration": 0.135714285714285,
                 "flowcell id": "BDGGG",
                 "index": 5,
                 "output": [

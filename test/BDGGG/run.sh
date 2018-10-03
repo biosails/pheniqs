@@ -32,7 +32,7 @@ fi
 mkdir $PHENIQS_TEST_HOME/result
 
 run_test $PHENIQS_TEST_HOME "validate_interleave" \
-"demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --validate"
+"mux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --validate"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "validate_interleave failed with code $PHENIQS_TEST_RETURN_CODE\n";
@@ -40,7 +40,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
 fi
 
 run_test $PHENIQS_TEST_HOME "compile_interleave" \
-"demux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --compile"
+"mux --config test/BDGGG/BDGGG_interleave.json --precision $PHENIQS_PRECISION --compile"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "compile_interleave failed with code $PHENIQS_TEST_RETURN_CODE\n";
@@ -48,7 +48,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
 fi
 
 run_test $PHENIQS_TEST_HOME "validate_annotated" \
-"demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --validate --distance"
+"mux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --validate --distance"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "validate_annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";
@@ -56,7 +56,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
 fi
 
 run_test $PHENIQS_TEST_HOME "compile_annotated" \
-"demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --compile"
+"mux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION --compile"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "compile_annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";
@@ -64,7 +64,7 @@ if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
 fi
 
 run_test $PHENIQS_TEST_HOME "annotated" \
-"demux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION"
+"mux --config test/BDGGG/BDGGG_annotated.json --precision $PHENIQS_PRECISION"
 PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";

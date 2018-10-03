@@ -129,7 +129,7 @@
     "configuration url": "example/HK5NHBGXX/HK5NHBGXX_cram.json",
     "flowcell id": "HK5NHBGXX",
     "flowcell lane number": 1,
-    "full command": "pheniqs demux --config example/HK5NHBGXX/HK5NHBGXX_cram.json --compile",
+    "full command": "pheniqs mux --config example/HK5NHBGXX/HK5NHBGXX_cram.json --compile",
     "input": [
         "raw/HK5NHBGXX/1/HK5NHBGXX_l01n01.fastq.gz",
         "raw/HK5NHBGXX/1/HK5NHBGXX_l01n02.fastq.gz",
@@ -406,7 +406,7 @@
     "output segment cardinality": 2,
     "platform": "ILLUMINA",
     "program": {
-        "CL": "pheniqs demux --config example/HK5NHBGXX/HK5NHBGXX_cram.json --compile",
+        "CL": "pheniqs mux --config example/HK5NHBGXX/HK5NHBGXX_cram.json --compile",
         "ID": "pheniqs",
         "PN": "pheniqs",
         "VN": "2.0.3-beta-79-g54e7fe9c2c61ba06f417675192e8f793ba940686"

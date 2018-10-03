@@ -57,7 +57,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 
 
     Action :
-      demux    Multiplex and Demultiplex annotated DNA sequence reads
+      mux    Multiplex and Demultiplex annotated DNA sequence reads
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.
@@ -67,11 +67,11 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
     pheniqs version 2.0.4
     Multiplex and Demultiplex annotated DNA sequence reads
 
-    Usage : pheniqs demux [-h] [-i PATH]* [-o PATH]* [-c PATH] [-R PATH] [-I URL]
-                          [-O URL] [-s] [-f] [-l INT] [-F fastq|sam|bam|cram] [-Z none|gz]
-                          [-T SEGMENT:START:END]*
-                          [-P CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-q] [-V]
-                          [-D] [-C] [-S] [-j] [-t INT] [-B INT] [--precision INT]
+    Usage : pheniqs mux [-h] [-i PATH]* [-o PATH]* [-c PATH] [-R PATH] [-I URL]
+                        [-O URL] [-s] [-f] [-l INT] [-F fastq|sam|bam|cram] [-Z none|gz]
+                        [-T SEGMENT:START:END]*
+                        [-P CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-q] [-V]
+                        [-D] [-C] [-S] [-j] [-t INT] [-B INT] [--precision INT]
     Optional :
       -h, --help                       Show this help
       -i, --input PATH                 Path to an input file. May be repeated.
@@ -105,7 +105,7 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
       -S/--static emits a static configuration file with all imports resolved.
       -C/--compile emits a compiled configuration file ready for execution with implicit attributes resolved.
       -i/--input and -o/--output can be repeated to provide multiple paths,
-      i.e. `pheniqs demux -i in_segment_1.fastq -i in_segment_2.fastq -o out_segment_1.fastq -o out_segment_2.fastq`
+      i.e. `pheniqs mux -i in_segment_1.fastq -i in_segment_2.fastq -o out_segment_1.fastq -o out_segment_2.fastq`
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.
