@@ -30,8 +30,6 @@ requirements:
 test:
   commands:
     - pheniqs --version
-    - pheniqs --help
-    - pheniqs mux --help
 
 about:
   home: http://biosails.github.io/pheniqs
