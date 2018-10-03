@@ -235,8 +235,8 @@ class Pipeline(object):
 
             self.ontology['platform'] = platform.system()
 
-            if 'verbosity' in self.ontology and self.ontology['verbosity']:
-                logging.getLogger().setLevel(log_levels[self.ontology['verbosity']])
+            if 'verbosity' in self.instruction and self.instruction['verbosity']:
+                logging.getLogger().setLevel(log_levels[self.instruction['verbosity']])
 
     @property
     def instruction(self):
