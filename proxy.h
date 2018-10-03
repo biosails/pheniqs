@@ -62,7 +62,7 @@ class FeedProxy {
         };
         void register_rg(const HeadRGAtom& rg);
         void register_pg(const HeadPGAtom& pg);
-        void probe();
+        void open();
 };
 bool encode_key_value(const string& key, const FeedProxy& value, Value& container, Document& document);
 ostream& operator<<(ostream& o, const FeedProxy& proxy);

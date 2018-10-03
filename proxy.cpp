@@ -51,14 +51,17 @@ void FeedProxy::register_pg(const HeadPGAtom& pg) {
         program_by_id.emplace(make_pair(key, HeadPGAtom(pg)));
     }
 };
-void FeedProxy::probe() {
+void FeedProxy::open() {
     if(hfile == NULL) {
         if(!is_dev_null()) {
+            int hopen_errono(0);
             switch(direction) {
                 case IoDirection::IN: {
                     /*  Use hfile to probe the input file and verify format */
                     if(url.is_readable()) {
                         hfile = hopen(url.hfile_name(), "r");
+                        hopen_errono = errno;
+
                         if(hfile != NULL) {
                             if(url.type() == FormatType::UNKNOWN) {
                                 ssize_t peeked(0);
@@ -177,16 +180,18 @@ void FeedProxy::probe() {
                                 }
                                 free(buffer);
                             }
-                        } else { throw IOError("failed to open " + string(url) + " for reading"); }
+                        } else { throw IOError("failed to open " + string(url) + " for reading with error code " + to_string(hopen_errono)); }
                     } else { throw IOError("could not open " + string(url) + " for reading"); }
                     break;
                 };
                 case IoDirection::OUT: {
                     if(url.is_writable()) {
-                        hfile = hopen(url.hfile_name(), "w");
+                        hfile = hopen(url.hfile_name(), "wx");
+                        hopen_errono = errno;
+
                         if(hfile != NULL) {
                             /* more testing */
-                        } else { throw IOError("failed to open " + string(url) + " for writing"); }
+                        } else { throw IOError("failed to open " + string(url) + " for writing with error code " + to_string(hopen_errono)); }
                     } else { throw IOError("could not open " + string(url) + " for writing"); }
                     break;
                 };

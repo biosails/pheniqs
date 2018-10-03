@@ -101,30 +101,28 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                         if(hts_file != NULL) {
                             hts_set_thread_pool(hts_file, thread_pool);
                             header.decode(hts_file);
-                        } else {
-                            throw IOError("failed to open " + string(url) + " for reading");
-                        }
+                        } else { throw IOError("failed to open hfile " + string(url) + " for reading"); }
                         break;
                     };
                     case IoDirection::OUT: {
                         switch(url.type()) {
                             case FormatType::SAM:
                                 hts_file = hts_hopen(hfile, url.hfile_name(), "w");
-                                if(hts_file) {
+                                if(hts_file != NULL) {
                                     hts_file->format.version.major = 1;
                                     hts_file->format.version.minor = 0;
                                 }
                                 break;
                             case FormatType::BAM:
                                 hts_file = hts_hopen(hfile, url.hfile_name(), "wb");
-                                if(hts_file) {
+                                if(hts_file != NULL) {
                                     hts_file->format.version.major = 1;
                                     hts_file->format.version.minor = 0;
                                 }
                                 break;
                             case FormatType::CRAM:
                                 hts_file = hts_hopen(hfile, url.hfile_name(), "wc");
-                                if(hts_file) {
+                                if(hts_file != NULL) {
                                     hts_file->format.version.major = 3;
                                     hts_file->format.version.minor = 0;
                                 }
@@ -137,9 +135,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                             header.hd.set_version(&(hts_file->format));
                             header.assemble();
                             header.encode(hts_file);
-                        } else {
-                            throw IOError("failed to open " + string(url) + " for writing");
-                        }
+                        } else { throw IOError("failed to open hfile " + string(url) + " for writing"); }
                         break;
                     };
                     default:
@@ -149,6 +145,8 @@ class HtsFeed : public BufferedFeed< bam1_t > {
         };
         void close() override {
             if(opened()) {
+                // int hts_close_error(hts_close(hts_file));
+                // if(hts_close_error) cerr << hts_close_error << endl;
                 hts_close(hts_file);
                 hts_file = NULL;
             }

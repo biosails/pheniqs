@@ -501,7 +501,7 @@ void Multiplex::compile_input() {
         for(auto& proxy : feed_proxy_by_index) {
             Feed* feed(NULL);
             int32_t resolution(0);
-            proxy.probe();
+            proxy.open();
             Segment segment;
             string feed_read_id;
             switch(proxy.kind()) {
@@ -904,11 +904,17 @@ void Multiplex::compile_output() {
                     list< URL > feed_url_array;
                     if(decode_value_by_key< list< URL > >("output", feed_url_array, reference->value)) {
                         for(auto& url : feed_url_array) {
-                            /* for now setting format and compression by default is only for standard streams */
                             if(url.is_standard_stream() && url.type() == FormatType::UNKNOWN) {
-                                url.set_type(default_output_format);
-                                if(url.type() == FormatType::FASTQ) {
-                                    url.set_compression(default_output_compression);
+                                if(url.is_stdout()) {
+                                    url.set_type(default_output_format);
+                                    if(url.type() == FormatType::FASTQ) {
+                                        url.set_compression(default_output_compression);
+                                    }
+                                } else if(url.is_stdin()) {
+                                    throw ConfigurationError("output stream can not be set to standard input");
+
+                                } else if(url.is_stderr()) {
+                                    throw ConfigurationError("output stream can not be set to standard error");
                                 }
                             }
                             ++(feed_resolution[url][index]);
@@ -1198,7 +1204,7 @@ void Multiplex::load_input() {
 
         /*  Initialized the hfile reference and verify input format */
         for(auto& proxy : feed_proxy_array) {
-            proxy.probe();
+            proxy.open();
         };
 
         /*  Load feed_by_url, a local map of input feeds by url, from the proxy.
@@ -1291,7 +1297,7 @@ void Multiplex::load_output() {
 
     /*  Initialized the hfile reference */
     for(auto& proxy : feed_proxy_array) {
-        proxy.probe();
+        proxy.open();
     };
 
     /*  Load feed_by_url, a local map of output feeds by url, from the proxy.
