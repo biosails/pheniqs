@@ -25,8 +25,13 @@ $WORKSPACE/miniconda/bin/conda install -y conda-build anaconda-client conda-veri
 
 
 # step 4: configure local channel
-$WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld
+# Lior Galanti 10/03/2018
+# see https://github.com/bioconda/bioconda-recipes/commit/824c84a9d7856d3cc81c70598d635c985e322feb
+
 # $WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
+mkdir -p $WORKSPACE/miniconda/conda-bld/{noarch,linux-64,osx-64}
+$WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld
+
 $WORKSPACE/miniconda/bin/conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 
 # step 5: cleanup
