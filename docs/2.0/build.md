@@ -45,10 +45,10 @@ Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson
 **coming soon**
 
 ## Building with pheniqs-tools
-Pheniqs comes bundled with a python3 helper tool called `pheniqs-tools.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/pheniqs-tools.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with pheniqs-tools does not require elevated permissions and is ideal for building an executable on cluster environments.
+Pheniqs comes bundled with a python3 helper tool called `ppkg.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/ppkg.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with pheniqs-tools does not require elevated permissions and is ideal for building an executable on cluster environments.
 
 ```
-% ./tool/pheniqs-tools.py build build/trunk_static.json
+% ./tool/ppkg.py build build/trunk_static.json
 INFO:Package:unpacking zlib 1.2.11
 INFO:Package:configuring make environment zlib 1.2.11
 INFO:Package:building with make zlib 1.2.11
@@ -62,28 +62,28 @@ INFO:Package:building with make xz 5.2.4
 INFO:Package:installing with make xz 5.2.4
 INFO:Package:unpacking libdeflate 1.0
 INFO:Package:building with make libdeflate 1.0
-INFO:Package:unpacking htslib 1.8
-INFO:Package:configuring make environment htslib 1.8
-INFO:Package:building with make htslib 1.8
-INFO:Package:installing with make htslib 1.8
+INFO:Package:unpacking htslib 1.9
+INFO:Package:configuring make environment htslib 1.9
+INFO:Package:building with make htslib 1.9
+INFO:Package:installing with make htslib 1.9
 INFO:Package:unpacking rapidjson 1.1.0
-INFO:Package:downloaded archive saved pheniqs 2.0.3-trunk None
-INFO:Package:unpacking pheniqs 2.0.3-trunk
-INFO:Package:building with make pheniqs 2.0.3-trunk
-INFO:Package:installing with make pheniqs 2.0.3-trunk
+INFO:Package:downloaded archive saved pheniqs 2.0-trunk None
+INFO:Package:unpacking pheniqs 2.0-trunk
+INFO:Package:building with make pheniqs 2.0-trunk
+INFO:Package:installing with make pheniqs 2.0-trunk
 ```
 
 When pheniqs-tools is done you may inspect your binary, statically linked builds made with pheniqs-tools will also report the versions of all built in libraries.
 
 ```
 % ./bin/trunk_static/install/bin/pheniqs --version
-pheniqs version 2.0.3-beta-27-g2a7c5abc73397f977b93cbd7faaefe32b9a251cd
+pheniqs version 2.0.4
 zlib 1.2.11
 bzlib 1.0.6
 xzlib 5.2.4
 libdeflate 1.0
 rapidjson 1.1.0
-htslib 1.8
+htslib 1.9
 ```
 
 You can check that your binary indeed does not link against any of the dependencies dynamically with `otool` on MacOs:
@@ -91,8 +91,8 @@ You can check that your binary indeed does not link against any of the dependenc
 ```
 % otool -L ./bin/trunk_static/install/bin/pheniqs
 ./bin/trunk_static/install/bin/pheniqs:
-	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 400.9.0)
-	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1252.50.4)
+	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 400.9.4)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1252.200.5)
 ```
 
 Or `ldd` on Ubuntu:

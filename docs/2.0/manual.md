@@ -403,7 +403,7 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 {: .example}
 
 ## Standard streams
-If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. Since Pheniqs selects the output format by inspecting the extensions of the URLs you provide in the `output` directive, specifying output as **/dev/stdout** or **/dev/stderr** does not allow you to specify an output format. In this case you can use the **exploded** URL directive syntax to provide more details about the output stream. You may also specify **/dev/null** as a URL in an `output` directive to discard the output.
+If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. Pheniqs allocates output format according to the output URL file extension. When writing to **/dev/stdout** you can specify a format with the `-F/--format` command line parameter: `sam`, `bam`, `cram` or `fastq`. For FASTQ output format you can specify compression with `-Z/--compression`: either `none` or `gz`. You can also use the **exploded** URL directive syntax to provide more details about the output stream. You may also specify **/dev/null** as a URL in an `output` directive to discard the output.
 
 >```json
 {
