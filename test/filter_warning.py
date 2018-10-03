@@ -28,7 +28,7 @@ hidden = [
     'note: change section name to',
     '.section __TEXT,',
     '.section __DATA,__const_coal,coalesced',
-    '^      ~~~~~~~~~~~~,
+    '^      ~~~~~~~~~~~~',
 ]
 
 for line in sys.stdin:
