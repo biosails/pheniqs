@@ -865,18 +865,24 @@ void Multiplex::compile_output_transformation() {
     compile_transformation(ontology);
 };
 void Multiplex::compile_output() {
+    /* expand the report URL */
+    expand_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
+
     /* load output transform */
     compile_output_transformation();
     Rule rule(decode_value_by_key< Rule >("transform", ontology));
 
+    /* encode the output_segment_cardinality deduced from the rule */
+    const int32_t output_segment_cardinality(rule.output_segment_cardinality);
+    encode_key_value("output segment cardinality", output_segment_cardinality, ontology, ontology);
+
+    /* verify input segment references in the tokens reference existing input segments */
     const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
     for(auto& token : rule.token_array) {
         if(!(token.input_segment_index < input_segment_cardinality)) {
             throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
         }
     }
-    const int32_t output_segment_cardinality(rule.output_segment_cardinality);
-    encode_key_value("output segment cardinality", output_segment_cardinality, ontology, ontology);
 
     Platform platform(decode_value_by_key< Platform >("platform", ontology));
     int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
@@ -887,24 +893,39 @@ void Multiplex::compile_output() {
     Value::MemberIterator reference = ontology.FindMember("multiplex");
     if(reference != ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
-            Value& value(reference->value);
-            expand_url_value_by_key("base output url", value, ontology);
-            URL base(decode_value_by_key< URL >("base output url", value));
+            Value& decoder_element(reference->value);
 
+            /* expand base output url path */
+            expand_url_value_by_key("base output url", decoder_element, ontology);
+            URL base(decode_value_by_key< URL >("base output url", decoder_element));
+
+            /* collect channel references in a channel_reference_list */
+            list< Value* > channel_reference_list;
+            reference = decoder_element.FindMember("undetermined");
+            if(reference != decoder_element.MemberEnd()) {
+                channel_reference_list.push_back(&reference->value);
+            }
+            reference = decoder_element.FindMember("codec");
+            if(reference != decoder_element.MemberEnd()) {
+                for(auto& record : reference->value.GetObject()) {
+                    channel_reference_list.push_back(&record.value);
+                }
+            }
+
+            /* assemble a table with the resolution of each feed in each channel */
             unordered_map< URL, unordered_map< int32_t, int > > feed_resolution;
-            Value::MemberIterator reference = value.FindMember("undetermined");
-            if(reference != value.MemberEnd()) {
-                if(!reference->value.IsNull()) {
-                    int32_t index(decode_value_by_key< int32_t >("index", reference->value));
-                    encode_key_value("TC", output_segment_cardinality, reference->value, ontology);
-                    pad_url_array_by_key("output", reference->value, output_segment_cardinality);
-                    expand_url_array_by_key("output", reference->value, ontology, IoDirection::OUT);
-                    relocate_url_array_by_key("output", reference->value, ontology, base);
+            for(auto& element : channel_reference_list) {
+                int32_t index(decode_value_by_key< int32_t >("index", *element));
+                encode_key_value("TC", output_segment_cardinality, *element, ontology);
+                pad_url_array_by_key("output", *element, output_segment_cardinality);
+                expand_url_array_by_key("output", *element, ontology, IoDirection::OUT);
+                relocate_url_array_by_key("output", *element, ontology, base);
 
-                    list< URL > feed_url_array;
-                    if(decode_value_by_key< list< URL > >("output", feed_url_array, reference->value)) {
-                        for(auto& url : feed_url_array) {
-                            if(url.is_standard_stream() && url.type() == FormatType::UNKNOWN) {
+                list< URL > feed_url_array;
+                if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+                    for(auto& url : feed_url_array) {
+                        if(url.type() == FormatType::UNKNOWN) {
+                            if(url.is_standard_stream()) {
                                 if(url.is_stdout()) {
                                     url.set_type(default_output_format);
                                     if(url.type() == FormatType::FASTQ) {
@@ -912,100 +933,57 @@ void Multiplex::compile_output() {
                                     }
                                 } else if(url.is_stdin()) {
                                     throw ConfigurationError("output stream can not be set to standard input");
-
                                 } else if(url.is_stderr()) {
                                     throw ConfigurationError("output stream can not be set to standard error");
                                 }
-                            }
-                            ++(feed_resolution[url][index]);
+                            } else { throw ConfigurationError("output stream " + string(url) + "is missing a format extension"); }
                         }
+                        ++(feed_resolution[url][index]);
                     }
                 }
             }
-            reference = value.FindMember("codec");
-            if(reference != value.MemberEnd()) {
-                if(!reference->value.IsNull()) {
-                    if(reference->value.IsObject()) {
-                        for(auto& record : reference->value.GetObject()) {
-                            int32_t index(decode_value_by_key< int32_t >("index", record.value));
-                            encode_key_value("TC", output_segment_cardinality, record.value, ontology);
-                            pad_url_array_by_key("output", record.value, output_segment_cardinality);
-                            expand_url_array_by_key("output", record.value, ontology, IoDirection::OUT);
-                            relocate_url_array_by_key("output", record.value, ontology, base);
 
-                            list< URL > feed_url_array;
-                            if(decode_value_by_key< list< URL > >("output", feed_url_array, record.value)) {
-                                for(auto& url : feed_url_array) {
-                                    ++(feed_resolution[url][index]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             if(feed_resolution.size() > 0) {
-                unordered_map< URL, Value > feed_ontology_by_url;
                 int32_t index(0);
+                unordered_map< URL, Value > feed_ontology_by_url;
+
                 for(const auto& url_record : feed_resolution) {
                     const URL& url = url_record.first;
 
-                    if(url.kind() != FormatKind::UNKNOWN) {
-                        int resolution(0);
-                        for(const auto& record : url_record.second) {
-                            if(resolution == 0) {
-                                resolution = record.second;
-                            } else if(resolution != record.second) {
-                                throw ConfigurationError("inconsistent resolution for " + string(url));
-                            }
-                        }
-                        Value proxy(kObjectType);
-                        encode_key_value("index", index, proxy, ontology);
-                        encode_key_value("url", url, proxy, ontology);
-                        encode_key_value("direction", IoDirection::OUT, proxy, ontology);
-                        encode_key_value("platform", platform, proxy, ontology);
-                        encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
-                        encode_key_value("resolution", resolution, proxy, ontology);
-                        encode_key_value("phred offset", phred_offset, proxy, ontology);
-                        feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
-                        ++index;
-                    } else { throw ConfigurationError("could not establish output format for " + string(url)); }
-                }
-
-                reference = value.FindMember("undetermined");
-                if(reference != value.MemberEnd()) {
-                    if(!reference->value.IsNull()) {
-                        if(reference->value.IsObject()) {
-                            list< URL > feed_url_array;
-                            if(decode_value_by_key< list< URL > >("output", feed_url_array, reference->value)) {
-                                Value feed_by_segment(kArrayType);
-                                for(const auto& url : feed_url_array) {
-                                    const Value& proxy(feed_ontology_by_url[url]);
-                                    feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                                }
-                                reference->value.RemoveMember("output feed by segment");
-                                reference->value.AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
-                            }
+                    /* verify each feed url has the same resolution in all channels */
+                    int resolution(0);
+                    for(const auto& record : url_record.second) {
+                        if(resolution == 0) {
+                            resolution = record.second;
+                        } else if(resolution != record.second) {
+                            throw ConfigurationError("inconsistent resolution for " + string(url));
                         }
                     }
+
+                    /* make a proxy element for the feed */
+                    Value proxy(kObjectType);
+                    encode_key_value("index", index, proxy, ontology);
+                    encode_key_value("url", url, proxy, ontology);
+                    encode_key_value("direction", IoDirection::OUT, proxy, ontology);
+                    encode_key_value("platform", platform, proxy, ontology);
+                    encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
+                    encode_key_value("resolution", resolution, proxy, ontology);
+                    encode_key_value("phred offset", phred_offset, proxy, ontology);
+                    feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
+                    ++index;
                 }
 
-                reference = value.FindMember("codec");
-                if(reference != value.MemberEnd()) {
-                    if(!reference->value.IsNull()) {
-                        if(reference->value.IsObject()) {
-                            for(auto& record : reference->value.GetObject()) {
-                                list< URL > feed_url_array;
-                                if(decode_value_by_key< list< URL > >("output", feed_url_array, record.value)) {
-                                    Value feed_by_segment(kArrayType);
-                                    for(const auto& url : feed_url_array) {
-                                        const Value& proxy(feed_ontology_by_url[url]);
-                                        feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                                    }
-                                    record.value.RemoveMember("output feed by segment");
-                                    record.value.AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
-                                }
-                            }
+                /* add the output feed by segment element to each channel */
+                for(auto& element : channel_reference_list) {
+                    list< URL > feed_url_array;
+                    if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+                        Value feed_by_segment(kArrayType);
+                        for(const auto& url : feed_url_array) {
+                            const Value& proxy(feed_ontology_by_url[url]);
+                            feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
                         }
+                        element->RemoveMember("output feed by segment");
+                        element->AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
                     }
                 }
 
@@ -1102,31 +1080,31 @@ void Multiplex::pad_url_array_by_key(const Value::Ch* key, Value& container, con
     }
 };
 void Multiplex::cross_validate_io() {
-    list< URL > input_array(decode_value_by_key< list< URL > >("input", ontology));
-
-    set< URL > input;
-    for(auto& url : input_array) {
-        input.emplace(url);
-    }
-
-    Value::MemberIterator reference = ontology.FindMember("multiplex");
+    set< URL > input_url_set;
+    Value::MemberIterator reference = ontology.FindMember("input feed");
     if(reference != ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            reference = reference->value.FindMember("codec");
-            if(reference != ontology.MemberEnd()) {
-                if(reference->value.IsObject()) {
-                    for(auto& record : reference->value.GetObject()) {
-                        list< URL > output;
-                        if(decode_value_by_key< list< URL > >("output", output, record.value)) {
-                            for(auto& url : output) {
-                                if(input.count(url) > 0) {
-                                    throw ConfigurationError("URL " + string(url) + " is used for both input and output");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        for(auto& element : reference->value.GetArray()) {
+            input_url_set.emplace(decode_value_by_key< URL >("url", element));
+        }
+    }
+    set< URL > output_url_set;
+    reference = ontology.FindMember("output feed");
+    if(reference != ontology.MemberEnd()) {
+        for(auto& element : reference->value.GetArray()) {
+            output_url_set.emplace(decode_value_by_key< URL >("url", element));
+        }
+    }
+    URL report_url(decode_value_by_key< URL >("report url", ontology));
+
+    if(input_url_set.count(report_url) > 0) {
+        throw ConfigurationError("URL " + string(report_url) + " can not be used for both input and report");
+    }
+    if(output_url_set.count(report_url) > 0) {
+        throw ConfigurationError("URL " + string(report_url) + " can not be used for both output and report");
+    }
+    for(auto& url : output_url_set) {
+        if(input_url_set.count(url) > 0) {
+            throw ConfigurationError("URL " + string(url) + " is used for both input and output");
         }
     }
 };

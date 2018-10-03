@@ -154,12 +154,8 @@
                 "flowcell id": "BDGGG",
                 "index": 1,
                 "output": [
-                    {
-                        "path": "/dev/stdout"
-                    },
-                    {
-                        "path": "/dev/stdout"
-                    }
+                    "/dev/stdout",
+                    "/dev/stdout"
                 ],
                 "output feed by segment": [
                     {
@@ -208,12 +204,8 @@
                 "flowcell id": "BDGGG",
                 "index": 2,
                 "output": [
-                    {
-                        "path": "/dev/stdout"
-                    },
-                    {
-                        "path": "/dev/stdout"
-                    }
+                    "/dev/stdout",
+                    "/dev/stdout"
                 ],
                 "output feed by segment": [
                     {
@@ -262,12 +254,8 @@
                 "flowcell id": "BDGGG",
                 "index": 3,
                 "output": [
-                    {
-                        "path": "/dev/stdout"
-                    },
-                    {
-                        "path": "/dev/stdout"
-                    }
+                    "/dev/stdout",
+                    "/dev/stdout"
                 ],
                 "output feed by segment": [
                     {
@@ -316,12 +304,8 @@
                 "flowcell id": "BDGGG",
                 "index": 4,
                 "output": [
-                    {
-                        "path": "/dev/stdout"
-                    },
-                    {
-                        "path": "/dev/stdout"
-                    }
+                    "/dev/stdout",
+                    "/dev/stdout"
                 ],
                 "output feed by segment": [
                     {
@@ -370,12 +354,8 @@
                 "flowcell id": "BDGGG",
                 "index": 5,
                 "output": [
-                    {
-                        "path": "/dev/stdout"
-                    },
-                    {
-                        "path": "/dev/stdout"
-                    }
+                    "/dev/stdout",
+                    "/dev/stdout"
                 ],
                 "output feed by segment": [
                     {
@@ -448,12 +428,8 @@
             "flowcell id": "BDGGG",
             "index": 0,
             "output": [
-                {
-                    "path": "/dev/stdout"
-                },
-                {
-                    "path": "/dev/stdout"
-                }
+                "/dev/stdout",
+                "/dev/stdout"
             ],
             "output feed by segment": [
                 {

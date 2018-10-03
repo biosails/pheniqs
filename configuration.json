@@ -294,7 +294,7 @@
     "comment": "pheniqs command line configuration file",
     "default": {
         "buffer capacity": 2048,
-        "float precision": 324,
+        "float precision": 15,
         "input phred offset": 33,
         "leading segment index": 0,
         "output phred offset": 33,

@@ -119,15 +119,9 @@
             "include filtered": true,
             "index": 0,
             "output": [
-                {
-                    "path": "/dev/stdout"
-                },
-                {
-                    "path": "/dev/stdout"
-                },
-                {
-                    "path": "/dev/stdout"
-                }
+                "/dev/stdout",
+                "/dev/stdout",
+                "/dev/stdout"
             ],
             "output feed by segment": [
                 {

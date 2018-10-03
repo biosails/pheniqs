@@ -22,6 +22,10 @@
 #ifndef PHENIQS_ERROR_H
 #define PHENIQS_ERROR_H
 
+/*  TODO: errno
+    https://en.cppreference.com/w/cpp/header/cerrno
+    htslib returns errno error codees, need to go over api calls and propegate correct errors */
+
 #include "include.h"
 
 /* Those are possible return values when pheniqs terminates */

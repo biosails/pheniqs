@@ -149,4 +149,10 @@ using rapidjson::kStringType;
 #include <htslib/sam.h>
 #include <htslib/thread_pool.h>
 
+/*  Float precision
+    The number of significant decimal digits when writing to output
+    see https://en.wikipedia.org/wiki/Double-precision_floating-point_format#IEEE_754_double-precision_binary_floating-point_format:_binary64 */
+
+#define PHENIQS_FLOAT_PRECISION 15
+
 #endif /* PHENIQS_INCLUDE_H */
