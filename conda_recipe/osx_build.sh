@@ -23,7 +23,6 @@ $WORKSPACE/miniconda/bin/conda config --system --add channels nyuad-cgsb
 # step 3: install conda build
 $WORKSPACE/miniconda/bin/conda install -y conda-build anaconda-client conda-verify
 
-
 # step 4: configure local channel
 # Lior Galanti 10/03/2018
 # see https://github.com/bioconda/bioconda-recipes/commit/824c84a9d7856d3cc81c70598d635c985e322feb
