@@ -44,7 +44,7 @@ STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/lib
 # PHENIQS_LIBDEFLATE_VERSION
 # PHENIQS_RAPIDJSON_VERSION
 # PHENIQS_HTSLIB_VERSION
-PHENIQS_VERSION := $(shell [ -d .git ] && git describe --abbrev=40 --always 2> /dev/null)
+PHENIQS_VERSION := $(shell [ -d .git ] && git describe --abbrev=40 --tags 2> /dev/null)
 ifndef PHENIQS_VERSION
     PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
 endif
@@ -136,6 +136,7 @@ help:
 	\tclean     : Delete all generated and object files.\n\
 	\tinstall   : Install pheniqs to $(PREFIX)\n\
 	\tconfig    : Print the values of the influential variables and exit.\n\
+	\ttest      : Run tests.\n\
 	\t_pheniqs  : Generate the zsh completion script.\n\
 	\n\
 	Pheniqs depends on the following libraries:\n\
@@ -235,6 +236,9 @@ install: pheniqs
 	if( test ! -d $(PREFIX)/bin ) ; then mkdir -p $(PREFIX)/bin ; fi
 	cp -f pheniqs $(PREFIX)/bin/pheniqs
 	chmod a+x $(PREFIX)/bin/pheniqs
+
+test: pheniqs
+	./test/BDGGG/run.sh
 
 # Dependencies
 
