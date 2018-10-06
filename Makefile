@@ -237,7 +237,7 @@ install: pheniqs
 	cp -f pheniqs $(PREFIX)/bin/pheniqs
 	chmod a+x $(PREFIX)/bin/pheniqs
 
-test: pheniqs
+test: all
 	./test/BDGGG/run.sh
 
 # Dependencies

@@ -7,4 +7,4 @@ make all PREFIX=${PREFIX}
 make install PREFIX=${PREFIX}
 
 #This is really a test
-./test/BDGGG/run.sh
+make test

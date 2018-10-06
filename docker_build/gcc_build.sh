@@ -30,10 +30,7 @@ export PATH=/tmp/miniconda3/bin/:\$PATH
 
 ./tool/ppkg.py -v info build test/build.json
 make all PREFIX="\${HOME}/.pheniqs/travis/install"
-./pheniqs --version
-./pheniqs --help
-./pheniqs mux --help
-./test/BDGGG/run.sh
+make test PREFIX="\${HOME}/.pheniqs/travis/install"
 
 EOF
 

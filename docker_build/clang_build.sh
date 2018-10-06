@@ -24,7 +24,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 make all PREFIX=${PREFIX}
 make install PREFIX=${PREFIX}
 
-./test/BDGGG/run.sh
+make test
 
 EOF
 
