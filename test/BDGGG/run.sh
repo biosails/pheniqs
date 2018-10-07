@@ -37,6 +37,8 @@ PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "validate_interleave failed with code $PHENIQS_TEST_RETURN_CODE\n";
     exit $PHENIQS_TEST_RETURN_CODE;
+else
+  printf "BDGGG validate interleave passed\n";
 fi
 
 run_test $PHENIQS_TEST_HOME "compile_interleave" \
@@ -45,6 +47,8 @@ PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "compile_interleave failed with code $PHENIQS_TEST_RETURN_CODE\n";
     exit $PHENIQS_TEST_RETURN_CODE;
+else
+  printf "BDGGG compile interleave passed\n";
 fi
 
 run_test $PHENIQS_TEST_HOME "validate_annotated" \
@@ -53,6 +57,8 @@ PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "validate_annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";
     exit $PHENIQS_TEST_RETURN_CODE;
+else
+  printf "BDGGG validate annotated passed\n";
 fi
 
 run_test $PHENIQS_TEST_HOME "compile_annotated" \
@@ -61,6 +67,8 @@ PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "compile_annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";
     exit $PHENIQS_TEST_RETURN_CODE;
+else
+  printf "BDGGG compile annotated passed\n";
 fi
 
 run_test $PHENIQS_TEST_HOME "annotated" \
@@ -69,6 +77,8 @@ PHENIQS_TEST_RETURN_CODE="$?"
 if [ "$PHENIQS_TEST_RETURN_CODE" != "0" ]; then
     printf "annotated failed with code $PHENIQS_TEST_RETURN_CODE\n";
     exit $PHENIQS_TEST_RETURN_CODE;
+else
+  printf "BDGGG annotated passed\n";
 fi
 
 exit 0
