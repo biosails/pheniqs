@@ -78,7 +78,7 @@ class Prototype {
         const string name;
         string help;
         string meta;
-        uint32_t cardinality;
+        size_t cardinality;
         bool plural;
         bool mandatory;
         bool positional;
@@ -152,7 +152,7 @@ class Argument {
         list< double >* get_decimal_array() const;
         list< string >* get_string_array() const;
         list< URL >* get_url_array() const;
-        uint32_t cardinality() const;
+        size_t cardinality() const;
         bool satisfied() const;
 
     private:

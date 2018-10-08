@@ -1009,12 +1009,12 @@ void Multiplex::compile_transformation(Value& value) {
                 reference = transform_element.FindMember("token");
                 if(reference != transform_element.MemberEnd()) {
                     if(reference->value.IsArray()) {
-                        int32_t token_cardinality(reference->value.Size());
+                        size_t token_cardinality(reference->value.Size());
 
                         reference = transform_element.FindMember("segment pattern");
                         if(reference == transform_element.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
                             Value observation(kArrayType);
-                            for(int32_t i(0); i < token_cardinality; ++i) {
+                            for(size_t i(0); i < token_cardinality; ++i) {
                                 string element(to_string(i));
                                 observation.PushBack(Value(element.c_str(), element.size(),ontology.GetAllocator()).Move(), ontology.GetAllocator());
                             }

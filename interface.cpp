@@ -58,10 +58,10 @@ static inline string get_cwd() {
     free(buffer);
     return directory;
 };
-static inline string assemble_full_command(const int argc, const char** argv) {
+static inline string assemble_full_command(const size_t argc, const char** argv) {
     string value;
     value.append(argv[0]);
-    for(int i(1); i < argc; ++i) {
+    for(size_t i(1); i < argc; ++i) {
         value.append(" ");
         value.append(argv[i]);
     }
@@ -424,8 +424,8 @@ list< URL >* Argument::get_url_array() const {
     }
     return value;
 };
-uint32_t Argument::cardinality() const {
-    uint32_t value(0);
+size_t Argument::cardinality() const {
+    size_t value(0);
     if(!prototype.plural) {
         value = assigned ? 1 : 0;
     } else {
