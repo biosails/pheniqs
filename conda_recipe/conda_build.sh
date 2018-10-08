@@ -4,17 +4,18 @@
 
 export WORKSPACE="/tmp/conda_recipe"
 
+mkdir -p /tmp/conda_recipe
+
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 	# WORKSPACE='/bioconda'
 	# File mounts with docker don't seem to work the same as they do everywhere else
 	# So we are just copying the recipe to tmp and working from there
-	mkdir -p /tmp/conda_recipe
 	cp -rf /bioconda/* /tmp/conda_recipe
 	cd /tmp/conda_recipe
 	export WORKSPACE="/tmp/conda_recipe"
 
 	mkdir -p /opt/conda/conda-bld/{noarch,linux-64,osx-64}
-	/opt/conda/bin/conda index $WORKSPACE/miniconda/conda-bld
+	/opt/conda/bin/conda index /opt/conda/conda-bld
 
 else
 	export WORKSPACE="/tmp/conda_recipe"
