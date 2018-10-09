@@ -80,6 +80,7 @@ void Job::print_compiled(ostream& o) const {
     compiled.RemoveMember("application version");
     compiled.RemoveMember("program");
     compiled.RemoveMember("working directory");
+    sort_json_value(compiled, compiled);
     print_json(compiled, o, float_precision());
 };
 void Job::print_report() const {

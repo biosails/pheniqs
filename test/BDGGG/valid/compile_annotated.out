@@ -6,7 +6,6 @@
     "PM": "miseq",
     "SM": "trinidad",
     "application name": "./pheniqs",
-    "threads": 1,
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
@@ -480,6 +479,8 @@
     "output phred offset": 33,
     "output segment cardinality": 2,
     "platform": "ILLUMINA",
+    "report url": "/dev/stderr",
+    "threads": 1,
     "transform": {
         "segment pattern": [
             "0",
@@ -489,6 +490,5 @@
             "0::",
             "2::"
         ]
-    },
-    "report url": "/dev/stderr"
+    }
 }

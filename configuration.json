@@ -298,8 +298,7 @@
         "input phred offset": 33,
         "leading segment index": 0,
         "output phred offset": 33,
-        "platform": "ILLUMINA",
-        "threads": 1
+        "platform": "ILLUMINA"
     },
     "description": "",
     "license": [

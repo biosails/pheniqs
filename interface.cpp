@@ -1053,42 +1053,42 @@ Interface::~Interface() {
     }
 };
 void Interface::apply_action_base() {
-    /* get the base code and decoder node from the configuration */
-    Value default_configuration_action(kObjectType);
+    /*  detetct the number of threads the machine is capable of.
+        If detection fails hardware_concurrency return 0 and we default to 1 */
+    int32_t detected_threads(max(1, static_cast< int32_t >(thread::hardware_concurrency())));
+
+    /* get the action projection node */
+    Value action_projection(kObjectType);
     Value::MemberIterator reference = configuration.FindMember("projection");
     if(reference != configuration.MemberEnd()) {
-        Value& base = reference->value;
-        if(!base.IsNull()) {
-            reference = base.FindMember("action");
-            if(reference != base.MemberEnd() && !reference->value.IsNull()) {
-                default_configuration_action.CopyFrom(reference->value, configuration.GetAllocator());
+        Value& projection = reference->value;
+        if(!projection.IsNull()) {
+            reference = projection.FindMember("action");
+            if(reference != projection.MemberEnd() && !reference->value.IsNull()) {
+                action_projection.CopyFrom(reference->value, configuration.GetAllocator());
             }
         }
     }
 
+    /* update the default action node */
     reference = configuration.FindMember("default");
     if(reference != configuration.MemberEnd()) {
+        Value& default_action = reference->value;
         if(!reference->value.IsNull()) {
-            encode_key_value("working directory", working_directory, reference->value, configuration);
-            encode_key_value("base input url", working_directory, reference->value, configuration);
-            encode_key_value("base output url", working_directory, reference->value, configuration);
-            encode_key_value("application version", application_version, reference->value, configuration);
-            encode_key_value("application name", application_name, reference->value, configuration);
-            encode_key_value("full command", full_command, reference->value, configuration);
+            encode_key_value("working directory", working_directory, default_action, configuration);
+            encode_key_value("base input url", working_directory, default_action, configuration);
+            encode_key_value("base output url", working_directory, default_action, configuration);
+            encode_key_value("application version", application_version, default_action, configuration);
+            encode_key_value("application name", application_name, default_action, configuration);
+            encode_key_value("full command", full_command, default_action, configuration);
+            encode_key_value("threads", detected_threads, default_action, configuration);
         }
     }
 
-    encode_key_value("working directory", working_directory, default_configuration_action, configuration);
-    encode_key_value("base input url", working_directory, default_configuration_action, configuration);
-    encode_key_value("base output url", working_directory, default_configuration_action, configuration);
-    encode_key_value("application version", application_version, default_configuration_action, configuration);
-    encode_key_value("application name", application_name, default_configuration_action, configuration);
-    encode_key_value("full command", full_command, default_configuration_action, configuration);
-
-    /* project action attributes from the document root */
+    /* project the document root on the action template */
     Value action_template(kObjectType);
-    project_json_value(default_configuration_action, configuration, action_template, configuration);
-    default_configuration_action.SetNull();
+    project_json_value(action_projection, configuration, action_template, configuration);
+    action_projection.SetNull();
 
     /* no need for the action projection in the action configuration nodes */
     reference = action_template.FindMember("projection");
