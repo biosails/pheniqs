@@ -23,6 +23,7 @@ PREFIX          := /usr/local
 BIN_PREFIX      = $(PREFIX)/bin
 INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
+ZSH_PREFIX      = $(PREFIX)/share/zsh
 
 CPPFLAGS        += -Wall -Wsign-compare
 CXXFLAGS        += -std=c++11 -O3
@@ -170,6 +171,7 @@ config:
 	$(if $(BIN_PREFIX),                  @echo 'BIN_PREFIX                  :  $(BIN_PREFIX)' )
 	$(if $(INCLUDE_PREFIX),              @echo 'INCLUDE_PREFIX              :  $(INCLUDE_PREFIX)' )
 	$(if $(LIB_PREFIX),                  @echo 'LIB_PREFIX                  :  $(LIB_PREFIX)' )
+	$(if $(ZSH_PREFIX),                  @echo 'ZSH_PREFIX                  :  $(ZSH_PREFIX)' )
 	$(if $(CXX),                         @echo 'CXX                         :  $(CXX)' )
 	$(if $(CPPFLAGS),                    @echo 'CPPFLAGS                    :  $(CPPFLAGS)' )
 	$(if $(CXXFLAGS),                    @echo 'CXXFLAGS                    :  $(CXXFLAGS)' )
@@ -232,10 +234,18 @@ clean.object:
 clean: clean.generated clean.object clean.bin
 	-@rm -f $(PHENIQS_EXECUTABLE)
 
-install: pheniqs
-	if( test ! -d $(PREFIX)/bin ) ; then mkdir -p $(PREFIX)/bin ; fi
-	cp -f pheniqs $(PREFIX)/bin/pheniqs
-	chmod a+x $(PREFIX)/bin/pheniqs
+install: pheniqs install.zsh_completion
+	$(and $(BIN_PREFIX), \
+      $(or $(wildcard $(BIN_PREFIX)),!$(shell mkdir -p $(BIN_PREFIX))), \
+	  $(shell cp -f pheniqs $(BIN_PREFIX)/pheniqs) \
+	  $(shell chmod a+x $(BIN_PREFIX)/pheniqs) \
+    )
+
+install.zsh_completion: _pheniqs
+	$(and $(ZSH_PREFIX), \
+      $(or $(wildcard $(ZSH_PREFIX)/site-functions),!$(shell mkdir -p $(ZSH_PREFIX)/site-functions)), \
+      $(shell cp -f _pheniqs $(ZSH_PREFIX)/site-functions/_pheniqs) \
+    )
 
 test: all
 	./test/BDGGG/run.sh

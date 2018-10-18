@@ -67,7 +67,7 @@ Mutliplex decoding
 
     Decoding algorithm                          pamld
     Shannon bound                               2
-    Noise                                       0.05
+    Noise                                       0.0152
     Confidence threshold                        0.99
     Segment cardinality                         1
     Nucleotide cardinality                      8
@@ -113,7 +113,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.203571428571429
+        Concentration : 0.183498128559805
         Barcode       : AGGCAGAA
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -128,7 +128,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.0678571428571429
+        Concentration : 0.199524165988608
         Barcode       : CGTACTAG
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -143,7 +143,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.407142857142857
+        Concentration : 0.211944344995932
         Barcode       : GGACTCCT
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -158,7 +158,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.135714285714286
+        Concentration : 0.222761920260375
         Barcode       : TAAGGCGA
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
@@ -173,7 +173,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.135714285714286
+        Concentration : 0.167071440195281
         Barcode       : TCCTGAGC
         Segment No.0  : /dev/stdout
         Segment No.1  : /dev/stdout
