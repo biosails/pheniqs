@@ -237,8 +237,8 @@ clean: clean.generated clean.object clean.bin
 install: pheniqs install.zsh_completion
 	$(and $(BIN_PREFIX), \
       $(or $(wildcard $(BIN_PREFIX)),!$(shell mkdir -p $(BIN_PREFIX))), \
-	  $(shell cp -f pheniqs $(BIN_PREFIX)/pheniqs) \
-	  $(shell chmod a+x $(BIN_PREFIX)/pheniqs) \
+      $(shell cp -f pheniqs $(BIN_PREFIX)/pheniqs) \
+      $(shell chmod a+x $(BIN_PREFIX)/pheniqs) \
     )
 
 install.zsh_completion: _pheniqs

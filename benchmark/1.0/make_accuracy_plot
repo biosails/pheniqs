@@ -1,5 +1,0 @@
-#!/bin/zsh
-
-source function.sh
-
-accuracy_plot
