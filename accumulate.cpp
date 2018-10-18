@@ -26,6 +26,7 @@ BarcodeAccumulator::BarcodeAccumulator() :
     pf_count(0),
     accumulated_distance(0),
     accumulated_confidence(0),
+    low_confidence_count(0),
     accumulated_pf_distance(0),
     accumulated_pf_confidence(0),
 
@@ -44,6 +45,7 @@ BarcodeAccumulator::BarcodeAccumulator(const BarcodeAccumulator& other) :
     pf_count(other.pf_count),
     accumulated_distance(other.accumulated_distance),
     accumulated_confidence(other.accumulated_confidence),
+    low_confidence_count(other.low_confidence_count),
     accumulated_pf_distance(other.accumulated_pf_distance),
     accumulated_pf_confidence(other.accumulated_pf_confidence) {
 };
@@ -79,11 +81,13 @@ void BarcodeAccumulator::encode(Value& container, Document& document) const {
     if(average_confidence > 0) {
         encode_key_value("average confidence", average_confidence, container, document);
     }
+    if(low_confidence_count > 0) {
+        encode_key_value("low confidence count", low_confidence_count, container, document);
+    }
     encode_key_value("pooled fraction", pooled_fraction, container, document);
     if(pooled_classified_fraction > 0) {
         encode_key_value("pooled classified fraction", pooled_classified_fraction, container, document);
     }
-
     encode_key_value("pf count", pf_count, container, document);
     if(average_pf_distance > 0) {
         encode_key_value("average pf distance", average_pf_distance, container, document);
@@ -102,6 +106,7 @@ BarcodeAccumulator& BarcodeAccumulator::operator+=(const BarcodeAccumulator& rhs
     pf_count += rhs.pf_count;
     accumulated_distance += rhs.accumulated_distance;
     accumulated_confidence += rhs.accumulated_confidence;
+    low_confidence_count += rhs.low_confidence_count;
     accumulated_pf_distance += rhs.accumulated_pf_distance;
     accumulated_pf_confidence += rhs.accumulated_pf_confidence;
     return *this;
@@ -112,6 +117,7 @@ AccumulatingDecoder::AccumulatingDecoder() :
     pf_count(0),
     classified_count(0),
     accumulated_classified_distance(0),
+    low_conditional_confidence_count(0),
     accumulated_classified_confidence(0),
     pf_classified_count(0),
     accumulated_pf_classified_distance(0),
@@ -131,6 +137,7 @@ AccumulatingDecoder::AccumulatingDecoder(const AccumulatingDecoder& other) :
     pf_count(other.pf_count),
     classified_count(other.classified_count),
     accumulated_classified_distance(other.accumulated_classified_distance),
+    low_conditional_confidence_count(other.low_conditional_confidence_count),
     accumulated_classified_confidence(other.accumulated_classified_confidence),
     pf_classified_count(other.pf_classified_count),
     accumulated_pf_classified_distance(other.accumulated_pf_classified_distance),
@@ -156,7 +163,15 @@ void AccumulatingDecoder::finalize() {
 };
 void AccumulatingDecoder::encode(Value& container, Document& document) const {
     encode_key_value("count", count, container, document);
+    encode_key_value("pf count", pf_count, container, document);
     encode_key_value("classified count", classified_count, container, document);
+
+    if(low_conditional_confidence_count > 0) {
+        encode_key_value("low conditional confidence count", low_conditional_confidence_count, container, document);
+        encode_key_value("low confidence count", count - classified_count - low_conditional_confidence_count, container, document);
+    }
+    encode_key_value("pf classified count", pf_classified_count, container, document);
+    encode_key_value("pf fraction", pf_fraction, container, document);
     encode_key_value("classified fraction", classified_fraction, container, document);
     if(average_classified_distance > 0) {
         encode_key_value("average classified distance", average_classified_distance, container, document);
@@ -164,10 +179,6 @@ void AccumulatingDecoder::encode(Value& container, Document& document) const {
     if(average_classified_confidence > 0) {
         encode_key_value("average classified confidence", average_classified_confidence, container, document);
     }
-
-    encode_key_value("pf fraction", pf_fraction, container, document);
-    encode_key_value("pf count", pf_count, container, document);
-    encode_key_value("pf classified count", pf_classified_count, container, document);
     encode_key_value("pf classified fraction", pf_classified_fraction, container, document);
     encode_key_value("classified pf fraction", classified_pf_fraction, container, document);
     if(average_pf_classified_distance > 0) {
@@ -182,6 +193,7 @@ AccumulatingDecoder& AccumulatingDecoder::operator+=(const AccumulatingDecoder& 
     pf_count += rhs.pf_count;
     classified_count += rhs.classified_count;
     accumulated_classified_distance += rhs.accumulated_classified_distance;
+    low_conditional_confidence_count += rhs.low_conditional_confidence_count;
     accumulated_classified_confidence += rhs.accumulated_classified_confidence;
     pf_classified_count += rhs.pf_classified_count;
     accumulated_pf_classified_distance += rhs.accumulated_pf_classified_distance;

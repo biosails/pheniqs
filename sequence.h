@@ -128,7 +128,7 @@ class Sequence {
         };
         inline string iupac_ambiguity() const {
             string value;
-            value.reserve(length);
+            value.reserve(value.size() + length);
             for(int32_t i(0); i < length; ++i) {
                 value.push_back(BamToAmbiguousAscii[code[i]]);
             }
@@ -311,11 +311,11 @@ class ObservedSequence : public Sequence {
             }
         };
         inline double expected_error() const {
-            double error(0);
+            uint32_t sigma_q(0);
             for(uint8_t* q(quality); *q; ++q) {
-                error += quality_to_probability(static_cast< uint8_t >(*q));
+                sigma_q += *q;
             }
-            return error;
+            return pow(10.0, sigma_q * -0.1);
         };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
             if(length > 0) {
@@ -364,14 +364,8 @@ template < class T > class SequenceArray {
         };
         inline void encode_iupac_ambiguity(kstring_t& buffer) const {
             for(auto& segment : segment_array) {
+                if(ks_not_empty(buffer)) { ks_put_character('-', buffer); }
                 segment.encode_iupac_ambiguity(buffer);
-                // ks_put_character('-', buffer);
-            }
-        };
-        inline void encode_iupac_ambiguity(string& buffer) const {
-            for(auto& segment : segment_array) {
-                segment.encode_iupac_ambiguity(buffer);
-                // ks_put_character('-', buffer);
             }
         };
         inline void encode_bam(string& value) const {
@@ -388,6 +382,15 @@ template < class T > class SequenceArray {
                 }
             }
             return true;
+        };
+        inline double expected_error() const {
+            uint32_t sigma_q(0);
+            for(auto& segment : segment_array) {
+                for(uint8_t* q(segment.quality); *q; ++q) {
+                    sigma_q += *q;
+                }
+            }
+            return pow(10.0, sigma_q * -0.1);
         };
         inline T& front() {
             return segment_array.front();
@@ -440,14 +443,8 @@ class Observation : public SequenceArray< ObservedSequence > {
         };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
             for(auto& segment : segment_array) {
+                if(ks_not_empty(buffer)) { ks_put_character(' ', buffer); }
                 segment.encode_phred_quality(buffer, phred_offset);
-                // ks_put_character(' ', buffer);
-            }
-        };
-        inline void encode_phred_quality(string& buffer, const uint8_t phred_offset) const {
-            for(auto& segment : segment_array) {
-                segment.encode_phred_quality(buffer, phred_offset);
-                // ks_put_character(' ', buffer);
             }
         };
         operator string() const {

@@ -108,7 +108,7 @@ template < class T > class ReadGroupDecoder : public RoutingDecoder< T > {
         };
         inline void decode(const Read& input, Read& output) override {
             this->decoded = &this->unclassified;
-            if(!ks_empty(input.RG())) {
+            if(ks_not_empty(input.RG())) {
                 rg_id_buffer.assign(input.RG().s, input.RG().l);
                 auto record = element_by_rg.find(rg_id_buffer);
                 if(record != element_by_rg.end()) {
@@ -130,7 +130,7 @@ template < class T > class ObservingDecoder : public RoutingDecoder< T > {
         const Rule rule;
         const int32_t nucleotide_cardinality;
         Observation observation;
-        int32_t hamming_distance;
+        int32_t decoding_hamming_distance;
 
     public:
         inline const int32_t segment_cardinality() const {
@@ -141,17 +141,17 @@ template < class T > class ObservingDecoder : public RoutingDecoder< T > {
             rule(decode_value_by_key< Rule >("transform", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
-            hamming_distance(0) {
+            decoding_hamming_distance(0) {
 
             } catch(Error& error) {
                 error.push("ObservingDecoder");
                 throw;
         };
         inline void decode(const Read& input, Read& output) override {
-            if(this->decoded->is_classified() && hamming_distance) {
-                this->decoded->accumulated_distance += static_cast< uint64_t >(hamming_distance);
+            if(this->decoded->is_classified() && decoding_hamming_distance) {
+                this->decoded->accumulated_distance += static_cast< uint64_t >(decoding_hamming_distance);
                 if(!input.qcfail()) {
-                    this->decoded->accumulated_pf_distance += static_cast< uint64_t >(hamming_distance);
+                    this->decoded->accumulated_pf_distance += static_cast< uint64_t >(decoding_hamming_distance);
                 }
             }
             RoutingDecoder< T >::decode(input, output);
@@ -185,8 +185,8 @@ template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public Observ
         const double confidence_threshold;
         const double random_barcode_probability;
         const double adjusted_noise_probability;
-        double conditioned_decoding_probability;
-        double decoding_probability;
+        double conditional_decoding_probability;
+        double decoding_confidence;
 
     public:
         PhredAdjustedMaximumLikelihoodDecoder(const Value& ontology);

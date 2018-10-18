@@ -479,7 +479,7 @@ The `decoder::` prefix in the table refers to the attribute in the parent decode
 | **average pf distance**                         | average hamming distance between observed and decoded barcode in reads that *passed vendor quality control*.    |
 | **average pf confidence**                       | average confidence of decoding a barcode in reads that *passed vendor quality control*.                         |
 | **pf pooled fraction**                          | **pf count** / **decoder::pf count**                                                                            |
-| **pf pooled multiplex fraction**                | **pf count** / **decoder::pf classified count**                                                                 |
+| **pf pooled classified fraction**                | **pf count** / **decoder::pf classified count**                                                                 |
 
 >```json
 {

@@ -54,6 +54,7 @@ class Barcode : public SequenceArray< Sequence >, public BarcodeAccumulator {
             return key;
         };
         inline string iupac_ambiguity() const {
+            /* used for printing only, not effecting performance */
             string value;
             for(const auto& segment : segment_array) {
                 for(int32_t i(0); i < segment.length; ++i) {
@@ -63,80 +64,136 @@ class Barcode : public SequenceArray< Sequence >, public BarcodeAccumulator {
             return value;
         };
         inline void decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
-            double p(1);
-            int32_t d(0);
+            probability = 1;
             for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& reference = segment_array[i];
+                const Sequence& sequnced = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < reference.length; ++j) {
-                    if(observed.code[j] == reference.code[j]) {
-                        p *= quality_to_inverse_probability(observed.quality[j]);
+                for(int32_t j(0); j < sequnced.length; ++j) {
+                    if(observed.code[j] == sequnced.code[j]) {
+                        probability *= quality_to_inverse_probability(observed.quality[j]);
                     } else {
-                        d += 1;
-                        if(observed.code[j] != ANY_NUCLEOTIDE) {
-                            p *= quality_to_third_probability(observed.quality[j]);
-                        } else {
-                            p *= UNIFORM_BASE_PROBABILITY;
-                        }
+                        ++distance;
+                        if(observed.code[j] == ANY_NUCLEOTIDE) {
+                            probability *= UNIFORM_BASE_PROBABILITY;
+                        } else { probability *= quality_to_third_probability(observed.quality[j]); }
                     }
                 }
             }
-            distance = d;
-            probability = p;
+        };
+        inline void accurate_decoding_probability(const Observation& observation, double& probability) const {
+            double sigma_q(0);
+            uint32_t sigma_c(0);
+            for(size_t i(0); i < segment_array.size(); ++i) {
+                const Sequence& sequnced = segment_array[i];
+                const ObservedSequence& observed = observation[i];
+                for(int32_t j(0); j < sequnced.length; ++j) {
+                    if(observed.code[j] == sequnced.code[j]) {
+                        sigma_q += quality_to_inverse_quality(observed.quality[j]);
+                    } else {
+                        if(observed.code[j] == ANY_NUCLEOTIDE) {
+                            sigma_q += UNIFORM_BASE_PHRED;
+                        } else { sigma_c += observed.quality[j]; }
+                    }
+                }
+            }
+            sigma_q += sigma_c;
+            probability = pow(10.0, sigma_q * -0.1);
         };
         inline void accurate_decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
-            double q(0);
-            int32_t d(0);
+            /*  sigma_c accumulates uint8_t Phred quality scores
+                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_PHRED
+            */
+            distance = 0;
+            double sigma_q(0);
+            uint32_t sigma_c(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& reference = segment_array[i];
+                const Sequence& sequnced = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < reference.length; ++j) {
-                    if(observed.code[j] == reference.code[j]) {
-                        q += quality_to_inverse_quality(observed.quality[j]);
+                for(int32_t j(0); j < sequnced.length; ++j) {
+                    if(observed.code[j] == sequnced.code[j]) {
+                        sigma_q += quality_to_inverse_quality(observed.quality[j]);
                     } else {
-                        d += 1;
-                        if(observed.code[j] != ANY_NUCLEOTIDE) {
-                            q += double(observed.quality[j]);
-                        } else {
-                            q += UNIFORM_BASE_PHRED;
-                        }
+                        ++distance;
+                        if(observed.code[j] == ANY_NUCLEOTIDE) {
+                            sigma_q += UNIFORM_BASE_PHRED;
+                        } else { sigma_c += observed.quality[j]; }
                     }
                 }
             }
-            distance = d;
-            probability = pow(10.0, q * -0.1);
+            sigma_q += sigma_c;
+            probability = pow(10.0, sigma_q * -0.1);
         };
-        inline void compensated_decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
-            // use the Kahan summation algorithm to minimize floating point drift
-            // see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
-            double sigma(0);
-            double compensation(0);
+        inline void compensated_decoding_probability(const Observation& observation, double& probability) const {
+            /*  use the Kahan summation algorithm to minimize floating point drift
+                see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+
+                sigma_c accumulates uint8_t Phred quality scores
+                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_PHRED
+            */
             double y(0);
             double t(0);
-            double q(0);
-            int32_t d(0);
+            double sigma_q(0);
+            uint32_t sigma_c(0);
+            double compensation(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& reference = segment_array[i];
+                const Sequence& sequnced = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < reference.length; ++j) {
-                    if(observed.code[j] == reference.code[j]) {
-                        q = quality_to_inverse_quality(observed.quality[j]);
+                for(int32_t j(0); j < sequnced.length; ++j) {
+                    if(observed.code[j] == sequnced.code[j]) {
+                        y = quality_to_inverse_quality(observed.quality[j]) - compensation;
+                        t = sigma_q + y;
+                        compensation = (t - sigma_q) - y;
+                        sigma_q = t;
+
                     } else {
-                        d += 1;
-                        if(observed.code[j] != ANY_NUCLEOTIDE) {
-                            q = double(observed.quality[j]);
-                        } else {
-                            q = UNIFORM_BASE_PHRED;
-                        }
+                        if(observed.code[j] == ANY_NUCLEOTIDE) {
+                            y = UNIFORM_BASE_PHRED - compensation;
+                            t = sigma_q + y;
+                            compensation = (t - sigma_q) - y;
+                            sigma_q = t;
+                        } else { sigma_c += observed.quality[j]; }
                     }
-                    y = q - compensation;
-                    t = sigma + y;
-                    compensation = (t - sigma) - y;
-                    sigma = t;
                 }
             }
-            distance = d;
-            probability = pow(10.0, sigma * -0.1);
+            sigma_q += sigma_c;
+            probability = pow(10.0, sigma_q * -0.1);
+        };
+        inline void compensated_decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
+            /*  use the Kahan summation algorithm to minimize floating point drift
+                see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+
+                sigma_c accumulates uint8_t Phred quality scores
+                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_PHRED
+            */
+            double y(0);
+            double t(0);
+            distance = 0;
+            double sigma_q(0);
+            uint32_t sigma_c(0);
+            double compensation(0);
+            for(size_t i(0); i < segment_array.size(); ++i) {
+                const Sequence& sequnced = segment_array[i];
+                const ObservedSequence& observed = observation[i];
+                for(int32_t j(0); j < sequnced.length; ++j) {
+                    if(observed.code[j] == sequnced.code[j]) {
+                        y = quality_to_inverse_quality(observed.quality[j]) - compensation;
+                        t = sigma_q + y;
+                        compensation = (t - sigma_q) - y;
+                        sigma_q = t;
+
+                    } else {
+                        ++distance;
+                        if(observed.code[j] == ANY_NUCLEOTIDE) {
+                            y = UNIFORM_BASE_PHRED - compensation;
+                            t = sigma_q + y;
+                            compensation = (t - sigma_q) - y;
+                            sigma_q = t;
+                        } else { sigma_c += observed.quality[j]; }
+                    }
+                }
+            }
+            sigma_q += sigma_c;
+            probability = pow(10.0, sigma_q * -0.1);
         };
         void encode(Value& container, Document& document) const override;
         Barcode& operator+=(const Barcode& rhs);

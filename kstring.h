@@ -68,6 +68,9 @@ static inline void ks_increase_to_size(kstring_t& s, size_t size) {
 static inline bool ks_empty(const kstring_t& s) {
     return s.l == 0;
 };
+static inline bool ks_not_empty(const kstring_t& s) {
+    return s.l > 0;
+};
 static inline void ks_clear(kstring_t& s) {
     s.l = 0;
     if(s.s != NULL) {

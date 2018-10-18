@@ -345,7 +345,7 @@ inline bool encode_key_value(const string& key, const list< string >& value, Val
 inline bool encode_key_value(const string& key, const kstring_t& value, Value& container, Document& document) {
     if(container.IsObject()) {
         container.RemoveMember(key.c_str());
-        if(value.l > 0) {
+        if(ks_not_empty(value)) {
             container.AddMember (
                 Value(key.c_str(), key.size(), document.GetAllocator()).Move(),
                 Value(value.s, value.l, document.GetAllocator()).Move(),

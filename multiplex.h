@@ -76,6 +76,8 @@ class Multiplex : public Job {
         vector< RoutingDecoder< Barcode >* > cellular;
 
         void compile_PG();
+        void compile_explicit_input();
+        void compile_sensed_input();
         void compile_input();
         void apply_inheritance();
         void compile_barcode_decoding();
@@ -138,8 +140,6 @@ class MultiplexPivot {
         RoutingDecoder< Channel >* multiplex;
         vector< RoutingDecoder< Barcode >* > molecular;
         vector< RoutingDecoder< Barcode >* > cellular;
-        // InputAccumulator input_accumulator;
-        // OutputAccumulator output_accumulator;
         MultiplexPivot(Multiplex& job, const int32_t& index);
         void start() {
             pivot_thread = thread(&MultiplexPivot::run, this);
@@ -181,10 +181,6 @@ class MultiplexPivot {
         inline void push() {
             multiplex->decoded->push(output);
         };
-        inline void increment() {
-            // input_accumulator.increment(input);
-            // output_accumulator.increment(multiplex->decoded->index, output);
-        };
         inline void clear() {
             input.clear();
             output.clear();
@@ -194,7 +190,6 @@ class MultiplexPivot {
                 validate();
                 transform();
                 push();
-                increment();
                 clear();
             }
         };

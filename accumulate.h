@@ -34,6 +34,7 @@ class BarcodeAccumulator {
         uint64_t pf_count;
         uint64_t accumulated_distance;
         double accumulated_confidence;
+        uint64_t low_confidence_count;
         uint64_t accumulated_pf_distance;
         double accumulated_pf_confidence;
 
@@ -61,6 +62,7 @@ class AccumulatingDecoder {
         uint64_t pf_count;
         uint64_t classified_count;
         uint64_t accumulated_classified_distance;
+        uint64_t low_conditional_confidence_count;
         double accumulated_classified_confidence;
         uint64_t pf_classified_count;
         uint64_t accumulated_pf_classified_distance;

@@ -70,7 +70,6 @@ void Job::finalize() {
         );
     }
 };
-
 void Job::print_ontology(ostream& o) const {
     print_json(ontology, o);
 };

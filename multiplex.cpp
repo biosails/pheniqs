@@ -65,153 +65,6 @@ Multiplex::~Multiplex() {
     input_feed_by_index.clear();
     output_feed_by_index.clear();
 };
-void Multiplex::assemble() {
-    Job::assemble();
-    apply_inheritance();
-    clean();
-};
-void Multiplex::compile() {
-    /* overlay on top of the default configuration */
-    apply_default();
-
-    /* overlay interactive parameters on top of the configuration */
-    apply_interactive();
-
-    /* compile a PG SAM header ontology with details about pheniqs */
-    compile_PG();
-
-    compile_input();
-    compile_barcode_decoding();
-    compile_output();
-
-    /* Remove the decoder repository, it is no longer needed in the compiled instruction */
-    ontology.RemoveMember("decoder");
-    Job::compile();
-};
-void Multiplex::validate() {
-    Job::validate();
-
-    uint8_t input_phred_offset;
-    if(decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, ontology)) {
-        if(input_phred_offset > MAX_PHRED_VALUE || input_phred_offset < MIN_PHRED_VALUE) {
-            throw ConfigurationError("input phred offset out of range " + to_string(input_phred_offset));
-        }
-    }
-
-    uint8_t output_phred_offset;
-    if(decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, ontology)) {
-        if(output_phred_offset > MAX_PHRED_VALUE || output_phred_offset < MIN_PHRED_VALUE) {
-            throw ConfigurationError("output phred offset out of range " + to_string(output_phred_offset));
-        }
-    }
-
-    validate_decoder_group("multiplex");
-    validate_decoder_group("molecular");
-    validate_decoder_group("cellular");
-};
-void Multiplex::load() {
-    validate_url_accessibility();
-    load_thread_pool();
-    load_input();
-    load_output();
-    load_decoding();
-    load_pivot();
-};
-void Multiplex::execute() {
-    load();
-    start();
-    stop();
-    finalize();
-};
-void Multiplex::apply_interactive() {
-    Document adjusted;
-    adjusted.CopyFrom(interactive, adjusted.GetAllocator());
-    Value::MemberIterator reference = adjusted.FindMember("template token");
-    if(reference != adjusted.MemberEnd()) {
-        Value transform(kObjectType);
-        transform.AddMember("token", Value(reference->value, adjusted.GetAllocator()).Move(), adjusted.GetAllocator());
-        adjusted.RemoveMember("template token");
-        adjusted.AddMember("transform", transform.Move(), adjusted.GetAllocator());
-    }
-    overlay(adjusted);
-};
-
-void Multiplex::start() {
-    for(auto feed : input_feed_by_index) {
-        feed->open();
-    }
-    for(auto feed : output_feed_by_index) {
-        feed->open();
-    }
-    for(auto feed : input_feed_by_index) {
-        feed->start();
-    }
-    for(auto feed : output_feed_by_index) {
-        feed->start();
-    }
-    for(auto& pivot : pivot_array) {
-        pivot.start();
-    }
-    for(auto& pivot : pivot_array) {
-        pivot.join();
-    }
-};
-void Multiplex::stop() {
-    /*
-        output channel buffers still have residual records
-        notify all output feeds that no more input is coming
-        and they should explicitly flush
-    */
-    for(auto feed : output_feed_by_index) {
-        feed->stop();
-    }
-    for(auto feed : input_feed_by_index) {
-        feed->join();
-    }
-    for(auto feed : output_feed_by_index) {
-        feed->join();
-    }
-};
-void Multiplex::finalize() {
-    Job::finalize();
-
-    /*  collect statistics from the accumulators on all pivot threads */
-    for(auto& pivot : pivot_array) {
-        *this += pivot;
-    }
-
-    if(multiplex != NULL) {
-        multiplex->finalize();
-        Value element(kObjectType);
-        multiplex->encode(element, report);
-        report.AddMember("multiplex", element.Move(), report.GetAllocator());
-    }
-
-    if(!molecular.empty()) {
-        Value array(kArrayType);
-        for(auto& decoder : molecular) {
-            decoder->finalize();
-            Value element(kObjectType);
-            decoder->encode(element, report);
-            array.PushBack(element.Move(), report.GetAllocator());
-        }
-        report.AddMember("molecular", array.Move(), report.GetAllocator());
-    }
-
-    if(!cellular.empty()) {
-        Value array(kArrayType);
-        for(auto& decoder : cellular) {
-            decoder->finalize();
-            Value element(kObjectType);
-            decoder->encode(element, report);
-            array.PushBack(element.Move(), report.GetAllocator());
-        }
-        report.AddMember("cellular", array.Move(), report.GetAllocator());
-    }
-
-    clean_json_value(report, report);
-    sort_json_value(report, report);
-};
 bool Multiplex::pull(Read& read) {
     vector< unique_lock< mutex > > feed_locks;
     feed_locks.reserve(input_feed_by_index.size());
@@ -234,15 +87,50 @@ bool Multiplex::pull(Read& read) {
     }
     return !end_of_input;
 };
-void Multiplex::describe(ostream& o) const {
-    print_global_instruction(o);
-    print_input_instruction(o);
-    print_transform_instruction(o);
-    print_multiplex_instruction(o);
-    print_molecular_instruction(o);
-    print_cellular_instruction(o);
+void Multiplex::populate_channel(Channel& channel) {
+    map< int32_t, Feed* > feed_by_index;
+    channel.output_feed_by_segment.reserve(channel.output_feed_url_by_segment.size());
+    for(const auto& url : channel.output_feed_url_by_segment) {
+        Feed* feed(output_feed_by_url[url]);
+        channel.output_feed_by_segment.emplace_back(feed);
+        if(feed_by_index.count(feed->index) == 0) {
+            feed_by_index.emplace(make_pair(feed->index, feed));
+        }
+    }
+    channel.output_feed_by_segment.shrink_to_fit();
+
+    channel.output_feed_lock_order.reserve(feed_by_index.size());
+    for(auto& record : feed_by_index) {
+        /* /dev/null is not really being written to so we don't need to lock it */
+        if(!record.second->is_dev_null()) {
+            channel.output_feed_lock_order.push_back(record.second);
+        }
+    }
+    channel.output_feed_lock_order.shrink_to_fit();
+};
+Multiplex& Multiplex::operator+=(const MultiplexPivot& pivot) {
+    if(multiplex != NULL) {
+        *multiplex += *(pivot.multiplex);
+    }
+    if(!molecular.empty()) {
+        for(size_t index(0); index < molecular.size(); ++index) {
+            *(molecular[index]) += *(pivot.molecular[index]);
+        }
+    }
+    if(!cellular.empty()) {
+        for(size_t index(0); index < cellular.size(); ++index) {
+            *(cellular[index]) += *(pivot.cellular[index]);
+        }
+    }
+    return *this;
 };
 
+/* assemble */
+void Multiplex::assemble() {
+    Job::assemble();
+    apply_inheritance();
+    clean();
+};
 void Multiplex::apply_inheritance() {
     apply_repository_inheritence("decoder", ontology, ontology);
     apply_topic_inheritance("multiplex");
@@ -341,95 +229,52 @@ void Multiplex::apply_decoder_inheritance(Value& value) {
     }
 };
 
-void Multiplex::load_decoding() {
-    load_multiplex_decoding();
-    load_molecular_decoding();
-    load_cellular_decoding();
-};
-void Multiplex::load_multiplex_decoding() {
-    Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
-    if(reference != ontology.MemberEnd()) {
-        Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
-        switch(algorithm) {
-            case Algorithm::PAMLD: {
-                multiplex = new PAMLMultiplexDecoder(reference->value);
-                break;
-            };
-            case Algorithm::MDD: {
-                multiplex = new MDMultiplexDecoder(reference->value);
-                break;
-            };
-            case Algorithm::TRANSPARENT: {
-                multiplex = new RoutingDecoder< Channel >(reference->value);
-                break;
-            };
-            default:
-                throw ConfigurationError("unsupported multiplex decoder algorithm " + to_string(algorithm));
-                break;
-        }
-    }
-};
-void Multiplex::load_molecular_decoding() {
-    Value::ConstMemberIterator reference = ontology.FindMember("molecular");
-    if(reference != ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            molecular.reserve(1);
-            load_molecular_decoder(reference->value);
+/* compile */
+void Multiplex::compile() {
+    ontology.RemoveMember("feed");
+    ontology.RemoveMember("input segment cardinality");
+    ontology.RemoveMember("output segment cardinality");
+    ontology.RemoveMember("program");
 
-        } else if(reference->value.IsArray()) {
-            molecular.reserve(reference->value.Size());
-            for(const auto& element : reference->value.GetArray()) {
-                load_molecular_decoder(element);
-            }
-        }
-    }
-    molecular.shrink_to_fit();
-};
-void Multiplex::load_molecular_decoder(const Value& value) {
-    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
-    switch(algorithm) {
-        case Algorithm::NAIVE: {
-            molecular.emplace_back(new NaiveMolecularDecoder(value));
-            break;
-        };
-        default:
-            throw ConfigurationError("unsupported molecular decoder algorithm " + to_string(algorithm));
-            break;
-    }
-};
-void Multiplex::load_cellular_decoding() {
-    Value::ConstMemberIterator reference = ontology.FindMember("cellular");
-    if(reference != ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            cellular.reserve(1);
-            load_cellular_decoder(reference->value);
+    /* overlay on top of the default configuration */
+    apply_default();
 
-        } else if(reference->value.IsArray()) {
-            cellular.reserve(reference->value.Size());
-            for(const auto& element : reference->value.GetArray()) {
-                load_cellular_decoder(element);
-            }
-        }
-    }
-    cellular.shrink_to_fit();
-};
-void Multiplex::load_cellular_decoder(const Value& value) {
-    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
-    switch(algorithm) {
-        case Algorithm::PAMLD: {
-            cellular.emplace_back(new PAMLCellularDecoder(value));
-            break;
-        };
-        case Algorithm::MDD: {
-            cellular.emplace_back(new MDCellularDecoder(value));
-            break;
-        };
-        default:
-            throw ConfigurationError("unsupported cellular decoder algorithm " + to_string(algorithm));
-            break;
-    }
-};
+    /* overlay interactive parameters on top of the configuration */
+    apply_interactive();
 
+    /* compile a PG SAM header ontology with details about pheniqs */
+    compile_PG();
+
+    ontology.AddMember("feed", Value(kObjectType).Move(), ontology.GetAllocator());
+    compile_input();
+    compile_barcode_decoding();
+    compile_output();
+
+    /* Remove the decoder repository, it is no longer needed in the compiled instruction */
+    ontology.RemoveMember("decoder");
+    Job::compile();
+};
+void Multiplex::apply_interactive() {
+    Document adjusted;
+    adjusted.CopyFrom(interactive, adjusted.GetAllocator());
+
+    /* remove flags */
+    adjusted.RemoveMember("static only");
+    adjusted.RemoveMember("lint only");
+    adjusted.RemoveMember("validate only");
+    adjusted.RemoveMember("compile only");
+
+    /* format template token array into an output transform */
+    Value::MemberIterator reference = adjusted.FindMember("template token");
+    if(reference != adjusted.MemberEnd()) {
+        Value transform(kObjectType);
+        transform.AddMember("token", Value(reference->value, adjusted.GetAllocator()).Move(), adjusted.GetAllocator());
+        adjusted.AddMember("transform", transform.Move(), adjusted.GetAllocator());
+    }
+    adjusted.RemoveMember("template token");
+
+    overlay(adjusted);
+};
 void Multiplex::compile_PG() {
     Value PG(kObjectType);
 
@@ -456,188 +301,227 @@ void Multiplex::compile_PG() {
 };
 void Multiplex::compile_input() {
     /* Populate the input_feed_by_index and input_feed_by_segment arrays */
-
-    Platform platform(decode_value_by_key< Platform >("platform", ontology));
-    int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
-    uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
-
     expand_url_value_by_key("base input url", ontology, ontology);
     URL base(decode_value_by_key< URL >("base input url", ontology));
 
     expand_url_array_by_key("input", ontology, ontology, IoDirection::IN);
     relocate_url_array_by_key("input", ontology, ontology, base);
-    list< URL > explicit_url_array(decode_value_by_key< list< URL > >("input", ontology));
 
+    if(sense_input_layout()) {
+        compile_sensed_input();
+    } else {
+        compile_explicit_input();
+    }
+
+    /*  validate leading_segment_index */
+    int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
+    int32_t leading_segment_index(decode_value_by_key< int32_t >("leading segment index", ontology));
+    if(leading_segment_index >= input_segment_cardinality) {
+        throw ConfigurationError("leading segment index " + to_string(leading_segment_index) + " references non existing input segment");
+    }
+};
+void Multiplex::compile_sensed_input() {
     int32_t feed_index(0);
     int32_t input_segment_cardinality(0);
-    if(sense_input_layout()) {
-        /*  create a proxy for each unique feed
-            feed_proxy_by_index is ordered by the first appearance of the url */
-        list< FeedProxy > feed_proxy_by_index;
-        unordered_map< URL, FeedProxy* > feed_proxy_by_url;
-        for(const auto& url : explicit_url_array) {
-            if(feed_proxy_by_url.count(url) == 0) {
-                Value element(kObjectType);
-                encode_key_value("index", feed_index, element, ontology);
-                encode_key_value("url", url, element, ontology);
-                encode_key_value("direction", IoDirection::IN, element, ontology);
-                encode_key_value("platform", platform, element, ontology);
-                encode_key_value("capacity", buffer_capacity, element, ontology);
-                encode_key_value("resolution", 1, element, ontology);
-                encode_key_value("phred offset", input_phred_offset, element, ontology);
-                feed_proxy_by_index.emplace_back(element);
-                feed_proxy_by_url.emplace(make_pair(url, &feed_proxy_by_index.back()));
-                ++feed_index;
-            }
-        }
+    int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
+    uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
+    list< URL > explicit_url_array(decode_value_by_key< list< URL > >("input", ontology));
+    Platform platform(decode_value_by_key< Platform >("platform", ontology));
 
-        /*  Detect the resolution of every feed
-            Count the number or consecutive reads with identical read id
-            The resolution is the number of segments of each read interleaved into the file
-            the read id of all interleaved blocks from all input feeds must match.
-            The sum of all uniqe input feed resolutions is the input segment cardinality */
-        unordered_map< URL, Feed* > feed_by_url;
-        unordered_map< URL, string > read_id_by_url;
-        for(auto& proxy : feed_proxy_by_index) {
-            Feed* feed(NULL);
-            int32_t resolution(0);
-            proxy.open();
-            Segment segment;
-            string feed_read_id;
-            switch(proxy.kind()) {
-                case FormatKind::FASTQ: {
-                    FastqFeed* fastq_feed = new FastqFeed(proxy);
-                    fastq_feed->set_thread_pool(&thread_pool);
-                    fastq_feed->open();
-                    fastq_feed->replenish();
-                    if(fastq_feed->peek(segment, resolution)) {
-                        ++resolution;
-                        feed_read_id.assign(segment.name.s, segment.name.l);
-                        while (
-                            fastq_feed->peek(segment, resolution) &&
-                            feed_read_id.size() == segment.name.l &&
-                            strncmp(feed_read_id.c_str(), segment.name.s, segment.name.l)
-                        ) { ++resolution; }
-                    }
-                    fastq_feed->calibrate_resolution(resolution);
-                    feed = fastq_feed;
-                    break;
-                };
-                case FormatKind::HTS: {
-                    HtsFeed* hts_feed = new HtsFeed(proxy);
-                    hts_feed->set_thread_pool(&thread_pool);
-                    hts_feed->open();
-                    hts_feed->replenish();
-                    if(hts_feed->peek(segment, resolution)) {
-                        feed_read_id.assign(segment.name.s, segment.name.l);
-                        resolution = segment.total_segments();
-                    }
-                    hts_feed->calibrate_resolution(resolution);
-                    /*
-                        const HtsHeader& header = ((HtsFeed*)feed)->get_header();
-                        for(const auto& record : header.read_group_by_id) {}
-                    */
-                    feed = hts_feed;
-                    break;
-                };
-                case FormatKind::DEV_NULL: {
-                    throw ConfigurationError("/dev/null can not be used for input");
-                    break;
-                };
-                default: {
-                    throw ConfigurationError("unknown input format " + string(proxy.url));
-                    break;
-                };
-            }
-
-            read_id_by_url[proxy.url] = feed_read_id;
-            input_feed_by_index.push_back(feed);
-            feed_by_url.emplace(make_pair(proxy.url, feed));
-            input_segment_cardinality += resolution;
-        };
-
-        /* Check that the read id of all interleaved blocks from all input feeds match. */
-        if(input_segment_cardinality > 1) {
-            string anchor_read_id;
-            URL anchor_url;
-            for(auto& record : read_id_by_url) {
-                if(anchor_read_id.empty()) {
-                    anchor_url = record.first;
-                    anchor_read_id = record.second;
-                } else if(anchor_read_id != record.second) {
-                    throw ConfigurationError(string(anchor_url) + " and " + string(record.second) + " are out of sync");
-                }
-            }
-        }
-        encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
-
-        input_feed_by_segment.reserve(input_segment_cardinality);
-        for(auto& feed : input_feed_by_index) {
-            for(int32_t i(0); i < feed->resolution(); ++i) {
-                input_feed_by_segment.push_back(feed);
-            }
-        }
-
-        list< URL > feed_url_by_segment;
-        for(auto& feed : input_feed_by_segment) {
-            feed_url_by_segment.push_back(feed->url);
-        }
-        encode_key_value("input", feed_url_by_segment, ontology, ontology);
-        encode_key_value("input feed", input_feed_by_index, ontology, ontology);
-        encode_key_value("input feed by segment", input_feed_by_segment, ontology, ontology);
-
-    } else {
-        /* encode the input segment cardinality */
-        input_segment_cardinality = static_cast< int32_t>(explicit_url_array.size());
-        encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
-
-        list< URL > feed_url_by_index;
-        map< URL, int > feed_resolution;
-        for(const auto& url : explicit_url_array) {
-            auto record = feed_resolution.find(url);
-            if(record == feed_resolution.end()) {
-                feed_resolution[url] = 1;
-                feed_url_by_index.push_back(url);
-            } else { ++(record->second); }
-        }
-
-        unordered_map< URL, Value > feed_ontology_by_url;
-        for(const auto& url : feed_url_by_index) {
+    /*  create a proxy for each unique feed
+        feed_proxy_by_index is ordered by the first appearance of the url */
+    list< FeedProxy > feed_proxy_by_index;
+    unordered_map< URL, FeedProxy* > feed_proxy_by_url;
+    for(const auto& url : explicit_url_array) {
+        if(feed_proxy_by_url.count(url) == 0) {
             Value element(kObjectType);
-            int resolution(feed_resolution[url]);
             encode_key_value("index", feed_index, element, ontology);
             encode_key_value("url", url, element, ontology);
             encode_key_value("direction", IoDirection::IN, element, ontology);
             encode_key_value("platform", platform, element, ontology);
             encode_key_value("capacity", buffer_capacity, element, ontology);
-            encode_key_value("resolution", resolution, element, ontology);
+            encode_key_value("resolution", 1, element, ontology);
             encode_key_value("phred offset", input_phred_offset, element, ontology);
-            feed_ontology_by_url.emplace(make_pair(url, move(element)));
+            feed_proxy_by_index.emplace_back(element);
+            feed_proxy_by_url.emplace(make_pair(url, &feed_proxy_by_index.back()));
             ++feed_index;
         }
-
-        Value feed_by_segment_array(kArrayType);
-        for(const auto& url : explicit_url_array) {
-            Value feed_ontology(feed_ontology_by_url[url], ontology.GetAllocator());
-            feed_by_segment_array.PushBack(feed_ontology.Move(), ontology.GetAllocator());
-        }
-        ontology.RemoveMember("input feed by segment");
-        ontology.AddMember("input feed by segment", feed_by_segment_array.Move(), ontology.GetAllocator());
-
-        Value feed_by_index_array(kArrayType);
-        for(const auto& url : feed_url_by_index) {
-            feed_by_index_array.PushBack(feed_ontology_by_url[url].Move(), ontology.GetAllocator());
-        }
-        feed_ontology_by_url.clear();
-
-        ontology.RemoveMember("input feed");
-        ontology.AddMember("input feed", feed_by_index_array.Move(), ontology.GetAllocator());
     }
 
-    /*  validate leading_segment_index */
-    int32_t leading_segment_index(decode_value_by_key< int32_t >("leading segment index", ontology));
-    if(leading_segment_index >= input_segment_cardinality) {
-        throw ConfigurationError("leading segment index " + to_string(leading_segment_index) + " references non existing input segment");
+    /*  Detect the resolution of every feed
+        Count the number or consecutive reads with identical read id
+        The resolution is the number of segments of each read interleaved into the file
+        the read id of all interleaved blocks from all input feeds must match.
+        The sum of all uniqe input feed resolutions is the input segment cardinality */
+    unordered_map< URL, Feed* > feed_by_url;
+    unordered_map< URL, string > read_id_by_url;
+    for(auto& proxy : feed_proxy_by_index) {
+        Feed* feed(NULL);
+        int32_t resolution(0);
+        proxy.open();
+        Segment segment;
+        string feed_read_id;
+        switch(proxy.kind()) {
+            case FormatKind::FASTQ: {
+                FastqFeed* fastq_feed = new FastqFeed(proxy);
+                fastq_feed->set_thread_pool(&thread_pool);
+                fastq_feed->open();
+                fastq_feed->replenish();
+                if(fastq_feed->peek(segment, resolution)) {
+                    ++resolution;
+                    feed_read_id.assign(segment.name.s, segment.name.l);
+                    while (
+                        fastq_feed->peek(segment, resolution) &&
+                        feed_read_id.size() == segment.name.l &&
+                        strncmp(feed_read_id.c_str(), segment.name.s, segment.name.l)
+                    ) { ++resolution; }
+                }
+                fastq_feed->calibrate_resolution(resolution);
+                feed = fastq_feed;
+                break;
+            };
+            case FormatKind::HTS: {
+                HtsFeed* hts_feed = new HtsFeed(proxy);
+                hts_feed->set_thread_pool(&thread_pool);
+                hts_feed->open();
+                hts_feed->replenish();
+                if(hts_feed->peek(segment, resolution)) {
+                    feed_read_id.assign(segment.name.s, segment.name.l);
+                    resolution = segment.total_segments();
+                }
+                hts_feed->calibrate_resolution(resolution);
+                /*
+                    const HtsHeader& header = ((HtsFeed*)feed)->get_header();
+                    for(const auto& record : header.read_group_by_id) {}
+                */
+                feed = hts_feed;
+                break;
+            };
+            case FormatKind::DEV_NULL: {
+                throw ConfigurationError("/dev/null can not be used for input");
+                break;
+            };
+            default: {
+                throw ConfigurationError("unknown input format " + string(proxy.url));
+                break;
+            };
+        }
+
+        read_id_by_url[proxy.url] = feed_read_id;
+        input_feed_by_index.push_back(feed);
+        feed_by_url.emplace(make_pair(proxy.url, feed));
+        input_segment_cardinality += resolution;
+    };
+
+    /* Check that the read id of all interleaved blocks from all input feeds match. */
+    if(input_segment_cardinality > 1) {
+        string anchor_read_id;
+        URL anchor_url;
+        for(auto& record : read_id_by_url) {
+            if(anchor_read_id.empty()) {
+                anchor_url = record.first;
+                anchor_read_id = record.second;
+            } else if(anchor_read_id != record.second) {
+                throw ConfigurationError(string(anchor_url) + " and " + string(record.second) + " are out of sync");
+            }
+        }
+    }
+    encode_key_value("input segment cardinality", input_segment_cardinality, ontology, ontology);
+
+    input_feed_by_segment.reserve(input_segment_cardinality);
+    for(auto& feed : input_feed_by_index) {
+        for(int32_t i(0); i < feed->resolution(); ++i) {
+            input_feed_by_segment.push_back(feed);
+        }
+    }
+
+    list< URL > feed_url_by_segment;
+    for(auto& feed : input_feed_by_segment) {
+        feed_url_by_segment.push_back(feed->url);
+    }
+    encode_key_value("input", feed_url_by_segment, ontology, ontology);
+    encode_key_value("input feed", input_feed_by_index, ontology["feed"], ontology);
+    encode_key_value("input feed by segment", input_feed_by_segment, ontology["feed"], ontology);
+};
+void Multiplex::compile_explicit_input() {
+    int32_t feed_index(0);
+    int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
+    uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
+    list< URL > explicit_url_array(decode_value_by_key< list< URL > >("input", ontology));
+    Platform platform(decode_value_by_key< Platform >("platform", ontology));
+
+    /* encode the input segment cardinality */
+    encode_key_value("input segment cardinality", static_cast< int32_t>(explicit_url_array.size()), ontology, ontology);
+
+    list< URL > feed_url_by_index;
+    map< URL, int > feed_resolution;
+    for(const auto& url : explicit_url_array) {
+        auto record = feed_resolution.find(url);
+        if(record == feed_resolution.end()) {
+            feed_resolution[url] = 1;
+            feed_url_by_index.push_back(url);
+        } else { ++(record->second); }
+    }
+
+    unordered_map< URL, Value > feed_ontology_by_url;
+    for(const auto& url : feed_url_by_index) {
+        Value element(kObjectType);
+        int resolution(feed_resolution[url]);
+        encode_key_value("index", feed_index, element, ontology);
+        encode_key_value("url", url, element, ontology);
+        encode_key_value("direction", IoDirection::IN, element, ontology);
+        encode_key_value("platform", platform, element, ontology);
+        encode_key_value("capacity", buffer_capacity, element, ontology);
+        encode_key_value("resolution", resolution, element, ontology);
+        encode_key_value("phred offset", input_phred_offset, element, ontology);
+        feed_ontology_by_url.emplace(make_pair(url, move(element)));
+        ++feed_index;
+    }
+
+    Value feed_by_segment_array(kArrayType);
+    for(const auto& url : explicit_url_array) {
+        Value feed_ontology(feed_ontology_by_url[url], ontology.GetAllocator());
+        feed_by_segment_array.PushBack(feed_ontology.Move(), ontology.GetAllocator());
+    }
+    ontology["feed"].RemoveMember("input feed by segment");
+    ontology["feed"].AddMember("input feed by segment", feed_by_segment_array.Move(), ontology.GetAllocator());
+
+    Value feed_by_index_array(kArrayType);
+    for(const auto& url : feed_url_by_index) {
+        feed_by_index_array.PushBack(feed_ontology_by_url[url].Move(), ontology.GetAllocator());
+    }
+    feed_ontology_by_url.clear();
+
+    ontology["feed"].RemoveMember("input feed");
+    ontology["feed"].AddMember("input feed", feed_by_index_array.Move(), ontology.GetAllocator());
+};
+void Multiplex::compile_transformation(Value& value) {
+    /* add the default observation if one was not specificed.
+       default observation will treat every token as a segment */
+    if(value.IsObject()) {
+        Value::MemberIterator reference = value.FindMember("transform");
+        if(reference != value.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                Value& transform_element(reference->value);
+                reference = transform_element.FindMember("token");
+                if(reference != transform_element.MemberEnd()) {
+                    if(reference->value.IsArray()) {
+                        size_t token_cardinality(reference->value.Size());
+
+                        reference = transform_element.FindMember("segment pattern");
+                        if(reference == transform_element.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
+                            Value observation(kArrayType);
+                            for(size_t i(0); i < token_cardinality; ++i) {
+                                string element(to_string(i));
+                                observation.PushBack(Value(element.c_str(), element.size(),ontology.GetAllocator()).Move(), ontology.GetAllocator());
+                            }
+                            transform_element.RemoveMember("segment pattern");
+                            transform_element.AddMember(Value("segment pattern", ontology.GetAllocator()).Move(), observation.Move(), ontology.GetAllocator());
+                        }
+                    } else { throw ConfigurationError("transform token element is not an array"); }
+                } else { throw ConfigurationError("transform element is missing a token array"); }
+            }
+        }
     }
 };
 void Multiplex::compile_barcode_decoding() {
@@ -782,6 +666,43 @@ void Multiplex::compile_codec(Value& value, const Value& default_decoder, const 
         }
     }
 };
+bool Multiplex::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+    buffer.clear();
+    if(!decode_value_by_key< string >(key, buffer, container)) {
+        if(infer_PU("PU", buffer, container, undetermined)) {
+            encode_key_value(key, buffer, container, ontology);
+            return true;
+        } else { return false; }
+    } else { return true; }
+};
+bool Multiplex::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+    buffer.clear();
+    string suffix;
+    if(!decode_value_by_key< string >(key, suffix, container)) {
+        if(!undetermined) {
+            list< string > barcode;
+            if(decode_value_by_key< list< string > >("barcode", barcode, container)) {
+                for(auto& segment : barcode) {
+                    suffix.append(segment);
+                }
+            }
+        } else { suffix.assign("undetermined"); }
+
+        if(!suffix.empty()) {
+            if(decode_value_by_key< string >("flowcell id", buffer, container)) {
+                buffer.push_back(':');
+                int32_t lane;
+                if(decode_value_by_key< int32_t >("flowcell lane number", lane, container)) {
+                    buffer.append(to_string(lane));
+                    buffer.push_back(':');
+                }
+            }
+            buffer.append(suffix);
+            encode_key_value(key, buffer, container, ontology);
+            return true;
+        } else { return false; }
+    } else { return true; }
+};
 void Multiplex::compile_decoder_transformation(Value& value) {
     if(value.HasMember("transform")) {
         compile_transformation(value);
@@ -842,27 +763,7 @@ void Multiplex::compile_decoder_transformation(Value& value) {
 
         CodecMetric metric(value);
         metric.compile_barcode_tolerance(value, ontology);
-
     }
-};
-void Multiplex::compile_output_transformation() {
-    const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
-
-    /* if the output transform was not defined add an empty dictionary */
-    if(!ontology.HasMember("transform")) {
-        ontology.AddMember("transform", Value(kObjectType).Move(), ontology.GetAllocator());
-    }
-
-    /* if transform does not define a token array route all input segments to the output verbatim */
-    if(!ontology["transform"].HasMember("token")) {
-        Value token_array(kArrayType);
-        for(int32_t i(0); i < input_segment_cardinality; ++i) {
-            string token(to_string(i) + "::");
-            token_array.PushBack(Value(token.c_str(), token.size(), ontology.GetAllocator()), ontology.GetAllocator());
-        }
-        ontology["transform"].AddMember("token", token_array.Move(), ontology.GetAllocator());
-    }
-    compile_transformation(ontology);
 };
 void Multiplex::compile_output() {
     /* expand the report URL */
@@ -982,8 +883,9 @@ void Multiplex::compile_output() {
                             const Value& proxy(feed_ontology_by_url[url]);
                             feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
                         }
-                        element->RemoveMember("output feed by segment");
-                        element->AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
+                        element->RemoveMember("feed");
+                        element->AddMember("feed", Value(kObjectType).Move(), ontology.GetAllocator());
+                        (*element)["feed"].AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
                     }
                 }
 
@@ -991,78 +893,31 @@ void Multiplex::compile_output() {
                 for(auto& record : feed_ontology_by_url) {
                     feed_array.PushBack(record.second.Move(), ontology.GetAllocator());
                 }
-                ontology.RemoveMember("output feed");
-                ontology.AddMember("output feed", feed_array.Move(), ontology.GetAllocator());
+                ontology["feed"].RemoveMember("output feed");
+                ontology["feed"].AddMember("output feed", feed_array.Move(), ontology.GetAllocator());
             }
             cross_validate_io();
         }
     }
 };
-void Multiplex::compile_transformation(Value& value) {
-    /* add the default observation if one was not specificed.
-       default observation will treat every token as a segment */
-    if(value.IsObject()) {
-        Value::MemberIterator reference = value.FindMember("transform");
-        if(reference != value.MemberEnd()) {
-            if(reference->value.IsObject()) {
-                Value& transform_element(reference->value);
-                reference = transform_element.FindMember("token");
-                if(reference != transform_element.MemberEnd()) {
-                    if(reference->value.IsArray()) {
-                        size_t token_cardinality(reference->value.Size());
+void Multiplex::compile_output_transformation() {
+    const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
 
-                        reference = transform_element.FindMember("segment pattern");
-                        if(reference == transform_element.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
-                            Value observation(kArrayType);
-                            for(size_t i(0); i < token_cardinality; ++i) {
-                                string element(to_string(i));
-                                observation.PushBack(Value(element.c_str(), element.size(),ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                            }
-                            transform_element.RemoveMember("segment pattern");
-                            transform_element.AddMember(Value("segment pattern", ontology.GetAllocator()).Move(), observation.Move(), ontology.GetAllocator());
-                        }
-                    } else { throw ConfigurationError("transform token element is not an array"); }
-                } else { throw ConfigurationError("transform element is missing a token array"); }
-            }
-        }
+    /* if the output transform was not defined add an empty dictionary */
+    if(!ontology.HasMember("transform")) {
+        ontology.AddMember("transform", Value(kObjectType).Move(), ontology.GetAllocator());
     }
-};
-bool Multiplex::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
-    buffer.clear();
-    string suffix;
-    if(!decode_value_by_key< string >(key, suffix, container)) {
-        if(!undetermined) {
-            list< string > barcode;
-            if(decode_value_by_key< list< string > >("barcode", barcode, container)) {
-                for(auto& segment : barcode) {
-                    suffix.append(segment);
-                }
-            }
-        } else { suffix.assign("undetermined"); }
 
-        if(!suffix.empty()) {
-            if(decode_value_by_key< string >("flowcell id", buffer, container)) {
-                buffer.push_back(':');
-                int32_t lane;
-                if(decode_value_by_key< int32_t >("flowcell lane number", lane, container)) {
-                    buffer.append(to_string(lane));
-                    buffer.push_back(':');
-                }
-            }
-            buffer.append(suffix);
-            encode_key_value(key, buffer, container, ontology);
-            return true;
-        } else { return false; }
-    } else { return true; }
-};
-bool Multiplex::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
-    buffer.clear();
-    if(!decode_value_by_key< string >(key, buffer, container)) {
-        if(infer_PU("PU", buffer, container, undetermined)) {
-            encode_key_value(key, buffer, container, ontology);
-            return true;
-        } else { return false; }
-    } else { return true; }
+    /* if transform does not define a token array route all input segments to the output verbatim */
+    if(!ontology["transform"].HasMember("token")) {
+        Value token_array(kArrayType);
+        for(int32_t i(0); i < input_segment_cardinality; ++i) {
+            string token(to_string(i) + "::");
+            token_array.PushBack(Value(token.c_str(), token.size(), ontology.GetAllocator()), ontology.GetAllocator());
+        }
+        ontology["transform"].AddMember("token", token_array.Move(), ontology.GetAllocator());
+    }
+    compile_transformation(ontology);
 };
 void Multiplex::pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality) {
     list< URL > array;
@@ -1081,32 +936,56 @@ void Multiplex::pad_url_array_by_key(const Value::Ch* key, Value& container, con
 };
 void Multiplex::cross_validate_io() {
     set< URL > input_url_set;
-    Value::MemberIterator reference = ontology.FindMember("input feed");
-    if(reference != ontology.MemberEnd()) {
+    Value::MemberIterator reference = ontology["feed"].FindMember("input feed");
+    if(reference != ontology["feed"].MemberEnd()) {
         for(auto& element : reference->value.GetArray()) {
             input_url_set.emplace(decode_value_by_key< URL >("url", element));
         }
     }
     set< URL > output_url_set;
-    reference = ontology.FindMember("output feed");
-    if(reference != ontology.MemberEnd()) {
+    reference = ontology["feed"].FindMember("output feed");
+    if(reference != ontology["feed"].MemberEnd()) {
         for(auto& element : reference->value.GetArray()) {
             output_url_set.emplace(decode_value_by_key< URL >("url", element));
         }
     }
     URL report_url(decode_value_by_key< URL >("report url", ontology));
-
-    if(input_url_set.count(report_url) > 0) {
-        throw ConfigurationError("URL " + string(report_url) + " can not be used for both input and report");
-    }
-    if(output_url_set.count(report_url) > 0) {
-        throw ConfigurationError("URL " + string(report_url) + " can not be used for both output and report");
+    if(!report_url.is_dev_null()) {
+        if(input_url_set.count(report_url) > 0) {
+            throw ConfigurationError("URL " + string(report_url) + " can not be used for both input and report");
+        }
+        if(output_url_set.count(report_url) > 0) {
+            throw ConfigurationError("URL " + string(report_url) + " can not be used for both output and report");
+        }
     }
     for(auto& url : output_url_set) {
         if(input_url_set.count(url) > 0) {
             throw ConfigurationError("URL " + string(url) + " is used for both input and output");
         }
     }
+};
+
+/* validate */
+void Multiplex::validate() {
+    Job::validate();
+
+    uint8_t input_phred_offset;
+    if(decode_value_by_key< uint8_t >("input phred offset", input_phred_offset, ontology)) {
+        if(input_phred_offset > MAX_PHRED_VALUE || input_phred_offset < MIN_PHRED_VALUE) {
+            throw ConfigurationError("input phred offset out of range " + to_string(input_phred_offset));
+        }
+    }
+
+    uint8_t output_phred_offset;
+    if(decode_value_by_key< uint8_t >("output phred offset", output_phred_offset, ontology)) {
+        if(output_phred_offset > MAX_PHRED_VALUE || output_phred_offset < MIN_PHRED_VALUE) {
+            throw ConfigurationError("output phred offset out of range " + to_string(output_phred_offset));
+        }
+    }
+
+    validate_decoder_group("multiplex");
+    validate_decoder_group("molecular");
+    validate_decoder_group("cellular");
 };
 void Multiplex::validate_decoder_group(const Value::Ch* key) {
     Value::MemberIterator reference = ontology.FindMember(key);
@@ -1143,10 +1022,26 @@ void Multiplex::validate_decoder(Value& value) {
         }
     }
 };
+
+/* execute */
+void Multiplex::execute() {
+    load();
+    start();
+    stop();
+    finalize();
+};
+void Multiplex::load() {
+    validate_url_accessibility();
+    load_thread_pool();
+    load_input();
+    load_output();
+    load_decoding();
+    load_pivot();
+};
 void Multiplex::validate_url_accessibility() {
     URL url;
-    Value::MemberIterator reference = ontology.FindMember("input feed");
-    if(reference != ontology.MemberEnd()) {
+    Value::MemberIterator reference = ontology["feed"].FindMember("input feed");
+    if(reference != ontology["feed"].MemberEnd()) {
         for(auto& element : reference->value.GetArray()) {
             if(decode_value_by_key< URL >("url", url, element)) {
                 if(!url.is_readable()) {
@@ -1156,8 +1051,8 @@ void Multiplex::validate_url_accessibility() {
         }
     }
 
-    reference = ontology.FindMember("output feed");
-    if(reference != ontology.MemberEnd()) {
+    reference = ontology["feed"].FindMember("output feed");
+    if(reference != ontology["feed"].MemberEnd()) {
         for(auto& element : reference->value.GetArray()) {
             if(decode_value_by_key< URL >("url", url, element)) {
                 if(!url.is_writable()) {
@@ -1178,7 +1073,7 @@ void Multiplex::load_input() {
             The list has already been enumerated by the interface
             and contains only unique url references
         */
-        list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("input feed", ontology));
+        list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("input feed", ontology["feed"]));
 
         /*  Initialized the hfile reference and verify input format */
         for(auto& proxy : feed_proxy_array) {
@@ -1232,7 +1127,7 @@ void Multiplex::load_output() {
         The list has already been enumerated by the environment
         and contains only unique url references
     */
-    list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("output feed", ontology));
+    list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("output feed", ontology["feed"]));
     HeadPGAtom program(decode_value_by_key< HeadPGAtom >("program", ontology));
 
     /*  Register the read group elements on the feed proxy so it can be added to SAM header
@@ -1306,32 +1201,185 @@ void Multiplex::load_output() {
             output_feed_by_url.emplace(make_pair(proxy.url, feed));
     }
 };
+void Multiplex::load_decoding() {
+    load_multiplex_decoding();
+    load_molecular_decoding();
+    load_cellular_decoding();
+};
+void Multiplex::load_multiplex_decoding() {
+    Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
+    if(reference != ontology.MemberEnd()) {
+        Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
+        switch(algorithm) {
+            case Algorithm::PAMLD: {
+                multiplex = new PAMLMultiplexDecoder(reference->value);
+                break;
+            };
+            case Algorithm::MDD: {
+                multiplex = new MDMultiplexDecoder(reference->value);
+                break;
+            };
+            case Algorithm::TRANSPARENT: {
+                multiplex = new RoutingDecoder< Channel >(reference->value);
+                break;
+            };
+            default:
+                throw ConfigurationError("unsupported multiplex decoder algorithm " + to_string(algorithm));
+                break;
+        }
+    }
+};
+void Multiplex::load_molecular_decoding() {
+    Value::ConstMemberIterator reference = ontology.FindMember("molecular");
+    if(reference != ontology.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            molecular.reserve(1);
+            load_molecular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            molecular.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_molecular_decoder(element);
+            }
+        }
+    }
+    molecular.shrink_to_fit();
+};
+void Multiplex::load_molecular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::NAIVE: {
+            molecular.emplace_back(new NaiveMolecularDecoder(value));
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported molecular decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
+void Multiplex::load_cellular_decoding() {
+    Value::ConstMemberIterator reference = ontology.FindMember("cellular");
+    if(reference != ontology.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            cellular.reserve(1);
+            load_cellular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            cellular.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_cellular_decoder(element);
+            }
+        }
+    }
+    cellular.shrink_to_fit();
+};
+void Multiplex::load_cellular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::PAMLD: {
+            cellular.emplace_back(new PAMLCellularDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            cellular.emplace_back(new MDCellularDecoder(value));
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported cellular decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
 void Multiplex::load_pivot() {
     int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     for(int32_t index(0); index < threads; ++index) {
         pivot_array.emplace_back(*this, index);
     }
 };
-void Multiplex::populate_channel(Channel& channel) {
-    map< int32_t, Feed* > feed_by_index;
-    channel.output_feed_by_segment.reserve(channel.output_feed_url_by_segment.size());
-    for(const auto& url : channel.output_feed_url_by_segment) {
-        Feed* feed(output_feed_by_url[url]);
-        channel.output_feed_by_segment.emplace_back(feed);
-        if(feed_by_index.count(feed->index) == 0) {
-            feed_by_index.emplace(make_pair(feed->index, feed));
-        }
+void Multiplex::start() {
+    for(auto feed : input_feed_by_index) {
+        feed->open();
     }
-    channel.output_feed_by_segment.shrink_to_fit();
+    for(auto feed : output_feed_by_index) {
+        feed->open();
+    }
+    for(auto feed : input_feed_by_index) {
+        feed->start();
+    }
+    for(auto feed : output_feed_by_index) {
+        feed->start();
+    }
+    for(auto& pivot : pivot_array) {
+        pivot.start();
+    }
+    for(auto& pivot : pivot_array) {
+        pivot.join();
+    }
+};
+void Multiplex::stop() {
+    /*
+        output channel buffers still have residual records
+        notify all output feeds that no more input is coming
+        and they should explicitly flush
+    */
+    for(auto feed : output_feed_by_index) {
+        feed->stop();
+    }
+    for(auto feed : input_feed_by_index) {
+        feed->join();
+    }
+    for(auto feed : output_feed_by_index) {
+        feed->join();
+    }
+};
+void Multiplex::finalize() {
+    Job::finalize();
 
-    channel.output_feed_lock_order.reserve(feed_by_index.size());
-    for(auto& record : feed_by_index) {
-        /* /dev/null is not really being written to so we don't need to lock it */
-        if(!record.second->is_dev_null()) {
-            channel.output_feed_lock_order.push_back(record.second);
-        }
+    /*  collect statistics from the accumulators on all pivot threads */
+    for(auto& pivot : pivot_array) {
+        *this += pivot;
     }
-    channel.output_feed_lock_order.shrink_to_fit();
+
+    if(multiplex != NULL) {
+        multiplex->finalize();
+        Value element(kObjectType);
+        multiplex->encode(element, report);
+        report.AddMember("multiplex", element.Move(), report.GetAllocator());
+    }
+
+    if(!molecular.empty()) {
+        Value array(kArrayType);
+        for(auto& decoder : molecular) {
+            decoder->finalize();
+            Value element(kObjectType);
+            decoder->encode(element, report);
+            array.PushBack(element.Move(), report.GetAllocator());
+        }
+        report.AddMember("molecular", array.Move(), report.GetAllocator());
+    }
+
+    if(!cellular.empty()) {
+        Value array(kArrayType);
+        for(auto& decoder : cellular) {
+            decoder->finalize();
+            Value element(kObjectType);
+            decoder->encode(element, report);
+            array.PushBack(element.Move(), report.GetAllocator());
+        }
+        report.AddMember("cellular", array.Move(), report.GetAllocator());
+    }
+
+    clean_json_value(report, report);
+    sort_json_value(report, report);
+};
+
+/* describe */
+void Multiplex::describe(ostream& o) const {
+    print_global_instruction(o);
+    print_input_instruction(o);
+    print_transform_instruction(o);
+    print_multiplex_instruction(o);
+    print_molecular_instruction(o);
+    print_cellular_instruction(o);
 };
 void Multiplex::print_global_instruction(ostream& o) const {
     o << setprecision(float_precision());
@@ -1373,6 +1421,90 @@ void Multiplex::print_global_instruction(ostream& o) const {
 
     int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     o << "    Threads                                     " << to_string(threads) << endl;
+    o << endl;
+};
+void Multiplex::print_feed_instruction(const Value::Ch* key, ostream& o) const {
+    Value::ConstMemberIterator reference = ontology["feed"].FindMember(key);
+    if(reference != ontology["feed"].MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsArray()) {
+                if(!reference->value.Empty()) {
+                    for(const auto& element : reference->value.GetArray()) {
+                        IoDirection direction(decode_value_by_key< IoDirection >("direction", element));
+                        int32_t index(decode_value_by_key< int32_t >("index", element));
+                        int32_t resolution(decode_value_by_key< int32_t >("resolution", element));
+                        int32_t capacity(decode_value_by_key< int32_t >("capacity", element));
+                        URL url(decode_value_by_key< URL >("url", element));
+                        Platform platform(decode_value_by_key< Platform >("platform", element));
+                        uint8_t phred_offset(decode_value_by_key< uint8_t >("phred offset", element));
+
+                        o << "    ";
+                        switch (direction) {
+                            case IoDirection::IN:
+                                o << "Input";
+                                break;
+                            case IoDirection::OUT:
+                                o << "Output";
+                                break;
+                            default:
+                                break;
+                        }
+                        o << " feed No." << index << endl;
+                        o << "        Type : " << url.type() << endl;
+                        o << "        Resolution : " << resolution << endl;
+                        o << "        Phred offset : " << to_string(phred_offset) << endl;
+                        o << "        Platform : " << platform << endl;
+                        o << "        Buffer capacity : " << capacity << endl;
+                        o << "        URL : " << url << endl;
+                        o << endl;
+                    }
+                }
+            }
+        }
+    }
+};
+void Multiplex::print_input_instruction(ostream& o) const {
+    o << "Input " << endl << endl;
+
+    int32_t input_segment_cardinality;
+    if(decode_value_by_key< int32_t >("input segment cardinality", input_segment_cardinality, ontology)) {
+        o << "    Input segment cardinality                   " << to_string(input_segment_cardinality) << endl;
+    }
+
+    list< URL > input_url_array;
+    if(decode_value_by_key< list< URL > >("input", input_url_array, ontology)) {
+        o << endl;
+        int32_t url_index(0);
+        for(auto& url : input_url_array) {
+            o << "    Input segment No." << url_index << " : " << url << endl;
+            ++url_index;
+        }
+        o << endl;
+    }
+    print_feed_instruction("input feed", o);
+};
+void Multiplex::print_transform_instruction(ostream& o) const {
+    o << "Output transform" << endl << endl;
+
+    int32_t output_segment_cardinality;
+    if(decode_value_by_key< int32_t >("output segment cardinality", output_segment_cardinality, ontology)) {
+        o << "    Output segment cardinality                  " << to_string(output_segment_cardinality) << endl;
+    }
+
+    Rule rule(decode_value_by_key< Rule >("transform", ontology));
+    o << endl;
+    for(auto& token : rule.token_array) {
+        o << "    Token No." << token.index << endl;
+        o << "        Length        " << (token.constant() ? to_string(token.length()) : "variable") << endl;
+        o << "        Pattern       " << string(token) << endl;
+        o << "        Description   ";
+        o << token.description() << endl;
+        o << endl;
+    }
+    o << "    Assembly instruction" << endl;
+    for(const auto& transform : rule.transform_array) {
+        o << "        " << transform.description() << endl;
+    }
     o << endl;
 };
 void Multiplex::print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const {
@@ -1541,90 +1673,6 @@ void Multiplex::print_channel_instruction(const string& key, const Value& value,
         o << endl;
     }
 };
-void Multiplex::print_feed_instruction(const Value::Ch* key, ostream& o) const {
-    Value::ConstMemberIterator reference = ontology.FindMember(key);
-    if(reference != ontology.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsArray()) {
-                if(!reference->value.Empty()) {
-                    for(const auto& element : reference->value.GetArray()) {
-                        IoDirection direction(decode_value_by_key< IoDirection >("direction", element));
-                        int32_t index(decode_value_by_key< int32_t >("index", element));
-                        int32_t resolution(decode_value_by_key< int32_t >("resolution", element));
-                        int32_t capacity(decode_value_by_key< int32_t >("capacity", element));
-                        URL url(decode_value_by_key< URL >("url", element));
-                        Platform platform(decode_value_by_key< Platform >("platform", element));
-                        uint8_t phred_offset(decode_value_by_key< uint8_t >("phred offset", element));
-
-                        o << "    ";
-                        switch (direction) {
-                            case IoDirection::IN:
-                                o << "Input";
-                                break;
-                            case IoDirection::OUT:
-                                o << "Output";
-                                break;
-                            default:
-                                break;
-                        }
-                        o << " feed No." << index << endl;
-                        o << "        Type : " << url.type() << endl;
-                        o << "        Resolution : " << resolution << endl;
-                        o << "        Phred offset : " << to_string(phred_offset) << endl;
-                        o << "        Platform : " << platform << endl;
-                        o << "        Buffer capacity : " << capacity << endl;
-                        o << "        URL : " << url << endl;
-                        o << endl;
-                    }
-                }
-            }
-        }
-    }
-};
-void Multiplex::print_input_instruction(ostream& o) const {
-    o << "Input " << endl << endl;
-
-    int32_t input_segment_cardinality;
-    if(decode_value_by_key< int32_t >("input segment cardinality", input_segment_cardinality, ontology)) {
-        o << "    Input segment cardinality                   " << to_string(input_segment_cardinality) << endl;
-    }
-
-    list< URL > input_url_array;
-    if(decode_value_by_key< list< URL > >("input", input_url_array, ontology)) {
-        o << endl;
-        int32_t url_index(0);
-        for(auto& url : input_url_array) {
-            o << "    Input segment No." << url_index << " : " << url << endl;
-            ++url_index;
-        }
-        o << endl;
-    }
-    print_feed_instruction("input feed", o);
-};
-void Multiplex::print_transform_instruction(ostream& o) const {
-    o << "Output transform" << endl << endl;
-
-    int32_t output_segment_cardinality;
-    if(decode_value_by_key< int32_t >("output segment cardinality", output_segment_cardinality, ontology)) {
-        o << "    Output segment cardinality                  " << to_string(output_segment_cardinality) << endl;
-    }
-
-    Rule rule(decode_value_by_key< Rule >("transform", ontology));
-    o << endl;
-    for(auto& token : rule.token_array) {
-        o << "    Token No." << token.index << endl;
-        o << "        Length        " << (token.constant() ? to_string(token.length()) : "variable") << endl;
-        o << "        Pattern       " << string(token) << endl;
-        o << "        Description   ";
-        o << token.description() << endl;
-        o << endl;
-    }
-    o << "    Assembly instruction" << endl;
-    for(const auto& transform : rule.transform_array) {
-        o << "        " << transform.description() << endl;
-    }
-    o << endl;
-};
 void Multiplex::print_multiplex_instruction(ostream& o) const {
     print_codec_group_instruction("multiplex", "Mutliplex decoding", o);
     print_feed_instruction("output feed", o);
@@ -1634,22 +1682,6 @@ void Multiplex::print_molecular_instruction(ostream& o) const {
 };
 void Multiplex::print_cellular_instruction(ostream& o) const {
     print_codec_group_instruction("cellular", "Cellular decoding", o);
-};
-Multiplex& Multiplex::operator+=(const MultiplexPivot& pivot) {
-    if(multiplex != NULL) {
-        *multiplex += *(pivot.multiplex);
-    }
-    if(!molecular.empty()) {
-        for(size_t index(0); index < molecular.size(); ++index) {
-            *(molecular[index]) += *(pivot.molecular[index]);
-        }
-    }
-    if(!cellular.empty()) {
-        for(size_t index(0); index < cellular.size(); ++index) {
-            *(cellular[index]) += *(pivot.cellular[index]);
-        }
-    }
-    return *this;
 };
 
 MultiplexPivot::MultiplexPivot(Multiplex& job, const int32_t& index) try :
@@ -1661,8 +1693,6 @@ MultiplexPivot::MultiplexPivot(Multiplex& job, const int32_t& index) try :
     input(input_segment_cardinality, platform, leading_segment_index),
     output(output_segment_cardinality, platform, leading_segment_index),
     multiplex(NULL),
-    // input_accumulator(job.ontology),
-    // output_accumulator(find_value_by_key("multiplex", job.ontology)),
     job(job),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", job.ontology)),
     template_rule(decode_value_by_key< Rule >("transform", job.ontology)) {

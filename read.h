@@ -144,6 +144,7 @@ class Read : public SequenceArray< Segment > {
         double molecular_decoding_confidence;
         uint32_t cellular_distance;
         double cellular_decoding_confidence;
+        double barcode_decoding_confidence;
 
         inline void clear() override {
             for(auto& segment : segment_array) {
@@ -155,24 +156,47 @@ class Read : public SequenceArray< Segment > {
             molecular_decoding_confidence = 1;
             cellular_distance = 0;
             cellular_decoding_confidence = 1;
+            barcode_decoding_confidence = 1;
         };
         inline void flush() {
-            float multiplex_decoding_error = static_cast< float >(1 - multiplex_decoding_confidence);
-            float molecular_decoding_error = static_cast< float >(1 - molecular_decoding_confidence);
-            float cellular_decoding_error = static_cast< float >(1 - cellular_decoding_confidence);
-            for(auto& segment : this->segment_array) {
-                /*
-                segment.auxiliary.set_multiplex_barcode(observation);
-                segment.auxiliary.set_molecular_barcode(observation);
-                segment.auxiliary.set_cellular_barcode(observation);
-                segment.auxiliary.set_raw_molecular_barcode(observation);
-                segment.auxiliary.set_raw_cellular_barcode(observation);
-                */
-                if(multiplex_decoding_error < 1)   segment.auxiliary.XB = multiplex_decoding_error;
-                if(molecular_decoding_error < 1)   segment.auxiliary.XM = molecular_decoding_error;
-                if(cellular_decoding_error < 1)    segment.auxiliary.XC = cellular_decoding_error;
+            if(multiplex_decoding_confidence > 0 && multiplex_decoding_confidence < 1) {
+                leader->auxiliary.XB = static_cast< float >(1 - multiplex_decoding_confidence);
+                // barcode_decoding_confidence *= multiplex_decoding_confidence;
             }
+            if(molecular_decoding_confidence > 0 && molecular_decoding_confidence < 1) {
+                leader->auxiliary.XM = static_cast< float >(1 - molecular_decoding_confidence);
+                // barcode_decoding_confidence *= molecular_decoding_confidence;
+            }
+            if(cellular_decoding_confidence > 0 && cellular_decoding_confidence < 1) {
+                leader->auxiliary.XC = static_cast< float >(1 - cellular_decoding_confidence);
+                // barcode_decoding_confidence *= cellular_decoding_confidence;
+            }
+            // if(barcode_decoding_confidence > 0 && barcode_decoding_confidence < 1) {
+            //     leader->auxiliary.XO = static_cast< float >(1 - barcode_decoding_confidence);
+            // }
+            if(segment_cardinality() > 1) {
+                for(auto& segment : this->segment_array) {
+                    if(leader != &segment) {
+                        if(ks_not_empty(leader->auxiliary.RG)) ks_put_string(leader->auxiliary.RG, segment.auxiliary.RG);
+                        if(ks_not_empty(leader->auxiliary.BC)) ks_put_string(leader->auxiliary.BC, segment.auxiliary.BC);
+                        if(ks_not_empty(leader->auxiliary.QT)) ks_put_string(leader->auxiliary.QT, segment.auxiliary.QT);
+                        if(leader->auxiliary.XB > 0)           segment.auxiliary.XB = leader->auxiliary.XB;
 
+                        if(ks_not_empty(leader->auxiliary.RX)) ks_put_string(leader->auxiliary.RX, segment.auxiliary.RX);
+                        if(ks_not_empty(leader->auxiliary.QX)) ks_put_string(leader->auxiliary.QX, segment.auxiliary.QX);
+                        if(ks_not_empty(leader->auxiliary.OX)) ks_put_string(leader->auxiliary.OX, segment.auxiliary.OX);
+                        if(ks_not_empty(leader->auxiliary.BZ)) ks_put_string(leader->auxiliary.BZ, segment.auxiliary.BZ);
+                        if(ks_not_empty(leader->auxiliary.MI)) ks_put_string(leader->auxiliary.MI, segment.auxiliary.MI);
+                        if(leader->auxiliary.XM > 0)           segment.auxiliary.XM = leader->auxiliary.XM;
+
+                        if(ks_not_empty(leader->auxiliary.CB)) ks_put_string(leader->auxiliary.CB, segment.auxiliary.CB);
+                        if(ks_not_empty(leader->auxiliary.CR)) ks_put_string(leader->auxiliary.CR, segment.auxiliary.CR);
+                        if(ks_not_empty(leader->auxiliary.CY)) ks_put_string(leader->auxiliary.CY, segment.auxiliary.CY);
+                        if(leader->auxiliary.XC > 0)           segment.auxiliary.XC = leader->auxiliary.XC;
+                        if(leader->auxiliary.XO > 0)           segment.auxiliary.XO = leader->auxiliary.XO;
+                    }
+                }
+            }
         };
         inline const Auxiliary& auxiliary() const {
             return leader->auxiliary;
@@ -199,15 +223,11 @@ class Read : public SequenceArray< Segment > {
             }
         };
         inline void assign_RG(const HeadRGAtom& rg) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.set_RG(rg);
-            }
+            leader->auxiliary.set_RG(rg);
         };
 
         inline void update_multiplex_barcode(const Observation& observation) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_multiplex_barcode(observation);
-            }
+            leader->auxiliary.update_multiplex_barcode(observation);
         };
         inline void update_multiplex_decoding_confidence(const double& confidence) {
             multiplex_decoding_confidence *= confidence;
@@ -223,14 +243,10 @@ class Read : public SequenceArray< Segment > {
         };
 
         inline void update_molecular_barcode(const Barcode& barcode) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_molecular_barcode(barcode);
-            }
+            leader->auxiliary.update_molecular_barcode(barcode);
         };
         inline void update_molecular_barcode(const Observation& observation) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_molecular_barcode(observation);
-            }
+            leader->auxiliary.update_molecular_barcode(observation);
         };
         inline void update_molecular_decoding_confidence(const double& confidence) {
             molecular_decoding_confidence *= confidence;
@@ -245,20 +261,14 @@ class Read : public SequenceArray< Segment > {
             molecular_distance += distance;
         };
         inline void update_raw_molecular_barcode(const Observation& observation) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_raw_molecular_barcode(observation);
-            }
+            leader->auxiliary.update_raw_molecular_barcode(observation);
         };
 
         inline void update_cellular_barcode(const Barcode& barcode) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_cellular_barcode(barcode);
-            }
+            leader->auxiliary.update_cellular_barcode(barcode);
         };
         inline void update_cellular_barcode(const Observation& observation) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_cellular_barcode(observation);
-            }
+            leader->auxiliary.update_cellular_barcode(observation);
         };
         inline void update_cellular_decoding_confidence(const double& confidence) {
             cellular_decoding_confidence *= confidence;
@@ -273,9 +283,7 @@ class Read : public SequenceArray< Segment > {
             cellular_distance = distance;
         };
         inline void update_raw_cellular_barcode(const Observation& observation) {
-            for(auto& segment : this->segment_array) {
-                segment.auxiliary.update_raw_cellular_barcode(observation);
-            }
+            leader->auxiliary.update_raw_cellular_barcode(observation);
         };
 
         Read(const int32_t& cardinality, const Platform& platform, int32_t leading_segment_index) :

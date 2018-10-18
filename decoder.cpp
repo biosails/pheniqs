@@ -34,54 +34,47 @@ template < class T > MinimumDistanceDecoder< T >::MinimumDistanceDecoder(const V
         error.push("MinimumDistanceDecoder");
         throw;
 };
-template < class T > bool MinimumDistanceDecoder< T >::match(T& barcode) {
-    bool result(true);
-    int32_t distance(0);
-
-    if(this->quality_masking_threshold > 0) {
-        for(size_t i(0); i < this->observation.segment_cardinality(); ++i) {
-            int32_t error(this->observation[i].masked_distance_from(barcode[i], this->quality_masking_threshold));
-            if(error > this->distance_tolerance[i]) {
-                result = false;
-                break;
-            } else {
-                distance += error;
-            }
-        }
-    } else {
-        for(size_t i(0); i < this->observation.segment_cardinality(); ++i) {
-            int32_t error(this->observation[i].distance_from(barcode[i]));
-            if(error > this->distance_tolerance[i]) {
-                result = false;
-                break;
-            } else {
-                distance += error;
-            }
-        }
-    }
-
-    if(result) {
-        this->hamming_distance = distance;
-        this->decoded = &barcode;
-    }
-    return result;
-};
 template < class T > void MinimumDistanceDecoder< T >::decode(const Read& input, Read& output) {
     this->observation.clear();
-    this->decoded = &this->unclassified;
-    this->hamming_distance = 0;
     this->rule.apply(input, this->observation);
+    this->decoded = &this->unclassified;
+    this->decoding_hamming_distance = 0;
 
     /* First try a perfect match to the full barcode sequence */
     auto record = element_by_sequence.find(this->observation);
     if(record != element_by_sequence.end()) {
-        this->hamming_distance = 0;
         this->decoded = record->second;
 
     } else {
         /* If no exact match was not found try error correction */
         for(auto& barcode : this->element_by_index) {
-            if(match(barcode)) {
+            int32_t distance(0);
+            bool successful(true);
+            if(this->quality_masking_threshold > 0) {
+                for(size_t i(0); i < this->observation.segment_cardinality(); ++i) {
+                    int32_t error(this->observation[i].masked_distance_from(barcode[i], this->quality_masking_threshold));
+                    if(error > this->distance_tolerance[i]) {
+                        successful = false;
+                        break;
+                    } else {
+                        distance += error;
+                    }
+                }
+            } else {
+                for(size_t i(0); i < this->observation.segment_cardinality(); ++i) {
+                    int32_t error(this->observation[i].distance_from(barcode[i]));
+                    if(error > this->distance_tolerance[i]) {
+                        successful = false;
+                        break;
+                    } else {
+                        distance += error;
+                    }
+                }
+            }
+
+            if(successful) {
+                this->decoding_hamming_distance = distance;
+                this->decoded = &barcode;
                 break;
             }
         }
@@ -95,8 +88,8 @@ template < class T > PhredAdjustedMaximumLikelihoodDecoder< T >::PhredAdjustedMa
     confidence_threshold(decode_value_by_key< double >("confidence threshold", ontology)),
     random_barcode_probability(1.0 / double(pow(4, (this->nucleotide_cardinality)))),
     adjusted_noise_probability(noise * random_barcode_probability),
-    conditioned_decoding_probability(0),
-    decoding_probability(0) {
+    conditional_decoding_probability(0),
+    decoding_confidence(0) {
 
     } catch(Error& error) {
         error.push("PhredAdjustedMaximumLikelihoodDecoder");
@@ -104,60 +97,79 @@ template < class T > PhredAdjustedMaximumLikelihoodDecoder< T >::PhredAdjustedMa
 };
 template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::decode(const Read& input, Read& output) {
     this->observation.clear();
-    this->decoded = &this->unclassified;
-    this->hamming_distance = 0;
-    this->decoding_probability = 0;
-    this->conditioned_decoding_probability = 0;
     this->rule.apply(input, this->observation);
 
-    /*  Compute P(observed|barcode) for each barcode
+    /*  Compute the posterior probability P(observed|barcode) for each barcode
         Keep track of the channel that yield the maximal prior adjusted probability.
         If r is the observed sequence and b is the barcode sequence
         P(r|b) is the probability that r was observed given b was sequenced.
-        Accumulate all prior adjusted probabilities P(b) * P(r|b), in sigma
-        using the Kahan summation algorithm to minimize floating point drift
-        see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+        Accumulate probabilities P(b) * P(r|b), in sigma_p using the Kahan summation algorithm
+        to minimize floating point drift. see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+
+        p is the prior adjusted conditional probability
+        d is the decoding Hamming distance
+        sigma_p accumulates the prior adjusted conditional probabilities to compute the decoding confidence
     */
-    double adjusted(0);
-    double compensation(0);
-    double sigma(0);
     double y(0);
     double t(0);
-    double c(0);
     double p(0);
     int32_t d(0);
+    double sigma_p(0);
+    double compensation(0);
+    double conditional_probability(0);
+    double adjusted_conditional_decoding_probability(0);
     for(auto& barcode : this->element_by_index) {
-        barcode.accurate_decoding_probability(this->observation, c, d);
-        p = c * barcode.concentration;
+        /*  conditional_probability: P(r|b) is the conditional_probability, the probability to observe the observation r given that b was sequenced
+            barcode.concentration: P(b), the prior probability of observing b
+            p: P(b) * P(r|b), the prior adjusted conditional probability
+            sigma_p: the sum of p over b
+        */
+        barcode.compensated_decoding_probability(this->observation, conditional_probability, d);
+        p = conditional_probability * barcode.concentration;
         y = p - compensation;
-        t = sigma + y;
-        compensation = (t - sigma) - y;
-        sigma = t;
-        if(p > adjusted) {
+        t = sigma_p + y;
+        compensation = (t - sigma_p) - y;
+        sigma_p = t;
+        if(p > adjusted_conditional_decoding_probability) {
             this->decoded = &barcode;
-            conditioned_decoding_probability = c;
-            this->hamming_distance = d;
-            adjusted = p;
+            this->decoding_hamming_distance = d;
+            adjusted_conditional_decoding_probability = p;
+            conditional_decoding_probability = conditional_probability;
         }
     }
-    /*  Compute P(barcode|observed)
-        P(b|r), the probability that b was sequenced given r was observed
-        P(b|r) = P(r|b) * P(b) / ( P(noise) * P(r|noise) + sigma )
-        where sigma = sum of P(r|b) * P(b) over b */
-    decoding_probability = adjusted / (sigma + adjusted_noise_probability);
 
-    /* Check for decoding failure and assign to the unclassified channel if decoding failed */
-    if(!(conditioned_decoding_probability > random_barcode_probability && decoding_probability > confidence_threshold)) {
-        this->hamming_distance = 0;
-        this->decoding_probability = 0;
+    /* add the prior adjusted noise probability to sigma_p */
+    y = adjusted_noise_probability - compensation;
+    t = sigma_p + y;
+    compensation = (t - sigma_p) - y;
+    sigma_p = t;
+
+    /*  if the conditional_decoding_probability is higher than random_barcode_probability
+        Note to self: it might be a better idea to compare to the probability of "any sequence not in the barcode set"
+        which is 1 / (4^n - |B|). This will make the threshold more agressive, meaning reject more, as |B| gets bigger.
+    */
+    if(conditional_decoding_probability > random_barcode_probability) {
+        /*  decoding_confidence: P(b|r) is the posterior probability, the probability that barcode b was sequenced given the observation r
+            adjusted_conditional_decoding_probability: is the prior adjusted conditional probability of decoding the decoded barcode */
+        decoding_confidence = adjusted_conditional_decoding_probability / sigma_p;
+
+        /*  if the posterior probability is higher than the confidence_threshold */
+        if(decoding_confidence > confidence_threshold) {
+            this->decoded->accumulated_confidence += decoding_confidence;
+            if(!input.qcfail()) {
+                this->decoded->accumulated_pf_confidence += decoding_confidence;
+            }
+        } else {
+            ++this->decoded->low_confidence_count;
+            this->decoded = &this->unclassified;
+            this->decoding_hamming_distance = 0;
+            decoding_confidence = 0;
+        }
+    } else {
+        ++this->low_conditional_confidence_count;
         this->decoded = &this->unclassified;
-    }
-
-    if(this->decoded->is_classified()) {
-        this->decoded->accumulated_confidence += decoding_probability;
-        if(!input.qcfail()) {
-            this->decoded->accumulated_pf_confidence += decoding_probability;
-        }
+        this->decoding_hamming_distance = 0;
+        decoding_confidence = 0;
     }
     ObservingDecoder< T >::decode(input, output);
 };
@@ -174,7 +186,7 @@ void MDMultiplexDecoder::decode(const Read& input, Read& output) {
     MinimumDistanceDecoder< Channel >::decode(input, output);
     output.assign_RG(this->decoded->rg);
     output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->hamming_distance);
+    output.update_multiplex_distance(this->decoding_hamming_distance);
 };
 
 PAMLMultiplexDecoder::PAMLMultiplexDecoder(const Value& ontology) try :
@@ -188,8 +200,8 @@ void PAMLMultiplexDecoder::decode(const Read& input, Read& output) {
     PhredAdjustedMaximumLikelihoodDecoder< Channel >::decode(input, output);
     output.assign_RG(this->decoded->rg);
     output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->hamming_distance);
-    output.update_multiplex_decoding_confidence(this->decoding_probability);
+    output.update_multiplex_distance(this->decoding_hamming_distance);
+    output.update_multiplex_decoding_confidence(this->decoding_confidence);
 };
 
 /* Molecular */
@@ -217,10 +229,10 @@ MDCellularDecoder::MDCellularDecoder(const Value& ontology) try :
 };
 void MDCellularDecoder::decode(const Read& input, Read& output) {
     MinimumDistanceDecoder< Barcode >::decode(input, output);
-    output.update_cellular_barcode(*this->decoded);
     output.update_raw_cellular_barcode(this->observation);
-    if(this->decoded != &this->unclassified) {
-        output.update_cellular_distance(this->hamming_distance);
+    output.update_cellular_barcode(*this->decoded);
+    if(this->decoded->is_classified()) {
+        output.update_cellular_distance(this->decoding_hamming_distance);
     } else {
         output.set_cellular_distance(0);
     }
@@ -237,9 +249,9 @@ void PAMLCellularDecoder::decode(const Read& input, Read& output) {
     PhredAdjustedMaximumLikelihoodDecoder< Barcode >::decode(input, output);
     output.update_raw_cellular_barcode(this->observation);
     output.update_cellular_barcode(*this->decoded);
-    if(this->decoded != &this->unclassified) {
-        output.update_cellular_decoding_confidence(this->decoding_probability);
-        output.update_cellular_distance(this->hamming_distance);
+    if(this->decoded->is_classified()) {
+        output.update_cellular_decoding_confidence(this->decoding_confidence);
+        output.update_cellular_distance(this->decoding_hamming_distance);
     } else {
         output.set_cellular_decoding_confidence(0);
         output.set_cellular_distance(0);

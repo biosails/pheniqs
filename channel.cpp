@@ -291,7 +291,7 @@ Channel::Channel(const Value& ontology) try :
     include_filtered(decode_value_by_key< bool >("include filtered", ontology)),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology)),
     output_feed_url_by_segment(decode_value_by_key< list< URL > >("output", ontology)),
-    segment_accumulator_by_index(decode_value_by_key< vector< SegmentAccumulator > >("output feed by segment", ontology)) {
+    segment_accumulator_by_index(decode_value_by_key< vector< SegmentAccumulator > >("output feed by segment", ontology["feed"])) {
 
     } catch(Error& error) {
         error.push("Channel");
@@ -354,12 +354,7 @@ void Channel::encode(Value& container, Document& document) const {
     } else { throw ConfigurationError("element must be a dictionary"); }
 };
 Channel& Channel::operator+=(const Channel& rhs) {
-    count += rhs.count;
-    pf_count += rhs.pf_count;
-    accumulated_distance += rhs.accumulated_distance;
-    accumulated_confidence += rhs.accumulated_confidence;
-    accumulated_pf_distance += rhs.accumulated_pf_distance;
-    accumulated_pf_confidence += rhs.accumulated_pf_confidence;
+    Barcode::operator+=(rhs);
     if(enable_quality_control) {
         for(size_t index(0); index < segment_accumulator_by_index.size(); ++index) {
             segment_accumulator_by_index[index] += rhs.segment_accumulator_by_index[index];

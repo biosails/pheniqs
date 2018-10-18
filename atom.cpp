@@ -393,9 +393,9 @@ HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }){
-    if(!ks_empty(other.VN)) ks_put_string(other.VN, VN);
-    if(!ks_empty(other.SO)) ks_put_string(other.SO, SO);
-    if(!ks_empty(other.GO)) ks_put_string(other.GO, GO);
+    if(ks_not_empty(other.VN)) ks_put_string(other.VN, VN);
+    if(ks_not_empty(other.SO)) ks_put_string(other.SO, SO);
+    if(ks_not_empty(other.GO)) ks_put_string(other.GO, GO);
 };
 HeadHDAtom::~HeadHDAtom() {
     ks_free(VN);
@@ -409,23 +409,23 @@ HeadHDAtom& HeadHDAtom::operator=(const HeadHDAtom& other) {
         ks_clear(VN);
         ks_clear(SO);
         ks_clear(GO);
-        if(!ks_empty(other.VN)) ks_put_string(other.VN, VN);
-        if(!ks_empty(other.SO)) ks_put_string(other.SO, SO);
-        if(!ks_empty(other.GO)) ks_put_string(other.GO, GO);
+        if(ks_not_empty(other.VN)) ks_put_string(other.VN, VN);
+        if(ks_not_empty(other.SO)) ks_put_string(other.SO, SO);
+        if(ks_not_empty(other.GO)) ks_put_string(other.GO, GO);
     }
     return *this;
 };
 void HeadHDAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@HD", 3, buffer);
-    if(!ks_empty(VN)) {
+    if(ks_not_empty(VN)) {
         ks_put_string_("\tVN:", 4, buffer);
         ks_put_string_(VN, buffer);
     }
-    if(!ks_empty(SO)) {
+    if(ks_not_empty(SO)) {
         ks_put_string_("\tSO:", 4, buffer);
         ks_put_string_(SO, buffer);
     }
-    if(!ks_empty(GO)) {
+    if(ks_not_empty(GO)) {
         ks_put_string_("\tGO:", 4, buffer);
         ks_put_string_(GO, buffer);
     }
@@ -471,9 +471,9 @@ void HeadHDAtom::set_version(const htsFormat* format) {
     }
 };
 ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
-    if(!ks_empty(hd.VN)) o << "VN : " << hd.VN.s << endl;
-    if(!ks_empty(hd.SO)) o << "SO : " << hd.SO.s << endl;
-    if(!ks_empty(hd.GO)) o << "GO : " << hd.GO.s << endl;
+    if(ks_not_empty(hd.VN)) o << "VN : " << hd.VN.s << endl;
+    if(ks_not_empty(hd.SO)) o << "SO : " << hd.SO.s << endl;
+    if(ks_not_empty(hd.GO)) o << "GO : " << hd.GO.s << endl;
     return o;
 };
 
@@ -522,14 +522,14 @@ HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     SP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
     ks_terminate(SN);
-    if(!ks_empty(other.SN)) ks_put_string(other.SN, SN);
+    if(ks_not_empty(other.SN)) ks_put_string(other.SN, SN);
     if(other.LN > 0)   LN = other.LN;
-    if(!ks_empty(other.AH)) ks_put_string(other.AH, AH);
-    if(!ks_empty(other.AN)) ks_put_string(other.AN, AN);
-    if(!ks_empty(other.AS)) ks_put_string(other.AS, AS);
-    if(!ks_empty(other.M5)) ks_put_string(other.M5, M5);
-    if(!ks_empty(other.SP)) ks_put_string(other.SP, SP);
-    if(!ks_empty(other.UR)) ks_put_string(other.UR, UR);
+    if(ks_not_empty(other.AH)) ks_put_string(other.AH, AH);
+    if(ks_not_empty(other.AN)) ks_put_string(other.AN, AN);
+    if(ks_not_empty(other.AS)) ks_put_string(other.AS, AS);
+    if(ks_not_empty(other.M5)) ks_put_string(other.M5, M5);
+    if(ks_not_empty(other.SP)) ks_put_string(other.SP, SP);
+    if(ks_not_empty(other.UR)) ks_put_string(other.UR, UR);
 };
 HeadSQAtom::~HeadSQAtom() {
     ks_free(SN);
@@ -552,14 +552,14 @@ HeadSQAtom& HeadSQAtom::operator=(const HeadSQAtom& other) {
         ks_clear(M5);
         ks_clear(SP);
         ks_clear(UR);
-        if(!ks_empty(other.SN)) ks_put_string(other.SN, SN);
+        if(ks_not_empty(other.SN)) ks_put_string(other.SN, SN);
         if(other.LN > 0)   LN = other.LN;
-        if(!ks_empty(other.AH)) ks_put_string(other.AH, AH);
-        if(!ks_empty(other.AN)) ks_put_string(other.AN, AN);
-        if(!ks_empty(other.AS)) ks_put_string(other.AS, AS);
-        if(!ks_empty(other.M5)) ks_put_string(other.M5, M5);
-        if(!ks_empty(other.SP)) ks_put_string(other.SP, SP);
-        if(!ks_empty(other.UR)) ks_put_string(other.UR, UR);
+        if(ks_not_empty(other.AH)) ks_put_string(other.AH, AH);
+        if(ks_not_empty(other.AN)) ks_put_string(other.AN, AN);
+        if(ks_not_empty(other.AS)) ks_put_string(other.AS, AS);
+        if(ks_not_empty(other.M5)) ks_put_string(other.M5, M5);
+        if(ks_not_empty(other.SP)) ks_put_string(other.SP, SP);
+        if(ks_not_empty(other.UR)) ks_put_string(other.UR, UR);
     }
     return *this;
 };
@@ -568,7 +568,7 @@ HeadSQAtom::operator string() const {
 };
 void HeadSQAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@SQ", 3, buffer);
-    if(!ks_empty(SN)) {
+    if(ks_not_empty(SN)) {
         ks_put_string_("\tSN:", 4, buffer);
         ks_put_string_(SN, buffer);
     }
@@ -576,27 +576,27 @@ void HeadSQAtom::encode(kstring_t& buffer) const {
         ks_put_string_("\tLN:", 4, buffer);
         ks_put_int32(LN, buffer);
     }
-    if(!ks_empty(AH)) {
+    if(ks_not_empty(AH)) {
         ks_put_string_("\tAH:", 4, buffer);
         ks_put_string_(AH, buffer);
     }
-    if(!ks_empty(AN)) {
+    if(ks_not_empty(AN)) {
         ks_put_string_("\tAN:", 4, buffer);
         ks_put_string_(AN, buffer);
     }
-    if(!ks_empty(AS)) {
+    if(ks_not_empty(AS)) {
         ks_put_string_("\tAS:", 4, buffer);
         ks_put_string_(AS, buffer);
     }
-    if(M5.l > 0) {
+    if(ks_not_empty(M5)) {
         ks_put_string_("\tM5:", 4, buffer);
         ks_put_string_(M5, buffer);
     }
-    if(!ks_empty(SP)) {
+    if(ks_not_empty(SP)) {
         ks_put_string_("\tSP:", 4, buffer);
         ks_put_string_(SP, buffer);
     }
-    if(!ks_empty(UR)) {
+    if(ks_not_empty(UR)) {
         ks_put_string_("\tUR:", 4, buffer);
         ks_put_string_(UR, buffer);
     }
@@ -649,14 +649,14 @@ char* HeadSQAtom::decode(char* position, const char* end) {
     return ++position;
 };
 ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
-    if(!ks_empty(sq.SN)) o << "SN : " << sq.SN.s << endl;
+    if(ks_not_empty(sq.SN)) o << "SN : " << sq.SN.s << endl;
     if(sq.LN   > 0)      o << "LN : " << sq.LN   << endl;
-    if(!ks_empty(sq.AH)) o << "AH : " << sq.AH.s << endl;
-    if(!ks_empty(sq.AN)) o << "AN : " << sq.AN.s << endl;
-    if(!ks_empty(sq.AS)) o << "AS : " << sq.AS.s << endl;
-    if(!ks_empty(sq.M5)) o << "M5 : " << sq.M5.s << endl;
-    if(!ks_empty(sq.SP)) o << "SP : " << sq.SP.s << endl;
-    if(!ks_empty(sq.UR)) o << "UR : " << sq.UR.s << endl;
+    if(ks_not_empty(sq.AH)) o << "AH : " << sq.AH.s << endl;
+    if(ks_not_empty(sq.AN)) o << "AN : " << sq.AN.s << endl;
+    if(ks_not_empty(sq.AS)) o << "AS : " << sq.AS.s << endl;
+    if(ks_not_empty(sq.M5)) o << "M5 : " << sq.M5.s << endl;
+    if(ks_not_empty(sq.SP)) o << "SP : " << sq.SP.s << endl;
+    if(ks_not_empty(sq.UR)) o << "UR : " << sq.UR.s << endl;
     return o;
 };
 
@@ -729,20 +729,20 @@ HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     SM({ 0, 0, NULL }) {
 
     ks_terminate(ID);
-    if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
-    if(!ks_empty(other.BC)) ks_put_string(other.BC, BC);
-    if(!ks_empty(other.CN)) ks_put_string(other.CN, CN);
-    if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
-    if(!ks_empty(other.DT)) ks_put_string(other.DT, DT);
-    if(!ks_empty(other.FO)) ks_put_string(other.FO, FO);
-    if(!ks_empty(other.KS)) ks_put_string(other.KS, KS);
-    if(!ks_empty(other.LB)) ks_put_string(other.LB, LB);
-    if(!ks_empty(other.PG)) ks_put_string(other.PG, PG);
-    if(!ks_empty(other.PI)) ks_put_string(other.PI, PI);
-    if(!ks_empty(other.PL)) ks_put_string(other.PL, PL);
-    if(!ks_empty(other.PM)) ks_put_string(other.PM, PM);
-    if(!ks_empty(other.PU)) ks_put_string(other.PU, PU);
-    if(!ks_empty(other.SM)) ks_put_string(other.SM, SM);
+    if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
+    if(ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
+    if(ks_not_empty(other.CN)) ks_put_string(other.CN, CN);
+    if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
+    if(ks_not_empty(other.DT)) ks_put_string(other.DT, DT);
+    if(ks_not_empty(other.FO)) ks_put_string(other.FO, FO);
+    if(ks_not_empty(other.KS)) ks_put_string(other.KS, KS);
+    if(ks_not_empty(other.LB)) ks_put_string(other.LB, LB);
+    if(ks_not_empty(other.PG)) ks_put_string(other.PG, PG);
+    if(ks_not_empty(other.PI)) ks_put_string(other.PI, PI);
+    if(ks_not_empty(other.PL)) ks_put_string(other.PL, PL);
+    if(ks_not_empty(other.PM)) ks_put_string(other.PM, PM);
+    if(ks_not_empty(other.PU)) ks_put_string(other.PU, PU);
+    if(ks_not_empty(other.SM)) ks_put_string(other.SM, SM);
 };
 HeadRGAtom::~HeadRGAtom() {
     ks_free(ID);
@@ -778,20 +778,20 @@ HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
         ks_clear(PM);
         ks_clear(PU);
         ks_clear(SM);
-        if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
-        if(!ks_empty(other.BC)) ks_put_string(other.BC, BC);
-        if(!ks_empty(other.CN)) ks_put_string(other.CN, CN);
-        if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
-        if(!ks_empty(other.DT)) ks_put_string(other.DT, DT);
-        if(!ks_empty(other.FO)) ks_put_string(other.FO, FO);
-        if(!ks_empty(other.KS)) ks_put_string(other.KS, KS);
-        if(!ks_empty(other.LB)) ks_put_string(other.LB, LB);
-        if(!ks_empty(other.PG)) ks_put_string(other.PG, PG);
-        if(!ks_empty(other.PI)) ks_put_string(other.PI, PI);
-        if(!ks_empty(other.PL)) ks_put_string(other.PL, PL);
-        if(!ks_empty(other.PM)) ks_put_string(other.PM, PM);
-        if(!ks_empty(other.PU)) ks_put_string(other.PU, PU);
-        if(!ks_empty(other.SM)) ks_put_string(other.SM, SM);
+        if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
+        if(ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
+        if(ks_not_empty(other.CN)) ks_put_string(other.CN, CN);
+        if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
+        if(ks_not_empty(other.DT)) ks_put_string(other.DT, DT);
+        if(ks_not_empty(other.FO)) ks_put_string(other.FO, FO);
+        if(ks_not_empty(other.KS)) ks_put_string(other.KS, KS);
+        if(ks_not_empty(other.LB)) ks_put_string(other.LB, LB);
+        if(ks_not_empty(other.PG)) ks_put_string(other.PG, PG);
+        if(ks_not_empty(other.PI)) ks_put_string(other.PI, PI);
+        if(ks_not_empty(other.PL)) ks_put_string(other.PL, PL);
+        if(ks_not_empty(other.PM)) ks_put_string(other.PM, PM);
+        if(ks_not_empty(other.PU)) ks_put_string(other.PU, PU);
+        if(ks_not_empty(other.SM)) ks_put_string(other.SM, SM);
     }
     return *this;
 };
@@ -800,59 +800,59 @@ HeadRGAtom::operator string() const {
 };
 void HeadRGAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@RG", 3, buffer);
-    if(!ks_empty(ID)) {
+    if(ks_not_empty(ID)) {
         ks_put_string_("\tID:", 4, buffer);
         ks_put_string_(ID, buffer);
     }
-    if(!ks_empty(BC)) {
+    if(ks_not_empty(BC)) {
         ks_put_string_("\tBC:", 4, buffer);
         ks_put_string_(BC, buffer);
     }
-    if(!ks_empty(CN)) {
+    if(ks_not_empty(CN)) {
         ks_put_string_("\tCN:", 4, buffer);
         ks_put_string_(CN, buffer);
     }
-    if(!ks_empty(DS)) {
+    if(ks_not_empty(DS)) {
         ks_put_string_("\tDS:", 4, buffer);
         ks_put_string_(DS, buffer);
     }
-    if(!ks_empty(DT)) {
+    if(ks_not_empty(DT)) {
         ks_put_string_("\tDT:", 4, buffer);
         ks_put_string_(DT, buffer);
     }
-    if(!ks_empty(FO)) {
+    if(ks_not_empty(FO)) {
         ks_put_string_("\tFO:", 4, buffer);
         ks_put_string_(FO, buffer);
     }
-    if(!ks_empty(KS)) {
+    if(ks_not_empty(KS)) {
         ks_put_string_("\tKS:", 4, buffer);
         ks_put_string_(KS, buffer);
     }
-    if(!ks_empty(LB)) {
+    if(ks_not_empty(LB)) {
         ks_put_string_("\tLB:", 4, buffer);
         ks_put_string_(LB, buffer);
     }
-    if(!ks_empty(PG)) {
+    if(ks_not_empty(PG)) {
         ks_put_string_("\tPG:", 4, buffer);
         ks_put_string_(PG, buffer);
     }
-    if(!ks_empty(PI)) {
+    if(ks_not_empty(PI)) {
         ks_put_string_("\tPI:", 4, buffer);
         ks_put_string_(PI, buffer);
     }
-    if(!ks_empty(PL)) {
+    if(ks_not_empty(PL)) {
         ks_put_string_("\tPL:", 4, buffer);
         ks_put_string_(PL, buffer);
     }
-    if(!ks_empty(PM)) {
+    if(ks_not_empty(PM)) {
         ks_put_string_("\tPM:", 4, buffer);
         ks_put_string_(PM, buffer);
     }
-    if(!ks_empty(PU)) {
+    if(ks_not_empty(PU)) {
         ks_put_string_("\tPU:", 4, buffer);
         ks_put_string_(PU, buffer);
     }
-    if(!ks_empty(SM)) {
+    if(ks_not_empty(SM)) {
         ks_put_string_("\tSM:", 4, buffer);
         ks_put_string_(SM, buffer);
     }
@@ -932,36 +932,36 @@ void HeadRGAtom::set_platform(const Platform& value) {
 };
 void HeadRGAtom::expand(const HeadRGAtom& other) {
     if(&other != this) {
-        if(BC.l == 0 && other.BC.l > 0) ks_put_string(other.BC, BC);
-        if(CN.l == 0 && other.CN.l > 0) ks_put_string(other.CN, CN);
-        if(DS.l == 0 && other.DS.l > 0) ks_put_string(other.DS, DS);
-        if(DT.l == 0 && other.DT.l > 0) ks_put_string(other.DT, DT);
-        if(FO.l == 0 && other.FO.l > 0) ks_put_string(other.FO, FO);
-        if(KS.l == 0 && other.KS.l > 0) ks_put_string(other.KS, KS);
-        if(LB.l == 0 && other.LB.l > 0) ks_put_string(other.LB, LB);
-        if(PG.l == 0 && other.PG.l > 0) ks_put_string(other.PG, PG);
-        if(PI.l == 0 && other.PI.l > 0) ks_put_string(other.PI, PI);
-        if(PL.l == 0 && other.PL.l > 0) ks_put_string(other.PL, PL);
-        if(PM.l == 0 && other.PM.l > 0) ks_put_string(other.PM, PM);
-        if(PU.l == 0 && other.PU.l > 0) ks_put_string(other.PU, PU);
-        if(SM.l == 0 && other.SM.l > 0) ks_put_string(other.SM, SM);
+        if(ks_empty(BC) && ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
+        if(ks_empty(CN) && ks_not_empty(other.CN)) ks_put_string(other.CN, CN);
+        if(ks_empty(DS) && ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
+        if(ks_empty(DT) && ks_not_empty(other.DT)) ks_put_string(other.DT, DT);
+        if(ks_empty(FO) && ks_not_empty(other.FO)) ks_put_string(other.FO, FO);
+        if(ks_empty(KS) && ks_not_empty(other.KS)) ks_put_string(other.KS, KS);
+        if(ks_empty(LB) && ks_not_empty(other.LB)) ks_put_string(other.LB, LB);
+        if(ks_empty(PG) && ks_not_empty(other.PG)) ks_put_string(other.PG, PG);
+        if(ks_empty(PI) && ks_not_empty(other.PI)) ks_put_string(other.PI, PI);
+        if(ks_empty(PL) && ks_not_empty(other.PL)) ks_put_string(other.PL, PL);
+        if(ks_empty(PM) && ks_not_empty(other.PM)) ks_put_string(other.PM, PM);
+        if(ks_empty(PU) && ks_not_empty(other.PU)) ks_put_string(other.PU, PU);
+        if(ks_empty(SM) && ks_not_empty(other.SM)) ks_put_string(other.SM, SM);
     }
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
-    if(!ks_empty(rg.ID)) o << "ID : " << rg.ID.s << endl;
-    if(!ks_empty(rg.BC)) o << "BC : " << rg.BC.s << endl;
-    if(!ks_empty(rg.CN)) o << "CN : " << rg.CN.s << endl;
-    if(!ks_empty(rg.DS)) o << "DS : " << rg.DS.s << endl;
-    if(!ks_empty(rg.DT)) o << "DT : " << rg.DT.s << endl;
-    if(!ks_empty(rg.FO)) o << "FO : " << rg.FO.s << endl;
-    if(!ks_empty(rg.KS)) o << "KS : " << rg.KS.s << endl;
-    if(!ks_empty(rg.LB)) o << "LB : " << rg.LB.s << endl;
-    if(!ks_empty(rg.PG)) o << "PG : " << rg.PG.s << endl;
-    if(!ks_empty(rg.PI)) o << "PI : " << rg.PI.s << endl;
-    if(!ks_empty(rg.PL)) o << "PL : " << rg.PL.s << endl;
-    if(!ks_empty(rg.PM)) o << "PM : " << rg.PM.s << endl;
-    if(!ks_empty(rg.PU)) o << "PU : " << rg.PU.s << endl;
-    if(!ks_empty(rg.SM)) o << "SM : " << rg.SM.s << endl;
+    if(ks_not_empty(rg.ID)) o << "ID : " << rg.ID.s << endl;
+    if(ks_not_empty(rg.BC)) o << "BC : " << rg.BC.s << endl;
+    if(ks_not_empty(rg.CN)) o << "CN : " << rg.CN.s << endl;
+    if(ks_not_empty(rg.DS)) o << "DS : " << rg.DS.s << endl;
+    if(ks_not_empty(rg.DT)) o << "DT : " << rg.DT.s << endl;
+    if(ks_not_empty(rg.FO)) o << "FO : " << rg.FO.s << endl;
+    if(ks_not_empty(rg.KS)) o << "KS : " << rg.KS.s << endl;
+    if(ks_not_empty(rg.LB)) o << "LB : " << rg.LB.s << endl;
+    if(ks_not_empty(rg.PG)) o << "PG : " << rg.PG.s << endl;
+    if(ks_not_empty(rg.PI)) o << "PI : " << rg.PI.s << endl;
+    if(ks_not_empty(rg.PL)) o << "PL : " << rg.PL.s << endl;
+    if(ks_not_empty(rg.PM)) o << "PM : " << rg.PM.s << endl;
+    if(ks_not_empty(rg.PU)) o << "PU : " << rg.PU.s << endl;
+    if(ks_not_empty(rg.SM)) o << "SM : " << rg.SM.s << endl;
     return o;
 };
 template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container) {
@@ -1071,12 +1071,12 @@ HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
     ks_terminate(ID);
-    if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
-    if(!ks_empty(other.PN)) ks_put_string(other.PN, PN);
-    if(!ks_empty(other.CL)) ks_put_string(other.CL, CL);
-    if(!ks_empty(other.PP)) ks_put_string(other.PP, PP);
-    if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
-    if(!ks_empty(other.VN)) ks_put_string(other.VN, VN);
+    if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
+    if(ks_not_empty(other.PN)) ks_put_string(other.PN, PN);
+    if(ks_not_empty(other.CL)) ks_put_string(other.CL, CL);
+    if(ks_not_empty(other.PP)) ks_put_string(other.PP, PP);
+    if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
+    if(ks_not_empty(other.VN)) ks_put_string(other.VN, VN);
 };
 HeadPGAtom::~HeadPGAtom() {
     ks_free(ID);
@@ -1096,12 +1096,12 @@ HeadPGAtom& HeadPGAtom::operator=(const HeadPGAtom& other) {
         ks_clear(PP);
         ks_clear(DS);
         ks_clear(VN);
-        if(!ks_empty(other.ID)) ks_put_string(other.ID, ID);
-        if(!ks_empty(other.PN)) ks_put_string(other.PN, PN);
-        if(!ks_empty(other.CL)) ks_put_string(other.CL, CL);
-        if(!ks_empty(other.PP)) ks_put_string(other.PP, PP);
-        if(!ks_empty(other.DS)) ks_put_string(other.DS, DS);
-        if(!ks_empty(other.VN)) ks_put_string(other.VN, VN);
+        if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
+        if(ks_not_empty(other.PN)) ks_put_string(other.PN, PN);
+        if(ks_not_empty(other.CL)) ks_put_string(other.CL, CL);
+        if(ks_not_empty(other.PP)) ks_put_string(other.PP, PP);
+        if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
+        if(ks_not_empty(other.VN)) ks_put_string(other.VN, VN);
     }
     return *this;
 };
@@ -1110,27 +1110,27 @@ HeadPGAtom::operator string() const {
 };
 void HeadPGAtom::encode(kstring_t& buffer) const {
     ks_put_string_("@PG", 3, buffer);
-    if(!ks_empty(ID)) {
+    if(ks_not_empty(ID)) {
         ks_put_string_("\tID:", 4, buffer);
         ks_put_string_(ID, buffer);
     }
-    if(!ks_empty(PN)) {
+    if(ks_not_empty(PN)) {
         ks_put_string_("\tPN:", 4, buffer);
         ks_put_string_(PN, buffer);
     }
-    if(!ks_empty(CL)) {
+    if(ks_not_empty(CL)) {
         ks_put_string_("\tCL:", 4, buffer);
         ks_put_string_(CL, buffer);
     }
-    if(!ks_empty(PP)) {
+    if(ks_not_empty(PP)) {
         ks_put_string_("\tPP:", 4, buffer);
         ks_put_string_(PP, buffer);
     }
-    if(!ks_empty(DS)) {
+    if(ks_not_empty(DS)) {
         ks_put_string_("\tDS:", 4, buffer);
         ks_put_string_(DS, buffer);
     }
-    if(!ks_empty(VN)) {
+    if(ks_not_empty(VN)) {
         ks_put_string_("\tVN:", 4, buffer);
         ks_put_string_(VN, buffer);
     }
@@ -1175,12 +1175,12 @@ char* HeadPGAtom::decode(char* position, const char* end) {
     return ++position;
 };
 ostream& operator<<(ostream& o, const HeadPGAtom& pg) {
-    if(!ks_empty(pg.ID)) o << "ID : " << pg.ID.s << endl;
-    if(!ks_empty(pg.PN)) o << "PN : " << pg.PN.s << endl;
-    if(!ks_empty(pg.CL)) o << "CL : " << pg.CL.s << endl;
-    if(!ks_empty(pg.PP)) o << "PP : " << pg.PP.s << endl;
-    if(!ks_empty(pg.DS)) o << "DS : " << pg.DS.s << endl;
-    if(!ks_empty(pg.VN)) o << "VN : " << pg.VN.s << endl;
+    if(ks_not_empty(pg.ID)) o << "ID : " << pg.ID.s << endl;
+    if(ks_not_empty(pg.PN)) o << "PN : " << pg.PN.s << endl;
+    if(ks_not_empty(pg.CL)) o << "CL : " << pg.CL.s << endl;
+    if(ks_not_empty(pg.PP)) o << "PP : " << pg.PP.s << endl;
+    if(ks_not_empty(pg.DS)) o << "DS : " << pg.DS.s << endl;
+    if(ks_not_empty(pg.VN)) o << "VN : " << pg.VN.s << endl;
     return o;
 };
 template<> HeadPGAtom decode_value_by_key< HeadPGAtom >(const Value::Ch* key, const Value& container) {
@@ -1208,7 +1208,7 @@ HeadCOAtom::HeadCOAtom(const Value& ontology) try :
 };
 HeadCOAtom::HeadCOAtom(const HeadCOAtom& other) :
     CO({ 0, 0, NULL }){
-    if(!ks_empty(other.CO)) ks_put_string(other.CO, CO);
+    if(ks_not_empty(other.CO)) ks_put_string(other.CO, CO);
 };
 HeadCOAtom::~HeadCOAtom() {
     ks_free(CO);
@@ -1218,7 +1218,7 @@ HeadCOAtom& HeadCOAtom::operator=(const HeadCOAtom& other) {
         return *this;
     } else {
         ks_clear(CO);
-        if(!ks_empty(other.CO)) ks_put_string(other.CO, CO);
+        if(ks_not_empty(other.CO)) ks_put_string(other.CO, CO);
     }
     return *this;
 };
@@ -1230,13 +1230,13 @@ char* HeadCOAtom::decode(char* position, const char* end) {
     return ++position;
 };
 void HeadCOAtom::encode(kstring_t& buffer) const {
-    if(!ks_empty(CO)) {
+    if(ks_not_empty(CO)) {
         ks_put_string_("@CO:", 4, buffer);
         ks_put_string_(CO, buffer);
         ks_put_character(LINE_BREAK, buffer);
     }
 };
 ostream& operator<<(ostream& o, const HeadCOAtom& co) {
-    if(!ks_empty(co.CO)) o << "CO : " << co.CO.s << endl;
+    if(ks_not_empty(co.CO)) o << "CO : " << co.CO.s << endl;
     return o;
 };

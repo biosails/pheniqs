@@ -83,6 +83,8 @@
     CY  Z   phred quality of the cellular barcode sequence in the CR tag
     XC  f   The probability that cellular barcode decoding is incorrect
 
+    XO  f   The overall probability that barcode based classification incorrect
+
     Specification amendment recommendation
     EE  f   Expected number of errors in the segment sequence
 */
@@ -180,6 +182,9 @@ class Auxiliary {
         kstring_t CY;
         float XC;
 
+        /* overall barcode classification */
+        float XO;
+
         #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
         uint16_t illumina_control_number;
         #endif
@@ -188,6 +193,7 @@ class Auxiliary {
         unordered_map< uint16_t, Tag > extended;
         #endif
 
+        /* expected error */
         float EE;
 
         Auxiliary();
@@ -197,17 +203,17 @@ class Auxiliary {
         void encode(bam1_t* bam1) const;
 
         inline void set_RG(const HeadRGAtom& rg) {
-            if(!ks_empty(rg.ID)) ks_put_string(rg.ID, RG);
+            if(ks_not_empty(rg.ID)) ks_put_string(rg.ID, RG);
         };
 
         inline void update_multiplex_barcode(const Barcode& barcode) {
-            if(BC.l > 0) {
+            if(ks_not_empty(BC)) {
                 ks_put_character('-', BC);
             }
             barcode.encode_iupac_ambiguity(BC);
         };
         inline void update_multiplex_barcode(const Observation& observation) {
-            if(BC.l > 0) {
+            if(ks_not_empty(BC)) {
                 ks_put_character('-', BC);
                 ks_put_character(' ', QT);
             }
@@ -216,19 +222,19 @@ class Auxiliary {
         };
 
         inline void update_cellular_barcode(const Barcode& barcode) {
-            if(CB.l > 0) {
+            if(ks_not_empty(CB)) {
                 ks_put_character('-', CB);
             }
             barcode.encode_iupac_ambiguity(CB);
         };
         inline void update_cellular_barcode(const Observation& observation) {
-            if(CB.l > 0) {
+            if(ks_not_empty(CB)) {
                 ks_put_character('-', CB);
             }
             observation.encode_iupac_ambiguity(CB);
         };
         inline void update_raw_cellular_barcode(const Observation& observation) {
-            if(CR.l > 0) {
+            if(ks_not_empty(CR)) {
                 ks_put_character('-', CR);
                 ks_put_character(' ', CY);
             }
@@ -237,13 +243,13 @@ class Auxiliary {
         };
 
         inline void update_molecular_barcode(const Barcode& barcode) {
-            if(RX.l > 0) {
+            if(ks_not_empty(RX)) {
                 ks_put_character('-', RX);
             }
             barcode.encode_iupac_ambiguity(RX);
         };
         inline void update_molecular_barcode(const Observation& observation) {
-            if(RX.l > 0) {
+            if(ks_not_empty(RX)) {
                 ks_put_character('-', RX);
                 ks_put_character(' ', QX);
             }
@@ -251,7 +257,7 @@ class Auxiliary {
             observation.encode_phred_quality(QX, SAM_PHRED_DECODING_OFFSET);
         };
         inline void update_raw_molecular_barcode(const Observation& observation) {
-            if(OX.l > 0) {
+            if(ks_not_empty(OX)) {
                 ks_put_character('-', OX);
                 ks_put_character(' ', BZ);
             }
@@ -283,6 +289,7 @@ class Auxiliary {
             ks_clear(CR);
             ks_clear(CY);
             XC = 0;
+            XO = 0;
 
             #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
             illumina_control_number = 0;
@@ -324,28 +331,29 @@ class Auxiliary {
             }
             #endif
 
-            if(!ks_empty(other.FS)) ks_put_string(other.FS, FS);
-            if(!ks_empty(other.RG)) ks_put_string(other.RG, RG);
-            if(!ks_empty(other.PU)) ks_put_string(other.PU, PU);
-            if(!ks_empty(other.LB)) ks_put_string(other.LB, LB);
-            if(!ks_empty(other.PG)) ks_put_string(other.PG, PG);
-            if(!ks_empty(other.CO)) ks_put_string(other.CO, CO);
+            if(ks_not_empty(other.FS)) ks_put_string(other.FS, FS);
+            if(ks_not_empty(other.RG)) ks_put_string(other.RG, RG);
+            if(ks_not_empty(other.PU)) ks_put_string(other.PU, PU);
+            if(ks_not_empty(other.LB)) ks_put_string(other.LB, LB);
+            if(ks_not_empty(other.PG)) ks_put_string(other.PG, PG);
+            if(ks_not_empty(other.CO)) ks_put_string(other.CO, CO);
 
-            if(!ks_empty(other.BC)) ks_put_string(other.BC, BC);
-            if(!ks_empty(other.QT)) ks_put_string(other.QT, QT);
+            if(ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
+            if(ks_not_empty(other.QT)) ks_put_string(other.QT, QT);
             XB = other.XB;
 
-            if(!ks_empty(other.RX)) ks_put_string(other.RX, RX);
-            if(!ks_empty(other.QX)) ks_put_string(other.QX, QX);
-            if(!ks_empty(other.OX)) ks_put_string(other.OX, OX);
-            if(!ks_empty(other.BZ)) ks_put_string(other.BZ, BZ);
-            if(!ks_empty(other.MI)) ks_put_string(other.MI, MI);
+            if(ks_not_empty(other.RX)) ks_put_string(other.RX, RX);
+            if(ks_not_empty(other.QX)) ks_put_string(other.QX, QX);
+            if(ks_not_empty(other.OX)) ks_put_string(other.OX, OX);
+            if(ks_not_empty(other.BZ)) ks_put_string(other.BZ, BZ);
+            if(ks_not_empty(other.MI)) ks_put_string(other.MI, MI);
             XM = other.XM;
 
-            if(!ks_empty(other.CB)) ks_put_string(other.CB, CB);
-            if(!ks_empty(other.CR)) ks_put_string(other.CR, CR);
-            if(!ks_empty(other.CY)) ks_put_string(other.CY, CY);
+            if(ks_not_empty(other.CB)) ks_put_string(other.CB, CB);
+            if(ks_not_empty(other.CR)) ks_put_string(other.CR, CR);
+            if(ks_not_empty(other.CY)) ks_put_string(other.CY, CY);
             XC = other.XC;
+            XO = other.XO;
 
             #if defined(PHENIQS_EXTENDED_SAM_TAG)
             for(auto& record : other.extended) {
