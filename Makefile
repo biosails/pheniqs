@@ -59,6 +59,8 @@ PHENIQS_SOURCES = \
 	barcode.cpp \
 	channel.cpp \
 	decoder.cpp \
+	mdd.cpp \
+	pamld.cpp \
 	environment.cpp \
 	fastq.cpp \
 	feed.cpp \
@@ -81,6 +83,8 @@ PHENIQS_OBJECTS = \
 	barcode.o \
 	channel.o \
 	decoder.o \
+	mdd.o \
+	pamld.o \
 	environment.o \
 	fastq.o \
 	feed.o \
@@ -328,6 +332,14 @@ decoder.o: \
 	accumulate.o \
 	decoder.h
 
+mdd.o: \
+	decoder.o \
+	mdd.h
+
+pamld.o: \
+	decoder.o \
+	pamld.h
+
 pipeline.o: \
 	json.o \
 	url.o \
@@ -338,6 +350,8 @@ multiplex.o: \
 	fastq.o \
 	hts.o \
 	decoder.o \
+	mdd.o \
+	pamld.o \
 	metric.h \
 	pipeline.h \
 	multiplex.h

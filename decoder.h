@@ -56,8 +56,8 @@ template < class T > class RoutingDecoder : public AccumulatingDecoder {
                 this->classified_count += element.count;
                 this->pf_classified_count += element.pf_count;
             }
-            this->count += this->classified_count + unclassified.count;
-            this->pf_count += this->pf_classified_count + unclassified.pf_count;
+            this->count = this->classified_count + unclassified.count;
+            this->pf_count = this->pf_classified_count + unclassified.pf_count;
 
             for(auto& element : element_by_index) {
                 element.finalize(*this);
@@ -165,71 +165,9 @@ template < class T > class ObservingDecoder : public RoutingDecoder< T > {
         };
 };
 
-template < class T > class MinimumDistanceDecoder : public ObservingDecoder< T > {
-    protected:
-        const uint8_t quality_masking_threshold;
-        const vector< int32_t > distance_tolerance;
-        unordered_map< string, T* > element_by_sequence;
-
-    public:
-        MinimumDistanceDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
-
-    private:
-        inline bool match(T& barcode);
-};
-
-template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public ObservingDecoder< T > {
-    protected:
-        const double noise;
-        const double confidence_threshold;
-        const double random_barcode_probability;
-        const double adjusted_noise_probability;
-        double conditional_decoding_probability;
-        double decoding_confidence;
-
-    public:
-        PhredAdjustedMaximumLikelihoodDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
-        inline void finalize() override {
-            for(auto& element : this->element_by_index) {
-                this->accumulated_classified_confidence += element.accumulated_confidence;
-                this->accumulated_pf_classified_confidence += element.accumulated_pf_confidence;
-            }
-            ObservingDecoder< T >::finalize();
-        };
-};
-
-/* Multiplex */
-class MDMultiplexDecoder : public MinimumDistanceDecoder< Channel > {
-    public:
-        MDMultiplexDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
-};
-
-class PAMLMultiplexDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Channel > {
-    public:
-        PAMLMultiplexDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
-};
-
-/* Molecular */
 class NaiveMolecularDecoder : public ObservingDecoder< Barcode > {
     public:
         NaiveMolecularDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
-};
-
-/* Cellular */
-class MDCellularDecoder : public MinimumDistanceDecoder< Barcode > {
-    public:
-        MDCellularDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
-};
-
-class PAMLCellularDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Barcode > {
-    public:
-        PAMLCellularDecoder(const Value& ontology);
         inline void decode(const Read& input, Read& output) override;
 };
 

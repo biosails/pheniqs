@@ -331,7 +331,7 @@ void Channel::populate(unordered_map< URL, Feed* >& feed_by_url) {
     output_feed_lock_order.shrink_to_fit();
 };
 void Channel::finalize(const AccumulatingDecoder& parent) {
-    BarcodeAccumulator::finalize(parent);
+    AccumulatingIdentifier::finalize(parent);
     if(enable_quality_control) {
         for(auto& segment_accumulator : segment_accumulator_by_index) {
             segment_accumulator.finalize();

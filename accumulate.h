@@ -25,15 +25,16 @@
 #include "include.h"
 #include "json.h"
 
-class BarcodeAccumulator;
+class AccumulatingIdentifier;
 class AccumulatingDecoder;
 
-class BarcodeAccumulator {
+class AccumulatingIdentifier {
     public:
         uint64_t count;
         uint64_t pf_count;
         uint64_t accumulated_distance;
         double accumulated_confidence;
+        uint64_t low_conditional_confidence_count;
         uint64_t low_confidence_count;
         uint64_t accumulated_pf_distance;
         double accumulated_pf_confidence;
@@ -48,12 +49,12 @@ class BarcodeAccumulator {
         double pooled_classified_fraction;      // count / decoder.classified_count
         double pf_pooled_classified_fraction;   // pf_count / decoder.pf_classified_count
 
-        BarcodeAccumulator();
-        BarcodeAccumulator(const BarcodeAccumulator& other);
-        virtual ~BarcodeAccumulator() {};
+        AccumulatingIdentifier();
+        AccumulatingIdentifier(const AccumulatingIdentifier& other);
+        virtual ~AccumulatingIdentifier() {};
         virtual void finalize(const AccumulatingDecoder& parent);
         virtual void encode(Value& container, Document& document) const;
-        BarcodeAccumulator& operator+=(const BarcodeAccumulator& rhs);
+        AccumulatingIdentifier& operator+=(const AccumulatingIdentifier& rhs);
 };
 
 class AccumulatingDecoder {
@@ -63,6 +64,7 @@ class AccumulatingDecoder {
         uint64_t classified_count;
         uint64_t accumulated_classified_distance;
         uint64_t low_conditional_confidence_count;
+        uint64_t low_confidence_count;
         double accumulated_classified_confidence;
         uint64_t pf_classified_count;
         uint64_t accumulated_pf_classified_distance;

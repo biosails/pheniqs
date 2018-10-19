@@ -28,6 +28,8 @@
 #include "fastq.h"
 #include "hts.h"
 #include "decoder.h"
+#include "mdd.h"
+#include "pamld.h"
 #include "metric.h"
 
 class Multiplex;

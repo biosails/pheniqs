@@ -175,22 +175,13 @@ template<> vector< Token > decode_value_by_key(const Value::Ch* key, const Value
     } else { throw ConfigurationError(string(key) + " element not found"); }
 };
 
-/*  EmbeddedToken */
-EmbeddedToken::EmbeddedToken(
-    const Token& token,
-    const int32_t& output_segment_index,
-    const LeftTokenOperator& left) :
-
-    output_segment_index(output_segment_index),
-    token(token),
-    left(left) {
-};
-EmbeddedToken::EmbeddedToken(const EmbeddedToken& other) :
+/*  Transform */
+Transform::Transform(const Transform& other) :
+    Token(other),
     output_segment_index(other.output_segment_index),
-    token(other.token),
     left(other.left) {
 };
-string EmbeddedToken::description() const {
+string Transform::description() const {
     string o("Append ");
     switch (left) {
         case LeftTokenOperator::NONE:
@@ -200,14 +191,14 @@ string EmbeddedToken::description() const {
             o.append("reverse complemented token ");
             break;
     }
-    o.append(to_string(token.index));
+    o.append(to_string(index));
     o.append(" of input segment ");
-    o.append(to_string(token.input_segment_index));
+    o.append(to_string(input_segment_index));
     o.append(" to output segment ");
     o.append(to_string(output_segment_index));
     return o;
 };
-EmbeddedToken::operator string() const {
+Transform::operator string() const {
     string o;
     switch (left) {
         case LeftTokenOperator::NONE:
@@ -216,21 +207,14 @@ EmbeddedToken::operator string() const {
             o.push_back('~');
             break;
     }
-    o.append(to_string(token.index));
+    o.append(to_string(index));
     return o;
 };
-ostream& operator<<(ostream& o, const EmbeddedToken& transform) {
-    switch (transform.left) {
-        case LeftTokenOperator::NONE:
-            break;
-        case LeftTokenOperator::REVERSE_COMPLEMENT:
-            o << '~';
-            break;
-    }
-    o << transform.token.index;
+ostream& operator<<(ostream& o, const Transform& transform) {
+    o << string(transform);
     return o;
 };
-bool encode_key_value(const string& key, const list< EmbeddedToken >& value, Value& container, Document& document) {
+bool encode_key_value(const string& key, const list< Transform >& value, Value& container, Document& document) {
     if(!value.empty()) {
         Value collection(kArrayType);
         int32_t index(0);
@@ -267,7 +251,7 @@ template<> Rule decode_value_by_key(const Value::Ch* key, const Value& container
                     const Value& observation_element(reference->value);
                     if(!observation_element.IsNull()) {
                         if(observation_element.IsArray()) {
-                            list< EmbeddedToken > transform_array;
+                            vector< Transform > transform_array;
                             int32_t output_segment_cardinality(0);
 
                             for(auto& element : observation_element.GetArray()) {

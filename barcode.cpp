@@ -23,7 +23,7 @@
 
 Barcode::Barcode(const Value& ontology) try :
     SequenceArray< Sequence >(decode_value_by_key< int32_t >("segment cardinality", ontology)),
-    BarcodeAccumulator(),
+    AccumulatingIdentifier(),
     index(decode_value_by_key< int32_t >("index", ontology)),
     concentration(decode_value_by_key< double >("concentration", ontology)) {
 
@@ -46,12 +46,12 @@ Barcode::Barcode(const Value& ontology) try :
 };
 Barcode::Barcode(const Barcode& other) :
     SequenceArray< Sequence >(other),
-    BarcodeAccumulator(other),
+    AccumulatingIdentifier(other),
     index(other.index),
     concentration(other.concentration) {
 };
 void Barcode::encode(Value& container, Document& document) const {
-    BarcodeAccumulator::encode(container, document);
+    AccumulatingIdentifier::encode(container, document);
     if(container.IsObject()) {
         encode_key_value("index", index, container, document);
         if(is_classified()) {
@@ -65,10 +65,18 @@ void Barcode::encode(Value& container, Document& document) const {
     } else { throw ConfigurationError("element must be a dictionary"); }
 };
 Barcode& Barcode::operator+=(const Barcode& rhs) {
-    BarcodeAccumulator::operator+=(rhs);
+    AccumulatingIdentifier::operator+=(rhs);
     return *this;
 };
-
+ostream& operator<<(ostream& o, const Barcode& barcode) {
+    if(!barcode.empty()) {
+        kstring_t buffer({ 0, 0, NULL });
+        barcode.encode_iupac_ambiguity(buffer);
+        o << buffer.s;
+        ks_free(buffer);
+    }
+    return o;
+};
 template<> vector< Barcode > decode_value_by_key(const Value::Ch* key, const Value& container) {
     vector< Barcode > value;
     Value::ConstMemberIterator reference = container.FindMember(key);
@@ -80,8 +88,4 @@ template<> vector< Barcode > decode_value_by_key(const Value::Ch* key, const Val
         value.shrink_to_fit();
     }
     return value;
-};
-ostream& operator<<(ostream& o, const Barcode& barcode) {
-    o << barcode.iupac_ambiguity() << endl;
-    return o;
 };

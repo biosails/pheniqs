@@ -22,22 +22,22 @@
 #include "read.h"
 
 ostream& operator<<(ostream& o, const Segment& segment) {
-    o << "Index : "     << segment.index << endl;
-    o << "Name : "      << segment.name.s << endl;
-    o << "Flag : "      << segment.flag << endl;
+    o << segment.name.s << '\t';
+    o << segment.index << '\t';
+    o << segment.flag << '\t';
 
-    string buffer;
+    kstring_t buffer({ 0, 0, NULL });
     segment.encode_iupac_ambiguity(buffer);
-    buffer.push_back(LINE_BREAK);
+    ks_put_character('/', buffer);
     segment.encode_phred_quality(buffer, SAM_PHRED_DECODING_OFFSET);
-    buffer.push_back(LINE_BREAK);
-    o << buffer << endl;
+    o << buffer.s;
+    ks_free(buffer);
     return o;
 };
 
 ostream& operator<<(ostream& o, const Read& read) {
     for(auto& segment : read) {
-        o << segment;
+        o << segment << endl;
     }
     return o;
 };

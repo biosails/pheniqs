@@ -26,7 +26,7 @@
 #include "sequence.h"
 #include "accumulate.h"
 
-class Barcode : public SequenceArray< Sequence >, public BarcodeAccumulator {
+class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier {
     friend ostream& operator<<(ostream& o, const Barcode& barcode);
     friend bool encode_key_value(const string& key, const Barcode& value, Value& node, Document& document);
     void operator=(Barcode const &) = delete;
@@ -52,16 +52,6 @@ class Barcode : public SequenceArray< Sequence >, public BarcodeAccumulator {
                 }
             }
             return key;
-        };
-        inline string iupac_ambiguity() const {
-            /* used for printing only, not effecting performance */
-            string value;
-            for(const auto& segment : segment_array) {
-                for(int32_t i(0); i < segment.length; ++i) {
-                    value.push_back(BamToAmbiguousAscii[segment.code[i]]);
-                }
-            }
-            return value;
         };
         inline void decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
             probability = 1;

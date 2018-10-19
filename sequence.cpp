@@ -53,29 +53,40 @@ bool operator>(const Sequence& left, const Sequence& right) {
 };
 void encode_value(const Sequence& value, Value& container, Document& document) {
     if(!value.empty()) {
-        string buffer;
+        kstring_t buffer({ 0, 0, NULL });
         value.encode_iupac_ambiguity(buffer);
-        container.PushBack(Value(buffer.c_str(), buffer.size(), document.GetAllocator()).Move(), document.GetAllocator());
+        container.PushBack(Value(buffer.s, buffer.l, document.GetAllocator()).Move(), document.GetAllocator());
+        ks_free(buffer);
     }
 };
 ostream& operator<<(ostream& o, const Sequence& sequence) {
-    if(sequence.length > 0) {
-        string word;
-        sequence.encode_iupac_ambiguity(word);
-        word.push_back(LINE_BREAK);
-        o << word;
-    }
-    return o;
-};
-
-ostream& operator<<(ostream& o, const ObservedSequence& sequence) {
-    if(sequence.length > 0) {
-        string buffer;
+    if(!sequence.empty()) {
+        kstring_t buffer({ 0, 0, NULL });
         sequence.encode_iupac_ambiguity(buffer);
-        buffer.push_back(LINE_BREAK);
-        sequence.encode_phred_quality(buffer, SAM_PHRED_DECODING_OFFSET);
-        buffer.push_back(LINE_BREAK);
-        o << buffer;
+        o << buffer.s;
+        ks_free(buffer);
     }
     return o;
 };
+ostream& operator<<(ostream& o, const ObservedSequence& sequence) {
+    if(!sequence.empty()) {
+        kstring_t buffer({ 0, 0, NULL });
+        sequence.encode_iupac_ambiguity(buffer);
+        ks_put_character('/', buffer);
+        sequence.encode_phred_quality(buffer, SAM_PHRED_DECODING_OFFSET);
+        o << buffer.s;
+        ks_free(buffer);
+    }
+    return o;
+};
+ostream& operator<<(ostream& o, const Observation& observation) {
+    if(!observation.empty()) {
+        kstring_t buffer({ 0, 0, NULL });
+        observation.encode_iupac_ambiguity(buffer);
+        ks_put_character('/', buffer);
+        observation.encode_phred_quality(buffer, SAM_PHRED_DECODING_OFFSET);
+        o << buffer.s;
+        ks_free(buffer);
+    }
+    return o;
+}

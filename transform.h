@@ -46,51 +46,40 @@ class Token {
             const int32_t& end,
             const bool& end_terminated);
         Token(const Token& other);
-        inline int32_t decode_end(const int32_t& length) const {
-            int32_t value;
-            if(end_terminated) {
-                int32_t v(end < 0 ? length + end : end);
-                value = v < 0 ? 0 : v;
-                if(value > length) {
-                    value = length;
-                }
-            } else {
-                value = length;
-            }
-            return value;
-        };
-        inline int32_t decode_start(const int32_t& length) const {
-            int32_t value;
-            int32_t v(start < 0 ? length + start : start);
-            value = v < 0 ? 0 : v;
-            if(value > length) {
-                value = length;
-            }
-            return value;
-        };
+        virtual ~Token() {};
         inline bool empty() const {
             return (end_terminated && start >= end) && ((start >= 0 && end >= 0) || (start < 0 && end < 0));
-        };
-        inline bool constant() const {
-            if(end_terminated) {
-               return (start >= 0 && end >= 0) || (start < 0 && end < 0);
-            } else {
-                return start < 0;
-            }
         };
         inline int32_t length() const {
             if(constant()) {
                 if(end_terminated) {
                     return empty() ? 0 : end - start;
-                } else {
-                    return -start;
-                }
-            } else {
-                return -1;
-            }
+                } else { return -start; }
+            } else { return -1; }
+        };
+        inline bool constant() const {
+            if(end_terminated) {
+               return (start >= 0 && end >= 0) || (start < 0 && end < 0);
+            } else { return start < 0; }
+        };
+        inline const int32_t absolute_end(const int32_t& length) const {
+            if(end_terminated) {
+                if(end < 0) {
+                    int32_t value(length + end);
+                    return (value < 0 ? 0 : value);
+                } else { return (end > length ? length : end); }
+            } else { return length; }
+        };
+        inline const int32_t absolute_start(const int32_t& length) const {
+            if(start < 0) {
+                int32_t value(length + start);
+                if(value < 0) {
+                    return 0;
+                } else { return value; }
+            } else { return (start > length ? 0 : start); }
         };
         operator string() const;
-        string description() const;
+        virtual string description() const;
 
     private:
         const int32_t start;
@@ -100,33 +89,40 @@ class Token {
 ostream& operator<<(ostream& o, const Token& token);
 template<> vector< Token > decode_value_by_key(const Value::Ch* key, const Value& container);
 
-class EmbeddedToken {
-    friend ostream& operator<<(ostream& o, const EmbeddedToken& transform);
-    void operator=(EmbeddedToken const &) = delete;
+class Transform : public Token {
+    friend ostream& operator<<(ostream& o, const Transform& transform);
+    void operator=(Transform const &) = delete;
 
     public:
         const int32_t output_segment_index;
-        const Token token;
         const LeftTokenOperator left;
 
-        EmbeddedToken(const Token& token, const int32_t& output_segment_index, const LeftTokenOperator& left);
-        EmbeddedToken(const EmbeddedToken& other);
-        string description() const;
+        Transform(
+            const Token& token,
+            const int32_t& output_segment_index,
+            const LeftTokenOperator& left) :
+
+            Token(token),
+            output_segment_index(output_segment_index),
+            left(left) {
+        };
+        Transform(const Transform& other);
+        string description() const override;
         operator string() const;
 };
-ostream& operator<<(ostream& o, const EmbeddedToken& transform);
-bool encode_key_value(const string& key, const list< EmbeddedToken >& value, Value& container, Document& document);
+ostream& operator<<(ostream& o, const Transform& transform);
+bool encode_key_value(const string& key, const list< Transform >& value, Value& container, Document& document);
 
 class Rule {
     public:
         const vector< Token > token_array;
         const int32_t output_segment_cardinality;
-        const list< EmbeddedToken > transform_array;
+        const vector< Transform > transform_array;
 
         Rule(
             const vector< Token > token_array,
             const int32_t output_segment_cardinality,
-            const list< EmbeddedToken > transform_array) :
+            const vector< Transform > transform_array) :
 
             token_array(token_array),
             output_segment_cardinality(output_segment_cardinality),
@@ -145,10 +141,10 @@ class Rule {
         };
         inline void apply(const Read& source, Observation& target) const {
             for(auto& transform : transform_array ) {
-                const Segment& from = source[transform.token.input_segment_index];
+                const Segment& from = source[transform.input_segment_index];
                 ObservedSequence& to = target[transform.output_segment_index];
-                const int32_t start(transform.token.decode_start(from.length));
-                const int32_t end(transform.token.decode_end(from.length));
+                const int32_t start(transform.absolute_start(from.length));
+                const int32_t end(transform.absolute_end(from.length));
                 const int32_t size(end - start);
                 if(size > 0) {
                     to.increase_by_size(size);
@@ -179,7 +175,7 @@ class TemplateRule : public Rule {
         TemplateRule(
             const vector< Token > token_array,
             const int32_t output_segment_cardinality,
-            const list< EmbeddedToken > transform_array) :
+            const vector< Transform > transform_array) :
             Rule(token_array, output_segment_cardinality, transform_array) {
         };
         TemplateRule(const TemplateRule& other) :
@@ -193,10 +189,10 @@ class TemplateRule : public Rule {
         };
         inline void apply(const Read& source, Read& target) const {
             for(auto& transform : transform_array ) {
-                const Segment& from = source[transform.token.input_segment_index];
+                const Segment& from = source[transform.input_segment_index];
                 Segment& to = target[transform.output_segment_index];
-                const int32_t start(transform.token.decode_start(from.length));
-                const int32_t end(transform.token.decode_end(from.length));
+                const int32_t start(transform.absolute_start(from.length));
+                const int32_t end(transform.absolute_end(from.length));
                 const int32_t size(end - start);
                 if(size > 0) {
                     to.increase_by_size(size);

@@ -715,18 +715,20 @@ void Multiplex::compile_decoder_transformation(Value& value) {
             if(!(token.input_segment_index < input_segment_cardinality)) {
                 throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
             }
+            if(token.empty()) {
+                throw ConfigurationError("token " + string(token) + " is empty");
+            }
+            if(!token.constant()) {
+                throw ConfigurationError("token " + string(token) + " is not fixed width");
+            }
         }
 
         /* annotate the decoder with cardinality information from the transfortmation */
         int32_t nucleotide_cardinality(0);
         vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
         for(auto& transform : rule.transform_array) {
-            if(transform.token.constant()) {
-                if(!transform.token.empty()) {
-                    barcode_length[transform.output_segment_index] += transform.token.length();
-                    nucleotide_cardinality += transform.token.length();
-                } else { throw ConfigurationError("multiplex barcode token " + string(transform.token) + " is empty"); }
-            } else { throw ConfigurationError("barcode token " + string(transform.token) + " is not fixed width"); }
+            barcode_length[transform.output_segment_index] += transform.length();
+            nucleotide_cardinality += transform.length();
         }
         encode_key_value("segment cardinality", rule.output_segment_cardinality, value, ontology);
         encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, ontology);
@@ -1659,7 +1661,7 @@ void Multiplex::print_channel_instruction(const string& key, const Value& value,
             }
 
             Barcode barcode(value);
-            if(!barcode.empty()) { o << "        Barcode       : " << barcode.iupac_ambiguity() << endl; }
+            if(!barcode.empty()) { o << "        Barcode       : " << barcode << endl; }
         }
 
         int32_t segment_index(0);

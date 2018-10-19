@@ -107,14 +107,6 @@ class Sequence {
                 ks_terminate(buffer);
             }
         };
-        inline void encode_iupac_ambiguity(string& buffer) const {
-            if(length > 0) {
-                buffer.reserve(buffer.size() + length + 1);
-                for(int32_t i(0); i < length; ++i) {
-                    buffer.push_back(BamToAmbiguousAscii[code[i]]);
-                }
-            }
-        };
         inline void encode_iupac_ambiguity(Value& value) const {
             char* buffer(NULL);
             if((buffer = static_cast< char* >(malloc(length + 1))) == NULL) {
@@ -125,14 +117,6 @@ class Sequence {
             }
             buffer[length] = '\0';
             value.SetString(StringRef(buffer, length));
-        };
-        inline string iupac_ambiguity() const {
-            string value;
-            value.reserve(value.size() + length);
-            for(int32_t i(0); i < length; ++i) {
-                value.push_back(BamToAmbiguousAscii[code[i]]);
-            }
-            return value;
         };
         inline bool is_iupac_strict() const {
             for(int32_t i(0); i < length; ++i) {
@@ -185,12 +169,99 @@ class Sequence {
             return *this;
         };
 };
-ostream& operator<<(ostream& o, const Sequence& sequence);
 bool operator<(const Sequence& left, const Sequence& right);
 bool operator>(const Sequence& left, const Sequence& right);
+ostream& operator<<(ostream& o, const Sequence& sequence);
 void encode_value(const Sequence& value, Value& container, Document& document);
 
-/* DNA sequence */
+template < class T > class SequenceArray {
+    protected:
+        vector< T > segment_array;
+
+    public:
+        inline bool empty() const {
+            return segment_array.empty();
+        };
+        inline size_t segment_cardinality() const {
+            return segment_array.size();
+        };
+        virtual inline void clear() {
+            for(auto& segment : segment_array) {
+                segment.clear();
+            }
+        };
+        inline void encode_iupac_ambiguity(kstring_t& buffer) const {
+            for(auto& segment : segment_array) {
+                if(ks_not_empty(buffer)) { ks_put_character('-', buffer); }
+                segment.encode_iupac_ambiguity(buffer);
+            }
+        };
+        inline void encode_bam(string& value) const {
+            for(const auto& segment : segment_array) {
+                for(int32_t i(0); i < segment.length; ++i) {
+                    value.push_back(segment.code[i]);
+                }
+            }
+        };
+        inline bool is_iupac_strict() const {
+            for(const auto& segment : segment_array) {
+                if(!segment.is_iupac_strict()) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        inline double expected_error() const {
+            uint32_t sigma_q(0);
+            for(auto& segment : segment_array) {
+                for(uint8_t* q(segment.quality); *q; ++q) {
+                    sigma_q += *q;
+                }
+            }
+            return pow(10.0, sigma_q * -0.1);
+        };
+        inline T& front() {
+            return segment_array.front();
+        };
+        inline const T& front() const {
+            return segment_array.front();
+        };
+        inline T& back() {
+            return segment_array.back();
+        };
+        inline const T& back() const {
+            return segment_array.back();
+        };
+        SequenceArray(const int32_t& cardinality) :
+            segment_array(cardinality) {
+        };
+        SequenceArray(const SequenceArray& other) :
+            segment_array(other.segment_array) {
+        };
+        virtual ~SequenceArray() {
+
+        };
+        typename vector< T >::iterator begin() {
+            return segment_array.begin();
+        };
+        typename vector< T >::iterator end() {
+            return segment_array.end();
+        };
+        typename vector< T >::const_iterator begin() const {
+            return segment_array.begin();
+        };
+        typename vector< T >::const_iterator end() const {
+            return segment_array.end();
+        };
+        T& operator[](size_t index) {
+            return segment_array[index];
+        };
+        const T& operator[](size_t index) const {
+            return segment_array[index];
+        };
+};
+
+/* Sequence with quality scores */
 class ObservedSequence : public Sequence {
     friend ostream& operator<<(ostream& o, const ObservedSequence& sequence);
 
@@ -327,14 +398,6 @@ class ObservedSequence : public Sequence {
                 ks_terminate(buffer);
             }
         };
-        inline void encode_phred_quality(string& buffer, const uint8_t phred_offset) const {
-            if(length > 0) {
-                buffer.reserve(buffer.size() + length + 1);
-                for(int32_t i(0); i < length; ++i) {
-                    buffer.push_back(quality[i] + phred_offset);
-                }
-            }
-        };
         ObservedSequence& operator=(const ObservedSequence& other) {
             if(&other == this) {
                 return *this;
@@ -346,93 +409,7 @@ class ObservedSequence : public Sequence {
 };
 ostream& operator<<(ostream& o, const ObservedSequence& sequence);
 
-template < class T > class SequenceArray {
-    protected:
-        vector< T > segment_array;
-
-    public:
-        inline bool empty() const {
-            return segment_array.empty();
-        };
-        inline size_t segment_cardinality() const {
-            return segment_array.size();
-        };
-        virtual inline void clear() {
-            for(auto& segment : segment_array) {
-                segment.clear();
-            }
-        };
-        inline void encode_iupac_ambiguity(kstring_t& buffer) const {
-            for(auto& segment : segment_array) {
-                if(ks_not_empty(buffer)) { ks_put_character('-', buffer); }
-                segment.encode_iupac_ambiguity(buffer);
-            }
-        };
-        inline void encode_bam(string& value) const {
-            for(const auto& segment : segment_array) {
-                for(int32_t i(0); i < segment.length; ++i) {
-                    value.push_back(segment.code[i]);
-                }
-            }
-        };
-        inline bool is_iupac_strict() const {
-            for(const auto& segment : segment_array) {
-                if(!segment.is_iupac_strict()) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        inline double expected_error() const {
-            uint32_t sigma_q(0);
-            for(auto& segment : segment_array) {
-                for(uint8_t* q(segment.quality); *q; ++q) {
-                    sigma_q += *q;
-                }
-            }
-            return pow(10.0, sigma_q * -0.1);
-        };
-        inline T& front() {
-            return segment_array.front();
-        };
-        inline const T& front() const {
-            return segment_array.front();
-        };
-        inline T& back() {
-            return segment_array.back();
-        };
-        inline const T& back() const {
-            return segment_array.back();
-        };
-        SequenceArray(const int32_t& cardinality) :
-            segment_array(cardinality) {
-        };
-        SequenceArray(const SequenceArray& other) :
-            segment_array(other.segment_array) {
-        };
-        virtual ~SequenceArray() {
-
-        };
-        typename vector< T >::iterator begin() {
-            return segment_array.begin();
-        };
-        typename vector< T >::iterator end() {
-            return segment_array.end();
-        };
-        typename vector< T >::const_iterator begin() const {
-            return segment_array.begin();
-        };
-        typename vector< T >::const_iterator end() const {
-            return segment_array.end();
-        };
-        T& operator[](size_t index) {
-            return segment_array[index];
-        };
-        const T& operator[](size_t index) const {
-            return segment_array[index];
-        };
-};
-
+/* Segmented sequence with quality scores */
 class Observation : public SequenceArray< ObservedSequence > {
     void operator=(Observation const &) = delete;
     Observation(Observation const &) = delete;
@@ -458,5 +435,6 @@ class Observation : public SequenceArray< ObservedSequence > {
             return key;
         };
 };
+ostream& operator<<(ostream& o, const Observation& observation);
 
 #endif /* PHENIQS_SEQUENCE_H */
