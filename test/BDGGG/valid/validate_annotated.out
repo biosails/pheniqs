@@ -84,12 +84,13 @@ Mutliplex decoding
 
     Hamming distance distribution
 
-    0 6 6 7 8 AGGCAGAA 2 
-    2 0 7 8 8 CGTACTAG 2 
-    2 3 0 6 8 GGACTCCT 2 
-    3 3 2 0 5 TAAGGCGA 2 
-    3 3 3 2 0 TCCTGAGC 2 
+    Segment No.0
 
+    0 6 6 7 8 AGGCAGAA
+    2 0 7 8 8 CGTACTAG
+    2 3 0 6 8 GGACTCCT
+    3 3 2 0 5 TAAGGCGA
+    3 3 3 2 0 TCCTGAGC
 
     Barcode undetermined
         ID : BDGGG:undetermined
@@ -189,7 +190,6 @@ Mutliplex decoding
 Molecular decoding
 
     Decoding algorithm                          naive
-    Shannon bound                               0
     Segment cardinality                         1
     Nucleotide cardinality                      8
 

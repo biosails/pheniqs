@@ -30,31 +30,24 @@ class WordMetric {
         const size_t barcode_length;
         WordMetric(const size_t barcode_length) :
             barcode_length(barcode_length),
-            _min_word_length(0),
-            _max_word_length(0),
             _min_distance(0),
-            _max_distance(0),
             _shannon_bound(0),
             _padding(0),
             _spacing(1) {
+
+            // We want to know how many digits are in the biggest value to be able to align the matrix
+            _padding = _spacing;
+            int32_t digit(barcode_length);
+            do {
+                digit /= 10;
+                ++_padding;
+            } while (digit != 0);
         };
         inline bool empty() const {
             return word_array.empty();
         };
-        inline int32_t nucleotide_cardinality() const {
-            return _max_word_length;
-        };
         inline int32_t cardinality() const {
             return static_cast< int32_t >(word_array.size());
-        };
-        inline int32_t value(int32_t i, int32_t j) const {
-            return _matrix[i][j];
-        };
-        inline const string& word(size_t i) const {
-            return word_array[i];
-        };
-        inline int32_t cumulative(size_t i) const {
-            return _cumulative[i];
         };
         inline int32_t minimum_distance() const {
             return _min_distance;
@@ -64,30 +57,65 @@ class WordMetric {
         };
         void describe(ostream& o) const {
             o << std::left;
-            if(!empty()) {
-                for(int32_t i(0); i < cardinality(); ++i) {
-                    o << "    ";
-                    for(int32_t j(0); j < cardinality(); ++j) {
-                        o << setw(_padding)<< value(i, j);
+            kstring_t buffer({ 0, 0, NULL });
+            string cell;
+            for(int32_t i(0); i < cardinality(); ++i) {
+                const string& row = word_array[i];
+                ks_put_string_("   ", buffer);
+                for(int32_t j(0); j < cardinality(); ++j) {
+                    const string& column = word_array[j];
+                    if(i < j) {
+                        cell = to_string(hamming_distance(row, column));
+                    } else if(i > j) {
+                        cell = to_string(shannon_bound(row, column));
+                    } else {
+                        cell.push_back('0');
                     }
-                    o << word(i) << ' ' << setw(_padding) << cumulative(i) << endl;
+                    cell.insert(cell.begin(), _padding - cell.length(), ' ');
+                    ks_put_string_(cell, buffer);
+                    cell.clear();
                 }
-                o << endl;
+                ks_put_character_(' ', buffer);
+                ks_put_string_(row, buffer);
+                ks_terminate(buffer);
+                o << buffer.s << endl;
+                ks_clear(buffer);
+            }
+            ks_free(buffer);
+        };
+        void find_shannon_bound() {
+            if(!word_array.empty()) {
+                int32_t distance(0);
+                _min_distance = barcode_length;
+                for(int32_t i(0); i < cardinality(); ++i) {
+                    const string& row = word_array[i];
+                    for(int32_t j(i + 1); j < cardinality(); ++j) {
+                        const string& column = word_array[j];
+                        distance = 0;
+                        for(size_t i(0); i < row.length(); ++i) {
+                            if(row[i] != column[i]) {
+                                ++distance;
+                                if(distance >= _min_distance) {
+                                    break;
+                                }
+                            }
+                        }
+                        if(distance < _min_distance) {
+                            _min_distance = distance;
+                        }
+                    }
+                }
+                _shannon_bound = ((_min_distance - 1) / 2);
             }
         };
 
     private:
-        int32_t _min_word_length;
-        int32_t _max_word_length;
         int32_t _min_distance;
-        int32_t _max_distance;
         int32_t _shannon_bound;
         int32_t _padding;
         int32_t _spacing;
         set< string > _index;
         vector < string > word_array;
-        vector < int32_t > _cumulative;
-        vector< vector< int32_t > > _matrix;
         void add(const string& word) {
             if(word.size() == barcode_length) {
                 _index.insert(word);
@@ -95,54 +123,11 @@ class WordMetric {
         };
         void load() {
             word_array.clear();
-            _cumulative.clear();
             if(!_index.empty()) {
-
-                _max_word_length = 0;
-                _min_word_length = numeric_limits< int32_t >::max();
                 for(const auto& word : _index) {
-                    _min_word_length = min(_min_word_length, static_cast< int32_t >(word.size()));
-                    _max_word_length = max(_max_word_length, static_cast< int32_t >(word.size()));
                     word_array.push_back(word);
                 }
-
-                _max_distance = 0;
-                _min_distance = numeric_limits< int32_t >::max();
-                _matrix.resize(cardinality());
-                _cumulative.resize(cardinality());
-                for(int32_t i(0); i < cardinality(); ++i) {
-                    const string& row = word(i);
-                    _matrix[i].resize(cardinality());
-                    for(int32_t j(0); j < cardinality(); ++j) {
-                        const string& column = word(j);
-                        if(i == j) {
-                            _matrix[i][j] = 0;
-
-                        } else if(i < j) {
-                            int32_t distance(hamming_distance(row, column));
-                            _min_distance = min(_min_distance, distance);
-                            _max_distance = max(_max_distance, distance);
-                            _matrix[i][j] = distance;
-                            _cumulative[i] += distance;
-                            _cumulative[j] += distance;
-
-                        } else {
-                            _matrix[i][j] = shannon_bound(row, column);
-                        }
-                    }
-                }
-                _shannon_bound = ((_min_distance - 1) / 2);
-
-                for(size_t i(0); i < _cumulative.size(); ++i) {
-                    _cumulative[i] /= (cardinality() * 2);
-                }
-                // We want to know how many digits are in the biggest value to be able to align the matrix
-                _padding = _spacing;
-                int32_t digit(_max_distance);
-                do {
-                    digit /= 10;
-                    ++_padding;
-                } while (digit != 0);
+                _index.clear();
             }
         };
         inline int32_t hamming_distance(const string& left, const string& right) const {
@@ -171,25 +156,23 @@ class CodecMetric {
             ontology(ontology),
             segment_cardinality(decode_value_by_key< int32_t >("segment cardinality", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
-            barcode_segment_length(decode_value_by_key< vector< int32_t > >("barcode length", ontology)),
-            concatenated_metric(nucleotide_cardinality) {
-
-            for(auto& segment_length : barcode_segment_length) {
-                segment_metric.emplace_back(segment_length);
-            }
+            barcode_segment_length(decode_value_by_key< vector< int32_t > >("barcode length", ontology)) {
 
             Value::ConstMemberIterator reference = ontology.FindMember("codec");
             if(reference != ontology.MemberEnd()) {
                 const Value& codec(reference->value);
+
+                for(auto& segment_length : barcode_segment_length) {
+                    segment_metric.emplace_back(segment_length);
+                }
+
                 for(auto& record : codec.GetObject()) {
                     int32_t barcode_index(decode_value_by_key< int32_t >("index", record.value));
                     list< string > sequence_array(decode_value_by_key< list< string > >("barcode", record.value));
                     if(sequence_array.size() == segment_cardinality) {
-                        string concatenated_sequence;
                         int32_t segment_index(0);
                         for(auto& sequence : sequence_array) {
                             if(static_cast< int32_t >(sequence.size()) == barcode_segment_length[segment_index]) {
-                                concatenated_sequence += sequence;
                                 segment_metric[segment_index].add(sequence);
 
                             } else {
@@ -206,7 +189,6 @@ class CodecMetric {
                             }
                             ++segment_index;
                         }
-                        concatenated_metric.add(concatenated_sequence);
 
                     } else {
                         string message;
@@ -219,19 +201,20 @@ class CodecMetric {
                         throw ConfigurationError(message);
                     }
                 }
+                load();
             }
-            load();
 
             } catch(Error& error) {
                 error.push("CodecMetric");
                 throw;
         };
         inline bool empty() const {
-            return concatenated_metric.empty();
+            return segment_metric.empty();
         };
         void compile_barcode_tolerance(Value& value, Document& document) {
             vector< int32_t > shannon_bound_array(segment_cardinality);
             for(size_t i(0); i < segment_cardinality; ++i) {
+                segment_metric[i].find_shannon_bound();
                 shannon_bound_array[i] = segment_metric[i].shannon_bound();
             }
             encode_key_value("shannon bound", shannon_bound_array, value, document);
@@ -256,26 +239,20 @@ class CodecMetric {
             } else { encode_key_value("distance tolerance", shannon_bound_array, value, document); }
         };
         void describe(ostream& o) const {
-            if(!concatenated_metric.empty()) {
+            if(!empty()) {
                 o << "    Hamming distance distribution" << endl << endl;
-                concatenated_metric.describe(o);
-
-                if(segment_cardinality > 1) {
-                    int32_t index(0);
-                    for(auto& segment : segment_metric) {
-                        o << "    Segment No." << index << endl << endl;
-                        segment.describe(o);
-                        ++index;
-                    }
+                int32_t index(0);
+                for(auto& segment : segment_metric) {
+                    o << "    Segment No." << index << endl << endl;
+                    segment.describe(o);
+                    ++index;
                 }
             }
         };
 
     private:
-        WordMetric concatenated_metric;
         vector< WordMetric > segment_metric;
         void load() {
-            concatenated_metric.load();
             for(auto& segment : segment_metric) {
                 segment.load();
             }

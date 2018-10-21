@@ -587,7 +587,6 @@ void Multiplex::compile_decoder(Value& value, int32_t& index, const Value& defau
     if(value.IsObject()) {
         encode_key_value("index", index, value, ontology);
         compile_codec(value, default_decoder, default_barcode);
-        compile_decoder_transformation(value);
         ++index;
     }
 };
@@ -601,13 +600,6 @@ void Multiplex::compile_codec(Value& value, const Value& default_decoder, const 
         Value default_codec_barcode(kObjectType);
         project_json_value(default_barcode, value, default_codec_barcode, ontology);
 
-        string buffer;
-        int32_t barcode_index(0);
-        double total_concentration(0);
-        set< string > unique_barcode_id;
-
-        double noise(decode_value_by_key< double >("noise", value));
-
         /* apply barcode default on undetermined barcode or create it from the default if one was not explicitly specified */
         Value::MemberIterator reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()){
@@ -619,6 +611,14 @@ void Multiplex::compile_codec(Value& value, const Value& default_decoder, const 
                 ontology.GetAllocator()
             );
         }
+
+        compile_decoder_transformation(value);
+
+        string buffer;
+        int32_t barcode_index(0);
+        double total_concentration(0);
+        set< string > unique_barcode_id;
+        double noise(decode_value_by_key< double >("noise", value));
 
         reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()){
@@ -634,7 +634,6 @@ void Multiplex::compile_codec(Value& value, const Value& default_decoder, const 
         if(reference != value.MemberEnd()){
             if(reference->value.IsObject()) {
                 Value& codec(reference->value);
-
                 for(auto& record : codec.GetObject()) {
                     merge_json_value(default_codec_barcode, record.value, ontology);
                     encode_key_value("index", barcode_index, record.value, ontology);
@@ -642,19 +641,16 @@ void Multiplex::compile_codec(Value& value, const Value& default_decoder, const 
                         if(!unique_barcode_id.count(buffer)) {
                             unique_barcode_id.emplace(buffer);
                         } else {
-                            string duplicate(record.name.GetString(), record.value.GetStringLength());
+                            string duplicate(record.name.GetString(), record.name.GetStringLength());
                             throw ConfigurationError("duplicate " + duplicate + " barcode");
                         }
                     }
-
                     double concentration(decode_value_by_key< double >("concentration", record.value));
                     if(concentration >= 0) {
                         total_concentration += concentration;
                     } else { throw ConfigurationError("barcode concentration must be a positive number");  }
-
                     ++barcode_index;
                 }
-
                 if(total_concentration > 0) {
                     const double factor((1.0 - noise) / total_concentration);
                     for(auto& record : codec.GetObject()) {
@@ -662,8 +658,12 @@ void Multiplex::compile_codec(Value& value, const Value& default_decoder, const 
                         encode_key_value("concentration", concentration * factor, record.value, ontology);
                     }
                 } else { throw ConfigurationError("total pool concentration is not a positive number"); }
+
+                CodecMetric metric(value);
+                metric.compile_barcode_tolerance(value, ontology);
             } else { throw ConfigurationError("codec element must be a dictionary"); }
         }
+
     }
 };
 bool Multiplex::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
@@ -734,7 +734,8 @@ void Multiplex::compile_decoder_transformation(Value& value) {
         encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, ontology);
         encode_key_value("barcode length", barcode_length, value, ontology);
 
-        /* annotate each barcode element with the barcode segment cardinality */
+        /* verify nucleotide cardinality and uniqueness
+           and annotate each barcode element with the barcode segment cardinality */
         Value::MemberIterator reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()) {
             if(!reference->value.IsNull()) {
@@ -752,19 +753,49 @@ void Multiplex::compile_decoder_transformation(Value& value) {
             }
         }
 
+        size_t segment_index(0);
+        string barcode_segment;
+        string barcode_sequence;
+        set< string > unique_barcode_sequence;
         reference = value.FindMember("codec");
         if(reference != value.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                if(reference->value.IsObject()) {
-                    for(auto& record : reference->value.GetObject()) {
-                        encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, ontology);
+            if(reference->value.IsObject()) {
+                Value& codec(reference->value);
+                for(auto& record : codec.GetObject()) {
+                    reference = record.value.FindMember("barcode");
+                    if(reference !=  record.value.MemberEnd()) {
+                        barcode_sequence.clear();
+                        segment_index = 0;
+                        for(const auto& element : reference->value.GetArray()) {
+                            barcode_segment.assign(element.GetString(), element.GetStringLength());
+                            if(static_cast< int32_t >(barcode_segment.size()) == barcode_length[segment_index]) {
+                                barcode_sequence.append(barcode_segment);
+                                ++segment_index;
+                            } else {
+                                string key(record.name.GetString(), record.name.GetStringLength());
+                                string message;
+                                message.append("expected ");
+                                message.append(to_string(barcode_length[segment_index]));
+                                message.append(" but found ");
+                                message.append(to_string(barcode_segment.size()));
+                                message.append(" nucleotides in segment ");
+                                message.append(to_string(segment_index));
+                                message.append(" of barcode ");
+                                message.append(key);
+                                throw ConfigurationError(message);
+                            }
+                        }
+                        if(!unique_barcode_sequence.count(barcode_sequence)) {
+                            unique_barcode_sequence.emplace(barcode_sequence);
+                        } else {
+                            throw ConfigurationError("duplicate barcode sequence " + barcode_sequence);
+                        }
                     }
+                    encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, ontology);
                 }
             }
         }
-
-        CodecMetric metric(value);
-        metric.compile_barcode_tolerance(value, ontology);
+        unique_barcode_sequence.clear();
     }
 };
 void Multiplex::compile_output() {

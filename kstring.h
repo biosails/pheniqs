@@ -121,6 +121,11 @@ static inline void ks_put_string(const string& from, kstring_t& to) {
     to.l += from.size();
     to.s[to.l] = '\0';
 };
+static inline void ks_put_string_(const string& from, kstring_t& to) {
+    ks_increase_by_size(to, from.size() + 2);
+    memcpy(to.s + to.l, from.c_str(), from.size());
+    to.l += from.size();
+};
 static inline void ks_put_string_(const void* p, size_t l, kstring_t& s) {
     ks_increase_by_size(s, l);
     memcpy(s.s + s.l, p, l);

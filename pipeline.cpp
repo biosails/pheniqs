@@ -33,20 +33,6 @@ Job::Job(Document& operation) try :
         error.push("Job");
         throw;
 };
-void Job::clean() {
-    clean_json_value(ontology, ontology);
-    sort_json_value(ontology, ontology);
-};
-void Job::apply_default() {
-    /* if the operation defines a default instruction overlay it on top of the ontology */
-    Value::ConstMemberIterator reference = operation.FindMember("default");
-    if(reference != operation.MemberEnd()) {
-        merge_json_value(reference->value, ontology, ontology);
-    }
-};
-void Job::apply_interactive() {
-    overlay(interactive);
-};
 void Job::assemble() {
     /* if a URL to an instruction file was provided in the interactive instruction, load it and overlay on top of the ontology */
     URL configuration_url;
@@ -55,10 +41,29 @@ void Job::assemble() {
         overlay(read_instruction_document(configuration_url));
     }
 };
+void Job::overlay(const Value& instruction) {
+    if(!instruction.IsNull()) {
+        if(instruction.IsObject()) {
+            if(!instruction.ObjectEmpty()) {
+                Document merged;
+                merged.CopyFrom(instruction, merged.GetAllocator());
+                merge_json_value(ontology, merged, merged);
+                ontology.Swap(merged);
+            }
+        } else { throw ConfigurationError("Job document root must be a dictionary"); }
+    }
+};
 void Job::compile() {
     remove_disabled();
     clean();
     validate();
+};
+void Job::remove_disabled() {
+    remove_disabled_from_json_value(ontology, ontology);
+};
+void Job::clean() {
+    clean_json_value(ontology, ontology);
+    sort_json_value(ontology, ontology);
 };
 void Job::finalize() {
     if(decode_value_by_key< bool >("include compiled job", ontology)) {
@@ -102,20 +107,56 @@ void Job::print_report() const {
 void Job::describe(ostream& o) const {
 
 };
-void Job::overlay(const Value& instruction) {
-    if(!instruction.IsNull()) {
-        if(instruction.IsObject()) {
-            if(!instruction.ObjectEmpty()) {
-                Document merged;
-                merged.CopyFrom(instruction, merged.GetAllocator());
-                merge_json_value(ontology, merged, merged);
-                ontology.Swap(merged);
-            }
-        } else { throw ConfigurationError("Job document root must be a dictionary"); }
+void Job::apply_default() {
+    /* if the operation defines a default instruction overlay it on top of the ontology */
+    Value::ConstMemberIterator reference = operation.FindMember("default");
+    if(reference != operation.MemberEnd()) {
+        merge_json_value(reference->value, ontology, ontology);
     }
 };
-void Job::remove_disabled() {
-    remove_disabled_from_json_value(ontology, ontology);
+void Job::apply_interactive() {
+    overlay(interactive);
+};
+const Value* Job::find_projection(const string& key) const {
+    const Value* element(NULL);
+    if(projection_repository.IsObject()) {
+        Value::ConstMemberIterator reference = projection_repository.FindMember(key.c_str());
+        if(reference != projection_repository.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                element = &reference->value;
+            }
+        }
+    }
+    return element;
+};
+const Value* Job::find_schema(const string& key) const {
+    const Value* element(NULL);
+    if(schema_repository.IsObject()) {
+        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
+        if(reference != schema_repository.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                element = &reference->value;
+            }
+        }
+    }
+    return element;
+};
+const SchemaDocument* Job::get_schema_document(const string& key) {
+    const SchemaDocument* schema_document(NULL);
+    auto record = schema_document_by_name.find(key);
+    if(record != schema_document_by_name.end()) {
+        schema_document = &record->second;
+    } else {
+        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
+        if(reference != schema_repository.MemberEnd()) {
+            schema_document_by_name.emplace(make_pair(key, SchemaDocument(reference->value)));
+            record = schema_document_by_name.find(key);
+            if(record != schema_document_by_name.end()) {
+                schema_document = &record->second;
+            }
+        }
+    }
+    return schema_document;
 };
 Document Job::read_instruction_document(const URL& url) {
     set< URL > visited;
@@ -171,45 +212,4 @@ Document Job::load_document_with_import(const URL& url, set< URL >& visited) {
         }
     } else { throw ConfigurationError("unable to read job file from " + string(url)); }
     return document;
-};
-const Value* Job::find_projection(const string& key) const {
-    const Value* element(NULL);
-    if(projection_repository.IsObject()) {
-        Value::ConstMemberIterator reference = projection_repository.FindMember(key.c_str());
-        if(reference != projection_repository.MemberEnd()) {
-            if(reference->value.IsObject()) {
-                element = &reference->value;
-            }
-        }
-    }
-    return element;
-};
-const Value* Job::find_schema(const string& key) const {
-    const Value* element(NULL);
-    if(schema_repository.IsObject()) {
-        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
-        if(reference != schema_repository.MemberEnd()) {
-            if(reference->value.IsObject()) {
-                element = &reference->value;
-            }
-        }
-    }
-    return element;
-};
-const SchemaDocument* Job::get_schema_document(const string& key) {
-    const SchemaDocument* schema_document(NULL);
-    auto record = schema_document_by_name.find(key);
-    if(record != schema_document_by_name.end()) {
-        schema_document = &record->second;
-    } else {
-        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
-        if(reference != schema_repository.MemberEnd()) {
-            schema_document_by_name.emplace(make_pair(key, SchemaDocument(reference->value)));
-            record = schema_document_by_name.find(key);
-            if(record != schema_document_by_name.end()) {
-                schema_document = &record->second;
-            }
-        }
-    }
-    return schema_document;
 };
