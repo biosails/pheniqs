@@ -53,12 +53,13 @@ endif
 PLATFORM := $(shell uname -s)
 
 PHENIQS_SOURCES = \
-	accumulate.cpp \
+	accumulator.cpp \
 	atom.cpp \
 	auxiliary.cpp \
 	barcode.cpp \
 	channel.cpp \
 	decoder.cpp \
+	classifier.cpp \
 	mdd.cpp \
 	pamld.cpp \
 	environment.cpp \
@@ -69,7 +70,7 @@ PHENIQS_SOURCES = \
 	json.cpp \
 	pheniqs.cpp \
 	pipeline.cpp \
-	multiplex.cpp \
+	transcode.cpp \
 	proxy.cpp \
 	read.cpp \
 	sequence.cpp \
@@ -77,12 +78,13 @@ PHENIQS_SOURCES = \
 	url.cpp
 
 PHENIQS_OBJECTS = \
-	accumulate.o \
+	accumulator.o \
 	atom.o \
 	auxiliary.o \
 	barcode.o \
 	channel.o \
 	decoder.o \
+	classifier.o \
 	mdd.o \
 	pamld.o \
 	environment.o \
@@ -93,7 +95,7 @@ PHENIQS_OBJECTS = \
 	json.o \
 	pheniqs.o \
 	pipeline.o \
-	multiplex.o \
+	transcode.o \
 	proxy.o \
 	read.o \
 	sequence.o \
@@ -283,7 +285,7 @@ sequence.o: \
 
 barcode.o: \
 	sequence.o \
-	accumulate.o \
+	accumulator.o \
 	barcode.h
 
 auxiliary.o: \
@@ -295,9 +297,9 @@ read.o: \
 	auxiliary.o \
 	read.h
 
-accumulate.o: \
+accumulator.o: \
 	json.o \
-	accumulate.h
+	accumulator.h
 
 proxy.o: \
 	url.o \
@@ -323,13 +325,18 @@ transform.o: \
 
 channel.o: \
 	feed.o \
-	accumulate.o \
+	accumulator.o \
 	channel.h
 
+classifier.o: \
+	accumulator.o \
+	read.o \
+	classifier.h
+
 decoder.o: \
+	classifier.o \
 	transform.o \
 	channel.o \
-	accumulate.o \
 	decoder.h
 
 mdd.o: \
@@ -345,8 +352,8 @@ pipeline.o: \
 	url.o \
 	pipeline.h
 
-multiplex.o: \
-	accumulate.o \
+transcode.o: \
+	accumulator.o \
 	fastq.o \
 	hts.o \
 	decoder.o \
@@ -354,11 +361,11 @@ multiplex.o: \
 	pamld.o \
 	metric.h \
 	pipeline.h \
-	multiplex.h
+	transcode.h
 
 environment.o: \
 	interface.o \
-	multiplex.o \
+	transcode.o \
 	environment.h
 
 pheniqs.o: \

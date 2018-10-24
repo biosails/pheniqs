@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "multiplex.h"
+#include "transcode.h"
 
 static int32_t compute_inheritence_depth(const string& key, const unordered_map< string, Value* >& object_by_key, Document& document) {
     int32_t depth(0);
@@ -41,17 +41,17 @@ static int32_t compute_inheritence_depth(const string& key, const unordered_map<
     return depth;
 };
 
-Multiplex::Multiplex(Document& operation) try :
+Transcode::Transcode(Document& operation) try :
     Job(operation),
     decoder_repository_query("/decoder"),
     end_of_input(false),
     thread_pool({NULL, 0}) {
 
     } catch(Error& error) {
-        error.push("Multiplex");
+        error.push("Transcode");
         throw;
 };
-Multiplex::~Multiplex() {
+Transcode::~Transcode() {
     if(thread_pool.pool != NULL) {
         hts_tpool_destroy(thread_pool.pool);
     }
@@ -65,7 +65,7 @@ Multiplex::~Multiplex() {
     input_feed_by_index.clear();
     output_feed_by_index.clear();
 };
-bool Multiplex::pull(Read& read) {
+bool Transcode::pull(Read& read) {
     vector< unique_lock< mutex > > feed_locks;
     feed_locks.reserve(input_feed_by_index.size());
 
@@ -87,7 +87,7 @@ bool Multiplex::pull(Read& read) {
     }
     return !end_of_input;
 };
-void Multiplex::populate_channel(Channel& channel) {
+void Transcode::populate_channel(Channel& channel) {
     map< int32_t, Feed* > feed_by_index;
     channel.output_feed_by_segment.reserve(channel.output_feed_url_by_segment.size());
     for(const auto& url : channel.output_feed_url_by_segment) {
@@ -108,36 +108,36 @@ void Multiplex::populate_channel(Channel& channel) {
     }
     channel.output_feed_lock_order.shrink_to_fit();
 };
-Multiplex& Multiplex::operator+=(const MultiplexPivot& pivot) {
-    if(multiplex != NULL) {
-        *multiplex += *(pivot.multiplex);
+Transcode& Transcode::operator+=(const TranscodePivot& pivot) {
+    if(sample_classifier != NULL) {
+        *sample_classifier += *(pivot.sample_classifier);
     }
-    if(!molecular.empty()) {
-        for(size_t index(0); index < molecular.size(); ++index) {
-            *(molecular[index]) += *(pivot.molecular[index]);
+    if(!molecular_classifier_array.empty()) {
+        for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
+            *(molecular_classifier_array[index]) += *(pivot.molecular_classifier_array[index]);
         }
     }
-    if(!cellular.empty()) {
-        for(size_t index(0); index < cellular.size(); ++index) {
-            *(cellular[index]) += *(pivot.cellular[index]);
+    if(!cellular_classifier_array.empty()) {
+        for(size_t index(0); index < cellular_classifier_array.size(); ++index) {
+            *(cellular_classifier_array[index]) += *(pivot.cellular_classifier_array[index]);
         }
     }
     return *this;
 };
 
 /* assemble */
-void Multiplex::assemble() {
+void Transcode::assemble() {
     Job::assemble();
     apply_inheritance();
     clean();
 };
-void Multiplex::apply_inheritance() {
+void Transcode::apply_inheritance() {
     apply_repository_inheritence("decoder", ontology, ontology);
     apply_topic_inheritance("multiplex");
     apply_topic_inheritance("molecular");
     apply_topic_inheritance("cellular");
 };
-void Multiplex::apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document) {
+void Transcode::apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document) {
     if(container.IsObject()) {
         Value::MemberIterator reference = container.FindMember(key);
         if(reference != container.MemberEnd()) {
@@ -183,7 +183,7 @@ void Multiplex::apply_repository_inheritence(const Value::Ch* key, Value& contai
         }
     }
 };
-void Multiplex::apply_topic_inheritance(const Value::Ch* key) {
+void Transcode::apply_topic_inheritance(const Value::Ch* key) {
     if(ontology.IsObject()) {
         Value::MemberIterator reference = ontology.FindMember(key);
         if(reference != ontology.MemberEnd()) {
@@ -211,7 +211,7 @@ void Multiplex::apply_topic_inheritance(const Value::Ch* key) {
         }
     }
 };
-void Multiplex::apply_decoder_inheritance(Value& value) {
+void Transcode::apply_decoder_inheritance(Value& value) {
     if(value.IsObject()) {
         string base;
         Value::ConstMemberIterator reference;
@@ -230,7 +230,7 @@ void Multiplex::apply_decoder_inheritance(Value& value) {
 };
 
 /* compile */
-void Multiplex::compile() {
+void Transcode::compile() {
     ontology.RemoveMember("feed");
     ontology.RemoveMember("input segment cardinality");
     ontology.RemoveMember("output segment cardinality");
@@ -254,7 +254,7 @@ void Multiplex::compile() {
     ontology.RemoveMember("decoder");
     Job::compile();
 };
-void Multiplex::apply_interactive() {
+void Transcode::apply_interactive() {
     Document adjusted;
     adjusted.CopyFrom(interactive, adjusted.GetAllocator());
 
@@ -275,7 +275,7 @@ void Multiplex::apply_interactive() {
 
     overlay(adjusted);
 };
-void Multiplex::compile_PG() {
+void Transcode::compile_PG() {
     Value PG(kObjectType);
 
     string buffer;
@@ -299,7 +299,7 @@ void Multiplex::compile_PG() {
     }
     ontology.AddMember(Value("program", ontology.GetAllocator()).Move(), PG.Move(), ontology.GetAllocator());
 };
-void Multiplex::compile_input() {
+void Transcode::compile_input() {
     /* Populate the input_feed_by_index and input_feed_by_segment arrays */
     expand_url_value_by_key("base input url", ontology, ontology);
     URL base(decode_value_by_key< URL >("base input url", ontology));
@@ -320,7 +320,7 @@ void Multiplex::compile_input() {
         throw ConfigurationError("leading segment index " + to_string(leading_segment_index) + " references non existing input segment");
     }
 };
-void Multiplex::compile_sensed_input() {
+void Transcode::compile_sensed_input() {
     int32_t feed_index(0);
     int32_t input_segment_cardinality(0);
     int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
@@ -443,7 +443,7 @@ void Multiplex::compile_sensed_input() {
     encode_key_value("input feed", input_feed_by_index, ontology["feed"], ontology);
     encode_key_value("input feed by segment", input_feed_by_segment, ontology["feed"], ontology);
 };
-void Multiplex::compile_explicit_input() {
+void Transcode::compile_explicit_input() {
     int32_t feed_index(0);
     int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
     uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
@@ -495,7 +495,7 @@ void Multiplex::compile_explicit_input() {
     ontology["feed"].RemoveMember("input feed");
     ontology["feed"].AddMember("input feed", feed_by_index_array.Move(), ontology.GetAllocator());
 };
-void Multiplex::compile_transformation(Value& value) {
+void Transcode::compile_transformation(Value& value) {
     /* add the default observation if one was not specificed.
        default observation will treat every token as a segment */
     if(value.IsObject()) {
@@ -524,12 +524,12 @@ void Multiplex::compile_transformation(Value& value) {
         }
     }
 };
-void Multiplex::compile_barcode_decoding() {
+void Transcode::compile_barcode_decoding() {
     compile_topic("multiplex");
     compile_topic("molecular");
     compile_topic("cellular");
 };
-void Multiplex::compile_topic(const Value::Ch* key) {
+void Transcode::compile_topic(const Value::Ch* key) {
     Value::MemberIterator reference = ontology.FindMember(key);
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
@@ -583,14 +583,14 @@ void Multiplex::compile_topic(const Value::Ch* key) {
         }
     }
 };
-void Multiplex::compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode) {
+void Transcode::compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode) {
     if(value.IsObject()) {
         encode_key_value("index", index, value, ontology);
         compile_codec(value, default_decoder, default_barcode);
         ++index;
     }
 };
-void Multiplex::compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode) {
+void Transcode::compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode) {
     if(value.IsObject()) {
         /* overlay on top of the default decoder */
         merge_json_value(default_decoder, value, ontology);
@@ -666,7 +666,7 @@ void Multiplex::compile_codec(Value& value, const Value& default_decoder, const 
 
     }
 };
-bool Multiplex::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+bool Transcode::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
     buffer.clear();
     if(!decode_value_by_key< string >(key, buffer, container)) {
         if(infer_PU("PU", buffer, container, undetermined)) {
@@ -675,7 +675,7 @@ bool Multiplex::infer_ID(const Value::Ch* key, string& buffer, Value& container,
         } else { return false; }
     } else { return true; }
 };
-bool Multiplex::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+bool Transcode::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
     buffer.clear();
     string suffix;
     if(!decode_value_by_key< string >(key, suffix, container)) {
@@ -703,7 +703,7 @@ bool Multiplex::infer_PU(const Value::Ch* key, string& buffer, Value& container,
         } else { return false; }
     } else { return true; }
 };
-void Multiplex::compile_decoder_transformation(Value& value) {
+void Transcode::compile_decoder_transformation(Value& value) {
     if(value.HasMember("transform")) {
         compile_transformation(value);
 
@@ -798,7 +798,7 @@ void Multiplex::compile_decoder_transformation(Value& value) {
         unique_barcode_sequence.clear();
     }
 };
-void Multiplex::compile_output() {
+void Transcode::compile_output() {
     /* expand the report URL */
     expand_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
 
@@ -933,7 +933,7 @@ void Multiplex::compile_output() {
         }
     }
 };
-void Multiplex::compile_output_transformation() {
+void Transcode::compile_output_transformation() {
     const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
 
     /* if the output transform was not defined add an empty dictionary */
@@ -952,7 +952,7 @@ void Multiplex::compile_output_transformation() {
     }
     compile_transformation(ontology);
 };
-void Multiplex::pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality) {
+void Transcode::pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality) {
     list< URL > array;
     if(decode_value_by_key< list< URL > >(key, array, container)) {
         if(!array.empty()) {
@@ -967,7 +967,7 @@ void Multiplex::pad_url_array_by_key(const Value::Ch* key, Value& container, con
         }
     }
 };
-void Multiplex::cross_validate_io() {
+void Transcode::cross_validate_io() {
     set< URL > input_url_set;
     Value::MemberIterator reference = ontology["feed"].FindMember("input feed");
     if(reference != ontology["feed"].MemberEnd()) {
@@ -999,7 +999,7 @@ void Multiplex::cross_validate_io() {
 };
 
 /* validate */
-void Multiplex::validate() {
+void Transcode::validate() {
     Job::validate();
 
     uint8_t input_phred_offset;
@@ -1020,7 +1020,7 @@ void Multiplex::validate() {
     validate_decoder_group("molecular");
     validate_decoder_group("cellular");
 };
-void Multiplex::validate_decoder_group(const Value::Ch* key) {
+void Transcode::validate_decoder_group(const Value::Ch* key) {
     Value::MemberIterator reference = ontology.FindMember(key);
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
@@ -1036,7 +1036,7 @@ void Multiplex::validate_decoder_group(const Value::Ch* key) {
         }
     }
 };
-void Multiplex::validate_decoder(Value& value) {
+void Transcode::validate_decoder(Value& value) {
     if(value.IsObject()) {
         if(value.HasMember("codec")) {
             double confidence_threshold;
@@ -1057,13 +1057,13 @@ void Multiplex::validate_decoder(Value& value) {
 };
 
 /* execute */
-void Multiplex::execute() {
+void Transcode::execute() {
     load();
     start();
     stop();
     finalize();
 };
-void Multiplex::load() {
+void Transcode::load() {
     validate_url_accessibility();
     load_thread_pool();
     load_input();
@@ -1071,7 +1071,7 @@ void Multiplex::load() {
     load_decoding();
     load_pivot();
 };
-void Multiplex::validate_url_accessibility() {
+void Transcode::validate_url_accessibility() {
     URL url;
     Value::MemberIterator reference = ontology["feed"].FindMember("input feed");
     if(reference != ontology["feed"].MemberEnd()) {
@@ -1095,12 +1095,12 @@ void Multiplex::validate_url_accessibility() {
         }
     }
 };
-void Multiplex::load_thread_pool() {
+void Transcode::load_thread_pool() {
     int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     thread_pool.pool = hts_tpool_init(threads);
     if(!thread_pool.pool) { throw InternalError("error creating thread pool"); }
 };
-void Multiplex::load_input() {
+void Transcode::load_input() {
     if(input_feed_by_index.empty()) {
         /*  Decode feed_proxy_array, a local list of input feed proxy.
             The list has already been enumerated by the interface
@@ -1155,7 +1155,7 @@ void Multiplex::load_input() {
         }
     }
 };
-void Multiplex::load_output() {
+void Transcode::load_output() {
     /*  Decode feed_proxy_array, a local list of output feed proxy.
         The list has already been enumerated by the environment
         and contains only unique url references
@@ -1177,18 +1177,18 @@ void Multiplex::load_output() {
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
             if(reference->value.IsObject()) {
-                const Value& multiplex(reference->value);
+                const Value& classifier(reference->value);
 
-                reference = multiplex.FindMember("undetermined");
-                if(reference != multiplex.MemberEnd()) {
+                reference = classifier.FindMember("undetermined");
+                if(reference != classifier.MemberEnd()) {
                     HeadRGAtom rg(reference->value);
                     list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
                     for(auto& url : output) {
                         feed_proxy_by_url[url]->register_rg(rg);
                     }
                 }
-                reference = multiplex.FindMember("codec");
-                if(reference != multiplex.MemberEnd()) {
+                reference = classifier.FindMember("codec");
+                if(reference != classifier.MemberEnd()) {
                     for(auto& record : reference->value.GetObject()) {
                         HeadRGAtom rg(record.value);
                         list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
@@ -1234,26 +1234,26 @@ void Multiplex::load_output() {
             output_feed_by_url.emplace(make_pair(proxy.url, feed));
     }
 };
-void Multiplex::load_decoding() {
+void Transcode::load_decoding() {
     load_multiplex_decoding();
     load_molecular_decoding();
     load_cellular_decoding();
 };
-void Multiplex::load_multiplex_decoding() {
+void Transcode::load_multiplex_decoding() {
     Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
     if(reference != ontology.MemberEnd()) {
         Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
         switch(algorithm) {
             case Algorithm::PAMLD: {
-                multiplex = new PAMLMultiplexDecoder(reference->value);
+                sample_classifier = new PAMLMultiplexDecoder(reference->value);
                 break;
             };
             case Algorithm::MDD: {
-                multiplex = new MDMultiplexDecoder(reference->value);
+                sample_classifier = new MDMultiplexDecoder(reference->value);
                 break;
             };
             case Algorithm::TRANSPARENT: {
-                multiplex = new RoutingDecoder< Channel >(reference->value);
+                sample_classifier = new RoutingClassifier< Channel >(reference->value);
                 break;
             };
             default:
@@ -1262,27 +1262,27 @@ void Multiplex::load_multiplex_decoding() {
         }
     }
 };
-void Multiplex::load_molecular_decoding() {
+void Transcode::load_molecular_decoding() {
     Value::ConstMemberIterator reference = ontology.FindMember("molecular");
     if(reference != ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
-            molecular.reserve(1);
+            molecular_classifier_array.reserve(1);
             load_molecular_decoder(reference->value);
 
         } else if(reference->value.IsArray()) {
-            molecular.reserve(reference->value.Size());
+            molecular_classifier_array.reserve(reference->value.Size());
             for(const auto& element : reference->value.GetArray()) {
                 load_molecular_decoder(element);
             }
         }
     }
-    molecular.shrink_to_fit();
+    molecular_classifier_array.shrink_to_fit();
 };
-void Multiplex::load_molecular_decoder(const Value& value) {
+void Transcode::load_molecular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
         case Algorithm::NAIVE: {
-            molecular.emplace_back(new NaiveMolecularDecoder(value));
+            molecular_classifier_array.emplace_back(new NaiveMolecularDecoder(value));
             break;
         };
         default:
@@ -1290,31 +1290,31 @@ void Multiplex::load_molecular_decoder(const Value& value) {
             break;
     }
 };
-void Multiplex::load_cellular_decoding() {
+void Transcode::load_cellular_decoding() {
     Value::ConstMemberIterator reference = ontology.FindMember("cellular");
     if(reference != ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
-            cellular.reserve(1);
+            cellular_classifier_array.reserve(1);
             load_cellular_decoder(reference->value);
 
         } else if(reference->value.IsArray()) {
-            cellular.reserve(reference->value.Size());
+            cellular_classifier_array.reserve(reference->value.Size());
             for(const auto& element : reference->value.GetArray()) {
                 load_cellular_decoder(element);
             }
         }
     }
-    cellular.shrink_to_fit();
+    cellular_classifier_array.shrink_to_fit();
 };
-void Multiplex::load_cellular_decoder(const Value& value) {
+void Transcode::load_cellular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
         case Algorithm::PAMLD: {
-            cellular.emplace_back(new PAMLCellularDecoder(value));
+            cellular_classifier_array.emplace_back(new PAMLCellularDecoder(value));
             break;
         };
         case Algorithm::MDD: {
-            cellular.emplace_back(new MDCellularDecoder(value));
+            cellular_classifier_array.emplace_back(new MDCellularDecoder(value));
             break;
         };
         default:
@@ -1322,13 +1322,13 @@ void Multiplex::load_cellular_decoder(const Value& value) {
             break;
     }
 };
-void Multiplex::load_pivot() {
+void Transcode::load_pivot() {
     int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     for(int32_t index(0); index < threads; ++index) {
         pivot_array.emplace_back(*this, index);
     }
 };
-void Multiplex::start() {
+void Transcode::start() {
     for(auto feed : input_feed_by_index) {
         feed->open();
     }
@@ -1348,7 +1348,7 @@ void Multiplex::start() {
         pivot.join();
     }
 };
-void Multiplex::stop() {
+void Transcode::stop() {
     /*
         output channel buffers still have residual records
         notify all output feeds that no more input is coming
@@ -1364,7 +1364,7 @@ void Multiplex::stop() {
         feed->join();
     }
 };
-void Multiplex::finalize() {
+void Transcode::finalize() {
     Job::finalize();
 
     /*  collect statistics from the accumulators on all pivot threads */
@@ -1372,30 +1372,30 @@ void Multiplex::finalize() {
         *this += pivot;
     }
 
-    if(multiplex != NULL) {
-        multiplex->finalize();
+    if(sample_classifier != NULL) {
+        sample_classifier->finalize();
         Value element(kObjectType);
-        multiplex->encode(element, report);
+        sample_classifier->encode(element, report);
         report.AddMember("multiplex", element.Move(), report.GetAllocator());
     }
 
-    if(!molecular.empty()) {
+    if(!molecular_classifier_array.empty()) {
         Value array(kArrayType);
-        for(auto& decoder : molecular) {
-            decoder->finalize();
+        for(auto& classifier : molecular_classifier_array) {
+            classifier->finalize();
             Value element(kObjectType);
-            decoder->encode(element, report);
+            classifier->encode(element, report);
             array.PushBack(element.Move(), report.GetAllocator());
         }
         report.AddMember("molecular", array.Move(), report.GetAllocator());
     }
 
-    if(!cellular.empty()) {
+    if(!cellular_classifier_array.empty()) {
         Value array(kArrayType);
-        for(auto& decoder : cellular) {
-            decoder->finalize();
+        for(auto& classifier : cellular_classifier_array) {
+            classifier->finalize();
             Value element(kObjectType);
-            decoder->encode(element, report);
+            classifier->encode(element, report);
             array.PushBack(element.Move(), report.GetAllocator());
         }
         report.AddMember("cellular", array.Move(), report.GetAllocator());
@@ -1406,7 +1406,7 @@ void Multiplex::finalize() {
 };
 
 /* describe */
-void Multiplex::describe(ostream& o) const {
+void Transcode::describe(ostream& o) const {
     print_global_instruction(o);
     print_input_instruction(o);
     print_transform_instruction(o);
@@ -1414,7 +1414,7 @@ void Multiplex::describe(ostream& o) const {
     print_molecular_instruction(o);
     print_cellular_instruction(o);
 };
-void Multiplex::print_global_instruction(ostream& o) const {
+void Transcode::print_global_instruction(ostream& o) const {
     o << setprecision(float_precision());
     o << "Environment " << endl << endl;
     // o << "    Version                                     " << interface.application_version << endl;
@@ -1456,7 +1456,7 @@ void Multiplex::print_global_instruction(ostream& o) const {
     o << "    Threads                                     " << to_string(threads) << endl;
     o << endl;
 };
-void Multiplex::print_feed_instruction(const Value::Ch* key, ostream& o) const {
+void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {
     Value::ConstMemberIterator reference = ontology["feed"].FindMember(key);
     if(reference != ontology["feed"].MemberEnd()) {
         if(!reference->value.IsNull()) {
@@ -1496,7 +1496,7 @@ void Multiplex::print_feed_instruction(const Value::Ch* key, ostream& o) const {
         }
     }
 };
-void Multiplex::print_input_instruction(ostream& o) const {
+void Transcode::print_input_instruction(ostream& o) const {
     o << "Input " << endl << endl;
 
     int32_t input_segment_cardinality;
@@ -1516,7 +1516,7 @@ void Multiplex::print_input_instruction(ostream& o) const {
     }
     print_feed_instruction("input feed", o);
 };
-void Multiplex::print_transform_instruction(ostream& o) const {
+void Transcode::print_transform_instruction(ostream& o) const {
     o << "Output transform" << endl << endl;
 
     int32_t output_segment_cardinality;
@@ -1540,7 +1540,7 @@ void Multiplex::print_transform_instruction(ostream& o) const {
     }
     o << endl;
 };
-void Multiplex::print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const {
+void Transcode::print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const {
     Value::ConstMemberIterator reference = ontology.FindMember(key);
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
@@ -1558,7 +1558,7 @@ void Multiplex::print_codec_group_instruction(const Value::Ch* key, const string
         }
     }
 };
-void Multiplex::print_codec_instruction(const Value& value, const bool& plural, ostream& o) const {
+void Transcode::print_codec_instruction(const Value& value, const bool& plural, ostream& o) const {
     if(!value.IsNull()) {
         if(plural) {
             int32_t index;
@@ -1664,7 +1664,7 @@ void Multiplex::print_codec_instruction(const Value& value, const bool& plural, 
         }
     }
 };
-void Multiplex::print_channel_instruction(const string& key, const Value& value, ostream& o) const {
+void Transcode::print_channel_instruction(const string& key, const Value& value, ostream& o) const {
     if(value.IsObject()) {
         o << "    Barcode " << key << endl;
 
@@ -1706,18 +1706,18 @@ void Multiplex::print_channel_instruction(const string& key, const Value& value,
         o << endl;
     }
 };
-void Multiplex::print_multiplex_instruction(ostream& o) const {
+void Transcode::print_multiplex_instruction(ostream& o) const {
     print_codec_group_instruction("multiplex", "Mutliplex decoding", o);
     print_feed_instruction("output feed", o);
 };
-void Multiplex::print_molecular_instruction(ostream& o) const {
+void Transcode::print_molecular_instruction(ostream& o) const {
     print_codec_group_instruction("molecular", "Molecular decoding", o);
 };
-void Multiplex::print_cellular_instruction(ostream& o) const {
+void Transcode::print_cellular_instruction(ostream& o) const {
     print_codec_group_instruction("cellular", "Cellular decoding", o);
 };
 
-MultiplexPivot::MultiplexPivot(Multiplex& job, const int32_t& index) try :
+TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
     index(index),
     platform(decode_value_by_key< Platform >("platform", job.ontology)),
     leading_segment_index(decode_value_by_key< int32_t >("leading segment index", job.ontology)),
@@ -1725,7 +1725,7 @@ MultiplexPivot::MultiplexPivot(Multiplex& job, const int32_t& index) try :
     output_segment_cardinality(decode_value_by_key< int32_t >("output segment cardinality", job.ontology)),
     input(input_segment_cardinality, platform, leading_segment_index),
     output(output_segment_cardinality, platform, leading_segment_index),
-    multiplex(NULL),
+    sample_classifier(NULL),
     job(job),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", job.ontology)),
     template_rule(decode_value_by_key< Rule >("transform", job.ontology)) {
@@ -1734,15 +1734,15 @@ MultiplexPivot::MultiplexPivot(Multiplex& job, const int32_t& index) try :
     clear();
 
     } catch(Error& error) {
-        error.push("MultiplexPivot");
+        error.push("TranscodePivot");
         throw;
 };
-void MultiplexPivot::load_decoding() {
+void TranscodePivot::load_decoding() {
     load_multiplex_decoding();
     load_molecular_decoding();
     load_cellular_decoding();
 };
-void MultiplexPivot::load_multiplex_decoding() {
+void TranscodePivot::load_multiplex_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("multiplex");
     if(reference != job.ontology.MemberEnd()) {
         Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
@@ -1753,7 +1753,7 @@ void MultiplexPivot::load_multiplex_decoding() {
                 for(auto& channel : pamld_decoder->element_by_index) {
                     channel.populate(job.output_feed_by_url);
                 }
-                multiplex = pamld_decoder;
+                sample_classifier = pamld_decoder;
                 break;
             };
             case Algorithm::MDD: {
@@ -1762,13 +1762,13 @@ void MultiplexPivot::load_multiplex_decoding() {
                 for(auto& channel : mdd_decoder->element_by_index) {
                     channel.populate(job.output_feed_by_url);
                 }
-                multiplex = mdd_decoder;
+                sample_classifier = mdd_decoder;
                 break;
             };
             case Algorithm::TRANSPARENT: {
-                RoutingDecoder< Channel >* transparent_decoder(new RoutingDecoder< Channel >(reference->value));
+                RoutingClassifier< Channel >* transparent_decoder(new RoutingClassifier< Channel >(reference->value));
                 transparent_decoder->unclassified.populate(job.output_feed_by_url);
-                multiplex = transparent_decoder;
+                sample_classifier = transparent_decoder;
                 break;
             };
             default:
@@ -1777,61 +1777,61 @@ void MultiplexPivot::load_multiplex_decoding() {
         }
     }
 };
-void MultiplexPivot::load_molecular_decoding() {
+void TranscodePivot::load_molecular_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("molecular");
     if(reference != job.ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
-            molecular.reserve(1);
+            molecular_classifier_array.reserve(1);
             load_molecular_decoder(reference->value);
 
         } else if(reference->value.IsArray()) {
-            molecular.reserve(reference->value.Size());
+            molecular_classifier_array.reserve(reference->value.Size());
             for(const auto& element : reference->value.GetArray()) {
                 load_molecular_decoder(element);
             }
         }
     }
-    molecular.shrink_to_fit();
+    molecular_classifier_array.shrink_to_fit();
 };
-void MultiplexPivot::load_molecular_decoder(const Value& value) {
+void TranscodePivot::load_molecular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch (algorithm) {
         case Algorithm::NAIVE: {
             NaiveMolecularDecoder* naive_decoder(new NaiveMolecularDecoder(value));
-            molecular.emplace_back(naive_decoder);
+            molecular_classifier_array.emplace_back(naive_decoder);
             break;
         };
         default:
             break;
     }
 };
-void MultiplexPivot::load_cellular_decoding() {
+void TranscodePivot::load_cellular_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("cellular");
     if(reference != job.ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
-            cellular.reserve(1);
+            cellular_classifier_array.reserve(1);
             load_cellular_decoder(reference->value);
 
         } else if(reference->value.IsArray()) {
-            cellular.reserve(reference->value.Size());
+            cellular_classifier_array.reserve(reference->value.Size());
             for(const auto& element : reference->value.GetArray()) {
                 load_cellular_decoder(element);
             }
         }
     }
-    cellular.shrink_to_fit();
+    cellular_classifier_array.shrink_to_fit();
 };
-void MultiplexPivot::load_cellular_decoder(const Value& value) {
+void TranscodePivot::load_cellular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch (algorithm) {
         case Algorithm::PAMLD: {
             PAMLCellularDecoder* paml_decoder(new PAMLCellularDecoder(value));
-            cellular.emplace_back(paml_decoder);
+            cellular_classifier_array.emplace_back(paml_decoder);
             break;
         };
         case Algorithm::MDD: {
             MDCellularDecoder* md_decoder(new MDCellularDecoder(value));
-            cellular.emplace_back(md_decoder);
+            cellular_classifier_array.emplace_back(md_decoder);
             break;
         };
         default:

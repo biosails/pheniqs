@@ -33,7 +33,7 @@ template < class T > class MinimumDistanceDecoder : public ObservingDecoder< T >
 
     public:
         MinimumDistanceDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
+        inline void classify(const Read& input, Read& output) override;
 
     private:
         inline bool match(T& barcode);
@@ -42,13 +42,13 @@ template < class T > class MinimumDistanceDecoder : public ObservingDecoder< T >
 class MDMultiplexDecoder : public MinimumDistanceDecoder< Channel > {
     public:
         MDMultiplexDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
+        inline void classify(const Read& input, Read& output) override;
 };
 
 class MDCellularDecoder : public MinimumDistanceDecoder< Barcode > {
     public:
         MDCellularDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
+        inline void classify(const Read& input, Read& output) override;
 };
 
 #endif /* PHENIQS_MDD_H */

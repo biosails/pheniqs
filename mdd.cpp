@@ -34,7 +34,7 @@ template < class T > MinimumDistanceDecoder< T >::MinimumDistanceDecoder(const V
         error.push("MinimumDistanceDecoder");
         throw;
 };
-template < class T > void MinimumDistanceDecoder< T >::decode(const Read& input, Read& output) {
+template < class T > void MinimumDistanceDecoder< T >::classify(const Read& input, Read& output) {
     this->observation.clear();
     this->rule.apply(input, this->observation);
     this->decoded = &this->unclassified;
@@ -79,7 +79,7 @@ template < class T > void MinimumDistanceDecoder< T >::decode(const Read& input,
             }
         }
     }
-    ObservingDecoder< T >::decode(input, output);
+    ObservingDecoder< T >::classify(input, output);
 };
 
 MDMultiplexDecoder::MDMultiplexDecoder(const Value& ontology) try :
@@ -89,8 +89,8 @@ MDMultiplexDecoder::MDMultiplexDecoder(const Value& ontology) try :
         error.push("MDMultiplexDecoder");
         throw;
 };
-void MDMultiplexDecoder::decode(const Read& input, Read& output) {
-    MinimumDistanceDecoder< Channel >::decode(input, output);
+void MDMultiplexDecoder::classify(const Read& input, Read& output) {
+    MinimumDistanceDecoder< Channel >::classify(input, output);
     output.assign_RG(this->decoded->rg);
     output.update_multiplex_barcode(this->observation);
     output.update_multiplex_distance(this->decoding_hamming_distance);
@@ -103,8 +103,8 @@ MDCellularDecoder::MDCellularDecoder(const Value& ontology) try :
         error.push("MDCellularDecoder");
         throw;
 };
-void MDCellularDecoder::decode(const Read& input, Read& output) {
-    MinimumDistanceDecoder< Barcode >::decode(input, output);
+void MDCellularDecoder::classify(const Read& input, Read& output) {
+    MinimumDistanceDecoder< Barcode >::classify(input, output);
     output.update_raw_cellular_barcode(this->observation);
     output.update_cellular_barcode(*this->decoded);
     if(this->decoded->is_classified()) {

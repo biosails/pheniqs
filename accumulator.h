@@ -26,7 +26,7 @@
 #include "json.h"
 
 class AccumulatingIdentifier;
-class AccumulatingDecoder;
+class AccumulatingClassifier;
 
 class AccumulatingIdentifier {
     public:
@@ -39,52 +39,52 @@ class AccumulatingIdentifier {
         uint64_t accumulated_pf_distance;
         double accumulated_pf_confidence;
 
-        double pf_fraction;                     // pf_count / count;
-        double average_distance;                // accumulated_distance / count
-        double average_confidence;              // accumulated_confidence / count
-        double average_pf_distance;             // accumulated_pf_distance / pf_count
-        double average_pf_confidence;           // accumulated_pf_confidence / pf_count
-        double pooled_fraction;                 // count / decoder.count;
-        double pf_pooled_fraction;              // pf_count / decoder.pf_count;
-        double pooled_classified_fraction;      // count / decoder.classified_count
-        double pf_pooled_classified_fraction;   // pf_count / decoder.pf_classified_count
+        double pf_fraction;                     /*  pf_count / count */
+        double average_distance;                /*  accumulated_distance / count */
+        double average_confidence;              /*  accumulated_confidence / count */
+        double average_pf_distance;             /*  accumulated_pf_distance / pf_count */
+        double average_pf_confidence;           /*  accumulated_pf_confidence / pf_count */
+        double pooled_fraction;                 /*  count / decoder.count */
+        double pf_pooled_fraction;              /*  pf_count / decoder.pf_count */
+        double pooled_classified_fraction;      /*  count / decoder.classified_count */
+        double pf_pooled_classified_fraction;   /*  pf_count / decoder.pf_classified_count */
 
         AccumulatingIdentifier();
         AccumulatingIdentifier(const AccumulatingIdentifier& other);
         virtual ~AccumulatingIdentifier() {};
-        virtual void finalize(const AccumulatingDecoder& parent);
+        virtual void finalize(const AccumulatingClassifier& parent);
         virtual void encode(Value& container, Document& document) const;
         AccumulatingIdentifier& operator+=(const AccumulatingIdentifier& rhs);
 };
 
-class AccumulatingDecoder {
+class AccumulatingClassifier {
     public:
         uint64_t count;
         uint64_t pf_count;
         uint64_t classified_count;
         uint64_t accumulated_classified_distance;
+        double accumulated_classified_confidence;
         uint64_t low_conditional_confidence_count;
         uint64_t low_confidence_count;
-        double accumulated_classified_confidence;
         uint64_t pf_classified_count;
         uint64_t accumulated_pf_classified_distance;
         double accumulated_pf_classified_confidence;
 
-        double pf_fraction;                         // pf_count / count
-        double classified_fraction;                 // classified_count / count
-        double average_classified_distance;         // accumulated_classified_distance / classified_count
-        double average_classified_confidence;       // accumulated_classified_confidence / classified_count
-        double pf_classified_fraction;              // pf_classified_count / pf_count
-        double classified_pf_fraction;              // pf_classified_count / classified_count
-        double average_pf_classified_distance;      // accumulated_pf_classified_distance / pf_classified_count
-        double average_pf_classified_confidence;    // accumulated_pf_classified_confidence / pf_classified_count
+        double pf_fraction;                         /*  pf_count / count */
+        double classified_fraction;                 /*  classified_count / count */
+        double average_classified_distance;         /*  accumulated_classified_distance / classified_count */
+        double average_classified_confidence;       /*  accumulated_classified_confidence / classified_count */
+        double pf_classified_fraction;              /*  pf_classified_count / pf_count */
+        double classified_pf_fraction;              /*  pf_classified_count / classified_count */
+        double average_pf_classified_distance;      /*  accumulated_pf_classified_distance / pf_classified_count */
+        double average_pf_classified_confidence;    /*  accumulated_pf_classified_confidence / pf_classified_count */
 
-        AccumulatingDecoder();
-        AccumulatingDecoder(const AccumulatingDecoder& other);
-        virtual ~AccumulatingDecoder() {};
+        AccumulatingClassifier();
+        AccumulatingClassifier(const AccumulatingClassifier& other);
+        virtual ~AccumulatingClassifier() {};
         virtual void finalize();
         virtual void encode(Value& container, Document& document) const;
-        AccumulatingDecoder& operator+=(const AccumulatingDecoder& rhs);
+        AccumulatingClassifier& operator+=(const AccumulatingClassifier& rhs);
 };
 
 #endif /* PHENIQS_ACCUMULATE_H */

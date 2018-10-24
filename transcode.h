@@ -19,12 +19,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PHENIQS_DEMULTIPLEX_H
-#define PHENIQS_DEMULTIPLEX_H
+#ifndef PHENIQS_TRANSCODE_H
+#define PHENIQS_TRANSCODE_H
 
 #include "include.h"
 #include "pipeline.h"
-#include "accumulate.h"
+#include "accumulator.h"
 #include "fastq.h"
 #include "hts.h"
 #include "decoder.h"
@@ -32,17 +32,17 @@
 #include "pamld.h"
 #include "metric.h"
 
-class Multiplex;
-class MultiplexPivot;
+class Transcode;
+class TranscodePivot;
 
-class Multiplex : public Job {
-    friend class MultiplexPivot;
-    Multiplex(Multiplex const &) = delete;
-    void operator=(Multiplex const &) = delete;
+class Transcode : public Job {
+    friend class TranscodePivot;
+    Transcode(Transcode const &) = delete;
+    void operator=(Transcode const &) = delete;
 
     public:
-        Multiplex(Document& operation);
-        ~Multiplex() override;
+        Transcode(Document& operation);
+        ~Transcode() override;
         inline bool display_distance() const {
             return decode_value_by_key< bool >("display distance", ontology);
         };
@@ -63,19 +63,19 @@ class Multiplex : public Job {
         };
         void apply_interactive() override;
         void finalize() override;
-        Multiplex& operator+=(const MultiplexPivot& pivot);
+        Transcode& operator+=(const TranscodePivot& pivot);
 
     private:
         bool end_of_input;
         htsThreadPool thread_pool;
-        list< MultiplexPivot > pivot_array;
+        list< TranscodePivot > pivot_array;
         list< Feed* > input_feed_by_index;
         list< Feed* > output_feed_by_index;
         vector< Feed* > input_feed_by_segment;
         unordered_map< URL, Feed* > output_feed_by_url;
-        RoutingDecoder< Channel >* multiplex;
-        vector< RoutingDecoder< Barcode >* > molecular;
-        vector< RoutingDecoder< Barcode >* > cellular;
+        RoutingClassifier< Channel >* sample_classifier;
+        vector< RoutingClassifier< Barcode >* > molecular_classifier_array;
+        vector< RoutingClassifier< Barcode >* > cellular_classifier_array;
 
         void compile_PG();
         void compile_explicit_input();
@@ -127,9 +127,9 @@ class Multiplex : public Job {
         void print_cellular_instruction(ostream& o) const;
 };
 
-class MultiplexPivot {
-    MultiplexPivot(MultiplexPivot const &) = delete;
-    void operator=(MultiplexPivot const &) = delete;
+class TranscodePivot {
+    TranscodePivot(TranscodePivot const &) = delete;
+    void operator=(TranscodePivot const &) = delete;
 
     public:
         const int32_t index;
@@ -139,28 +139,28 @@ class MultiplexPivot {
         const int32_t output_segment_cardinality;
         Read input;
         Read output;
-        RoutingDecoder< Channel >* multiplex;
-        vector< RoutingDecoder< Barcode >* > molecular;
-        vector< RoutingDecoder< Barcode >* > cellular;
-        MultiplexPivot(Multiplex& job, const int32_t& index);
+        RoutingClassifier< Channel >* sample_classifier;
+        vector< RoutingClassifier< Barcode >* > molecular_classifier_array;
+        vector< RoutingClassifier< Barcode >* > cellular_classifier_array;
+        TranscodePivot(Transcode& job, const int32_t& index);
         void start() {
-            pivot_thread = thread(&MultiplexPivot::run, this);
+            pivot_thread = thread(&TranscodePivot::run, this);
         };
         void join() {
             pivot_thread.join();
         };
         void finalize() {
-            if(multiplex != NULL) {
-                multiplex->finalize();
+            if(sample_classifier != NULL) {
+                sample_classifier->finalize();
             }
-            if(!molecular.empty()) {
-                for(auto& decoder : molecular) {
-                    decoder->finalize();
+            if(!molecular_classifier_array.empty()) {
+                for(auto& classifier : molecular_classifier_array) {
+                    classifier->finalize();
                 }
             }
-            if(!cellular.empty()) {
-                for(auto& decoder : cellular) {
-                    decoder->finalize();
+            if(!cellular_classifier_array.empty()) {
+                for(auto& classifier : cellular_classifier_array) {
+                    classifier->finalize();
                 }
             }
         };
@@ -171,17 +171,17 @@ class MultiplexPivot {
         };
         inline void transform() {
             template_rule.apply(input, output);
-            multiplex->decode(input, output);
-            for(auto& decoder : molecular) {
-                decoder->decode(input, output);
+            sample_classifier->classify(input, output);
+            for(auto& classifier : molecular_classifier_array) {
+                classifier->classify(input, output);
             }
-            for(auto& decoder : cellular) {
-                decoder->decode(input, output);
+            for(auto& classifier : cellular_classifier_array) {
+                classifier->classify(input, output);
             }
             output.flush();
         };
         inline void push() {
-            multiplex->decoded->push(output);
+            sample_classifier->decoded->push(output);
         };
         inline void clear() {
             input.clear();
@@ -197,7 +197,7 @@ class MultiplexPivot {
         };
 
     private:
-        Multiplex& job;
+        Transcode& job;
         thread pivot_thread;
         const bool enable_quality_control;
         const TemplateRule template_rule;
@@ -209,4 +209,4 @@ class MultiplexPivot {
         void load_cellular_decoder(const Value& value);
 };
 
-#endif /* PHENIQS_DEMULTIPLEX_H */
+#endif /* PHENIQS_TRANSCODE_H */

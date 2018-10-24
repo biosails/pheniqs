@@ -48,12 +48,12 @@
     CO  Z   Free-text comments
 
     Multiplex barcode
-    BC  Z   Raw uncorrected multiplex barcode sequence with any quality scores stored in the QT tag.
+    BC  Z   Raw uncorrected sample barcode sequence with any quality scores stored in the QT tag.
             The BC tag should match the QT tag in length.
-            In the case of multiple multiplex barcode segments the recommended implementation
+            In the case of multiple sample barcode segments the recommended implementation
             concatenates all the segments and places a hyphen (‘-’) seperator.
     QT  Z   Phred quality of the sample barcode sequence in the BC tag. Phred score + 33 encoded.
-            In the case of multiple multiplex barcode segments the recommended implementation
+            In the case of multiple sample barcode segments the recommended implementation
             concatenates all the segments and places a space (‘ ’) seperator.
     XB  f   The probability that multiplexing barcode decoding is incorrect
 
@@ -71,7 +71,7 @@
             In the case of multiple unique molecular identifier segments the recommended implementation
             concatenates all the segments and places a hyphen (‘-’) seperator.
     BZ  Z   Phred quality of the uncorrected unique molecular identifier sequence in the OX tag. Phred score + 33 encoded.
-            In the case of multiple unique multiplex segments the recommended implementation
+            In the case of multiple molecular barcode segments the recommended implementation
             concatenates all the segments and places a space (‘ ’) seperator.
     MI  Z   Molecular Identifier. A unique ID within the SAM file for the source molecule from which this read is derived.
             All reads with the same MI tag represent the group of reads derived from the same source molecule.
@@ -163,7 +163,7 @@ class Auxiliary {
         kstring_t PG;
         kstring_t CO;
 
-        /* multiplex */
+        /* sample */
         kstring_t BC;
         kstring_t QT;
         float XB;

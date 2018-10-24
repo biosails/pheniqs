@@ -159,10 +159,11 @@ AveragePhreadAccumulator& AveragePhreadAccumulator::operator+=(const AveragePhre
 
 SegmentAccumulator::SegmentAccumulator(const Value& ontology) try :
     index(decode_value_by_key< int32_t >("index", ontology)),
-    url(decode_value_by_key< URL >("url", ontology)),
     capacity(0),
     shortest(numeric_limits< int32_t >::max()),
     nucleic_acid_count_by_code(IUPAC_CODE_SIZE, 0) {
+
+    decode_value_by_key< URL >("url", url, ontology);
 
     } catch(Error& error) {
         error.push("SegmentAccumulator");
@@ -330,7 +331,7 @@ void Channel::populate(unordered_map< URL, Feed* >& feed_by_url) {
     }
     output_feed_lock_order.shrink_to_fit();
 };
-void Channel::finalize(const AccumulatingDecoder& parent) {
+void Channel::finalize(const AccumulatingClassifier& parent) {
     AccumulatingIdentifier::finalize(parent);
     if(enable_quality_control) {
         for(auto& segment_accumulator : segment_accumulator_by_index) {

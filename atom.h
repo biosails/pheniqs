@@ -149,7 +149,7 @@ ostream& operator<<(ostream& o, const HeadSQAtom& sq);
     PL  Platform used to produce the read. identifies the sequencing technology used to generate the sequencing data.
 
     PU  Platform Unit, RG-PU, is unique read group identifier in the platform vendor dialect.
-        The default convention for illumina seuqnce reads is <flowcell id>:<flowcell lane number>:<multiplex barcode>
+        The default convention for illumina seuqnce reads is <flowcell id>:<flowcell lane number>:<sample barcode>
         making it a globally unique identifier across all sequencing data in the world.
         PU is not required by GATK but takes precedence over ID for base recalibration if present.
 

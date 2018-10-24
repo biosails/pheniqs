@@ -137,7 +137,7 @@ class SegmentAccumulator {
 
     public:
         const int32_t index;
-        const URL url;
+        URL url;
         int32_t capacity;
         int32_t shortest;
         vector < uint64_t > nucleic_acid_count_by_code;
@@ -216,7 +216,7 @@ class Channel : public Barcode {
             }
         };
         void populate(unordered_map< URL, Feed* >& output_feed_by_url);
-        void finalize(const AccumulatingDecoder& parent) override;
+        void finalize(const AccumulatingClassifier& parent) override;
         void encode(Value& container, Document& document) const override;
         Channel& operator+=(const Channel& rhs);
 };

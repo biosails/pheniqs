@@ -24,7 +24,7 @@
 
 #include "include.h"
 #include "sequence.h"
-#include "accumulate.h"
+#include "accumulator.h"
 
 class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier {
     friend ostream& operator<<(ostream& o, const Barcode& barcode);
@@ -87,7 +87,7 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
                 }
             }
             sigma_q += sigma_c;
-            probability = pow(10.0, sigma_q * -0.1);
+            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
         };
         inline void accurate_decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
             /*  sigma_c accumulates uint8_t Phred quality scores
@@ -111,7 +111,7 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
                 }
             }
             sigma_q += sigma_c;
-            probability = pow(10.0, sigma_q * -0.1);
+            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
         };
         inline void compensated_decoding_probability(const Observation& observation, double& probability) const {
             /*  use the Kahan summation algorithm to minimize floating point drift
@@ -146,7 +146,7 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
                 }
             }
             sigma_q += sigma_c;
-            probability = pow(10.0, sigma_q * -0.1);
+            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
         };
         inline void compensated_decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
             /*  use the Kahan summation algorithm to minimize floating point drift
@@ -183,7 +183,7 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
                 }
             }
             sigma_q += sigma_c;
-            probability = pow(10.0, sigma_q * -0.1);
+            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
         };
         void encode(Value& container, Document& document) const override;
         Barcode& operator+=(const Barcode& rhs);

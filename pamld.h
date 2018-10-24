@@ -36,7 +36,7 @@ template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public Observ
 
     public:
         PhredAdjustedMaximumLikelihoodDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
+        inline void classify(const Read& input, Read& output) override;
         inline void finalize() override {
             for(auto& element : this->element_by_index) {
                 this->accumulated_classified_confidence += element.accumulated_confidence;
@@ -51,13 +51,13 @@ template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public Observ
 class PAMLMultiplexDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Channel > {
     public:
         PAMLMultiplexDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
+        inline void classify(const Read& input, Read& output) override;
 };
 
 class PAMLCellularDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Barcode > {
     public:
         PAMLCellularDecoder(const Value& ontology);
-        inline void decode(const Read& input, Read& output) override;
+        inline void classify(const Read& input, Read& output) override;
 };
 
 #endif /* PHENIQS_PAMLD_H */

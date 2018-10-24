@@ -32,6 +32,7 @@ const uint8_t PHRED_RANGE(128);
 const uint8_t EFFECTIVE_PHRED_RANGE(42);
 const double UNIFORM_BASE_PROBABILITY(0.25);
 const double UNIFORM_BASE_PHRED(6.02059991327962329421552567509934);
+const double PHRED_PROBABILITY_FACTOR(pow(10.0, -0.1));
 
 #define quality_to_probability(q) (ProbabilityOfQuality[(q)])
 #define quality_to_inverse_probability(q) (InverseProbability[(q)])

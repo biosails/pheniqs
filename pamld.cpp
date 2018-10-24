@@ -34,7 +34,7 @@ template < class T > PhredAdjustedMaximumLikelihoodDecoder< T >::PhredAdjustedMa
         error.push("PhredAdjustedMaximumLikelihoodDecoder");
         throw;
 };
-template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::decode(const Read& input, Read& output) {
+template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(const Read& input, Read& output) {
     this->observation.clear();
     this->rule.apply(input, this->observation);
 
@@ -113,7 +113,7 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::decode(con
         this->decoding_hamming_distance = 0;
         decoding_confidence = 0;
     }
-    ObservingDecoder< T >::decode(input, output);
+    ObservingDecoder< T >::classify(input, output);
 };
 
 PAMLMultiplexDecoder::PAMLMultiplexDecoder(const Value& ontology) try :
@@ -123,8 +123,8 @@ PAMLMultiplexDecoder::PAMLMultiplexDecoder(const Value& ontology) try :
         error.push("PAMLMultiplexDecoder");
         throw;
 };
-void PAMLMultiplexDecoder::decode(const Read& input, Read& output) {
-    PhredAdjustedMaximumLikelihoodDecoder< Channel >::decode(input, output);
+void PAMLMultiplexDecoder::classify(const Read& input, Read& output) {
+    PhredAdjustedMaximumLikelihoodDecoder< Channel >::classify(input, output);
     output.assign_RG(this->decoded->rg);
     output.update_multiplex_barcode(this->observation);
     output.update_multiplex_distance(this->decoding_hamming_distance);
@@ -138,8 +138,8 @@ PAMLCellularDecoder::PAMLCellularDecoder(const Value& ontology) try :
         error.push("PAMLCellularDecoder");
         throw;
 };
-void PAMLCellularDecoder::decode(const Read& input, Read& output) {
-    PhredAdjustedMaximumLikelihoodDecoder< Barcode >::decode(input, output);
+void PAMLCellularDecoder::classify(const Read& input, Read& output) {
+    PhredAdjustedMaximumLikelihoodDecoder< Barcode >::classify(input, output);
     output.update_raw_cellular_barcode(this->observation);
     output.update_cellular_barcode(*this->decoded);
     if(this->decoded->is_classified()) {

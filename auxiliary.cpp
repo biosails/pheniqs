@@ -261,7 +261,7 @@ void Auxiliary::decode(const bam1_t* bam1) {
                         if(value) { ks_put_string(value, CO); }
                         break;
 
-                    /*  multiplex barcode */
+                    /*  sample barcode */
                     case uint16_t(HtsTagCode::BC):
                         value = bam_aux2Z(position);
                         if(value) { ks_put_string(value, BC); }

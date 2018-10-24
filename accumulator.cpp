@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "accumulate.h"
+#include "accumulator.h"
 
 AccumulatingIdentifier::AccumulatingIdentifier() :
     count(0),
@@ -51,7 +51,7 @@ AccumulatingIdentifier::AccumulatingIdentifier(const AccumulatingIdentifier& oth
     accumulated_pf_distance(other.accumulated_pf_distance),
     accumulated_pf_confidence(other.accumulated_pf_confidence) {
 };
-void AccumulatingIdentifier::finalize(const AccumulatingDecoder& parent) {
+void AccumulatingIdentifier::finalize(const AccumulatingClassifier& parent) {
     if(count > 0) {
         average_distance = accumulated_distance / double(count);
         average_confidence = accumulated_confidence / double(count);
@@ -118,14 +118,14 @@ AccumulatingIdentifier& AccumulatingIdentifier::operator+=(const AccumulatingIde
     return *this;
 };
 
-AccumulatingDecoder::AccumulatingDecoder() :
+AccumulatingClassifier::AccumulatingClassifier() :
     count(0),
     pf_count(0),
     classified_count(0),
     accumulated_classified_distance(0),
+    accumulated_classified_confidence(0),
     low_conditional_confidence_count(0),
     low_confidence_count(0),
-    accumulated_classified_confidence(0),
     pf_classified_count(0),
     accumulated_pf_classified_distance(0),
     accumulated_pf_classified_confidence(0),
@@ -139,19 +139,19 @@ AccumulatingDecoder::AccumulatingDecoder() :
     average_pf_classified_distance(0),
     average_pf_classified_confidence(0) {
 };
-AccumulatingDecoder::AccumulatingDecoder(const AccumulatingDecoder& other) :
+AccumulatingClassifier::AccumulatingClassifier(const AccumulatingClassifier& other) :
     count(other.count),
     pf_count(other.pf_count),
     classified_count(other.classified_count),
     accumulated_classified_distance(other.accumulated_classified_distance),
+    accumulated_classified_confidence(other.accumulated_classified_confidence),
     low_conditional_confidence_count(other.low_conditional_confidence_count),
     low_confidence_count(other.low_confidence_count),
-    accumulated_classified_confidence(other.accumulated_classified_confidence),
     pf_classified_count(other.pf_classified_count),
     accumulated_pf_classified_distance(other.accumulated_pf_classified_distance),
     accumulated_pf_classified_confidence(other.accumulated_pf_classified_confidence) {
 };
-void AccumulatingDecoder::finalize() {
+void AccumulatingClassifier::finalize() {
     if(count > 0) {
         pf_fraction = double(pf_count) / double(count);
         classified_fraction = double(classified_count) / double(count);
@@ -169,7 +169,7 @@ void AccumulatingDecoder::finalize() {
         average_pf_classified_confidence = accumulated_pf_classified_confidence / double(pf_classified_count);
     }
 };
-void AccumulatingDecoder::encode(Value& container, Document& document) const {
+void AccumulatingClassifier::encode(Value& container, Document& document) const {
     encode_key_value("count", count, container, document);
     encode_key_value("pf count", pf_count, container, document);
     encode_key_value("classified count", classified_count, container, document);
@@ -198,7 +198,7 @@ void AccumulatingDecoder::encode(Value& container, Document& document) const {
         encode_key_value("average pf classified confidence", average_pf_classified_confidence, container, document);
     }
 };
-AccumulatingDecoder& AccumulatingDecoder::operator+=(const AccumulatingDecoder& rhs) {
+AccumulatingClassifier& AccumulatingClassifier::operator+=(const AccumulatingClassifier& rhs) {
     count += rhs.count;
     pf_count += rhs.pf_count;
     classified_count += rhs.classified_count;
