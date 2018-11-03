@@ -23,7 +23,6 @@
 
 int main(int argc, char** argv) {
     int return_code(static_cast< int >(ErrorCode::OK));
-
     try {
         Environment environment(argc, (const char**)argv);
         environment.execute();
@@ -37,6 +36,5 @@ int main(int argc, char** argv) {
         return_code =  static_cast< int >(ErrorCode::UNKNOWN_ERROR);
 
     }
-
     return return_code;
 };

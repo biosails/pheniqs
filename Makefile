@@ -71,6 +71,7 @@ PHENIQS_SOURCES = \
 	pheniqs.cpp \
 	pipeline.cpp \
 	transcode.cpp \
+	phred.cpp \
 	proxy.cpp \
 	read.cpp \
 	sequence.cpp \
@@ -96,6 +97,7 @@ PHENIQS_OBJECTS = \
 	pheniqs.o \
 	pipeline.o \
 	transcode.o \
+	phred.o \
 	proxy.o \
 	read.o \
 	sequence.o \
@@ -253,6 +255,18 @@ install.zsh_completion: _pheniqs
       $(shell cp -f _pheniqs $(ZSH_PREFIX)/site-functions/_pheniqs) \
     )
 
+uninstall.zsh_completion:
+	$(and $(ZSH_PREFIX), \
+      $(wildcard $(ZSH_PREFIX)/site-functions/_pheniqs), \
+      $(shell rm -f _pheniqs $(ZSH_PREFIX)/site-functions/_pheniqs) \
+    )
+
+uninstall: uninstall.zsh_completion
+	$(and $(BIN_PREFIX), \
+      $(wildcard $(BIN_PREFIX)/pheniqs), \
+      $(shell rm -f $(BIN_PREFIX)/pheniqs) \
+    )
+
 test: all
 	./test/BDGGG/run.sh
 
@@ -279,7 +293,7 @@ atom.o: \
 
 sequence.o: \
 	json.o \
-	phred.h \
+	phred.o \
 	nucleotide.h \
 	sequence.h
 
@@ -300,6 +314,10 @@ read.o: \
 accumulator.o: \
 	json.o \
 	accumulator.h
+
+phred.o: \
+	json.o \
+	phred.h
 
 proxy.o: \
 	url.o \

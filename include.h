@@ -91,6 +91,8 @@ using std::recursive_mutex;
 using std::set;
 using std::setprecision;
 using std::setw;
+using std::left;
+using std::right;
 using std::size_t;
 using std::string;
 using std::thread;

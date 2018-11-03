@@ -211,14 +211,29 @@ template < class T > class SequenceArray {
             }
             return true;
         };
-        inline double expected_error() const {
-            uint32_t sigma_q(0);
+        inline double compensated_expected_error() const {
+            double y(0);
+            double t(0);
+            double sigma(0);
+            double compensation(0);
             for(auto& segment : segment_array) {
                 for(uint8_t* q(segment.quality); *q; ++q) {
-                    sigma_q += *q;
+                    y = PhredScale::get_instance().probability_of_quality(*q);
+                    t = sigma + y;
+                    compensation = (t - sigma) - y;
+                    sigma = t;
                 }
             }
-            return pow(10.0, sigma_q * -0.1);
+            return sigma;
+        };
+        inline double expected_error() const {
+            double sigma(0);
+            for(auto& segment : segment_array) {
+                for(uint8_t* q(segment.quality); *q; ++q) {
+                    sigma += PhredScale::get_instance().probability_of_quality(*q);
+                }
+            }
+            return sigma;
         };
         inline T& front() {
             return segment_array.front();
@@ -382,11 +397,24 @@ class ObservedSequence : public Sequence {
             }
         };
         inline double expected_error() const {
-            uint32_t sigma_q(0);
+            double sigma(0);
             for(uint8_t* q(quality); *q; ++q) {
-                sigma_q += *q;
+                sigma += PhredScale::get_instance().probability_of_quality(*q);
             }
-            return pow(10.0, sigma_q * -0.1);
+            return sigma;
+        };
+        inline double compensated_expected_error() const {
+            double y(0);
+            double t(0);
+            double sigma(0);
+            double compensation(0);
+            for(uint8_t* q(quality); *q; ++q) {
+                y = PhredScale::get_instance().probability_of_quality(*q);
+                t = sigma + y;
+                compensation = (t - sigma) - y;
+                sigma = t;
+            }
+            return sigma;
         };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
             if(length > 0) {

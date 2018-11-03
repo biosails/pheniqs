@@ -26,6 +26,8 @@ Environment::Environment(const int argc, const char** argv) try :
     _help_only(interface.help_triggered()),
     _version_only(interface.version_triggered()) {
 
+    PhredScale::get_instance();
+
     } catch(Error& error) {
         error.push("Environment");
         throw;

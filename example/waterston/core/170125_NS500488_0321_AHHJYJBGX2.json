@@ -10,7 +10,7 @@
             "base": "rt_c_elegans"
         },
         {
-            "base": "HGGN5BGX2_multiplex",
+            "base": "HHJYJBGX2_multiplex",
             "algorithm": "pamld",
             "confidence threshold": 0.99,
             "noise": 0.05

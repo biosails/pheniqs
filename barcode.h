@@ -53,137 +53,79 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
             }
             return key;
         };
-        inline void decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
-            probability = 1;
-            for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& sequnced = segment_array[i];
-                const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < sequnced.length; ++j) {
-                    if(observed.code[j] == sequnced.code[j]) {
-                        probability *= quality_to_inverse_probability(observed.quality[j]);
-                    } else {
-                        ++distance;
-                        if(observed.code[j] == ANY_NUCLEOTIDE) {
-                            probability *= UNIFORM_BASE_PROBABILITY;
-                        } else { probability *= quality_to_third_probability(observed.quality[j]); }
-                    }
-                }
-            }
-        };
         inline void accurate_decoding_probability(const Observation& observation, double& probability) const {
             double sigma_q(0);
-            uint32_t sigma_c(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
                 const Sequence& sequnced = segment_array[i];
                 const ObservedSequence& observed = observation[i];
                 for(int32_t j(0); j < sequnced.length; ++j) {
-                    if(observed.code[j] == sequnced.code[j]) {
-                        sigma_q += quality_to_inverse_quality(observed.quality[j]);
-                    } else {
-                        if(observed.code[j] == ANY_NUCLEOTIDE) {
-                            sigma_q += UNIFORM_BASE_PHRED;
-                        } else { sigma_c += observed.quality[j]; }
-                    }
+                    sigma_q += PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]);
                 }
             }
-            sigma_q += sigma_c;
-            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
+            probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
         };
         inline void accurate_decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
-            /*  sigma_c accumulates uint8_t Phred quality scores
-                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_PHRED
-            */
             distance = 0;
             double sigma_q(0);
-            uint32_t sigma_c(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
                 const Sequence& sequnced = segment_array[i];
                 const ObservedSequence& observed = observation[i];
                 for(int32_t j(0); j < sequnced.length; ++j) {
-                    if(observed.code[j] == sequnced.code[j]) {
-                        sigma_q += quality_to_inverse_quality(observed.quality[j]);
-                    } else {
+                    sigma_q += PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]);
+                    if(observed.code[j] != sequnced.code[j]) {
                         ++distance;
-                        if(observed.code[j] == ANY_NUCLEOTIDE) {
-                            sigma_q += UNIFORM_BASE_PHRED;
-                        } else { sigma_c += observed.quality[j]; }
                     }
                 }
             }
-            sigma_q += sigma_c;
-            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
+            probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
         };
         inline void compensated_decoding_probability(const Observation& observation, double& probability) const {
             /*  use the Kahan summation algorithm to minimize floating point drift
                 see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
 
-                sigma_c accumulates uint8_t Phred quality scores
-                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_PHRED
+                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_QUALITY
             */
             double y(0);
             double t(0);
             double sigma_q(0);
-            uint32_t sigma_c(0);
             double compensation(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
                 const Sequence& sequnced = segment_array[i];
                 const ObservedSequence& observed = observation[i];
                 for(int32_t j(0); j < sequnced.length; ++j) {
-                    if(observed.code[j] == sequnced.code[j]) {
-                        y = quality_to_inverse_quality(observed.quality[j]) - compensation;
-                        t = sigma_q + y;
-                        compensation = (t - sigma_q) - y;
-                        sigma_q = t;
-
-                    } else {
-                        if(observed.code[j] == ANY_NUCLEOTIDE) {
-                            y = UNIFORM_BASE_PHRED - compensation;
-                            t = sigma_q + y;
-                            compensation = (t - sigma_q) - y;
-                            sigma_q = t;
-                        } else { sigma_c += observed.quality[j]; }
-                    }
+                    y = PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]) - compensation;
+                    t = sigma_q + y;
+                    compensation = (t - sigma_q) - y;
+                    sigma_q = t;
                 }
             }
-            sigma_q += sigma_c;
-            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
+            probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
         };
         inline void compensated_decoding_probability(const Observation& observation, double& probability, int32_t& distance) const {
             /*  use the Kahan summation algorithm to minimize floating point drift
                 see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
 
-                sigma_c accumulates uint8_t Phred quality scores
-                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_PHRED
+                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_QUALITY
             */
             double y(0);
             double t(0);
             distance = 0;
             double sigma_q(0);
-            uint32_t sigma_c(0);
             double compensation(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
                 const Sequence& sequnced = segment_array[i];
                 const ObservedSequence& observed = observation[i];
                 for(int32_t j(0); j < sequnced.length; ++j) {
-                    if(observed.code[j] == sequnced.code[j]) {
-                        y = quality_to_inverse_quality(observed.quality[j]) - compensation;
-                        t = sigma_q + y;
-                        compensation = (t - sigma_q) - y;
-                        sigma_q = t;
-
-                    } else {
+                    y = PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]) - compensation;
+                    t = sigma_q + y;
+                    compensation = (t - sigma_q) - y;
+                    sigma_q = t;
+                    if(observed.code[j] != sequnced.code[j]) {
                         ++distance;
-                        if(observed.code[j] == ANY_NUCLEOTIDE) {
-                            y = UNIFORM_BASE_PHRED - compensation;
-                            t = sigma_q + y;
-                            compensation = (t - sigma_q) - y;
-                            sigma_q = t;
-                        } else { sigma_c += observed.quality[j]; }
                     }
                 }
             }
-            sigma_q += sigma_c;
-            probability = pow(PHRED_PROBABILITY_FACTOR, sigma_q);
+            probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
         };
         void encode(Value& container, Document& document) const override;
         Barcode& operator+=(const Barcode& rhs);
