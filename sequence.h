@@ -25,7 +25,6 @@
 #include "include.h"
 #include "json.h"
 #include "phred.h"
-#include "nucleotide.h"
 
 const int32_t INITIAL_SEQUENCE_CAPACITY(64);
 
@@ -191,9 +190,9 @@ template < class T > class SequenceArray {
             }
         };
         inline void encode_iupac_ambiguity(kstring_t& buffer) const {
-            for(auto& segment : segment_array) {
-                if(ks_not_empty(buffer)) { ks_put_character('-', buffer); }
-                segment.encode_iupac_ambiguity(buffer);
+            for(size_t i(0); i < segment_array.size(); ++i) {
+                if(i) { ks_put_character('-', buffer); }
+                segment_array[i].encode_iupac_ambiguity(buffer);
             }
         };
         inline void encode_bam(string& value) const {
@@ -386,16 +385,6 @@ class ObservedSequence : public Sequence {
                 this->quality[length] = '\0';
             }
         };
-        inline void mask(const uint8_t& quality_masking_threshold) {
-            if(quality_masking_threshold > 0) {
-                for(int32_t i(0); i < length; ++i) {
-                    if(quality[i] < quality_masking_threshold) {
-                        code[i] = ANY_NUCLEOTIDE;
-                        // TODO do we also set the quality value to 2?
-                    }
-                }
-            }
-        };
         inline double expected_error() const {
             double sigma(0);
             for(uint8_t* q(quality); *q; ++q) {
@@ -447,9 +436,9 @@ class Observation : public SequenceArray< ObservedSequence > {
             SequenceArray< ObservedSequence >(cardinality) {
         };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
-            for(auto& segment : segment_array) {
-                if(ks_not_empty(buffer)) { ks_put_character(' ', buffer); }
-                segment.encode_phred_quality(buffer, phred_offset);
+            for(size_t i(0); i < segment_array.size(); ++i) {
+                if(i) { ks_put_character('-', buffer); }
+                segment_array[i].encode_phred_quality(buffer, phred_offset);
             }
         };
         operator string() const {
