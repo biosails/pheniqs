@@ -294,7 +294,6 @@ atom.o: \
 sequence.o: \
 	json.o \
 	phred.o \
-	nucleotide.h \
 	sequence.h
 
 barcode.o: \
@@ -316,6 +315,7 @@ accumulator.o: \
 	accumulator.h
 
 phred.o: \
+	iupac.h \
 	json.o \
 	phred.h
 

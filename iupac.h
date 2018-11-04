@@ -19,95 +19,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PHENIQS_NUCLEOTIDE_H
-#define PHENIQS_NUCLEOTIDE_H
+#ifndef PHENIQS_IUPAC_H
+#define PHENIQS_IUPAC_H
 
 #include "include.h"
 
-static inline bool is_iupac_ambiguous(const char& c) {
-    switch(c) {
-        case 'A':
-        case 'C':
-        case 'M':
-        case 'G':
-        case 'R':
-        case 'S':
-        case 'V':
-        case 'T':
-        case 'W':
-        case 'Y':
-        case 'H':
-        case 'K':
-        case 'D':
-        case 'B':
-        case 'N':
-            return true;
-            break;
-        default:
-            return false;
-            break;
-    }
-};
-
-static inline bool is_iupac_unambiguous(const char& c) {
-    switch(c) {
-        case 'A':
-        case 'C':
-        case 'G':
-        case 'T':
-        case 'N':
-            return true;
-            break;
-        default:
-            return false;
-            break;
-    }
-};
-
-static inline bool is_iupac_strict_nucleotide(const char& c) {
-    switch(c) {
-        case 'A':
-        case 'C':
-        case 'G':
-        case 'T':
-            return true;
-            break;
-        default:
-            return false;
-            break;
-    }
-};
-
-static inline bool is_iupac_strict_bam_nucleotide(const uint8_t& c) {
-    switch(c) {
-        case 0x1:
-        case 0x2:
-        case 0x4:
-        case 0x8:
-            return true;
-            break;
-        default:
-            return false;
-            break;
-    }
-};
-
-static inline bool is_iupac_strict_sequence(const char* s) {
-    if(s != NULL && *s != '\0') {
-        const char* c(s);
-        while(*c != '\0') {
-            if(!is_iupac_strict_nucleotide(*c)) {
-                return false;
-            } else {
-                ++c;
-            }
-        }
-        return true;
-    }
-    return false;
-};
-
-/*  BAM Nucleic Acid Encoding
+/*  BAM Nucleic acid encoding
     The BAM encoding fits an ambiguous nucleotide encoding in 4 bits
     it is used internally by htslib
     most of the pheniqs pipeline uses the same encoding but padded to 8 bits
@@ -176,12 +93,12 @@ const char BamToUnambiguousAscii[IUPAC_CODE_SIZE] = {
     'N',    //  ACG     0x7
     'T',    //     T    0x8
     'N',    //  A  T    0x9
-    'N',    //   C T    0xA
-    'N',    //  AC T    0xB
-    'N',    //    GT    0xC
-    'N',    //  A GT    0xD
-    'N',    //   CGT    0xE
-    'N'     //  ACGT    0xF
+    'N',    //   C T    0xa
+    'N',    //  AC T    0xb
+    'N',    //    GT    0xc
+    'N',    //  A GT    0xd
+    'N',    //   CGT    0xe
+    'N'     //  ACGT    0xf
 };
 
 /*  BAM to reverse complement BAM
@@ -253,4 +170,72 @@ const uint8_t AsciiToAmbiguousBam[256] = {
     15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15
 };
 
-#endif /* PHENIQS_NUCLEOTIDE_H */
+static inline bool is_iupac_ambiguous(const char& c) {
+    switch(c) {
+        case 'A':
+        case 'C':
+        case 'M':
+        case 'G':
+        case 'R':
+        case 'S':
+        case 'V':
+        case 'T':
+        case 'W':
+        case 'Y':
+        case 'H':
+        case 'K':
+        case 'D':
+        case 'B':
+        case 'N':
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+};
+
+static inline bool is_iupac_unambiguous(const char& c) {
+    switch(c) {
+        case 'A':
+        case 'C':
+        case 'G':
+        case 'T':
+        case 'N':
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+};
+
+static inline bool is_iupac_strict_nucleotide(const char& c) {
+    switch(c) {
+        case 'A':
+        case 'C':
+        case 'G':
+        case 'T':
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+};
+
+static inline bool is_iupac_strict_bam_nucleotide(const uint8_t& c) {
+    switch(c) {
+        case 0x1:
+        case 0x2:
+        case 0x4:
+        case 0x8:
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+};
+
+#endif /* PHENIQS_IUPAC_H */

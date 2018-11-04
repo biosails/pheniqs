@@ -23,6 +23,7 @@
 #define PHENIQS_PHRED_H
 
 #include "include.h"
+#include "iupac.h"
 #include "json.h"
 
 const uint8_t SAM_PHRED_DECODING_OFFSET(33);
@@ -31,29 +32,18 @@ const uint8_t MAX_PHRED_VALUE(104);
 const uint8_t EFFECTIVE_PHRED_RANGE(42);
 const double UNIFORM_BASE_QUALITY(10.0 * log10(4));
 const double PHRED_PROBABILITY_BASE(pow(10.0, -0.1));
+const int32_t DISPLAY_FLOAT_PRECISION(16);
 
-/*
-    BAM Nucleic Acid Encoding
-    Name    hex     char    ambiguity
-    --------------------------------
-    =       0x0     =
-    A       0x1     T       A
-    C       0x2     G        C
-    M       0x3     K       AC
-    G       0x4     C         G
-    R       0x5     Y       A G
-    S       0x6     S        CG
-    V       0x7     B       ACG
-    T       0x8     A          T
-    W       0x9     W       A  T
-    Y       0xA     R        C T
-    H       0xB     D       AC T
-    K       0xC     M         GT
-    D       0xD     H       A GT
-    B       0xE     V        CGT
-    N       0xF     N       ACGT
+/*  Substitution lookup table
 
-    Substitution Matrix
+    substitution_lookup enables fast resolution of a 2 byte, 16bit code word,
+    to the correct substitution probability.
+
+    The 16 bit code word is assembled from:
+    8 bit   Phred value
+    4 bit   Bam encoded expected nucloetide
+    4 bit   Bam encoded observed nucleotide
+
     position    expected    observed    probability
     ------------------------------------------------
     0x0         0x1         0x1         1-p
@@ -74,48 +64,29 @@ const double PHRED_PROBABILITY_BASE(pow(10.0, -0.1));
     0xf         0x8         0x8         1-p
 */
 
-const char bam_to_ambiguous_ascii[0x10] = {
-    '=',
-    'A',
-    'C',
-    'M',
-    'G',
-    'R',
-    'S',
-    'V',
-    'T',
-    'W',
-    'Y',
-    'H',
-    'K',
-    'D',
-    'B',
-    'N'
-};
-
 class PhredScale {
-    public:
-        uint16_t* substitution_lookup;
-        double* conditional_substitution_probability;
-        double* false_positive_probability;
-        double* true_positive_probability;
-        double* true_positive_quality;
-        double* substitution_quality_by_observed_quality;
+    friend ostream& operator<<(ostream& o, const PhredScale& scale);
 
-        uint16_t* assemble_substitution_lookup() const;
-        double* assemble_conditional_substitution_probability() const;
-        double* assemble_false_positive_probability() const;
-        double* assemble_true_positive_probability() const;
-        double* assemble_true_positive_quality() const;
-        double* assemble_substitution_quality_by_observed_quality() const;
-        double* assemble_uniform_conditional_substitution_probability() const;
-        double* assemble_alt_conditional_substitution_probability() const;
+    private:
+        uint16_t substitution_lookup[0x8000];
+        double conditional_substitution_probability[0x10];
+        double false_positive_probability[0x80];
+        double true_positive_probability[0x80];
+        double true_positive_quality[0x80];
+        double substitution_quality_by_observed_quality[0x800];
+        void assemble_substitution_lookup();
+        void assemble_conditional_substitution_probability();
+        void assemble_false_positive_probability();
+        void assemble_true_positive_probability();
+        void assemble_true_positive_quality();
+        void assemble_substitution_quality_by_observed_quality();
+        void assemble_uniform_conditional_substitution_probability();
+        void assemble_alt_conditional_substitution_probability();
 
     public:
         PhredScale(PhredScale const&) = delete;
         void operator=(PhredScale const&) = delete;
         PhredScale();
-        virtual ~PhredScale();
         inline double substitution_quality(const uint8_t& expected, const uint8_t& observed, const uint8_t& quality) const {
             uint16_t key((quality<<0x8)|(expected<<4|observed));
             return substitution_quality_by_observed_quality[substitution_lookup[key]];
