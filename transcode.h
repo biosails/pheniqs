@@ -37,10 +37,10 @@ class TranscodePivot;
 
 class Transcode : public Job {
     friend class TranscodePivot;
-    Transcode(Transcode const &) = delete;
-    void operator=(Transcode const &) = delete;
 
     public:
+        Transcode(Transcode const &) = delete;
+        void operator=(Transcode const &) = delete;
         Transcode(Document& operation);
         ~Transcode() override;
         inline bool display_distance() const {
@@ -128,10 +128,9 @@ class Transcode : public Job {
 };
 
 class TranscodePivot {
-    TranscodePivot(TranscodePivot const &) = delete;
-    void operator=(TranscodePivot const &) = delete;
-
     public:
+        TranscodePivot(TranscodePivot const &) = delete;
+        void operator=(TranscodePivot const &) = delete;
         const int32_t index;
         const Platform platform;
         const int32_t leading_segment_index;

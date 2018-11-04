@@ -56,10 +56,10 @@
 /*  HTS header */
 class HtsHeader {
     friend ostream& operator<<(ostream& o, const HtsHeader& head);
-    HtsHeader(HtsHeader const &) = delete;
-    void operator=(HtsHeader const &) = delete;
 
     public:
+        HtsHeader(HtsHeader const &) = delete;
+        void operator=(HtsHeader const &) = delete;
         bam_hdr_t* hdr;
         HeadHDAtom hd;
         vector< HeadCOAtom > comments;

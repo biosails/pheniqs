@@ -174,6 +174,7 @@ class Argument {
 class Action {
     friend class Layout;
     friend bool encode_key_value(const string& key, const Action& value, Value& container, Document& document);
+
     public:
         const Value& ontology;
         const string name;

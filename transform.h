@@ -33,9 +33,9 @@ ostream& operator<<(ostream& o, const LeftTokenOperator& operation);
 
 class Token {
     friend ostream& operator<<(ostream& o, const Token& token);
-    void operator=(Token const &) = delete;
 
     public:
+        void operator=(Token const &) = delete;
         const int32_t index;
         const int32_t input_segment_index;
 
@@ -91,9 +91,9 @@ template<> vector< Token > decode_value_by_key(const Value::Ch* key, const Value
 
 class Transform : public Token {
     friend ostream& operator<<(ostream& o, const Transform& transform);
-    void operator=(Transform const &) = delete;
 
     public:
+        void operator=(Transform const &) = delete;
         const int32_t output_segment_index;
         const LeftTokenOperator left;
 

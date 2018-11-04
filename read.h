@@ -27,10 +27,10 @@
 
 class Segment : public ObservedSequence {
     friend ostream& operator<<(ostream& o, const Segment& segment);
-    void operator=(Segment const &) = delete;
-    Segment(Segment const &) = delete;
 
     public:
+        void operator=(Segment const &) = delete;
+        Segment(Segment const &) = delete;
         size_t index;
         Platform platform;
         kstring_t name;
@@ -130,13 +130,13 @@ ostream& operator<<(ostream& o, const Segment& segment);
 
 class Read : public SequenceArray< Segment > {
     friend ostream& operator<<(ostream& o, const Read& read);
-    void operator=(Read const &) = delete;
-    Read(Read const &) = delete;
 
     protected:
         Segment* leader;
 
     public:
+        void operator=(Read const &) = delete;
+        Read(Read const &) = delete;
         const Platform platform;
         uint32_t multiplex_distance;
         double multiplex_decoding_confidence;

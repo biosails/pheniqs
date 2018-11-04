@@ -133,9 +133,8 @@ class AveragePhreadAccumulator {
 };
 
 class SegmentAccumulator {
-    void operator=(SegmentAccumulator const &) = delete;
-
     public:
+        void operator=(SegmentAccumulator const &) = delete;
         const int32_t index;
         URL url;
         int32_t capacity;
@@ -173,9 +172,8 @@ bool encode_value(const SegmentAccumulator& value, Value& container, Document& d
 template<> vector< SegmentAccumulator > decode_value_by_key(const Value::Ch* key, const Value& container);
 
 class Channel : public Barcode {
-    void operator=(Channel const &) = delete;
-
     public:
+        void operator=(Channel const &) = delete;
         const HeadRGAtom rg;
         const bool include_filtered;
         const bool enable_quality_control;

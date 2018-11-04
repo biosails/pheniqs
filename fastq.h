@@ -28,10 +28,9 @@
 KSEQ_INIT(BGZF*, bgzf_read)
 
 class FastqRecord {
-    FastqRecord(FastqRecord const &) = delete;
-    void operator=(FastqRecord const &) = delete;
-
     public:
+        FastqRecord(FastqRecord const &) = delete;
+        void operator=(FastqRecord const &) = delete;
         kstring_t sequence;
         kstring_t quality;
         kstring_t name;

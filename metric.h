@@ -26,6 +26,7 @@
 
 class WordMetric {
     friend class CodecMetric;
+
     public:
         const size_t barcode_length;
         WordMetric(const size_t barcode_length) :

@@ -152,8 +152,9 @@ class Tag {
 
 class Auxiliary {
     friend ostream& operator<<(ostream& o, const Auxiliary& auxiliary);
-    void operator=(Auxiliary const &) = delete;
+
     public:
+        void operator=(Auxiliary const &) = delete;
         uint32_t FI;
         uint32_t TC;
         kstring_t FS;

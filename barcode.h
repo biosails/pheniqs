@@ -29,9 +29,9 @@
 class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier {
     friend ostream& operator<<(ostream& o, const Barcode& barcode);
     friend bool encode_key_value(const string& key, const Barcode& value, Value& node, Document& document);
-    void operator=(Barcode const &) = delete;
 
     public:
+        void operator=(Barcode const &) = delete;
         const int32_t index;
         const double concentration;
         Barcode(const Value& ontology);

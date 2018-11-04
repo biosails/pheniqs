@@ -428,10 +428,9 @@ ostream& operator<<(ostream& o, const ObservedSequence& sequence);
 
 /* Segmented sequence with quality scores */
 class Observation : public SequenceArray< ObservedSequence > {
-    void operator=(Observation const &) = delete;
-    Observation(Observation const &) = delete;
-
     public:
+        void operator=(Observation const &) = delete;
+        Observation(Observation const &) = delete;
         Observation(const int32_t& cardinality) :
             SequenceArray< ObservedSequence >(cardinality) {
         };

@@ -67,6 +67,21 @@ const int32_t DISPLAY_FLOAT_PRECISION(16);
 class PhredScale {
     friend ostream& operator<<(ostream& o, const PhredScale& scale);
 
+    public:
+        PhredScale(PhredScale const&) = delete;
+        void operator=(PhredScale const&) = delete;
+        PhredScale();
+        inline double substitution_quality(const uint8_t& expected, const uint8_t& observed, const uint8_t& quality) const {
+            uint16_t key((quality<<0x8)|(expected<<4|observed));
+            return substitution_quality_by_observed_quality[substitution_lookup[key]];
+        };
+        inline double probability_of_quality(const uint8_t& quality) const {
+            return false_positive_probability[quality];
+        };
+        static PhredScale& get_instance() {
+            static PhredScale instance;
+            return instance;
+        };
     private:
         uint16_t substitution_lookup[0x8000];
         double conditional_substitution_probability[0x10];
@@ -83,21 +98,6 @@ class PhredScale {
         void assemble_uniform_conditional_substitution_probability();
         void assemble_alt_conditional_substitution_probability();
 
-    public:
-        PhredScale(PhredScale const&) = delete;
-        void operator=(PhredScale const&) = delete;
-        PhredScale();
-        inline double substitution_quality(const uint8_t& expected, const uint8_t& observed, const uint8_t& quality) const {
-            uint16_t key((quality<<0x8)|(expected<<4|observed));
-            return substitution_quality_by_observed_quality[substitution_lookup[key]];
-        };
-        inline double probability_of_quality(const uint8_t& quality) const {
-            return false_positive_probability[quality];
-        };
-        static PhredScale& get_instance() {
-            static PhredScale instance;
-            return instance;
-        };
 };
 ostream& operator<<(ostream& o, const PhredScale& scale);
 
