@@ -56,10 +56,10 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
         inline void accurate_decoding_probability(const Observation& observation, double& probability) const {
             double sigma_q(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& sequnced = segment_array[i];
+                const Sequence& expected = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < sequnced.length; ++j) {
-                    sigma_q += PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]);
+                for(int32_t j(0); j < expected.length; ++j) {
+                    sigma_q += scale.substitution_quality(expected.code[j], observed.code[j], observed.quality[j]);
                 }
             }
             probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
@@ -68,11 +68,11 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
             distance = 0;
             double sigma_q(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& sequnced = segment_array[i];
+                const Sequence& expected = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < sequnced.length; ++j) {
-                    sigma_q += PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]);
-                    if(observed.code[j] != sequnced.code[j]) {
+                for(int32_t j(0); j < expected.length; ++j) {
+                    sigma_q += scale.substitution_quality(expected.code[j], observed.code[j], observed.quality[j]);
+                    if(observed.code[j] != expected.code[j]) {
                         ++distance;
                     }
                 }
@@ -90,10 +90,10 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
             double sigma_q(0);
             double compensation(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& sequnced = segment_array[i];
+                const Sequence& expected = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < sequnced.length; ++j) {
-                    y = PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]) - compensation;
+                for(int32_t j(0); j < expected.length; ++j) {
+                    y = scale.substitution_quality(expected.code[j], observed.code[j], observed.quality[j]) - compensation;
                     t = sigma_q + y;
                     compensation = (t - sigma_q) - y;
                     sigma_q = t;
@@ -113,14 +113,14 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
             double sigma_q(0);
             double compensation(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
-                const Sequence& sequnced = segment_array[i];
+                const Sequence& expected = segment_array[i];
                 const ObservedSequence& observed = observation[i];
-                for(int32_t j(0); j < sequnced.length; ++j) {
-                    y = PhredScale::get_instance().substitution_quality(sequnced.code[j], observed.code[j], observed.quality[j]) - compensation;
+                for(int32_t j(0); j < expected.length; ++j) {
+                    y = scale.substitution_quality(expected.code[j], observed.code[j], observed.quality[j]) - compensation;
                     t = sigma_q + y;
                     compensation = (t - sigma_q) - y;
                     sigma_q = t;
-                    if(observed.code[j] != sequnced.code[j]) {
+                    if(observed.code[j] != expected.code[j]) {
                         ++distance;
                     }
                 }

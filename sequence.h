@@ -175,6 +175,7 @@ void encode_value(const Sequence& value, Value& container, Document& document);
 
 template < class T > class SequenceArray {
     protected:
+        const PhredScale& scale;
         vector< T > segment_array;
 
     public:
@@ -210,30 +211,6 @@ template < class T > class SequenceArray {
             }
             return true;
         };
-        inline double compensated_expected_error() const {
-            double y(0);
-            double t(0);
-            double sigma(0);
-            double compensation(0);
-            for(auto& segment : segment_array) {
-                for(uint8_t* q(segment.quality); *q; ++q) {
-                    y = PhredScale::get_instance().probability_of_quality(*q);
-                    t = sigma + y;
-                    compensation = (t - sigma) - y;
-                    sigma = t;
-                }
-            }
-            return sigma;
-        };
-        inline double expected_error() const {
-            double sigma(0);
-            for(auto& segment : segment_array) {
-                for(uint8_t* q(segment.quality); *q; ++q) {
-                    sigma += PhredScale::get_instance().probability_of_quality(*q);
-                }
-            }
-            return sigma;
-        };
         inline T& front() {
             return segment_array.front();
         };
@@ -247,9 +224,11 @@ template < class T > class SequenceArray {
             return segment_array.back();
         };
         SequenceArray(const int32_t& cardinality) :
+            scale(PhredScale::get_instance()),
             segment_array(cardinality) {
         };
         SequenceArray(const SequenceArray& other) :
+            scale(other.scale),
             segment_array(other.segment_array) {
         };
         virtual ~SequenceArray() {
@@ -385,26 +364,6 @@ class ObservedSequence : public Sequence {
                 this->quality[length] = '\0';
             }
         };
-        inline double expected_error() const {
-            double sigma(0);
-            for(uint8_t* q(quality); *q; ++q) {
-                sigma += PhredScale::get_instance().probability_of_quality(*q);
-            }
-            return sigma;
-        };
-        inline double compensated_expected_error() const {
-            double y(0);
-            double t(0);
-            double sigma(0);
-            double compensation(0);
-            for(uint8_t* q(quality); *q; ++q) {
-                y = PhredScale::get_instance().probability_of_quality(*q);
-                t = sigma + y;
-                compensation = (t - sigma) - y;
-                sigma = t;
-            }
-            return sigma;
-        };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
             if(length > 0) {
                 ks_increase_by_size(buffer, length + 2);
@@ -439,6 +398,30 @@ class Observation : public SequenceArray< ObservedSequence > {
                 if(i) { ks_put_character('-', buffer); }
                 segment_array[i].encode_phred_quality(buffer, phred_offset);
             }
+        };
+        inline double compensated_expected_error() const {
+            double y(0);
+            double t(0);
+            double sigma(0);
+            double compensation(0);
+            for(auto& segment : segment_array) {
+                for(uint8_t* q(segment.quality); *q; ++q) {
+                    y = scale.probability_of_quality(*q);
+                    t = sigma + y;
+                    compensation = (t - sigma) - y;
+                    sigma = t;
+                }
+            }
+            return sigma;
+        };
+        inline double expected_error() const {
+            double sigma(0);
+            for(auto& segment : segment_array) {
+                for(uint8_t* q(segment.quality); *q; ++q) {
+                    sigma += scale.probability_of_quality(*q);
+                }
+            }
+            return sigma;
         };
         operator string() const {
             /* NOTICE this is in BAM encoding not iupac and will not look as expected when printed */

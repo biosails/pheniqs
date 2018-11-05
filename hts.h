@@ -51,7 +51,7 @@
     } bam1_t;
 */
 
-#define bam1_seq_seti(s, i, c) ((s)[(i)>>1] = ((s)[(i)>>1] & 0xf<<(((i)&1)<<2)) | (c)<<((~(i)&1)<<2))
+#define bam1_seq_set_i(s, i, c) ((s)[(i)>>0x1] = ((s)[(i)>>0x1]&0xf<<(((i)&0x1)<<0x2))|(c)<<((~(i)&0x1)<<0x2))
 
 /*  HTS header */
 class HtsHeader {
@@ -208,7 +208,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
 
                     // encode nucleotide byte BAM numeric encoding into nybble BAM numeric encoding
                     for(i = 0; i < segment.length; ++i) {
-                        bam1_seq_seti(position, i, segment.code[i]);
+                        bam1_seq_set_i(position, i, segment.code[i]);
                     }
                     position += ((segment.length + 1) >> 1);
 

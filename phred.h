@@ -39,6 +39,8 @@ const int32_t DISPLAY_FLOAT_PRECISION(16);
     substitution_lookup enables fast resolution of a 2 byte, 16bit code word,
     to the correct substitution probability.
 
+    The lookup key is composed from the quality score, the expected and the observed
+    nucleotide base.
     The 16 bit code word is assembled from:
     8 bit   Phred value
     4 bit   Bam encoded expected nucloetide
@@ -72,8 +74,7 @@ class PhredScale {
         void operator=(PhredScale const&) = delete;
         PhredScale();
         inline double substitution_quality(const uint8_t& expected, const uint8_t& observed, const uint8_t& quality) const {
-            uint16_t key((quality<<0x8)|(expected<<4|observed));
-            return substitution_quality_by_observed_quality[substitution_lookup[key]];
+            return substitution_quality_by_observed_quality[substitution_lookup[quality << 0x8 | expected << 0x4 | observed]];
         };
         inline double probability_of_quality(const uint8_t& quality) const {
             return false_positive_probability[quality];
@@ -82,6 +83,7 @@ class PhredScale {
             static PhredScale instance;
             return instance;
         };
+
     private:
         uint16_t substitution_lookup[0x8000];
         double conditional_substitution_probability[0x10];

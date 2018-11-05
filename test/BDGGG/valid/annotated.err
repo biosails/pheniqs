@@ -21,9 +21,7 @@
     ],
     "multiplex": {
         "average classified confidence": 0.99996934529009,
-        "average classified distance": 0.017149857084524,
         "average pf classified confidence": 0.999971208761178,
-        "average pf classified distance": 0.008812421317666,
         "classified": [
             {
                 "CN": "CGSB",
@@ -36,9 +34,7 @@
                 "PU": "BDGGG:AGGCAGAA",
                 "SM": "trinidad",
                 "average confidence": 0.999956798686651,
-                "average distance": 0.006578947368421,
                 "average pf confidence": 0.999956526001517,
-                "average pf distance": 0.004434589800443,
                 "barcode": [
                     "AGGCAGAA"
                 ],
@@ -64,9 +60,7 @@
                 "PU": "BDGGG:CGTACTAG",
                 "SM": "trinidad",
                 "average confidence": 0.99997533459935,
-                "average distance": 0.018145161290322,
                 "average pf confidence": 0.999975236364668,
-                "average pf distance": 0.008316008316008,
                 "barcode": [
                     "CGTACTAG"
                 ],
@@ -93,9 +87,7 @@
                 "PU": "BDGGG:GGACTCCT",
                 "SM": "trinidad",
                 "average confidence": 0.999956293678902,
-                "average distance": 0.026515151515151,
                 "average pf confidence": 0.999960172189264,
-                "average pf distance": 0.013645224171539,
                 "barcode": [
                     "GGACTCCT"
                 ],
@@ -122,9 +114,7 @@
                 "PU": "BDGGG:TAAGGCGA",
                 "SM": "trinidad",
                 "average confidence": 0.999987431850491,
-                "average distance": 0.01624548736462,
                 "average pf confidence": 0.999992995433398,
-                "average pf distance": 0.00563909774436,
                 "barcode": [
                     "TAAGGCGA"
                 ],
@@ -151,9 +141,7 @@
                 "PU": "BDGGG:TCCTGAGC",
                 "SM": "trinidad",
                 "average confidence": 0.999968434085317,
-                "average distance": 0.016867469879518,
                 "average pf confidence": 0.999968144473247,
-                "average pf distance": 0.01231527093596,
                 "barcode": [
                     "TCCTGAGC"
                 ],

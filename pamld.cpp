@@ -52,7 +52,7 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
     double y(0);
     double t(0);
     double p(0);
-    int32_t d(0);
+    // int32_t d(0);
     double sigma_p(0);
     double compensation(0);
     double conditional_probability(0);
@@ -63,7 +63,8 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
             p: P(b) * P(r|b), the prior adjusted conditional probability
             sigma_p: the sum of p over b
         */
-        barcode.compensated_decoding_probability(this->observation, conditional_probability, d);
+        barcode.compensated_decoding_probability(this->observation, conditional_probability);
+        // barcode.compensated_decoding_probability(this->observation, conditional_probability, d);
         p = conditional_probability * barcode.concentration;
         y = p - compensation;
         t = sigma_p + y;
@@ -71,7 +72,7 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
         sigma_p = t;
         if(p > adjusted_conditional_decoding_probability) {
             this->decoded = &barcode;
-            this->decoding_hamming_distance = d;
+            // this->decoding_hamming_distance = d;
             adjusted_conditional_decoding_probability = p;
             conditional_decoding_probability = conditional_probability;
         }
@@ -103,14 +104,14 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
         } else {
             ++this->decoded->low_confidence_count;
             this->decoded = &this->unclassified;
-            this->decoding_hamming_distance = 0;
+            // this->decoding_hamming_distance = 0;
             decoding_confidence = 0;
         }
 
     } else {
         ++this->decoded->low_conditional_confidence_count;
         this->decoded = &this->unclassified;
-        this->decoding_hamming_distance = 0;
+        // this->decoding_hamming_distance = 0;
         decoding_confidence = 0;
     }
     ObservingDecoder< T >::classify(input, output);
