@@ -45,6 +45,7 @@ Transcode::Transcode(Document& operation) try :
     Job(operation),
     decoder_repository_query("/decoder"),
     end_of_input(false),
+    decoded_nucleotide_cardinality(0),
     thread_pool({NULL, 0}) {
 
     } catch(Error& error) {
@@ -252,6 +253,7 @@ void Transcode::compile() {
 
     /* Remove the decoder repository, it is no longer needed in the compiled instruction */
     ontology.RemoveMember("decoder");
+    compile_thread_model();
     Job::compile();
 };
 void Transcode::apply_interactive() {
@@ -300,6 +302,10 @@ void Transcode::compile_PG() {
     ontology.AddMember(Value("program", ontology.GetAllocator()).Move(), PG.Move(), ontology.GetAllocator());
 };
 void Transcode::compile_input() {
+    int32_t total_threads(decode_value_by_key< int32_t >("threads", ontology));
+    int32_t htslib_threads(max(1, total_threads));
+    encode_key_value("htslib threads", htslib_threads, ontology, ontology);
+
     /* Populate the input_feed_by_index and input_feed_by_segment arrays */
     expand_url_value_by_key("base input url", ontology, ontology);
     URL base(decode_value_by_key< URL >("base input url", ontology));
@@ -348,6 +354,7 @@ void Transcode::compile_sensed_input() {
         }
     }
 
+    load_thread_pool();
     /*  Detect the resolution of every feed
         Count the number or consecutive reads with identical read id
         The resolution is the number of segments of each read interleaved into the file
@@ -651,6 +658,11 @@ void Transcode::compile_codec(Value& value, const Value& default_decoder, const 
                     } else { throw ConfigurationError("barcode concentration must be a positive number");  }
                     ++barcode_index;
                 }
+
+                int32_t nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", value));
+                encode_key_value("barcode cardinality", barcode_index, value, ontology);
+                decoded_nucleotide_cardinality += barcode_index * nucleotide_cardinality;
+
                 if(total_concentration > 0) {
                     const double factor((1.0 - noise) / total_concentration);
                     for(auto& record : codec.GetObject()) {
@@ -997,7 +1009,12 @@ void Transcode::cross_validate_io() {
         }
     }
 };
-
+void Transcode::compile_thread_model() {
+    int32_t total_threads(decode_value_by_key< int32_t >("threads", ontology));
+    int32_t decoding_threads(max(1, min(total_threads, max(1, total_threads * (decoded_nucleotide_cardinality / 1000)))));
+    encode_key_value("decoding threads", decoding_threads, ontology, ontology);
+    cout << "decoded_nucleotide_cardinality " << decoded_nucleotide_cardinality << " : decoding_threads " << decoding_threads << endl;
+};
 /* validate */
 void Transcode::validate() {
     Job::validate();
@@ -1096,9 +1113,12 @@ void Transcode::validate_url_accessibility() {
     }
 };
 void Transcode::load_thread_pool() {
-    int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
-    thread_pool.pool = hts_tpool_init(threads);
-    if(!thread_pool.pool) { throw InternalError("error creating thread pool"); }
+    if(thread_pool.pool == NULL) {
+        int32_t htslib_threads(decode_value_by_key< int32_t >("htslib threads", ontology));
+        cout << "htslib_threads " << htslib_threads << endl;
+        thread_pool.pool = hts_tpool_init(htslib_threads);
+        if(!thread_pool.pool) { throw InternalError("error creating thread pool"); }
+    }
 };
 void Transcode::load_input() {
     if(input_feed_by_index.empty()) {
@@ -1323,8 +1343,8 @@ void Transcode::load_cellular_decoder(const Value& value) {
     }
 };
 void Transcode::load_pivot() {
-    int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
-    for(int32_t index(0); index < threads; ++index) {
+    int32_t decoding_threads(decode_value_by_key< int32_t >("decoding threads", ontology));
+    for(int32_t index(0); index < decoding_threads; ++index) {
         pivot_array.emplace_back(*this, index);
     }
 };
@@ -1454,6 +1474,10 @@ void Transcode::print_global_instruction(ostream& o) const {
 
     int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     o << "    Threads                                     " << to_string(threads) << endl;
+    o << endl;
+
+    int32_t decoding_threads(decode_value_by_key< int32_t >("decoding threads", ontology));
+    o << "    Decoding threads                            " << to_string(decoding_threads) << endl;
     o << endl;
 };
 void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {

@@ -67,6 +67,7 @@ class Transcode : public Job {
 
     private:
         bool end_of_input;
+        int32_t decoded_nucleotide_cardinality;
         htsThreadPool thread_pool;
         list< TranscodePivot > pivot_array;
         list< Feed* > input_feed_by_index;
@@ -98,6 +99,7 @@ class Transcode : public Job {
         bool infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
         void pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality);
         void cross_validate_io();
+        void compile_thread_model();
         void validate_decoder_group(const Value::Ch* key);
         void validate_decoder(Value& value);
 
