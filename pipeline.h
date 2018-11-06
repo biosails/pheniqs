@@ -55,7 +55,7 @@ class Job {
         virtual void execute() {};
         virtual void finalize();
         virtual void clean();
-        virtual void print_ontology(ostream& o) const;
+        virtual void print_ontology(ostream& o);
         virtual void print_compiled(ostream& o) const;
         virtual void print_report() const;
         virtual void describe(ostream& o) const;

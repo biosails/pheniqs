@@ -63,7 +63,9 @@ void Job::remove_disabled() {
 };
 void Job::clean() {
     clean_json_value(ontology, ontology);
-    sort_json_value(ontology, ontology);
+    if(ontology.IsNull()) {
+        ontology.SetObject();
+    }
 };
 void Job::finalize() {
     if(decode_value_by_key< bool >("include compiled job", ontology)) {
@@ -75,7 +77,8 @@ void Job::finalize() {
         );
     }
 };
-void Job::print_ontology(ostream& o) const {
+void Job::print_ontology(ostream& o) {
+    sort_json_value(ontology, ontology);
     print_json(ontology, o);
 };
 void Job::print_compiled(ostream& o) const {
