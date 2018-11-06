@@ -1013,7 +1013,6 @@ void Transcode::compile_thread_model() {
     int32_t total_threads(decode_value_by_key< int32_t >("threads", ontology));
     int32_t decoding_threads(max(1, min(total_threads, max(1, total_threads * (decoded_nucleotide_cardinality / 1000)))));
     encode_key_value("decoding threads", decoding_threads, ontology, ontology);
-    cout << "decoded_nucleotide_cardinality " << decoded_nucleotide_cardinality << " : decoding_threads " << decoding_threads << endl;
 };
 /* validate */
 void Transcode::validate() {
@@ -1115,7 +1114,6 @@ void Transcode::validate_url_accessibility() {
 void Transcode::load_thread_pool() {
     if(thread_pool.pool == NULL) {
         int32_t htslib_threads(decode_value_by_key< int32_t >("htslib threads", ontology));
-        cout << "htslib_threads " << htslib_threads << endl;
         thread_pool.pool = hts_tpool_init(htslib_threads);
         if(!thread_pool.pool) { throw InternalError("error creating thread pool"); }
     }
