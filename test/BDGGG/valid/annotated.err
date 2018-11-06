@@ -20,8 +20,8 @@
         }
     ],
     "multiplex": {
-        "average classified confidence": 0.99996934529009,
-        "average pf classified confidence": 0.999971208761178,
+        "average classified confidence": 0.999972299530271,
+        "average pf classified confidence": 0.999973586034902,
         "classified": [
             {
                 "CN": "CGSB",
@@ -33,21 +33,22 @@
                 "PM": "miseq",
                 "PU": "BDGGG:AGGCAGAA",
                 "SM": "trinidad",
-                "average confidence": 0.999956798686651,
-                "average pf confidence": 0.999956526001517,
+                "average confidence": 0.99997372515215,
+                "average pf confidence": 0.999973512925138,
                 "barcode": [
                     "AGGCAGAA"
                 ],
                 "concentration": 0.183498128559804,
-                "count": 456,
+                "count": 457,
                 "index": 1,
-                "low conditional confidence count": 11,
-                "pf count": 451,
-                "pf fraction": 0.989035087719298,
-                "pf pooled classified fraction": 0.189257238774653,
-                "pf pooled fraction": 0.18559670781893,
-                "pooled classified fraction": 0.186198448346263,
-                "pooled fraction": 0.1824
+                "low conditional confidence count": 8,
+                "low confidence count": 2,
+                "pf count": 452,
+                "pf fraction": 0.9890590809628,
+                "pf pooled classified fraction": 0.189121338912133,
+                "pf pooled fraction": 0.186008230452674,
+                "pooled classified fraction": 0.185999185999186,
+                "pooled fraction": 0.1828
             },
             {
                 "CN": "CGSB",
@@ -59,22 +60,21 @@
                 "PM": "miseq",
                 "PU": "BDGGG:CGTACTAG",
                 "SM": "trinidad",
-                "average confidence": 0.99997533459935,
-                "average pf confidence": 0.999975236364668,
+                "average confidence": 0.999970628686681,
+                "average pf confidence": 0.999977014156961,
                 "barcode": [
                     "CGTACTAG"
                 ],
                 "concentration": 0.199524165988608,
-                "count": 496,
+                "count": 498,
                 "index": 2,
                 "low conditional confidence count": 10,
-                "low confidence count": 1,
-                "pf count": 481,
-                "pf fraction": 0.969758064516129,
-                "pf pooled classified fraction": 0.201846412085606,
-                "pf pooled fraction": 0.197942386831275,
-                "pooled classified fraction": 0.20253164556962,
-                "pooled fraction": 0.1984
+                "pf count": 482,
+                "pf fraction": 0.967871485943775,
+                "pf pooled classified fraction": 0.201673640167364,
+                "pf pooled fraction": 0.19835390946502,
+                "pooled classified fraction": 0.202686202686202,
+                "pooled fraction": 0.1992
             },
             {
                 "CN": "CGSB",
@@ -86,22 +86,21 @@
                 "PM": "miseq",
                 "PU": "BDGGG:GGACTCCT",
                 "SM": "trinidad",
-                "average confidence": 0.999956293678902,
-                "average pf confidence": 0.999960172189264,
+                "average confidence": 0.999973758634981,
+                "average pf confidence": 0.999973721972205,
                 "barcode": [
                     "GGACTCCT"
                 ],
                 "concentration": 0.211944344995931,
-                "count": 528,
+                "count": 529,
                 "index": 3,
-                "low conditional confidence count": 6,
-                "low confidence count": 1,
-                "pf count": 513,
-                "pf fraction": 0.971590909090909,
-                "pf pooled classified fraction": 0.215274863617289,
-                "pf pooled fraction": 0.211111111111111,
-                "pooled classified fraction": 0.215598203348305,
-                "pooled fraction": 0.2112
+                "low conditional confidence count": 5,
+                "pf count": 514,
+                "pf fraction": 0.97164461247637,
+                "pf pooled classified fraction": 0.215062761506276,
+                "pf pooled fraction": 0.211522633744855,
+                "pooled classified fraction": 0.215303215303215,
+                "pooled fraction": 0.2116
             },
             {
                 "CN": "CGSB",
@@ -113,22 +112,22 @@
                 "PM": "miseq",
                 "PU": "BDGGG:TAAGGCGA",
                 "SM": "trinidad",
-                "average confidence": 0.999987431850491,
-                "average pf confidence": 0.999992995433398,
+                "average confidence": 0.999971994176548,
+                "average pf confidence": 0.999972545569492,
                 "barcode": [
                     "TAAGGCGA"
                 ],
                 "concentration": 0.222761920260374,
-                "count": 554,
+                "count": 556,
                 "index": 4,
                 "low conditional confidence count": 7,
-                "low confidence count": 2,
-                "pf count": 532,
-                "pf fraction": 0.960288808664259,
-                "pf pooled classified fraction": 0.223248006714225,
-                "pf pooled fraction": 0.218930041152263,
-                "pooled classified fraction": 0.226214781543487,
-                "pooled fraction": 0.2216
+                "low confidence count": 1,
+                "pf count": 534,
+                "pf fraction": 0.960431654676259,
+                "pf pooled classified fraction": 0.223430962343096,
+                "pf pooled fraction": 0.219753086419753,
+                "pooled classified fraction": 0.226292226292226,
+                "pooled fraction": 0.2224
             },
             {
                 "CN": "CGSB",
@@ -140,32 +139,32 @@
                 "PM": "miseq",
                 "PU": "BDGGG:TCCTGAGC",
                 "SM": "trinidad",
-                "average confidence": 0.999968434085317,
-                "average pf confidence": 0.999968144473247,
+                "average confidence": 0.999971288693789,
+                "average pf confidence": 0.999970807671021,
                 "barcode": [
                     "TCCTGAGC"
                 ],
                 "concentration": 0.16707144019528,
-                "count": 415,
+                "count": 417,
                 "index": 5,
-                "low conditional confidence count": 12,
-                "low confidence count": 1,
-                "pf count": 406,
-                "pf fraction": 0.978313253012048,
-                "pf pooled classified fraction": 0.170373478808224,
-                "pf pooled fraction": 0.167078189300411,
-                "pooled classified fraction": 0.169456921192323,
-                "pooled fraction": 0.166
+                "low conditional confidence count": 8,
+                "low confidence count": 2,
+                "pf count": 408,
+                "pf fraction": 0.97841726618705,
+                "pf pooled classified fraction": 0.170711297071129,
+                "pf pooled fraction": 0.167901234567901,
+                "pooled classified fraction": 0.169719169719169,
+                "pooled fraction": 0.1668
             }
         ],
-        "classified count": 2449,
-        "classified fraction": 0.9796,
-        "classified pf fraction": 0.973050224581461,
+        "classified count": 2457,
+        "classified fraction": 0.9828,
+        "classified pf fraction": 0.972730972730972,
         "count": 2500,
-        "low conditional confidence count": 46,
+        "low conditional confidence count": 38,
         "low confidence count": 5,
-        "pf classified count": 2383,
-        "pf classified fraction": 0.980658436213991,
+        "pf classified count": 2390,
+        "pf classified fraction": 0.983539094650205,
         "pf count": 2430,
         "pf fraction": 0.972,
         "unclassified": {
@@ -177,14 +176,14 @@
             "PM": "miseq",
             "PU": "BDGGG:undetermined",
             "SM": "trinidad",
-            "count": 51,
+            "count": 43,
             "index": 0,
-            "pf count": 47,
-            "pf fraction": 0.92156862745098,
-            "pf pooled classified fraction": 0.019723038187159,
-            "pf pooled fraction": 0.019341563786008,
-            "pooled classified fraction": 0.020824826459779,
-            "pooled fraction": 0.0204
+            "pf count": 40,
+            "pf fraction": 0.930232558139534,
+            "pf pooled classified fraction": 0.01673640167364,
+            "pf pooled fraction": 0.016460905349794,
+            "pooled classified fraction": 0.017501017501017,
+            "pooled fraction": 0.0172
         }
     }
 }
