@@ -10,6 +10,7 @@
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
     "configuration url": "test/BDGGG/BDGGG_annotated.json",
+    "decoding threads": 1,
     "default output compression": "none",
     "default output format": "sam",
     "feed": {
@@ -89,6 +90,7 @@
     "float precision": 15,
     "flowcell id": "BDGGG",
     "full command": "./pheniqs mux --config test/BDGGG/BDGGG_annotated.json --precision 15 --compile",
+    "htslib threads": 1,
     "input": [
         "test/BDGGG/BDGGG_s01.fastq.gz",
         "test/BDGGG/BDGGG_s02.fastq.gz",
@@ -138,6 +140,7 @@
         "PM": "miseq",
         "SM": "trinidad",
         "algorithm": "pamld",
+        "barcode cardinality": 6,
         "barcode length": [
             8
         ],

@@ -1473,10 +1473,6 @@ void Transcode::print_global_instruction(ostream& o) const {
     int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     o << "    Threads                                     " << to_string(threads) << endl;
     o << endl;
-
-    int32_t decoding_threads(decode_value_by_key< int32_t >("decoding threads", ontology));
-    o << "    Decoding threads                            " << to_string(decoding_threads) << endl;
-    o << endl;
 };
 void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {
     Value::ConstMemberIterator reference = ontology["feed"].FindMember(key);

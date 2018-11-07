@@ -406,7 +406,7 @@ class Observation : public SequenceArray< ObservedSequence > {
             double compensation(0);
             for(auto& segment : segment_array) {
                 for(uint8_t* q(segment.quality); *q; ++q) {
-                    y = scale.probability_of_quality(*q);
+                    y = scale.probability_of_quality(*q) - compensation;
                     t = sigma + y;
                     compensation = (t - sigma) - y;
                     sigma = t;

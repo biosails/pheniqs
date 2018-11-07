@@ -10,6 +10,7 @@
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
     "configuration url": "test/BDGGG/BDGGG_interleave.json",
+    "decoding threads": 1,
     "default output compression": "none",
     "default output format": "sam",
     "feed": {
@@ -89,6 +90,7 @@
     "float precision": 15,
     "flowcell id": "BDGGG",
     "full command": "./pheniqs mux --config test/BDGGG/BDGGG_interleave.json --precision 15 --compile",
+    "htslib threads": 1,
     "include filtered": true,
     "input": [
         "test/BDGGG/BDGGG_s01.fastq.gz",
