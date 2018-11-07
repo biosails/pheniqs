@@ -60,6 +60,7 @@ class Layout {
             max_line_width(80),
             option_indent(2),
             max_action_name(0),
+            max_option_handle(0),
             option_handle_spacing(4),
             option_choice_indent(0) {
         };
