@@ -42,7 +42,7 @@
 Command line parameters, if specified, override their corresponding values provided in the configuration file.
 
 # zsh completion
-If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install the bundled zsh command line completion script for a more interactive command line experience. It will interactively complete the command line arguments for you and makes learning the interface more intuitive. The zsh completion script, `_pheniqs`, is generated when building pheniqs with `make` but you can also generate it by invoking the corresponding `make` target `make _pheniqs` or with `pheniqs-tools.py` by executing `pheniqs-tools.py zsh configuration.json > _pheniqs`. The script should be placed in one of the folders referenced in your in your **fpath**.
+If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install the bundled zsh command line completion script for a more interactive command line experience. It will interactively complete the command line arguments for you and makes learning the interface more intuitive. The zsh completion script, `_pheniqs`, is generated when building pheniqs with `make` but you can also generate it by invoking the corresponding `make` target `make _pheniqs` or with `shell.py` by executing `shell.py zsh configuration.json > _pheniqs`. The script should be placed in one of the folders referenced in your in your **fpath**.
 
 # Global command line help
 

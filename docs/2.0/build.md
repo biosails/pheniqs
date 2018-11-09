@@ -44,8 +44,8 @@ Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson
 ## Build with the One Liner
 **coming soon**
 
-## Building with pheniqs-tools
-Pheniqs comes bundled with a python3 helper tool called `ppkg.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/ppkg.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with pheniqs-tools does not require elevated permissions and is ideal for building an executable on cluster environments.
+## Building with `ppkg.py`
+Pheniqs comes bundled with a python3 helper tool called `ppkg.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/ppkg.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with `ppkg.py` does not require elevated permissions and is ideal for building an executable on cluster environments.
 
 ```
 % ./tool/ppkg.py build build/trunk_static.json
@@ -73,7 +73,7 @@ INFO:Package:building with make pheniqs 2.0-trunk
 INFO:Package:installing with make pheniqs 2.0-trunk
 ```
 
-When pheniqs-tools is done you may inspect your binary, statically linked builds made with pheniqs-tools will also report the versions of all built in libraries.
+When `ppkg.py` is done you may inspect your binary, statically linked builds made with `ppkg.py` will also report the versions of all built in libraries.
 
 ```
 % ./bin/trunk_static/install/bin/pheniqs --version
