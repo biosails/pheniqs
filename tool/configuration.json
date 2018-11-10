@@ -374,5 +374,127 @@
                 }
             }
         }
+    },
+    "simulate": {
+        "interface": {
+            "global": {
+                "argument": [
+                    "version",
+                    "verbosity"
+                ]
+            },
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "capacity": {
+                    "flag": [
+                        "-c",
+                        "--capacity"
+                    ],
+                    "parameter": {
+                        "default": 128,
+                        "help": "IO buffer capacity",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "frequency": {
+                    "flag": [
+                        "-f",
+                        "--frequency"
+                    ],
+                    "parameter": {
+                        "default": 0.0024,
+                        "help": "Error frequency per base",
+                        "metavar": "FLOAT",
+                        "type": "float"
+                    }
+                },
+                "model": {
+                    "flag": [
+                        "-m",
+                        "--model"
+                    ],
+                    "parameter": {
+                        "help": "path to json error model",
+                        "metavar": "PATH"
+                    },
+                    "required": true
+                },
+                "preset": {
+                    "flag": [
+                        "-p",
+                        "--preset"
+                    ],
+                    "parameter": {
+                        "help": "model preset",
+                        "metavar": "NAME"
+                    },
+                    "required": true
+                },
+                "sam": {
+                    "flag": [
+                        "-s",
+                        "--sam"
+                    ],
+                    "parameter": {
+                        "help": "path to sam file with sequencing reads",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "model",
+                            "capacity",
+                            "frequency",
+                            "preset"
+                        ],
+                        "implementation": "simulate_barcode",
+                        "instruction": {
+                            "help": "simulate barcodes on sequencing reads",
+                            "name": "barcode"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        }
     }
 }

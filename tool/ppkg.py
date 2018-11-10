@@ -723,7 +723,7 @@ class SAMTools(Make):
         Make.__init__(self, pipeline, node)
         self.node['configure optional'] = [ '--with-htslib={}'.format(self.install_prefix) ]
 
-class PackagePipeline(Pipeline):
+class PackageManager(Pipeline):
     def __init__(self):
         Pipeline.__init__(self, 'package')
         self.package = None
@@ -886,7 +886,7 @@ def main():
 
     pipeline = None
     try:
-        pipeline = PackagePipeline()
+        pipeline = PackageManager()
         pipeline.execute()
 
     except DownloadError as e:
