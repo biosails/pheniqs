@@ -18,8 +18,7 @@
                     "parameter": {
                         "help": "illumina run directory",
                         "metavar": "PATH"
-                    },
-                    "required": true
+                    }
                 },
                 "selected_lane_number": {
                     "flag": [
@@ -196,8 +195,7 @@
                     "parameter": {
                         "help": "path",
                         "metavar": "PATH"
-                    },
-                    "required": true
+                    }
                 },
                 "verbosity": {
                     "flag": [
@@ -321,8 +319,7 @@
                     "parameter": {
                         "help": "path",
                         "metavar": "PATH"
-                    },
-                    "required": true
+                    }
                 },
                 "verbosity": {
                     "flag": [
@@ -387,6 +384,15 @@
                 "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
             },
             "prototype": {
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
                 "capacity": {
                     "flag": [
                         "-c",
@@ -399,28 +405,16 @@
                         "type": "int"
                     }
                 },
-                "frequency": {
-                    "flag": [
-                        "-f",
-                        "--frequency"
-                    ],
-                    "parameter": {
-                        "default": 0.0024,
-                        "help": "Error frequency per base",
-                        "metavar": "FLOAT",
-                        "type": "float"
-                    }
-                },
                 "model": {
                     "flag": [
                         "-m",
                         "--model"
                     ],
                     "parameter": {
-                        "help": "path to json error model",
-                        "metavar": "PATH"
-                    },
-                    "required": true
+                        "default": "lrsim",
+                        "help": "name of error model from config",
+                        "metavar": "NAME"
+                    }
                 },
                 "preset": {
                     "flag": [
@@ -428,18 +422,28 @@
                         "--preset"
                     ],
                     "parameter": {
+                        "default": "default",
                         "help": "model preset",
                         "metavar": "NAME"
-                    },
-                    "required": true
+                    }
                 },
-                "sam": {
+                "input": {
                     "flag": [
-                        "-s",
-                        "--sam"
+                        "-i",
+                        "--input"
                     ],
                     "parameter": {
-                        "help": "path to sam file with sequencing reads",
+                        "help": "input SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "output": {
+                    "flag": [
+                        "-o",
+                        "--output"
+                    ],
+                    "parameter": {
+                        "help": "output SAM encoded file path",
                         "metavar": "PATH"
                     }
                 },
@@ -475,9 +479,11 @@
                 "action": [
                     {
                         "argument": [
+                            "path",
+                            "input",
+                            "output",
                             "model",
                             "capacity",
-                            "frequency",
                             "preset"
                         ],
                         "implementation": "simulate_barcode",

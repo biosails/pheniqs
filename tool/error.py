@@ -48,3 +48,7 @@ class BadConfigurationError(Exception):
 class UnsupportedError(Exception):
     def __init__(self, message):
         super(Exception, self).__init__(message)
+
+class SequenceError(Exception):
+    def __init__(self, message):
+        super(Exception, self).__init__(message)

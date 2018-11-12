@@ -206,19 +206,21 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     pipeline = None
+
     try:
         pipeline = ShellPipeline()
         pipeline.execute()
 
-    except DownloadError as e:
-        logging.getLogger('main').critical(e)
-        sys.exit(1)
-
-    except ValueError as e:
-        logging.getLogger('main').critical(e)
-        sys.exit(1)
-
-    except CommandFailedError as e:
+    except (
+        PermissionDeniedError,
+        NoOverwriteError,
+        DownloadError,
+        CommandFailedError,
+        NoConfigurationFileError,
+        BadConfigurationError,
+        UnsupportedError,
+        SequenceError
+    ) as e:
         logging.getLogger('main').critical(e)
         sys.exit(1)
 
@@ -228,8 +230,7 @@ def main():
             sys.exit(1)
 
     finally:
-        if pipeline:
-            pipeline.close()
+        if pipeline: pipeline.close()
 
     sys.exit(0)
 

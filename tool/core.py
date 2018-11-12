@@ -25,6 +25,7 @@ import os
 import re
 import sys
 import json
+import signal
 import logging
 import hashlib
 import platform
@@ -34,6 +35,12 @@ from argparse import ArgumentParser
 from subprocess import Popen, PIPE
 
 from error import *
+
+def termination_handler(signal, frame):
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, termination_handler)
+signal.signal(signal.SIGINT, termination_handler)
 
 split_class = lambda x: (x[0:x.rfind('.')], x[x.rfind('.') + 1:])
 
@@ -214,9 +221,6 @@ class Pipeline(object):
                 'home': '~/.pheniqs',
             }
         }
-        self.execution = {}
-        self.stdout = None
-        self.stderr = None
 
         command = CommandLineParser(name)
         if command.help_triggered:
@@ -251,7 +255,4 @@ class Pipeline(object):
         pass
 
     def close(self):
-        if self.stdout:
-            self.stdout.close();
-        if self.stderr:
-            self.stderr.close();
+        pass
