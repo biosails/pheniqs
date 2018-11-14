@@ -595,7 +595,7 @@
                             "$ref": "#/definitions/transform"
                         },
                         "undetermined": {
-                            "$ref": "#/definitions/decoder_class"
+                            "$ref": "#/definitions/undetermined_decoder_class"
                         }
                     },
                     "type": "object"
@@ -684,6 +684,9 @@
                             "$ref": "#/definitions/segment_cardinality"
                         }
                     },
+                    "required": [
+                        "barcode"
+                    ],
                     "type": "object"
                 },
                 "decoding_algorithm": {
@@ -1260,6 +1263,80 @@
                     "required": [
                         "token"
                     ],
+                    "type": "object"
+                },
+                "undetermined_decoder_class": {
+                    "properties": {
+                        "BC": {
+                            "$ref": "#/definitions/rg_bc"
+                        },
+                        "CN": {
+                            "$ref": "#/definitions/rg_cn"
+                        },
+                        "DS": {
+                            "$ref": "#/definitions/rg_ds"
+                        },
+                        "DT": {
+                            "$ref": "#/definitions/rg_dt"
+                        },
+                        "FO": {
+                            "$ref": "#/definitions/rg_fo"
+                        },
+                        "ID": {
+                            "$ref": "#/definitions/rg_id"
+                        },
+                        "KS": {
+                            "$ref": "#/definitions/rg_ks"
+                        },
+                        "LB": {
+                            "$ref": "#/definitions/rg_lb"
+                        },
+                        "PG": {
+                            "$ref": "#/definitions/rg_pg"
+                        },
+                        "PI": {
+                            "$ref": "#/definitions/rg_pi"
+                        },
+                        "PL": {
+                            "$ref": "#/definitions/rg_pl"
+                        },
+                        "PM": {
+                            "$ref": "#/definitions/rg_pm"
+                        },
+                        "PU": {
+                            "$ref": "#/definitions/rg_pu"
+                        },
+                        "SM": {
+                            "$ref": "#/definitions/rg_sm"
+                        },
+                        "algorithm": {
+                            "$ref": "#/definitions/decoding_algorithm"
+                        },
+                        "enable quality control": {
+                            "$ref": "#/definitions/enable_quality_control"
+                        },
+                        "flowcell id": {
+                            "$ref": "#/definitions/flowcell_id"
+                        },
+                        "flowcell lane number": {
+                            "$ref": "#/definitions/flowcell_lane_number"
+                        },
+                        "include filtered": {
+                            "$ref": "#/definitions/include_filtered"
+                        },
+                        "index": {
+                            "$ref": "#/definitions/index"
+                        },
+                        "output": {
+                            "$ref": "#/definitions/url_array"
+                        },
+                        "output feed by segment": {
+                            "$ref": "#/definitions/feed_array"
+                        },
+                        "segment cardinality": {
+                            "$ref": "#/definitions/segment_cardinality"
+                        }
+                    },
                     "type": "object"
                 },
                 "url": {
