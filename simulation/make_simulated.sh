@@ -1,0 +1,61 @@
+#!/usr/bin/env zsh
+
+SAMTOOLS_THREADS=2
+SIMULATED_PRESET="A5KVK_n50_nu1"
+SOURCE_DATA="/volume/albireo/waverly/deml/pheniqs/A5KVK.cram"
+SIMULATE_PY="/Users/lg/code/biosails/pheniqs/tool/simulate.py"
+TODEML_PY="/Users/lg/code/biosails/pheniqs/tool/todeml.py"
+SIMULATE_PY_PROFILE="/Users/lg/code/biosails/pheniqs/test/synthetic/simulation.json"
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.24 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_24_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_24.bam
+
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.002408 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_002408_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_002408.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.010169 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_010169_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_010169.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.020160 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_020160_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_020160.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.029793 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_029793_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_029793.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.039433 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_039433_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_039433.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.048776 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_048776_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_048776.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.057784 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_057784_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_057784.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.066878 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_066878_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_066878.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.075641 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_075641_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_075641.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.084253 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_084253_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_084253.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.092736 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_092736_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_092736.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.101145 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_101145_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_101145.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.109136 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_109136_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_109136.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.117206 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_117206_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_117206.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.125214 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_125214_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_125214.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.132844 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_132844_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_132844.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.140526 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_140526_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_140526.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.147897 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_147897_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_147897.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.155148 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_155148_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_155148.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.162508 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_162508_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_162508.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.169414 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_169414_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_169414.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.176525 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_176525_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_176525.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.183351 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_183351_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_183351.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.190047 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_190047_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_190047.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.196708 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_196708_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_196708.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.203133 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_203133_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_203133.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.209702 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_209702_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_209702.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.215989 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_215989_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_215989.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.222165 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_222165_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_222165.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.228286 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_228286_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_228286.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.234293 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_234293_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_234293.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.240130 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_240130_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_240130.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.245970 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_245970_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_245970.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.251751 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_251751_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_251751.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.257444 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_257444_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_257444.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.263088 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_263088_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_263088.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.268502 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_268502_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_268502.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.273824 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_273824_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_273824.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.279133 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_279133_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_279133.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.284395 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_284395_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_284395.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.289590 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_289590_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_289590.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.294594 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_294594_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_294594.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.299673 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_299673_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_299673.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.304587 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_304587_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_304587.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.309421 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_309421_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_309421.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.314206 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_314206_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_314206.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.318938 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_318938_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_318938.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.323720 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_323720_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_323720.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.328343 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_328343_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_328343.bam
+samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.332825 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_332825_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_332825.bam
+# samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA|$SIMULATE_PY -p $SIMULATED_PRESET -e 0.337214 $SIMULATE_PY_PROFILE -r A5KVK_n50_nu1_337214_model.json|samtools view --threads $SAMTOOLS_THREADS -b > A5KVK_n50_nu1_337214.bam

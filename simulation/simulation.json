@@ -1055,7 +1055,7 @@
                 }
             }
         },
-        "deml": {
+        "A5KVK": {
             "instrument id": "PHENIQS",
             "flowcell id": "A5KVK",
             "noise model": {
@@ -1074,14 +1074,14 @@
                 }
             }
         },
-        "deml_n50_nu1": {
+        "A5KVK_n50_nu1": {
             "instrument id": "PHENIQS",
             "flowcell id": "A5KVK",
             "noise model": {
                 "reference fasta path": "phix/NC_001422.1_Phix.fasta"
             },
             "decoder": {
-                "deml": {
+                "deml_multiplex": {
                     "type": "sample",
                     "expected substitution frequency": 0.0024,
                     "codec": {
@@ -1397,7 +1397,7 @@
         }
     },
     "decoder": {
-        "deml": {
+        "deml_multiplex": {
             "codec": {
                 "@RG01": { "barcode": [ "AATTCAA", "CATCCGG" ] },
                 "@RG02": { "barcode": [ "CGCGCAG", "TCATGGT" ] },
