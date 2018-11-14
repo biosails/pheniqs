@@ -51,6 +51,10 @@ class Simulate(SamTranscode):
         self.load_configuration()
         self.load_preset()
 
+    def report(self):
+        with io.open(self.instruction['report'], 'w') as file:
+            file.write(to_json(self.preset))
+
     def load_configuration(self):
         if os.path.exists(self.instruction['path']):
             self.instruction['working directory'] = os.path.dirname(self.instruction['path'])

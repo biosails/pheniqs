@@ -377,6 +377,7 @@
             "global": {
                 "argument": [
                     "path",
+                    "report",
                     "number",
                     "error",
                     "input",
@@ -411,6 +412,17 @@
                         "help": "IO buffer capacity",
                         "metavar": "INT",
                         "type": "int"
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stderr",
+                        "help": "path to write report",
+                        "metavar": "PATH"
                     }
                 },
                 "model": {

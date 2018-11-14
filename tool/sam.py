@@ -61,6 +61,18 @@ def print_json(node):
 
     return print(json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4, default=handler))
 
+def to_json(node):
+    def handler(o):
+        if isinstance(o, numpy.ndarray):
+            return ''.join(o)
+
+        elif isinstance(o, Decimal):
+            return '{:10.17f}'.format(o)
+
+        return None
+
+    return json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4, default=handler)
+
 class SamTranscode(Pipeline):
     def __init__(self, name):
         Pipeline.__init__(self, name)
