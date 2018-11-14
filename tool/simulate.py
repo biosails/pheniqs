@@ -60,7 +60,6 @@ class Simulate(SamTranscode):
         else: raise NoConfigurationFileError('configure {} not found'.format(self.instruction['path']))
 
     def load_preset(self):
-        print_json(self.instruction)
         if self.instruction['preset'] in self.configuration['preset']:
             self.ontology['preset'] = deepcopy(self.configuration['preset'][self.instruction['preset']])
             self.ontology['preset']['run count'] = str(self.instruction['number'])
@@ -181,8 +180,6 @@ class Simulate(SamTranscode):
 
             self.load_noise_model()
             self.load_report()
-            print_json(self.preset)
-            exit(0)
 
         else: raise BadConfigurationError('unknown preset %s', self.configuration['preset'])
 
