@@ -684,9 +684,6 @@
                             "$ref": "#/definitions/segment_cardinality"
                         }
                     },
-                    "required": [
-                        "barcode"
-                    ],
                     "type": "object"
                 },
                 "decoding_algorithm": {
