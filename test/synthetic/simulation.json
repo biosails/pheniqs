@@ -1073,6 +1073,327 @@
                     }
                 }
             }
+        },
+        "deml_n50_nu1": {
+            "instrument id": "PHENIQS",
+            "flowcell id": "A5KVK",
+            "noise model": {
+                "reference fasta path": "phix/NC_001422.1_Phix.fasta"
+            },
+            "decoder": {
+                "deml": {
+                    "type": "sample",
+                    "expected substitution frequency": 0.0024,
+                    "codec": {
+                        "@RG01": {
+                            "concentration": 494
+                        },
+                        "@RG02": {
+                            "concentration": 751
+                        },
+                        "@RG03": {
+                            "concentration": 302
+                        },
+                        "@RG04": {
+                            "concentration": 178
+                        },
+                        "@RG05": {
+                            "concentration": 348
+                        },
+                        "@RG06": {
+                            "concentration": 719
+                        },
+                        "@RG07": {
+                            "concentration": 784
+                        },
+                        "@RG08": {
+                            "concentration": 28
+                        },
+                        "@RG09": {
+                            "concentration": 148
+                        },
+                        "@RG10": {
+                            "concentration": 63
+                        },
+                        "@RG11": {
+                            "concentration": 572
+                        },
+                        "@RG12": {
+                            "concentration": 461
+                        },
+                        "@RG13": {
+                            "concentration": 968
+                        },
+                        "@RG14": {
+                            "concentration": 193
+                        },
+                        "@RG15": {
+                            "concentration": 963
+                        },
+                        "@RG16": {
+                            "concentration": 907
+                        },
+                        "@RG17": {
+                            "concentration": 169
+                        },
+                        "@RG18": {
+                            "concentration": 422
+                        },
+                        "@RG19": {
+                            "concentration": 233
+                        },
+                        "@RG20": {
+                            "concentration": 919
+                        },
+                        "@RG21": {
+                            "concentration": 135
+                        },
+                        "@RG22": {
+                            "concentration": 412
+                        },
+                        "@RG23": {
+                            "concentration": 501
+                        },
+                        "@RG24": {
+                            "concentration": 644
+                        },
+                        "@RG25": {
+                            "concentration": 6
+                        },
+                        "@RG26": {
+                            "concentration": 179
+                        },
+                        "@RG27": {
+                            "concentration": 132
+                        },
+                        "@RG28": {
+                            "concentration": 291
+                        },
+                        "@RG29": {
+                            "concentration": 262
+                        },
+                        "@RG30": {
+                            "concentration": 37
+                        },
+                        "@RG31": {
+                            "concentration": 725
+                        },
+                        "@RG32": {
+                            "concentration": 103
+                        },
+                        "@RG33": {
+                            "concentration": 503
+                        },
+                        "@RG34": {
+                            "concentration": 647
+                        },
+                        "@RG35": {
+                            "concentration": 568
+                        },
+                        "@RG36": {
+                            "concentration": 172
+                        },
+                        "@RG37": {
+                            "concentration": 962
+                        },
+                        "@RG38": {
+                            "concentration": 494
+                        },
+                        "@RG39": {
+                            "concentration": 655
+                        },
+                        "@RG40": {
+                            "concentration": 634
+                        },
+                        "@RG41": {
+                            "concentration": 114
+                        },
+                        "@RG42": {
+                            "concentration": 8
+                        },
+                        "@RG43": {
+                            "concentration": 867
+                        },
+                        "@RG44": {
+                            "concentration": 636
+                        },
+                        "@RG45": {
+                            "concentration": 242
+                        },
+                        "@RG46": {
+                            "concentration": 266
+                        },
+                        "@RG47": {
+                            "concentration": 74
+                        },
+                        "@RG48": {
+                            "concentration": 924
+                        },
+                        "@RG49": {
+                            "concentration": 311
+                        },
+                        "@RG50": {
+                            "concentration": 83
+                        },
+                        "@RG51": {
+                            "concentration": 713
+                        },
+                        "@RG52": {
+                            "concentration": 21
+                        },
+                        "@RG53": {
+                            "concentration": 993
+                        },
+                        "@RG54": {
+                            "concentration": 115
+                        },
+                        "@RG55": {
+                            "concentration": 86
+                        },
+                        "@RG56": {
+                            "concentration": 921
+                        },
+                        "@RG57": {
+                            "concentration": 598
+                        },
+                        "@RG58": {
+                            "concentration": 929
+                        },
+                        "@RG59": {
+                            "concentration": 12
+                        },
+                        "@RG60": {
+                            "concentration": 420
+                        },
+                        "@RG61": {
+                            "concentration": 185
+                        },
+                        "@RG62": {
+                            "concentration": 425
+                        },
+                        "@RG63": {
+                            "concentration": 128
+                        },
+                        "@RG64": {
+                            "concentration": 292
+                        },
+                        "@RG65": {
+                            "concentration": 957
+                        },
+                        "@RG66": {
+                            "concentration": 392
+                        },
+                        "@RG67": {
+                            "concentration": 708
+                        },
+                        "@RG68": {
+                            "concentration": 71
+                        },
+                        "@RG69": {
+                            "concentration": 649
+                        },
+                        "@RG70": {
+                            "concentration": 53
+                        },
+                        "@RG71": {
+                            "concentration": 515
+                        },
+                        "@RG72": {
+                            "concentration": 684
+                        },
+                        "@RG73": {
+                            "concentration": 225
+                        },
+                        "@RG74": {
+                            "concentration": 603
+                        },
+                        "@RG75": {
+                            "concentration": 669
+                        },
+                        "@RG76": {
+                            "concentration": 338
+                        },
+                        "@RG77": {
+                            "concentration": 351
+                        },
+                        "@RG78": {
+                            "concentration": 315
+                        },
+                        "@RG79": {
+                            "concentration": 920
+                        },
+                        "@RG80": {
+                            "concentration": 12
+                        },
+                        "@RG81": {
+                            "concentration": 763
+                        },
+                        "@RG82": {
+                            "concentration": 331
+                        },
+                        "@RG83": {
+                            "concentration": 991
+                        },
+                        "@RG84": {
+                            "concentration": 266
+                        },
+                        "@RG85": {
+                            "concentration": 831
+                        },
+                        "@RG86": {
+                            "concentration": 456
+                        },
+                        "@RG87": {
+                            "concentration": 905
+                        },
+                        "@RG88": {
+                            "concentration": 194
+                        },
+                        "@RG89": {
+                            "concentration": 74
+                        },
+                        "@RG90": {
+                            "concentration": 833
+                        },
+                        "@RG91": {
+                            "concentration": 532
+                        },
+                        "@RG92": {
+                            "concentration": 278
+                        },
+                        "@RG93": {
+                            "concentration": 30
+                        },
+                        "@RG94": {
+                            "concentration": 771
+                        },
+                        "@RG95": {
+                            "concentration": 890
+                        },
+                        "@RG96": {
+                            "concentration": 573
+                        },
+                        "@RG97": {
+                            "concentration": 681
+                        },
+                        "@RG98": {
+                            "concentration": 411
+                        },
+                        "@RG99": {
+                            "concentration": 353
+                        },
+                        "@control": {
+                            "concentration": 5
+                        }
+                    },
+                    "error model reference": "lrsim",
+                    "noise": 0.05,
+                    "transform": {
+                        "token": [ "1::7", "2::7" ],
+                        "error token": [ "0:1:8", "0:8:15" ]
+                    }
+                }
+            }
         }
     },
     "decoder": {

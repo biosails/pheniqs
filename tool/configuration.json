@@ -376,6 +376,14 @@
         "interface": {
             "global": {
                 "argument": [
+                    "path",
+                    "number",
+                    "error",
+                    "input",
+                    "output",
+                    "model",
+                    "capacity",
+                    "preset",
                     "version",
                     "verbosity"
                 ]
@@ -424,7 +432,20 @@
                     "parameter": {
                         "default": 0,
                         "help": "run number to set in simulated read QNAME",
-                        "metavar": "INT"
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "error": {
+                    "flag": [
+                        "-e",
+                        "--error"
+                    ],
+                    "parameter": {
+                        "default": 0.0024,
+                        "help": "expected error rate per nucloetide",
+                        "metavar": "FLOAT",
+                        "type": "float"
                     }
                 },
                 "preset": {
@@ -485,33 +506,6 @@
                         "version": "%[prog]s 1.0"
                     }
                 }
-            },
-            "section": {
-                "action": [
-                    {
-                        "argument": [
-                            "path",
-                            "number",
-                            "input",
-                            "output",
-                            "model",
-                            "capacity",
-                            "preset"
-                        ],
-                        "implementation": "simulate_barcode",
-                        "instruction": {
-                            "help": "simulate barcodes on sequencing reads",
-                            "name": "barcode"
-                        }
-                    }
-                ],
-                "instruction": {
-                    "description": "",
-                    "dest": "action",
-                    "help": null,
-                    "metavar": "ACTION",
-                    "title": "pipeline operations"
-                }
             }
         }
     },
@@ -519,6 +513,10 @@
         "interface": {
             "global": {
                 "argument": [
+                    "path",
+                    "input",
+                    "output",
+                    "capacity",
                     "version",
                     "verbosity"
                 ]
@@ -594,29 +592,6 @@
                         "action": "version",
                         "version": "%[prog]s 1.0"
                     }
-                }
-            },
-            "section": {
-                "action": [
-                    {
-                        "argument": [
-                            "path",
-                            "input",
-                            "output",
-                            "capacity"
-                        ],
-                        "instruction": {
-                            "help": "analyze simulation ",
-                            "name": "barcode"
-                        }
-                    }
-                ],
-                "instruction": {
-                    "description": "",
-                    "dest": "action",
-                    "help": null,
-                    "metavar": "ACTION",
-                    "title": "pipeline operations"
                 }
             }
         }

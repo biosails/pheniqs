@@ -136,6 +136,10 @@ class Analyze(SamTranscode):
                 if 'RG' in read['segment'][0]['auxiliary']:
                     RG = read['segment'][0]['auxiliary']['RG']['VALUE']
                     for decoder in self.decoder_by_index:
+                        # this is for deML, i think...
+                        if 'ZQ' in read['segment'][0]['auxiliary']:
+                            RG = self.barcode_by_index[decoder['key']][0]['RG']
+
                         true_barcode_index = read['fact']['sample'][decoder['index']]
                         true_barcode = self.barcode_by_index[decoder['key']][true_barcode_index]
                         decoded_barcode = self.barcode_by_RG[decoder['key']][RG]

@@ -100,6 +100,7 @@ class SamTranscode(Pipeline):
     def token_model(self):
         return self.ontology['token model']
 
+    @property
     def decoder_by_index(self):
         return self.ontology['decoder by index']
 

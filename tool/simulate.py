@@ -60,6 +60,7 @@ class Simulate(SamTranscode):
         else: raise NoConfigurationFileError('configure {} not found'.format(self.instruction['path']))
 
     def load_preset(self):
+        print_json(self.instruction)
         if self.instruction['preset'] in self.configuration['preset']:
             self.ontology['preset'] = deepcopy(self.configuration['preset'][self.instruction['preset']])
             self.ontology['preset']['run count'] = str(self.instruction['number'])
@@ -73,7 +74,7 @@ class Simulate(SamTranscode):
                     }
                     if decoder_key in self.configuration['decoder']:
                         self.preset['decoder'][decoder_key] = merge(self.preset['decoder'][decoder_key], self.configuration['decoder'][decoder_key])
-
+                        self.preset['decoder'][decoder_key]['expected substitution frequency'] = self.instruction['error']
             decoder_index = 0
             for key,decoder in self.preset['decoder'].items():
                 decoder['index'] = decoder_index
@@ -173,15 +174,15 @@ class Simulate(SamTranscode):
                     decoder['substitution model'] = normalized
 
                     self.log.info('loaded %s decoder', key)
-                    # print_json(self.preset)
-                    # exit(0)
+                else: raise BadConfigurationError('unknown error model reference {}'.format(decoder['error model reference']))
 
                 self.decoder_by_index.append(decoder)
                 decoder_index += 1
-                else: raise BadConfigurationError('unknown error model reference {}'.format(decoder['error model reference']))
 
             self.load_noise_model()
             self.load_report()
+            print_json(self.preset)
+            exit(0)
 
         else: raise BadConfigurationError('unknown preset %s', self.configuration['preset'])
 
@@ -266,7 +267,7 @@ class Simulate(SamTranscode):
             self.output_buffer.append(read)
 
     def finalize(self):
-        for decoder in self.decoder_by_index:
+        for decoder in self.preset['decoder'].values():
             # unclassified
             unclassified = decoder['unclassified']
             unclassified['substitution rate per barcode'] = 0
