@@ -416,6 +416,17 @@
                         "metavar": "NAME"
                     }
                 },
+                "number": {
+                    "flag": [
+                        "-n",
+                        "--number"
+                    ],
+                    "parameter": {
+                        "default": 0,
+                        "help": "run number to set in simulated read QNAME",
+                        "metavar": "INT"
+                    }
+                },
                 "preset": {
                     "flag": [
                         "-p",
@@ -480,6 +491,7 @@
                     {
                         "argument": [
                             "path",
+                            "number",
                             "input",
                             "output",
                             "model",
@@ -499,6 +511,189 @@
                     "help": null,
                     "metavar": "ACTION",
                     "title": "pipeline operations"
+                }
+            }
+        }
+    },
+    "analyze": {
+        "interface": {
+            "global": {
+                "argument": [
+                    "version",
+                    "verbosity"
+                ]
+            },
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
+                "capacity": {
+                    "flag": [
+                        "-c",
+                        "--capacity"
+                    ],
+                    "parameter": {
+                        "default": 128,
+                        "help": "IO buffer capacity",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "help": "input SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "output": {
+                    "flag": [
+                        "-o",
+                        "--output"
+                    ],
+                    "parameter": {
+                        "help": "output SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "path",
+                            "input",
+                            "output",
+                            "capacity"
+                        ],
+                        "instruction": {
+                            "help": "analyze simulation ",
+                            "name": "barcode"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        }
+    },
+    "todeml": {
+        "interface": {
+            "global": {
+                "argument": [
+                    "version",
+                    "verbosity",
+                    "input",
+                    "output",
+                    "capacity"
+                ]
+            },
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "capacity": {
+                    "flag": [
+                        "-c",
+                        "--capacity"
+                    ],
+                    "parameter": {
+                        "default": 128,
+                        "help": "IO buffer capacity",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "help": "input SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "output": {
+                    "flag": [
+                        "-o",
+                        "--output"
+                    ],
+                    "parameter": {
+                        "help": "output SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
                 }
             }
         }
