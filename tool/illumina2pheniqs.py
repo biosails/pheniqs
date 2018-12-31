@@ -22,9 +22,9 @@
 
 from core import *
 
-class IlluminaPipeline(Pipeline):
-    def __init__(self):
-        Pipeline.__init__(self, 'illumina')
+class IlluminaPipeline(Job):
+    def __init__(self, ontology):
+        Job.__init__(self, ontology)
 
         if 'preset' in self.instruction and self.instruction['preset'] in self.ontology['preset']:
             self.ontology['selected preset'] = deepcopy(self.ontology['preset'][self.instruction['preset']])
@@ -487,12 +487,19 @@ class IlluminaPipeline(Pipeline):
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
-
     pipeline = None
 
     try:
-        pipeline = IlluminaPipeline()
-        pipeline.execute()
+        command = CommandLineParser('illumina')
+        if command.help_triggered:
+            command.help()
+            sys.exit(0)
+        else:
+            if 'verbosity' in command.instruction and command.instruction['verbosity']:
+                logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
+
+            pipeline = IlluminaPipeline(command.configuration)
+            pipeline.execute()
 
     except (
         PermissionDeniedError,

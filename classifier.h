@@ -33,7 +33,7 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
         vector< T > element_by_index;
 
         RoutingClassifier(const Value& ontology) try :
-            AccumulatingClassifier(),
+            AccumulatingClassifier(decode_value_by_key< int32_t >("index", ontology)),
             decoded(NULL),
             unclassified(find_value_by_key("undetermined", ontology)),
             element_by_index(decode_value_by_key< vector< T > >("codec", ontology)) {

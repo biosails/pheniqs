@@ -1,12 +1,581 @@
 {
+    "benchmark": {
+        "interface": {
+            "argument": [
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "capacity": {
+                    "flag": [
+                        "-C",
+                        "--capacity"
+                    ],
+                    "parameter": {
+                        "default": 256,
+                        "help": "IO buffer capacity.",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "configuration": {
+                    "flag": [
+                        "-c",
+                        "--configuration"
+                    ],
+                    "parameter": {
+                        "help": "Path to configuration file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stdin",
+                        "help": "Path to SAM encoded input file. default: stdin.",
+                        "metavar": "PATH"
+                    }
+                },
+                "model": {
+                    "flag": [
+                        "-m",
+                        "--model"
+                    ],
+                    "parameter": {
+                        "help": "Path to simulation model file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "output": {
+                    "flag": [
+                        "-o",
+                        "--output"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stdout",
+                        "help": "Path to SAM encoded output file. default: stdout.",
+                        "metavar": "PATH"
+                    }
+                },
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
+                "preset": {
+                    "flag": [
+                        "-p",
+                        "--preset"
+                    ],
+                    "parameter": {
+                        "default": "A5KVK",
+                        "help": "Simulation preset.",
+                        "metavar": "NAME"
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stderr",
+                        "help": "Path to report file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "Logging verbosity level.",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "configuration",
+                            "preset",
+                            "input",
+                            "output",
+                            "report",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "simulate_barcode",
+                        "instruction": {
+                            "description": "Simulate barcode indices using the priors with perfect barcodes, keeping the existing quality scores. Global error rate on the cycles containing the barcode indice is reported to allow calibrtation when simulating errors. The correct barcode index is encoded in the read id.",
+                            "help": "Simulate perfect barcode indices.",
+                            "name": "simulate_barcode"
+                        },
+                        "prototype": {
+                            "configuration": {
+                                "parameter": {
+                                    "help": "Path to simulation configuration file."
+                                }
+                            },
+                            "input": {
+                                "parameter": {
+                                    "help": "Original input data to simulate barcode indices."
+                                }
+                            },
+                            "output": {
+                                "parameter": {
+                                    "help": "Output path to write data with simulated barcode indices."
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to write barcode simulation model file."
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "model",
+                            "error",
+                            "input",
+                            "output",
+                            "report",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "simulate_error",
+                        "instruction": {
+                            "description": "Simulate barcode errors based on the quality scores. If -e/--error is specified quality scores are first recalibrated to produce the requested global rate.",
+                            "help": "Simulate barcode errors.",
+                            "name": "simulate_error"
+                        },
+                        "prototype": {
+                            "error": {
+                                "flag": [
+                                    "-e",
+                                    "--error"
+                                ],
+                                "parameter": {
+                                    "default": null,
+                                    "help": "Desired error rate per nucloetide.",
+                                    "metavar": "FLOAT",
+                                    "type": "float"
+                                }
+                            },
+                            "model": {
+                                "parameter": {
+                                    "help": "Path to barcode simulation model file."
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to barcode error simulation model file."
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "input",
+                            "output",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "todeml",
+                        "instruction": {
+                            "description": "Transcoded reads to a deML consumable format.",
+                            "help": "Transcoded to deML syntax",
+                            "name": "todeml"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "configuration",
+                            "input",
+                            "report",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "sense_prior",
+                        "instruction": {
+                            "description": "",
+                            "help": "Estimate distrbution prior from data.",
+                            "name": "sense_prior"
+                        },
+                        "prototype": {
+                            "configuration": {
+                                "parameter": {
+                                    "help": "Path to pheniqs mux configuration file."
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to pheniqs mux report file."
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "configuration",
+                            "report",
+                            "model",
+                            "adjusted",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "adjust_prior",
+                        "instruction": {
+                            "description": "Create a new pheniqs mux configuration file with adjusted priors based on the initial report.",
+                            "help": "Adjuste configuration priors",
+                            "name": "adjust_prior"
+                        },
+                        "prototype": {
+                            "adjusted": {
+                                "flag": [
+                                    "-a",
+                                    "--adjusted"
+                                ],
+                                "parameter": {
+                                    "help": "Path to write prior adjusted pheniqs mux configuration file",
+                                    "metavar": "PATH"
+                                }
+                            },
+                            "configuration": {
+                                "parameter": {
+                                    "help": "Path to original pheniqs mux configuration file"
+                                }
+                            },
+                            "model": {
+                                "parameter": {
+                                    "help": "Path to barcode error simulation model file"
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to prior estimation pheniqs mux report"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "configuration",
+                            "input",
+                            "output",
+                            "report",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "demux_pheniqs",
+                        "instruction": {
+                            "help": "Demultiplex with pheniqs.",
+                            "name": "demux_pheniqs"
+                        },
+                        "prototype": {
+                            "configuration": {
+                                "parameter": {
+                                    "help": "Path to pheniqs mux configuration file"
+                                }
+                            },
+                            "input": {
+                                "parameter": {
+                                    "help": "Path to pheniqs mux input file"
+                                }
+                            },
+                            "output": {
+                                "parameter": {
+                                    "help": "Path to pheniqs mux output file"
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to pheniqs mux report file"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "configuration",
+                            "input",
+                            "output",
+                            "report",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "demux_deml",
+                        "instruction": {
+                            "help": "Demultiplex with deML.",
+                            "name": "demux_deml"
+                        },
+                        "prototype": {
+                            "configuration": {
+                                "parameter": {
+                                    "help": "Path to deML index file"
+                                }
+                            },
+                            "input": {
+                                "parameter": {
+                                    "help": "Path to deML mux input file"
+                                }
+                            },
+                            "output": {
+                                "parameter": {
+                                    "help": "Path to deML mux output file"
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to write deML summary file"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "model",
+                            "input",
+                            "report",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "analyze_pheniqs",
+                        "instruction": {
+                            "description": "Collect FP/FN/TP/TN statistics from pheniqs demultiplexing.",
+                            "help": "Analyze pheniqs demultiplexing results.",
+                            "name": "analyze_pheniqs"
+                        },
+                        "prototype": {
+                            "input": {
+                                "parameter": {
+                                    "help": "Path to pheniqs demultiplexed file to analyze"
+                                }
+                            },
+                            "model": {
+                                "parameter": {
+                                    "help": "Path to barcode error simulation model file"
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to write analysis report"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "model",
+                            "input",
+                            "report",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "analyze_deml",
+                        "instruction": {
+                            "description": "Collect FP/FN/TP/TN statistics from deML demultiplexing.",
+                            "help": "Analyze deML demultiplexing results.",
+                            "name": "analyze_deml"
+                        },
+                        "prototype": {
+                            "input": {
+                                "parameter": {
+                                    "help": "Path to deML demultiplexed file to analyze"
+                                }
+                            },
+                            "model": {
+                                "parameter": {
+                                    "help": "Path to barcode error simulation model file"
+                                }
+                            },
+                            "report": {
+                                "parameter": {
+                                    "help": "Path to write analysis report"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "path",
+                            "pattern",
+                            "database",
+                            "version",
+                            "verbosity"
+                        ],
+                        "implementation": "collect",
+                        "instruction": {
+                            "description": "Collect analysis reports matching the pattern in the directory path and update the project db.",
+                            "help": "Collect analysis reports.",
+                            "name": "collect"
+                        },
+                        "prototype": {
+                            "path": {
+                                "parameter": {
+                                    "default": ".",
+                                    "help": "Directory path to look for analysis reports."
+                                }
+                            },
+                            "pattern": {
+                                "flag": [
+                                    "-p",
+                                    "--pattern"
+                                ],
+                                "parameter": {
+                                    "default": ".+_analysis.json",
+                                    "help": "File pattern to collect.",
+                                    "metavar": "REGEX"
+                                }
+                            },
+                            "database": {
+                                "flag": [
+                                    "-d",
+                                    "--database"
+                                ],
+                                "parameter": {
+                                    "help": "Path to JSON database file.",
+                                    "metavar": "PATH"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "path"
+                        ],
+                        "implementation": "summarize",
+                        "instruction": {
+                            "description": "Extract data in CSV according to some transformation.",
+                            "help": "Summarize benchmark results.",
+                            "name": "summarize"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        }
+    },
+    "collect": {
+        "interface": {
+            "argument": [
+                "path",
+                "pattern",
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
+                "pattern": {
+                    "flag": [
+                        "-p",
+                        "--pattern"
+                    ],
+                    "parameter": {
+                        "default": ".+_analysis.json",
+                        "help": "file pattern to collect",
+                        "metavar": "REGEX"
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stderr",
+                        "help": "path to write report",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            }
+        }
+    },
     "illumina": {
         "interface": {
-            "global": {
-                "argument": [
-                    "version",
-                    "verbosity"
-                ]
-            },
+            "argument": [
+                "version",
+                "verbosity"
+            ],
             "instruction": {
                 "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
             },
@@ -156,12 +725,10 @@
     },
     "package": {
         "interface": {
-            "global": {
-                "argument": [
-                    "version",
-                    "verbosity"
-                ]
-            },
+            "argument": [
+                "version",
+                "verbosity"
+            ],
             "instruction": {
                 "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
             },
@@ -302,12 +869,10 @@
     },
     "shell": {
         "interface": {
-            "global": {
-                "argument": [
-                    "version",
-                    "verbosity"
-                ]
-            },
+            "argument": [
+                "version",
+                "verbosity"
+            ],
             "instruction": {
                 "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
             },
@@ -372,39 +937,23 @@
             }
         }
     },
-    "simulate": {
+    "subsample": {
         "interface": {
-            "global": {
-                "argument": [
-                    "path",
-                    "report",
-                    "number",
-                    "error",
-                    "input",
-                    "output",
-                    "model",
-                    "capacity",
-                    "preset",
-                    "version",
-                    "verbosity"
-                ]
-            },
+            "argument": [
+                "fraction",
+                "input",
+                "output",
+                "capacity",
+                "version",
+                "verbosity"
+            ],
             "instruction": {
                 "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
             },
             "prototype": {
-                "path": {
-                    "flag": [
-                        "path"
-                    ],
-                    "parameter": {
-                        "help": "path",
-                        "metavar": "PATH"
-                    }
-                },
                 "capacity": {
                     "flag": [
-                        "-c",
+                        "-C",
                         "--capacity"
                     ],
                     "parameter": {
@@ -414,282 +963,6 @@
                         "type": "int"
                     }
                 },
-                "report": {
-                    "flag": [
-                        "-r",
-                        "--report"
-                    ],
-                    "parameter": {
-                        "default": "/dev/stderr",
-                        "help": "path to write report",
-                        "metavar": "PATH"
-                    }
-                },
-                "model": {
-                    "flag": [
-                        "-m",
-                        "--model"
-                    ],
-                    "parameter": {
-                        "default": "lrsim",
-                        "help": "name of error model from config",
-                        "metavar": "NAME"
-                    }
-                },
-                "number": {
-                    "flag": [
-                        "-n",
-                        "--number"
-                    ],
-                    "parameter": {
-                        "default": 0,
-                        "help": "run number to set in simulated read QNAME",
-                        "metavar": "INT",
-                        "type": "int"
-                    }
-                },
-                "error": {
-                    "flag": [
-                        "-e",
-                        "--error"
-                    ],
-                    "parameter": {
-                        "default": 0.0024,
-                        "help": "expected error rate per nucloetide",
-                        "metavar": "FLOAT",
-                        "type": "float"
-                    }
-                },
-                "preset": {
-                    "flag": [
-                        "-p",
-                        "--preset"
-                    ],
-                    "parameter": {
-                        "default": "default",
-                        "help": "model preset",
-                        "metavar": "NAME"
-                    }
-                },
-                "input": {
-                    "flag": [
-                        "-i",
-                        "--input"
-                    ],
-                    "parameter": {
-                        "help": "input SAM encoded file path",
-                        "metavar": "PATH"
-                    }
-                },
-                "output": {
-                    "flag": [
-                        "-o",
-                        "--output"
-                    ],
-                    "parameter": {
-                        "help": "output SAM encoded file path",
-                        "metavar": "PATH"
-                    }
-                },
-                "verbosity": {
-                    "flag": [
-                        "-v",
-                        "--verbosity"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "debug",
-                            "info",
-                            "warning",
-                            "error",
-                            "critical"
-                        ],
-                        "dest": "verbosity",
-                        "help": "logging verbosity level",
-                        "metavar": "LEVEL"
-                    }
-                },
-                "version": {
-                    "flag": [
-                        "--version"
-                    ],
-                    "parameter": {
-                        "action": "version",
-                        "version": "%[prog]s 1.0"
-                    }
-                }
-            }
-        }
-    },
-    "analyze": {
-        "interface": {
-            "global": {
-                "argument": [
-                    "path",
-                    "input",
-                    "capacity",
-                    "version",
-                    "verbosity"
-                ]
-            },
-            "instruction": {
-                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-            },
-            "prototype": {
-                "path": {
-                    "flag": [
-                        "path"
-                    ],
-                    "parameter": {
-                        "help": "path",
-                        "metavar": "PATH"
-                    }
-                },
-                "capacity": {
-                    "flag": [
-                        "-c",
-                        "--capacity"
-                    ],
-                    "parameter": {
-                        "default": 128,
-                        "help": "IO buffer capacity",
-                        "metavar": "INT",
-                        "type": "int"
-                    }
-                },
-                "input": {
-                    "flag": [
-                        "-i",
-                        "--input"
-                    ],
-                    "parameter": {
-                        "help": "input SAM encoded file path",
-                        "metavar": "PATH"
-                    }
-                },
-                "verbosity": {
-                    "flag": [
-                        "-v",
-                        "--verbosity"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "debug",
-                            "info",
-                            "warning",
-                            "error",
-                            "critical"
-                        ],
-                        "dest": "verbosity",
-                        "help": "logging verbosity level",
-                        "metavar": "LEVEL"
-                    }
-                },
-                "version": {
-                    "flag": [
-                        "--version"
-                    ],
-                    "parameter": {
-                        "action": "version",
-                        "version": "%[prog]s 1.0"
-                    }
-                }
-            }
-        }
-    },
-    "todeml": {
-        "interface": {
-            "global": {
-                "argument": [
-                    "version",
-                    "verbosity",
-                    "input",
-                    "output",
-                    "capacity"
-                ]
-            },
-            "instruction": {
-                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-            },
-            "prototype": {
-                "capacity": {
-                    "flag": [
-                        "-c",
-                        "--capacity"
-                    ],
-                    "parameter": {
-                        "default": 128,
-                        "help": "IO buffer capacity",
-                        "metavar": "INT",
-                        "type": "int"
-                    }
-                },
-                "input": {
-                    "flag": [
-                        "-i",
-                        "--input"
-                    ],
-                    "parameter": {
-                        "help": "input SAM encoded file path",
-                        "metavar": "PATH"
-                    }
-                },
-                "output": {
-                    "flag": [
-                        "-o",
-                        "--output"
-                    ],
-                    "parameter": {
-                        "help": "output SAM encoded file path",
-                        "metavar": "PATH"
-                    }
-                },
-                "verbosity": {
-                    "flag": [
-                        "-v",
-                        "--verbosity"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "debug",
-                            "info",
-                            "warning",
-                            "error",
-                            "critical"
-                        ],
-                        "dest": "verbosity",
-                        "help": "logging verbosity level",
-                        "metavar": "LEVEL"
-                    }
-                },
-                "version": {
-                    "flag": [
-                        "--version"
-                    ],
-                    "parameter": {
-                        "action": "version",
-                        "version": "%[prog]s 1.0"
-                    }
-                }
-            }
-        }
-    },
-    "samsample": {
-        "interface": {
-            "global": {
-                "argument": [
-                    "fraction",
-                    "input",
-                    "output",
-                    "capacity",
-                    "version",
-                    "verbosity"
-                ]
-            },
-            "instruction": {
-                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-            },
-            "prototype": {
                 "fraction": {
                     "flag": [
                         "-f",
@@ -702,18 +975,6 @@
                         "type": "float"
                     }
                 },
-                "capacity": {
-                    "flag": [
-                        "-c",
-                        "--capacity"
-                    ],
-                    "parameter": {
-                        "default": 128,
-                        "help": "IO buffer capacity",
-                        "metavar": "INT",
-                        "type": "int"
-                    }
-                },
                 "input": {
                     "flag": [
                         "-i",
@@ -731,6 +992,79 @@
                     ],
                     "parameter": {
                         "help": "output SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            }
+        }
+    },
+    "summarize": {
+        "interface": {
+            "argument": [
+                "path",
+                "pattern",
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
+                "pattern": {
+                    "flag": [
+                        "-p",
+                        "--pattern"
+                    ],
+                    "parameter": {
+                        "default": ".+_analysis.json",
+                        "help": "file pattern to collect",
+                        "metavar": "REGEX"
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stderr",
+                        "help": "path to write report",
                         "metavar": "PATH"
                     }
                 },

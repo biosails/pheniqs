@@ -46,20 +46,8 @@
     # 9  SEQ     string     segment SEQuence
     # 10 QUAL    string     Phred QUALity+33
 
-import numpy.random
 from core import *
-
-def print_json(node):
-    def handler(o):
-        if isinstance(o, numpy.ndarray):
-            return ''.join(o)
-
-        elif isinstance(o, Decimal):
-            return '{:10.17f}'.format(o)
-
-        return None
-
-    return print(json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4, default=handler))
+import numpy.random
 
 def to_json(node):
     def handler(o):
@@ -73,48 +61,73 @@ def to_json(node):
 
     return json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4, default=handler)
 
-class SamTranscode(Pipeline):
-    def __init__(self, name):
-        Pipeline.__init__(self, name)
-        self.read_buffer = None
+class TranscodeSAM(Job):
+    def __init__(self, ontology):
+        Job.__init__(self, ontology)
         self.input_buffer = None
+        self.input_feed = None
         self.output_buffer = None
-        self.input_handle = None
-        self.output_handle = None
-        self.ontology['token model'] = {}
-        self.ontology['decoder by index'] = []
+        self.output_feed = None
+        self.read_buffer = None
 
-    @property
-    def preset(self):
-        return self.ontology['preset']
+        self.ontology['decoder by index'] = []
+        self.ontology['phred scale'] = []
+        phred_probability_base = pow(10.0, -0.1)
+        for q in range(64):
+            self.ontology['phred scale'].append({
+                'code': chr(q + 33),
+                'value': q,
+                'error': pow(phred_probability_base, q)
+            })
 
     @property
     def buffer_capacity(self):
         return self.instruction['capacity']
 
     @property
+    def model(self):
+        return self.ontology['model']
+
+    @property
     def instrument_id(self):
-        return self.preset['instrument id']
+        return self.model['instrument id']
 
     @property
     def flowcell_id(self):
-        return self.preset['flowcell id']
+        return self.model['flowcell id']
 
     @property
     def run_count(self):
-        return self.preset['run count']
-
-    @property
-    def read_count(self):
-        return self.preset['count']
-
-    @property
-    def token_model(self):
-        return self.ontology['token model']
+        return self.model['run count']
 
     @property
     def decoder_by_index(self):
         return self.ontology['decoder by index']
+
+    @property
+    def phred_scale(self):
+        return self.ontology['phred scale']
+
+    def load_model(self):
+        if 'model' in self.instruction and self.instruction['model']:
+            if os.path.exists(self.instruction['model']):
+                self.log.debug('loading model %s', self.instruction['model'])
+                with io.open(self.instruction['model'], 'rb') as file:
+                    self.ontology['model'] = json.loads(file.read().decode('utf8'))
+                    return True
+        return False
+
+    def parse_qname(self, read):
+        # @PHENIQS:1:HABDFADXX:0112241932:23:31:4
+        #<instrument id>:<run count>:<flowcell id>:<read index>[:<decoder hint>]*
+        read['hint'] = []
+        parsed = read['segment'][0]['fixed'][0].split(':')
+
+        if len(parsed) - 4 == len(self.decoder_by_index):
+            for field in parsed[4:]:
+                read['hint'].append(int(field))
+        else:
+            raise SequenceError('incorrect number of decoder hints')
 
     def load(self):
         pass
@@ -122,34 +135,34 @@ class SamTranscode(Pipeline):
     def open(self):
         self.input_buffer = []
         self.output_buffer = []
-
-        if self.instruction['input']:
+        if 'input' in self.instruction and self.instruction['input']:
             if os.path.exists(self.instruction['input']):
-                self.input_handle = io.open(self.instruction['input'], 'r')
+                self.input_feed = io.open(self.instruction['input'], 'r')
             else:
                 raise BadConfigurationError('input {} not found'.format(self.instruction['input']))
         else:
-            self.input_handle = sys.stdin
+            self.input_feed = sys.stdin
 
-        if self.instruction['output']:
-            self.output_handle = io.open(self.instruction['output'], 'w')
+        if 'output' in self.instruction and self.instruction['output']:
+            self.output_feed = io.open(self.instruction['output'], 'w')
         else:
-            self.output_handle = sys.stdout
+            self.output_feed = sys.stdout
 
     def close(self):
-        if self.input_handle is not None:
-            if self.input_handle != sys.stdin:
-                self.input_handle.close()
-            self.input_handle = None
+        if self.input_feed is not None:
+            if self.input_feed != sys.stdin:
+                self.input_feed.close()
+            self.input_feed = None
 
-        if self.output_handle is not None:
-            if self.output_handle != sys.stdout:
-                self.output_handle.close()
-            self.output_handle = None
-        Pipeline.close(self)
+        if self.output_feed is not None:
+            if self.output_feed != sys.stdout:
+                self.output_feed.close()
+            self.output_feed = None
+        Job.close(self)
 
     def execute(self):
         self.load()
+
         self.open()
         while(self.replenish()):
             self.manipulate()
@@ -160,11 +173,11 @@ class SamTranscode(Pipeline):
         self.report()
 
     def replenish(self):
-        for line in self.input_handle:
+        for line in self.input_feed:
             if line:
                 if line[0] =='@':
                     # redirect header line
-                    self.output_handle.write(line)
+                    self.output_feed.write(line)
                 else:
                     segment = { 'fixed': line.strip().split('\t'), 'auxiliary': {} }
                     if len(segment['fixed']) > 10:
@@ -245,35 +258,44 @@ class SamTranscode(Pipeline):
                             pass
                         auxiliary.append('{}:{}:{}'.format(tag['TAG'], tag['TYPE'], tag['VALUE']))
                     auxiliary = '\t'.join(auxiliary)
-                self.output_handle.write('{}\t{}\n'.format(fixed, auxiliary))
+                self.output_feed.write('{}\t{}\n'.format(fixed, auxiliary))
 
     def finalize(self):
         pass
 
     def report(self):
-        print_json(self.preset)
+        report = deepcopy(self.model)
+        remove_compiled(report)
 
-    def parse_token(self, pattern_array):
-        parsed_pattern_array = []
-        for pattern in pattern_array:
-            parsed = pattern.split(':')
-            token = { 'segment': parsed[0], 'start': parsed[1], 'end': parsed[2] }
+        if 'report' in self.instruction and self.instruction['report']:
+            with io.open(self.instruction['report'], 'w') as file:
+                file.write(to_json(report))
+        else:
+            sys.stderr.write(to_json(report))
 
-            if len(token['segment']) > 0:
-                token['segment'] = int(token['segment'])
-            else:
-                raise BadConfigurationError('segment index is missing in {}'.format(pattern))
+    def parse_rule(self, rule):
+        node = {}
+        if 'token' in rule:
+            node['token'] = []
+            for pattern in rule['token']:
+                parsed = pattern.split(':')
+                token = { 'segment': parsed[0], 'start': parsed[1], 'end': parsed[2] }
 
-            if len(token['start']) is 0:
-                token['start'] = 0
-            token['start'] = int(token['start'])
+                if len(token['segment']) > 0:
+                    token['segment'] = int(token['segment'])
+                else:
+                    raise BadConfigurationError('segment index is missing in {}'.format(pattern))
 
-            if len(token['end']) > 0:
-                token['end'] = int(token['end'])
-            else:
-                raise BadConfigurationError('end position is missing in {}'.format(pattern))
+                if len(token['start']) > 0:
+                    token['start'] = int(token['start'])
+                else:
+                    token['start'] = 0
 
-            token['length'] = token['end'] - token['start']
-            parsed_pattern_array.append(token)
+                if len(token['end']) > 0:
+                    token['end'] = int(token['end'])
+                else:
+                    raise BadConfigurationError('end position is missing in {}'.format(pattern))
 
-        return parsed_pattern_array
+                token['length'] = token['end'] - token['start']
+                node['token'].append(token)
+        return node

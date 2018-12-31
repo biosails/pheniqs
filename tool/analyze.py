@@ -20,215 +20,194 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sam import *
+from transcode import *
 
-def print_json(node):
-    def handler(o):
-        if isinstance(o, numpy.ndarray):
-            return ''.join(o)
+class Analyze(TranscodeSAM):
+    def __init__(self, ontology):
+        TranscodeSAM.__init__(self, ontology)
 
-        elif isinstance(o, Decimal):
-            return '{:10.17f}'.format(o)
+    def report(self):
+        report = deepcopy(self.model)
+        report['genealogy']['document type'] = 'analysis report'
+        report['genealogy']['tool'] = self.instruction['tool']
+        remove_compiled(report)
+        if 'report' in self.instruction and self.instruction['report']:
+            with io.open(self.instruction['report'], 'w') as file:
+                file.write(to_json(report))
 
-        return None
+    def load_decoder_model(self, decoder):
+        decoder['barcode by index.compiled'] = [ None ] * (decoder['barcode cardinality'] + 1)
+        decoder['barcode by index.compiled'][0] = decoder['unclassified']
+        for barcode in decoder['codec'].values():
+            decoder['barcode by index.compiled'][barcode['index']] = barcode
 
-    return print(json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4, default=handler))
-
-def f_score(precision, recall):
-    if(precision + recall) > 0:
-        return 2.0 * (precision * recall) / (precision + recall)
-    else:
-        return 0
-
-class Analyze(SamTranscode):
-    def __init__(self):
-        SamTranscode.__init__(self, 'analyze')
-        self.ontology['barcode by index'] = {}
-        self.ontology['barcode by RG'] = {}
-
-    @property
-    def barcode_by_index(self):
-        return self.ontology['barcode by index']
-
-    @property
-    def barcode_by_RG(self):
-        return self.ontology['barcode by RG']
-
-    def load_RG(self):
-        for decoder in self.decoder_by_index:
-            self.barcode_by_RG[decoder['key']] = {}
-            decoder['unclassified']['RG'] = '{}:{}'.format(self.flowcell_id, 'undetermined')
-            self.barcode_by_RG[decoder['key']][decoder['unclassified']['RG']] = decoder['unclassified']
-
-            for barcode in decoder['codec'].values():
-                barcode['RG'] = '{}:{}'.format(self.flowcell_id, ''.join(barcode['barcode']))
-                self.barcode_by_RG[decoder['key']][barcode['RG']] = barcode
-
-    def load(self):
-        if os.path.exists(self.instruction['path']):
-            self.instruction['working directory'] = os.path.dirname(self.instruction['path'])
-            self.log.debug('loading simulation %s', self.instruction['path'])
-            with io.open(self.instruction['path'], 'rb') as file:
-                self.ontology['preset'] = json.loads(file.read().decode('utf8'))
-
-            self.decoder_by_index = [ None ] * len(self.preset['decoder'])
-            for key,decoder in self.preset['decoder'].items():
-                # self.token_model[key] = { 'token': self.parse_token(decoder['transform']['token']) }
-                self.barcode_by_index[key] = [ None ] * (decoder['barcode cardinality'] + 1)
-                self.barcode_by_index[key][0] = decoder['unclassified']
-                for barcode in decoder['codec'].values():
-                    self.barcode_by_index[key][barcode['index']] = barcode
-
-                for barcode in self.barcode_by_index[key]:
-                    barcode['FP'] = 0
-                    barcode['FN'] = 0
-                    barcode['TP'] = 0
-                    barcode['TN'] = 0
-                    barcode['FDR'] = 0
-                    barcode['precision'] = 0
-                    barcode['recall'] = 0
-                    barcode['MR'] = 0
-
-                decoder['correct'] = 0
-                decoder['wrong'] = 0
-                decoder['macro'] = {
-                    'FDR': 0,
+        for qc in ['qc fail', 'qc pass']:
+            for barcode in decoder['barcode by index.compiled']:
+                barcode[qc] = {
+                    'count': 0,
+                    'FP': 0,
+                    'FN': 0,
+                    'TP': 0,
+                    # 'TN': 0,
                     'precision': 0,
                     'recall': 0,
+                    'FDR': 0,
                     'MR': 0,
                 }
-                decoder['FP'] = 0
-                decoder['FN'] = 0
-                decoder['TP'] = 0
-                decoder['TN'] = 0
-                decoder['FDR'] = 0
-                decoder['precision'] = 0
-                decoder['recall'] = 0
-                decoder['MR'] = 0
-                self.decoder_by_index[decoder['index']] = decoder
 
-                self.log.info('loaded %s decoder', key)
-            self.load_RG()
-        else: raise NoConfigurationFileError('simulation {} not found'.format(self.instruction['path']))
+        if 'classified' not in decoder:
+            decoder['classified'] = {}
 
-    def parse_qname(self, read):
-        # PHENIQS:0:A5KVK:0000016164:S49:C
-        # 0:1:2:3:4:5
-        # 0 instrument id
-        # 1 run count
-        # 2 flowcell id
-        # 3 read counter
-        # 4 - separated true sample barcode indexs
-        # 5 - separated true cellular barcode indexs
-        read['fact'] = {}
-        parsed = read['segment'][0]['fixed'][0].split(':')
-        if len(parsed) > 4 and len(parsed[4]) > 1:
-            read['fact']['sample'] = [int(i) for i in parsed[4].strip('S').split('-')]
+        for qc in ['qc fail', 'qc pass']:
+            decoder[qc] = {
+                'count': 0,
+                'FP': 0,
+                'FN': 0,
+                'TP': 0,
+                # 'TN': 0,
+                'precision': 0,
+                'recall': 0,
+                'FDR': 0,
+                'MR': 0,
+            }
+            decoder['classified'][qc] = {
+                'count': 0,
+                'FP': 0,
+                'FN': 0,
+                'TP': 0,
+                # 'TN': 0,
+                'precision': 0,
+                'recall': 0,
+                'FDR': 0,
+                'MR': 0,
+            }
 
-        if len(parsed) > 5 and len(parsed[5]) > 1:
-            read['fact']['cellular'] = [int(i) for i in parsed[5].strip('C').split('-')]
+        decoder['macro'] = {}
+        for qc in ['qc fail', 'qc pass']:
+            decoder['macro'][qc] = {
+                'precision': 0,
+                'recall': 0,
+                'FDR': 0,
+                'MR': 0,
+            }
+
+        decoder['barcode by rg.compiled'] = {}
+        decoder['unclassified']['RG'] = '{}:{}'.format(self.flowcell_id, 'undetermined')
+        decoder['barcode by rg.compiled'][decoder['unclassified']['RG']] = decoder['unclassified']
+        for barcode in decoder['codec'].values():
+            barcode['RG'] = '{}:{}'.format(self.flowcell_id, ''.join(barcode['barcode']))
+            decoder['barcode by rg.compiled'][barcode['RG']] = barcode
+
+    def load_model(self):
+        if TranscodeSAM.load_model(self):
+            for topic in [ 'multiplex', 'cellular', 'molecular' ]:
+                if topic in self.model:
+                    if isinstance(self.model[topic], dict):
+                        self.load_decoder_model(self.model[topic])
+                        self.decoder_by_index.append(self.model[topic])
+
+                    elif isinstance(self.model[topic], list):
+                        for decoder in self.model[topic]:
+                            self.load_decoder_model(decoder)
+                            self.decoder_by_index.append(decoder)
+                    return True
+            else: raise NoConfigurationFileError('model file {} not found'.format(self.instruction['model']))
+        return False
+
+    def load(self):
+        self.load_model()
+
+    def is_qc_fail(self, read):
+        flag = int(read['segment'][0]['fixed'][1])
+        return (flag & 0x200 == 0x200)
 
     def manipulate(self):
         while(len(self.input_buffer) > 0):
             read = self.input_buffer.pop(0)
+            qname = read['segment'][0]['fixed'][0]
             self.parse_qname(read)
-            if 'sample' in read['fact']:
+            for hint, decoder in zip(read['hint'], self.decoder_by_index):
+
+                true_barcode = decoder['barcode by index.compiled'][hint]
+                if self.is_qc_fail(read):
+                    qc = 'qc fail'
+                else:
+                    qc = 'qc pass'
+
+                # if RG is not present assign to unclassified
                 if 'RG' in read['segment'][0]['auxiliary']:
                     RG = read['segment'][0]['auxiliary']['RG']['VALUE']
-                    for decoder in self.decoder_by_index:
-                        # this is for deML, i think...
-                        if 'ZQ' in read['segment'][0]['auxiliary']:
-                            RG = self.barcode_by_index[decoder['key']][0]['RG']
+                else:
+                    RG = decoder['barcode by index.compiled'][0]['RG']
 
-                        true_barcode_index = read['fact']['sample'][decoder['index']]
-                        true_barcode = self.barcode_by_index[decoder['key']][true_barcode_index]
-                        decoded_barcode = self.barcode_by_RG[decoder['key']][RG]
-                        if true_barcode['RG'] == decoded_barcode['RG']:
-                            decoder['correct'] += 1
-                            true_barcode['TP'] += 1
-                            for barcode in self.barcode_by_index[decoder['key']]:
-                                if barcode['index'] != true_barcode['index']:
-                                    barcode['TN'] += 1
-                        else:
-                            decoder['wrong'] += 1
-                            true_barcode['FN'] += 1
-                            decoded_barcode['FP'] += 1
-                            for barcode in self.barcode_by_index[decoder['key']]:
-                                if barcode['index'] != true_barcode['index'] and barcode['index'] != decoded_barcode['index']:
-                                    barcode['TN'] += 1
-            else:
-                self.log.warning('read %s is missing a read group', read[segment][0]['fixed'][0])
+                decoded_barcode = decoder['barcode by rg.compiled'][RG]
+                decoded_barcode[qc]['count'] += 1
 
-            # self.output_buffer.append(read)
+                if true_barcode['RG'] == decoded_barcode['RG']:
+                    true_barcode[qc]['TP'] += 1
+                    # for barcode in self.barcode_by_index[decoder['key']]:
+                    #     if barcode['index'] != true_barcode['index']:
+                    #         barcode[qc]['TN'] += 1
+                else:
+                    true_barcode[qc]['FN'] += 1
+                    decoded_barcode[qc]['FP'] += 1
+                    # for barcode in self.barcode_by_index[decoder['key']]:
+                    #     if barcode['index'] != true_barcode['index'] and barcode['index'] != decoded_barcode['index']:
+                    #         barcode[qc]['TN'] += 1
 
     def flush(self):
         pass
 
     def finalize(self):
         for decoder in self.decoder_by_index:
-            for barcode in self.barcode_by_index[decoder['key']]:
-                if barcode['TP'] > 0 or barcode['FP'] > 0:
-                    barcode['FDR'] = barcode['FP'] / (barcode['FP'] + barcode['TP'])
-                    barcode['precision'] = barcode['TP'] / (barcode['FP'] + barcode['TP'])
+            for barcode in decoder['barcode by index.compiled']:
+                if barcode['index'] > 0:
+                    for qc in ['qc fail', 'qc pass']:
+                        if barcode[qc]['TP'] > 0 or barcode[qc]['FP'] > 0:
+                            barcode[qc]['FDR'] = barcode[qc]['FP'] / (barcode[qc]['FP'] + barcode[qc]['TP'])
+                            barcode[qc]['precision'] = barcode[qc]['TP'] / (barcode[qc]['FP'] + barcode[qc]['TP'])
 
-                if barcode['FN'] > 0 or barcode['TP'] > 0:
-                    barcode['recall'] = barcode['TP'] / (barcode['TP'] + barcode['FN'])
-                    barcode['MR'] = barcode['FN'] / (barcode['TP'] + barcode['FN'])
+                        if barcode[qc]['FN'] > 0 or barcode[qc]['TP'] > 0:
+                            barcode[qc]['recall'] = barcode[qc]['TP'] / (barcode[qc]['TP'] + barcode[qc]['FN'])
+                            barcode[qc]['MR'] = barcode[qc]['FN'] / (barcode[qc]['TP'] + barcode[qc]['FN'])
 
-                decoder['FP'] += barcode['FP']
-                decoder['FN'] += barcode['FN']
-                decoder['TP'] += barcode['TP']
-                decoder['TN'] += barcode['TN']
-                decoder['macro']['FDR'] += barcode['FDR']
-                decoder['macro']['precision'] += barcode['precision']
-                decoder['macro']['recall'] += barcode['recall']
-                decoder['macro']['MR'] += barcode['MR']
+                        decoder[qc]['count'] += barcode[qc]['count']
+                        decoder[qc]['FP'] += barcode[qc]['FP']
+                        decoder[qc]['FN'] += barcode[qc]['FN']
+                        decoder[qc]['TP'] += barcode[qc]['TP']
+                        # decoder[qc]['TN'] += barcode[qc]['TN']
 
-            if decoder['TP'] > 0 or decoder['FP'] > 0:
-                decoder['FDR'] = decoder['FP'] / (decoder['FP'] + decoder['TP'])
-                decoder['precision'] = decoder['TP'] / (decoder['FP'] + decoder['TP'])
+                        if barcode['index'] > 0:
+                            decoder['classified'][qc]['count'] += barcode[qc]['count']
+                            decoder['classified'][qc]['FP'] += barcode[qc]['FP']
+                            decoder['classified'][qc]['FN'] += barcode[qc]['FN']
+                            decoder['classified'][qc]['TP'] += barcode[qc]['TP']
+                            # decoder['classified'][qc]['TN'] += barcode[qc]['TN']
 
-            if decoder['FN'] > 0 or decoder['TP'] > 0:
-                decoder['recall'] = decoder['TP'] / (decoder['TP'] + decoder['FN'])
-                decoder['MR'] = decoder['FN'] / (decoder['TP'] + decoder['FN'])
+                        decoder['macro'][qc]['FDR'] += barcode[qc]['FDR']
+                        decoder['macro'][qc]['precision'] += barcode[qc]['precision']
+                        decoder['macro'][qc]['recall'] += barcode[qc]['recall']
+                        decoder['macro'][qc]['MR'] += barcode[qc]['MR']
 
-            decoder['macro']['FDR'] /= (decoder['barcode cardinality'] + 1)
-            decoder['macro']['precision'] /= (decoder['barcode cardinality'] + 1)
-            decoder['macro']['recall'] /= (decoder['barcode cardinality'] + 1)
-            decoder['macro']['MR'] /= (decoder['barcode cardinality'] + 1)
+            for qc in ['qc fail', 'qc pass']:
+                if decoder[qc]['TP'] > 0 or decoder[qc]['FP'] > 0:
+                    decoder[qc]['FDR'] = decoder[qc]['FP'] / (decoder[qc]['FP'] + decoder[qc]['TP'])
+                    decoder[qc]['precision'] = decoder[qc]['TP'] / (decoder[qc]['FP'] + decoder[qc]['TP'])
 
-def main():
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.INFO)
+                if decoder[qc]['FN'] > 0 or decoder[qc]['TP'] > 0:
+                    decoder[qc]['recall'] = decoder[qc]['TP'] / (decoder[qc]['TP'] + decoder[qc]['FN'])
+                    decoder[qc]['MR'] = decoder[qc]['FN'] / (decoder[qc]['TP'] + decoder[qc]['FN'])
 
-    pipeline = None
+                if decoder['classified'][qc]['TP'] > 0 or decoder['classified'][qc]['FP'] > 0:
+                    decoder['classified'][qc]['FDR'] = decoder['classified'][qc]['FP'] / (decoder['classified'][qc]['FP'] + decoder['classified'][qc]['TP'])
+                    decoder['classified'][qc]['precision'] = decoder['classified'][qc]['TP'] / (decoder['classified'][qc]['FP'] + decoder['classified'][qc]['TP'])
 
-    try:
-        pipeline = Analyze()
-        pipeline.execute()
+                if decoder['classified'][qc]['FN'] > 0 or decoder['classified'][qc]['TP'] > 0:
+                    decoder['classified'][qc]['recall'] = decoder['classified'][qc]['TP'] / (decoder['classified'][qc]['TP'] + decoder['classified'][qc]['FN'])
+                    decoder['classified'][qc]['MR'] = decoder['classified'][qc]['FN'] / (decoder['classified'][qc]['TP'] + decoder['classified'][qc]['FN'])
 
-    except (
-        PermissionDeniedError,
-        NoOverwriteError,
-        DownloadError,
-        CommandFailedError,
-        NoConfigurationFileError,
-        BadConfigurationError,
-        UnsupportedError,
-        SequenceError
-    ) as e:
-        logging.getLogger('main').critical(e)
-        sys.exit(1)
-
-    except(KeyboardInterrupt, SystemExit) as e:
-        if e.code != 0:
-            logging.getLogger('main').critical(e)
-            sys.exit(1)
-
-    finally:
-        if pipeline: pipeline.close()
-
-    sys.exit(0)
-
-if __name__ == '__main__':
-    main()
+            for qc in ['qc fail', 'qc pass']:
+                decoder['macro'][qc]['FDR'] /= decoder['barcode cardinality']
+                decoder['macro'][qc]['precision'] /= decoder['barcode cardinality']
+                decoder['macro'][qc]['recall'] /= decoder['barcode cardinality']
+                decoder['macro'][qc]['MR'] /= decoder['barcode cardinality']

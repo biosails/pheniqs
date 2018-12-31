@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sam import *
+from transcode import *
 
-class SamSample(SamTranscode):
-    def __init__(self):
-        SamTranscode.__init__(self, 'samsample')
+class SamSample(TranscodeSAM):
+    def __init__(self, ontology):
+        TranscodeSAM.__init__(self, ontology)
         self.fraction = self.instruction['fraction']
 
     def load(self):
@@ -47,12 +47,19 @@ class SamSample(SamTranscode):
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
-
     pipeline = None
 
     try:
-        pipeline = SamSample()
-        pipeline.execute()
+        command = CommandLineParser('subsample')
+        if command.help_triggered:
+            command.help()
+            sys.exit(0)
+        else:
+            if 'verbosity' in command.instruction and command.instruction['verbosity']:
+                logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
+
+            pipeline = SamSample(command.configuration)
+            pipeline.execute()
 
     except (
         PermissionDeniedError,

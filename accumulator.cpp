@@ -118,7 +118,8 @@ AccumulatingIdentifier& AccumulatingIdentifier::operator+=(const AccumulatingIde
     return *this;
 };
 
-AccumulatingClassifier::AccumulatingClassifier() :
+AccumulatingClassifier::AccumulatingClassifier(const int32_t index) :
+    index(index),
     count(0),
     pf_count(0),
     classified_count(0),
@@ -140,6 +141,7 @@ AccumulatingClassifier::AccumulatingClassifier() :
     average_pf_classified_confidence(0) {
 };
 AccumulatingClassifier::AccumulatingClassifier(const AccumulatingClassifier& other) :
+    index(other.index),
     count(other.count),
     pf_count(other.pf_count),
     classified_count(other.classified_count),
@@ -170,6 +172,7 @@ void AccumulatingClassifier::finalize() {
     }
 };
 void AccumulatingClassifier::encode(Value& container, Document& document) const {
+    encode_key_value("index", index, container, document);
     encode_key_value("count", count, container, document);
     encode_key_value("pf count", pf_count, container, document);
     encode_key_value("classified count", classified_count, container, document);

@@ -59,6 +59,7 @@ class AccumulatingIdentifier {
 
 class AccumulatingClassifier {
     public:
+        const int32_t index;
         uint64_t count;
         uint64_t pf_count;
         uint64_t classified_count;
@@ -79,7 +80,7 @@ class AccumulatingClassifier {
         double average_pf_classified_distance;      /*  accumulated_pf_classified_distance / pf_classified_count */
         double average_pf_classified_confidence;    /*  accumulated_pf_classified_confidence / pf_classified_count */
 
-        AccumulatingClassifier();
+        AccumulatingClassifier(const int32_t index);
         AccumulatingClassifier(const AccumulatingClassifier& other);
         virtual ~AccumulatingClassifier() {};
         virtual void finalize();

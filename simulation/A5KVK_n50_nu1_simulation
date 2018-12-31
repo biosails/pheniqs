@@ -1,0 +1,551 @@
+#!/usr/bin/env zsh
+PHENIQS_CODE_HOME="/Users/lg/code/biosails/pheniqs"
+SIMULATION_PROFILE="n50_nu1"
+PHENIQS_CMD="pheniqs"
+DEML_CMD="deML"
+SAMTOOLS_THREADS=2
+DEML_BARCODE_FILE="$PHENIQS_CODE_HOME/simulation/deml_barcode.txt"
+PHENIQS_DEMUX_CONFIG="$PHENIQS_CODE_HOME/simulation/A5KVK_pheniqs_config.json"
+SOURCE_DATA="/volume/albireo/waverly/deml/simulation/A5KVK_tiny.bam"
+SIMULATE_PY="$PHENIQS_CODE_HOME/tool/simulate.py"
+EXTRACT_PRIOR_PY="$PHENIQS_CODE_HOME/tool/extract_prior.py"
+ANALYZE_PY="$PHENIQS_CODE_HOME/tool/analyze.py"
+TODEML_PY="$PHENIQS_CODE_HOME/tool/todeml.py"
+SIMULATE_PY_CONFIGURATION="$PHENIQS_CODE_HOME/simulation/simulation.json"
+
+make_simulated_for_pheniqs() {
+echo "\
+time samtools view --threads $SAMTOOLS_THREADS $SOURCE_DATA | \
+$SIMULATE_PY -p A5KVK_${SIMULATION_PROFILE} -e 0.$1 $SIMULATE_PY_CONFIGURATION -r A5KVK_${SIMULATION_PROFILE}_$1_model.json | \
+samtools view --threads $SAMTOOLS_THREADS -b \
+> A5KVK_${SIMULATION_PROFILE}_$1.bam \
+"
+}
+
+make_simulated_for_deml() {
+echo "\
+time samtools view --threads $SAMTOOLS_THREADS A5KVK_${SIMULATION_PROFILE}_$1.bam | \
+$TODEML_PY | \
+samtools view --threads $SAMTOOLS_THREADS -b \
+> A5KVK_${SIMULATION_PROFILE}_$1_for_deml.bam \
+"
+}
+
+pheniqs_sense_prior() {
+echo "\
+time $PHENIQS_CMD mux --config \
+$PHENIQS_DEMUX_CONFIG \
+--sense-input \
+--input A5KVK_${SIMULATION_PROFILE}_$1.bam \
+--report A5KVK_${SIMULATION_PROFILE}_$1_flat_report.json \
+--output /dev/null \
+"
+}
+
+pheniqs_adjust_prior() {
+echo "\
+time $EXTRACT_PRIOR_PY \
+--original $PHENIQS_DEMUX_CONFIG \
+--model A5KVK_${SIMULATION_PROFILE}_$1_model.json \
+--report A5KVK_${SIMULATION_PROFILE}_$1_flat_report.json \
+--adjusted A5KVK_${SIMULATION_PROFILE}_$1_adjusted.json \
+"
+}
+
+pheniqs_demux() {
+echo "\
+time $PHENIQS_CMD mux --config \
+A5KVK_${SIMULATION_PROFILE}_$1_adjusted.json \
+--sense-input \
+--input A5KVK_${SIMULATION_PROFILE}_$1.bam \
+--output A5KVK_${SIMULATION_PROFILE}_$1_pheniqs_demux.bam \
+--report A5KVK_${SIMULATION_PROFILE}_$1_adjusted_report.json \
+"
+}
+
+deml_demux() {
+echo "\
+time $DEML_CMD \
+--index $DEML_BARCODE_FILE \
+--outfile A5KVK_${SIMULATION_PROFILE}_$1_deml_demux.bam \
+--summary A5KVK_${SIMULATION_PROFILE}_$1_deml_summary.txt \
+A5KVK_${SIMULATION_PROFILE}_$1_for_deml.bam \
+"
+}
+
+pheniqs_analyze() {
+echo "\
+time samtools view --threads $SAMTOOLS_THREADS \
+A5KVK_${SIMULATION_PROFILE}_$1_pheniqs_demux.bam | \
+$ANALYZE_PY --report A5KVK_${SIMULATION_PROFILE}_$1_pheniqs_analysis.json \
+A5KVK_${SIMULATION_PROFILE}_$1_model.json \
+"
+}
+
+deml_analyze() {
+echo "\
+time samtools view --threads $SAMTOOLS_THREADS \
+A5KVK_${SIMULATION_PROFILE}_$1_deml_demux.bam | \
+$ANALYZE_PY --report A5KVK_${SIMULATION_PROFILE}_$1_deml_analysis.json \
+A5KVK_${SIMULATION_PROFILE}_$1_model.json \
+"
+}
+
+make_simulated_for_pheniqs 002408
+make_simulated_for_deml 002408
+pheniqs_sense_prior 002408
+pheniqs_adjust_prior 002408
+pheniqs_demux 002408
+pheniqs_analyze 002408
+deml_demux 002408
+deml_analyze 002408
+
+make_simulated_for_pheniqs 010169
+make_simulated_for_deml 010169
+pheniqs_sense_prior 010169
+pheniqs_adjust_prior 010169
+pheniqs_demux 010169
+pheniqs_analyze 010169
+deml_demux 010169
+deml_analyze 010169
+
+make_simulated_for_pheniqs 020160
+make_simulated_for_deml 020160
+pheniqs_sense_prior 020160
+pheniqs_adjust_prior 020160
+pheniqs_demux 020160
+pheniqs_analyze 020160
+deml_demux 020160
+deml_analyze 020160
+
+make_simulated_for_pheniqs 029793
+make_simulated_for_deml 029793
+pheniqs_sense_prior 029793
+pheniqs_adjust_prior 029793
+pheniqs_demux 029793
+pheniqs_analyze 029793
+deml_demux 029793
+deml_analyze 029793
+
+make_simulated_for_pheniqs 039433
+make_simulated_for_deml 039433
+pheniqs_sense_prior 039433
+pheniqs_adjust_prior 039433
+pheniqs_demux 039433
+pheniqs_analyze 039433
+deml_demux 039433
+deml_analyze 039433
+
+make_simulated_for_pheniqs 048776
+make_simulated_for_deml 048776
+pheniqs_sense_prior 048776
+pheniqs_adjust_prior 048776
+pheniqs_demux 048776
+pheniqs_analyze 048776
+deml_demux 048776
+deml_analyze 048776
+
+make_simulated_for_pheniqs 057784
+make_simulated_for_deml 057784
+pheniqs_sense_prior 057784
+pheniqs_adjust_prior 057784
+pheniqs_demux 057784
+pheniqs_analyze 057784
+deml_demux 057784
+deml_analyze 057784
+
+make_simulated_for_pheniqs 066878
+make_simulated_for_deml 066878
+pheniqs_sense_prior 066878
+pheniqs_adjust_prior 066878
+pheniqs_demux 066878
+pheniqs_analyze 066878
+deml_demux 066878
+deml_analyze 066878
+
+make_simulated_for_pheniqs 075641
+make_simulated_for_deml 075641
+pheniqs_sense_prior 075641
+pheniqs_adjust_prior 075641
+pheniqs_demux 075641
+pheniqs_analyze 075641
+deml_demux 075641
+deml_analyze 075641
+
+make_simulated_for_pheniqs 084253
+make_simulated_for_deml 084253
+pheniqs_sense_prior 084253
+pheniqs_adjust_prior 084253
+pheniqs_demux 084253
+pheniqs_analyze 084253
+deml_demux 084253
+deml_analyze 084253
+
+make_simulated_for_pheniqs 092736
+make_simulated_for_deml 092736
+pheniqs_sense_prior 092736
+pheniqs_adjust_prior 092736
+pheniqs_demux 092736
+pheniqs_analyze 092736
+deml_demux 092736
+deml_analyze 092736
+
+make_simulated_for_pheniqs 101145
+make_simulated_for_deml 101145
+pheniqs_sense_prior 101145
+pheniqs_adjust_prior 101145
+pheniqs_demux 101145
+pheniqs_analyze 101145
+deml_demux 101145
+deml_analyze 101145
+
+make_simulated_for_pheniqs 109136
+make_simulated_for_deml 109136
+pheniqs_sense_prior 109136
+pheniqs_adjust_prior 109136
+pheniqs_demux 109136
+pheniqs_analyze 109136
+deml_demux 109136
+deml_analyze 109136
+
+make_simulated_for_pheniqs 117206
+make_simulated_for_deml 117206
+pheniqs_sense_prior 117206
+pheniqs_adjust_prior 117206
+pheniqs_demux 117206
+pheniqs_analyze 117206
+deml_demux 117206
+deml_analyze 117206
+
+make_simulated_for_pheniqs 125214
+make_simulated_for_deml 125214
+pheniqs_sense_prior 125214
+pheniqs_adjust_prior 125214
+pheniqs_demux 125214
+pheniqs_analyze 125214
+deml_demux 125214
+deml_analyze 125214
+
+make_simulated_for_pheniqs 132844
+make_simulated_for_deml 132844
+pheniqs_sense_prior 132844
+pheniqs_adjust_prior 132844
+pheniqs_demux 132844
+pheniqs_analyze 132844
+deml_demux 132844
+deml_analyze 132844
+
+make_simulated_for_pheniqs 140526
+make_simulated_for_deml 140526
+pheniqs_sense_prior 140526
+pheniqs_adjust_prior 140526
+pheniqs_demux 140526
+pheniqs_analyze 140526
+deml_demux 140526
+deml_analyze 140526
+
+make_simulated_for_pheniqs 147897
+make_simulated_for_deml 147897
+pheniqs_sense_prior 147897
+pheniqs_adjust_prior 147897
+pheniqs_demux 147897
+pheniqs_analyze 147897
+deml_demux 147897
+deml_analyze 147897
+
+make_simulated_for_pheniqs 155148
+make_simulated_for_deml 155148
+pheniqs_sense_prior 155148
+pheniqs_adjust_prior 155148
+pheniqs_demux 155148
+pheniqs_analyze 155148
+deml_demux 155148
+deml_analyze 155148
+
+make_simulated_for_pheniqs 162508
+make_simulated_for_deml 162508
+pheniqs_sense_prior 162508
+pheniqs_adjust_prior 162508
+pheniqs_demux 162508
+pheniqs_analyze 162508
+deml_demux 162508
+deml_analyze 162508
+
+make_simulated_for_pheniqs 169414
+make_simulated_for_deml 169414
+pheniqs_sense_prior 169414
+pheniqs_adjust_prior 169414
+pheniqs_demux 169414
+pheniqs_analyze 169414
+deml_demux 169414
+deml_analyze 169414
+
+make_simulated_for_pheniqs 176525
+make_simulated_for_deml 176525
+pheniqs_sense_prior 176525
+pheniqs_adjust_prior 176525
+pheniqs_demux 176525
+pheniqs_analyze 176525
+deml_demux 176525
+deml_analyze 176525
+
+make_simulated_for_pheniqs 183351
+make_simulated_for_deml 183351
+pheniqs_sense_prior 183351
+pheniqs_adjust_prior 183351
+pheniqs_demux 183351
+pheniqs_analyze 183351
+deml_demux 183351
+deml_analyze 183351
+
+make_simulated_for_pheniqs 190047
+make_simulated_for_deml 190047
+pheniqs_sense_prior 190047
+pheniqs_adjust_prior 190047
+pheniqs_demux 190047
+pheniqs_analyze 190047
+deml_demux 190047
+deml_analyze 190047
+
+make_simulated_for_pheniqs 196708
+make_simulated_for_deml 196708
+pheniqs_sense_prior 196708
+pheniqs_adjust_prior 196708
+pheniqs_demux 196708
+pheniqs_analyze 196708
+deml_demux 196708
+deml_analyze 196708
+
+make_simulated_for_pheniqs 203133
+make_simulated_for_deml 203133
+pheniqs_sense_prior 203133
+pheniqs_adjust_prior 203133
+pheniqs_demux 203133
+pheniqs_analyze 203133
+deml_demux 203133
+deml_analyze 203133
+
+make_simulated_for_pheniqs 209702
+make_simulated_for_deml 209702
+pheniqs_sense_prior 209702
+pheniqs_adjust_prior 209702
+pheniqs_demux 209702
+pheniqs_analyze 209702
+deml_demux 209702
+deml_analyze 209702
+
+make_simulated_for_pheniqs 215989
+make_simulated_for_deml 215989
+pheniqs_sense_prior 215989
+pheniqs_adjust_prior 215989
+pheniqs_demux 215989
+pheniqs_analyze 215989
+deml_demux 215989
+deml_analyze 215989
+
+make_simulated_for_pheniqs 222165
+make_simulated_for_deml 222165
+pheniqs_sense_prior 222165
+pheniqs_adjust_prior 222165
+pheniqs_demux 222165
+pheniqs_analyze 222165
+deml_demux 222165
+deml_analyze 222165
+
+make_simulated_for_pheniqs 228286
+make_simulated_for_deml 228286
+pheniqs_sense_prior 228286
+pheniqs_adjust_prior 228286
+pheniqs_demux 228286
+pheniqs_analyze 228286
+deml_demux 228286
+deml_analyze 228286
+
+make_simulated_for_pheniqs 234293
+make_simulated_for_deml 234293
+pheniqs_sense_prior 234293
+pheniqs_adjust_prior 234293
+pheniqs_demux 234293
+pheniqs_analyze 234293
+deml_demux 234293
+deml_analyze 234293
+
+make_simulated_for_pheniqs 240130
+make_simulated_for_deml 240130
+pheniqs_sense_prior 240130
+pheniqs_adjust_prior 240130
+pheniqs_demux 240130
+pheniqs_analyze 240130
+deml_demux 240130
+deml_analyze 240130
+
+make_simulated_for_pheniqs 245970
+make_simulated_for_deml 245970
+pheniqs_sense_prior 245970
+pheniqs_adjust_prior 245970
+pheniqs_demux 245970
+pheniqs_analyze 245970
+deml_demux 245970
+deml_analyze 245970
+
+make_simulated_for_pheniqs 251751
+make_simulated_for_deml 251751
+pheniqs_sense_prior 251751
+pheniqs_adjust_prior 251751
+pheniqs_demux 251751
+pheniqs_analyze 251751
+deml_demux 251751
+deml_analyze 251751
+
+make_simulated_for_pheniqs 257444
+make_simulated_for_deml 257444
+pheniqs_sense_prior 257444
+pheniqs_adjust_prior 257444
+pheniqs_demux 257444
+pheniqs_analyze 257444
+deml_demux 257444
+deml_analyze 257444
+
+make_simulated_for_pheniqs 263088
+make_simulated_for_deml 263088
+pheniqs_sense_prior 263088
+pheniqs_adjust_prior 263088
+pheniqs_demux 263088
+pheniqs_analyze 263088
+deml_demux 263088
+deml_analyze 263088
+
+make_simulated_for_pheniqs 268502
+make_simulated_for_deml 268502
+pheniqs_sense_prior 268502
+pheniqs_adjust_prior 268502
+pheniqs_demux 268502
+pheniqs_analyze 268502
+deml_demux 268502
+deml_analyze 268502
+
+make_simulated_for_pheniqs 273824
+make_simulated_for_deml 273824
+pheniqs_sense_prior 273824
+pheniqs_adjust_prior 273824
+pheniqs_demux 273824
+pheniqs_analyze 273824
+deml_demux 273824
+deml_analyze 273824
+
+make_simulated_for_pheniqs 279133
+make_simulated_for_deml 279133
+pheniqs_sense_prior 279133
+pheniqs_adjust_prior 279133
+pheniqs_demux 279133
+pheniqs_analyze 279133
+deml_demux 279133
+deml_analyze 279133
+
+make_simulated_for_pheniqs 284395
+make_simulated_for_deml 284395
+pheniqs_sense_prior 284395
+pheniqs_adjust_prior 284395
+pheniqs_demux 284395
+pheniqs_analyze 284395
+deml_demux 284395
+deml_analyze 284395
+
+make_simulated_for_pheniqs 289590
+make_simulated_for_deml 289590
+pheniqs_sense_prior 289590
+pheniqs_adjust_prior 289590
+pheniqs_demux 289590
+pheniqs_analyze 289590
+deml_demux 289590
+deml_analyze 289590
+
+make_simulated_for_pheniqs 294594
+make_simulated_for_deml 294594
+pheniqs_sense_prior 294594
+pheniqs_adjust_prior 294594
+pheniqs_demux 294594
+pheniqs_analyze 294594
+deml_demux 294594
+deml_analyze 294594
+
+make_simulated_for_pheniqs 299673
+make_simulated_for_deml 299673
+pheniqs_sense_prior 299673
+pheniqs_adjust_prior 299673
+pheniqs_demux 299673
+pheniqs_analyze 299673
+deml_demux 299673
+deml_analyze 299673
+
+make_simulated_for_pheniqs 304587
+make_simulated_for_deml 304587
+pheniqs_sense_prior 304587
+pheniqs_adjust_prior 304587
+pheniqs_demux 304587
+pheniqs_analyze 304587
+deml_demux 304587
+deml_analyze 304587
+
+make_simulated_for_pheniqs 309421
+make_simulated_for_deml 309421
+pheniqs_sense_prior 309421
+pheniqs_adjust_prior 309421
+pheniqs_demux 309421
+pheniqs_analyze 309421
+deml_demux 309421
+deml_analyze 309421
+
+make_simulated_for_pheniqs 314206
+make_simulated_for_deml 314206
+pheniqs_sense_prior 314206
+pheniqs_adjust_prior 314206
+pheniqs_demux 314206
+pheniqs_analyze 314206
+deml_demux 314206
+deml_analyze 314206
+
+make_simulated_for_pheniqs 318938
+make_simulated_for_deml 318938
+pheniqs_sense_prior 318938
+pheniqs_adjust_prior 318938
+pheniqs_demux 318938
+pheniqs_analyze 318938
+deml_demux 318938
+deml_analyze 318938
+
+make_simulated_for_pheniqs 323720
+make_simulated_for_deml 323720
+pheniqs_sense_prior 323720
+pheniqs_adjust_prior 323720
+pheniqs_demux 323720
+pheniqs_analyze 323720
+deml_demux 323720
+deml_analyze 323720
+
+make_simulated_for_pheniqs 328343
+make_simulated_for_deml 328343
+pheniqs_sense_prior 328343
+pheniqs_adjust_prior 328343
+pheniqs_demux 328343
+pheniqs_analyze 328343
+deml_demux 328343
+deml_analyze 328343
+
+make_simulated_for_pheniqs 332825
+make_simulated_for_deml 332825
+pheniqs_sense_prior 332825
+pheniqs_adjust_prior 332825
+pheniqs_demux 332825
+pheniqs_analyze 332825
+deml_demux 332825
+deml_analyze 332825
+
+make_simulated_for_pheniqs 337214
+make_simulated_for_deml 337214
+pheniqs_sense_prior 337214
+pheniqs_adjust_prior 337214
+pheniqs_demux 337214
+pheniqs_analyze 337214
+deml_demux 337214
+deml_analyze 337214

@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sam import *
+from transcode import *
 
-class ToDeML(SamTranscode):
-    def __init__(self):
-        SamTranscode.__init__(self, 'todeml')
+class ToDeML(TranscodeSAM):
+    def __init__(self, ontology):
+        TranscodeSAM.__init__(self, ontology)
 
     def load(self):
         pass
@@ -51,40 +51,3 @@ class ToDeML(SamTranscode):
 
     def report(self):
         pass
-
-
-def main():
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.INFO)
-
-    pipeline = None
-
-    try:
-        pipeline = ToDeML()
-        pipeline.execute()
-
-    except (
-        PermissionDeniedError,
-        NoOverwriteError,
-        DownloadError,
-        CommandFailedError,
-        NoConfigurationFileError,
-        BadConfigurationError,
-        UnsupportedError,
-        SequenceError
-    ) as e:
-        logging.getLogger('main').critical(e)
-        sys.exit(1)
-
-    except(KeyboardInterrupt, SystemExit) as e:
-        if e.code != 0:
-            logging.getLogger('main').critical(e)
-            sys.exit(1)
-
-    finally:
-        if pipeline: pipeline.close()
-
-    sys.exit(0)
-
-if __name__ == '__main__':
-    main()

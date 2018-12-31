@@ -723,9 +723,9 @@ class SAMTools(Make):
         Make.__init__(self, pipeline, node)
         self.node['configure optional'] = [ '--with-htslib={}'.format(self.install_prefix) ]
 
-class PackageManager(Pipeline):
-    def __init__(self):
-        Pipeline.__init__(self, 'package')
+class PackageManager(Job):
+    def __init__(self, ontology):
+        Job.__init__(self, ontology)
         self.package = None
         self.cache = None
         self.stdout = None
@@ -887,17 +887,24 @@ class PackageManager(Pipeline):
         if self.stderr:
             self.stderr.close();
 
-        Pipeline.close(self)
+        Job.close(self)
 
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
-
     pipeline = None
 
     try:
-        pipeline = PackageManager()
-        pipeline.execute()
+        command = CommandLineParser('package')
+        if command.help_triggered:
+            command.help()
+            sys.exit(0)
+        else:
+            if 'verbosity' in command.instruction and command.instruction['verbosity']:
+                logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
+
+            pipeline = PackageManager(command.configuration)
+            pipeline.execute()
 
     except (
         PermissionDeniedError,

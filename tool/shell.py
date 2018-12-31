@@ -22,9 +22,9 @@
 
 from core import *
 
-class ShellPipeline(Pipeline):
-    def __init__(self):
-        Pipeline.__init__(self, 'shell')
+class ShellPipeline(Job):
+    def __init__(self, ontology):
+        Job.__init__(self, ontology)
         self.banner = [
             '# Pheniqs : PHilology ENcoder wIth Quality Statistics',
             '# Copyright (C) 2017  Lior Galanti',
@@ -204,12 +204,19 @@ class ShellPipeline(Pipeline):
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
-
     pipeline = None
 
     try:
-        pipeline = ShellPipeline()
-        pipeline.execute()
+        command = CommandLineParser('shell')
+        if command.help_triggered:
+            command.help()
+            sys.exit(0)
+        else:
+            if 'verbosity' in command.instruction and command.instruction['verbosity']:
+                logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
+
+            pipeline = ShellPipeline(command.configuration)
+            pipeline.execute()
 
     except (
         PermissionDeniedError,

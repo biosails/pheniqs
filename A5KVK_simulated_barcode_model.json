@@ -1,0 +1,2284 @@
+{
+    "count": 0,
+    "flowcell id": "A5KVK",
+    "genealogy": {
+        "barcode simulation id": "64e2381b-1058-46e8-90d7-afed285310df",
+        "document type": "barcode simulation report"
+    },
+    "instrument id": "PHENIQS",
+    "multiplex": {
+        "barcode cardinality": 100,
+        "barcode length": [
+            7,
+            7
+        ],
+        "barcode segment cardinality": 2,
+        "base": "A5KVK",
+        "classified count": 0,
+        "codec": {
+            "@RG01": {
+                "barcode": [
+                    "AATTCAA",
+                    "CATCCGG"
+                ],
+                "concentration": 0.001884316801352552,
+                "count": 0,
+                "description": "1:AATTCAA-CATCCGG",
+                "index": 1,
+                "key": "@RG01",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG02": {
+                "barcode": [
+                    "CGCGCAG",
+                    "TCATGGT"
+                ],
+                "concentration": 0.0009020163134294171,
+                "count": 0,
+                "description": "2:CGCGCAG-TCATGGT",
+                "index": 2,
+                "key": "@RG02",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG03": {
+                "barcode": [
+                    "AAGGTCT",
+                    "AGAACCG"
+                ],
+                "concentration": 0.0009214314405945647,
+                "count": 0,
+                "description": "3:AAGGTCT-AGAACCG",
+                "index": 3,
+                "key": "@RG03",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG04": {
+                "barcode": [
+                    "ACTGGAC",
+                    "TGGAATA"
+                ],
+                "concentration": 0.001777074460423444,
+                "count": 0,
+                "description": "4:ACTGGAC-TGGAATA",
+                "index": 4,
+                "key": "@RG04",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG05": {
+                "barcode": [
+                    "AGCAGGT",
+                    "CAGGAGG"
+                ],
+                "concentration": 9.687886088825256e-05,
+                "count": 0,
+                "description": "5:AGCAGGT-CAGGAGG",
+                "index": 5,
+                "key": "@RG05",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG06": {
+                "barcode": [
+                    "GTACCGG",
+                    "AATACCT"
+                ],
+                "concentration": 0.001272018787546298,
+                "count": 0,
+                "description": "6:GTACCGG-AATACCT",
+                "index": 6,
+                "key": "@RG06",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG07": {
+                "barcode": [
+                    "GGTCAAG",
+                    "CGAATGC"
+                ],
+                "concentration": 0.0006384690804917064,
+                "count": 0,
+                "description": "7:GGTCAAG-CGAATGC",
+                "index": 7,
+                "key": "@RG07",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG08": {
+                "barcode": [
+                    "AATGATG",
+                    "TTCGCAA"
+                ],
+                "concentration": 0.0006936972462790516,
+                "count": 0,
+                "description": "8:AATGATG-TTCGCAA",
+                "index": 8,
+                "key": "@RG08",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG09": {
+                "barcode": [
+                    "AGTCAGA",
+                    "AATTCAA"
+                ],
+                "concentration": 0.00029417853153948054,
+                "count": 0,
+                "description": "9:AGTCAGA-AATTCAA",
+                "index": 9,
+                "key": "@RG09",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG10": {
+                "barcode": [
+                    "AACTAGA",
+                    "CGCGCAG"
+                ],
+                "concentration": 0.001537009036692229,
+                "count": 0,
+                "description": "10:AACTAGA-CGCGCAG",
+                "index": 10,
+                "key": "@RG10",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG11": {
+                "barcode": [
+                    "CTATGGC",
+                    "AAGGTCT"
+                ],
+                "concentration": 0.0009945661256930086,
+                "count": 0,
+                "description": "11:CTATGGC-AAGGTCT",
+                "index": 11,
+                "key": "@RG11",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG12": {
+                "barcode": [
+                    "CGACGGT",
+                    "ACTGGAC"
+                ],
+                "concentration": 1.6397911457050197e-05,
+                "count": 0,
+                "description": "12:CGACGGT-ACTGGAC",
+                "index": 12,
+                "key": "@RG12",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG13": {
+                "barcode": [
+                    "AACCAAG",
+                    "AGCAGGT"
+                ],
+                "concentration": 0.0002939817566019959,
+                "count": 0,
+                "description": "13:AACCAAG-AGCAGGT",
+                "index": 13,
+                "key": "@RG13",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG14": {
+                "barcode": [
+                    "CGGCGTA",
+                    "GTACCGG"
+                ],
+                "concentration": 0.00033779697601523404,
+                "count": 0,
+                "description": "14:CGGCGTA-GTACCGG",
+                "index": 14,
+                "key": "@RG14",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG15": {
+                "barcode": [
+                    "GCAGTCC",
+                    "GGTCAAG"
+                ],
+                "concentration": 0.00026374400787519534,
+                "count": 0,
+                "description": "15:GCAGTCC-GGTCAAG",
+                "index": 15,
+                "key": "@RG15",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG16": {
+                "barcode": [
+                    "CTCGCGC",
+                    "AATGATG"
+                ],
+                "concentration": 0.0014422291084704789,
+                "count": 0,
+                "description": "16:CTCGCGC-AATGATG",
+                "index": 16,
+                "key": "@RG16",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG17": {
+                "barcode": [
+                    "CTGCGAC",
+                    "AGTCAGA"
+                ],
+                "concentration": 0.0010848202303526129,
+                "count": 0,
+                "description": "17:CTGCGAC-AGTCAGA",
+                "index": 17,
+                "key": "@RG17",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG18": {
+                "barcode": [
+                    "ACGTATG",
+                    "AACTAGA"
+                ],
+                "concentration": 0.0011819614578241781,
+                "count": 0,
+                "description": "18:ACGTATG-AACTAGA",
+                "index": 18,
+                "key": "@RG18",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG19": {
+                "barcode": [
+                    "ATACTGA",
+                    "CTATGGC"
+                ],
+                "concentration": 0.0015832511470011106,
+                "count": 0,
+                "description": "19:ATACTGA-CTATGGC",
+                "index": 19,
+                "key": "@RG19",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG20": {
+                "barcode": [
+                    "TACTTAG",
+                    "CGACGGT"
+                ],
+                "concentration": 0.001631067456809869,
+                "count": 0,
+                "description": "20:TACTTAG-CGACGGT",
+                "index": 20,
+                "key": "@RG20",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG21": {
+                "barcode": [
+                    "AAGCTAA",
+                    "AACCAAG"
+                ],
+                "concentration": 0.00046379852765120774,
+                "count": 0,
+                "description": "21:AAGCTAA-AACCAAG",
+                "index": 21,
+                "key": "@RG21",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG22": {
+                "barcode": [
+                    "GACGGCG",
+                    "CGGCGTA"
+                ],
+                "concentration": 7.897234157715374e-05,
+                "count": 0,
+                "description": "22:GACGGCG-CGGCGTA",
+                "index": 22,
+                "key": "@RG22",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG23": {
+                "barcode": [
+                    "AGAAGAC",
+                    "GCAGTCC"
+                ],
+                "concentration": 0.0012404692059029333,
+                "count": 0,
+                "description": "23:AGAAGAC-GCAGTCC",
+                "index": 23,
+                "key": "@RG23",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG24": {
+                "barcode": [
+                    "GTCCGGC",
+                    "CTCGCGC"
+                ],
+                "concentration": 0.000320152823287448,
+                "count": 0,
+                "description": "24:GTCCGGC-CTCGCGC",
+                "index": 24,
+                "key": "@RG24",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG25": {
+                "barcode": [
+                    "TTCAACC",
+                    "TCAGCTT"
+                ],
+                "concentration": 0.0015936802186877945,
+                "count": 0,
+                "description": "25:TTCAACC-TCAGCTT",
+                "index": 25,
+                "key": "@RG25",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG26": {
+                "barcode": [
+                    "TTAACTC",
+                    "AGAGCGC"
+                ],
+                "concentration": 0.0008591849687036021,
+                "count": 0,
+                "description": "26:TTAACTC-AGAGCGC",
+                "index": 26,
+                "key": "@RG26",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG27": {
+                "barcode": [
+                    "TAGTCTA",
+                    "GCCTACG"
+                ],
+                "concentration": 0.0013522373703941874,
+                "count": 0,
+                "description": "27:TAGTCTA-GCCTACG",
+                "index": 27,
+                "key": "@RG27",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG28": {
+                "barcode": [
+                    "TGCATGA",
+                    "TAATCAT"
+                ],
+                "concentration": 0.0009694445253408075,
+                "count": 0,
+                "description": "28:TGCATGA-TAATCAT",
+                "index": 28,
+                "key": "@RG28",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG29": {
+                "barcode": [
+                    "AATAAGC",
+                    "AACCTGC"
+                ],
+                "concentration": 2.3022667685698475e-05,
+                "count": 0,
+                "description": "29:AATAAGC-AACCTGC",
+                "index": 29,
+                "key": "@RG29",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG30": {
+                "barcode": [
+                    "AGCCTTG",
+                    "GACGATT"
+                ],
+                "concentration": 0.0018670661984997357,
+                "count": 0,
+                "description": "30:AGCCTTG-GACGATT",
+                "index": 30,
+                "key": "@RG30",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG31": {
+                "barcode": [
+                    "CCAACCT",
+                    "TAGGCCG"
+                ],
+                "concentration": 0.0018788071031029835,
+                "count": 0,
+                "description": "31:CCAACCT-TAGGCCG",
+                "index": 31,
+                "key": "@RG31",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG32": {
+                "barcode": [
+                    "GCAGAAG",
+                    "GGCATAG"
+                ],
+                "concentration": 0.0008890291675554335,
+                "count": 0,
+                "description": "32:GCAGAAG-GGCATAG",
+                "index": 32,
+                "key": "@RG32",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG33": {
+                "barcode": [
+                    "AGAATTA",
+                    "TTCAACC"
+                ],
+                "concentration": 0.0022998398776742043,
+                "count": 0,
+                "description": "33:AGAATTA-TTCAACC",
+                "index": 33,
+                "key": "@RG33",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG34": {
+                "barcode": [
+                    "CAGCATC",
+                    "TTAACTC"
+                ],
+                "concentration": 0.0017167301462614993,
+                "count": 0,
+                "description": "34:CAGCATC-TTAACTC",
+                "index": 34,
+                "key": "@RG34",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG35": {
+                "barcode": [
+                    "TTCTAGG",
+                    "TAGTCTA"
+                ],
+                "concentration": 0.002228869716888091,
+                "count": 0,
+                "description": "35:TTCTAGG-TAGTCTA",
+                "index": 35,
+                "key": "@RG35",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG36": {
+                "barcode": [
+                    "CCTCTAG",
+                    "TGCATGA"
+                ],
+                "concentration": 0.002142354336040694,
+                "count": 0,
+                "description": "36:CCTCTAG-TGCATGA",
+                "index": 36,
+                "key": "@RG36",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG37": {
+                "barcode": [
+                    "CCGGATA",
+                    "AATAAGC"
+                ],
+                "concentration": 0.0001742114113197013,
+                "count": 0,
+                "description": "37:CCGGATA-AATAAGC",
+                "index": 37,
+                "key": "@RG37",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG38": {
+                "barcode": [
+                    "GCCGCCT",
+                    "AGCCTTG"
+                ],
+                "concentration": 0.0016847870147431653,
+                "count": 0,
+                "description": "38:GCCGCCT-AGCCTTG",
+                "index": 38,
+                "key": "@RG38",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG39": {
+                "barcode": [
+                    "AACGACC",
+                    "CCAACCT"
+                ],
+                "concentration": 0.001510575603423464,
+                "count": 0,
+                "description": "39:AACGACC-CCAACCT",
+                "index": 39,
+                "key": "@RG39",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG40": {
+                "barcode": [
+                    "CCAGCGG",
+                    "GCAGAAG"
+                ],
+                "concentration": 0.000584421564329269,
+                "count": 0,
+                "description": "40:CCAGCGG-GCAGAAG",
+                "index": 40,
+                "key": "@RG40",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG41": {
+                "barcode": [
+                    "TAGTTCC",
+                    "AGAATTA"
+                ],
+                "concentration": 0.002400457462374664,
+                "count": 0,
+                "description": "41:TAGTTCC-AGAATTA",
+                "index": 41,
+                "key": "@RG41",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG42": {
+                "barcode": [
+                    "TGGCAAT",
+                    "CAGCATC"
+                ],
+                "concentration": 0.0012360089739866156,
+                "count": 0,
+                "description": "42:TGGCAAT-CAGCATC",
+                "index": 42,
+                "key": "@RG42",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG43": {
+                "barcode": [
+                    "CGTATAT",
+                    "TTCTAGG"
+                ],
+                "concentration": 0.0021990255180362596,
+                "count": 0,
+                "description": "43:CGTATAT-TTCTAGG",
+                "index": 43,
+                "key": "@RG43",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG44": {
+                "barcode": [
+                    "GCTAATC",
+                    "CCTCTAG"
+                ],
+                "concentration": 0.001984409652886387,
+                "count": 0,
+                "description": "44:GCTAATC-CCTCTAG",
+                "index": 44,
+                "key": "@RG44",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG45": {
+                "barcode": [
+                    "GACTTCT",
+                    "CCGGATA"
+                ],
+                "concentration": 0.0013703406646427708,
+                "count": 0,
+                "description": "45:GACTTCT-CCGGATA",
+                "index": 45,
+                "key": "@RG45",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG46": {
+                "barcode": [
+                    "GTACTAT",
+                    "GCCGCCT"
+                ],
+                "concentration": 0.0019007147128096023,
+                "count": 0,
+                "description": "46:GTACTAT-GCCGCCT",
+                "index": 46,
+                "key": "@RG46",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG47": {
+                "barcode": [
+                    "CGAGATC",
+                    "AACGACC"
+                ],
+                "concentration": 0.0020141226684465617,
+                "count": 0,
+                "description": "47:CGAGATC-AACGACC",
+                "index": 47,
+                "key": "@RG47",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG48": {
+                "barcode": [
+                    "CGCAGCC",
+                    "CCAGCGG"
+                ],
+                "concentration": 0.0020474432245272877,
+                "count": 0,
+                "description": "48:CGCAGCC-CCAGCGG",
+                "index": 48,
+                "key": "@RG48",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG49": {
+                "barcode": [
+                    "TCGCAGG",
+                    "TAGTTCC"
+                ],
+                "concentration": 0.0019406600251189766,
+                "count": 0,
+                "description": "49:TCGCAGG-TAGTTCC",
+                "index": 49,
+                "key": "@RG49",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG50": {
+                "barcode": [
+                    "CTCTGCA",
+                    "TGGCAAT"
+                ],
+                "concentration": 0.00209985094954402,
+                "count": 0,
+                "description": "50:CTCTGCA-TGGCAAT",
+                "index": 50,
+                "key": "@RG50",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG51": {
+                "barcode": [
+                    "CCTAGGT",
+                    "CGTATAT"
+                ],
+                "concentration": 0.002646754092459558,
+                "count": 0,
+                "description": "51:CCTAGGT-CGTATAT",
+                "index": 51,
+                "key": "@RG51",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG52": {
+                "barcode": [
+                    "GGATCAA",
+                    "GCTAATC"
+                ],
+                "concentration": 0.0010834428057902206,
+                "count": 0,
+                "description": "52:GGATCAA-GCTAATC",
+                "index": 52,
+                "key": "@RG52",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG53": {
+                "barcode": [
+                    "GCAAGAT",
+                    "GACTTCT"
+                ],
+                "concentration": 0.0018853006760399754,
+                "count": 0,
+                "description": "53:GCAAGAT-GACTTCT",
+                "index": 53,
+                "key": "@RG53",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG54": {
+                "barcode": [
+                    "ATGGAGA",
+                    "GTACTAT"
+                ],
+                "concentration": 0.0014337021945128128,
+                "count": 0,
+                "description": "54:ATGGAGA-GTACTAT",
+                "index": 54,
+                "key": "@RG54",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG55": {
+                "barcode": [
+                    "CTCGATG",
+                    "CGAGATC"
+                ],
+                "concentration": 0.002014647401613187,
+                "count": 0,
+                "description": "55:CTCGATG-CGAGATC",
+                "index": 55,
+                "key": "@RG55",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG56": {
+                "barcode": [
+                    "GCTCGAA",
+                    "CGCAGCC"
+                ],
+                "concentration": 0.0021390747537492843,
+                "count": 0,
+                "description": "56:GCTCGAA-CGCAGCC",
+                "index": 56,
+                "key": "@RG56",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG57": {
+                "barcode": [
+                    "AGTCAGA",
+                    "CATCCGG"
+                ],
+                "concentration": 0.0015037540722573311,
+                "count": 0,
+                "description": "57:AGTCAGA-CATCCGG",
+                "index": 57,
+                "key": "@RG57",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG58": {
+                "barcode": [
+                    "AACTAGA",
+                    "TCATGGT"
+                ],
+                "concentration": 0.0019720784234706847,
+                "count": 0,
+                "description": "58:AACTAGA-TCATGGT",
+                "index": 58,
+                "key": "@RG58",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG59": {
+                "barcode": [
+                    "CTATGGC",
+                    "AGAACCG"
+                ],
+                "concentration": 0.0016097501719157037,
+                "count": 0,
+                "description": "59:CTATGGC-AGAACCG",
+                "index": 59,
+                "key": "@RG59",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG60": {
+                "barcode": [
+                    "CGACGGT",
+                    "TGGAATA"
+                ],
+                "concentration": 0.0006904832556334697,
+                "count": 0,
+                "description": "60:CGACGGT-TGGAATA",
+                "index": 60,
+                "key": "@RG60",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG61": {
+                "barcode": [
+                    "AACCAAG",
+                    "CAGGAGG"
+                ],
+                "concentration": 0.0003493411056809974,
+                "count": 0,
+                "description": "61:AACCAAG-CAGGAGG",
+                "index": 61,
+                "key": "@RG61",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG62": {
+                "barcode": [
+                    "CGGCGTA",
+                    "AATACCT"
+                ],
+                "concentration": 0.0007040607263199073,
+                "count": 0,
+                "description": "62:CGGCGTA-AATACCT",
+                "index": 62,
+                "key": "@RG62",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG63": {
+                "barcode": [
+                    "GCAGTCC",
+                    "CGAATGC"
+                ],
+                "concentration": 0.0018322370345649607,
+                "count": 0,
+                "description": "63:GCAGTCC-CGAATGC",
+                "index": 63,
+                "key": "@RG63",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG64": {
+                "barcode": [
+                    "CTCGCGC",
+                    "TTCGCAA"
+                ],
+                "concentration": 0.0020071043623429443,
+                "count": 0,
+                "description": "64:CTCGCGC-TTCGCAA",
+                "index": 64,
+                "key": "@RG64",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG65": {
+                "barcode": [
+                    "CTGCGAC",
+                    "AATTCAA"
+                ],
+                "concentration": 0.0021499629669567656,
+                "count": 0,
+                "description": "65:CTGCGAC-AATTCAA",
+                "index": 65,
+                "key": "@RG65",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG66": {
+                "barcode": [
+                    "ACGTATG",
+                    "CGCGCAG"
+                ],
+                "concentration": 0.002311515190631624,
+                "count": 0,
+                "description": "66:ACGTATG-CGCGCAG",
+                "index": 66,
+                "key": "@RG66",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG67": {
+                "barcode": [
+                    "ATACTGA",
+                    "AAGGTCT"
+                ],
+                "concentration": 0.0020360302781531805,
+                "count": 0,
+                "description": "67:ATACTGA-AAGGTCT",
+                "index": 67,
+                "key": "@RG67",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG68": {
+                "barcode": [
+                    "CAGGAGG",
+                    "CCGATTG"
+                ],
+                "concentration": 0.015833232978115216,
+                "count": 0,
+                "description": "68:CAGGAGG-CCGATTG",
+                "index": 68,
+                "key": "@RG68",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG69": {
+                "barcode": [
+                    "AATACCT",
+                    "ATGCCGC"
+                ],
+                "concentration": 0.017492045701110414,
+                "count": 0,
+                "description": "69:AATACCT-ATGCCGC",
+                "index": 69,
+                "key": "@RG69",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG70": {
+                "barcode": [
+                    "CGAATGC",
+                    "CAGTACT"
+                ],
+                "concentration": 0.01279522471829044,
+                "count": 0,
+                "description": "70:CGAATGC-CAGTACT",
+                "index": 70,
+                "key": "@RG70",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG71": {
+                "barcode": [
+                    "TTCGCAA",
+                    "AATAGTA"
+                ],
+                "concentration": 0.017880676202642505,
+                "count": 0,
+                "description": "71:TTCGCAA-AATAGTA",
+                "index": 71,
+                "key": "@RG71",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG72": {
+                "barcode": [
+                    "ACCAACT",
+                    "TCGCAGG"
+                ],
+                "concentration": 0.024598506976721002,
+                "count": 0,
+                "description": "72:ACCAACT-TCGCAGG",
+                "index": 72,
+                "key": "@RG72",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG73": {
+                "barcode": [
+                    "CCGGTAC",
+                    "CTCTGCA"
+                ],
+                "concentration": 0.018673416834122138,
+                "count": 0,
+                "description": "73:CCGGTAC-CTCTGCA",
+                "index": 73,
+                "key": "@RG73",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG74": {
+                "barcode": [
+                    "AACTCCG",
+                    "CCTAGGT"
+                ],
+                "concentration": 0.017128602391576354,
+                "count": 0,
+                "description": "74:AACTCCG-CCTAGGT",
+                "index": 74,
+                "key": "@RG74",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG75": {
+                "barcode": [
+                    "TTGAAGT",
+                    "GGATCAA"
+                ],
+                "concentration": 0.018496778531906795,
+                "count": 0,
+                "description": "75:TTGAAGT-GGATCAA",
+                "index": 75,
+                "key": "@RG75",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG76": {
+                "barcode": [
+                    "ACTATCA",
+                    "GCAAGAT"
+                ],
+                "concentration": 0.01730235466137526,
+                "count": 0,
+                "description": "76:ACTATCA-GCAAGAT",
+                "index": 76,
+                "key": "@RG76",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG77": {
+                "barcode": [
+                    "TTGGATC",
+                    "ATGGAGA"
+                ],
+                "concentration": 0.01883562497425528,
+                "count": 0,
+                "description": "77:TTGGATC-ATGGAGA",
+                "index": 77,
+                "key": "@RG77",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG78": {
+                "barcode": [
+                    "CGACCTG",
+                    "CTCGATG"
+                ],
+                "concentration": 0.01615489440925671,
+                "count": 0,
+                "description": "78:CGACCTG-CTCGATG",
+                "index": 78,
+                "key": "@RG78",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG79": {
+                "barcode": [
+                    "TAATGCG",
+                    "GCTCGAA"
+                ],
+                "concentration": 0.016768504255979533,
+                "count": 0,
+                "description": "79:TAATGCG-GCTCGAA",
+                "index": 79,
+                "key": "@RG79",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG80": {
+                "barcode": [
+                    "AGGTACC",
+                    "ACCAACT"
+                ],
+                "concentration": 0.016583863772973145,
+                "count": 0,
+                "description": "80:AGGTACC-ACCAACT",
+                "index": 80,
+                "key": "@RG80",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG81": {
+                "barcode": [
+                    "TGCGTCC",
+                    "CCGGTAC"
+                ],
+                "concentration": 0.01513855185714874,
+                "count": 0,
+                "description": "81:TGCGTCC-CCGGTAC",
+                "index": 81,
+                "key": "@RG81",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG82": {
+                "barcode": [
+                    "GAATCTC",
+                    "AACTCCG"
+                ],
+                "concentration": 0.01461617998977295,
+                "count": 0,
+                "description": "82:GAATCTC-AACTCCG",
+                "index": 82,
+                "key": "@RG82",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG83": {
+                "barcode": [
+                    "CATGCTC",
+                    "TTGAAGT"
+                ],
+                "concentration": 0.015366023684880943,
+                "count": 0,
+                "description": "83:CATGCTC-TTGAAGT",
+                "index": 83,
+                "key": "@RG83",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG84": {
+                "barcode": [
+                    "ACGCAAC",
+                    "ACTATCA"
+                ],
+                "concentration": 0.015266193199930422,
+                "count": 0,
+                "description": "84:ACGCAAC-ACTATCA",
+                "index": 84,
+                "key": "@RG84",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG85": {
+                "barcode": [
+                    "GCATTGG",
+                    "TTGGATC"
+                ],
+                "concentration": 0.01941814438085553,
+                "count": 0,
+                "description": "85:GCATTGG-TTGGATC",
+                "index": 85,
+                "key": "@RG85",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG86": {
+                "barcode": [
+                    "GATCTCG",
+                    "CGACCTG"
+                ],
+                "concentration": 0.01539455605081621,
+                "count": 0,
+                "description": "86:GATCTCG-CGACCTG",
+                "index": 86,
+                "key": "@RG86",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG87": {
+                "barcode": [
+                    "CAATATG",
+                    "TAATGCG"
+                ],
+                "concentration": 0.01747099078279956,
+                "count": 0,
+                "description": "87:CAATATG-TAATGCG",
+                "index": 87,
+                "key": "@RG87",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG88": {
+                "barcode": [
+                    "TGACGTC",
+                    "AGGTACC"
+                ],
+                "concentration": 0.008451614748255327,
+                "count": 0,
+                "description": "88:TGACGTC-AGGTACC",
+                "index": 88,
+                "key": "@RG88",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG89": {
+                "barcode": [
+                    "GATGCCA",
+                    "TGCGTCC"
+                ],
+                "concentration": 0.005252513406276491,
+                "count": 0,
+                "description": "89:GATGCCA-TGCGTCC",
+                "index": 89,
+                "key": "@RG89",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG90": {
+                "barcode": [
+                    "CAATTAC",
+                    "GAATCTC"
+                ],
+                "concentration": 0.014138148074977023,
+                "count": 0,
+                "description": "90:CAATTAC-GAATCTC",
+                "index": 90,
+                "key": "@RG90",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG91": {
+                "barcode": [
+                    "AGATAGG",
+                    "CATGCTC"
+                ],
+                "concentration": 0.016524831291727764,
+                "count": 0,
+                "description": "91:AGATAGG-CATGCTC",
+                "index": 91,
+                "key": "@RG91",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG92": {
+                "barcode": [
+                    "CCGATTG",
+                    "ACGCAAC"
+                ],
+                "concentration": 0.016012166987934548,
+                "count": 0,
+                "description": "92:CCGATTG-ACGCAAC",
+                "index": 92,
+                "key": "@RG92",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG93": {
+                "barcode": [
+                    "ATGCCGC",
+                    "GCATTGG"
+                ],
+                "concentration": 0.00445124586083919,
+                "count": 0,
+                "description": "93:ATGCCGC-GCATTGG",
+                "index": 93,
+                "key": "@RG93",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG94": {
+                "barcode": [
+                    "CAGTACT",
+                    "GATCTCG"
+                ],
+                "concentration": 0.02138379482303505,
+                "count": 0,
+                "description": "94:CAGTACT-GATCTCG",
+                "index": 94,
+                "key": "@RG94",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG95": {
+                "barcode": [
+                    "AATAGTA",
+                    "CAATATG"
+                ],
+                "concentration": 0.01591259886956734,
+                "count": 0,
+                "description": "95:AATAGTA-CAATATG",
+                "index": 95,
+                "key": "@RG95",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG96": {
+                "barcode": [
+                    "CATCCGG",
+                    "TGACGTC"
+                ],
+                "concentration": 0.0092072305081962,
+                "count": 0,
+                "description": "96:CATCCGG-TGACGTC",
+                "index": 96,
+                "key": "@RG96",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG97": {
+                "barcode": [
+                    "TCATGGT",
+                    "GATGCCA"
+                ],
+                "concentration": 0.019813202863678783,
+                "count": 0,
+                "description": "97:TCATGGT-GATGCCA",
+                "index": 97,
+                "key": "@RG97",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG98": {
+                "barcode": [
+                    "AGAACCG",
+                    "CAATTAC"
+                ],
+                "concentration": 0.00952515321552549,
+                "count": 0,
+                "description": "98:AGAACCG-CAATTAC",
+                "index": 98,
+                "key": "@RG98",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@RG99": {
+                "barcode": [
+                    "TGGAATA",
+                    "AGATAGG"
+                ],
+                "concentration": 0.017986016385842594,
+                "count": 0,
+                "description": "99:TGGAATA-AGATAGG",
+                "index": 99,
+                "key": "@RG99",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            },
+            "@control": {
+                "barcode": [
+                    "GACGATT",
+                    "GACGGCG"
+                ],
+                "concentration": 0.3201110414090555,
+                "count": 0,
+                "description": "100:GACGATT-GACGGCG",
+                "index": 100,
+                "key": "@control",
+                "simulated concentration": 0,
+                "simulated concentration deviation": 1.0,
+                "simulated nucleotide": 0
+            }
+        },
+        "error model reference": "lrsim",
+        "expected barcode error": 0,
+        "index": 0,
+        "noise": 0.08972924030968701,
+        "nucleotide cardinality": 14,
+        "simulated classified nucleotide": 0,
+        "simulated noise": 0,
+        "simulated noise deviation": 1.0,
+        "simulated nucleotide": 0,
+        "substitution frequency transform": {
+            "token": [
+                "0:1:8",
+                "0:8:15"
+            ]
+        },
+        "substitution model": {
+            "frequency": {
+                "segment": [
+                    {
+                        "nucleotide substitution frequency": [
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.248391841609553,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.452225152780146,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.563918024508456,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.271759809161439,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.383139952595116,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.596635639908786,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.253201640746953,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.356231919488245,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.612659080115662,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.0867939772665535,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.315210731658511,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.681413839419953,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.35875670578243,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.646852731962304,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.73066954778514,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.343760589219978,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.479971081907819,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.793895808076938,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.285338081360802,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.396841355796019,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.763238404334643,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.105581623902801,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.316107883346555,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.785941934496185,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.381603629518156,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.720009551363568,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.809796811399441,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.310711927790844,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.494214799315343,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.833901512819323,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.304626183783441,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.425403239506486,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.811649040628603,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.115669720635526,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.338093421976441,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.854613457687941,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.422569262592116,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.8786178694049,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.993668893861723,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.418755753334043,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.699391707797705,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.994838536583109,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.416612808249673,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.598519013218052,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.994178503549868,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.171887212260899,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.408418695997334,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.995999176955996,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.455596441354606,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.890908380782869,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999912121879978,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.413720923086378,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.692969916725563,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999904126847556,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.385448512090586,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.537184675888728,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999902986763912,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.143105140923864,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.376153257273678,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.99994272535355,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.406327122386922,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.826869104480771,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.997881317068697,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.374638212546548,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.705784016041249,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.998169578917216,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.310655760448629,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.673039164730911,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.998758410649673,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.238939465779065,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.481877157622821,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.998489829208511,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.195755343642281,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.597418219800039,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.9999027098749,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.306706272884354,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.623375596535977,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999887185275846,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.425573183339738,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.644636465230306,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999868880685305,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.268149141057318,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.583011172880877,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999894468159314,
+                                        "to": "G"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "nucleotide substitution frequency": [
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.518582892018808,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.784930884223576,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999240164825784,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.27197526200349,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.677298530767374,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999459461525574,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.298843598520712,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.566920693914455,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999250351099056,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.206940109327211,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.453842829047238,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999488510173712,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.310375812444249,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.711274446114916,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.995279006975584,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.33198496434301,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.682154642434746,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.994291602749511,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.326298575650106,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.623180862865886,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.993958370958107,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.245572771549946,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.509869938136896,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.995911758726658,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.328380850761973,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.787038692763321,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999824876157147,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.314533542852326,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.761671785760346,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999832485674823,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.394375376537983,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.67886273624847,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999770609437724,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.215190322042968,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.459559438903071,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999832267459712,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.351088558521034,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.789439220146743,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.998694370574477,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.313613251580904,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.711908553951083,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.998681302505116,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.359368440646015,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.617058478744723,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.998362884254382,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.209646159907881,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.468978015961584,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.998889020344748,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.393658697481948,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.792198525518021,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999928449922612,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.410475580222229,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.722234908570464,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999931264601499,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.374465971655011,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.658098282400073,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.99992428468644,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.253478004683067,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.534648200183392,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.99995165622933,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.356711759499212,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.728725231428964,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999992410855512,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.382426264718291,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.663486603263781,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 0.999997354906714,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.35486390882733,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.602597758689963,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999991516359174,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.232284719632891,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.495108208909138,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.999995994302563,
+                                        "to": "G"
+                                    }
+                                ]
+                            },
+                            {
+                                "A": [
+                                    {
+                                        "density": 0.319898694544483,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 0.731679405112689,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 1,
+                                        "to": "T"
+                                    }
+                                ],
+                                "C": [
+                                    {
+                                        "density": 0.37096552352182,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.706085746854284,
+                                        "to": "G"
+                                    },
+                                    {
+                                        "density": 1,
+                                        "to": "T"
+                                    }
+                                ],
+                                "G": [
+                                    {
+                                        "density": 0.390778933035154,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.642144404001968,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 1,
+                                        "to": "T"
+                                    }
+                                ],
+                                "T": [
+                                    {
+                                        "density": 0.273646850490209,
+                                        "to": "A"
+                                    },
+                                    {
+                                        "density": 0.52192922481363,
+                                        "to": "C"
+                                    },
+                                    {
+                                        "density": 1,
+                                        "to": "G"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "transform": {
+            "token": [
+                "1::7",
+                "2::7"
+            ]
+        },
+        "unclassified": {
+            "concentration": 0.08972924030968701,
+            "count": 0,
+            "description": "unclassified",
+            "index": 0,
+            "simulated concentration": 0,
+            "simulated concentration deviation": 1.0,
+            "simulated nucleotide": 0
+        }
+    },
+    "noise model": {
+        "genome comment": "Coliphage phi-X174, complete genome",
+        "genome id": "NC_001422.1",
+        "nucleotide cardinality": 5386,
+        "reference fasta path": "phix/NC_001422.1_Phix.fasta"
+    },
+    "run count": 0
+}

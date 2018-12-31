@@ -127,6 +127,34 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier 
             }
             probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
         };
+        inline void compensated_decoding_quality(const Observation& observation, double& quality, int32_t& distance) const {
+            /*  use the Kahan summation algorithm to minimize floating point drift
+                see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+                sigma_q accumulates double precision floats who are either the probability of correct base call
+                if the expected and observed bases agree or probability of error if they dont.
+                Since the probabilties are encoded on a logarithmic scale they are added instead of multiplied.
+                UNIFORM_BASE_QUALITY is used in the of an observed ANY NUCLEOTIDE.
+            */
+            double y(0);
+            double t(0);
+            distance = 0;
+            double sigma_q(0);
+            double compensation(0);
+            for(size_t i(0); i < segment_array.size(); ++i) {
+                const Sequence& expected = segment_array[i];
+                const ObservedSequence& observed = observation[i];
+                for(int32_t j(0); j < expected.length; ++j) {
+                    y = scale.substitution_quality(expected.code[j], observed.code[j], observed.quality[j]) - compensation;
+                    t = sigma_q + y;
+                    compensation = (t - sigma_q) - y;
+                    sigma_q = t;
+                    if(observed.code[j] != expected.code[j]) {
+                        ++distance;
+                    }
+                }
+            }
+            quality = sigma_q;
+        };
         void encode(Value& container, Document& document) const override;
         Barcode& operator+=(const Barcode& rhs);
 };

@@ -177,6 +177,7 @@ class Read : public SequenceArray< Segment > {
             if(segment_cardinality() > 1) {
                 for(auto& segment : this->segment_array) {
                     if(leader != &segment) {
+                        segment.set_qcfail(leader->qcfail());
                         if(ks_not_empty(leader->auxiliary.RG)) ks_put_string(leader->auxiliary.RG, segment.auxiliary.RG);
                         if(ks_not_empty(leader->auxiliary.BC)) ks_put_string(leader->auxiliary.BC, segment.auxiliary.BC);
                         if(ks_not_empty(leader->auxiliary.QT)) ks_put_string(leader->auxiliary.QT, segment.auxiliary.QT);
@@ -206,6 +207,9 @@ class Read : public SequenceArray< Segment > {
         };
         inline const bool qcfail() const {
             return leader->qcfail();
+        };
+        inline void set_qcfail(const bool value) {
+            return leader->set_qcfail(value);
         };
         inline const kstring_t& RG() const {
             return leader->auxiliary.RG;
