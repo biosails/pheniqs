@@ -27,6 +27,7 @@ import json
 import logging
 
 from core.error import *
+from core import log_levels
 from core import CommandLineParser
 from core import Job
 

@@ -31,6 +31,7 @@ from copy import deepcopy
 from datetime import datetime, date
 
 from core.error import *
+from core import log_levels
 from core import CommandLineParser
 from core import Job
 from core import merge

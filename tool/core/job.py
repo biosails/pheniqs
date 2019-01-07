@@ -27,6 +27,7 @@ import platform
 from copy import deepcopy
 
 from core.error import *
+from core import log_levels
 from core import merge
 from core import remove_compiled
 
