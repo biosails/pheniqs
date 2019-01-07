@@ -348,61 +348,6 @@
                             "help": "Analyze deML demultiplexing results.",
                             "name": "analyze_deml"
                         }
-                    },
-                    {
-                        "argument": [
-                            "path",
-                            "pattern",
-                            "database",
-                            "version",
-                            "verbosity"
-                        ],
-                        "implementation": "collect",
-                        "instruction": {
-                            "description": "Collect analysis reports matching the pattern in the directory path and update the project db.",
-                            "help": "Collect analysis reports.",
-                            "name": "collect"
-                        },
-                        "prototype": {
-                            "database": {
-                                "flag": [
-                                    "-d",
-                                    "--database"
-                                ],
-                                "parameter": {
-                                    "help": "Path to JSON database file.",
-                                    "metavar": "PATH"
-                                }
-                            },
-                            "path": {
-                                "parameter": {
-                                    "default": ".",
-                                    "help": "Directory path to look for analysis reports."
-                                }
-                            },
-                            "pattern": {
-                                "flag": [
-                                    "-p",
-                                    "--pattern"
-                                ],
-                                "parameter": {
-                                    "default": ".+_analysis.json",
-                                    "help": "File pattern to collect.",
-                                    "metavar": "REGEX"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "argument": [
-                            "path"
-                        ],
-                        "implementation": "summarize",
-                        "instruction": {
-                            "description": "Extract data in CSV according to some transformation.",
-                            "help": "Summarize benchmark results.",
-                            "name": "summarize"
-                        }
                     }
                 ],
                 "instruction": {
