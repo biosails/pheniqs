@@ -1,0 +1,205 @@
+{
+    "CN": "CGSB",
+    "DT": "2018-02-25T07:00:00+00:00",
+    "PI": "300",
+    "PL": "ILLUMINA",
+    "PM": "miseq",
+    "SM": "trinidad",
+    "application name": "./pheniqs",
+    "base input url": "test/BDGGG",
+    "base output url": "test/BDGGG",
+    "buffer capacity": 2048,
+    "configuration url": "test/BDGGG/BDGGG_interleave.json",
+    "decoding threads": 1,
+    "default output compression": "none",
+    "default output format": "sam",
+    "feed": {
+        "input feed": [
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "test/BDGGG/BDGGG_s01.fastq.gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 1,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "test/BDGGG/BDGGG_s02.fastq.gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 2,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "test/BDGGG/BDGGG_s03.fastq.gz"
+            }
+        ],
+        "input feed by segment": [
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "test/BDGGG/BDGGG_s01.fastq.gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 1,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "test/BDGGG/BDGGG_s02.fastq.gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 2,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "test/BDGGG/BDGGG_s03.fastq.gz"
+            }
+        ],
+        "output feed": [
+            {
+                "capacity": 6144,
+                "direction": "out",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 3,
+                "url": {
+                    "path": "/dev/stdout",
+                    "type": "sam"
+                }
+            }
+        ]
+    },
+    "float precision": 15,
+    "flowcell id": "BDGGG",
+    "full command": "./pheniqs mux --config test/BDGGG/BDGGG_interleave.json --precision 15 --compile",
+    "htslib threads": 1,
+    "include filtered": true,
+    "input": [
+        "test/BDGGG/BDGGG_s01.fastq.gz",
+        "test/BDGGG/BDGGG_s02.fastq.gz",
+        "test/BDGGG/BDGGG_s03.fastq.gz"
+    ],
+    "input phred offset": 33,
+    "input segment cardinality": 3,
+    "leading segment index": 0,
+    "multiplex": {
+        "CN": "CGSB",
+        "DT": "2018-02-25T07:00:00+00:00",
+        "PI": "300",
+        "PL": "ILLUMINA",
+        "PM": "miseq",
+        "SM": "trinidad",
+        "algorithm": "transparent",
+        "base output url": "test/BDGGG",
+        "confidence threshold": 0.99,
+        "flowcell id": "BDGGG",
+        "include filtered": true,
+        "index": 0,
+        "noise": 0.01,
+        "output": [
+            "/dev/stdout"
+        ],
+        "quality masking threshold": 0,
+        "segment cardinality": 0,
+        "undetermined": {
+            "CN": "CGSB",
+            "DT": "2018-02-25T07:00:00+00:00",
+            "ID": "BDGGG:undetermined",
+            "PI": "300",
+            "PL": "ILLUMINA",
+            "PM": "miseq",
+            "PU": "BDGGG:undetermined",
+            "SM": "trinidad",
+            "TC": 3,
+            "algorithm": "transparent",
+            "concentration": 0.01,
+            "feed": {
+                "output feed by segment": [
+                    {
+                        "capacity": 6144,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 3,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    },
+                    {
+                        "capacity": 6144,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 3,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    },
+                    {
+                        "capacity": 6144,
+                        "direction": "out",
+                        "index": 0,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 3,
+                        "url": {
+                            "path": "/dev/stdout",
+                            "type": "sam"
+                        }
+                    }
+                ]
+            },
+            "flowcell id": "BDGGG",
+            "include filtered": true,
+            "index": 0,
+            "output": [
+                "/dev/stdout",
+                "/dev/stdout",
+                "/dev/stdout"
+            ],
+            "segment cardinality": 0
+        }
+    },
+    "output": [
+        "/dev/stdout"
+    ],
+    "output phred offset": 33,
+    "output segment cardinality": 3,
+    "platform": "ILLUMINA",
+    "report url": "/dev/stderr",
+    "threads": 1,
+    "transform": {
+        "segment pattern": [
+            "0",
+            "1",
+            "2"
+        ],
+        "token": [
+            "0::",
+            "1::",
+            "2::"
+        ]
+    }
+}

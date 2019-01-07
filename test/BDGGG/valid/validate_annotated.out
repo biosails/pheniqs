@@ -1,0 +1,210 @@
+Environment 
+
+    Base input URL                              test/BDGGG
+    Base output URL                             test/BDGGG
+    Platform                                    ILLUMINA
+    Quality tracking                            disabled
+    Include non PF reads                        disabled
+    Input Phred offset                          33
+    Output Phred offset                         33
+    Leading segment index                       0
+    Default output format                       sam
+    Default output compression                  none
+    Feed buffer capacity                        2048
+    Threads                                     1
+
+Input 
+
+    Input segment cardinality                   3
+
+    Input segment No.0 : test/BDGGG/BDGGG_s01.fastq.gz
+    Input segment No.1 : test/BDGGG/BDGGG_s02.fastq.gz
+    Input segment No.2 : test/BDGGG/BDGGG_s03.fastq.gz
+
+    Input feed No.0
+        Type : fastq
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : test/BDGGG/BDGGG_s01.fastq.gz
+
+    Input feed No.1
+        Type : fastq
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : test/BDGGG/BDGGG_s02.fastq.gz
+
+    Input feed No.2
+        Type : fastq
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : test/BDGGG/BDGGG_s03.fastq.gz
+
+Output transform
+
+    Output segment cardinality                  2
+
+    Token No.0
+        Length        variable
+        Pattern       0::
+        Description   cycles 0 to end of input segment 0
+
+    Token No.1
+        Length        variable
+        Pattern       2::
+        Description   cycles 0 to end of input segment 2
+
+    Assembly instruction
+        Append token 0 of input segment 0 to output segment 0
+        Append token 1 of input segment 2 to output segment 1
+
+Mutliplex decoding
+
+    Decoding algorithm                          pamld
+    Shannon bound                               2
+    Noise                                       0.0152
+    Confidence threshold                        0.99
+    Segment cardinality                         1
+    Nucleotide cardinality                      8
+
+    Transform
+
+        Token No.0
+            Length        8
+            Pattern       1::8
+            Description   cycles 0 to 8 of input segment 1
+
+        Assembly instruction
+            Append token 0 of input segment 1 to output segment 0
+
+    Hamming distance distribution
+
+    Segment No.0
+
+    0 6 6 7 8 AGGCAGAA
+    2 0 7 8 8 CGTACTAG
+    2 3 0 6 8 GGACTCCT
+    3 3 2 0 5 TAAGGCGA
+    3 3 3 2 0 TCCTGAGC
+
+    Barcode undetermined
+        ID : BDGGG:undetermined
+        PU : BDGGG:undetermined
+        SM : trinidad
+        DT : 2018-02-25T07:00:00+00:00
+        PL : ILLUMINA
+        PM : miseq
+        CN : CGSB
+        PI : 300
+        Segment No.0  : /dev/stdout
+        Segment No.1  : /dev/stdout
+
+    Barcode @AGGCAGAA
+        ID : BDGGG:AGGCAGAA
+        PU : BDGGG:AGGCAGAA
+        LB : trinidad 5
+        SM : trinidad
+        DT : 2018-02-25T07:00:00+00:00
+        PL : ILLUMINA
+        PM : miseq
+        CN : CGSB
+        PI : 300
+        Concentration : 0.183498128559805
+        Barcode       : AGGCAGAA
+        Segment No.0  : /dev/stdout
+        Segment No.1  : /dev/stdout
+
+    Barcode @CGTACTAG
+        ID : BDGGG:CGTACTAG
+        PU : BDGGG:CGTACTAG
+        LB : trinidad 4
+        SM : trinidad
+        DT : 2018-02-25T07:00:00+00:00
+        PL : ILLUMINA
+        PM : miseq
+        CN : CGSB
+        PI : 300
+        Concentration : 0.199524165988608
+        Barcode       : CGTACTAG
+        Segment No.0  : /dev/stdout
+        Segment No.1  : /dev/stdout
+
+    Barcode @GGACTCCT
+        ID : BDGGG:GGACTCCT
+        PU : BDGGG:GGACTCCT
+        LB : trinidad 9
+        SM : trinidad
+        DT : 2018-02-25T07:00:00+00:00
+        PL : ILLUMINA
+        PM : miseq
+        CN : CGSB
+        PI : 300
+        Concentration : 0.211944344995932
+        Barcode       : GGACTCCT
+        Segment No.0  : /dev/stdout
+        Segment No.1  : /dev/stdout
+
+    Barcode @TAAGGCGA
+        ID : BDGGG:TAAGGCGA
+        PU : BDGGG:TAAGGCGA
+        LB : trinidad 1
+        SM : trinidad
+        DT : 2018-02-25T07:00:00+00:00
+        PL : ILLUMINA
+        PM : miseq
+        CN : CGSB
+        PI : 300
+        Concentration : 0.222761920260375
+        Barcode       : TAAGGCGA
+        Segment No.0  : /dev/stdout
+        Segment No.1  : /dev/stdout
+
+    Barcode @TCCTGAGC
+        ID : BDGGG:TCCTGAGC
+        PU : BDGGG:TCCTGAGC
+        LB : trinidad 8
+        SM : trinidad
+        DT : 2018-02-25T07:00:00+00:00
+        PL : ILLUMINA
+        PM : miseq
+        CN : CGSB
+        PI : 300
+        Concentration : 0.167071440195281
+        Barcode       : TCCTGAGC
+        Segment No.0  : /dev/stdout
+        Segment No.1  : /dev/stdout
+
+    Output feed No.0
+        Type : sam
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /dev/stdout
+
+Molecular decoding
+
+    Decoding algorithm                          naive
+    Segment cardinality                         1
+    Nucleotide cardinality                      8
+
+    Transform
+
+        Token No.0
+            Length        8
+            Pattern       0:8:16
+            Description   cycles 8 to 16 of input segment 0
+
+        Assembly instruction
+            Append token 0 of input segment 0 to output segment 0
+
+
+    Barcode undetermined
+        ID : undetermined
+        PU : undetermined
+
