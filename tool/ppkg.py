@@ -20,12 +20,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
+import os
+import sys
+import json
+import logging
+import platform
+import hashlib
+from datetime import datetime, date
+from subprocess import Popen, PIPE
+
 import urllib.request, urllib.parse, urllib.error
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from http.client import BadStatusLine
 
-from core import *
+from core.error import *
+from core import CommandLineParser
+from core import Job
+from core import merge
+from core import prepare_directory
+from core import prepare_path
+from core import split_class
+from core import remove_directory
 
 class Package(object):
     def __init__(self, pipeline, node):
@@ -730,7 +747,13 @@ class PackageManager(Job):
         self.cache = None
         self.stdout = None
         self.stderr = None
-        self.execution = {}
+        self.stack = {}
+        default = {
+            'instruction': {
+                'filter': None,
+            },
+        }
+        self.ontology = merge(default, self.ontology)
 
     def load_cache(self):
         if 'cache path' in self.instruction:
@@ -846,7 +869,7 @@ class PackageManager(Job):
                 self.persisted_instruction = self.cache['environment'][self.instruction['document sha1 digest']]
 
                 if self.instruction['package']:
-                    self.execution['package'] = []
+                    self.stack['package'] = []
                     prepare_directory(self.home, self.log)
                     prepare_directory(self.install_prefix, self.log)
                     prepare_directory(self.download_prefix, self.log)
@@ -862,7 +885,7 @@ class PackageManager(Job):
                         if self.filter is None or key in self.filter:
                             package = Package.create(self, o)
                             if package:
-                                self.execution['package'].append(package)
+                                self.stack['package'].append(package)
                                 if self.action == 'clean':
                                     self.log.info('cleaning %s', package.display_name)
                                     package.clean()
@@ -903,8 +926,8 @@ def main():
             if 'verbosity' in command.instruction and command.instruction['verbosity']:
                 logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
 
-            pipeline = PackageManager(command.configuration)
-            pipeline.execute()
+            job = PackageManager(command.configuration)
+            job.execute()
 
     except (
         PermissionDeniedError,

@@ -20,7 +20,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from core import *
+import io
+import os
+import sys
+import json
+import logging
+
+from core.error import *
+from core import CommandLineParser
+from core import Job
 
 class ShellPipeline(Job):
     def __init__(self, ontology):

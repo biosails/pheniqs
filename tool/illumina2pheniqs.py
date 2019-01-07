@@ -20,9 +20,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from core import *
+import io
+import os
+import sys
+import json
+import logging
 
-class IlluminaPipeline(Job):
+from core.error import *
+from core import CommandLineParser
+from core import Job
+
+class Illumina(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
 
@@ -498,7 +506,7 @@ def main():
             if 'verbosity' in command.instruction and command.instruction['verbosity']:
                 logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
 
-            pipeline = IlluminaPipeline(command.configuration)
+            pipeline = Illumina(command.configuration)
             pipeline.execute()
 
     except (

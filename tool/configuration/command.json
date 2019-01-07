@@ -1,0 +1,873 @@
+{
+    "benchmark": {
+        "interface": {
+            "argument": [
+                "home",
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "bsid": {
+                    "flag": [
+                        "--bsid"
+                    ],
+                    "parameter": {
+                        "help": "Barcode simulation id"
+                    }
+                },
+                "capacity": {
+                    "flag": [
+                        "-C",
+                        "--capacity"
+                    ],
+                    "parameter": {
+                        "default": 256,
+                        "help": "IO buffer capacity.",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "configuration": {
+                    "flag": [
+                        "-c",
+                        "--configuration"
+                    ],
+                    "parameter": {
+                        "help": "Path to configuration file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "error": {
+                    "flag": [
+                        "-e",
+                        "--error"
+                    ],
+                    "parameter": {
+                        "default": null,
+                        "help": "Desired error rate per nucloetide.",
+                        "metavar": "FLOAT",
+                        "type": "float"
+                    }
+                },
+                "home": {
+                    "flag": [
+                        "-H",
+                        "--home"
+                    ],
+                    "parameter": {
+                        "help": "Path to home directory.",
+                        "metavar": "PATH"
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stdin",
+                        "help": "Path to SAM encoded input file. default: stdin.",
+                        "metavar": "PATH"
+                    }
+                },
+                "model": {
+                    "flag": [
+                        "-m",
+                        "--model"
+                    ],
+                    "parameter": {
+                        "help": "Path to simulation model file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "output": {
+                    "flag": [
+                        "-o",
+                        "--output"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stdout",
+                        "help": "Path to SAM encoded output file. default: stdout.",
+                        "metavar": "PATH"
+                    }
+                },
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
+                "preset": {
+                    "flag": [
+                        "-p",
+                        "--preset"
+                    ],
+                    "parameter": {
+                        "default": "A5KVK",
+                        "help": "Simulation preset.",
+                        "metavar": "NAME"
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "default": "/dev/stderr",
+                        "help": "Path to report file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "ssid": {
+                    "flag": [
+                        "--ssid"
+                    ],
+                    "parameter": {
+                        "help": "Substitution simulation id"
+                    }
+                },
+                "summary": {
+                    "flag": [
+                        "-s",
+                        "--summary"
+                    ],
+                    "parameter": {
+                        "help": "Path to execution summary file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "Logging verbosity level.",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "path",
+                            "preset",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "plan",
+                        "instruction": {
+                            "description": "Execute simmulation plan.",
+                            "help": "Execute simmulation plan.",
+                            "name": "plan"
+                        },
+                        "prototype": {
+                            "path": {
+                                "parameter": {
+                                    "help": "path to simlation plan JSON file"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "input",
+                            "preset",
+                            "bsid",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "simulate_barcode",
+                        "instruction": {
+                            "description": "Simulate barcode indices using the priors with perfect barcodes, keeping the existing quality scores. Global error rate on the cycles containing the barcode indice is reported to allow calibrtation when simulating errors. The correct barcode index is encoded in the read id.",
+                            "help": "Simulate perfect barcode indices.",
+                            "name": "simulate_barcode"
+                        },
+                        "prototype": {
+                            "input": {
+                                "parameter": {
+                                    "help": "Original input data to simulate barcode indices."
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "error",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "benchmark_substitution",
+                        "instruction": {
+                            "description": "Simulate barcode errors based on the quality scores and benchmark against resulting file.",
+                            "help": "Benchmakr simulate barcode errors.",
+                            "name": "benchmark_substitution"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "error",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "simulate_substitution",
+                        "instruction": {
+                            "description": "Simulate barcode errors based on the quality scores. If -e/--error is specified quality scores are first recalibrated to produce the requested global rate.",
+                            "help": "Simulate barcode errors.",
+                            "name": "simulate_substitution"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "todeml",
+                        "instruction": {
+                            "description": "Transcoded reads to a deML consumable format.",
+                            "help": "Transcoded to deML syntax",
+                            "name": "todeml"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "sense_prior",
+                        "instruction": {
+                            "description": "Exectue pheniqs with a flat configuration and no output to estimste priors.",
+                            "help": "Estimate distrbution prior from data.",
+                            "name": "sense_prior"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "adjust_prior",
+                        "instruction": {
+                            "description": "Create a new pheniqs mux configuration file with adjusted priors based on the initial report.",
+                            "help": "Adjuste configuration priors",
+                            "name": "adjust_prior"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "demux_pheniqs",
+                        "instruction": {
+                            "help": "Demultiplex with pheniqs.",
+                            "name": "demux_pheniqs"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "demux_deml",
+                        "instruction": {
+                            "help": "Demultiplex with deML.",
+                            "name": "demux_deml"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "analyze_pheniqs",
+                        "instruction": {
+                            "description": "Collect FP/FN/TP/TN statistics from pheniqs demultiplexing.",
+                            "help": "Analyze pheniqs demultiplexing results.",
+                            "name": "analyze_pheniqs"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "capacity",
+                            "verbosity",
+                            "version"
+                        ],
+                        "implementation": "analyze_deml",
+                        "instruction": {
+                            "description": "Collect FP/FN/TP/TN statistics from deML demultiplexing.",
+                            "help": "Analyze deML demultiplexing results.",
+                            "name": "analyze_deml"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "path",
+                            "pattern",
+                            "database",
+                            "version",
+                            "verbosity"
+                        ],
+                        "implementation": "collect",
+                        "instruction": {
+                            "description": "Collect analysis reports matching the pattern in the directory path and update the project db.",
+                            "help": "Collect analysis reports.",
+                            "name": "collect"
+                        },
+                        "prototype": {
+                            "database": {
+                                "flag": [
+                                    "-d",
+                                    "--database"
+                                ],
+                                "parameter": {
+                                    "help": "Path to JSON database file.",
+                                    "metavar": "PATH"
+                                }
+                            },
+                            "path": {
+                                "parameter": {
+                                    "default": ".",
+                                    "help": "Directory path to look for analysis reports."
+                                }
+                            },
+                            "pattern": {
+                                "flag": [
+                                    "-p",
+                                    "--pattern"
+                                ],
+                                "parameter": {
+                                    "default": ".+_analysis.json",
+                                    "help": "File pattern to collect.",
+                                    "metavar": "REGEX"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "path"
+                        ],
+                        "implementation": "summarize",
+                        "instruction": {
+                            "description": "Extract data in CSV according to some transformation.",
+                            "help": "Summarize benchmark results.",
+                            "name": "summarize"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        }
+    },
+    "illumina": {
+        "interface": {
+            "argument": [
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "illumina run directory": {
+                    "flag": [
+                        "illumina run directory"
+                    ],
+                    "parameter": {
+                        "help": "illumina run directory",
+                        "metavar": "PATH"
+                    }
+                },
+                "selected_lane_number": {
+                    "flag": [
+                        "--lane-number",
+                        "-l"
+                    ],
+                    "parameter": {
+                        "default": 0,
+                        "help": "selected lane number",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "illumina run directory"
+                        ],
+                        "implementation": "bcl2fastq",
+                        "instruction": {
+                            "help": "bcl2fastq command to write all segments to FASTQ",
+                            "name": "bcl2fastq"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina run directory"
+                        ],
+                        "instruction": {
+                            "help": "Single decoder directive for each lane",
+                            "name": "core"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina run directory"
+                        ],
+                        "instruction": {
+                            "help": "Interleave both template and index segments to SAM",
+                            "name": "interleave"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina run directory",
+                            "selected_lane_number"
+                        ],
+                        "instruction": {
+                            "help": "Demultiplex a single lane",
+                            "name": "demultiplex"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that RunInfo.xml, RunParameters.xml and SampleSheet.csv files in the directory.",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        },
+        "namespace": {
+            "sample sheet": {
+                "Data": {
+                    "column": {
+                        "Description": {},
+                        "I5_index_ID": {},
+                        "I7_Index_ID": {},
+                        "Lane": {},
+                        "Sample_ID": {},
+                        "Sample_Name": {},
+                        "Sample_Plate": {},
+                        "Sample_Project": {},
+                        "Sample_Well": {},
+                        "index": {},
+                        "index2": {}
+                    }
+                },
+                "Header": {
+                    "Date": {}
+                },
+                "Reads": {},
+                "Settings": {}
+            }
+        },
+        "preset": {
+            "default": {
+                "sample sheet record": {
+                    "key": [
+                        "@{Sample_ID}",
+                        "{flowcell id}:{lane number}:{concatenated barcode}",
+                        "{flowcell id}:{concatenated barcode}"
+                    ],
+                    "value": {
+                        "DS": "{Description}",
+                        "LB": [
+                            "{Sample_Name}",
+                            "{Sample_ID}"
+                        ],
+                        "SM": "{Sample_Project}"
+                    }
+                }
+            }
+        }
+    },
+    "package": {
+        "interface": {
+            "argument": [
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "filter": {
+                    "flag": [
+                        "-f",
+                        "--filter"
+                    ],
+                    "parameter": {
+                        "help": "list of packages",
+                        "metavar": "PACKAGE",
+                        "nargs": "*"
+                    }
+                },
+                "force": {
+                    "flag": [
+                        "-F",
+                        "--force"
+                    ],
+                    "parameter": {
+                        "help": "list of packages to force",
+                        "metavar": "PACKAGE",
+                        "nargs": "*"
+                    }
+                },
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "filter",
+                            "path"
+                        ],
+                        "implementation": "clean",
+                        "instruction": {
+                            "help": "clean build root environment",
+                            "name": "clean"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "filter",
+                            "path"
+                        ],
+                        "implementation": "build",
+                        "instruction": {
+                            "help": "build build root environment",
+                            "name": "build"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "filter",
+                            "path"
+                        ],
+                        "implementation": "clean.package",
+                        "instruction": {
+                            "help": "delete exploded package",
+                            "name": "clean.package"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        },
+        "package implementation": {
+            "bcl2fastq": {
+                "job implementation": "ppkg.Bcl2Fastq"
+            },
+            "bz2": {
+                "job implementation": "ppkg.BZip2"
+            },
+            "htslib": {
+                "job implementation": "ppkg.Make"
+            },
+            "libdeflate": {
+                "job implementation": "ppkg.LibDeflate"
+            },
+            "pheniqs": {
+                "job implementation": "ppkg.Make"
+            },
+            "rapidjson": {
+                "job implementation": "ppkg.RapidJSON"
+            },
+            "samtools": {
+                "job implementation": "ppkg.SAMTools"
+            },
+            "xz": {
+                "job implementation": "ppkg.Make"
+            },
+            "zlib": {
+                "job implementation": "ppkg.Make"
+            }
+        }
+    },
+    "shell": {
+        "interface": {
+            "argument": [
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "path": {
+                    "flag": [
+                        "path"
+                    ],
+                    "parameter": {
+                        "help": "path",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "path"
+                        ],
+                        "implementation": "zsh_completion",
+                        "instruction": {
+                            "help": "generate zsh completion script",
+                            "name": "zsh"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        }
+    },
+    "subsample": {
+        "interface": {
+            "argument": [
+                "fraction",
+                "input",
+                "output",
+                "capacity",
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "capacity": {
+                    "flag": [
+                        "-C",
+                        "--capacity"
+                    ],
+                    "parameter": {
+                        "default": 128,
+                        "help": "IO buffer capacity",
+                        "metavar": "INT",
+                        "type": "int"
+                    }
+                },
+                "fraction": {
+                    "flag": [
+                        "-f",
+                        "--fraction"
+                    ],
+                    "parameter": {
+                        "default": 0.1,
+                        "help": "fraction of reads to sample",
+                        "metavar": "FLOAT",
+                        "type": "float"
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "help": "input SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "output": {
+                    "flag": [
+                        "-o",
+                        "--output"
+                    ],
+                    "parameter": {
+                        "help": "output SAM encoded file path",
+                        "metavar": "PATH"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            }
+        }
+    }
+}

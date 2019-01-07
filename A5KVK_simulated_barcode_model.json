@@ -2,7 +2,7 @@
     "count": 0,
     "flowcell id": "A5KVK",
     "genealogy": {
-        "barcode simulation id": "64e2381b-1058-46e8-90d7-afed285310df",
+        "bsid": "64e2381b-1058-46e8-90d7-afed285310df",
         "document type": "barcode simulation report"
     },
     "instrument id": "PHENIQS",
@@ -1417,7 +1417,7 @@
                 "simulated nucleotide": 0
             }
         },
-        "error model reference": "lrsim",
+        "substitution model reference": "lrsim",
         "expected barcode error": 0,
         "index": 0,
         "noise": 0.08972924030968701,

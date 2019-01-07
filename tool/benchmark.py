@@ -20,138 +20,75 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    # SIMULATION_PRESET="A5KVK"
-    #
-    # PHENIQS_CODE_HOME="~/code/biosails/pheniqs"
-    # DEML_CMD="deML"
-    # PHENIQS_CMD="pheniqs"
-    # SAMTOOLS_CMD="samtools"
-    # SIMULATE_PY_CMD="$PHENIQS_CODE_HOME/tool/simulate.py"
-    # SUMMARIZE_PY_CMD="$PHENIQS_CODE_HOME/tool/summarize.py"
-    # EXTRACT_PRIOR_PY_CMD="$PHENIQS_CODE_HOME/tool/prior.py"
-    # ANALYZE_PY_CMD="$PHENIQS_CODE_HOME/tool/analyze.py"
-    # TODEML_PY_CMD="$PHENIQS_CODE_HOME/tool/todeml.py"
-    # SIMULATION_CONFIGURATION="$PHENIQS_CODE_HOME/simulation/core.json"
-    #
-    # PHENIQS_DEMUX_CONFIG="$PHENIQS_CODE_HOME/simulation/$SIMULATION_PRESET/pheniqs_annotate.json"
-    # DEML_INDEX_FILE="$PHENIQS_CODE_HOME/simulation/$SIMULATION_PRESET/deml_index.txt"
-    # SOURCE_DATA="~/Downloads/A5KVK_tiny.bam"
-    #
-    #
-    # make_simulated_for_pheniqs() {
-    #     echo "\
-    #     time $SAMTOOLS_CMD view $SOURCE_DATA | $SIMULATE_PY_CMD \
-    #     --configuration $SIMULATION_CONFIGURATION \
-    #     --preset $1 \
-    #     --report $1_model.json | \
-    #     $SAMTOOLS_CMD view -b > $1_simulated.bam \
-    #     "
-    # }
-    #
-    # make_simulated_for_deml() {
-    #     echo "\
-    #     time $SAMTOOLS_CMD view $1_simulated.bam | $TODEML_PY_CMD | \
-    #     $SAMTOOLS_CMD view -b > $1_simulated_deml_syntax.bam \
-    #     "
-    # }
-    #
-    # pheniqs_sense_prior() {
-    #     echo "\
-    #     time $PHENIQS_CMD mux \
-    #     --sense-input \
-    #     --output /dev/null \
-    #     --config $PHENIQS_DEMUX_CONFIG \
-    #     --input $1_simulated.bam \
-    #     --report $1_uniform_report.json \
-    #     "
-    # }
-    #
-    # pheniqs_adjust_prior() {
-    #     echo "\
-    #     time $EXTRACT_PRIOR_PY_CMD \
-    #     --original $PHENIQS_DEMUX_CONFIG \
-    #     --model $1_model.json \
-    #     --report $1_uniform_report.json \
-    #     --adjusted $1_adjusted.json \
-    #     "
-    # }
-    #
-    # pheniqs_demux() {
-    #     echo "\
-    #     time $PHENIQS_CMD mux \
-    #     --sense-input \
-    #     --input $1_simulated.bam \
-    #     --config $1_adjusted.json \
-    #     --output $1_pheniqs_demux.bam \
-    #     --report $1_pheniqs_demux_report.json \
-    #     "
-    # }
-    #
-    # deml_demux() {
-    #     echo "\
-    #     time $DEML_CMD \
-    #     --index $DEML_INDEX_FILE \
-    #     --outfile $1_deml_demux.bam \
-    #     --summary $1_deml_summary.txt \
-    #     $1_simulated_deml_syntax.bam \
-    #     "
-    # }
-    #
-    # pheniqs_analyze() {
-    #     echo "\
-    #     time $SAMTOOLS_CMD view $1_pheniqs_demux.bam | \
-    #     $ANALYZE_PY_CMD --report $1_pheniqs_analysis.json \
-    #     $1_model.json \
-    #     "
-    # }
-    #
-    # deml_analyze() {
-    #     echo "\
-    #     time $SAMTOOLS_CMD view $1_deml_demux.bam | \
-    #     $ANALYZE_PY_CMD --report $1_deml_analysis.json \
-    #     $1_model.json \
-    #     "
-    # }
-    #
-    # summarize() {
-    #     echo "\
-    #     time $SUMMARIZE_PY_CMD . \
-    #     "
-    # }
-    #
-    # do_good() {
-    #     make_simulated_for_pheniqs $1;
-    #     make_simulated_for_deml $1;
-    #     pheniqs_sense_prior $1;
-    #     pheniqs_adjust_prior $1;
-    #     pheniqs_demux $1;
-    #     pheniqs_analyze $1;
-    #     deml_demux $1;
-    #     deml_analyze $1;
-    #     summarize $1;
-    # }
-    #
-    # do_good $SIMULATION_PRESET
+import io
+import os
+import re
+import sys
+import json
+import numpy
+import logging
+from copy import deepcopy
+from datetime import datetime, date
 
-from core import *
-from simulate_barcode import SimulateBarcode
-from simulate_error import SimulateError
-from todeml import ToDeML
-from prior import Prior
-from analyze import Analyze
-from collect import Collect
-from summarize import Summarize
+from core.error import *
+from core import CommandLineParser
+from core import Job
+from core import merge
+from core import to_json
+from core import prepare_path
+
+from simulation import SensePrior, AdjustPrior
+from simulation import SimulateBarcode
+from simulation import SimulateSubstitution
+from simulation import PheniqsDemultiplex
+from simulation import DemlDemultiplex
+from simulation import ToDeML
+from simulation import Analyze
+# from simulation import Collect
+# from simulation import Summarize
 
 class Benchmark(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
+        self.instruction['database path'] = os.path.join(self.home, 'benchmark.json')
+
+    @property
+    def db(self):
+        return self.ontology['db']
+
+    def load_db(self):
+        if os.path.exists(self.instruction['database path']):
+            self.log.debug('loading existing database %s', self.instruction['database path'])
+            with io.open(self.instruction['database path'], 'rb') as file:
+                try:
+                    self.ontology['db'] = json.loads(file.read().decode('utf8'))
+                except json.decoder.JSONDecodeError as e:
+                    self.log.warning('ignoring corrupt database %s', self.instruction['database path'])
+
+        if 'db' not in self.ontology:
+            self.ontology['db'] = { 'created': str(datetime.now()) }
+
+        self.db['loaded'] = str(datetime.now())
+        if 'simulation' not in self.db:
+            self.db['simulation'] = {}
+
+    def persist_db(self):
+        prepare_path(self.instruction['database path'], self.log)
+        with io.open(self.instruction['database path'], 'wb') as file:
+            self.log.debug('persisting database %s', self.instruction['database path'])
+            self.db['saved'] = str(datetime.now())
+            file.write(to_json(self.db).encode('utf8'))
 
     def execute(self):
+        self.load_db()
+        if self.action == 'plan':
+            self.plan(self.ontology)
+
         if self.action == 'simulate_barcode':
             self.simulate_barcode(self.ontology)
 
-        elif self.action == 'simulate_error':
-            self.simulate_error(self.ontology)
+        elif self.action == 'simulate_substitution':
+            self.simulate_substitution(self.ontology)
 
         elif self.action == 'todeml':
             self.todeml(self.ontology)
@@ -179,158 +116,292 @@ class Benchmark(Job):
 
         elif self.action == 'summarize':
             self.summarize(self.ontology)
+        self.persist_db()
+
+    def plan(self, ontology):
+        path = os.path.realpath(self.instruction['path'])
+        if os.path.exists(path):
+            self.log.debug('loading simulation plan %s', self.instruction['path'])
+            with io.open(path, 'rb') as file:
+                plan = json.loads(file.read().decode('utf8'))
+
+                if 'job' in plan:
+                    compiled = []
+                    for job in plan['job']:
+                        instruction = merge(self.instruction, job)
+                        if 'default' in plan:
+                            instruction = merge(plan['default'], instruction)
+                        compiled.append({ 'instruction': instruction })
+
+                    for job in compiled:
+                        if 'action' in job['instruction']:
+                            if job['instruction']['action'] == 'benchmark_substitution':
+                                self.benchmark_substitution(job)
+
+                            elif job['instruction']['action'] == 'simulate_barcode':
+                                self.simulate_barcode(job)
+
+                            elif job['instruction']['action'] == 'simulate_substitution':
+                                self.simulate_substitution(job)
+
+                            elif job['instruction']['action'] == 'todeml':
+                                self.todeml(self.ontology)
+
+                            elif job['instruction']['action'] == 'sense_prior':
+                                self.sense_prior(job)
+
+                            elif job['instruction']['action'] == 'adjust_prior':
+                                self.adjust_prior(job)
+
+                            elif job['instruction']['action'] == 'demux_pheniqs':
+                                self.demux_pheniqs(job)
+
+                            elif job['instruction']['action'] == 'demux_deml':
+                                self.demux_deml(job)
+
+                            elif job['instruction']['action'] == 'analyze_pheniqs':
+                                self.analyze_pheniqs(job)
+
+                            elif job['instruction']['action'] == 'analyze_deml':
+                                self.analyze_deml(job)
+
+        else: raise NoConfigurationFileError('plan file {} not found'.format(path))
+
+    def benchmark_substitution(self, ontology):
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'simulate_substitution'
+        job = self.simulate_substitution(o)
+        ssid = job.ssid
+
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'todeml'
+        o['instruction']['ssid'] = ssid
+        job = self.todeml(o)
+
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'sense_prior'
+        o['instruction']['ssid'] = ssid
+        job = self.sense_prior(o)
+
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'adjust_prior'
+        o['instruction']['ssid'] = ssid
+        job = self.adjust_prior(o)
+
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'demux_pheniqs'
+        o['instruction']['ssid'] = ssid
+        job = self.demux_pheniqs(o)
+
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'demux_deml'
+        o['instruction']['ssid'] = ssid
+        job = self.demux_deml(o)
+
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'analyze_pheniqs'
+        o['instruction']['ssid'] = ssid
+        job = self.analyze_pheniqs(o)
+
+        o = deepcopy(ontology)
+        o['instruction']['action'] = 'analyze_deml'
+        o['instruction']['ssid'] = ssid
+        job = self.analyze_deml(o)
 
     def simulate_barcode(self, ontology):
+        job = None
         self.log.info('simulating barcode indices')
-        pipeline = SimulateBarcode(ontology)
-        pipeline.execute()
 
-    def simulate_error(self, ontology):
+        if 'bsid' in ontology['instruction'] and ontology['instruction']['bsid'] in self.db['simulation']:
+            barcode_simulation_node = self.db['simulation'][ontology['instruction']['bsid']]
+            ontology['model'] = deepcopy(barcode_simulation_node['barcode']['model'])
+
+        job = SimulateBarcode(ontology)
+        job.execute()
+
+        if job.bsid not in self.db['simulation']:
+            self.db['simulation'][job.bsid] = {}
+
+        if 'barcode' not in self.db['simulation'][job.bsid]:
+            self.db['simulation'][job.bsid]['barcode'] = {}
+
+        if 'substitution' not in self.db['simulation'][job.bsid]:
+            self.db['simulation'][job.bsid]['substitution'] = {}
+
+        self.db['simulation'][job.bsid]['barcode']['model'] = job.summary
+
+        self.persist_db()
+        return job
+
+    def simulate_substitution(self, ontology):
+        job = None
         self.log.info('simulating errors on barcode indices')
-        pipeline = SimulateError(ontology)
-        pipeline.execute()
+
+        # load the barcode simulation model
+        if 'bsid' in ontology['instruction'] and ontology['instruction']['bsid'] in self.db['simulation']:
+            barcode_simulation_node = self.db['simulation'][ontology['instruction']['bsid']]
+            if 'ssid' in ontology['instruction'] and ontology['instruction']['ssid'] in barcode_simulation_node['substitution']:
+                substitution_simulation_node = barcode_simulation_node['substitution'][ontology['instruction']['ssid']]
+                ontology['model'] = deepcopy(substitution_simulation_node['model'])
+            else:
+                ontology['model'] = deepcopy(barcode_simulation_node['barcode']['model'])
+
+            job = SimulateSubstitution(ontology)
+            job.execute()
+
+            barcode_simulation_node['substitution'][job.ssid] = {
+                'model': job.summary,
+            }
+        else:
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
+
+        self.persist_db()
+        return job
 
     def todeml(self, ontology):
+        job = None
         self.log.info('transcoding simulated data to deML syntax')
-        pipeline = ToDeML(ontology)
-        pipeline.execute()
+
+        # load the barcode simulation model
+        if 'bsid' in ontology['instruction'] and ontology['instruction']['bsid'] in self.db['simulation']:
+            barcode_simulation_node = self.db['simulation'][ontology['instruction']['bsid']]
+            if 'ssid' in ontology['instruction'] and ontology['instruction']['ssid'] in barcode_simulation_node['substitution']:
+                substitution_simulation_node = barcode_simulation_node['substitution'][ontology['instruction']['ssid']]
+                if 'model' in substitution_simulation_node:
+                    ontology['model'] = deepcopy(substitution_simulation_node['model'])
+                    job = ToDeML(ontology)
+                    job.execute()
+        return job
 
     def sense_prior(self, ontology):
+        job = None
         self.log.info('estimating priors')
-        command = [ 'pheniqs', 'mux', '--sense-input', '--output', '/dev/null' ]
 
-        self.log.info('estimating priors for %s with configuration %s', self.instruction['input'], self.instruction['configuration'])
-
-        command.append('--config')
-        command.append(self.instruction['configuration'])
-
-        command.append('--input')
-        command.append(self.instruction['input'])
-
-        command.append('--report')
-        command.append(self.instruction['report'])
-
-        self.log.debug(' '.join([str(i) for i in command]))
-        process = Popen(
-            args=command,
-            # env=self.env,
-            cwd=self.current_working_directoy,
-            # stdout=PIPE,
-            # stderr=PIPE
-        )
-        output, error = process.communicate()
-        code = process.returncode
-        if code == 0:
-            # self.stdout.write(output.decode('utf8'))
-            # self.stderr.write(error.decode('utf8'))
-            pass
+        # load the substitution simulation model
+        if ontology['instruction']['bsid'] in self.db['simulation']:
+            substitution = self.db['simulation'][ontology['instruction']['bsid']]['substitution']
+            if ontology['instruction']['ssid'] in substitution:
+                experiment = substitution[ontology['instruction']['ssid']]
+                ontology['model'] = deepcopy(experiment['model'])
+                job = SensePrior(ontology)
+                job.execute()
+                experiment['sense prior execution'] = job.execution
+            else:
+                self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
-            print(output.decode('utf8'))
-            print(error.decode('utf8'))
-            raise CommandFailedError('pheniqs returned {} when estimating prior'.format(code))
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
+
+        self.persist_db()
+        return job
 
     def adjust_prior(self, ontology):
+        job = None
         self.log.info('adjusting priors')
-        pipeline = Prior(ontology)
-        pipeline.execute()
+
+        # load the substitution simulation model
+        if ontology['instruction']['bsid'] in self.db['simulation']:
+            substitution = self.db['simulation'][ontology['instruction']['bsid']]['substitution']
+            if ontology['instruction']['ssid'] in substitution:
+                experiment = substitution[ontology['instruction']['ssid']]
+                ontology['model'] = deepcopy(experiment['model'])
+                job = AdjustPrior(ontology)
+                job.execute()
+            else:
+                self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
+        else:
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
+        return job
 
     def demux_pheniqs(self, ontology):
+        job = None
         self.log.info('demultiplexing with pheniqs')
-        command = [ 'pheniqs', 'mux', '--sense-input' ]
 
-        self.log.info('pheniqs demultiplexing %s with configuration %s', self.instruction['input'], self.instruction['configuration'])
-
-        command.append('--config')
-        command.append(self.instruction['configuration'])
-
-        command.append('--input')
-        command.append(self.instruction['input'])
-
-        command.append('--output')
-        command.append(self.instruction['output'])
-
-        command.append('--report')
-        command.append(self.instruction['report'])
-
-        self.log.debug(' '.join([str(i) for i in command]))
-        process = Popen(
-            args=command,
-            # env=self.env,
-            cwd=self.current_working_directoy,
-            # stdout=PIPE,
-            # stderr=PIPE
-        )
-        output, error = process.communicate()
-        code = process.returncode
-        if code == 0:
-            # self.stdout.write(output.decode('utf8'))
-            # self.stderr.write(error.decode('utf8'))
-            pass
+        # load the substitution simulation model
+        if ontology['instruction']['bsid'] in self.db['simulation']:
+            substitution = self.db['simulation'][ontology['instruction']['bsid']]['substitution']
+            if ontology['instruction']['ssid'] in substitution:
+                experiment = substitution[ontology['instruction']['ssid']]
+                ontology['model'] = deepcopy(experiment['model'])
+                job = PheniqsDemultiplex(ontology)
+                job.execute()
+                experiment['pheniqs demultiplex execution'] = job.execution
+            else:
+                self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
-            print(output.decode('utf8'))
-            print(error.decode('utf8'))
-            raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(code))
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
+
+        self.persist_db()
+        return job
 
     def demux_deml(self, ontology):
-        self.log.info('demultiplexing with deML')
-        command = [ 'deML' ]
+        job = None
+        self.log.info('demultiplexing with deml')
 
-        self.log.info('deML demultiplexing %s with configuration %s', self.instruction['input'], self.instruction['configuration'])
-
-        command.append('--index')
-        command.append(self.instruction['configuration'])
-
-        command.append('--outfile')
-        command.append(self.instruction['output'])
-
-        command.append('--summary')
-        command.append(self.instruction['report'])
-
-        command.append(self.instruction['input'])
-
-        self.log.debug(' '.join([str(i) for i in command]))
-        process = Popen(
-            args=command,
-            # env=self.env,
-            cwd=self.current_working_directoy,
-            # stdout=PIPE,
-            # stderr=PIPE
-        )
-        output, error = process.communicate()
-        code = process.returncode
-        if code == 0:
-            # self.stdout.write(output.decode('utf8'))
-            # self.stderr.write(error.decode('utf8'))
-            pass
+        # load the substitution simulation model
+        if ontology['instruction']['bsid'] in self.db['simulation']:
+            substitution = self.db['simulation'][ontology['instruction']['bsid']]['substitution']
+            if ontology['instruction']['ssid'] in substitution:
+                experiment = substitution[ontology['instruction']['ssid']]
+                ontology['model'] = deepcopy(experiment['model'])
+                job = DemlDemultiplex(ontology)
+                job.execute()
+                experiment['deml demultiplex execution'] = job.execution
+            else:
+                self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
-            print(output.decode('utf8'))
-            print(error.decode('utf8'))
-            raise CommandFailedError('deML returned {} when demultiplexing'.format(code))
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
+
+        self.persist_db()
+        return job
 
     def analyze_pheniqs(self, ontology):
+        job = None
         self.log.info('analyzing pheniqs results')
         ontology['instruction']['tool'] = 'pheniqs'
-        pipeline = Analyze(ontology)
-        pipeline.execute()
+
+        # load the substitution simulation model
+        if ontology['instruction']['bsid'] in self.db['simulation']:
+            substitution = self.db['simulation'][ontology['instruction']['bsid']]['substitution']
+            if ontology['instruction']['ssid'] in substitution:
+                experiment = substitution[ontology['instruction']['ssid']]
+                ontology['model'] = deepcopy(experiment['model'])
+                job = Analyze(ontology)
+                job.execute()
+                experiment['pheniqs demultiplex analysis'] = job.summary
+            else:
+                self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
+        else:
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
+
+        self.persist_db()
+        return job
 
     def analyze_deml(self, ontology):
+        job = None
         self.log.info('analyzing deML results')
         ontology['instruction']['tool'] = 'deml'
-        pipeline = Analyze(ontology)
-        pipeline.execute()
 
-    def collect(self, ontology):
-        pipeline = Collect(ontology)
-        pipeline.execute()
+        # load the substitution simulation model
+        if ontology['instruction']['bsid'] in self.db['simulation']:
+            substitution = self.db['simulation'][ontology['instruction']['bsid']]['substitution']
+            if ontology['instruction']['ssid'] in substitution:
+                experiment = substitution[ontology['instruction']['ssid']]
+                ontology['model'] = deepcopy(experiment['model'])
+                job = Analyze(ontology)
+                job.execute()
+                experiment['deml demultiplex analysis'] = job.summary
+            else:
+                self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
+        else:
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
 
-    def summarize(self, ontology):
-        pipeline = Summarize(ontology)
-        pipeline.execute()
+        self.persist_db()
+        return job
 
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
-    pipeline = None
+    job = None
 
     try:
         command = CommandLineParser('benchmark')
@@ -341,8 +412,8 @@ def main():
             if 'verbosity' in command.instruction and command.instruction['verbosity']:
                 logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
 
-            pipeline = Benchmark(command.configuration)
-            pipeline.execute()
+            job = Benchmark(command.configuration)
+            job.execute()
 
     except (
         PermissionDeniedError,
@@ -363,7 +434,7 @@ def main():
             sys.exit(1)
 
     finally:
-        if pipeline: pipeline.close()
+        if job: job.close()
 
     sys.exit(0)
 
