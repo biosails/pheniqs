@@ -46,44 +46,48 @@ class SensePrior(Shell):
         return self.genealogy['ssid']
 
     def execute(self):
-        command = [ 'pheniqs', 'mux', '--sense-input', '--output', '/dev/null' ]
-        command.append('--config')
-        command.append(os.path.join(self.home, self.location['pheniqs uniform configuration path']))
-        command.append('--input')
-        command.append(os.path.join(self.home, self.location['simulated substitution path']))
-        command.append('--report')
-        command.append(os.path.join(self.home, self.location['pheniqs prior estimate path']))
+        product = os.path.join(self.home, self.location['pheniqs prior estimate path'])
+        if not os.path.exists(product):
+            command = [ 'pheniqs', 'mux', '--sense-input', '--output', '/dev/null' ]
+            command.append('--config')
+            command.append(os.path.join(self.home, self.location['pheniqs uniform configuration path']))
+            command.append('--input')
+            command.append(os.path.join(self.home, self.location['simulated substitution path']))
+            command.append('--report')
+            command.append(os.path.join(self.home, self.location['pheniqs prior estimate path']))
 
-        self.execution['command'] = ' '.join([str(i) for i in command])
-        self.log.debug('executing %s', self.execution['command'])
+            self.execution['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution['command'])
 
-        process = Popen(
-            args=self.posix_time_command + command,
-            cwd=self.current_working_directoy,
-            stdout=PIPE,
-            stderr=PIPE
-        )
-        output, error = process.communicate()
-        self.execution['return code'] = process.returncode
+            process = Popen(
+                args=self.posix_time_command + command,
+                cwd=self.current_working_directoy,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            output, error = process.communicate()
+            self.execution['return code'] = process.returncode
 
-        for line in output.decode('utf8').splitlines():
-            line = line.strip()
-            if line:
-                self.execution['stdout'].append(line)
+            for line in output.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    self.execution['stdout'].append(line)
 
-        for line in error.decode('utf8').splitlines():
-            line = line.strip()
-            if line:
-                match = self.posix_time_head_ex.search(line)
-                if match:
-                    for k,v in match.groupdict().items():
-                        self.execution[k] = float(v)
-                else:
-                    self.execution['stderr'].append(line)
+            for line in error.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    match = self.posix_time_head_ex.search(line)
+                    if match:
+                        for k,v in match.groupdict().items():
+                            self.execution[k] = float(v)
+                    else:
+                        self.execution['stderr'].append(line)
 
-        if self.execution['return code'] != 0:
-            print(to_json(self.execution))
-            raise CommandFailedError('pheniqs returned {} when estimating prior'.format(self.execution['return code']))
+            if self.execution['return code'] != 0:
+                print(to_json(self.execution))
+                raise CommandFailedError('pheniqs returned {} when estimating prior'.format(self.execution['return code']))
+        else:
+            self.log.info('skipping prior estimation because %s exists', self.location['pheniqs prior estimate path'])
 
 class AdjustPrior(Job):
     def __init__(self, ontology):
@@ -110,11 +114,15 @@ class AdjustPrior(Job):
         return self.ontology['adjusted']
 
     def execute(self):
-        self.load_original()
-        self.load_estimate()
-        self.adjust_prior()
-        self.compare_to_model()
-        self.save_adjusted_prior_pheniqs_config()
+        self.instruction['output'] = os.path.join(self.home, self.location['pheniqs adjusted configuration path'])
+        if not os.path.exists(self.instruction['output']):
+            self.load_original()
+            self.load_estimate()
+            self.adjust_prior()
+            self.compare_to_model()
+            self.save_adjusted_prior_pheniqs_config()
+        else:
+            self.log.info('skipping prior adjustment because %s exists', self.location['pheniqs adjusted configuration path'])
 
     def load_original(self):
         path = os.path.join(self.home, self.location['pheniqs uniform configuration path'])
@@ -218,6 +226,6 @@ class AdjustPrior(Job):
                         compare_decoder_to_model(decoder, model)
 
     def save_adjusted_prior_pheniqs_config(self):
-        path = os.path.join(self.home, self.location['pheniqs adjusted configuration path'])
+        path = os.path.join(self.instruction['output'])
         with io.open(path, 'w') as file:
             file.write(to_json(self.adjusted))

@@ -177,9 +177,7 @@
                         "argument": [
                             "path",
                             "preset",
-                            "capacity",
-                            "verbosity",
-                            "version"
+                            "capacity"
                         ],
                         "implementation": "plan",
                         "instruction": {
@@ -197,12 +195,37 @@
                     },
                     {
                         "argument": [
-                            "input",
-                            "preset",
                             "bsid",
-                            "capacity",
-                            "verbosity",
-                            "version"
+                            "ssid",
+                            "error",
+                            "capacity"
+                        ],
+                        "implementation": "benchmark_substitution",
+                        "instruction": {
+                            "description": "Simulate barcode errors based on the quality scores and benchmark against resulting file.",
+                            "help": "Benchmakr simulate barcode errors.",
+                            "name": "benchmark_substitution"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid",
+                            "preset"
+                        ],
+                        "implementation": "summarize",
+                        "instruction": {
+                            "description": "Summarize benchmark results.",
+                            "help": "Summarize benchmark results.",
+                            "name": "summarize"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "preset",
+                            "input",
+                            "capacity"
                         ],
                         "implementation": "simulate_barcode",
                         "instruction": {
@@ -223,25 +246,7 @@
                             "bsid",
                             "ssid",
                             "error",
-                            "capacity",
-                            "verbosity",
-                            "version"
-                        ],
-                        "implementation": "benchmark_substitution",
-                        "instruction": {
-                            "description": "Simulate barcode errors based on the quality scores and benchmark against resulting file.",
-                            "help": "Benchmakr simulate barcode errors.",
-                            "name": "benchmark_substitution"
-                        }
-                    },
-                    {
-                        "argument": [
-                            "bsid",
-                            "ssid",
-                            "error",
-                            "capacity",
-                            "verbosity",
-                            "version"
+                            "capacity"
                         ],
                         "implementation": "simulate_substitution",
                         "instruction": {
@@ -254,9 +259,7 @@
                         "argument": [
                             "bsid",
                             "ssid",
-                            "capacity",
-                            "verbosity",
-                            "version"
+                            "capacity"
                         ],
                         "implementation": "todeml",
                         "instruction": {
@@ -268,9 +271,7 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid",
-                            "verbosity",
-                            "version"
+                            "ssid"
                         ],
                         "implementation": "sense_prior",
                         "instruction": {
@@ -282,9 +283,7 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid",
-                            "verbosity",
-                            "version"
+                            "ssid"
                         ],
                         "implementation": "adjust_prior",
                         "instruction": {
@@ -296,9 +295,7 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid",
-                            "verbosity",
-                            "version"
+                            "ssid"
                         ],
                         "implementation": "demux_pheniqs",
                         "instruction": {
@@ -309,9 +306,7 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid",
-                            "verbosity",
-                            "version"
+                            "ssid"
                         ],
                         "implementation": "demux_deml",
                         "instruction": {
@@ -323,9 +318,7 @@
                         "argument": [
                             "bsid",
                             "ssid",
-                            "capacity",
-                            "verbosity",
-                            "version"
+                            "capacity"
                         ],
                         "implementation": "analyze_pheniqs",
                         "instruction": {
@@ -338,9 +331,7 @@
                         "argument": [
                             "bsid",
                             "ssid",
-                            "capacity",
-                            "verbosity",
-                            "version"
+                            "capacity"
                         ],
                         "implementation": "analyze_deml",
                         "instruction": {

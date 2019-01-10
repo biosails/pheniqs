@@ -380,7 +380,6 @@ class SimulateBarcode(Transcode):
         else:
             self.log.info('skipping deml index because %s exists', self.location['deml index path'])
 
-
     def save_accurate_prior_pheniqs_config(self):
         def extract_codec(decoder):
             compiled = {

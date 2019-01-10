@@ -24,6 +24,15 @@ import os
 from core.error import *
 from simulation.transcode import Transcode
 
+# FDR = FP / ( FP + TP )
+# Precision = TP / ( FP + TP )
+# MR = FN / ( FN + TP )
+# recall = TP / ( FN + TP )
+
+def is_qc_fail(read):
+    flag = int(read['segment'][0]['fixed'][1])
+    return (flag & 0x200 == 0x200)
+
 class Analyze(Transcode):
     def __init__(self, ontology):
         Transcode.__init__(self, ontology)
@@ -38,70 +47,38 @@ class Analyze(Transcode):
         return self.genealogy['ssid']
 
     def load(self):
+        def load_barcode_model(barcode):
+            barcode['accumulate'] = {}
+            for rank in ['real', 'noise']:
+                barcode['accumulate'][rank] = {}
+                for qc in ['fail', 'pass']:
+                    barcode['accumulate'][rank][qc] = {}
+                    for item in [ 'count', 'TP', 'FP', 'FN' ]:
+                        barcode['accumulate'][rank][qc][item] = 0
+
         def load_decoder_model(decoder):
+            # load enumerated barcode by index
             decoder['barcode by index.compiled'] = [ None ] * (decoder['barcode cardinality'] + 1)
             decoder['barcode by index.compiled'][0] = decoder['unclassified']
             for barcode in decoder['codec'].values():
                 decoder['barcode by index.compiled'][barcode['index']] = barcode
 
-            for qc in ['qc fail', 'qc pass']:
-                for barcode in decoder['barcode by index.compiled']:
-                    barcode[qc] = {
-                        'count': 0,
-                        'FP': 0,
-                        'FN': 0,
-                        'TP': 0,
-                        # 'TN': 0,
-                        'precision': 0,
-                        'recall': 0,
-                        'FDR': 0,
-                        'MR': 0,
-                    }
+            for barcode in decoder['barcode by index.compiled']:
+                load_barcode_model(barcode)
 
-            if 'classified' not in decoder:
-                decoder['classified'] = {}
-
-            for qc in ['qc fail', 'qc pass']:
-                decoder[qc] = {
-                    'count': 0,
-                    'FP': 0,
-                    'FN': 0,
-                    'TP': 0,
-                    # 'TN': 0,
-                    'precision': 0,
-                    'recall': 0,
-                    'FDR': 0,
-                    'MR': 0,
-                }
-                decoder['classified'][qc] = {
-                    'count': 0,
-                    'FP': 0,
-                    'FN': 0,
-                    'TP': 0,
-                    # 'TN': 0,
-                    'precision': 0,
-                    'recall': 0,
-                    'FDR': 0,
-                    'MR': 0,
-                }
-
-            decoder['macro'] = {}
-            for qc in ['qc fail', 'qc pass']:
-                decoder['macro'][qc] = {
-                    'precision': 0,
-                    'recall': 0,
-                    'FDR': 0,
-                    'MR': 0,
-                }
-
+        def load_multiplex_model(decoder):
+            # load RG to barcode mapping
             decoder['barcode by rg.compiled'] = {}
+
             decoder['unclassified']['RG'] = '{}:{}'.format(self.flowcell_id, 'undetermined')
             decoder['barcode by rg.compiled'][decoder['unclassified']['RG']] = decoder['unclassified']
+
             for barcode in decoder['codec'].values():
                 barcode['RG'] = '{}:{}'.format(self.flowcell_id, ''.join(barcode['barcode']))
                 decoder['barcode by rg.compiled'][barcode['RG']] = barcode
 
         Transcode.load(self)
+
         for topic in [ 'multiplex', 'cellular', 'molecular' ]:
             if topic in self.model:
                 if isinstance(self.model[topic], dict):
@@ -113,99 +90,111 @@ class Analyze(Transcode):
                         load_decoder_model(decoder)
                         self.decoder_by_index.append(decoder)
 
-        self.instruction['input'] = os.path.join(self.home, self.location['{} demultiplex path'.format(self.genealogy['tool'])])
+        if 'multiplex' in self.model:
+            load_multiplex_model(self.model['multiplex'])
 
-    def is_qc_fail(self, read):
-        flag = int(read['segment'][0]['fixed'][1])
-        return (flag & 0x200 == 0x200)
+        self.instruction['input'] = os.path.join(self.home, self.location['{} demultiplex path'.format(self.genealogy['tool'])])
 
     def manipulate(self):
         while(len(self.input_buffer) > 0):
             read = self.input_buffer.pop(0)
             qname = read['segment'][0]['fixed'][0]
             self.parse_qname(read)
-            for hint, decoder in zip(read['hint'], self.decoder_by_index):
 
-                true_barcode = decoder['barcode by index.compiled'][hint]
-                if self.is_qc_fail(read):
-                    qc = 'qc fail'
-                else:
-                    qc = 'qc pass'
+            if 'multiplex' in self.model:
+                hint = read['hint'][self.model['multiplex']['index']]
 
-                # if RG is not present assign to unclassified
+                # find the true barcode from the header
+                true_barcode = self.model['multiplex']['barcode by index.compiled'][hint]
+
+                # find the decoded barcode from the assigned RG
                 if 'RG' in read['segment'][0]['auxiliary']:
-                    RG = read['segment'][0]['auxiliary']['RG']['VALUE']
+                    decoded_barcode = self.model['multiplex']['barcode by rg.compiled'][read['segment'][0]['auxiliary']['RG']['VALUE']]
                 else:
-                    RG = decoder['barcode by index.compiled'][0]['RG']
+                    # if RG is not present assign to unclassified
+                    decoded_barcode = self.model['multiplex']['barcode by rg.compiled'][self.model['multiplex']['barcode by index.compiled'][0]['RG']]
 
-                decoded_barcode = decoder['barcode by rg.compiled'][RG]
-                decoded_barcode[qc]['count'] += 1
-
-                if true_barcode['RG'] == decoded_barcode['RG']:
-                    true_barcode[qc]['TP'] += 1
-                    # for barcode in self.barcode_by_index[decoder['key']]:
-                    #     if barcode['index'] != true_barcode['index']:
-                    #         barcode[qc]['TN'] += 1
+                # fail or pass quality control
+                if is_qc_fail(read):
+                    qc = 'fail'
                 else:
-                    true_barcode[qc]['FN'] += 1
-                    decoded_barcode[qc]['FP'] += 1
-                    # for barcode in self.barcode_by_index[decoder['key']]:
-                    #     if barcode['index'] != true_barcode['index'] and barcode['index'] != decoded_barcode['index']:
-                    #         barcode[qc]['TN'] += 1
+                    qc = 'pass'
+
+                if true_barcode['index'] > 0:
+                    # real read, not noise
+                    if true_barcode['index'] == decoded_barcode['index']:
+                        # read is correctly classified
+                        true_barcode['accumulate']['real'][qc]['TP'] += 1
+                    else:
+                        # read is incorrectly classified
+                        if decoded_barcode['index'] > 0:
+                            # read is classified to another, real, barcode
+                            true_barcode['accumulate']['real'][qc]['FN'] += 1
+                            decoded_barcode['accumulate']['real'][qc]['FP'] += 1
+                        else:
+                            # read is classified as noise
+                            true_barcode['accumulate']['noise'][qc]['FN'] += 1
+                            decoded_barcode['accumulate']['noise'][qc]['FP'] += 1
+                else:
+                    # noise read : true_barcode['index'] == 0
+                    if decoded_barcode['index'] > 0:
+                        # noise read was classified to a real barcode
+                        decoded_barcode['accumulate']['noise'][qc]['FP'] += 1
+                        true_barcode['accumulate']['noise'][qc]['FN'] += 1
+                    else:
+                        # noise read is correctly classified as noise
+                        true_barcode['accumulate']['noise'][qc]['TP'] += 1
 
     def flush(self):
         pass
 
     def finalize(self):
-        for decoder in self.decoder_by_index:
-            for barcode in decoder['barcode by index.compiled']:
-                if barcode['index'] > 0:
-                    for qc in ['qc fail', 'qc pass']:
-                        if barcode[qc]['TP'] > 0 or barcode[qc]['FP'] > 0:
-                            barcode[qc]['FDR'] = barcode[qc]['FP'] / (barcode[qc]['FP'] + barcode[qc]['TP'])
-                            barcode[qc]['precision'] = barcode[qc]['TP'] / (barcode[qc]['FP'] + barcode[qc]['TP'])
-
-                        if barcode[qc]['FN'] > 0 or barcode[qc]['TP'] > 0:
-                            barcode[qc]['recall'] = barcode[qc]['TP'] / (barcode[qc]['TP'] + barcode[qc]['FN'])
-                            barcode[qc]['MR'] = barcode[qc]['FN'] / (barcode[qc]['TP'] + barcode[qc]['FN'])
-
-                        decoder[qc]['count'] += barcode[qc]['count']
-                        decoder[qc]['FP'] += barcode[qc]['FP']
-                        decoder[qc]['FN'] += barcode[qc]['FN']
-                        decoder[qc]['TP'] += barcode[qc]['TP']
-                        # decoder[qc]['TN'] += barcode[qc]['TN']
-
-                        if barcode['index'] > 0:
-                            decoder['classified'][qc]['count'] += barcode[qc]['count']
-                            decoder['classified'][qc]['FP'] += barcode[qc]['FP']
-                            decoder['classified'][qc]['FN'] += barcode[qc]['FN']
-                            decoder['classified'][qc]['TP'] += barcode[qc]['TP']
-                            # decoder['classified'][qc]['TN'] += barcode[qc]['TN']
-
-                        decoder['macro'][qc]['FDR'] += barcode[qc]['FDR']
-                        decoder['macro'][qc]['precision'] += barcode[qc]['precision']
-                        decoder['macro'][qc]['recall'] += barcode[qc]['recall']
-                        decoder['macro'][qc]['MR'] += barcode[qc]['MR']
-
-            for qc in ['qc fail', 'qc pass']:
-                if decoder[qc]['TP'] > 0 or decoder[qc]['FP'] > 0:
-                    decoder[qc]['FDR'] = decoder[qc]['FP'] / (decoder[qc]['FP'] + decoder[qc]['TP'])
-                    decoder[qc]['precision'] = decoder[qc]['TP'] / (decoder[qc]['FP'] + decoder[qc]['TP'])
-
-                if decoder[qc]['FN'] > 0 or decoder[qc]['TP'] > 0:
-                    decoder[qc]['recall'] = decoder[qc]['TP'] / (decoder[qc]['TP'] + decoder[qc]['FN'])
-                    decoder[qc]['MR'] = decoder[qc]['FN'] / (decoder[qc]['TP'] + decoder[qc]['FN'])
-
-                if decoder['classified'][qc]['TP'] > 0 or decoder['classified'][qc]['FP'] > 0:
-                    decoder['classified'][qc]['FDR'] = decoder['classified'][qc]['FP'] / (decoder['classified'][qc]['FP'] + decoder['classified'][qc]['TP'])
-                    decoder['classified'][qc]['precision'] = decoder['classified'][qc]['TP'] / (decoder['classified'][qc]['FP'] + decoder['classified'][qc]['TP'])
-
-                if decoder['classified'][qc]['FN'] > 0 or decoder['classified'][qc]['TP'] > 0:
-                    decoder['classified'][qc]['recall'] = decoder['classified'][qc]['TP'] / (decoder['classified'][qc]['TP'] + decoder['classified'][qc]['FN'])
-                    decoder['classified'][qc]['MR'] = decoder['classified'][qc]['FN'] / (decoder['classified'][qc]['TP'] + decoder['classified'][qc]['FN'])
-
-            for qc in ['qc fail', 'qc pass']:
-                decoder['macro'][qc]['FDR'] /= decoder['barcode cardinality']
-                decoder['macro'][qc]['precision'] /= decoder['barcode cardinality']
-                decoder['macro'][qc]['recall'] /= decoder['barcode cardinality']
-                decoder['macro'][qc]['MR'] /= decoder['barcode cardinality']
+        pass
+        # for decoder in self.decoder_by_index:
+        #     for barcode in decoder['barcode by index.compiled']:
+        #         for qc in ['qc fail', 'qc pass']:
+        #             TP = barcode[qc]['TP']
+        #             FP = barcode[qc]['FP']
+        #             FN = barcode[qc]['FN']
+        #             if TP > 0 or FP > 0:
+        #                 barcode[qc]['precision']    = TP / (FP + TP)
+        #                 barcode[qc]['FDR']          = FP / (FP + TP)
+        #             if TP > 0 or FN > 0:
+        #                 barcode[qc]['recall']       = TP / (TP + FN)
+        #                 barcode[qc]['MR']           = FN / (TP + FN)
+        #
+        #             decoder[qc]['count'] += barcode[qc]['count']
+        #             decoder[qc]['FP'] += FP
+        #             decoder[qc]['FN'] += FN
+        #             decoder[qc]['TP'] += TP
+        #             if barcode['index'] > 0:
+        #                 decoder['classified'][qc]['count'] += barcode[qc]['count']
+        #                 decoder['classified'][qc]['FP'] += FP
+        #                 decoder['classified'][qc]['FN'] += FN
+        #                 decoder['classified'][qc]['TP'] += TP
+        #             decoder['macro'][qc]['precision'] += barcode[qc]['precision']
+        #             decoder['macro'][qc]['recall'] += barcode[qc]['recall']
+        #             decoder['macro'][qc]['FDR'] += barcode[qc]['FDR']
+        #             decoder['macro'][qc]['MR'] += barcode[qc]['MR']
+        #
+        #     for qc in ['qc fail', 'qc pass']:
+        #         TP = decoder[qc]['TP']
+        #         FP = decoder[qc]['FP']
+        #         FN = decoder[qc]['FN']
+        #         if TP > 0 or FP > 0:
+        #             decoder[qc]['precision']    = TP / (FP + TP)
+        #             decoder[qc]['FDR']          = FP / (FP + TP)
+        #         if FN > 0 or TP > 0:
+        #             decoder[qc]['recall']       = TP / (TP + FN)
+        #             decoder[qc]['MR']           = FN / (TP + FN)
+        #
+        #         TP = decoder['classified'][qc]['TP']
+        #         FP = decoder['classified'][qc]['FP']
+        #         FN = decoder['classified'][qc]['FN']
+        #         if TP > 0 or FP > 0:
+        #             decoder['classified'][qc]['precision']  = TP / (FP + TP)
+        #             decoder['classified'][qc]['FDR']        = FP / (FP + TP)
+        #
+        #         if FN > 0 or TP > 0:
+        #             decoder['classified'][qc]['recall']     = TP / (TP + FN)
+        #             decoder['classified'][qc]['MR']         = FN / (TP + FN)

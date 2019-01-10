@@ -5549,6 +5549,7 @@
             "multiplex": {
                 "algorithm": "pamld",
                 "base": "A5KVK",
+                "confidence threshold": 0.95,
                 "codec": {
                     "@RG01": {
                         "configured concentration": 0.0018843168013525523

@@ -52,5 +52,5 @@ from simulation.deml import ToDeML
 from simulation.demultiplex import PheniqsDemultiplex, DemlDemultiplex
 from simulation.analyze import Analyze
 from simulation.prior import SensePrior, AdjustPrior
+from simulation.summarize import Summarize
 # from simulation.collect import Collect
-# from simulation.summarize import Summarize

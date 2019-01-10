@@ -44,50 +44,56 @@ class PheniqsDemultiplex(Shell):
     def execute(self):
         self.instruction['input'] = os.path.join(self.home, self.location['simulated substitution path'])
         self.instruction['output'] = os.path.join(self.home, self.location['pheniqs demultiplex path'])
-        if os.path.exists(self.instruction['output']):
-            self.log.info('purging existing output file %s', self.location['pheniqs demultiplex path'])
-            os.remove(self.instruction['output'])
 
-        command = [ 'pheniqs', 'mux', '--sense-input' ]
-        command.append('--config')
-        command.append(os.path.join(self.home, self.location['pheniqs adjusted configuration path']))
-        command.append('--input')
-        command.append(os.path.join(self.home, self.location['simulated substitution path']))
-        command.append('--output')
-        command.append(os.path.join(self.home, self.location['pheniqs demultiplex path']))
-        command.append('--report')
-        command.append(os.path.join(self.home, self.location['pheniqs demultiplex report path']))
+        if not os.path.exists(self.instruction['output']):
 
-        self.execution['command'] = ' '.join([str(i) for i in command])
-        self.log.debug('executing %s', self.execution['command'])
+            if os.path.exists(self.instruction['output']):
+                self.log.info('purging existing output file %s', self.location['pheniqs demultiplex path'])
+                os.remove(self.instruction['output'])
 
-        process = Popen(
-            args=self.posix_time_command + command,
-            cwd=self.current_working_directoy,
-            stdout=PIPE,
-            stderr=PIPE
-        )
-        output, error = process.communicate()
-        self.execution['return code'] = process.returncode
+            command = [ 'pheniqs', 'mux', '--sense-input' ]
+            command.append('--config')
+            command.append(os.path.join(self.home, self.location['pheniqs adjusted configuration path']))
+            command.append('--input')
+            command.append(os.path.join(self.home, self.location['simulated substitution path']))
+            command.append('--output')
+            command.append(os.path.join(self.home, self.location['pheniqs demultiplex path']))
+            command.append('--report')
+            command.append(os.path.join(self.home, self.location['pheniqs demultiplex report path']))
 
-        for line in output.decode('utf8').splitlines():
-            line = line.strip()
-            if line:
-                self.execution['stdout'].append(line)
+            self.execution['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution['command'])
 
-        for line in error.decode('utf8').splitlines():
-            line = line.strip()
-            if line:
-                match = self.posix_time_head_ex.search(line)
-                if match:
-                    for k,v in match.groupdict().items():
-                        self.execution[k] = float(v)
-                else:
-                    self.execution['stderr'].append(line)
+            process = Popen(
+                args=self.posix_time_command + command,
+                cwd=self.current_working_directoy,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            output, error = process.communicate()
+            self.execution['return code'] = process.returncode
 
-        if self.execution['return code'] != 0:
-            print(to_json(self.execution))
-            raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
+            for line in output.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    self.execution['stdout'].append(line)
+
+            for line in error.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    match = self.posix_time_head_ex.search(line)
+                    if match:
+                        for k,v in match.groupdict().items():
+                            self.execution[k] = float(v)
+                    else:
+                        self.execution['stderr'].append(line)
+
+            if self.execution['return code'] != 0:
+                print(to_json(self.execution))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
+
+        else:
+            self.log.info('skipping pheniqs demultiplexing because %s exists', self.location['pheniqs demultiplex path'])
 
 class DemlDemultiplex(Shell):
     def __init__(self, ontology):
@@ -105,46 +111,49 @@ class DemlDemultiplex(Shell):
         self.instruction['input'] = os.path.join(self.home, self.location['deml simulated substitution path'])
         self.instruction['output'] = os.path.join(self.home, self.location['deml demultiplex path'])
 
-        if os.path.exists(self.instruction['output']):
-            self.log.info('purging existing output file %s', self.location['deml demultiplex path'])
-            os.remove(self.instruction['output'])
+        if not os.path.exists(self.instruction['output']):
+            if os.path.exists(self.instruction['output']):
+                self.log.info('purging existing output file %s', self.location['deml demultiplex path'])
+                os.remove(self.instruction['output'])
 
-        command = [ 'deML' ]
-        command.append('--index')
-        command.append(os.path.join(self.home, self.location['deml index path']))
-        command.append('--outfile')
-        command.append(self.instruction['output'])
-        command.append('--summary')
-        command.append(os.path.join(self.home, self.location['deml summary path']))
-        command.append(self.instruction['input'])
+            command = [ 'deML' ]
+            command.append('--index')
+            command.append(os.path.join(self.home, self.location['deml index path']))
+            command.append('--outfile')
+            command.append(self.instruction['output'])
+            command.append('--summary')
+            command.append(os.path.join(self.home, self.location['deml summary path']))
+            command.append(self.instruction['input'])
 
-        self.execution['command'] = ' '.join([str(i) for i in command])
-        self.log.debug('executing %s', self.execution['command'])
+            self.execution['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution['command'])
 
-        process = Popen(
-            args=self.posix_time_command + command,
-            cwd=self.current_working_directoy,
-            stdout=PIPE,
-            stderr=PIPE
-        )
-        output, error = process.communicate()
-        self.execution['return code'] = process.returncode
+            process = Popen(
+                args=self.posix_time_command + command,
+                cwd=self.current_working_directoy,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            output, error = process.communicate()
+            self.execution['return code'] = process.returncode
 
-        for line in output.decode('utf8').splitlines():
-            line = line.strip()
-            if line:
-                self.execution['stdout'].append(line)
+            for line in output.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    self.execution['stdout'].append(line)
 
-        for line in error.decode('utf8').splitlines():
-            line = line.strip()
-            if line:
-                match = self.posix_time_head_ex.search(line)
-                if match:
-                    for k,v in match.groupdict().items():
-                        self.execution[k] = float(v)
-                else:
-                    self.execution['stderr'].append(line)
+            for line in error.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    match = self.posix_time_head_ex.search(line)
+                    if match:
+                        for k,v in match.groupdict().items():
+                            self.execution[k] = float(v)
+                    else:
+                        self.execution['stderr'].append(line)
 
-        if self.execution['return code'] != 0:
-            print(to_json(self.execution))
-            raise CommandFailedError('deML returned {} when demultiplexing'.format(self.execution['return code']))
+            if self.execution['return code'] != 0:
+                print(to_json(self.execution))
+                raise CommandFailedError('deML returned {} when demultiplexing'.format(self.execution['return code']))
+        else:
+            self.log.info('skipping deML demultiplexing because %s exists', self.location['deml demultiplex path'])

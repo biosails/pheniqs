@@ -45,8 +45,8 @@ from simulation import PheniqsDemultiplex
 from simulation import DemlDemultiplex
 from simulation import ToDeML
 from simulation import Analyze
+from simulation import Summarize
 # from simulation import Collect
-# from simulation import Summarize
 
 class Benchmark(Job):
     def __init__(self, ontology):
@@ -117,7 +117,7 @@ class Benchmark(Job):
 
         elif self.action == 'summarize':
             self.summarize(self.ontology)
-        self.persist_db()
+        # self.persist_db()
 
     def plan(self, ontology):
         path = os.path.realpath(self.instruction['path'])
@@ -397,6 +397,17 @@ class Benchmark(Job):
             self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
 
         self.persist_db()
+        return job
+
+    def summarize(self, ontology):
+        job = None
+        self.log.info('summarizing speed benchmarks')
+        if self.instruction['bsid'] in self.db['simulation']:
+            ontology['experiment'] = deepcopy(self.db['simulation'][self.instruction['bsid']])
+            job = Summarize(ontology)
+            job.execute()
+        else:
+            self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
         return job
 
 def main():
