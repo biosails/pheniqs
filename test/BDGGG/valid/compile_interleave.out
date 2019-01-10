@@ -109,7 +109,7 @@
         "SM": "trinidad",
         "algorithm": "transparent",
         "base output url": "test/BDGGG",
-        "confidence threshold": 0.99,
+        "confidence threshold": 0.95,
         "flowcell id": "BDGGG",
         "include filtered": true,
         "index": 0,
