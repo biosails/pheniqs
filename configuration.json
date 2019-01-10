@@ -409,7 +409,7 @@
             "algorithm": "pamld",
             "base output url": null,
             "codec": null,
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "distance tolerance": null,
             "enable quality control": null,
             "flowcell id": null,
