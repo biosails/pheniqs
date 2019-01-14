@@ -219,8 +219,8 @@ clean.version:
 
 # Regenerate interface configuration.h from configuration.json
 configuration.h: configuration.json
-	@echo configuration.h command line interface configuration generated.
-	$(shell ./tool/make_configuration_h.sh)
+	@echo generating configuration.h command line interface configuration.
+	$(shell ./tool/serialize_configuration.py > configuration.h)
 
 # Regenerate zsh completion from configuration.json
 _pheniqs: configuration.json

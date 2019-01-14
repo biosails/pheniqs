@@ -23,8 +23,18 @@
 import sys
 import json
 
+command = { 'argument': sys.argv, 'length': len(sys.argv) }
+
 try:
-    print(json.dumps(json.load(sys.stdin), sort_keys=True, ensure_ascii=False, indent=4))
+    if command['length'] > 1:
+        for index, argument in enumerate(command['argument']):
+            if argument == '-p' or argument == '--pretty':
+                print(json.dumps(json.load(sys.stdin), sort_keys=True, ensure_ascii=True, allow_nan=False,  indent=4))
+
+            elif argument == '-c' or argument == '--compact':
+                print(json.dumps(json.load(sys.stdin), sort_keys=True, ensure_ascii=True, allow_nan=False,  indent=None))
+    else:
+        print(json.dumps(json.load(sys.stdin), sort_keys=True, ensure_ascii=False, indent=4))
 
 except json.decoder.JSONDecodeError as e:
     print(e)
