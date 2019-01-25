@@ -90,32 +90,35 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
         P(r|b) of all possible b */
     decoding_confidence = adjusted_conditional_decoding_probability / sigma_p;
 
+    bool conditional_probability_test(conditional_decoding_probability > random_barcode_probability);
+    bool confidence_test(decoding_confidence > confidence_threshold);
+
     /*  This is a noise filter, when the conditional probability is lower than the probability of
         a random abservation, the entropy is too high for the information to be meaningful */
-    if(conditional_decoding_probability > random_barcode_probability) {
+    if(conditional_probability_test) {
 
         /*  if the posterior probability is higher than the confidence_threshold */
-        if(decoding_confidence > confidence_threshold) {
+        if(confidence_test) {
             this->decoded->accumulated_confidence += decoding_confidence;
             if(!input.qcfail()) {
                 this->decoded->accumulated_pf_confidence += decoding_confidence;
             }
 
         } else {
-            ++this->decoded->low_confidence_count;
             output.set_qcfail(true);
-            // this->decoded = &this->unclassified;
-            // this->decoding_hamming_distance = 0;
-            // decoding_confidence = 0;
+            ++this->decoded->low_confidence_count;
         }
 
     } else {
-        ++this->decoded->low_conditional_confidence_count;
         output.set_qcfail(true);
-        this->decoded = &this->unclassified;
-        this->decoding_hamming_distance = 0;
-        decoding_confidence = 0;
+        ++this->decoded->low_conditional_confidence_count;
+        if(!confidence_test) {
+            this->decoded = &this->unclassified;
+            this->decoding_hamming_distance = 0;
+            decoding_confidence = 0;
+        }
     }
+
     ObservingDecoder< T >::classify(input, output);
 };
 
