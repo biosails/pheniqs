@@ -197,11 +197,11 @@
                         "argument": [
                             "bsid"
                         ],
-                        "implementation": "compile",
+                        "implementation": "rebuild",
                         "instruction": {
-                            "description": "Compile simmulation.",
-                            "help": "Compile simmulation.",
-                            "name": "compile"
+                            "description": "rebuild db.",
+                            "help": "Rebuild db.",
+                            "name": "rebuild"
                         }
                     },
                     {

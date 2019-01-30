@@ -136,7 +136,7 @@ class Summarize(Job):
                         d[rank][qc]['MR']           = d[rank][qc]['FN'] / (d[rank][qc]['TP'] + d[rank][qc]['FN'])
                     d[rank][qc]['fscore'] = fscore(d[rank][qc]['precision'], d[rank][qc]['recall'])
 
-        if True or 'collection' not in  self.experiment:
+        if 'collection' not in  self.experiment:
             self.log.info('computing collection')
             collection = []
             for substitution in self.experiment['substitution'].values():

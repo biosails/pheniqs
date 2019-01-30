@@ -34,7 +34,6 @@ from core import to_json
 from core import decode_phred
 from core import encode_phred
 from core import prepare_directory
-from simulation.model import Tagged
 from simulation.transcode import Transcode
 
 class SimulateBarcode(Transcode):

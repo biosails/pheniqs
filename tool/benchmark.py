@@ -96,8 +96,8 @@ class Benchmark(Job):
         if self.action == 'plan':
             self.plan(self.ontology)
 
-        if self.action == 'compile':
-            self.compile_barcode(self.ontology)
+        if self.action == 'rebuild':
+            self.rebuild_db(self.ontology)
 
         if self.action == 'simulate_barcode':
             self.simulate_barcode(self.ontology)
@@ -497,7 +497,7 @@ class Benchmark(Job):
             barcode_simulation = self.db['simulation'][ontology['instruction']['bsid']]
             if ontology['instruction']['ssid'] in barcode_simulation['substitution']:
                 substitution_simulation = barcode_simulation['substitution'][ontology['instruction']['ssid']]
-                if True or 'pamld demultiplex analysis' not in substitution_simulation:
+                if 'pamld demultiplex analysis' not in substitution_simulation:
                     ontology['model'] = deepcopy(substitution_simulation['model'])
                     ontology['instruction']['input'] = ontology['model']['location']['pamld demultiplex path']
 
@@ -640,7 +640,7 @@ class Benchmark(Job):
         self.persist_db()
         return job
 
-    def compile_barcode(self, ontology):
+    def rebuild_db(self, ontology):
         def compile_model(node):
             default = {
                 'genealogy': {},
@@ -686,6 +686,8 @@ class Benchmark(Job):
                     #     if key in model['location']:
                     #         del model['location'][key]
 
+                self.log.info('compiling %d substitution in simulation %s', len(barcode_simulation_node['substitution']), bsid)
+
             return model
 
         def compile_barcode_simulation(bsid):
@@ -694,14 +696,15 @@ class Benchmark(Job):
                 barcode_simulation_node['barcode']['model'] = compile_model(barcode_simulation_node['barcode']['model'])
 
                 if 'substitution' in barcode_simulation_node:
+                    self.log.info('compiling %d substitution in simulation %s', len(barcode_simulation_node['substitution']), bsid)
                     for ssid, substitution_simulation_node in barcode_simulation_node['substitution'].items():
                         substitution_simulation_node['model'] = compile_model(substitution_simulation_node['model'])
                         for key in [
                             'deml demultiplex analysis',
-                            'pamld demultiplex analysis',
-                            'pamld accurate prior demultiplex analysis',
-                            'pamld uniform demultiplex analysis',
                             'mdd demultiplex analysis',
+                            'pamld demultiplex analysis',
+                            'pamld uniform demultiplex analysis',
+                            'pamld accurate prior demultiplex analysis',
                         ]:
                             if key in substitution_simulation_node:
                                 substitution_simulation_node[key] = compile_model(substitution_simulation_node[key])

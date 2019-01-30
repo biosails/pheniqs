@@ -47,7 +47,7 @@ class PamldDemultiplex(Shell):
         self.instruction['input'] = os.path.join(self.home, self.location['simulated substitution path'])
         self.instruction['output'] = os.path.join(self.home, self.location['pamld demultiplex path'])
 
-        if True or not os.path.exists(self.instruction['output']):
+        if not os.path.exists(self.instruction['output']):
             if os.path.exists(self.instruction['output']):
                 self.log.info('purging existing output file %s', self.location['pamld demultiplex path'])
                 os.remove(self.instruction['output'])

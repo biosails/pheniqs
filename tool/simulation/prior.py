@@ -49,7 +49,7 @@ class SensePrior(Shell):
 
     def execute(self):
         product = os.path.join(self.home, self.location['pamld prior estimate path'])
-        if True or not os.path.exists(product):
+        if not os.path.exists(product):
             command = [ 'pheniqs', 'mux', '--sense-input', '--output', '/dev/null' ]
             command.append('--config')
             command.append(os.path.join(self.home, self.location['pamld uniform configuration path']))
@@ -120,7 +120,7 @@ class AdjustPrior(Job):
 
     def execute(self):
         self.instruction['output'] = os.path.join(self.home, self.location['pamld adjusted configuration path'])
-        if True or not os.path.exists(self.instruction['output']):
+        if not os.path.exists(self.instruction['output']):
             self.load_original()
             self.load_estimate()
             self.adjust_prior()
@@ -170,6 +170,8 @@ class AdjustPrior(Job):
 
     def adjust_prior(self):
         def adjust_decoder_prior(estimate, decoder):
+            # Noise prior: {decoder low conditional confidence count} / {decoder count}
+            # Barcode prior: {barcode count} + {barcode low confidence count} / {decoder count}
             estimated_barcode_by_hash = {}
             decoder['noise'] = estimate['low conditional confidence count'] / estimate['count']
             for barcode in estimate['classified']:
@@ -185,7 +187,6 @@ class AdjustPrior(Job):
                 hash = ''.join(barcode['barcode'])
                 if hash in estimated_barcode_by_hash:
                     barcode['concentration'] = estimated_barcode_by_hash[hash]['prior']
-
 
         self.ontology['adjusted'] = deepcopy(self.original)
         for topic in [ 'multiplex', 'cellular', 'molecular' ]:
@@ -218,7 +219,7 @@ class AdjustPrior(Job):
                 if key in modeled:
                     barcode['simulated concentration'] = modeled[key]['simulated concentration']
                     barcode['concentration estimate deviation'] = barcode['simulated concentration'] - barcode['concentration']
-                    decoder['total classified prior deviation'] += barcode['concentration estimate deviation']
+                    decoder['total classified prior deviation'] += abs(barcode['concentration estimate deviation'])
 
             decoder['average classified prior deviation'] = decoder['total classified prior deviation'] / len(decoder['codec'])
 

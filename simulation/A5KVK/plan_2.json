@@ -1,0 +1,121 @@
+{
+    "default": {
+        "bsid": "2ea833ea-d9c5-4994-a4f3-d4f786e7e19a"
+    },
+    "job": [
+        {
+            "action": "simulate_barcode",
+            "input": "/volume/albireo/waverly/A5KVK/A5KVK.cram",
+            "preset": "A5KVK"
+        },
+        {
+            "action": "benchmark_substitution",
+            "ssid": "37e41038-310c-44e1-a1ed-8979b0f73709",
+            "error": 0.0001
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0005,
+            "ssid": "082e6a59-27fe-47ed-ae2c-89da8ceb31ee"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0010,
+            "ssid": "ce333fb9-5e8d-4b14-a5ee-7101afe2cfa6"
+        },
+        {
+            "action": "benchmark_substitution",
+            "ssid": "b3b1b9af-9a6c-43dd-b5ab-be35bbee9c7f"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0015,
+            "ssid": "40a08990-33b3-41f5-b061-2561bc84ca96"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0025,
+            "ssid": "8c689128-8483-4ce5-9b67-8cb160550497"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0050,
+            "ssid": "b7e78bf9-30a3-4955-9469-0bbd77310476"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0075,
+            "ssid": "9442e6ea-8033-44b2-b0f3-91470348a7f0"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0100,
+            "ssid": "156d68c8-abcd-439a-a387-71b3708652ff"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0125,
+            "ssid": "7d4caa7a-5b9c-4b47-af6a-0217ce344f6a"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0150,
+            "ssid": "d67a3999-b73b-4428-a4dc-66b54ee3ba58"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0175,
+            "ssid": "7cc6f068-10f3-487b-ae6b-5b1423423e66"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0200,
+            "ssid": "62bdb0f5-affe-4b31-8b27-f5e96899f37f"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0250,
+            "ssid": "b37d56c6-488a-4121-abf6-8b8a2bf82668"
+        },
+        {
+            "action": "benchmark_substitution",
+            "ssid": "58020739-79fd-4cab-8f4e-e611a6cfba15",
+            "error": 0.0500
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.0750,
+            "ssid": "92ffff7e-8c09-447a-96b1-9bcdc2a0da1c"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.100,
+            "ssid": "a11ae384-a142-4f33-a129-eda212675e2a"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.125,
+            "ssid": "44eb6f63-6f19-47d2-acce-67f2e59395bf"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.150,
+            "ssid": "1a0d8c5d-3a1b-48ec-894a-12888c735955"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.175,
+            "ssid": "599a0d9c-387a-4b4b-8b00-e0057ad35a2e"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.200,
+            "ssid": "3c4383a7-3ce4-4ecd-8518-c9c7cb681e01"
+        },
+        {
+            "action": "benchmark_substitution",
+            "error": 0.250,
+            "ssid": "6d9944ec-a347-4b09-8ebc-0e0b2e54875a"
+        }
+    ]
+}
