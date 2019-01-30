@@ -51,6 +51,7 @@ import os
 import sys
 import json
 import numpy
+import logging
 from copy import deepcopy
 from threading import Thread
 from queue import Queue, Empty
@@ -63,12 +64,11 @@ from core import to_json
 from core import remove_compiled
 from core import prepare_path
 
-
 class BamReader(object):
     def __init__(self, path):
         self.eof = False
         self.queue = Queue(128)
-        self.input_process = Popen(args=[ 'samtools', 'view', path ], stdout=PIPE, stderr=PIPE)
+        self.input_process = Popen(args=[ 'samtools', 'view', '-h', path ], stdout=PIPE, stderr=PIPE)
         self.thread = Thread(target = self.replenish)
         self.thread.start()
 
@@ -92,7 +92,7 @@ class BamWriter(object):
     def __init__(self, path):
         self.eof = False
         self.queue = Queue(128)
-        self.output_process = Popen(args=[ 'samtools', 'view', '-b', '-o', path], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        self.output_process = Popen(args=[ 'samtools', 'view', '-h', '-b', '-o', path], stdin=PIPE, stdout=PIPE, stderr=PIPE)
         self.thread = Thread(target = self.flush)
         self.thread.start()
 
@@ -103,7 +103,9 @@ class BamWriter(object):
                 self.output_process.stdin.write(line.encode('utf-8'))
                 self.output_process.stdin.write(b'\n')
             except Empty:
-                if self.eof: break
+                if self.eof:
+                    self.output_process.stdin.close()
+                    break
 
     def write_line(self, line):
         self.queue.put(line)
@@ -114,6 +116,7 @@ class BamWriter(object):
 class Transcode(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
+        self.log = logging.getLogger('Transcode')
         default = {
             'phred scale': [],
             'decoder by index': [],
@@ -207,7 +210,8 @@ class Transcode(Job):
             if line is not None:
                 if line[0] =='@':
                     # redirect header line
-                    self.output_feed.write_line(line)
+                    if self.output_feed is not None:
+                        self.output_feed.write_line(line)
                 else:
                     segment = { 'fixed': line.split('\t'), 'auxiliary': {} }
                     if len(segment['fixed']) > 10:

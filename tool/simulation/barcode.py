@@ -25,6 +25,7 @@ import io
 import uuid
 import json
 import numpy
+import logging
 from copy import deepcopy
 
 from core.error import *
@@ -33,11 +34,13 @@ from core import to_json
 from core import decode_phred
 from core import encode_phred
 from core import prepare_directory
+from simulation.model import Tagged
 from simulation.transcode import Transcode
 
 class SimulateBarcode(Transcode):
     def __init__(self, ontology):
         Transcode.__init__(self, ontology)
+        self.log = logging.getLogger('SimulateBarcode')
         default = {
             'instruction': {
                 'bsid': str(uuid.uuid4()),
@@ -59,8 +62,9 @@ class SimulateBarcode(Transcode):
         self.genealogy['bsid'] = self.instruction['bsid']
         self.location['barcode simulation home'] = os.path.join('simulation', self.bsid)
         self.location['simulated barcode path'] = os.path.join(self.location['barcode simulation home'], 'simulated_barcode.bam')
-        self.location['pheniqs uniform configuration path'] = os.path.join(self.location['barcode simulation home'], 'pheniqs_uniform_configuration.json')
-        self.location['pheniqs accurate prior configuration path'] = os.path.join(self.location['barcode simulation home'], 'pheniqs_accurate_prior_configuration.json')
+        self.location['pamld uniform configuration path'] = os.path.join(self.location['barcode simulation home'], 'pamld_uniform_configuration.json')
+        self.location['mdd configuration path'] = os.path.join(self.location['barcode simulation home'], 'mdd_configuration.json')
+        self.location['pamld accurate prior configuration path'] = os.path.join(self.location['barcode simulation home'], 'pamld_accurate_prior_configuration.json')
         self.location['deml index path'] = os.path.join(self.location['barcode simulation home'], 'deml_index.txt')
 
     @property
@@ -166,6 +170,12 @@ class SimulateBarcode(Transcode):
             for q in range(64):
                 compiled['quality distribution'].append(0)
 
+            compiled['quality distribution by base'] = {}
+            for base in ['A', 'T', 'C', 'G', 'N']:
+                compiled['quality distribution by base'][base] = []
+                for q in range(64):
+                    compiled['quality distribution by base'][base].append(0)
+
             return compiled
 
         if self.instruction['preset'] in self.vocabulary['preset']:
@@ -196,8 +206,8 @@ class SimulateBarcode(Transcode):
                 decoder['classified count'] = 0
                 decoder['unclassified']['count'] = 0
                 decoder['simulated nucleotide'] = 0
-                decoder['expected barcode error compensation'] = 0
-                decoder['expected barcode error'] = 0
+                decoder['expected substitution rate compensation'] = 0
+                decoder['expected substitution rate'] = 0
                 for barcode in decoder['codec'].values():
                     barcode['count'] = 0
 
@@ -250,11 +260,12 @@ class SimulateBarcode(Transcode):
                         nucleotide = read['segment'][token['segment']]['fixed'][9][segment_cycle]
                         quality = decode_phred(read['segment'][token['segment']]['fixed'][10][segment_cycle])
                         decoder['quality distribution'][quality] += 1
+                        decoder['quality distribution by base'][nucleotide][quality] += 1
 
-                        y = self.phred_scale[quality]['error'] - decoder['expected barcode error compensation']
-                        t = decoder['expected barcode error'] + y
-                        compensation = (t - decoder['expected barcode error']) - y
-                        decoder['expected barcode error'] = t
+                        y = self.phred_scale[quality]['error'] - decoder['expected substitution rate compensation']
+                        t = decoder['expected substitution rate'] + y
+                        compensation = (t - decoder['expected substitution rate']) - y
+                        decoder['expected substitution rate'] = t
 
             self.simulate_qname(read)
 
@@ -304,16 +315,18 @@ class SimulateBarcode(Transcode):
 
         if not os.path.exists(self.instruction['output']):
             Transcode.execute(self)
+            self.ontology['persistence']['dirty'] = True
         else:
             self.log.info('skipping barcode simulation because %s exists', self.location['simulated barcode path'])
 
-        self.save_uniform_pheniqs_config()
-        self.save_accurate_prior_pheniqs_config()
+        self.save_uniform_pamld_config()
+        self.save_mdd_config()
+        self.save_accurate_prior_pamld_config()
         self.save_deml_index()
 
     def finalize(self):
         for decoder in self.decoder_by_index:
-            del decoder['expected barcode error compensation']
+            del decoder['expected substitution rate compensation']
 
             decoder['quality distribution count'] = 0
             decoder['quality distribution mean'] = 0
@@ -355,7 +368,7 @@ class SimulateBarcode(Transcode):
             decoder['simulated classified nucleotide'] = decoder['classified count'] * decoder['nucleotide cardinality']
             decoder['simulated nucleotide'] = unclassified['simulated nucleotide'] + decoder['simulated classified nucleotide']
             if decoder['simulated nucleotide'] > 0:
-                decoder['expected barcode error'] /= decoder['simulated nucleotide']
+                decoder['expected substitution rate'] /= decoder['simulated nucleotide']
 
             if self.model['count'] > 0:
                 decoder['simulated noise'] = unclassified['count'] / self.model['count']
@@ -380,22 +393,28 @@ class SimulateBarcode(Transcode):
         else:
             self.log.info('skipping deml index because %s exists', self.location['deml index path'])
 
-    def save_accurate_prior_pheniqs_config(self):
+    def save_accurate_prior_pamld_config(self):
         def extract_codec(decoder):
             compiled = {
                 'noise': decoder['simulated noise'],
                 'transform': decoder['transform'],
                 'algorithm': 'pamld',
-                'codec': {}
+                'codec': {},
             }
+            for k in [
+                'confidence threshold'
+            ]:
+                if k in decoder:
+                    compiled[k] = decoder[k]
+
             for k,v in decoder['codec'].items():
                 compiled['codec'][k] = {
                     'barcode': v['barcode'],
-                    'concentration': v['simulated concentration']
+                    'concentration': v['simulated concentration'],
                 }
             return compiled
 
-        path = os.path.join(self.home, self.location['pheniqs accurate prior configuration path'])
+        path = os.path.join(self.home, self.location['pamld accurate prior configuration path'])
         if not os.path.exists(path):
             ontology = {
                 'PL': self.model['PL'],
@@ -413,24 +432,65 @@ class SimulateBarcode(Transcode):
                         for decoder in self.model[topic]:
                             ontology[topic].append(extract_codec(decoder))
 
-            self.log.info('saving accurate prior pheniqs configuration %s', self.location['pheniqs accurate prior configuration path'])
+            self.log.info('saving accurate prior pamld configuration %s', self.location['pamld accurate prior configuration path'])
             with io.open(path, 'w') as file:
                 file.write(to_json(ontology))
         else:
-            self.log.info('skipping accurate prior configuration because %s exists', self.location['pheniqs accurate prior configuration path'])
+            self.log.info('skipping accurate prior configuration because %s exists', self.location['pamld accurate prior configuration path'])
 
-    def save_uniform_pheniqs_config(self):
+    def save_uniform_pamld_config(self):
         def extract_codec(decoder):
             compiled = {
                 'transform': decoder['transform'],
                 'algorithm': 'pamld',
+                'codec': {}
+            }
+            for k in [
+                'confidence threshold'
+            ]:
+                if k in decoder:
+                    compiled[k] = decoder[k]
+
+            for k,v in decoder['codec'].items():
+                compiled['codec'][k] = { 'barcode': v['barcode'] }
+            return compiled
+
+        path = os.path.join(self.home, self.location['pamld uniform configuration path'])
+        if not os.path.exists(path):
+            ontology = {
+                'PL': self.model['PL'],
+                'flowcell id': self.model['flowcell id'],
+                'transform': self.model['transform'],
+                'include filtered': True,
+            }
+            for topic in [ 'multiplex', 'cellular', 'molecular' ]:
+                if topic in self.model:
+                    if isinstance(self.model[topic], dict):
+                        ontology[topic] = extract_codec(self.model[topic])
+
+                    elif isinstance(self.model[topic], list):
+                        ontology[topic] = []
+                        for decoder in self.model[topic]:
+                            ontology[topic].append(extract_codec(decoder))
+
+            self.log.info('saving uniform pamld configuration %s', self.location['pamld uniform configuration path'])
+            with io.open(path, 'w') as file:
+                file.write(to_json(ontology))
+        else:
+            self.log.info('skipping uniform configuration because %s exists', self.location['pamld uniform configuration path'])
+
+    def save_mdd_config(self):
+        def extract_codec(decoder):
+            compiled = {
+                'transform': decoder['transform'],
+                'algorithm': 'mdd',
                 'codec': {}
             }
             for k,v in decoder['codec'].items():
                 compiled['codec'][k] = { 'barcode': v['barcode'] }
             return compiled
 
-        path = os.path.join(self.home, self.location['pheniqs uniform configuration path'])
+        path = os.path.join(self.home, self.location['mdd configuration path'])
         if not os.path.exists(path):
             ontology = {
                 'PL': self.model['PL'],
@@ -448,8 +508,8 @@ class SimulateBarcode(Transcode):
                         for decoder in self.model[topic]:
                             ontology[topic].append(extract_codec(decoder))
 
-            self.log.info('saving uniform pheniqs configuration %s', self.location['pheniqs uniform configuration path'])
+            self.log.info('saving mdd configuration %s', self.location['mdd configuration path'])
             with io.open(path, 'w') as file:
                 file.write(to_json(ontology))
         else:
-            self.log.info('skipping uniform configuration because %s exists', self.location['pheniqs uniform configuration path'])
+            self.log.info('skipping mdd configuration because %s exists', self.location['mdd configuration path'])

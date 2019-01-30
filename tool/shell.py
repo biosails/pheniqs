@@ -31,7 +31,7 @@ from core import log_levels
 from core import CommandLineParser
 from core import Job
 
-class ShellPipeline(Job):
+class ShellCompletion(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
         self.banner = [
@@ -224,7 +224,7 @@ def main():
             if 'verbosity' in command.instruction and command.instruction['verbosity']:
                 logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
 
-            pipeline = ShellPipeline(command.configuration)
+            pipeline = ShellCompletion(command.configuration)
             pipeline.execute()
 
     except (

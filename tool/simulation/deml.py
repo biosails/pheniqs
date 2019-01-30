@@ -22,6 +22,7 @@
 
 import os
 import io
+import logging
 from core.error import *
 from core import merge
 from core import to_json
@@ -30,6 +31,7 @@ from simulation.transcode import Transcode
 class ToDeML(Transcode):
     def __init__(self, ontology):
         Transcode.__init__(self, ontology)
+        self.log = logging.getLogger('ToDeML')
 
     @property
     def bsid(self):

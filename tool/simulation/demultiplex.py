@@ -22,6 +22,7 @@
 
 import os
 import io
+import logging
 from subprocess import Popen, PIPE
 
 from core.error import *
@@ -29,9 +30,10 @@ from core import Shell
 from core import merge
 from core import to_json
 
-class PheniqsDemultiplex(Shell):
+class PamldDemultiplex(Shell):
     def __init__(self, ontology):
         Shell.__init__(self, ontology)
+        self.log = logging.getLogger('PamldDemultiplex')
 
     @property
     def bsid(self):
@@ -43,23 +45,22 @@ class PheniqsDemultiplex(Shell):
 
     def execute(self):
         self.instruction['input'] = os.path.join(self.home, self.location['simulated substitution path'])
-        self.instruction['output'] = os.path.join(self.home, self.location['pheniqs demultiplex path'])
+        self.instruction['output'] = os.path.join(self.home, self.location['pamld demultiplex path'])
 
-        if not os.path.exists(self.instruction['output']):
-
+        if True or not os.path.exists(self.instruction['output']):
             if os.path.exists(self.instruction['output']):
-                self.log.info('purging existing output file %s', self.location['pheniqs demultiplex path'])
+                self.log.info('purging existing output file %s', self.location['pamld demultiplex path'])
                 os.remove(self.instruction['output'])
 
             command = [ 'pheniqs', 'mux', '--sense-input' ]
             command.append('--config')
-            command.append(os.path.join(self.home, self.location['pheniqs adjusted configuration path']))
+            command.append(os.path.join(self.home, self.location['pamld adjusted configuration path']))
             command.append('--input')
             command.append(os.path.join(self.home, self.location['simulated substitution path']))
             command.append('--output')
-            command.append(os.path.join(self.home, self.location['pheniqs demultiplex path']))
+            command.append(os.path.join(self.home, self.location['pamld demultiplex path']))
             command.append('--report')
-            command.append(os.path.join(self.home, self.location['pheniqs demultiplex report path']))
+            command.append(os.path.join(self.home, self.location['pamld demultiplex report path']))
 
             self.execution['command'] = ' '.join([str(i) for i in command])
             self.log.debug('executing %s', self.execution['command'])
@@ -91,13 +92,216 @@ class PheniqsDemultiplex(Shell):
             if self.execution['return code'] != 0:
                 print(to_json(self.execution))
                 raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
-
+            else:
+                self.ontology['persistence']['dirty'] = True
         else:
-            self.log.info('skipping pheniqs demultiplexing because %s exists', self.location['pheniqs demultiplex path'])
+            self.log.info('skipping pamld demultiplexing because %s exists', self.location['pamld demultiplex path'])
+
+class MddDemultiplex(Shell):
+    def __init__(self, ontology):
+        Shell.__init__(self, ontology)
+        self.log = logging.getLogger('MddDemultiplex')
+
+    @property
+    def bsid(self):
+        return self.genealogy['bsid']
+
+    @property
+    def ssid(self):
+        return self.genealogy['ssid']
+
+    def execute(self):
+        self.instruction['input'] = os.path.join(self.home, self.location['simulated substitution path'])
+        self.instruction['output'] = os.path.join(self.home, self.location['mdd demultiplex path'])
+
+        if not os.path.exists(self.instruction['output']):
+            if os.path.exists(self.instruction['output']):
+                self.log.info('purging existing output file %s', self.location['mdd demultiplex path'])
+                os.remove(self.instruction['output'])
+
+            command = [ 'pheniqs', 'mux', '--sense-input' ]
+            command.append('--config')
+            command.append(os.path.join(self.home, self.location['mdd configuration path']))
+            command.append('--input')
+            command.append(os.path.join(self.home, self.location['simulated substitution path']))
+            command.append('--output')
+            command.append(os.path.join(self.home, self.location['mdd demultiplex path']))
+            command.append('--report')
+            command.append(os.path.join(self.home, self.location['mdd demultiplex report path']))
+
+            self.execution['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution['command'])
+
+            process = Popen(
+                args=self.posix_time_command + command,
+                cwd=self.current_working_directoy,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            output, error = process.communicate()
+            self.execution['return code'] = process.returncode
+
+            for line in output.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    self.execution['stdout'].append(line)
+
+            for line in error.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    match = self.posix_time_head_ex.search(line)
+                    if match:
+                        for k,v in match.groupdict().items():
+                            self.execution[k] = float(v)
+                    else:
+                        self.execution['stderr'].append(line)
+
+            if self.execution['return code'] != 0:
+                print(to_json(self.execution))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
+            else:
+                self.ontology['persistence']['dirty'] = True
+        else:
+            self.log.info('skipping mdd demultiplexing because %s exists', self.location['mdd demultiplex path'])
+
+class PamldAccuratePriorDemultiplex(Shell):
+    def __init__(self, ontology):
+        Shell.__init__(self, ontology)
+        self.log = logging.getLogger('PamldDemultiplex')
+
+    @property
+    def bsid(self):
+        return self.genealogy['bsid']
+
+    @property
+    def ssid(self):
+        return self.genealogy['ssid']
+
+    def execute(self):
+        self.instruction['input'] = os.path.join(self.home, self.location['simulated substitution path'])
+        self.instruction['output'] = os.path.join(self.home, self.location['pamld accurate prior demultiplex path'])
+
+        if not os.path.exists(self.instruction['output']):
+            if os.path.exists(self.instruction['output']):
+                self.log.info('purging existing output file %s', self.instruction['output'])
+                os.remove(self.instruction['output'])
+
+            command = [ 'pheniqs', 'mux', '--sense-input' ]
+            command.append('--config')
+            command.append(os.path.join(self.home, self.location['pamld accurate prior configuration path']))
+            command.append('--input')
+            command.append(os.path.join(self.instruction['input']))
+            command.append('--output')
+            command.append(os.path.join(self.instruction['output']))
+            command.append('--report')
+            command.append(os.path.join(self.home, self.location['pamld accurate prior demultiplex report path']))
+
+            self.execution['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution['command'])
+
+            process = Popen(
+                args=self.posix_time_command + command,
+                cwd=self.current_working_directoy,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            output, error = process.communicate()
+            self.execution['return code'] = process.returncode
+
+            for line in output.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    self.execution['stdout'].append(line)
+
+            for line in error.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    match = self.posix_time_head_ex.search(line)
+                    if match:
+                        for k,v in match.groupdict().items():
+                            self.execution[k] = float(v)
+                    else:
+                        self.execution['stderr'].append(line)
+
+            if self.execution['return code'] != 0:
+                print(to_json(self.execution))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
+            else:
+                self.ontology['persistence']['dirty'] = True
+        else:
+            self.log.info('skipping accurate prior pamld demultiplexing because %s exists', self.instruction['output'])
+
+class PamldUniformDemultiplex(Shell):
+    def __init__(self, ontology):
+        Shell.__init__(self, ontology)
+        self.log = logging.getLogger('PamldDemultiplex')
+
+    @property
+    def bsid(self):
+        return self.genealogy['bsid']
+
+    @property
+    def ssid(self):
+        return self.genealogy['ssid']
+
+    def execute(self):
+        self.instruction['input'] = os.path.join(self.home, self.location['simulated substitution path'])
+        self.instruction['output'] = os.path.join(self.home, self.location['pamld uniform demultiplex path'])
+
+        if not os.path.exists(self.instruction['output']):
+            if os.path.exists(self.instruction['output']):
+                self.log.info('purging existing output file %s', self.instruction['output'])
+                os.remove(self.instruction['output'])
+
+            command = [ 'pheniqs', 'mux', '--sense-input' ]
+            command.append('--config')
+            command.append(os.path.join(self.home, self.location['pamld uniform configuration path']))
+            command.append('--input')
+            command.append(os.path.join(self.instruction['input']))
+            command.append('--output')
+            command.append(os.path.join(self.instruction['output']))
+            command.append('--report')
+            command.append(os.path.join(self.home, self.location['pamld uniform demultiplex report path']))
+
+            self.execution['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution['command'])
+
+            process = Popen(
+                args=self.posix_time_command + command,
+                cwd=self.current_working_directoy,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            output, error = process.communicate()
+            self.execution['return code'] = process.returncode
+
+            for line in output.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    self.execution['stdout'].append(line)
+
+            for line in error.decode('utf8').splitlines():
+                line = line.strip()
+                if line:
+                    match = self.posix_time_head_ex.search(line)
+                    if match:
+                        for k,v in match.groupdict().items():
+                            self.execution[k] = float(v)
+                    else:
+                        self.execution['stderr'].append(line)
+
+            if self.execution['return code'] != 0:
+                print(to_json(self.execution))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
+            else:
+                self.ontology['persistence']['dirty'] = True
+        else:
+            self.log.info('skipping uniform pamld demultiplexing because %s exists', self.instruction['output'])
 
 class DemlDemultiplex(Shell):
     def __init__(self, ontology):
         Shell.__init__(self, ontology)
+        self.log = logging.getLogger('DemlDemultiplex')
 
     @property
     def bsid(self):
@@ -155,5 +359,7 @@ class DemlDemultiplex(Shell):
             if self.execution['return code'] != 0:
                 print(to_json(self.execution))
                 raise CommandFailedError('deML returned {} when demultiplexing'.format(self.execution['return code']))
+            else:
+                self.ontology['persistence']['dirty'] = True
         else:
             self.log.info('skipping deML demultiplexing because %s exists', self.location['deml demultiplex path'])

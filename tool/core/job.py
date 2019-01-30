@@ -43,7 +43,10 @@ class Job(object):
             'model': {
                 'genealogy': {}
             },
-            'execution': {}
+            'execution': {},
+            'persistence': {
+                'dirty': False
+            },
         }
         self.ontology = merge(default, ontology)
         self.instruction['home'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['home']))))
@@ -94,6 +97,14 @@ class Job(object):
     def action(self):
         return self.instruction['action']
 
+    @property
+    def action(self):
+        return self.instruction['action']
+
+    @property
+    def dirty(self):
+        return self.ontology['persistence']['dirty']
+
     def execute(self):
         pass
 
@@ -103,6 +114,7 @@ class Job(object):
 class Shell(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
+        self.log = logging.getLogger('Shell')
         default = {
             'execution': {
                 'stdout': [],

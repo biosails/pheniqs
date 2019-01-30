@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import logging
 from core.error import *
 from simulation.transcode import Transcode
 
@@ -36,7 +37,23 @@ def is_qc_fail(read):
 class Analyze(Transcode):
     def __init__(self, ontology):
         Transcode.__init__(self, ontology)
+        self.log = logging.getLogger('Analyze')
         self.genealogy['tool'] = self.instruction['tool']
+        self.model
+
+        for term in [
+            'noise model',
+        ]:
+            if term in self.model:
+                del self.model[term]
+
+        if 'multiplex' in self.model:
+            for term in [
+                'substitution frequency transform',
+                'substitution model',
+            ]:
+                if term in self.model['multiplex']:
+                    del self.model['multiplex'][term]
 
     @property
     def bsid(self):
@@ -93,7 +110,7 @@ class Analyze(Transcode):
         if 'multiplex' in self.model:
             load_multiplex_model(self.model['multiplex'])
 
-        self.instruction['input'] = os.path.join(self.home, self.location['{} demultiplex path'.format(self.genealogy['tool'])])
+        self.instruction['input'] = os.path.join(self.home, self.instruction['input'])
 
     def manipulate(self):
         while(len(self.input_buffer) > 0):
@@ -120,81 +137,54 @@ class Analyze(Transcode):
                 else:
                     qc = 'pass'
 
+                # Noise accumulator:
+                #   TP : a noise read was correctly classified as noise
+                #   FN :
+                #       noise: a noise read was incorrectly classified to a real barcode
+                #   FP :
+                #       noise: a real read was classified as noise
+                #
+                # Real barcode accumulator:
+                #   TP : real read is correctly classified
+                #   FN :
+                #       real: a read from this barcode was incorrectly classified to another real barcode
+                #       noise: a read from this barcode was incorrectly classified as noise
+                #   FP :
+                #       real: a real read from another barcode was incorrectly classified to this barcode
+                #       noise: a noise read was incorrectly classified to this barcode
                 if true_barcode['index'] > 0:
-                    # real read, not noise
+                    # real read
                     if true_barcode['index'] == decoded_barcode['index']:
-                        # read is correctly classified
-                        true_barcode['accumulate']['real'][qc]['TP'] += 1
+                        # real read is correctly classified
+                        true_barcode['accumulate']['real'][qc]['TP'] += 1               # TP real
                     else:
-                        # read is incorrectly classified
+                        # real read is incorrectly classified
                         if decoded_barcode['index'] > 0:
-                            # read is classified to another, real, barcode
-                            true_barcode['accumulate']['real'][qc]['FN'] += 1
-                            decoded_barcode['accumulate']['real'][qc]['FP'] += 1
+                            # real read is incorrectly classified to another real barcode
+                            # true barcode is real
+                            # decoded barcode is real
+                            true_barcode['accumulate']['real'][qc]['FN'] += 1           # FN real
+                            decoded_barcode['accumulate']['real'][qc]['FP'] += 1        # FP real
                         else:
-                            # read is classified as noise
-                            true_barcode['accumulate']['noise'][qc]['FN'] += 1
-                            decoded_barcode['accumulate']['noise'][qc]['FP'] += 1
+                            # real read is classified as noise
+                            # true barcode is real
+                            # decoded barcode is noise
+                            true_barcode['accumulate']['noise'][qc]['FN'] += 1          # FN real
+                            decoded_barcode['accumulate']['noise'][qc]['FP'] += 1       # FP noise
                 else:
-                    # noise read : true_barcode['index'] == 0
+                    # noise read
                     if decoded_barcode['index'] > 0:
-                        # noise read was classified to a real barcode
-                        decoded_barcode['accumulate']['noise'][qc]['FP'] += 1
-                        true_barcode['accumulate']['noise'][qc]['FN'] += 1
+                        # noise read is incorrectly classified to a real barcode
+                        # true barcode is noise
+                        # decoded barcode is real
+                        true_barcode['accumulate']['noise'][qc]['FN'] += 1              # FN noise
+                        decoded_barcode['accumulate']['noise'][qc]['FP'] += 1           # FP real
                     else:
                         # noise read is correctly classified as noise
-                        true_barcode['accumulate']['noise'][qc]['TP'] += 1
+                        true_barcode['accumulate']['noise'][qc]['TP'] += 1              # TP noise
 
     def flush(self):
         pass
 
     def finalize(self):
         pass
-        # for decoder in self.decoder_by_index:
-        #     for barcode in decoder['barcode by index.compiled']:
-        #         for qc in ['qc fail', 'qc pass']:
-        #             TP = barcode[qc]['TP']
-        #             FP = barcode[qc]['FP']
-        #             FN = barcode[qc]['FN']
-        #             if TP > 0 or FP > 0:
-        #                 barcode[qc]['precision']    = TP / (FP + TP)
-        #                 barcode[qc]['FDR']          = FP / (FP + TP)
-        #             if TP > 0 or FN > 0:
-        #                 barcode[qc]['recall']       = TP / (TP + FN)
-        #                 barcode[qc]['MR']           = FN / (TP + FN)
-        #
-        #             decoder[qc]['count'] += barcode[qc]['count']
-        #             decoder[qc]['FP'] += FP
-        #             decoder[qc]['FN'] += FN
-        #             decoder[qc]['TP'] += TP
-        #             if barcode['index'] > 0:
-        #                 decoder['classified'][qc]['count'] += barcode[qc]['count']
-        #                 decoder['classified'][qc]['FP'] += FP
-        #                 decoder['classified'][qc]['FN'] += FN
-        #                 decoder['classified'][qc]['TP'] += TP
-        #             decoder['macro'][qc]['precision'] += barcode[qc]['precision']
-        #             decoder['macro'][qc]['recall'] += barcode[qc]['recall']
-        #             decoder['macro'][qc]['FDR'] += barcode[qc]['FDR']
-        #             decoder['macro'][qc]['MR'] += barcode[qc]['MR']
-        #
-        #     for qc in ['qc fail', 'qc pass']:
-        #         TP = decoder[qc]['TP']
-        #         FP = decoder[qc]['FP']
-        #         FN = decoder[qc]['FN']
-        #         if TP > 0 or FP > 0:
-        #             decoder[qc]['precision']    = TP / (FP + TP)
-        #             decoder[qc]['FDR']          = FP / (FP + TP)
-        #         if FN > 0 or TP > 0:
-        #             decoder[qc]['recall']       = TP / (TP + FN)
-        #             decoder[qc]['MR']           = FN / (TP + FN)
-        #
-        #         TP = decoder['classified'][qc]['TP']
-        #         FP = decoder['classified'][qc]['FP']
-        #         FN = decoder['classified'][qc]['FN']
-        #         if TP > 0 or FP > 0:
-        #             decoder['classified'][qc]['precision']  = TP / (FP + TP)
-        #             decoder['classified'][qc]['FDR']        = FP / (FP + TP)
-        #
-        #         if FN > 0 or TP > 0:
-        #             decoder['classified'][qc]['recall']     = TP / (TP + FN)
-        #             decoder['classified'][qc]['MR']         = FN / (TP + FN)

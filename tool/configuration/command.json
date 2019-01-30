@@ -195,6 +195,17 @@
                     },
                     {
                         "argument": [
+                            "bsid"
+                        ],
+                        "implementation": "compile",
+                        "instruction": {
+                            "description": "Compile simmulation.",
+                            "help": "Compile simmulation.",
+                            "name": "compile"
+                        }
+                    },
+                    {
+                        "argument": [
                             "bsid",
                             "ssid",
                             "error",
@@ -210,7 +221,6 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid",
                             "preset"
                         ],
                         "implementation": "summarize",
@@ -218,6 +228,37 @@
                             "description": "Summarize benchmark results.",
                             "help": "Summarize benchmark results.",
                             "name": "summarize"
+                        },
+                        "prototype": {
+                            "bsid": {
+                                "flag": [
+                                    "--bsid"
+                                ],
+                                "parameter": {
+                                    "required": true,
+                                    "help": "Barcode simulation id"
+                                }
+                            },
+                            "preset": {
+                                "flag": [
+                                    "-p",
+                                    "--preset"
+                                ],
+                                "parameter": {
+                                    "choices": [
+                                        "json",
+                                        "noise",
+                                        "multiplex",
+                                        "multiplex_barcode",
+                                        "noise_R",
+                                        "multiplex_R",
+                                        "multiplex_barcode_R"
+                                    ],
+                                    "default": "json",
+                                    "help": "Summary preset.",
+                                    "metavar": "NAME"
+                                }
+                            }
                         }
                     },
                     {
@@ -297,10 +338,21 @@
                             "bsid",
                             "ssid"
                         ],
-                        "implementation": "demux_pheniqs",
+                        "implementation": "demux_pamld",
                         "instruction": {
-                            "help": "Demultiplex with pheniqs.",
-                            "name": "demux_pheniqs"
+                            "help": "Demultiplex with pamld.",
+                            "name": "demux_pamld"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "bsid",
+                            "ssid"
+                        ],
+                        "implementation": "demux_mdd",
+                        "instruction": {
+                            "help": "Demultiplex with mdd.",
+                            "name": "demux_mdd"
                         }
                     },
                     {
@@ -320,11 +372,11 @@
                             "ssid",
                             "capacity"
                         ],
-                        "implementation": "analyze_pheniqs",
+                        "implementation": "analyze_pamld",
                         "instruction": {
-                            "description": "Collect FP/FN/TP/TN statistics from pheniqs demultiplexing.",
-                            "help": "Analyze pheniqs demultiplexing results.",
-                            "name": "analyze_pheniqs"
+                            "description": "Collect FP/FN/TP/TN statistics from pamld demultiplexing.",
+                            "help": "Analyze pamld demultiplexing results.",
+                            "name": "analyze_pamld"
                         }
                     },
                     {

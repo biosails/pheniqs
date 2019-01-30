@@ -24,6 +24,7 @@ import os
 import re
 import io
 import json
+import logging
 from copy import deepcopy
 from subprocess import Popen, PIPE
 
@@ -36,6 +37,7 @@ from core import to_json
 class SensePrior(Shell):
     def __init__(self, ontology):
         Shell.__init__(self, ontology)
+        self.log = logging.getLogger('SensePrior')
 
     @property
     def bsid(self):
@@ -46,15 +48,15 @@ class SensePrior(Shell):
         return self.genealogy['ssid']
 
     def execute(self):
-        product = os.path.join(self.home, self.location['pheniqs prior estimate path'])
-        if not os.path.exists(product):
+        product = os.path.join(self.home, self.location['pamld prior estimate path'])
+        if True or not os.path.exists(product):
             command = [ 'pheniqs', 'mux', '--sense-input', '--output', '/dev/null' ]
             command.append('--config')
-            command.append(os.path.join(self.home, self.location['pheniqs uniform configuration path']))
+            command.append(os.path.join(self.home, self.location['pamld uniform configuration path']))
             command.append('--input')
             command.append(os.path.join(self.home, self.location['simulated substitution path']))
             command.append('--report')
-            command.append(os.path.join(self.home, self.location['pheniqs prior estimate path']))
+            command.append(os.path.join(self.home, self.location['pamld prior estimate path']))
 
             self.execution['command'] = ' '.join([str(i) for i in command])
             self.log.debug('executing %s', self.execution['command'])
@@ -86,12 +88,15 @@ class SensePrior(Shell):
             if self.execution['return code'] != 0:
                 print(to_json(self.execution))
                 raise CommandFailedError('pheniqs returned {} when estimating prior'.format(self.execution['return code']))
+            else:
+                self.ontology['persistence']['dirty'] = True
         else:
-            self.log.info('skipping prior estimation because %s exists', self.location['pheniqs prior estimate path'])
+            self.log.info('skipping prior estimation because %s exists', self.location['pamld prior estimate path'])
 
 class AdjustPrior(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
+        self.log = logging.getLogger('AdjustPrior')
 
     @property
     def bsid(self):
@@ -114,18 +119,18 @@ class AdjustPrior(Job):
         return self.ontology['adjusted']
 
     def execute(self):
-        self.instruction['output'] = os.path.join(self.home, self.location['pheniqs adjusted configuration path'])
-        if not os.path.exists(self.instruction['output']):
+        self.instruction['output'] = os.path.join(self.home, self.location['pamld adjusted configuration path'])
+        if True or not os.path.exists(self.instruction['output']):
             self.load_original()
             self.load_estimate()
             self.adjust_prior()
             self.compare_to_model()
-            self.save_adjusted_prior_pheniqs_config()
+            self.save_adjusted_prior_pamld_config()
         else:
-            self.log.info('skipping prior adjustment because %s exists', self.location['pheniqs adjusted configuration path'])
+            self.log.info('skipping prior adjustment because %s exists', self.location['pamld adjusted configuration path'])
 
     def load_original(self):
-        path = os.path.join(self.home, self.location['pheniqs uniform configuration path'])
+        path = os.path.join(self.home, self.location['pamld uniform configuration path'])
         if os.path.exists(path):
             with io.open(path, 'rb') as file:
                 self.ontology['original'] = json.loads(file.read().decode('utf8'))
@@ -157,7 +162,7 @@ class AdjustPrior(Job):
         else: raise NoConfigurationFileError('original configurtion file {} not found'.format(path))
 
     def load_estimate(self):
-        path = os.path.join(self.home, self.location['pheniqs prior estimate path'])
+        path = os.path.join(self.home, self.location['pamld prior estimate path'])
         if os.path.exists(path):
             with io.open(path, 'rb') as file:
                 self.ontology['estimate'] = json.loads(file.read().decode('utf8'))
@@ -172,6 +177,7 @@ class AdjustPrior(Job):
                 low_confidence_count = 0
                 if 'low confidence count' in barcode:
                     low_confidence_count = barcode['low confidence count']
+
                 barcode['prior'] = ((barcode['count'] + low_confidence_count) / estimate['count'])
                 estimated_barcode_by_hash[hash] = barcode
 
@@ -225,7 +231,7 @@ class AdjustPrior(Job):
                     for decoder, model in zip(self.adjusted[topic], self.model[topic]):
                         compare_decoder_to_model(decoder, model)
 
-    def save_adjusted_prior_pheniqs_config(self):
+    def save_adjusted_prior_pamld_config(self):
         path = os.path.join(self.instruction['output'])
         with io.open(path, 'w') as file:
             file.write(to_json(self.adjusted))
