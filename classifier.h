@@ -46,7 +46,7 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
         };
         virtual inline void classify(const Read& input, Read& output) {
             ++(decoded->count);
-            if(!input.qcfail()) {
+            if(!output.qcfail()) {
                 ++(decoded->pf_count);
             }
         };

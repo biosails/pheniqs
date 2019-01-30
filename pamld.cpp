@@ -100,7 +100,7 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
         /*  if the posterior probability is higher than the confidence_threshold */
         if(confidence_test) {
             this->decoded->accumulated_confidence += decoding_confidence;
-            if(!input.qcfail()) {
+            if(!output.qcfail()) {
                 this->decoded->accumulated_pf_confidence += decoding_confidence;
             }
 
@@ -118,7 +118,6 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
             decoding_confidence = 0;
         }
     }
-
     ObservingDecoder< T >::classify(input, output);
 };
 

@@ -52,7 +52,7 @@ template < class T > class ObservingDecoder : public RoutingClassifier< T > {
         inline void classify(const Read& input, Read& output) override {
             if(this->decoded->is_classified() && decoding_hamming_distance) {
                 this->decoded->accumulated_distance += static_cast< uint64_t >(decoding_hamming_distance);
-                if(!input.qcfail()) {
+                if(!output.qcfail()) {
                     this->decoded->accumulated_pf_distance += static_cast< uint64_t >(decoding_hamming_distance);
                 }
             }
