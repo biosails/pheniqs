@@ -56,9 +56,9 @@ class PamldDemultiplex(Shell):
             command.append('--config')
             command.append(os.path.join(self.home, self.location['pamld adjusted configuration path']))
             command.append('--input')
-            command.append(os.path.join(self.home, self.location['simulated substitution path']))
+            command.append(os.path.join(self.instruction['input']))
             command.append('--output')
-            command.append(os.path.join(self.home, self.location['pamld demultiplex path']))
+            command.append(os.path.join(self.instruction['output']))
             command.append('--report')
             command.append(os.path.join(self.home, self.location['pamld demultiplex report path']))
 
@@ -123,9 +123,9 @@ class MddDemultiplex(Shell):
             command.append('--config')
             command.append(os.path.join(self.home, self.location['mdd configuration path']))
             command.append('--input')
-            command.append(os.path.join(self.home, self.location['simulated substitution path']))
+            command.append(self.instruction['input'])
             command.append('--output')
-            command.append(os.path.join(self.home, self.location['mdd demultiplex path']))
+            command.append(self.instruction['output'])
             command.append('--report')
             command.append(os.path.join(self.home, self.location['mdd demultiplex report path']))
 

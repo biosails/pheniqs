@@ -250,6 +250,7 @@
                                         "noise",
                                         "multiplex",
                                         "multiplex_barcode",
+                                        "quality_distribution_R",
                                         "noise_R",
                                         "multiplex_R",
                                         "multiplex_barcode_R"

@@ -188,8 +188,8 @@ class Summarize(Job):
             'qc',
             'TP',
             'FP',
-            # 'FN', # for real ranl reads only FP and FN are the same
-            'FDR',
+            'FN', # for real ranl reads only FP and FN are the same
+            # 'FDR',
             # 'MR',
             # 'precision',
             # 'recall',
@@ -197,27 +197,27 @@ class Summarize(Job):
         collection = []
         for record in self.collection:
             rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'real' ]:
-                # for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                    # for qc in [ 'pass', 'fail', 'both' ]:
-                        qnode = benchmark['multiplex']['decoder'][rank][qc]
-                        record = [
-                            rate,
-                            tool,
-                            rank,
-                            qc,
-                            qnode['TP'],
-                            qnode['FP'],
-                            # qnode['FN'],
-                            qnode['FDR'],
-                            # qnode['MR'],
-                            # qnode['precision'],
-                            # qnode['recall'],
-                        ]
-                        collection.append(record)
+            if rate < 0.06:
+                for benchmark in record['benchmark']:
+                    tool = benchmark['tool']
+                    for rank in [ 'noise', 'real', 'both' ]:
+                        for qc in [ 'pass', 'fail', 'both' ]:
+                        # for qc in [ 'pass', 'fail', 'both' ]:
+                            qnode = benchmark['multiplex']['decoder'][rank][qc]
+                            record = [
+                                rate,
+                                tool,
+                                rank,
+                                qc,
+                                qnode['TP'],
+                                qnode['FP'],
+                                qnode['FN'],
+                                # qnode['FDR'],
+                                # qnode['MR'],
+                                # qnode['precision'],
+                                # qnode['recall'],
+                            ]
+                            collection.append(record)
 
         collection.sort(key=lambda i: i[3])
         collection.sort(key=lambda i: i[2])
@@ -314,6 +314,37 @@ class Summarize(Job):
 
         collection.sort(key=lambda i: i[3])
         collection.sort(key=lambda i: i[2])
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
+    def summarize_decoder_quality_distribution_R(self):
+        header = [
+            'rate',
+            'quality',
+            'density',
+        ]
+        collection = []
+        for substitution in self.experiment['substitution'].values():
+            if 'model' in substitution:
+                record = {
+                    'expected': substitution['model']['multiplex']['expected substitution rate'],
+                    'simulated': substitution['model']['multiplex']['simulated substitution rate'],
+                    'benchmark': []
+                }
+                rate = record['simulated']
+                if 'multiplex' in substitution['model']:
+                    if 'quality distribution' in substitution['model']['multiplex']:
+                        for quality, density in enumerate(substitution['model']['multiplex']['quality distribution']):
+                            record = [
+                                rate,
+                                quality,
+                                density
+                            ]
+                            collection.append(record)
+
         collection.sort(key=lambda i: i[1])
         collection.sort(key=lambda i: i[0])
 
@@ -474,7 +505,6 @@ class Summarize(Job):
         print(','.join(header))
         print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
 
-
     def execute(self):
         self.collect_accuracy_benchmark()
         if self.instruction['preset'] == 'json':
@@ -489,6 +519,9 @@ class Summarize(Job):
         elif self.instruction['preset'] == 'multiplex_barcode':
             self.summarize_barcode_accuracy_benchmark()
 
+
+        elif self.instruction['preset'] == 'quality_distribution_R':
+            self.summarize_decoder_quality_distribution_R()
 
         elif self.instruction['preset'] == 'noise_R':
             self.summarize_noise_accuracy_benchmark_R()

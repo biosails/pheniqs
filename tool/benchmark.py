@@ -497,7 +497,7 @@ class Benchmark(Job):
             barcode_simulation = self.db['simulation'][ontology['instruction']['bsid']]
             if ontology['instruction']['ssid'] in barcode_simulation['substitution']:
                 substitution_simulation = barcode_simulation['substitution'][ontology['instruction']['ssid']]
-                if 'pamld demultiplex analysis' not in substitution_simulation:
+                if True or 'pamld demultiplex analysis' not in substitution_simulation:
                     ontology['model'] = deepcopy(substitution_simulation['model'])
                     ontology['instruction']['input'] = ontology['model']['location']['pamld demultiplex path']
 
@@ -525,7 +525,7 @@ class Benchmark(Job):
             barcode_simulation = self.db['simulation'][ontology['instruction']['bsid']]
             if ontology['instruction']['ssid'] in barcode_simulation['substitution']:
                 substitution_simulation = barcode_simulation['substitution'][ontology['instruction']['ssid']]
-                if 'pamld accurate prior demultiplex analysis' not in substitution_simulation:
+                if True or 'pamld accurate prior demultiplex analysis' not in substitution_simulation:
                     ontology['model'] = deepcopy(substitution_simulation['model'])
                     ontology['instruction']['input'] = ontology['model']['location']['pamld accurate prior demultiplex path']
 
@@ -553,7 +553,7 @@ class Benchmark(Job):
             barcode_simulation = self.db['simulation'][ontology['instruction']['bsid']]
             if ontology['instruction']['ssid'] in barcode_simulation['substitution']:
                 substitution_simulation = barcode_simulation['substitution'][ontology['instruction']['ssid']]
-                if 'pamld uniform demultiplex analysis' not in substitution_simulation:
+                if True or 'pamld uniform demultiplex analysis' not in substitution_simulation:
                     ontology['model'] = deepcopy(substitution_simulation['model'])
                     ontology['instruction']['input'] = ontology['model']['location']['pamld uniform demultiplex path']
 
@@ -686,8 +686,6 @@ class Benchmark(Job):
                     #     if key in model['location']:
                     #         del model['location'][key]
 
-                self.log.info('compiling %d substitution in simulation %s', len(barcode_simulation_node['substitution']), bsid)
-
             return model
 
         def compile_barcode_simulation(bsid):
@@ -696,9 +694,11 @@ class Benchmark(Job):
                 barcode_simulation_node['barcode']['model'] = compile_model(barcode_simulation_node['barcode']['model'])
 
                 if 'substitution' in barcode_simulation_node:
-                    self.log.info('compiling %d substitution in simulation %s', len(barcode_simulation_node['substitution']), bsid)
+                    self.log.debug('compiling %d substitution in simulation %s', len(barcode_simulation_node['substitution']), bsid)
                     for ssid, substitution_simulation_node in barcode_simulation_node['substitution'].items():
                         substitution_simulation_node['model'] = compile_model(substitution_simulation_node['model'])
+                        self.log.debug('compiling substitution %s', ssid)
+
                         for key in [
                             'deml demultiplex analysis',
                             'mdd demultiplex analysis',
@@ -707,6 +707,7 @@ class Benchmark(Job):
                             'pamld accurate prior demultiplex analysis',
                         ]:
                             if key in substitution_simulation_node:
+                                self.log.debug('compiling %s', key)
                                 substitution_simulation_node[key] = compile_model(substitution_simulation_node[key])
 
                 for key in [
