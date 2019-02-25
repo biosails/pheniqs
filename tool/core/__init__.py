@@ -189,7 +189,7 @@ def decode_phred(phred):
     return ord(phred) - 33
 
 def encode_phred(quality):
-    chr(quality + 33)
+    return chr(quality + 33)
 
 def f_score(precision, recall):
     if(precision + recall) > 0:

@@ -497,7 +497,7 @@ class Benchmark(Job):
             barcode_simulation = self.db['simulation'][ontology['instruction']['bsid']]
             if ontology['instruction']['ssid'] in barcode_simulation['substitution']:
                 substitution_simulation = barcode_simulation['substitution'][ontology['instruction']['ssid']]
-                if True or 'pamld demultiplex analysis' not in substitution_simulation:
+                if 'pamld demultiplex analysis' not in substitution_simulation:
                     ontology['model'] = deepcopy(substitution_simulation['model'])
                     ontology['instruction']['input'] = ontology['model']['location']['pamld demultiplex path']
 
@@ -525,7 +525,7 @@ class Benchmark(Job):
             barcode_simulation = self.db['simulation'][ontology['instruction']['bsid']]
             if ontology['instruction']['ssid'] in barcode_simulation['substitution']:
                 substitution_simulation = barcode_simulation['substitution'][ontology['instruction']['ssid']]
-                if True or 'pamld accurate prior demultiplex analysis' not in substitution_simulation:
+                if 'pamld accurate prior demultiplex analysis' not in substitution_simulation:
                     ontology['model'] = deepcopy(substitution_simulation['model'])
                     ontology['instruction']['input'] = ontology['model']['location']['pamld accurate prior demultiplex path']
 
@@ -553,7 +553,7 @@ class Benchmark(Job):
             barcode_simulation = self.db['simulation'][ontology['instruction']['bsid']]
             if ontology['instruction']['ssid'] in barcode_simulation['substitution']:
                 substitution_simulation = barcode_simulation['substitution'][ontology['instruction']['ssid']]
-                if True or 'pamld uniform demultiplex analysis' not in substitution_simulation:
+                if 'pamld uniform demultiplex analysis' not in substitution_simulation:
                     ontology['model'] = deepcopy(substitution_simulation['model'])
                     ontology['instruction']['input'] = ontology['model']['location']['pamld uniform demultiplex path']
 
