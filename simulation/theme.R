@@ -67,27 +67,6 @@ precision_recall_text_for_axis = element_text (
     colour = text_color,
     family = font_family,
     margin = margin(0,0,0,0))
-
-runtime_benchmark_color = alpha ( c (
-    "0" = "#384725",
-    "1" = "#98A725"
-), 0.875)
-accuracy_decoder_color = c (
-    "pheniqs" = alpha("#444444", 0.875),
-    "deml" = alpha("#333333", 0.875)
-)
-organism_color = c (
-    "SC" = alpha( "#889725", 0.9),
-    "NC" = alpha( "#98A725", 0.9),
-    "CO" = alpha( "#A8B725", 0.9),
-    "SP" = alpha( "#B8C725", 0.9),
-    "PX" = alpha( "#FFAA07", 0.9),
-    "BC" = alpha( "#6A4A3C", 0.9),
-    "PH" = alpha( "#AA111D", 0.9),
-    "VR" = alpha( "#EB6841", 0.9),
-    "UK" = alpha( "#C94A65", 0.9)
-)
-
 tick_line = element_line (
     colour = ticks_color,
     size = rel(0.25),
@@ -123,69 +102,107 @@ accuracy_plot_theme = theme (
     legend.margin = margin(0,0,0,0),
     legend.justification = c(0,0.5)
 )
-benchmark_plot_theme = theme (
-    plot.title = element_blank(),
-    legend.position="none",
+comparison_plot_theme = theme (
+    plot.title = precision_recall_text_for_title,
+    legend.position = "left",
     legend.title = element_blank(),
-    legend.text = text_for_legend,
+    legend.text = precision_recall_text_for_legend,
+    # legend.text.align=-1.5,
     axis.line = axis_line,
     axis.ticks = tick_line,
-    axis.title.x = text_for_title,
-    axis.text.x = vertical_text_for_axis,
-    axis.title.y = element_blank(),
-    axis.text.y = text_for_axis,
-    strip.text = text_for_title,
+    axis.title.x = precision_recall_text_for_title,
+    axis.text.x = precision_recall_vertical_text_for_axis,
+    axis.title.y = precision_recall_text_for_title,
+    # axis.title.y = element_blank(),
+    axis.text.y = precision_recall_text_for_axis,
+    strip.text = precision_recall_text_for_title,
     strip.background = element_blank(),
     panel.grid.major = grid_line,
     panel.background = element_blank(),
-    panel.grid.minor = element_blank()
-)
-sam_plot_theme = theme (
-    plot.title = element_blank(),
-    legend.position = "top",
-    legend.direction = "horizontal",
-    legend.title = element_blank(),
-    legend.text = text_for_legend,
-    axis.line = element_blank(),
-    axis.ticks = tick_line,
-    axis.title.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.title.y = text_for_title,
-    axis.text.y = text_for_axis,
-    strip.text = text_for_title,
-    strip.background = element_blank(),
-    panel.grid.major = grid_line,
     panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
-    legend.key.width = unit(0.375, "char"),
+    legend.key.width = unit(0.5, "char"),
     legend.key.height = unit(0.5, "char"),
+    legend.key = element_rect(fill = NA),
+    legend.margin = margin(0,0,0,0),
+    legend.justification = c(0,0.5)
 )
-error_plot_theme = theme (
-    plot.title = element_blank(),
-    legend.position="none",
-    legend.text = text_for_axis,
-    axis.line = element_blank(),
-    axis.ticks = tick_line,
-    axis.title.x = text_for_title,
-    axis.text.x = vertical_text_for_axis,
-    axis.title.y = text_for_title,
-    axis.text.y = text_for_axis,
-    strip.text = text_for_title,
-    strip.background = element_blank(),
-    panel.grid.major = grid_line,
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
+accurecy_variable_name = c (
+    "FDR" = "False Discovery Rate",
+    "MR" = "Miss Rate",
+    "FP" = "False Positive",
+    "FN" = "False Negative",
+    "TP" = "True Positive",
+    "precision" = "Precision",
+    "recall" = "Recall",
+    "fscore" = "F score"
 )
-benchmark_name_labels = c (
-    "picard fastq",
-    "picard cram",
-    "fastq-multx",
-    "mdd split fastq",
-    "pamld split fastq",
-    "mdd interleaved fastq",
-    "pamld interleaved fastq",
-    "mdd interleaved cram",
-    "pamld interleaved cram",
-    "mdd combined cram",
-    "pamld combined cram"
+accurecy_rank_name = c (
+    "real" = "Real reads only",
+    "noise" = "Noise reads only",
+    "both" = "Both Real and Noise reads"
+)
+accurecy_variable_labeller = labeller (
+    variable = accurecy_variable_name,
+    rank = accurecy_rank_name,
+    qc = c (
+        "pass" = "Passed Quality Control",
+        "fail" = "Failed Quality Control",
+        "both" = "Both Passed and Failed Quality Control"
+    )
+)
+accurecy_variable_order = c (
+    "FDR",
+    "MR",
+    "FP",
+    "FN",
+    "TP",
+    "precision",
+    "recall",
+    "fscore"
+)
+accurecy_qc_order = c (
+    "both",
+    "fail",
+    "pass"
+)
+accurecy_tool_order = c (
+    "deml",
+    "mdd",
+    "pamld",
+    "pamld_u",
+    "pamld_ap"
+)
+tool_color = scale_color_manual (
+    name = "tool",
+    labels = c (
+        "deml",
+        "mdd",
+        "pamld",
+        "pamld_u",
+        "pamld_ap"
+    ),
+    breaks = c (
+        "deml",
+        "mdd",
+        "pamld",
+        "pamld_u",
+        "pamld_ap"
+    ),
+    values = c (
+        "deml" = alpha("#151297", 0.875),
+        "mdd" = alpha("#9f0070", 0.875),
+        "pamld" = alpha("#889725", 0.875),
+        "pamld_u" = alpha("#f18407", 0.875),
+        "pamld_ap" = alpha("#420d38", 0.875)
+    )
+)
+tool_linetype = scale_linetype_manual (
+    name = "tool",
+    values = c (
+      "deml" = "solid",
+      "mdd" = "solid",
+      "pamld" = "solid",
+      "pamld_u" = "31",
+      "pamld_ap" = "31"
+    )
 )

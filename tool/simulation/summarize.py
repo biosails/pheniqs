@@ -44,6 +44,337 @@ class Summarize(Job):
     def collection(self):
         return self.experiment['collection']
 
+    def execute(self):
+        self.collect_accuracy_benchmark()
+
+        self.log.info('summarizing %s benchmarks', self.instruction['preset'])
+
+        if self.instruction['preset'] == 'json':
+            print(to_json(self.collection))
+
+        elif self.instruction['preset'] == 'noise':
+            self.summarize_noise_accuracy_benchmark()
+
+        elif self.instruction['preset'] == 'multiplex':
+            self.summarize_decoder_accuracy_benchmark()
+
+        elif self.instruction['preset'] == 'multiplex_barcode':
+            self.summarize_barcode_accuracy_benchmark()
+
+
+        elif self.instruction['preset'] == 'quality_distribution_R':
+            self.summarize_decoder_quality_distribution_R()
+
+        elif self.instruction['preset'] == 'noise_R':
+            self.summarize_noise_accuracy_benchmark_R()
+
+        elif self.instruction['preset'] == 'multiplex_R':
+            self.summarize_decoder_accuracy_benchmark_R()
+
+        elif self.instruction['preset'] == 'multiplex_barcode_R':
+            self.summarize_barcode_accuracy_benchmark_R()
+
+
+    def summarize_decoder_accuracy_benchmark(self):
+        header = [
+            'rate',
+            'tool',
+            'rank',
+            'qc',
+            'TP',
+            'FP',
+            'FN', # for real ranl reads only FP and FN are the same
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+        ]
+        collection = []
+        for record in self.collection:
+            if 'simulated' not in record:
+                self.log.info(to_json(record))
+            rate = record['simulated']
+            for benchmark in record['benchmark']:
+                tool = benchmark['tool']
+                for rank in [ 'noise', 'real', 'both' ]:
+                    for qc in [ 'pass', 'fail', 'both' ]:
+                        qnode = benchmark['multiplex']['decoder'][rank][qc]
+                        record = [
+                            rate,
+                            tool,
+                            rank,
+                            qc,
+                            qnode['TP'],
+                            qnode['FP'],
+                            qnode['FN'],
+                            qnode['FDR'],
+                            qnode['MR'],
+                            qnode['precision'],
+                            qnode['recall'],
+                        ]
+                        collection.append(record)
+
+        collection.sort(key=lambda i: i[3])
+        collection.sort(key=lambda i: i[2])
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
+    def summarize_barcode_accuracy_benchmark(self):
+        header = [
+            'index',
+            'rate',
+            'tool',
+            'rank',
+            'qc',
+            'TP',
+            'FP',
+            'FN',
+            'FDR',
+            'MR',
+            # 'precision',
+            # 'recall',
+        ]
+        collection = []
+        for record in self.collection:
+            rate = record['simulated']
+            for benchmark in record['benchmark']:
+                tool = benchmark['tool']
+                for rank in [ 'noise', 'real' ]:
+                # for rank in [ 'noise', 'real', 'both' ]:
+                    for qc in [ 'pass', 'fail', 'both' ]:
+                    # for qc in [ 'pass', 'fail', 'both' ]:
+                        for barcode in benchmark['multiplex']['barcode']:
+                            if barcode['index'] > 0:
+                                qnode = barcode[rank][qc]
+                                record = [
+                                    barcode['index'],
+                                    rate,
+                                    tool,
+                                    rank,
+                                    qc,
+                                    qnode['TP'],
+                                    qnode['FP'],
+                                    qnode['FN'],
+                                    qnode['FDR'],
+                                    qnode['MR'],
+                                ]
+                                collection.append(record)
+
+        collection.sort(key=lambda i: i[4])
+        collection.sort(key=lambda i: i[3])
+        collection.sort(key=lambda i: i[2])
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
+    def summarize_noise_accuracy_benchmark(self):
+        header = [
+            'rate',
+            'tool',
+            'qc',
+            'TP',
+            'FP',
+            'FN',
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+        ]
+        collection = []
+        for record in self.collection:
+            rate = record['simulated']
+            for benchmark in record['benchmark']:
+                tool = benchmark['tool']
+                for qc in [ 'pass', 'fail', 'both' ]:
+                # for qc in [ 'pass', 'fail', 'both' ]:
+                    qnode = benchmark['multiplex']['barcode'][0]['noise'][qc]
+                    record = [
+                        rate,
+                        tool,
+                        qc,
+                        qnode['TP'],
+                        qnode['FP'],
+                        qnode['FN'],
+                        qnode['FDR'],
+                        qnode['MR'],
+                        qnode['precision'],
+                        qnode['recall'],
+                    ]
+                    collection.append(record)
+
+        collection.sort(key=lambda i: i[3])
+        collection.sort(key=lambda i: i[2])
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
+
+    def summarize_decoder_accuracy_benchmark_R(self):
+        header = [
+            'rate',
+            'tool',
+            'rank',
+            'qc',
+            'variable',
+            'value',
+        ]
+        collection = []
+        for record in self.collection:
+            rate = record['simulated']
+            for benchmark in record['benchmark']:
+                tool = benchmark['tool']
+                for rank in [ 'noise', 'real', 'both' ]:
+                    for qc in [ 'pass', 'fail', 'both' ]:
+                        qnode = benchmark['multiplex']['decoder'][rank][qc]
+                        for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'fscore' ]:
+                        # for variable in [ 'TP', 'FP', 'FN', 'FDR', 'MR', 'precision', 'recall' ]:
+                            record = [
+                                rate,
+                                tool,
+                                rank,
+                                qc,
+                                variable,
+                                qnode[variable],
+                            ]
+                            collection.append(record)
+
+        collection.sort(key=lambda i: i[3])
+        collection.sort(key=lambda i: i[2])
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
+    def summarize_barcode_accuracy_benchmark_R(self):
+        header = [
+            'index',
+            'rate',
+            'tool',
+            'rank',
+            'qc',
+            'variable',
+            'value',
+        ]
+        collection = []
+        for record in self.collection:
+            rate = record['simulated']
+            for benchmark in record['benchmark']:
+                tool = benchmark['tool']
+                for rank in [ 'real', 'noise' ]:
+                # for rank in [ 'noise', 'real', 'both' ]:
+                    for qc in [ 'pass', 'fail', 'both' ]:
+                    # for qc in [ 'pass', 'fail', 'both' ]:
+                        for barcode in benchmark['multiplex']['barcode']:
+                            if barcode['index'] > 0:
+                                qnode = barcode[rank][qc]
+                                for variable in [ 'TP', 'FP', 'FN', 'FDR', 'MR' ]:
+                                    record = [
+                                        barcode['index'],
+                                        rate,
+                                        tool,
+                                        rank,
+                                        qc,
+                                        variable,
+                                        qnode[variable],
+                                    ]
+                                    collection.append(record)
+
+        collection.sort(key=lambda i: i[4])
+        collection.sort(key=lambda i: i[3])
+        collection.sort(key=lambda i: i[2])
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
+    def summarize_noise_accuracy_benchmark_R(self):
+        header = [
+            'rate',
+            'tool',
+            'qc',
+            'variable',
+            'value',
+        ]
+        collection = []
+        for record in self.collection:
+            rate = record['simulated']
+            for benchmark in record['benchmark']:
+                tool = benchmark['tool']
+                for qc in [ 'fail', 'pass', 'both' ]:
+                # for qc in [ 'pass', 'fail', 'both' ]:
+                    qnode = benchmark['multiplex']['barcode'][0]['noise'][qc]
+                    for variable in [ 'TP', 'FP', 'FN', 'precision', 'recall', 'fscore' ]:
+                        record = [
+                            rate,
+                            tool,
+                            qc,
+                            variable,
+                            qnode[variable],
+                        ]
+                        collection.append(record)
+
+        collection.sort(key=lambda i: i[2])
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
+    def summarize_decoder_quality_distribution_R(self):
+        header = [
+            'rate',
+            'quality',
+            'density',
+        ]
+        raw = []
+        for substitution in self.experiment['substitution'].values():
+            if 'model' in substitution:
+                record = {
+                    'expected': substitution['model']['multiplex']['expected substitution rate'],
+                    'simulated': substitution['model']['multiplex']['simulated substitution rate'],
+                    'benchmark': []
+                }
+                rate = record['simulated']
+                if 'multiplex' in substitution['model']:
+                    if 'quality distribution' in substitution['model']['multiplex']:
+                        for quality, density in enumerate(substitution['model']['multiplex']['quality distribution']):
+                            record['benchmark'].append([
+                                rate,
+                                quality,
+                                density
+                            ])
+
+                if record['benchmark']:
+                    raw.append(record)
+
+        raw.sort(key=lambda i: i['simulated'])
+
+        collection = []
+        previous = 0
+        for record in raw:
+            rate = record['simulated']
+            test = abs(1.0 - previous / rate)
+            if test > 0.01:
+                collection.extend(record['benchmark'])
+                previous = rate
+            else:
+                self.log.info('skipping experiment with rate %s because its too close to %s', rate, previous)
+
+        collection.sort(key=lambda i: i[1])
+        collection.sort(key=lambda i: i[0])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+
     def collect_accuracy_benchmark(self):
         # Noise accumulator:
         #   TP :
@@ -173,361 +504,12 @@ class Summarize(Job):
             collection.sort(key=lambda i: i['simulated'])
             self.experiment['collection'] = []
 
-            current = 0
+            previous = 0
             for record in collection:
-                test = abs(1.0 - current / record['simulated'])
-                if test > 0.01:
-                    current = record['simulated']
-                    self.experiment['collection'].append(record)
-
-    def summarize_decoder_accuracy_benchmark(self):
-        header = [
-            'rate',
-            'tool',
-            'rank',
-            'qc',
-            'TP',
-            'FP',
-            'FN', # for real ranl reads only FP and FN are the same
-            # 'FDR',
-            # 'MR',
-            # 'precision',
-            # 'recall',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            if rate < 0.06:
-                for benchmark in record['benchmark']:
-                    tool = benchmark['tool']
-                    for rank in [ 'noise', 'real', 'both' ]:
-                        for qc in [ 'pass', 'fail', 'both' ]:
-                        # for qc in [ 'pass', 'fail', 'both' ]:
-                            qnode = benchmark['multiplex']['decoder'][rank][qc]
-                            record = [
-                                rate,
-                                tool,
-                                rank,
-                                qc,
-                                qnode['TP'],
-                                qnode['FP'],
-                                qnode['FN'],
-                                # qnode['FDR'],
-                                # qnode['MR'],
-                                # qnode['precision'],
-                                # qnode['recall'],
-                            ]
-                            collection.append(record)
-
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def summarize_barcode_accuracy_benchmark(self):
-        header = [
-            'index',
-            'rate',
-            'tool',
-            'rank',
-            'qc',
-            'TP',
-            'FP',
-            'FN',
-            'FDR',
-            'MR',
-            # 'precision',
-            # 'recall',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'noise', 'real' ]:
-                # for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                    # for qc in [ 'pass', 'fail', 'both' ]:
-                        for barcode in benchmark['multiplex']['barcode']:
-                            if barcode['index'] > 0:
-                                qnode = barcode[rank][qc]
-                                record = [
-                                    barcode['index'],
-                                    rate,
-                                    tool,
-                                    rank,
-                                    qc,
-                                    qnode['TP'],
-                                    qnode['FP'],
-                                    qnode['FN'],
-                                    qnode['FDR'],
-                                    qnode['MR'],
-                                ]
-                                collection.append(record)
-
-        collection.sort(key=lambda i: i[4])
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def summarize_noise_accuracy_benchmark(self):
-        header = [
-            'rate',
-            'tool',
-            'qc',
-            'TP',
-            'FP',
-            'FN',
-            'FDR',
-            'MR',
-            'precision',
-            'recall',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for qc in [ 'pass', 'fail', 'both' ]:
-                # for qc in [ 'pass', 'fail', 'both' ]:
-                    qnode = benchmark['multiplex']['barcode'][0]['noise'][qc]
-                    record = [
-                        rate,
-                        tool,
-                        qc,
-                        qnode['TP'],
-                        qnode['FP'],
-                        qnode['FN'],
-                        qnode['FDR'],
-                        qnode['MR'],
-                        qnode['precision'],
-                        qnode['recall'],
-                    ]
-                    collection.append(record)
-
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def summarize_decoder_quality_distribution_R(self):
-        header = [
-            'rate',
-            'quality',
-            'density',
-        ]
-        collection = []
-        for substitution in self.experiment['substitution'].values():
-            if 'model' in substitution:
-                record = {
-                    'expected': substitution['model']['multiplex']['expected substitution rate'],
-                    'simulated': substitution['model']['multiplex']['simulated substitution rate'],
-                    'benchmark': []
-                }
                 rate = record['simulated']
-                if 'multiplex' in substitution['model']:
-                    if 'quality distribution' in substitution['model']['multiplex']:
-                        for quality, density in enumerate(substitution['model']['multiplex']['quality distribution']):
-                            record = [
-                                rate,
-                                quality,
-                                density
-                            ]
-                            collection.append(record)
-
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def summarize_decoder_accuracy_benchmark_R(self):
-        header = [
-            'rate',
-            'tool',
-            'rank',
-            'qc',
-            'variable',
-            'value',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'both' ]:
-                # for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                    # for qc in [ 'pass', 'fail', 'both' ]:
-                        qnode = benchmark['multiplex']['decoder'][rank][qc]
-                        for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'fscore' ]:
-                        # for variable in [ 'TP', 'FP', 'FN', 'FDR', 'MR', 'precision', 'recall' ]:
-                            record = [
-                                rate,
-                                tool,
-                                rank,
-                                qc,
-                                variable,
-                                qnode[variable],
-                            ]
-                            collection.append(record)
-
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def summarize_barcode_accuracy_benchmark_R(self):
-        header = [
-            'index',
-            'rate',
-            'tool',
-            'rank',
-            'qc',
-            'variable',
-            'value',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'real', 'noise' ]:
-                # for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                    # for qc in [ 'pass', 'fail', 'both' ]:
-                        for barcode in benchmark['multiplex']['barcode']:
-                            if barcode['index'] > 0:
-                                qnode = barcode[rank][qc]
-                                for variable in [ 'TP', 'FP', 'FN', 'FDR', 'MR' ]:
-                                    record = [
-                                        barcode['index'],
-                                        rate,
-                                        tool,
-                                        rank,
-                                        qc,
-                                        variable,
-                                        qnode[variable],
-                                    ]
-                                    collection.append(record)
-
-        collection.sort(key=lambda i: i[4])
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def summarize_noise_accuracy_benchmark_R(self):
-        header = [
-            'rate',
-            'tool',
-            'qc',
-            'variable',
-            'value',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for qc in [ 'fail', 'pass', 'both' ]:
-                # for qc in [ 'pass', 'fail', 'both' ]:
-                    qnode = benchmark['multiplex']['barcode'][0]['noise'][qc]
-                    for variable in [ 'TP', 'FP', 'FN', 'precision', 'recall', 'fscore' ]:
-                        record = [
-                            rate,
-                            tool,
-                            qc,
-                            variable,
-                            qnode[variable],
-                        ]
-                        collection.append(record)
-
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def summarize_decoder_with_noise_accuracy_benchmark_R(self):
-        header = [
-            'rate',
-            'tool',
-            'rank',
-            'qc',
-            'variable',
-            'value',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'real' ]:
-                # for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                    # for qc in [ 'pass', 'fail', 'both' ]:
-                        qnode = benchmark['multiplex']['decoder'][rank][qc]
-                        for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP' ]:
-                        # for variable in [ 'TP', 'FP', 'FN', 'FDR', 'MR', 'precision', 'recall' ]:
-                            record = [
-                                rate,
-                                tool,
-                                rank,
-                                qc,
-                                variable,
-                                qnode[variable],
-                            ]
-                            collection.append(record)
-
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
-
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
-    def execute(self):
-        self.collect_accuracy_benchmark()
-        if self.instruction['preset'] == 'json':
-            print(to_json(self.collection))
-
-        elif self.instruction['preset'] == 'noise':
-            self.summarize_noise_accuracy_benchmark()
-
-        elif self.instruction['preset'] == 'multiplex':
-            self.summarize_decoder_accuracy_benchmark()
-
-        elif self.instruction['preset'] == 'multiplex_barcode':
-            self.summarize_barcode_accuracy_benchmark()
-
-
-        elif self.instruction['preset'] == 'quality_distribution_R':
-            self.summarize_decoder_quality_distribution_R()
-
-        elif self.instruction['preset'] == 'noise_R':
-            self.summarize_noise_accuracy_benchmark_R()
-
-        elif self.instruction['preset'] == 'multiplex_R':
-            self.summarize_decoder_accuracy_benchmark_R()
-
-        elif self.instruction['preset'] == 'multiplex_barcode_R':
-            self.summarize_barcode_accuracy_benchmark_R()
+                test = abs(1.0 - previous / rate)
+                if test > 0.01:
+                    self.experiment['collection'].append(record)
+                    previous = rate
+                else:
+                    self.log.info('skipping experiment with rate %s because its too close to %s', rate, previous)

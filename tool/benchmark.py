@@ -627,7 +627,6 @@ class Benchmark(Job):
 
     def summarize(self, ontology):
         job = None
-        self.log.info('summarizing benchmarks')
         if self.instruction['bsid'] in self.db['simulation']:
             barcode_simulation = self.db['simulation'][self.instruction['bsid']]
             ontology['experiment'] = deepcopy(barcode_simulation)

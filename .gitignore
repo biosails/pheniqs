@@ -1,6 +1,7 @@
 /bin
 /pheniqs
 /_pheniqs
+/local
 /configuration.h
 /version.h
 **/*.o
