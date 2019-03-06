@@ -40,7 +40,7 @@ diagram_height =  72 * 2.5
 
 plot_diagram <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rate < maximum_rate),]
+    selected <- selected[which(selected$rate < maximum_erro_rate),]
     benchmark_plot <- ggplot(selected) +
     facet_wrap(vars(rate), ncol=4) +
     pheniqs_plot_theme +
@@ -51,7 +51,10 @@ plot_diagram <- function(data) {
       data = selected,
       stat = "identity",
       position = position_dodge(),
-      aes(x = quality, y = density),
+      aes(
+        x = quality,
+        y = density
+      ),
       fill = alpha("#f18407", 0.875),
       alpha = 0.5,
       size = 0.25,
@@ -61,7 +64,7 @@ plot_diagram <- function(data) {
         linetype = guide_legend (
             label.hjust = 0.5,
             label.vjust = 0.5,
-            label.position="top"
+            label.position = "top"
         )
     )
     return(benchmark_plot)
@@ -70,7 +73,6 @@ plot_diagram <- function(data) {
 data = read.table(data_filename, header=T, sep=",")
 data$quality = as.numeric(data$quality)
 data$density = as.numeric(data$density)
-# data$rate = factor(data$rate)
 plot <- plot_diagram(data)
 plot <- plot +
 ggtitle( "Quality Distribution on Barcode Nucleotide for each Simulation" ) +

@@ -51,7 +51,7 @@ accurecy_variable_labeller = labeller (
 
 plot_diagram <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rate < maximum_rate),]
+    selected <- selected[which(selected$rate < maximum_erro_rate),]
     selected <- selected[which(selected$rank == 'real'),]
     selected <- selected[which(selected$tool != 'mdd'),]
     # selected <- selected[which(selected$rate > 0.00104 | selected$rate < 0.0014),]
@@ -73,7 +73,12 @@ plot_diagram <- function(data) {
     theme(
       axis.title.y = element_blank()
     ) +
-    facet_wrap(qc ~ variable, labeller = accurecy_variable_labeller, scales="free", ncol=2) +
+    facet_wrap(
+      qc ~ variable,
+      labeller = accurecy_variable_labeller,
+      scales="free",
+      ncol=2
+    ) +
     geom_line (
         data = selected,
         aes(
@@ -88,7 +93,11 @@ plot_diagram <- function(data) {
     ) +
     geom_point (
         data = selected,
-        aes(x = rate, y = value, colour = tool),
+        aes(
+          x = rate,
+          y = value,
+          colour = tool
+        ),
         shape = 21,
         size = 1.25,
         alpha = 0.325,
@@ -101,7 +110,7 @@ plot_diagram <- function(data) {
         linetype = guide_legend (
             label.hjust = 0.5,
             label.vjust = 0.5,
-            label.position="top"
+            label.position = "top"
         )
     )
     return(benchmark_plot)

@@ -20,63 +20,60 @@
 library(extrafont)
 library(Cairo)
 
-maximum_rate = 0.06
-diagram_units = "mm"
-self_point_color = alpha("#333333", 0.75)
-box_color = alpha("#3A3A3A", 0.75)
-outlier_color = alpha("#3A3A3A", 0.25)
+maximum_erro_rate = 0.06
+
+font_family = "Monaco"
 ticks_color = alpha("#3A3A3A", 1)
 text_color = alpha("#3A3A3A", 1)
 major_grid_color = alpha("#3A3A3A", 0.25)
 axis_color = alpha("#3A3A3A", 0.75)
-box_fill_color = alpha("#3A3A3A", 0.125)
-font_family = "Monaco"
+diagram_units = "mm"
 
 plot_title_text = element_text (
   size = rel(0.5),
   hjust = 0.5,
   colour = text_color,
-  family = font_family )
-
+  family = font_family
+)
 title_text = element_text (
   size = rel(0.375),
   hjust = 0.5,
   colour = text_color,
-  family = font_family )
-
+  family = font_family
+)
 axis_text = element_text (
   size = rel(0.375),
   colour = text_color,
   family = font_family,
-  margin = margin(0,0,0,0) )
-
+  margin = margin(0,0,0,0)
+)
 legend_text = element_text (
   angle = 0,
   size = rel(0.375),
   colour = text_color,
-  family = font_family )
-
+  family = font_family
+)
 vertical_axis_text = element_text (
   angle = 90,
   size = rel(0.375),
   colour = text_color,
-  family = font_family)
-
+  family = font_family
+)
 tick_line = element_line (
   colour = ticks_color,
   size = rel(0.25),
-  linetype = "solid" )
-
+  linetype = "solid"
+)
 grid_line = element_line (
   colour = major_grid_color,
   size = rel(0.125),
-  linetype = "solid" )
-
+  linetype = "solid"
+)
 axis_line = element_line (
   colour = axis_color,
   size = rel(0.25),
-  linetype = "solid" )
-
+  linetype = "solid"
+)
 pheniqs_plot_theme = theme (
   plot.title = plot_title_text,
   legend.position = "right",
@@ -100,7 +97,6 @@ pheniqs_plot_theme = theme (
   legend.margin = margin(0,0,0,0),
   legend.justification = c(0,0.5)
 )
-
 tool_order = c (
   "pamld",
   "pamld_u",
@@ -180,9 +176,8 @@ accurecy_variable_labeller = labeller (
   rank = accurecy_rank_name,
   qc = quality_control_name
 )
-
-# rate_scale = scale_x_continuous (
 rate_scale = scale_x_log10 (
+# rate_scale = scale_x_continuous (
     breaks = c (
         0.00010285707764030215,
         # 0.0005081994200929769,

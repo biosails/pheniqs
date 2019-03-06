@@ -51,7 +51,7 @@ accurecy_variable_labeller = labeller (
 
 plot_measure <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rate < maximum_rate),]
+    selected <- selected[which(selected$rate < maximum_erro_rate),]
     selected <- selected[which(selected$rank == 'both'),]
     selected <- selected[which(selected$qc == 'pass'),]
 
@@ -73,7 +73,12 @@ plot_measure <- function(data) {
       text = element_text(size = 12),
       axis.title.y = element_blank()
     ) +
-    facet_wrap(qc ~ variable, labeller = accurecy_variable_labeller, scales="free", ncol=2) +
+    facet_wrap(
+      qc ~ variable,
+      labeller = accurecy_variable_labeller,
+      scales="free",
+      ncol=2
+    ) +
     geom_line (
         data = selected,
         aes(
@@ -88,7 +93,11 @@ plot_measure <- function(data) {
     ) +
     geom_point (
         data = selected,
-        aes(x = rate, y = value, colour = tool),
+        aes(
+          x = rate,
+          y = value,
+          colour = tool
+        ),
         shape = 21,
         size = 1.25,
         alpha = 0.325,
@@ -102,7 +111,7 @@ plot_measure <- function(data) {
         linetype = guide_legend (
             label.hjust = 0.5,
             label.vjust = 0.5,
-            label.position="top"
+            label.position = "top"
         )
     )
     return(benchmark_plot)

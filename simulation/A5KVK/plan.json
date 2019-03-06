@@ -79,6 +79,11 @@
         },
         {
             "action": "benchmark_substitution",
+            "ssid": "a5b2c471-f1bc-49b7-9650-19bcd78e73ae",
+            "error": 0.0375
+        },
+        {
+            "action": "benchmark_substitution",
             "ssid": "58020739-79fd-4cab-8f4e-e611a6cfba15",
             "error": 0.0500
         },

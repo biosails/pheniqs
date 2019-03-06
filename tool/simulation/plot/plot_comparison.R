@@ -58,7 +58,7 @@ shift = 0.0000001
 
 plot_diagram <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rate < maximum_rate),]
+    selected <- selected[which(selected$rate < maximum_erro_rate),]
     selected <- selected[which(selected$rank == 'both'),]
     selected <- selected[which(selected$qc == 'pass'),]
 
@@ -80,7 +80,11 @@ plot_diagram <- function(data) {
     selected.melt$shifted_MR = selected.melt$MR + shift
     comparison_plot <- ggplot(selected.melt) +
     pheniqs_plot_theme +
-    facet_wrap(~rank, labeller = accurecy_variable_labeller, scales="free") +
+    facet_wrap (
+      ~rank,
+      labeller = accurecy_variable_labeller,
+      scales="free"
+    ) +
     geom_point (
       data = selected.melt,
       aes(
@@ -143,12 +147,12 @@ plot_diagram <- function(data) {
           0.1583,
           0.1916
       )
-    )
+    ) +
     guides(
         size = guide_legend (
             label.hjust = 0.5,
             label.vjust = 0.5,
-            label.position="top"
+            label.position = "top"
         )
     )
 
