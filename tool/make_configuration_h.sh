@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # dump configuration.json into a byte array in configuration.h
+# NOTICE: this method is no longer in use. please see serialize_configuration.py
 
 printf "/*
     Pheniqs : PHilology ENcoder wIth Quality Statistics

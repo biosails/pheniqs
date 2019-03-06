@@ -29,29 +29,30 @@ library(grid)
 library(ggplot2)
 library(gridExtra)
 
-source("theme.R")
-
-diagram_width = 86 * 4
-diagram_height =  72 * 4
-
 args = commandArgs(trailingOnly = TRUE)
 data_filename = args[1]
 diagram_filename = args[2]
 
+source("theme.R")
+
+diagram_width = 86 * 2
+diagram_height =  72 * 2.5
+
 plot_diagram <- function(data) {
     selected <- data
+    selected <- selected[which(selected$rate < maximum_rate),]
     benchmark_plot <- ggplot(selected) +
-    facet_wrap(vars(rate)) +
-    accuracy_plot_theme +
+    facet_wrap(vars(rate), ncol=4) +
+    pheniqs_plot_theme +
+    theme(
+      text = element_text(size = 8)
+    ) +
     geom_bar(
       data = selected,
       stat = "identity",
       position = position_dodge(),
-      aes(
-          x = quality,
-          y = density
-      ),
-      fill = alpha("#889725", 0.875),
+      aes(x = quality, y = density),
+      fill = alpha("#f18407", 0.875),
       alpha = 0.5,
       size = 0.25,
       show.legend = FALSE
@@ -69,11 +70,10 @@ plot_diagram <- function(data) {
 data = read.table(data_filename, header=T, sep=",")
 data$quality = as.numeric(data$quality)
 data$density = as.numeric(data$density)
-data$rate = factor(data$rate)
+# data$rate = factor(data$rate)
 plot <- plot_diagram(data)
 plot <- plot +
-# theme ( legend.position = "none" ) +
-ggtitle( "100 libraries / 2x7bp barcode" ) +
+ggtitle( "Quality Distribution on Barcode Nucleotide for each Simulation" ) +
 xlab( "Expected Nucleotide Error Rate" )
 
 sheet <- ggplotGrob(plot)

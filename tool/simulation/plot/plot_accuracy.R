@@ -4,7 +4,7 @@
 # Copyright (C) 2017  Lior Galanti
 # NYU Center for Genetics and System Biology
 
-# Author: Lior Galanti < lior.galanti@nyu.edu >
+# Author: Lior Galanti <lior.galanti@nyu.edu>
 # Author: Alan Twaddle < alan.twaddle@nyu.edu >
 
 # This program is free software: you can redistribute it and/or modify
@@ -27,69 +27,77 @@
 
 library(grid)
 library(ggplot2)
-library(reshape2)
 library(gridExtra)
-
-source("theme.R")
-
-diagram_width = 86 * 2
-diagram_height =  72 * 1
 
 args = commandArgs(trailingOnly = TRUE)
 data_filename = args[1]
 diagram_filename = args[2]
 
-plot_diagram <- function(data) {
+source("theme.R")
+
+diagram_width = 86 * 2
+diagram_height =  72 * 3
+
+accurecy_variable_labeller = labeller (
+  tool = tool_name,
+  variable = accurecy_variable_name,
+  rank = accurecy_rank_name,
+  qc = c (
+      "pass" = "",
+      "fail" = "",
+      "both" = ""
+  )
+)
+
+plot_measure <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rank != 'noise'),]
+    selected <- selected[which(selected$rate < maximum_rate),]
+    selected <- selected[which(selected$rank == 'both'),]
+    selected <- selected[which(selected$qc == 'pass'),]
+
     selected <- selected[which(selected$tool != 'mdd'),]
     # selected <- selected[which(selected$tool != 'deml'),]
-    selected <- selected[which(selected$tool != 'pamld_ap'),]
+    # selected <- selected[which(selected$tool != 'pamld_ap'),]
     # selected <- selected[which(selected$tool != 'pamld'),]
-    selected <- selected[which(selected$tool != 'pamld_u'),]
+    # selected <- selected[which(selected$tool != 'pamld_u'),]
+
     # selected <- selected[which(selected$variable != 'FN'),]
     # selected <- selected[which(selected$variable != 'FP'),]
     # selected <- selected[which(selected$variable != 'TP'),]
     # selected <- selected[which(selected$variable != 'MR'),]
     # selected <- selected[which(selected$variable != 'FDR'),]
-    selected <- selected[which(selected$qc == 'pass'),]
-    # selected <- selected[selected$rate > 0.002,]
 
-    selected.melt <- melt(selected, id.vars=c('tool','rank','qc', 'TP', 'FP', 'FN', 'FDR', 'MR'))
-    selected.melt <- selected.melt[selected.melt$variable == "rate",]
-
-    comparison_plot <- ggplot(selected.melt) +
-    facet_wrap(~rank, labeller = accurecy_variable_labeller, scales="free") +
-    comparison_plot_theme +
-    # geom_line (
-    #   data = selected.melt,
-    #   aes(
-    #     x = FP,
-    #     y = TP,
-    #     group = tool,
-    #     color = tool,
-    #     size = value
-    #   ),
-    #   alpha = 0.5,
-    #   size = 0.25,
-    #   show.legend = FALSE
-    # ) +
-    geom_point (
-      data = selected.melt,
-      aes(
-        x = FN,
-        y = TP,
-        group = tool,
-        color = tool,
-        size = value
-      ),
-      shape = 20,
-      alpha = 0.3,
-      stroke = 0.5
+    benchmark_plot <- ggplot(selected) +
+    pheniqs_plot_theme +
+    theme(
+      text = element_text(size = 12),
+      axis.title.y = element_blank()
     ) +
-    # scale_x_continuous(limits = c(0, NA)) +
-    # scale_x_log10() +
-    tool_color +
+    facet_wrap(qc ~ variable, labeller = accurecy_variable_labeller, scales="free", ncol=2) +
+    geom_line (
+        data = selected,
+        aes(
+            x = rate,
+            y = value,
+            linetype = tool,
+            colour = tool
+        ),
+        alpha = 0.5,
+        size = 0.25,
+        show.legend = FALSE
+    ) +
+    geom_point (
+        data = selected,
+        aes(x = rate, y = value, colour = tool),
+        shape = 21,
+        size = 1.25,
+        alpha = 0.325,
+        stroke = 0.25
+    ) +
+    tool_linetype_scale +
+    tool_color_scale +
+    # scale_y_log10() +
+    rate_scale +
     guides(
         linetype = guide_legend (
             label.hjust = 0.5,
@@ -97,17 +105,20 @@ plot_diagram <- function(data) {
             label.position="top"
         )
     )
-
-    return(comparison_plot)
+    return(benchmark_plot)
 }
 
-
 data = read.table(data_filename, header=T, sep=",")
-plot <- plot_diagram(data)
+data$value = as.numeric(data$value)
+data$variable = factor(data$variable, levels = accurecy_variable_order)
+data$qc = factor(data$qc, levels = quality_control_order)
+data$tool = factor(data$tool)
+data$rate = as.numeric(data$rate)
+plot <- plot_measure(data)
 plot <- plot +
 # theme ( legend.position = "none" ) +
-# xlab( "Expected Nucleotide Error Rate" )
-ggtitle( "100 libraries / 2x7bp barcode" )
+ggtitle( "Accuracy Statistics for both Real and Noise Reads" ) +
+xlab( "Expected error rate" )
 sheet <- ggplotGrob(plot)
 
 diagram <- arrangeGrob(sheet, ncol=1)

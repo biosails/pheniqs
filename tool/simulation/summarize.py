@@ -88,6 +88,7 @@ class Summarize(Job):
             'MR',
             'precision',
             'recall',
+            'fscore'
         ]
         collection = []
         for record in self.collection:
@@ -111,6 +112,7 @@ class Summarize(Job):
                             qnode['MR'],
                             qnode['precision'],
                             qnode['recall'],
+                            qnode['fscore'],
                         ]
                         collection.append(record)
 
@@ -336,9 +338,10 @@ class Summarize(Job):
             'density',
         ]
         raw = []
-        for substitution in self.experiment['substitution'].values():
+        for key, substitution in self.experiment['substitution'].items():
             if 'model' in substitution:
                 record = {
+                    'key': key,
                     'expected': substitution['model']['multiplex']['expected substitution rate'],
                     'simulated': substitution['model']['multiplex']['simulated substitution rate'],
                     'benchmark': []
@@ -363,11 +366,11 @@ class Summarize(Job):
         for record in raw:
             rate = record['simulated']
             test = abs(1.0 - previous / rate)
-            if test > 0.01:
+            if test > 0.02:
                 collection.extend(record['benchmark'])
                 previous = rate
             else:
-                self.log.info('skipping experiment with rate %s because its too close to %s', rate, previous)
+                self.log.info('skipping experiment %s with rate %s because its too close to %s', key, rate, previous)
 
         collection.sort(key=lambda i: i[1])
         collection.sort(key=lambda i: i[0])
@@ -470,9 +473,10 @@ class Summarize(Job):
         if 'collection' not in  self.experiment:
             self.log.info('computing collection')
             collection = []
-            for substitution in self.experiment['substitution'].values():
+            for key, substitution in self.experiment['substitution'].items():
                 if 'model' in substitution:
                     record = {
+                        'key': key,
                         'expected': substitution['model']['multiplex']['expected substitution rate'],
                         'simulated': substitution['model']['multiplex']['simulated substitution rate'],
                         'benchmark': []
@@ -508,8 +512,8 @@ class Summarize(Job):
             for record in collection:
                 rate = record['simulated']
                 test = abs(1.0 - previous / rate)
-                if test > 0.01:
+                if test > 0.02:
                     self.experiment['collection'].append(record)
                     previous = rate
                 else:
-                    self.log.info('skipping experiment with rate %s because its too close to %s', rate, previous)
+                    self.log.info('skipping experiment %s with rate %s because its too close to %s', key, rate, previous)
