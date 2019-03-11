@@ -2,7 +2,7 @@
     "CN": "CGSB AD",
     "PL": "ILLUMINA",
     "PM": "HiSeq",
-    "base input url": "/scratch/nd48/Pheniqs/Fluidigm/Unaligned2",
+    "base input url": "/volume/albireo/waverly/Unaligned2",
     "transform": { "token": [ "2::" ] },
     "flowcell id": "CBJLFACXX",
     "include filtered": false,
