@@ -175,7 +175,7 @@ class AdjustPrior(Job):
 
             low_conditional_confidence_count = 0
             if 'low conditional confidence count' in estimate:
-                estimate['low conditional confidence count']
+                low_conditional_confidence_count = estimate['low conditional confidence count']
 
             estimated_barcode_by_hash = {}
             decoder['noise'] = low_conditional_confidence_count / estimate['count']
