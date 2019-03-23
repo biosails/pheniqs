@@ -101,8 +101,8 @@ pheniqs_plot_theme = theme (
 
   legend.title = legend_title_text,
   legend.text = legend_text,
-  legend.key.width = unit(0.5, "char"),
-  legend.key.height = unit(0.5, "char"),
+  legend.key.width = unit(0.375, "char"),
+  legend.key.height = unit(0.375, "char"),
   legend.key = element_rect(fill = NA),
   legend.margin = margin(0,0,0,0, "char")
   # legend.justification = c(0,0)
@@ -282,9 +282,9 @@ rate_scale = scale_x_continuous (
         0.005028,
         # 0.006923,
         0.009596,
-        0.01348,
+        0.013481,
         0.016086,
-        0.01927,
+        0.019272,
         0.023176,
         0.034073,
         0.041562,
