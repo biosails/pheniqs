@@ -36,7 +36,7 @@ diagram_filename = args[2]
 source("theme.R")
 
 diagram_width = 86 * 2
-diagram_height =  72 * 3
+diagram_height =  72 * 4
 
 accurecy_variable_labeller = labeller (
   tool = tool_name,
@@ -44,7 +44,7 @@ accurecy_variable_labeller = labeller (
   ssid = experiment_id_name
 )
 
-plot_diagram <- function(data) {
+plot_measure <- function(data) {
     selected <- data
     selected <- selected[which(selected$requested != 0),]
     selected <- selected[which(selected$rate < maximum_error_rate),]
@@ -62,17 +62,19 @@ plot_diagram <- function(data) {
     # selected <- selected[which(selected$variable != 'FDR'),]
     selected <- selected[which(selected$variable != 'recall'),]
     selected <- selected[which(selected$variable != 'precision'),]
+
     benchmark_plot <- ggplot(selected) +
     pheniqs_plot_theme +
     theme(
       legend.position = "top",
+      text = element_text(size = 12),
       axis.title.y = element_blank()
     ) +
     facet_wrap(
       ~ variable,
       labeller = accurecy_variable_labeller,
-      strip.position = "left",
       scales="free",
+      strip.position = "left",
       ncol=2
     ) +
     geom_line (
@@ -90,8 +92,8 @@ plot_diagram <- function(data) {
         stroke = 0.25
     ) +
     tool_color_scale +
+    # scale_y_log10() +
     rate_scale
-
     return(benchmark_plot)
 }
 
@@ -100,9 +102,9 @@ data$value = as.numeric(data$value)
 data$variable = factor(data$variable, levels = accurecy_variable_order)
 data$tool = factor(data$tool)
 data$rate = as.numeric(data$rate)
-plot <- plot_diagram(data)
+plot <- plot_measure(data)
 plot <- plot +
-ggtitle( "Classification accuracy for unclassified reads only" ) +
+ggtitle( "Classification accuracy for classified reads only" ) +
 xlab( "Expected error rate" )
 sheet <- ggplotGrob(plot)
 

@@ -26,6 +26,7 @@ import re
 import sys
 import json
 import numpy
+import pickle
 import logging
 import hashlib
 from copy import deepcopy
@@ -56,23 +57,38 @@ class Benchmark(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
         self.instruction['database path'] = os.path.join(self.home, 'benchmark.json')
+        self.instruction['pickeled database path'] = os.path.join(self.home, 'benchmark.pickle')
+        self.ontology['db'] = None
+        self.ontology['db sha1'] = None
 
     @property
     def db(self):
         return self.ontology['db']
 
     def load_db(self):
-        if os.path.exists(self.instruction['database path']):
-            self.log.info('loading existing database %s', self.instruction['database path'])
-            with io.open(self.instruction['database path'], 'rb') as file:
-                try:
-                    content = file.read()
-                    self.ontology['db'] = json.loads(content.decode('utf8'))
-                    self.ontology['db sha1'] = hashlib.sha1(content).hexdigest()
-                except json.decoder.JSONDecodeError as e:
-                    self.log.warning('ignoring corrupt database %s', self.instruction['database path'])
+        if os.path.exists(self.instruction['pickeled database path']):
+            self.log.debug('loading pickeled database %s', self.instruction['pickeled database path'])
+            with io.open(self.instruction['pickeled database path'], 'rb') as file:
+                pickled = pickle.load(file)
+                self.ontology['db'] = pickled['db']
+                self.ontology['db sha1'] = pickled['db sha1']
 
-        if 'db' not in self.ontology:
+        if os.path.exists(self.instruction['database path']):
+            self.log.debug('reading json database %s', self.instruction['database path'])
+            with io.open(self.instruction['database path'], 'rb') as file:
+                content = file.read()
+                checksum = hashlib.sha1(content).hexdigest()
+                if self.ontology['db sha1'] != checksum:
+                    try:
+                        self.log.debug('decoding json database %s', self.instruction['database path'])
+                        self.ontology['db'] = json.loads(content.decode('utf8'))
+                        self.ontology['db sha1'] = checksum
+                    except json.decoder.JSONDecodeError as e:
+                        self.log.warning('ignoring corrupt database %s', self.instruction['database path'])
+                else:
+                    self.log.debug('skipping json database decoding %s', self.instruction['database path'])
+
+        if self.db is None:
             self.ontology['db'] = { 'created': str(datetime.now()) }
             self.ontology['db sha1'] = None
 
@@ -80,6 +96,16 @@ class Benchmark(Job):
             self.db['simulation'] = {}
 
     def persist_db(self, clear=False):
+        def persist_pickle(checksum):
+            prepare_path(self.instruction['pickeled database path'], self.log)
+            with io.open(self.instruction['pickeled database path'], 'wb') as file:
+                self.log.info('persisting pickeled database %s', self.instruction['pickeled database path'])
+                pickled = {
+                    'db': self.db,
+                    'db sha1': checksum,
+                }
+                pickle.dump(pickled, file)
+
         content = to_json(self.db).encode('utf8')
         checksum  = hashlib.sha1(content).hexdigest()
         if checksum != self.ontology['db sha1']:
@@ -88,8 +114,12 @@ class Benchmark(Job):
                 self.log.info('persisting database %s', self.instruction['database path'])
                 file.write(content)
             self.ontology['db sha1'] = checksum
+            persist_pickle(checksum)
         else:
-            self.log.info('skipping clean db flush')
+            self.log.debug('skipping json db flush')
+
+        if not os.path.exists(self.instruction['pickeled database path']):
+            persist_pickle(checksum)
 
     def execute(self):
         self.load_db()
@@ -628,11 +658,9 @@ class Benchmark(Job):
     def summarize(self, ontology):
         job = None
         if self.instruction['bsid'] in self.db['simulation']:
-            barcode_simulation = self.db['simulation'][self.instruction['bsid']]
-            ontology['experiment'] = deepcopy(barcode_simulation)
+            ontology['barcode simulation'] = self.db['simulation'][self.instruction['bsid']]
             job = Summarize(ontology)
             job.execute()
-            barcode_simulation['collection'] = job.collection
         else:
             self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
 

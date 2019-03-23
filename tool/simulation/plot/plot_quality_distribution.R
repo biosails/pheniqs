@@ -35,37 +35,27 @@ diagram_filename = args[2]
 
 source("theme.R")
 
-diagram_width = 86 * 2
-diagram_height =  72 * 2.5
+diagram_width = 86 * 3
+diagram_height =  72 * 6
 
 plot_diagram <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rate < maximum_erro_rate),]
+    selected <- selected[which(selected$rate < maximum_error_rate),]
+    selected <- selected[which(selected$density > 0),]
     benchmark_plot <- ggplot(selected) +
-    facet_wrap(vars(rate), ncol=4) +
+    facet_wrap(~ssid, ncol = 3) +
     pheniqs_plot_theme +
     theme(
-      text = element_text(size = 8)
+      text = element_text(size = 16)
     ) +
     geom_bar(
       data = selected,
       stat = "identity",
       position = position_dodge(),
-      aes(
-        x = quality,
-        y = density
-      ),
-      fill = alpha("#f18407", 0.875),
+      aes(x = quality, y = density),
+      fill = alpha("#5C5151", 0.875),
       alpha = 0.5,
-      size = 0.25,
-      show.legend = FALSE
-    ) +
-    guides(
-        linetype = guide_legend (
-            label.hjust = 0.5,
-            label.vjust = 0.5,
-            label.position = "top"
-        )
+      size = 0.25
     )
     return(benchmark_plot)
 }
@@ -73,10 +63,12 @@ plot_diagram <- function(data) {
 data = read.table(data_filename, header=T, sep=",")
 data$quality = as.numeric(data$quality)
 data$density = as.numeric(data$density)
+data$ssid = factor(data$ssid, labels = experiment_id_name, levels = experiment_id_order)
 plot <- plot_diagram(data)
 plot <- plot +
-ggtitle( "Quality Distribution on Barcode Nucleotide for each Simulation" ) +
-xlab( "Expected Nucleotide Error Rate" )
+ggtitle( "Barcode cycles quality distribution" ) +
+xlab( "Quality" ) +
+ylab( "Read count" )
 
 sheet <- ggplotGrob(plot)
 diagram <- arrangeGrob(sheet, ncol=1)

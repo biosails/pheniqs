@@ -42,26 +42,15 @@ diagram_height =  72 * 1
 accurecy_variable_labeller = labeller (
   tool = tool_name,
   variable = accurecy_variable_name,
-  rank = c (
-    "real" = "",
-    "noise" = "",
-    "both" = ""
-  ),
-  qc = c (
-      "pass" = "",
-      "fail" = "",
-      "both" = ""
-  )
+  ssid = experiment_id_name
 )
 
 shift = 0.0000001
 
 plot_diagram <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rate < maximum_erro_rate),]
-    selected <- selected[which(selected$rank == 'both'),]
-    selected <- selected[which(selected$qc == 'pass'),]
-
+    selected <- selected[which(selected$requested != 0),]
+    selected <- selected[which(selected$rate < maximum_error_rate),]
     # selected <- selected[which(selected$tool != 'mdd'),]
     # selected <- selected[which(selected$tool != 'deml'),]
     # selected <- selected[which(selected$tool != 'pamld_ap'),]
@@ -73,35 +62,96 @@ plot_diagram <- function(data) {
     # selected <- selected[which(selected$variable != 'TP'),]
     # selected <- selected[which(selected$variable != 'MR'),]
     # selected <- selected[which(selected$variable != 'FDR'),]
-
-    selected.melt <- melt(selected, id.vars=c('tool','rank','qc', 'TP', 'FP', 'FN', 'FDR', 'MR', 'precision', 'recall', 'fscore'))
-    # selected.melt <- selected.melt[selected.melt$variable == "rate",]
+    selected.melt <- melt (
+        selected,
+        id.vars = c (
+          'ssid',
+          'expected',
+          'requested',
+          'tool',
+          'classifier',
+          'TP',
+          'FP',
+          'FN',
+          'TP_FN',
+          'TP_FP',
+          'FDR',
+          'MR',
+          'precision',
+          'recall',
+          'fscore'
+        )
+    )
+    selected.melt <- selected.melt[selected.melt$variable == "rate",]
     selected.melt$shifted_FDR = selected.melt$FDR + shift
     selected.melt$shifted_MR = selected.melt$MR + shift
     comparison_plot <- ggplot(selected.melt) +
     pheniqs_plot_theme +
-    facet_wrap (
-      ~rank,
-      labeller = accurecy_variable_labeller,
-      scales="free"
+    theme(
+      legend.position = "left"
     ) +
     geom_point (
       data = selected.melt,
-      aes(
-        x = shifted_MR,
-        y = shifted_FDR,
-        group = tool,
-        color = tool,
-        size = value
-      ),
+      aes(x = shifted_MR, y = shifted_FDR, group = tool, color = tool, size = value),
       shape = 20,
       alpha = 0.25,
       stroke = 0.5
     ) +
     xlab("Miss Rate + 1e-07") +
     ylab("False Discovery Rate + 1e-07") +
-    scale_x_log10() +
-    scale_y_log10() +
+    scale_x_log10 (
+      limits = c (shift, NA),
+      breaks = c (
+        0,
+        0.00000001,
+        0.0000001,
+        0.000001,
+        0.00001,
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        0.2
+      ),
+      labels = c (
+        "0",
+        "1e-08",
+        "1e-07",
+        "1e-06",
+        "1e-05",
+        "1e-04",
+        "1e-03",
+        "1e-02",
+        "1e-01",
+        "2e-01"
+      )
+    ) +
+    scale_y_log10 (
+      limits = c (0.000001, NA),
+      breaks = c (
+        0.000001,
+        0.00001,
+        0.00002,
+        0.00003,
+        0.00004,
+        0.00006,
+        0.00008,
+        0.0001,
+        0.0002,
+        0.0003,
+        0.0004,
+        0.0006,
+        0.0008,
+        0.001,
+        0.002,
+        0.003,
+        0.004,
+        0.006,
+        0.008,
+        0.01,
+        0.02
+      )
+    ) +
     tool_color_scale +
     scale_size_continuous (
       name = "Error Rate",
@@ -162,7 +212,7 @@ plot_diagram <- function(data) {
 data = read.table(data_filename, header=T, sep=",")
 plot <- plot_diagram(data)
 plot <- plot +
-ggtitle( "Comparing FDR and MR for Both Real and Noise reads" )
+ggtitle( "Classification false discovery and miss rates comparison" )
 
 sheet <- ggplotGrob(plot)
 diagram <- arrangeGrob(sheet, ncol=1)

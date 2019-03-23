@@ -93,7 +93,7 @@ class PamldDemultiplex(Shell):
                 print(to_json(self.execution))
                 raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
             else:
-                self.ontology['persistence']['dirty'] = True
+                self.dirty = True
         else:
             self.log.info('skipping pamld demultiplexing because %s exists', self.location['pamld demultiplex path'])
 
@@ -160,7 +160,7 @@ class MddDemultiplex(Shell):
                 print(to_json(self.execution))
                 raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
             else:
-                self.ontology['persistence']['dirty'] = True
+                self.dirty = True
         else:
             self.log.info('skipping mdd demultiplexing because %s exists', self.location['mdd demultiplex path'])
 
@@ -227,7 +227,7 @@ class PamldAccuratePriorDemultiplex(Shell):
                 print(to_json(self.execution))
                 raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
             else:
-                self.ontology['persistence']['dirty'] = True
+                self.dirty = True
         else:
             self.log.info('skipping accurate prior pamld demultiplexing because %s exists', self.instruction['output'])
 
@@ -294,7 +294,7 @@ class PamldUniformDemultiplex(Shell):
                 print(to_json(self.execution))
                 raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
             else:
-                self.ontology['persistence']['dirty'] = True
+                self.dirty = True
         else:
             self.log.info('skipping uniform pamld demultiplexing because %s exists', self.instruction['output'])
 
@@ -360,6 +360,6 @@ class DemlDemultiplex(Shell):
                 print(to_json(self.execution))
                 raise CommandFailedError('deML returned {} when demultiplexing'.format(self.execution['return code']))
             else:
-                self.ontology['persistence']['dirty'] = True
+                self.dirty = True
         else:
             self.log.info('skipping deML demultiplexing because %s exists', self.location['deml demultiplex path'])

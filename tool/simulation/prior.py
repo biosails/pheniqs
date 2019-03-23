@@ -89,7 +89,7 @@ class SensePrior(Shell):
                 print(to_json(self.execution))
                 raise CommandFailedError('pheniqs returned {} when estimating prior'.format(self.execution['return code']))
             else:
-                self.ontology['persistence']['dirty'] = True
+                self.dirty = True
         else:
             self.log.info('skipping prior estimation because %s exists', self.location['pamld prior estimate path'])
 
@@ -172,8 +172,13 @@ class AdjustPrior(Job):
         def adjust_decoder_prior(estimate, decoder):
             # Noise prior: {decoder low conditional confidence count} / {decoder count}
             # Barcode prior: {barcode count} + {barcode low confidence count} / {decoder count}
+
+            low_conditional_confidence_count = 0
+            if 'low conditional confidence count' in estimate:
+                estimate['low conditional confidence count']
+
             estimated_barcode_by_hash = {}
-            decoder['noise'] = estimate['low conditional confidence count'] / estimate['count']
+            decoder['noise'] = low_conditional_confidence_count / estimate['count']
             for barcode in estimate['classified']:
                 hash = ''.join(barcode['barcode'])
                 low_confidence_count = 0

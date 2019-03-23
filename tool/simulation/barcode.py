@@ -314,7 +314,7 @@ class SimulateBarcode(Transcode):
 
         if not os.path.exists(self.instruction['output']):
             Transcode.execute(self)
-            self.ontology['persistence']['dirty'] = True
+            self.dirty = True
         else:
             self.log.info('skipping barcode simulation because %s exists', self.location['simulated barcode path'])
 
@@ -419,7 +419,8 @@ class SimulateBarcode(Transcode):
                 'PL': self.model['PL'],
                 'flowcell id': self.model['flowcell id'],
                 'transform': self.model['transform'],
-                'include filtered': True,
+                'filter incoming qc fail': True,
+                'filter outgoing qc fail': False,
             }
             for topic in [ 'multiplex', 'cellular', 'molecular' ]:
                 if topic in self.model:
@@ -460,7 +461,8 @@ class SimulateBarcode(Transcode):
                 'PL': self.model['PL'],
                 'flowcell id': self.model['flowcell id'],
                 'transform': self.model['transform'],
-                'include filtered': True,
+                'filter incoming qc fail': True,
+                'filter outgoing qc fail': False,
             }
             for topic in [ 'multiplex', 'cellular', 'molecular' ]:
                 if topic in self.model:
@@ -495,7 +497,8 @@ class SimulateBarcode(Transcode):
                 'PL': self.model['PL'],
                 'flowcell id': self.model['flowcell id'],
                 'transform': self.model['transform'],
-                'include filtered': True,
+                'filter incoming qc fail': True,
+                'filter outgoing qc fail': False,
             }
             for topic in [ 'multiplex', 'cellular', 'molecular' ]:
                 if topic in self.model:

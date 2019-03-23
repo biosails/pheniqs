@@ -35,77 +35,46 @@ diagram_filename = args[2]
 
 source("theme.R")
 
-diagram_width = 86 * 2
-diagram_height =  72 * 3
+diagram_width = 86 * 1
+diagram_height =  72 * 1
 
 accurecy_variable_labeller = labeller (
   tool = tool_name,
   variable = accurecy_variable_name,
+  bin = bin_name,
   ssid = experiment_id_name
 )
 
 plot_diagram <- function(data) {
     selected <- data
-    selected <- selected[which(selected$requested != 0),]
-    selected <- selected[which(selected$rate < maximum_error_rate),]
-    selected <- selected[which(selected$tool != 'mdd'),]
-    # selected <- selected[which(selected$tool != 'deml'),]
-    # selected <- selected[which(selected$tool != 'pamld_ap'),]
-    # selected <- selected[which(selected$tool != 'pamld'),]
-    # selected <- selected[which(selected$tool != 'pamld_u'),]
-    # selected <- selected[which(selected$variable != 'TP_FP'),]
-    selected <- selected[which(selected$variable != 'TP_FN'),]
-    # selected <- selected[which(selected$variable != 'FN'),]
-    # selected <- selected[which(selected$variable != 'FP'),]
-    # selected <- selected[which(selected$variable != 'TP'),]
-    # selected <- selected[which(selected$variable != 'MR'),]
-    # selected <- selected[which(selected$variable != 'FDR'),]
-    selected <- selected[which(selected$variable != 'recall'),]
-    selected <- selected[which(selected$variable != 'precision'),]
+
     benchmark_plot <- ggplot(selected) +
     pheniqs_plot_theme +
     theme(
       legend.position = "top",
-      axis.title.y = element_blank()
+      text = element_text(size = 8)
     ) +
-    facet_wrap(
-      ~ variable,
-      labeller = accurecy_variable_labeller,
-      strip.position = "left",
-      scales="free",
-      ncol=2
-    ) +
-    geom_line (
-        data = selected,
-        aes(x = rate, y = value, colour = tool),
-        alpha = 0.5,
-        size = 0.25
-    ) +
-    geom_point (
-        data = selected,
-        aes(x = rate, y = value, colour = tool),
-        shape = 21,
-        size = 1.25,
-        alpha = 0.325,
-        stroke = 0.25
-    ) +
-    tool_color_scale +
-    rate_scale
-
+    geom_bar(
+      data = selected,
+      stat = "identity",
+      position = position_dodge(),
+      aes(x = order, y = count, fill = bin),
+      # fill = alpha("#5C5151", 0.875),
+      alpha = 0.5,
+      size = 0.25
+    )
     return(benchmark_plot)
 }
 
 data = read.table(data_filename, header=T, sep=",")
-data$value = as.numeric(data$value)
-data$variable = factor(data$variable, levels = accurecy_variable_order)
-data$tool = factor(data$tool)
-data$rate = as.numeric(data$rate)
+data$bin = factor(data$bin, labels = bin_name)
 plot <- plot_diagram(data)
 plot <- plot +
-ggtitle( "Classification accuracy for unclassified reads only" ) +
-xlab( "Expected error rate" )
-sheet <- ggplotGrob(plot)
+ggtitle( "Library density distribution" ) +
+xlab( "Library" ) +
+ylab( "Read Count" )
 
+sheet <- ggplotGrob(plot)
 diagram <- arrangeGrob(sheet, ncol=1)
 grid.draw(diagram)
 if(grepl("\\.eps$", diagram_filename, perl = TRUE)) {

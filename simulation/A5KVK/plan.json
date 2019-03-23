@@ -10,8 +10,8 @@
         },
         {
             "action": "benchmark_substitution",
-            "ssid": "37e41038-310c-44e1-a1ed-8979b0f73709",
-            "error": 0.0001
+            "error": 0.0001,
+            "ssid": "37e41038-310c-44e1-a1ed-8979b0f73709"
         },
         {
             "action": "benchmark_substitution",
@@ -20,7 +20,7 @@
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.0010,
+            "error": 0.001,
             "ssid": "ce333fb9-5e8d-4b14-a5ee-7101afe2cfa6"
         },
         {
@@ -39,7 +39,7 @@
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.0050,
+            "error": 0.005,
             "ssid": "b7e78bf9-30a3-4955-9469-0bbd77310476"
         },
         {
@@ -49,7 +49,7 @@
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.0100,
+            "error": 0.01,
             "ssid": "156d68c8-abcd-439a-a387-71b3708652ff"
         },
         {
@@ -59,62 +59,47 @@
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.0150,
-            "ssid": "d67a3999-b73b-4428-a4dc-66b54ee3ba58"
-        },
-        {
-            "action": "benchmark_substitution",
             "error": 0.016,
             "ssid": "a362969d-fe30-497a-a2ec-42bc0119f398"
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.0175,
-            "ssid": "7cc6f068-10f3-487b-ae6b-5b1423423e66"
-        },
-        {
-            "action": "benchmark_substitution",
-            "error": 0.018,
-            "ssid": "87a2aefb-4d6f-40c8-a3bd-89e4d1983e92"
-        },
-        {
-            "action": "benchmark_substitution",
-            "error": 0.0200,
+            "error": 0.02,
             "ssid": "62bdb0f5-affe-4b31-8b27-f5e96899f37f"
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.0250,
+            "error": 0.025,
             "ssid": "b37d56c6-488a-4121-abf6-8b8a2bf82668"
         },
         {
             "action": "benchmark_substitution",
-            "ssid": "424c4ff7-5cc6-4032-bd54-70b492bbcbb5",
-            "error": 0.031
+            "error": 0.031,
+            "ssid": "424c4ff7-5cc6-4032-bd54-70b492bbcbb5"
         },
         {
             "action": "benchmark_substitution",
-            "ssid": "a5b2c471-f1bc-49b7-9650-19bcd78e73ae",
-            "error": 0.0375
+            "error": 0.0375,
+            "ssid": "a5b2c471-f1bc-49b7-9650-19bcd78e73ae"
         },
         {
             "action": "benchmark_substitution",
-            "ssid": "58020739-79fd-4cab-8f4e-e611a6cfba15",
-            "error": 0.0500
+            "error": 0.05,
+            "ssid": "58020739-79fd-4cab-8f4e-e611a6cfba15"
         },
         {
             "action": "benchmark_substitution",
-            "ssid": "ffad3de5-49d4-4c8d-8be9-6db1be42dbda",
-            "error": 0.0625
+            "error": 0.0625,
+            "ssid": "ffad3de5-49d4-4c8d-8be9-6db1be42dbda"
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.0750,
+            "error": 0.075,
             "ssid": "92ffff7e-8c09-447a-96b1-9bcdc2a0da1c"
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.100,
+            "error": 0.1,
             "ssid": "a11ae384-a142-4f33-a129-eda212675e2a"
         },
         {
@@ -124,22 +109,17 @@
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.150,
+            "error": 0.15,
             "ssid": "1a0d8c5d-3a1b-48ec-894a-12888c735955"
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.175,
-            "ssid": "599a0d9c-387a-4b4b-8b00-e0057ad35a2e"
-        },
-        {
-            "action": "benchmark_substitution",
-            "error": 0.200,
+            "error": 0.2,
             "ssid": "3c4383a7-3ce4-4ecd-8518-c9c7cb681e01"
         },
         {
             "action": "benchmark_substitution",
-            "error": 0.250,
+            "error": 0.25,
             "ssid": "6d9944ec-a347-4b09-8ebc-0e0b2e54875a"
         }
     ]

@@ -35,98 +35,87 @@ diagram_filename = args[2]
 
 source("theme.R")
 
-diagram_width = 86 * 2
-diagram_height =  72 * 3
+diagram_width = 86 * 5
+diagram_height =  72 * 5
 
 accurecy_variable_labeller = labeller (
   tool = tool_name,
   variable = accurecy_variable_name,
-  rank = accurecy_rank_name,
-  qc = c (
-      "pass" = "",
-      "fail" = "",
-      "both" = ""
-  )
+  bin = bin_name,
+  ssid = experiment_id_name
 )
 
-plot_diagram <- function(data) {
+plot_measure <- function(data) {
     selected <- data
-    selected <- selected[which(selected$rate < maximum_erro_rate),]
-    selected <- selected[which(selected$rank == 'real'),]
+    selected <- selected[which(selected$requested != 0),]
+    selected <- selected[which(selected$rate < maximum_error_rate),]
     selected <- selected[which(selected$tool != 'mdd'),]
-    # selected <- selected[which(selected$rate > 0.00104 | selected$rate < 0.0014),]
     # selected <- selected[which(selected$tool != 'deml'),]
     # selected <- selected[which(selected$tool != 'pamld_ap'),]
     # selected <- selected[which(selected$tool != 'pamld'),]
     # selected <- selected[which(selected$tool != 'pamld_u'),]
+    # selected <- selected[which(selected$variable == 'FN'),]
+    # selected <- selected[which(selected$variable == 'FP'),]
+    # selected <- selected[which(selected$variable == 'TP'),]
+    # selected <- selected[which(selected$variable == 'MR'),]
+    # selected <- selected[which(selected$variable == 'FDR'),]
+    # selected <- selected[which(selected$variable == 'fscore'),]
+
+    selected <- selected[which(selected$variable != 'TP_FN'),]
+    # selected <- selected[which(selected$variable != 'TP_FP'),]
     # selected <- selected[which(selected$variable != 'FN'),]
     # selected <- selected[which(selected$variable != 'FP'),]
     # selected <- selected[which(selected$variable != 'TP'),]
-    # selected <- selected[which(selected$variable != 'MR'),]
-    # selected <- selected[which(selected$variable != 'FDR'),]
-    selected <- selected[which(selected$qc == 'pass'),]
-    # selected <- selected[which(selected$index == 0),]
-    # selected <- selected[which(selected$value > 0),]
-    # selected <- selected[which(selected$qc == 'fail'),]
+    selected <- selected[which(selected$variable != 'precision'),]
+    selected <- selected[which(selected$variable != 'recall'),]
+    selected <- selected[which(selected$variable != 'MR'),]
+    selected <- selected[which(selected$variable != 'FDR'),]
+    # selected <- selected[which(selected$variable != 'fscore'),]
+
     benchmark_plot <- ggplot(selected) +
     pheniqs_plot_theme +
     theme(
+      legend.position = "top",
+      text = element_text(size = 12),
       axis.title.y = element_blank()
     ) +
     facet_wrap(
-      qc ~ variable,
+      bin ~ variable,
       labeller = accurecy_variable_labeller,
-      scales="free",
-      ncol=2
+      scales = "free",
+      strip.position = "left",
+      ncol = 5
     ) +
     geom_line (
         data = selected,
-        aes(
-            x = rate,
-            y = value,
-            linetype = tool,
-            colour = tool
-        ),
+        aes(x = rate, y = value, colour = tool),
         alpha = 0.5,
-        size = 0.25,
-        show.legend = FALSE
+        size = 0.25
     ) +
     geom_point (
         data = selected,
-        aes(
-          x = rate,
-          y = value,
-          colour = tool
-        ),
+        aes(x = rate, y = value, colour = tool),
         shape = 21,
         size = 1.25,
         alpha = 0.325,
         stroke = 0.25
     ) +
-    tool_linetype_scale +
     tool_color_scale +
-    rate_scale +
-    guides(
-        linetype = guide_legend (
-            label.hjust = 0.5,
-            label.vjust = 0.5,
-            label.position = "top"
-        )
-    )
+    # scale_y_log10() +
+    rate_scale
     return(benchmark_plot)
 }
 
 data = read.table(data_filename, header=T, sep=",")
 data$value = as.numeric(data$value)
 data$variable = factor(data$variable, levels = accurecy_variable_order)
-data$qc = factor(data$qc, levels = quality_control_order)
 data$tool = factor(data$tool)
+data$bin = factor(data$bin)
 data$rate = as.numeric(data$rate)
-plot <- plot_diagram(data)
+plot <- plot_measure(data)
 plot <- plot +
-# theme ( legend.position = "none" ) +
-ggtitle( "Accuracy Statistics for Real Reads Only" ) +
-xlab( "Expected Nucleotide Error Rate" )
+ggtitle( "Classification accuracy for libraries are binned by density" ) +
+xlab( "Expected error rate" )
 sheet <- ggplotGrob(plot)
 
 diagram <- arrangeGrob(sheet, ncol=1)

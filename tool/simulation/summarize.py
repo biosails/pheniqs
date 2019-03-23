@@ -36,484 +36,987 @@ class Summarize(Job):
         Job.__init__(self, ontology)
         self.log = logging.getLogger('Summarize')
 
-    @property
-    def experiment(self):
-        return self.ontology['experiment']
+        if self.instruction['refresh'] and 'summary' in self.barcode_simulation:
+            del self.barcode_simulation['summary']
 
     @property
-    def collection(self):
-        return self.experiment['collection']
+    def bsid(self):
+        return self.barcode_simulation['barcode']['model']['genealogy']['bsid']
+
+    @property
+    def barcode_simulation(self):
+        return self.ontology['barcode simulation']
+
+    @property
+    def barcode_simulation_summary(self):
+        if 'summary' not in self.session:
+            self.session['summary'] = self.summarize_simulation()
+        return self.session['summary']
+
+    @property
+    def barcode_binning_model(self):
+        if 'barcode binning model' not in self.session:
+            self.session['barcode binning model'] = self.compose_barcode_binning_model()
+        return self.session['barcode binning model']
+
+    def initialize_accurecy_record(self, record=None):
+        for key, value in {
+            'TP': 0,
+            'FP': 0,
+            'FN': 0,
+            'TP_FN': 0,
+            'TP_FP': 0,
+            'FDR': 0,
+            'MR': 0,
+            'precision': 0,
+            'recall': 0,
+            'fscore': 0,
+        }.items(): record[key] = value
+
+    def finalize_accurecy_record(self, record):
+        record['TP_FP'] = record['TP'] + record['FP']
+        if record['TP_FP'] > 0:
+            record['precision']    = record['TP'] / record['TP_FP']
+            record['FDR']          = record['FP'] / record['TP_FP']
+
+        record['TP_FN'] = record['TP'] + record['FN']
+        if record['TP_FN'] > 0:
+            record['recall']       = record['TP'] / record['TP_FN']
+            record['MR']           = record['FN'] / record['TP_FN']
+
+        record['fscore'] = fscore(record['precision'], record['recall'])
+
+    def compose_barcode_binning_model(self):
+        def assemble_classifier_binning_map(classifier_model, classifier_binning_model):
+            if 'codec' in classifier_model:
+                classifier_binning_model['barcode bin by index'] = []
+                for bin_index, bin_limit in enumerate(classifier_binning_model['interval']):
+                    classifier_binning_model['barcode bin by index'].append({
+                        'index': bin_index,
+                        'limit': bin_limit,
+                        'barcode': [],
+                    })
+
+                barcode_density_stack = []
+                for barcode in classifier_model['codec'].values():
+                    barcode_density_stack.append(
+                        {
+                            'index': barcode['index'],
+                            'count': barcode['count'],
+                            'density': barcode['count'] / classifier_binning_model['count'],
+                        }
+                    )
+                barcode_density_stack.sort(key=lambda i: i['density'])
+
+                order = 0
+                while barcode_density_stack:
+                    record = barcode_density_stack.pop(0)
+                    record['order'] = order
+                    order += 1
+                    for bin_model in classifier_binning_model['barcode bin by index']:
+                        if record['density'] < bin_model['limit']:
+                            record['bin index'] = bin_model['index']
+                            bin_model['barcode'].append(record)
+                            break
+
+        barcode_model = self.barcode_simulation['barcode']['model']
+        barcode_binning_model = {}
+        interval = [
+            0.001,
+            0.003,
+            0.01,
+            0.03,
+            1.0,
+        ]
+        for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
+            if classifier_type in barcode_model:
+                classifier_model = barcode_model[classifier_type]
+                if isinstance(classifier_model, dict):
+                    classifier_binning_model = {
+                        'index': classifier_model['index'],
+                        'count': barcode_model['count'],
+                        'classifier type': classifier_type,
+                        'interval': interval,
+                    }
+                    assemble_classifier_binning_map(classifier_model, classifier_binning_model)
+                    barcode_binning_model[classifier_type] = classifier_binning_model
+
+                elif isinstance(classifier_model, list):
+                    barcode_binning_model[classifier_type] = []
+                    for item in classifier_model:
+                        classifier_binning_model = {
+                            'index': item['index'],
+                            'count': barcode_model['count'],
+                            'classifier type': classifier_type,
+                            'interval': interval,
+                        }
+                        assemble_classifier_binning_map(item, classifier_binning_model)
+                        barcode_binning_model[classifier_type].append(classifier_binning_model)
+
+        return barcode_binning_model
+
+    def summarize_simulation(self):
+        def summarize_classifier_simulation(classifier_analysis, classifier_report):
+            # classification code from analysis
+            # if true_barcode['index'] > 0:
+            #     if true_barcode['index'] == decoded_barcode['index']:
+            #         true_barcode['accumulate']['real'][qc]['TP'] += 1
+            #     else:
+            #         if decoded_barcode['index'] > 0:
+            #             true_barcode['accumulate']['real'][qc]['FN'] += 1
+            #             decoded_barcode['accumulate']['real'][qc]['FP'] += 1
+            #         else:
+            #             true_barcode['accumulate']['noise'][qc]['FN'] += 1
+            #             decoded_barcode['accumulate']['noise'][qc]['FP'] += 1 This is actually a real read
+            # else:
+            #     if decoded_barcode['index'] > 0:
+            #         true_barcode['accumulate']['noise'][qc]['FN'] += 1
+            #         decoded_barcode['accumulate']['noise'][qc]['FP'] += 1
+            #     else:
+            #         true_barcode['accumulate']['noise'][qc]['TP'] += 1
+            classifier_report['classified count'] = classifier_analysis['classified count']
+            classifier_report['rate'] = classifier_analysis['simulated substitution rate']
+            classifier_report['simulated rate'] = classifier_analysis['simulated substitution rate']
+            classifier_report['expected rate'] = classifier_analysis['expected substitution rate']
+            if 'requested substitution rate' in classifier_analysis:
+                classifier_report['requested rate'] = classifier_analysis['requested substitution rate']
+            else:
+                classifier_report['requested rate'] = 0
+
+            classifier_report['barcode'] = []
+            classifier_report['classified'] = {
+                'count': 0,
+            }
+            self.initialize_accurecy_record(classifier_report['classified'])
+
+            classifier_report['unclassified'] = {
+                'count': None,
+                'index': None,
+            }
+            self.initialize_accurecy_record(classifier_report['unclassified'])
+
+            classifier_report['summary'] = {
+                'count': 0,
+            }
+            self.initialize_accurecy_record(classifier_report['summary'])
+
+            if 'codec' in classifier_analysis:
+                codec = classifier_analysis['codec']
+                unclassified_report = classifier_report['unclassified']
+                for barcode_analysis in codec.values():
+                    if 'accumulate' in barcode_analysis:
+                        # real,pass,TP  :   Real read was correctly classified and passing filter.
+                        # real,fail,TP  :   Real read was correctly classified but erroneously filtered.
+                        # real,pass,FP  :   Cross contamination erroneously passing filter.
+                        # real,fail,FP  :   Cross contamination filtered.
+                        # noise,pass,FP :   Noise erroneously decoded as real and erroneously passing filter
+                        # noise,fail,FP :   Noise erroneously decoded as real and filtered
+                        # real,pass,FN  :   Cross contamination erroneously passing filter.
+                        # real,fail,FN  :   Cross contamination filtered.
+                        # noise,pass,FN :   Real erroneously decoded as noise. Only in MDD marked as pass.
+                        # noise,fail,FN :   Real erroneously decoded as noise and filtered.
+                        accumulate = barcode_analysis['accumulate']
+                        barcode_report = {
+                            'index': barcode_analysis['index'],
+                            'count': barcode_analysis['count'],
+                        }
+                        self.initialize_accurecy_record(barcode_report)
+                        classifier_report['barcode'].append(barcode_report)
+
+                        # Real read was correctly classified and passing filter.
+                        barcode_report['TP'] += accumulate['real']['pass']['TP']
+
+                        # Real read was correctly classified but erroneously filtered.
+                        barcode_report['FN'] += accumulate['real']['fail']['TP']
+                        unclassified_report['FP'] += accumulate['real']['fail']['TP']
+
+                        # Cross contamination erroneously passing filter.
+                        barcode_report['FP'] += accumulate['real']['pass']['FP']
+
+                        # Cross contamination filtered.
+                        unclassified_report['FP'] += accumulate['real']['fail']['FP']
+
+                        # Noise erroneously decoded as real and erroneously passing filter
+                        barcode_report['FP'] += accumulate['noise']['pass']['FP']
+
+                        # Noise erroneously decoded as real and filtered
+                        # already accounted for with ['noise']['fail']['FN'] on the noise bin
+                        # unclassified_analysis['TP'] += accumulate['noise']['fail']['FP']
+
+                        # Cross contamination erroneously passing filter
+                        barcode_report['FN'] += accumulate['real']['pass']['FN']
+
+                        # Cross contamination filtered.
+                        barcode_report['FN'] += accumulate['real']['fail']['FN']
+
+                        # Real erroneously decoded as noise. Only in MDD marked as pass.
+                        barcode_report['FN'] += accumulate['noise']['pass']['FN']
+
+                        # Real erroneously decoded as noise and filtered.
+                        barcode_report['FN'] += accumulate['noise']['fail']['FN']
+
+                        classifier_report['classified']['count'] += barcode_report['count']
+                        classifier_report['classified']['TP'] += barcode_report['TP']
+                        classifier_report['classified']['FP'] += barcode_report['FP']
+                        classifier_report['classified']['FN'] += barcode_report['FN']
+                        self.finalize_accurecy_record(barcode_report)
+                        self.log.debug (
+                            '%s %s %-9s Index %-5s %-9s %-9s %s',
+                            ssid,
+                            classifier_type,
+                            tool,
+                            barcode_report['index'],
+                            barcode_report['count'],
+                            barcode_report['TP_FN'],
+                            barcode_report['count'] - barcode_report['TP_FN'],
+                        )
+
+                classifier_report['summary']['count'] += classifier_report['classified']['count']
+                classifier_report['summary']['TP'] += classifier_report['classified']['TP']
+                classifier_report['summary']['FP'] += classifier_report['classified']['FP']
+                classifier_report['summary']['FN'] += classifier_report['classified']['FN']
+
+            if 'unclassified' in classifier_analysis:
+                barcode_analysis = classifier_analysis['unclassified']
+                if 'accumulate' in barcode_analysis:
+                    # noise,pass,TP :   Noise read correctly classified. Only in MDD marked as pass.
+                    # noise,fail,TP :   Noise read correctly classified and filtered.
+                    # noise,pass,FP :   Real erroneously decoded as noise. Only in MDD marked as pass.
+                    # noise,fail,FP :   Real erroneously decoded as noise and filtered.
+                    # noise,pass,FN :   Noise erroneously decoded as real and erroneously passing filter
+                    # noise,fail,FN :   Noise erroneously decoded as real and filtered
+                    accumulate = barcode_analysis['accumulate']
+                    barcode_report = classifier_report['unclassified']
+                    barcode_report['index'] = barcode_analysis['index']
+                    barcode_report['count'] = barcode_analysis['count']
+
+                    # Noise read correctly classified. Only in MDD marked as pass.
+                    barcode_report['TP'] += accumulate['noise']['pass']['TP']
+
+                    # Noise read correctly classified and filtered.
+                    barcode_report['TP'] += accumulate['noise']['fail']['TP']
+
+                    # Real erroneously decoded as noise. Only in MDD marked as pass.
+                    barcode_report['FP'] += accumulate['noise']['pass']['FP']
+
+                    # Real erroneously decoded as noise and filtered.
+                    barcode_report['FP'] += accumulate['noise']['fail']['FP']
+
+                    # Noise erroneously decoded as real and erroneously passing filter
+                    barcode_report['FN'] += accumulate['noise']['pass']['FN']
+
+                    # Noise erroneously decoded as real and filtered
+                    barcode_report['TP'] += accumulate['noise']['fail']['FN']
+
+                    classifier_report['summary']['count'] += barcode_report['count']
+                    classifier_report['summary']['TP'] += barcode_report['TP']
+                    classifier_report['summary']['FP'] += barcode_report['FP']
+                    classifier_report['summary']['FN'] += barcode_report['FN']
+                    self.finalize_accurecy_record(barcode_report)
+                    self.log.debug (
+                        '%s %s %-9s %-10s %-9s %-9s %s',
+                        ssid,
+                        classifier_type,
+                        tool,
+                        'Noise ',
+                        barcode_report['count'],
+                        barcode_report['TP_FN'],
+                        barcode_report['count'] - barcode_report['TP_FN'],
+                    )
+
+            self.finalize_accurecy_record(classifier_report['classified'])
+            self.finalize_accurecy_record(classifier_report['summary'])
+            self.log.debug (
+                '%s %s %-9s Balance    %-9s %-9s %s',
+                ssid,
+                classifier_type,
+                tool,
+                classifier_report['count'],
+                classifier_report['summary']['TP_FN'],
+                classifier_report['count'] - classifier_report['summary']['TP_FN'],
+            )
+            self.log.debug (
+                '%s:%s:%-9s Classified  %-9s %-9s %s',
+                ssid,
+                classifier_type,
+                tool,
+                classifier_report['classified count'],
+                classifier_report['classified']['TP_FN'],
+                classifier_report['classified count'] - classifier_report['classified']['TP_FN'],
+            )
+
+        self.log.info('summarizing barcode simulation %s', self.bsid)
+        barcode_simulation_summary = {}
+        for ssid, substitution_analysis in self.barcode_simulation['substitution'].items():
+            substitution_report = {
+                'ssid': ssid,
+                'count': substitution_analysis['model']['count'],
+                'tool': {}
+            }
+            for tool, tool_analysis_key in {
+                'deml': 'deml demultiplex analysis',
+                'pamld': 'pamld demultiplex analysis',
+                'pamld_ap': 'pamld accurate prior demultiplex analysis',
+                'pamld_u': 'pamld uniform demultiplex analysis',
+                'mdd': 'mdd demultiplex analysis',
+            }.items():
+                if tool_analysis_key in substitution_analysis:
+                    tool_substitution_analysis = substitution_analysis[tool_analysis_key]
+                    tool_report = {
+                        'tool': tool,
+                        'classifier': {}
+                    }
+                    substitution_report['tool'][tool] = tool_report
+
+                    for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
+                        if classifier_type in tool_substitution_analysis:
+                            classifier_analysis = tool_substitution_analysis[classifier_type]
+                            if isinstance(classifier_analysis, dict):
+                                classifier_report = {
+                                    'index': classifier_analysis['index'],
+                                    'classifier type': classifier_type,
+                                    'count': substitution_report['count'],
+                                }
+                                summarize_classifier_simulation(classifier_analysis, classifier_report)
+                                tool_report['classifier'][classifier_type] = classifier_report
+
+                            elif isinstance(classifier_analysis, list):
+                                tool_report['classifier'][classifier_type] = []
+                                for item in classifier_analysis:
+                                    classifier_report = {
+                                        'index': item['index'],
+                                        'classifier type': classifier_type,
+                                        'count': substitution_report['count'],
+                                    }
+                                    summarize_classifier_simulation(item, classifier_report)
+                                    tool_report['classifier'][classifier_type].append(classifier_report)
+
+            if ssid not in barcode_simulation_summary:
+                barcode_simulation_summary[ssid] = substitution_report
+            else:
+                self.log.warning('substitution %s already present', ssid)
+
+        self.summarize_binned_simulation(barcode_simulation_summary)
+        return barcode_simulation_summary
+
+    def summarize_binned_simulation(self, barcode_simulation_summary):
+        def assemble_classifier_binned_barcode_simulation_summary(classifier_binning_model, classifier_report):
+            binned_classifier_report = []
+            barcode_report_by_index = {}
+            for barcode_report in classifier_report['barcode']:
+                barcode_report_by_index[barcode_report['index']] = barcode_report
+
+            for bin_model in classifier_binning_model['barcode bin by index']:
+                barcode_bin_report = {
+                    'index': bin_model['index'],
+                    'limit': bin_model['limit'],
+                    'barcode count': 0,
+                }
+                self.initialize_accurecy_record(barcode_bin_report)
+                for barcode in bin_model['barcode']:
+                    barcode_report = barcode_report_by_index[barcode['index']]
+                    barcode_bin_report['TP'] += barcode_report['TP']
+                    barcode_bin_report['FP'] += barcode_report['FP']
+                    barcode_bin_report['FN'] += barcode_report['FN']
+                    barcode_bin_report['barcode count'] += 1
+                    self.finalize_accurecy_record(barcode_bin_report)
+                binned_classifier_report.append(barcode_bin_report)
+
+            classifier_report['binned barcode'] = binned_classifier_report
+
+        self.log.info('summarizing binned barcode simulation %s', self.bsid)
+        for ssid, substitution_report in barcode_simulation_summary.items():
+            for tool, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    if classifier_type in self.barcode_binning_model:
+                        classifier_binning_model = self.barcode_binning_model[classifier_type]
+
+                        if isinstance(classifier_report, dict):
+                            assemble_classifier_binned_barcode_simulation_summary(classifier_binning_model, classifier_report)
+
+                        elif isinstance(classifier_report, list):
+                            for model, report in zip(classifier_binning_model, classifier_report):
+                                assemble_classifier_binned_barcode_simulation_summary(model, report)
 
     def execute(self):
-        self.collect_accuracy_benchmark()
-
         self.log.info('summarizing %s benchmarks', self.instruction['preset'])
 
         if self.instruction['preset'] == 'json':
-            print(to_json(self.collection))
+            print(to_json(self.barcode_simulation_summary))
 
-        elif self.instruction['preset'] == 'noise':
-            self.summarize_noise_accuracy_benchmark()
+        elif self.instruction['preset'] == 'bin_model':
+            print(to_json(self.barcode_binning_model))
 
-        elif self.instruction['preset'] == 'multiplex':
-            self.summarize_decoder_accuracy_benchmark()
-
-        elif self.instruction['preset'] == 'multiplex_barcode':
-            self.summarize_barcode_accuracy_benchmark()
-
-
-        elif self.instruction['preset'] == 'quality_distribution_R':
-            self.summarize_decoder_quality_distribution_R()
-
-        elif self.instruction['preset'] == 'noise_R':
-            self.summarize_noise_accuracy_benchmark_R()
-
-        elif self.instruction['preset'] == 'multiplex_R':
+        elif self.instruction['preset'] == 'decoder_summary_R':
             self.summarize_decoder_accuracy_benchmark_R()
 
-        elif self.instruction['preset'] == 'multiplex_barcode_R':
+        elif self.instruction['preset'] == 'decoder_summary':
+            self.summarize_decoder_accuracy_benchmark()
+
+        elif self.instruction['preset'] == 'barcode_summary_R':
             self.summarize_barcode_accuracy_benchmark_R()
 
+        elif self.instruction['preset'] == 'barcode_summary':
+            self.summarize_barcode_accuracy_benchmark()
 
-    def summarize_decoder_accuracy_benchmark(self):
-        header = [
-            'rate',
-            'tool',
-            'rank',
-            'qc',
-            'TP',
-            'FP',
-            'FN', # for real ranl reads only FP and FN are the same
-            'FDR',
-            'MR',
-            'precision',
-            'recall',
-            'fscore'
-        ]
-        collection = []
-        for record in self.collection:
-            if 'simulated' not in record:
-                self.log.info(to_json(record))
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                        qnode = benchmark['multiplex']['decoder'][rank][qc]
-                        record = [
-                            rate,
-                            tool,
-                            rank,
-                            qc,
-                            qnode['TP'],
-                            qnode['FP'],
-                            qnode['FN'],
-                            qnode['FDR'],
-                            qnode['MR'],
-                            qnode['precision'],
-                            qnode['recall'],
-                            qnode['fscore'],
-                        ]
-                        collection.append(record)
+        elif self.instruction['preset'] == 'noise_summary_R':
+            self.summarize_noise_accuracy_benchmark_R()
 
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
+        elif self.instruction['preset'] == 'noise_summary':
+            self.summarize_noise_accuracy_benchmark()
 
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+        elif self.instruction['preset'] == 'classified_summary_R':
+            self.summarize_classified_accuracy_benchmark_R()
 
-    def summarize_barcode_accuracy_benchmark(self):
-        header = [
-            'index',
-            'rate',
-            'tool',
-            'rank',
-            'qc',
-            'TP',
-            'FP',
-            'FN',
-            'FDR',
-            'MR',
-            # 'precision',
-            # 'recall',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'noise', 'real' ]:
-                # for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                    # for qc in [ 'pass', 'fail', 'both' ]:
-                        for barcode in benchmark['multiplex']['barcode']:
-                            if barcode['index'] > 0:
-                                qnode = barcode[rank][qc]
-                                record = [
-                                    barcode['index'],
-                                    rate,
-                                    tool,
-                                    rank,
-                                    qc,
-                                    qnode['TP'],
-                                    qnode['FP'],
-                                    qnode['FN'],
-                                    qnode['FDR'],
-                                    qnode['MR'],
-                                ]
-                                collection.append(record)
+        elif self.instruction['preset'] == 'classified_summary':
+            self.summarize_classified_accuracy_benchmark()
 
-        collection.sort(key=lambda i: i[4])
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
+        elif self.instruction['preset'] == 'binned_decoder_summary_R':
+            self.summarize_binned_decoder_accuracy_benchmark_R()
 
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+        elif self.instruction['preset'] == 'binned_decoder_summary':
+            self.summarize_binned_decoder_accuracy_benchmark()
 
-    def summarize_noise_accuracy_benchmark(self):
-        header = [
-            'rate',
-            'tool',
-            'qc',
-            'TP',
-            'FP',
-            'FN',
-            'FDR',
-            'MR',
-            'precision',
-            'recall',
-        ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for qc in [ 'pass', 'fail', 'both' ]:
-                # for qc in [ 'pass', 'fail', 'both' ]:
-                    qnode = benchmark['multiplex']['barcode'][0]['noise'][qc]
-                    record = [
-                        rate,
-                        tool,
-                        qc,
-                        qnode['TP'],
-                        qnode['FP'],
-                        qnode['FN'],
-                        qnode['FDR'],
-                        qnode['MR'],
-                        qnode['precision'],
-                        qnode['recall'],
-                    ]
-                    collection.append(record)
+        elif self.instruction['preset'] == 'quality_distribution':
+            self.summarize_decoder_quality_distribution_R()
 
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
+        elif self.instruction['preset'] == 'barcode_distribution':
+            self.summarize_barcode_distribution_R()
 
-        print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
-
+        self.save_session()
 
     def summarize_decoder_accuracy_benchmark_R(self):
         header = [
+            'ssid',
             'rate',
+            'expected',
+            'requested',
             'tool',
-            'rank',
-            'qc',
+            'classifier',
             'variable',
             'value',
         ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                        qnode = benchmark['multiplex']['decoder'][rank][qc]
-                        for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'fscore' ]:
-                        # for variable in [ 'TP', 'FP', 'FN', 'FDR', 'MR', 'precision', 'recall' ]:
-                            record = [
-                                rate,
-                                tool,
-                                rank,
-                                qc,
-                                variable,
-                                qnode[variable],
-                            ]
-                            collection.append(record)
+        table = []
 
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'TP_FP', 'TP_FN', 'precision', 'recall', 'fscore' ]:
+                        row = [
+                            ssid,
+                            classifier_report['simulated rate'],
+                            classifier_report['expected rate'],
+                            classifier_report['requested rate'],
+                            tool_id,
+                            classifier_type,
+                            variable,
+                            classifier_report['summary'][variable],
+                        ]
+                        table.append(row)
+
+        table.sort(key=lambda i: i[6])
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
 
         print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_decoder_accuracy_benchmark(self):
+        header = [
+            'ssid',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'TP',
+            'FP',
+            'FN',
+            'TP_FN',
+            'TP_FP',
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+            'fscore',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    row = [
+                        ssid,
+                        classifier_report['simulated rate'],
+                        classifier_report['expected rate'],
+                        classifier_report['requested rate'],
+                        tool_id,
+                        classifier_type,
+                        classifier_report['summary']['TP'],
+                        classifier_report['summary']['FP'],
+                        classifier_report['summary']['FN'],
+                        classifier_report['summary']['TP_FN'],
+                        classifier_report['summary']['TP_FP'],
+                        classifier_report['summary']['FDR'],
+                        classifier_report['summary']['MR'],
+                        classifier_report['summary']['precision'],
+                        classifier_report['summary']['recall'],
+                        classifier_report['summary']['fscore'],
+                    ]
+                    table.append(row)
+
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
 
     def summarize_barcode_accuracy_benchmark_R(self):
         header = [
+            'ssid',
             'index',
             'rate',
+            'expected',
+            'requested',
             'tool',
-            'rank',
-            'qc',
+            'classifier',
             'variable',
             'value',
         ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for rank in [ 'real', 'noise' ]:
-                # for rank in [ 'noise', 'real', 'both' ]:
-                    for qc in [ 'pass', 'fail', 'both' ]:
-                    # for qc in [ 'pass', 'fail', 'both' ]:
-                        for barcode in benchmark['multiplex']['barcode']:
-                            if barcode['index'] > 0:
-                                qnode = barcode[rank][qc]
-                                for variable in [ 'TP', 'FP', 'FN', 'FDR', 'MR' ]:
-                                    record = [
-                                        barcode['index'],
-                                        rate,
-                                        tool,
-                                        rank,
-                                        qc,
-                                        variable,
-                                        qnode[variable],
-                                    ]
-                                    collection.append(record)
+        table = []
 
-        collection.sort(key=lambda i: i[4])
-        collection.sort(key=lambda i: i[3])
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for barcode_report in classifier_report['barcode']:
+                        for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'TP_FP', 'TP_FN', 'precision', 'recall', 'fscore' ]:
+                            row = [
+                                ssid,
+                                barcode_report['index'],
+                                classifier_report['simulated rate'],
+                                classifier_report['expected rate'],
+                                classifier_report['requested rate'],
+                                tool_id,
+                                classifier_type,
+                                variable,
+                                barcode_report[variable],
+                            ]
+                            table.append(row)
+
+        table.sort(key=lambda i: i[7])
+        table.sort(key=lambda i: i[6])
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
 
         print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_barcode_accuracy_benchmark(self):
+        header = [
+            'ssid',
+            'index',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'TP',
+            'FP',
+            'FN',
+            'TP_FN',
+            'TP_FP',
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+            'fscore',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for barcode_report in classifier_report['barcode']:
+                        row = [
+                            ssid,
+                            barcode_report['index'],
+                            classifier_report['simulated rate'],
+                            classifier_report['expected rate'],
+                            classifier_report['requested rate'],
+                            tool_id,
+                            classifier_type,
+                            barcode_report['TP'],
+                            barcode_report['FP'],
+                            barcode_report['FN'],
+                            barcode_report['TP_FN'],
+                            barcode_report['TP_FP'],
+                            barcode_report['FDR'],
+                            barcode_report['MR'],
+                            barcode_report['precision'],
+                            barcode_report['recall'],
+                            barcode_report['fscore'],
+                        ]
+                        table.append(row)
+
+        table.sort(key=lambda i: i[6])
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
 
     def summarize_noise_accuracy_benchmark_R(self):
         header = [
+            'ssid',
             'rate',
+            'expected',
+            'requested',
             'tool',
-            'qc',
+            'classifier',
             'variable',
             'value',
         ]
-        collection = []
-        for record in self.collection:
-            rate = record['simulated']
-            for benchmark in record['benchmark']:
-                tool = benchmark['tool']
-                for qc in [ 'fail', 'pass', 'both' ]:
-                # for qc in [ 'pass', 'fail', 'both' ]:
-                    qnode = benchmark['multiplex']['barcode'][0]['noise'][qc]
-                    for variable in [ 'TP', 'FP', 'FN', 'precision', 'recall', 'fscore' ]:
-                        record = [
-                            rate,
-                            tool,
-                            qc,
-                            variable,
-                            qnode[variable],
-                        ]
-                        collection.append(record)
+        table = []
 
-        collection.sort(key=lambda i: i[2])
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'TP_FP', 'TP_FN', 'precision', 'recall', 'fscore' ]:
+                        row = [
+                            ssid,
+                            classifier_report['simulated rate'],
+                            classifier_report['expected rate'],
+                            classifier_report['requested rate'],
+                            tool_id,
+                            classifier_type,
+                            variable,
+                            classifier_report['unclassified'][variable],
+                        ]
+                        table.append(row)
+
+        table.sort(key=lambda i: i[6])
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
 
         print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_noise_accuracy_benchmark(self):
+        header = [
+            'ssid',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'TP',
+            'FP',
+            'FN',
+            'TP_FN',
+            'TP_FP',
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+            'fscore',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    row = [
+                        ssid,
+                        classifier_report['simulated rate'],
+                        classifier_report['expected rate'],
+                        classifier_report['requested rate'],
+                        tool_id,
+                        classifier_type,
+                        classifier_report['unclassified']['TP'],
+                        classifier_report['unclassified']['FP'],
+                        classifier_report['unclassified']['FN'],
+                        classifier_report['unclassified']['TP_FN'],
+                        classifier_report['unclassified']['TP_FP'],
+                        classifier_report['unclassified']['FDR'],
+                        classifier_report['unclassified']['MR'],
+                        classifier_report['unclassified']['precision'],
+                        classifier_report['unclassified']['recall'],
+                        classifier_report['unclassified']['fscore'],
+                    ]
+                    table.append(row)
+
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_classified_accuracy_benchmark_R(self):
+        header = [
+            'ssid',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'variable',
+            'value',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'TP_FP', 'TP_FN', 'precision', 'recall', 'fscore' ]:
+                        row = [
+                            ssid,
+                            classifier_report['simulated rate'],
+                            classifier_report['expected rate'],
+                            classifier_report['requested rate'],
+                            tool_id,
+                            classifier_type,
+                            variable,
+                            classifier_report['classified'][variable],
+                        ]
+                        table.append(row)
+
+        table.sort(key=lambda i: i[6])
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_classified_accuracy_benchmark(self):
+        header = [
+            'ssid',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'TP',
+            'FP',
+            'FN',
+            'TP_FN',
+            'TP_FP',
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+            'fscore',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    row = [
+                        ssid,
+                        classifier_report['simulated rate'],
+                        classifier_report['expected rate'],
+                        classifier_report['requested rate'],
+                        tool_id,
+                        classifier_type,
+                        classifier_report['classified']['TP'],
+                        classifier_report['classified']['FP'],
+                        classifier_report['classified']['FN'],
+                        classifier_report['classified']['TP_FN'],
+                        classifier_report['classified']['TP_FP'],
+                        classifier_report['classified']['FDR'],
+                        classifier_report['classified']['MR'],
+                        classifier_report['classified']['precision'],
+                        classifier_report['classified']['recall'],
+                        classifier_report['classified']['fscore'],
+                    ]
+                    table.append(row)
+
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_binned_decoder_accuracy_benchmark_R(self):
+        header = [
+            'ssid',
+            'bin',
+            'count',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'variable',
+            'value',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for barcode_bin_report in classifier_report['binned barcode']:
+                        for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'TP_FP', 'TP_FN', 'precision', 'recall', 'fscore' ]:
+                            row = [
+                                ssid,
+                                barcode_bin_report['index'],
+                                barcode_bin_report['barcode count'],
+                                classifier_report['simulated rate'],
+                                classifier_report['expected rate'],
+                                classifier_report['requested rate'],
+                                tool_id,
+                                classifier_type,
+                                variable,
+                                barcode_bin_report[variable],
+                            ]
+                            table.append(row)
+
+        table.sort(key=lambda i: i[8])
+        table.sort(key=lambda i: i[7])
+        table.sort(key=lambda i: i[6])
+        table.sort(key=lambda i: i[3])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_binned_decoder_accuracy_benchmark(self):
+        header = [
+            'ssid',
+            'bin',
+            'count',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'TP',
+            'FP',
+            'FN',
+            'TP_FN',
+            'TP_FP',
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+            'fscore',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for barcode_bin_report in classifier_report['binned barcode']:
+                        row = [
+                            ssid,
+                            barcode_bin_report['index'],
+                            barcode_bin_report['barcode count'],
+                            classifier_report['simulated rate'],
+                            classifier_report['expected rate'],
+                            classifier_report['requested rate'],
+                            tool_id,
+                            classifier_type,
+                            barcode_bin_report['TP'],
+                            barcode_bin_report['FP'],
+                            barcode_bin_report['FN'],
+                            barcode_bin_report['TP_FN'],
+                            barcode_bin_report['TP_FP'],
+                            barcode_bin_report['FDR'],
+                            barcode_bin_report['MR'],
+                            barcode_bin_report['precision'],
+                            barcode_bin_report['recall'],
+                            barcode_bin_report['fscore'],
+                        ]
+                        table.append(row)
+
+        table.sort(key=lambda i: i[3])
+        table.sort(key=lambda i: i[2])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
 
     def summarize_decoder_quality_distribution_R(self):
         header = [
+            'ssid',
             'rate',
+            'expected',
+            'requested',
+            'classifier',
             'quality',
             'density',
         ]
-        raw = []
-        for key, substitution in self.experiment['substitution'].items():
-            if 'model' in substitution:
-                record = {
-                    'key': key,
-                    'expected': substitution['model']['multiplex']['expected substitution rate'],
-                    'simulated': substitution['model']['multiplex']['simulated substitution rate'],
-                    'benchmark': []
-                }
-                rate = record['simulated']
-                if 'multiplex' in substitution['model']:
-                    if 'quality distribution' in substitution['model']['multiplex']:
-                        for quality, density in enumerate(substitution['model']['multiplex']['quality distribution']):
-                            record['benchmark'].append([
-                                rate,
-                                quality,
-                                density
-                            ])
+        table = []
 
-                if record['benchmark']:
-                    raw.append(record)
+        for ssid, substitution_analysis in self.barcode_simulation['substitution'].items():
+            if 'model' in substitution_analysis:
+                substitution_model = substitution_analysis['model']
+                for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
+                    if classifier_type in substitution_model:
+                        classifier_model = substitution_model['multiplex']
+                        if 'quality distribution' in classifier_model:
+                            simulated_rate = classifier_model['simulated substitution rate']
+                            expected_rate = classifier_model['expected substitution rate']
+                            if 'requested substitution rate' in classifier_model:
+                                requested_rate = classifier_model['requested substitution rate']
+                            else:
+                                requested_rate = 0
 
-        raw.sort(key=lambda i: i['simulated'])
+                            for quality, density in enumerate(classifier_model['quality distribution']):
+                                row = [
+                                    ssid,
+                                    simulated_rate,
+                                    expected_rate,
+                                    requested_rate,
+                                    classifier_type,
+                                    quality,
+                                    density
+                                ]
+                                table.append(row)
 
-        collection = []
-        previous = 0
-        for record in raw:
-            rate = record['simulated']
-            test = abs(1.0 - previous / rate)
-            if test > 0.02:
-                collection.extend(record['benchmark'])
-                previous = rate
-            else:
-                self.log.info('skipping experiment %s with rate %s because its too close to %s', key, rate, previous)
-
-        collection.sort(key=lambda i: i[1])
-        collection.sort(key=lambda i: i[0])
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
 
         print(','.join(header))
-        print('\n'.join([','.join([str(field) for field in record]) for record in collection]))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
 
-    def collect_accuracy_benchmark(self):
-        # Noise accumulator:
-        #   TP :
-        #       noise: a noise read was correctly classified as noise
-        #   FN :
-        #       noise: a noise read was incorrectly classified to a real barcode
-        #   FP :
-        #       noise: a real read was classified as noise
-        #
-        # Real barcode accumulator:
-        #   TP :
-        #       real: real read is correctly classified
-        #   FN :
-        #       real: a read from this barcode was incorrectly classified to another real barcode
-        #       noise: a read from this barcode was incorrectly classified as noise
-        #   FP :
-        #       real: a real read from another barcode was incorrectly classified to this barcode
-        #       noise: a noise read was incorrectly classified to this barcode
-        def collect_barcode(n, barcode):
-            d = n['decoder']
-            b = n['barcode'][barcode['index']]
-            for rank in [ 'noise', 'real' , 'both' ]:
-                b[rank] = {}
-                for qc in ['fail', 'pass', 'both']:
-                    b[rank][qc] = {}
-                    for item in [ 'count', 'TP', 'FP', 'FN', 'FDR', 'MR', 'precision', 'recall', 'fscore' ]:
-                        b[rank][qc][item] = 0
+    def summarize_barcode_distribution_R(self):
+        header = [
+            'classifier',
+            'index',
+            'count',
+            'fraction',
+            'order',
+            'bin',
+        ]
+        table = []
 
-            for rank in [ 'noise', 'real' ]:
-                for qc in ['fail', 'pass']:
-                    for item in [ 'TP', 'FP', 'FN' ]:
-                        b[rank][qc][item] = barcode['accumulate'][rank][qc][item]
-                        b[rank]['both'][item] += b[rank][qc][item]
-                        b['both'][qc][item] += barcode['accumulate'][rank][qc][item]
-                        b['both']['both'][item] += b[rank][qc][item]
+        for classifier_type, classifier_binning_model in self.barcode_binning_model.items():
+            for barcode_binning_model in classifier_binning_model['barcode bin by index']:
+                for barcode_model in barcode_binning_model['barcode']:
 
-                        if b['index'] > 0:
-                            d[rank][qc][item] += b[rank][qc][item]
-                            d[rank]['both'][item] += b[rank][qc][item]
-                            d['both'][qc][item] += b[rank][qc][item]
-                            d['both']['both'][item] += b[rank][qc][item]
+                        row = [
+                            classifier_type,
+                            barcode_model['index'],
+                            barcode_model['count'],
+                            barcode_model['density'],
+                            barcode_model['order'],
+                            barcode_model['bin index'],
+                        ]
+                        table.append(row)
 
-                    b[rank][qc]['count'] = b[rank][qc]['TP'] + b[rank][qc]['FN']
-                    b[rank]['both']['count'] += b[rank][qc]['count']
-                    b['both'][qc]['count'] += b[rank][qc]['count']
-                    b['both']['both']['count'] += b[rank][qc]['count']
+        table.sort(key=lambda i: i[2])
+        table.sort(key=lambda i: i[1])
+        table.sort(key=lambda i: i[0])
 
-                    if b['index'] > 0:
-                        d[rank][qc]['count'] += b[rank][qc]['count']
-                        d[rank]['both']['count'] += b[rank][qc]['count']
-                        d['both'][qc]['count'] += b[rank][qc]['count']
-                        d['both']['both']['count'] += b[rank][qc]['count']
-
-            for rank in [ 'noise', 'real', 'both' ]:
-                for qc in ['fail', 'pass', 'both']:
-                    if b[rank][qc]['TP'] > 0 or b[rank][qc]['FP'] > 0:
-                        b[rank][qc]['precision']    = b[rank][qc]['TP'] / (b[rank][qc]['FP'] + b[rank][qc]['TP'])
-                        b[rank][qc]['FDR']          = b[rank][qc]['FP'] / (b[rank][qc]['FP'] + b[rank][qc]['TP'])
-                    if b[rank][qc]['FN'] > 0 or b[rank][qc]['TP'] > 0:
-                        b[rank][qc]['recall']       = b[rank][qc]['TP'] / (b[rank][qc]['TP'] + b[rank][qc]['FN'])
-                        b[rank][qc]['MR']           = b[rank][qc]['FN'] / (b[rank][qc]['TP'] + b[rank][qc]['FN'])
-                    b[rank][qc]['fscore'] = fscore(b[rank][qc]['precision'], b[rank][qc]['recall'])
-
-        def collect_decoder(n, decoder):
-            n['decoder'] = {}
-            n['barcode'] = []
-            for index in range(decoder['barcode cardinality'] + 1):
-                b = { 'index': index }
-                n['barcode'].append(b)
-
-            d = n['decoder']
-            for rank in [ 'noise', 'real', 'both' ]:
-                d[rank] = {}
-                for qc in ['fail', 'pass', 'both']:
-                    d[rank][qc] = {}
-                    for item in [ 'count', 'TP', 'FP', 'FN', 'FDR', 'MR', 'precision', 'recall', 'fscore' ]:
-                        d[rank][qc][item] = 0
-
-            collect_barcode(n, decoder['unclassified'])
-            for barcode in decoder['codec'].values():
-                collect_barcode(n, barcode)
-
-            for rank in [ 'noise', 'real', 'both' ]:
-                for qc in ['fail', 'pass', 'both']:
-                    if d[rank][qc]['TP'] > 0 or d[rank][qc]['FP'] > 0:
-                        d[rank][qc]['precision']    = d[rank][qc]['TP'] / (d[rank][qc]['FP'] + d[rank][qc]['TP'])
-                        d[rank][qc]['FDR']          = d[rank][qc]['FP'] / (d[rank][qc]['FP'] + d[rank][qc]['TP'])
-                    if d[rank][qc]['FN'] > 0 or d[rank][qc]['TP'] > 0:
-                        d[rank][qc]['recall']       = d[rank][qc]['TP'] / (d[rank][qc]['TP'] + d[rank][qc]['FN'])
-                        d[rank][qc]['MR']           = d[rank][qc]['FN'] / (d[rank][qc]['TP'] + d[rank][qc]['FN'])
-                    d[rank][qc]['fscore'] = fscore(d[rank][qc]['precision'], d[rank][qc]['recall'])
-
-        if 'collection' not in  self.experiment:
-            self.log.info('computing collection')
-            collection = []
-            for key, substitution in self.experiment['substitution'].items():
-                if 'model' in substitution:
-                    record = {
-                        'key': key,
-                        'expected': substitution['model']['multiplex']['expected substitution rate'],
-                        'simulated': substitution['model']['multiplex']['simulated substitution rate'],
-                        'benchmark': []
-                    }
-                    if 'calibrated' in substitution['model'] and substitution['model']['calibrated']:
-                        record['requested'] = substitution['model']['multiplex']['requested substitution rate'],
-
-
-                    for tool, akey in {
-                        'deml': 'deml demultiplex analysis',
-                        'pamld': 'pamld demultiplex analysis',
-                        'pamld_ap': 'pamld accurate prior demultiplex analysis',
-                        'pamld_u': 'pamld uniform demultiplex analysis',
-                        'mdd': 'mdd demultiplex analysis',
-                    }.items():
-                        if akey in substitution:
-                            analysis = { 'tool': tool, }
-                            if 'multiplex' in substitution[akey]:
-                                if 'accumulate' in substitution[akey]['multiplex']['unclassified']:
-                                    analysis['multiplex'] = {}
-                                    collect_decoder(analysis['multiplex'], substitution[akey]['multiplex'])
-
-                            if 'multiplex' in analysis:
-                                record['benchmark'].append(analysis)
-
-                    if record['benchmark']:
-                        collection.append(record)
-
-            collection.sort(key=lambda i: i['simulated'])
-            self.experiment['collection'] = []
-
-            previous = 0
-            for record in collection:
-                rate = record['simulated']
-                test = abs(1.0 - previous / rate)
-                if test > 0.02:
-                    self.experiment['collection'].append(record)
-                    previous = rate
-                else:
-                    self.log.info('skipping experiment %s with rate %s because its too close to %s', key, rate, previous)
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))

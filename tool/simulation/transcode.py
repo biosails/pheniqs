@@ -66,7 +66,8 @@ from core import prepare_path
 
 class BamReader(object):
     def __init__(self, path):
-        self.eof = False
+        self.log = logging.getLogger('BamReader')
+        self.count = 0
         self.queue = Queue(128)
         self.input_process = Popen(args=[ 'samtools', 'view', '-h', path ], stdout=PIPE, stderr=PIPE)
         self.thread = Thread(target = self.replenish)
@@ -76,14 +77,13 @@ class BamReader(object):
         for line in iter(self.input_process.stdout.readline, b''):
             if line:
                 self.queue.put(line.strip().decode('utf-8'))
-            else:
-                self.eof = True
+                self.count += 1
 
     def read_line(self):
         line = None
-        while line is None and not self.eof:
+        while line is None:
             try:
-                line = self.queue.get(timeout = 0.1)
+                line = self.queue.get(timeout = 0.2)
             except Empty:
                 break
         return line
@@ -91,6 +91,7 @@ class BamReader(object):
 class BamWriter(object):
     def __init__(self, path):
         self.eof = False
+        self.count = 0
         self.queue = Queue(128)
         self.output_process = Popen(args=[ 'samtools', 'view', '-h', '-b', '-o', path], stdin=PIPE, stdout=PIPE, stderr=PIPE)
         self.thread = Thread(target = self.flush)
@@ -99,7 +100,7 @@ class BamWriter(object):
     def flush(self):
         while True:
             try:
-                line = self.queue.get(timeout = 0.1)
+                line = self.queue.get(timeout = 0.2)
                 self.output_process.stdin.write(line.encode('utf-8'))
                 self.output_process.stdin.write(b'\n')
             except Empty:
@@ -109,6 +110,7 @@ class BamWriter(object):
 
     def write_line(self, line):
         self.queue.put(line)
+        self.count += 1
 
     def close(self):
         self.eof = True
@@ -191,7 +193,10 @@ class Transcode(Job):
     def close(self):
         Job.close(self)
         if self.output_feed:
+            self.flush()
             self.output_feed.close()
+            self.output_feed.thread.join()
+            self.log.debug('output feed count %s', self.output_feed.count)
 
     def execute(self):
         self.load()
@@ -201,8 +206,8 @@ class Transcode(Job):
             self.flush()
         self.close()
         self.finalize()
-        if self.output_feed:
-            self.output_feed.thread.join()
+        # if self.output_feed:
+        #     self.output_feed.thread.join()
 
     def replenish(self):
         while True:
@@ -248,60 +253,13 @@ class Transcode(Job):
 
                     if len(self.input_buffer) >= self.buffer_capacity: break
             else:
+                if self.read_buffer and self.input_feed.input_process.poll() is not None:
+                    self.log.debug('pushing one last read with %s segments', len(self.read_buffer['segment']))
+                    self.input_buffer.append(self.read_buffer)
+                    self.read_buffer = None
                 break
 
-        if self.input_feed.eof and len(self.input_buffer) == 0 and self.read_buffer:
-            self.input_buffer.append(self.read_buffer)
-            self.read_buffer = None
-
         return len(self.input_buffer)
-
-        # for line in self.input_feed:
-        #     if line:
-        #         if line[0] =='@':
-        #             # redirect header line
-        #             self.output_feed.write(line)
-        #         else:
-        #             segment = { 'fixed': line.strip().split('\t'), 'auxiliary': {} }
-        #             if len(segment['fixed']) > 10:
-        #                 # parse AUX
-        #                 if len(segment['fixed']) > 11:
-        #                     for item in segment['fixed'][11:]:
-        #                         if len(item) > 5:
-        #                             tag = { 'TAG': item[0:2], 'TYPE': item[3:4], 'VALUE': item[5:] }
-        #                             if tag['TYPE'] is 'i':
-        #                                 tag['VALUE'] = int(tag['VALUE'])
-        #                             elif tag['TYPE'] is 'f':
-        #                                 tag['VALUE'] = float(tag['VALUE'])
-        #                             segment['auxiliary'][tag['TAG']] = tag
-        #                         else:
-        #                             self.log.warning('ignoring invalid auxiliary tag %s', field)
-        #
-        #                 if self.read_buffer:
-        #                     if self.read_buffer['segment'][0]['fixed'][0] == segment['fixed'][0]:
-        #                         # if QNAME is the same as the first segment in the read buffer
-        #                         # this is another segment of the same read
-        #                         self.read_buffer['segment'].append(segment)
-        #                     else:
-        #                         # otherwise this is a segment from a new read
-        #                         # so write the completed read to the input buffer and intitalize the read buffer
-        #                         self.input_buffer.append(self.read_buffer)
-        #                         self.read_buffer = { 'segment': [ segment ] }
-        #                 else:
-        #                     # only when the first read segment is encountered
-        #                     self.read_buffer = { 'segment': [ segment ] }
-        #             else:
-        #                 # a sam record must have at least 11 mandatory fields
-        #                 self.log.error('invalid sam syntax %s', line)
-        #                 raise SequenceError(line)
-        #
-        #             if len(self.input_buffer) >= self.buffer_capacity: break
-        #
-        # if len(self.input_buffer) == 0 and self.read_buffer:
-        #     self.input_buffer.append(self.read_buffer)
-        #     self.read_buffer = None
-        #
-        # return len(self.input_buffer)
 
     def manipulate(self):
         pass

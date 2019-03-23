@@ -125,22 +125,22 @@
                         "metavar": "PATH"
                     }
                 },
+                "sid": {
+                    "flag": [
+                        "-s",
+                        "--session"
+                    ],
+                    "parameter": {
+                        "help": "Persistence session id",
+                        "metavar": "ID"
+                    }
+                },
                 "ssid": {
                     "flag": [
                         "--ssid"
                     ],
                     "parameter": {
                         "help": "Substitution simulation id"
-                    }
-                },
-                "summary": {
-                    "flag": [
-                        "-s",
-                        "--summary"
-                    ],
-                    "parameter": {
-                        "help": "Path to execution summary file.",
-                        "metavar": "PATH"
                     }
                 },
                 "verbosity": {
@@ -177,7 +177,8 @@
                         "argument": [
                             "path",
                             "preset",
-                            "capacity"
+                            "capacity",
+                            "sid"
                         ],
                         "implementation": "plan",
                         "instruction": {
@@ -209,7 +210,8 @@
                             "bsid",
                             "ssid",
                             "error",
-                            "capacity"
+                            "capacity",
+                            "sid"
                         ],
                         "implementation": "benchmark_substitution",
                         "instruction": {
@@ -221,7 +223,9 @@
                     {
                         "argument": [
                             "bsid",
-                            "preset"
+                            "preset",
+                            "refresh",
+                            "sid"
                         ],
                         "implementation": "summarize",
                         "instruction": {
@@ -235,8 +239,8 @@
                                     "--bsid"
                                 ],
                                 "parameter": {
-                                    "required": true,
-                                    "help": "Barcode simulation id"
+                                    "help": "Barcode simulation id",
+                                    "required": true
                                 }
                             },
                             "preset": {
@@ -247,17 +251,33 @@
                                 "parameter": {
                                     "choices": [
                                         "json",
-                                        "noise",
-                                        "multiplex",
-                                        "multiplex_barcode",
-                                        "quality_distribution_R",
-                                        "noise_R",
-                                        "multiplex_R",
-                                        "multiplex_barcode_R"
+                                        "bin_model",
+                                        "decoder_summary_R",
+                                        "decoder_summary",
+                                        "barcode_summary_R",
+                                        "barcode_summary",
+                                        "noise_summary_R",
+                                        "noise_summary",
+                                        "classified_summary_R",
+                                        "classified_summary",
+                                        "binned_decoder_summary_R",
+                                        "binned_decoder_summary",
+                                        "quality_distribution",
+                                        "barcode_distribution"
                                     ],
                                     "default": "json",
                                     "help": "Summary preset.",
                                     "metavar": "NAME"
+                                }
+                            },
+                            "refresh": {
+                                "flag": [
+                                    "-R",
+                                    "--refresh"
+                                ],
+                                "parameter": {
+                                    "action": "store_true",
+                                    "help": "Refresh summary model"
                                 }
                             }
                         }
@@ -267,7 +287,8 @@
                             "bsid",
                             "preset",
                             "input",
-                            "capacity"
+                            "capacity",
+                            "sid"
                         ],
                         "implementation": "simulate_barcode",
                         "instruction": {
@@ -288,7 +309,8 @@
                             "bsid",
                             "ssid",
                             "error",
-                            "capacity"
+                            "capacity",
+                            "sid"
                         ],
                         "implementation": "simulate_substitution",
                         "instruction": {
@@ -301,7 +323,8 @@
                         "argument": [
                             "bsid",
                             "ssid",
-                            "capacity"
+                            "capacity",
+                            "sid"
                         ],
                         "implementation": "todeml",
                         "instruction": {
@@ -313,7 +336,8 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid"
+                            "ssid",
+                            "sid"
                         ],
                         "implementation": "sense_prior",
                         "instruction": {
@@ -325,7 +349,8 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid"
+                            "ssid",
+                            "sid"
                         ],
                         "implementation": "adjust_prior",
                         "instruction": {
@@ -337,7 +362,8 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid"
+                            "ssid",
+                            "sid"
                         ],
                         "implementation": "demux_pamld",
                         "instruction": {
@@ -348,7 +374,8 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid"
+                            "ssid",
+                            "sid"
                         ],
                         "implementation": "demux_mdd",
                         "instruction": {
@@ -359,7 +386,8 @@
                     {
                         "argument": [
                             "bsid",
-                            "ssid"
+                            "ssid",
+                            "sid"
                         ],
                         "implementation": "demux_deml",
                         "instruction": {
@@ -371,7 +399,8 @@
                         "argument": [
                             "bsid",
                             "ssid",
-                            "capacity"
+                            "capacity",
+                            "sid"
                         ],
                         "implementation": "analyze_pamld",
                         "instruction": {
@@ -384,7 +413,8 @@
                         "argument": [
                             "bsid",
                             "ssid",
-                            "capacity"
+                            "capacity",
+                            "sid"
                         ],
                         "implementation": "analyze_deml",
                         "instruction": {
