@@ -104,9 +104,6 @@ template < class T > void PhredAdjustedMaximumLikelihoodDecoder< T >::classify(c
         } else {
             ++this->decoded->low_confidence_count;
             output.set_qcfail(true);
-            // this->decoded = &this->unclassified;
-            // this->decoding_hamming_distance = 0;
-            // decoding_confidence = 0;
         }
 
     } else {

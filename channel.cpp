@@ -289,7 +289,7 @@ bool encode_value(const SegmentAccumulator& value, Value& container, Document& d
 Channel::Channel(const Value& ontology) try :
     Barcode(ontology),
     rg(ontology),
-    include_filtered(decode_value_by_key< bool >("include filtered", ontology)),
+    filter_outgoing_qc_fail(decode_value_by_key< bool >("filter outgoing qc fail", ontology)),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology)),
     output_feed_url_by_segment(decode_value_by_key< list< URL > >("output", ontology)),
     segment_accumulator_by_index(decode_value_by_key< vector< SegmentAccumulator > >("output feed by segment", ontology["feed"])) {
@@ -301,7 +301,7 @@ Channel::Channel(const Value& ontology) try :
 Channel::Channel(const Channel& other) :
     Barcode(other),
     rg(other.rg),
-    include_filtered(other.include_filtered),
+    filter_outgoing_qc_fail(other.filter_outgoing_qc_fail),
     enable_quality_control(other.enable_quality_control),
     output_feed_url_by_segment(other.output_feed_url_by_segment),
     output_feed_lock_order(other.output_feed_lock_order),

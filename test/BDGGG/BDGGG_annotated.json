@@ -1,6 +1,5 @@
 {
     "import": [ "BDGGG_interleave.json" ],
-    "include filtered": false,
     "molecular": [
         {
             "algorithm": "naive",

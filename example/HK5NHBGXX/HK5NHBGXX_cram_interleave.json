@@ -7,7 +7,7 @@
     "base input url": "interleaved/HK5NHBGXX/1",
     "flowcell id": "HK5NHBGXX",
     "flowcell lane number": 1,
-    "include filtered": true,
+    "filter incoming qc fail": false,
     "input": [
         "HK5NHBGXX_l01n01.fastq.gz",
         "HK5NHBGXX_l01n02.fastq.gz",

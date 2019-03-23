@@ -1537,7 +1537,8 @@
         }
     },
     "flowcell id": "BCBJLFACXX",
-    "include filtered": true,
+    "filter incoming qc fail": false,
+    "filter outgoing qc fail": false,
     "input": [
         "Lane1_S1_L001_I1_001.fastq.gz",
         "Lane1_S1_L001_I2_001.fastq.gz",

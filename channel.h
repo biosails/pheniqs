@@ -175,7 +175,7 @@ class Channel : public Barcode {
     public:
         void operator=(Channel const &) = delete;
         const HeadRGAtom rg;
-        const bool include_filtered;
+        const bool filter_outgoing_qc_fail;
         const bool enable_quality_control;
         const list< URL > output_feed_url_by_segment;
         vector< Feed* > output_feed_lock_order;
@@ -186,7 +186,7 @@ class Channel : public Barcode {
         Channel(const Channel& other);
         inline void push(const Read& read) {
             if(output_feed_lock_order.size() > 0) {
-                if(include_filtered || !read.qcfail()) {
+                if(!filter_outgoing_qc_fail || !read.qcfail()) {
                     // acquire a push lock for all feeds in a fixed order
                     vector< unique_lock< mutex > > feed_locks;
                     feed_locks.reserve(output_feed_lock_order.size());

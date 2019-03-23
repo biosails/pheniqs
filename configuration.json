@@ -4,6 +4,8 @@
             "default": {
                 "default output compression": "none",
                 "default output format": "sam",
+                "filter incoming qc fail": false,
+                "filter outgoing qc fail": false,
                 "input": [
                     "/dev/stdin"
                 ],
@@ -140,11 +142,20 @@
                 },
                 {
                     "handle": [
-                        "-f",
-                        "--filtered"
+                        "-n",
+                        "--no-output-npf"
                     ],
-                    "help": "Include reads not passing vendor QC in output",
-                    "name": "include filtered",
+                    "help": "Filter outgoing QC failed reads",
+                    "name": "filter outgoing qc fail",
+                    "type": "boolean"
+                },
+                {
+                    "handle": [
+                        "-N",
+                        "--no-input-npf"
+                    ],
+                    "help": "Filter incoming QC failed reads.",
+                    "name": "filter incoming qc fail",
                     "type": "boolean"
                 },
                 {
@@ -391,9 +402,9 @@
             "algorithm": null,
             "concentration": 1,
             "enable quality control": null,
+            "filter outgoing qc fail": false,
             "flowcell id": null,
             "flowcell lane number": null,
-            "include filtered": false,
             "output": null,
             "segment cardinality": null
         },
@@ -412,9 +423,9 @@
             "confidence threshold": 0.95,
             "distance tolerance": null,
             "enable quality control": null,
+            "filter outgoing qc fail": false,
             "flowcell id": null,
             "flowcell lane number": null,
-            "include filtered": false,
             "noise": 0.01,
             "output": null,
             "quality masking threshold": 0,
@@ -662,14 +673,14 @@
                         "enable quality control": {
                             "$ref": "#/definitions/enable_quality_control"
                         },
+                        "filter outgoing qc fail": {
+                            "$ref": "#/definitions/filter_outgoing_qc_fail"
+                        },
                         "flowcell id": {
                             "$ref": "#/definitions/flowcell_id"
                         },
                         "flowcell lane number": {
                             "$ref": "#/definitions/flowcell_lane_number"
-                        },
-                        "include filtered": {
-                            "$ref": "#/definitions/include_filtered"
                         },
                         "index": {
                             "$ref": "#/definitions/index"
@@ -763,6 +774,16 @@
                     "minItems": 1,
                     "type": "array"
                 },
+                "filter_incoming_qc_fail": {
+                    "description": "Filter incoming QC failed reads.",
+                    "title": "Filter incoming QC failed reads",
+                    "type": "boolean"
+                },
+                "filter_outgoing_qc_fail": {
+                    "description": "Filter outgoing QC failed reads.",
+                    "title": "Filter outgoing QC failed reads",
+                    "type": "boolean"
+                },
                 "flowcell_id": {
                     "description": "A unique identifier of the flowcel used to deduce read group identifiers.",
                     "examples": [
@@ -819,11 +840,6 @@
                     "pattern": "^[0-9]+\\.[0-9]+$",
                     "title": "Format version",
                     "type": "string"
-                },
-                "include_filtered": {
-                    "description": "Include reads not passing vendor Quality Control filter in the output.",
-                    "title": "Include filtered",
-                    "type": "boolean"
                 },
                 "index": {
                     "minimum": 0,
@@ -900,6 +916,12 @@
                         "enable quality control": {
                             "$ref": "#/definitions/enable_quality_control"
                         },
+                        "filter incoming qc fail": {
+                            "$ref": "#/definitions/filter_incoming_qc_fail"
+                        },
+                        "filter outgoing qc fail": {
+                            "$ref": "#/definitions/filter_outgoing_qc_fail"
+                        },
                         "flowcell id": {
                             "$ref": "#/definitions/flowcell_id"
                         },
@@ -914,9 +936,6 @@
                             "minItems": 1,
                             "title": "Import",
                             "type": "array"
-                        },
-                        "include filtered": {
-                            "$ref": "#/definitions/include_filtered"
                         },
                         "input": {
                             "$ref": "#/definitions/url_array"
@@ -1312,14 +1331,14 @@
                         "enable quality control": {
                             "$ref": "#/definitions/enable_quality_control"
                         },
+                        "filter outgoing qc fail": {
+                            "$ref": "#/definitions/filter_outgoing_qc_fail"
+                        },
                         "flowcell id": {
                             "$ref": "#/definitions/flowcell_id"
                         },
                         "flowcell lane number": {
                             "$ref": "#/definitions/flowcell_lane_number"
-                        },
-                        "include filtered": {
-                            "$ref": "#/definitions/include_filtered"
                         },
                         "index": {
                             "$ref": "#/definitions/index"

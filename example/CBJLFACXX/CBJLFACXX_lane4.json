@@ -9,8 +9,6 @@
         "Lane4_S4_L004_R2_001.fastq.gz"
     ],
     "multiplex": {
-        "base": "@CBJLFACXX_multiplex_lane_4",
-        "output": [ "CBJLFACXX_l04.cram" ],
-        "undetermined": { "output": [ "CBJLFACXX_l04_unclassified.cram" ] }
+        "base": "@CBJLFACXX_multiplex_lane_4"
     }
 }

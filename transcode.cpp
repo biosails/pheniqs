@@ -19,6 +19,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+    filter_incoming_qc_fail:    should we process incoming qc_fail reads?
+    filter_outgoing_qc_fail:    should we write qc_fail reads?
+    inherit_qc_fail:            should outgoing reads inherit qc_fail flag from incoming?
+*/
 #include "transcode.h"
 
 static int32_t compute_inheritence_depth(const string& key, const unordered_map< string, Value* >& object_by_key, Document& document) {
@@ -43,6 +48,9 @@ static int32_t compute_inheritence_depth(const string& key, const unordered_map<
 
 Transcode::Transcode(Document& operation) try :
     Job(operation),
+    count(0),
+    pf_count(0),
+    pf_fraction(0),
     decoder_repository_query("/decoder"),
     end_of_input(false),
     decoded_nucleotide_cardinality(0),
@@ -79,6 +87,14 @@ bool Transcode::pull(Read& read) {
     for(size_t i(0); i < read.segment_cardinality(); ++i) {
         if(!input_feed_by_segment[i]->pull(read[i])) {
             end_of_input = true;
+        }
+    }
+
+    /* update input counters */
+    if(!end_of_input) {
+        ++count;
+        if(!read.qcfail()) {
+            ++pf_count;
         }
     }
 
@@ -1384,6 +1400,14 @@ void Transcode::stop() {
 };
 void Transcode::finalize() {
     Job::finalize();
+    if(count > 0) {
+        pf_fraction = double(pf_count) / double(count);
+        Value element(kObjectType);
+        encode_key_value("count", count, element, report);
+        encode_key_value("pf count", pf_count, element, report);
+        encode_key_value("pf fraction", pf_fraction, element, report);
+        report.AddMember("incoming", element.Move(), report.GetAllocator());
+    }
 
     /*  collect statistics from the accumulators on all pivot threads */
     for(auto& pivot : pivot_array) {
@@ -1449,8 +1473,11 @@ void Transcode::print_global_instruction(ostream& o) const {
     bool enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology));
     o << "    Quality tracking                            " << (enable_quality_control ? "enabled" : "disabled") << endl;
 
-    bool include_filtered(decode_value_by_key< bool >("include filtered", ontology));
-    o << "    Include non PF reads                        " << (include_filtered ? "enabled" : "disabled") << endl;
+    bool filter_incoming_qc_fail(decode_value_by_key< bool >("filter incoming qc fail", ontology));
+    o << "    Filter incoming QC failed reads             " << (filter_incoming_qc_fail ? "enabled" : "disabled") << endl;
+
+    bool filter_outgoing_qc_fail(decode_value_by_key< bool >("filter outgoing qc fail", ontology));
+    o << "    Filter outgoing QC failed reads             " << (filter_outgoing_qc_fail ? "enabled" : "disabled") << endl;
 
     uint8_t input_phred_offset(decode_value_by_key< uint8_t >("input phred offset", ontology));
     o << "    Input Phred offset                          " << to_string(input_phred_offset) << endl;
@@ -1745,11 +1772,11 @@ TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
     output(output_segment_cardinality, platform, leading_segment_index),
     sample_classifier(NULL),
     job(job),
+    filter_incoming_qc_fail(decode_value_by_key< bool >("filter incoming qc fail", job.ontology)),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", job.ontology)),
     template_rule(decode_value_by_key< Rule >("transform", job.ontology)) {
 
     load_decoding();
-    clear();
 
     } catch(Error& error) {
         error.push("TranscodePivot");
@@ -1759,6 +1786,8 @@ void TranscodePivot::load_decoding() {
     load_multiplex_decoding();
     load_molecular_decoding();
     load_cellular_decoding();
+    input.clear();
+    output.clear();
 };
 void TranscodePivot::load_multiplex_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("multiplex");

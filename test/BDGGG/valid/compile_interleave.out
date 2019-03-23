@@ -91,7 +91,7 @@
     "flowcell id": "BDGGG",
     "full command": "./pheniqs mux --config test/BDGGG/BDGGG_interleave.json --precision 15 --compile",
     "htslib threads": 1,
-    "include filtered": true,
+    "filter outgoing qc fail": false,
     "input": [
         "test/BDGGG/BDGGG_s01.fastq.gz",
         "test/BDGGG/BDGGG_s02.fastq.gz",
@@ -111,7 +111,7 @@
         "base output url": "test/BDGGG",
         "confidence threshold": 0.95,
         "flowcell id": "BDGGG",
-        "include filtered": true,
+        "filter outgoing qc fail": false,
         "index": 0,
         "noise": 0.01,
         "output": [
@@ -172,7 +172,7 @@
                 ]
             },
             "flowcell id": "BDGGG",
-            "include filtered": true,
+            "filter outgoing qc fail": false,
             "index": 0,
             "output": [
                 "/dev/stdout",

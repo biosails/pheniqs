@@ -3,15 +3,16 @@
     "PL": "ILLUMINA",
     "PM": "HiSeq",
     "base input url": "/volume/albireo/waverly/CBJLFACXX",
+    "base output url": "/volume/albireo/canal/CBJLFACXX",
     "transform": { "token": [ "2::" ] },
     "flowcell id": "CBJLFACXX",
-    "include filtered": false,
+    "filter incoming qc fail": true,
     "threads": 16,
     "cellular": [ { "base": "@CBJLFACXX_cellular" } ],
     "decoder": {
         "@CBJLFACXX_cellular": {
             "algorithm": "pamld",
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "noise": 0.05,
             "transform": { "token": [ "0::6" ] },
             "codec": {
@@ -60,7 +61,7 @@
         "@CBJLFACXX_multiplex": {
             "algorithm": "pamld",
             "noise": 0.05,
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "transform": { "token": [ "1::8" ] }
         },
         "@CBJLFACXX_multiplex_lane_1": {

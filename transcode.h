@@ -57,6 +57,9 @@ class Transcode : public Job {
         bool pull(Read& read);
 
     protected:
+        uint64_t count;
+        uint64_t pf_count;
+        double pf_fraction;
         const Pointer decoder_repository_query;
         inline bool sense_input_layout() const {
             return decode_value_by_key< bool >("sense input layout", interactive);
@@ -167,39 +170,30 @@ class TranscodePivot {
         };
 
     protected:
-        inline void validate() {
-            input.validate();
-        };
-        inline void transform() {
-            template_rule.apply(input, output);
-            sample_classifier->classify(input, output);
-            for(auto& classifier : molecular_classifier_array) {
-                classifier->classify(input, output);
-            }
-            for(auto& classifier : cellular_classifier_array) {
-                classifier->classify(input, output);
-            }
-            output.flush();
-        };
-        inline void push() {
-            sample_classifier->decoded->push(output);
-        };
-        inline void clear() {
-            input.clear();
-            output.clear();
-        };
         void run() {
             while(job.pull(input)) {
-                validate();
-                transform();
-                push();
-                clear();
+                input.validate();
+                if(!filter_incoming_qc_fail || !input.qcfail()) {
+                    template_rule.apply(input, output);
+                    sample_classifier->classify(input, output);
+                    for(auto& classifier : molecular_classifier_array) {
+                        classifier->classify(input, output);
+                    }
+                    for(auto& classifier : cellular_classifier_array) {
+                        classifier->classify(input, output);
+                    }
+                    output.flush();
+                    sample_classifier->decoded->push(output);
+                }
+                input.clear();
+                output.clear();
             }
         };
 
     private:
         Transcode& job;
         thread pivot_thread;
+        const bool filter_incoming_qc_fail;
         const bool enable_quality_control;
         const TemplateRule template_rule;
         void load_decoding();

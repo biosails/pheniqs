@@ -8,7 +8,7 @@
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "flowcell id": "BDGGG",
-    "include filtered": true,
+    "filter incoming qc fail": false,
     "input": [
         "BDGGG_s01.fastq.gz",
         "BDGGG_s02.fastq.gz",

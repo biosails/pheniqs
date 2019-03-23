@@ -9,8 +9,6 @@
         "Lane7_S7_L007_R2_001.fastq.gz"
     ],
     "multiplex": {
-        "base": "@CBJLFACXX_multiplex_lane_7",
-        "output": [ "CBJLFACXX_l07.cram" ],
-        "undetermined": { "output": [ "CBJLFACXX_l06_unclassified.cram" ] }
+        "base": "@CBJLFACXX_multiplex_lane_7"
     }
 }
