@@ -1,4 +1,9 @@
 {
+    "incoming": {
+        "count": 2500,
+        "pf count": 2430,
+        "pf fraction": 0.972
+    },
     "molecular": [
         {
             "classified count": 0,

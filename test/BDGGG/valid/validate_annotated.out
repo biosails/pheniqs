@@ -4,7 +4,8 @@ Environment
     Base output URL                             test/BDGGG
     Platform                                    ILLUMINA
     Quality tracking                            disabled
-    Include non PF reads                        disabled
+    Filter incoming QC failed reads             disabled
+    Filter outgoing QC failed reads             disabled
     Input Phred offset                          33
     Output Phred offset                         33
     Leading segment index                       0
