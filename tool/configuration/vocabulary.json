@@ -5552,307 +5552,307 @@
                 "confidence threshold": 0.95,
                 "codec": {
                     "@RG01": {
-                        "configured concentration": 0.0018843168013525523
+                        "requested concentration": 0.0018843168013525523
                     },
                     "@RG02": {
-                        "configured concentration": 0.0009020163134294172
+                        "requested concentration": 0.0009020163134294172
                     },
                     "@RG03": {
-                        "configured concentration": 0.0009214314405945646
+                        "requested concentration": 0.0009214314405945646
                     },
                     "@RG04": {
-                        "configured concentration": 0.001777074460423444
+                        "requested concentration": 0.001777074460423444
                     },
                     "@RG05": {
-                        "configured concentration": 9.687886088825256e-05
+                        "requested concentration": 9.687886088825256e-05
                     },
                     "@RG06": {
-                        "configured concentration": 0.001272018787546298
+                        "requested concentration": 0.001272018787546298
                     },
                     "@RG07": {
-                        "configured concentration": 0.0006384690804917064
+                        "requested concentration": 0.0006384690804917064
                     },
                     "@RG08": {
-                        "configured concentration": 0.0006936972462790516
+                        "requested concentration": 0.0006936972462790516
                     },
                     "@RG09": {
-                        "configured concentration": 0.00029417853153948054
+                        "requested concentration": 0.00029417853153948054
                     },
                     "@RG10": {
-                        "configured concentration": 0.001537009036692229
+                        "requested concentration": 0.001537009036692229
                     },
                     "@RG11": {
-                        "configured concentration": 0.0009945661256930086
+                        "requested concentration": 0.0009945661256930086
                     },
                     "@RG12": {
-                        "configured concentration": 1.6397911457050197e-05
+                        "requested concentration": 1.6397911457050197e-05
                     },
                     "@RG13": {
-                        "configured concentration": 0.0002939817566019959
+                        "requested concentration": 0.0002939817566019959
                     },
                     "@RG14": {
-                        "configured concentration": 0.00033779697601523404
+                        "requested concentration": 0.00033779697601523404
                     },
                     "@RG15": {
-                        "configured concentration": 0.00026374400787519534
+                        "requested concentration": 0.00026374400787519534
                     },
                     "@RG16": {
-                        "configured concentration": 0.0014422291084704789
+                        "requested concentration": 0.0014422291084704789
                     },
                     "@RG17": {
-                        "configured concentration": 0.0010848202303526129
+                        "requested concentration": 0.0010848202303526129
                     },
                     "@RG18": {
-                        "configured concentration": 0.0011819614578241781
+                        "requested concentration": 0.0011819614578241781
                     },
                     "@RG19": {
-                        "configured concentration": 0.0015832511470011106
+                        "requested concentration": 0.0015832511470011106
                     },
                     "@RG20": {
-                        "configured concentration": 0.001631067456809869
+                        "requested concentration": 0.001631067456809869
                     },
                     "@RG21": {
-                        "configured concentration": 0.00046379852765120774
+                        "requested concentration": 0.00046379852765120774
                     },
                     "@RG22": {
-                        "configured concentration": 7.897234157715374e-05
+                        "requested concentration": 7.897234157715374e-05
                     },
                     "@RG23": {
-                        "configured concentration": 0.0012404692059029333
+                        "requested concentration": 0.0012404692059029333
                     },
                     "@RG24": {
-                        "configured concentration": 0.000320152823287448
+                        "requested concentration": 0.000320152823287448
                     },
                     "@RG25": {
-                        "configured concentration": 0.0015936802186877945
+                        "requested concentration": 0.0015936802186877945
                     },
                     "@RG26": {
-                        "configured concentration": 0.0008591849687036021
+                        "requested concentration": 0.0008591849687036021
                     },
                     "@RG27": {
-                        "configured concentration": 0.0013522373703941874
+                        "requested concentration": 0.0013522373703941874
                     },
                     "@RG28": {
-                        "configured concentration": 0.0009694445253408076
+                        "requested concentration": 0.0009694445253408076
                     },
                     "@RG29": {
-                        "configured concentration": 2.3022667685698475e-05
+                        "requested concentration": 2.3022667685698475e-05
                     },
                     "@RG30": {
-                        "configured concentration": 0.0018670661984997354
+                        "requested concentration": 0.0018670661984997354
                     },
                     "@RG31": {
-                        "configured concentration": 0.0018788071031029833
+                        "requested concentration": 0.0018788071031029833
                     },
                     "@RG32": {
-                        "configured concentration": 0.0008890291675554335
+                        "requested concentration": 0.0008890291675554335
                     },
                     "@RG33": {
-                        "configured concentration": 0.0022998398776742043
+                        "requested concentration": 0.0022998398776742043
                     },
                     "@RG34": {
-                        "configured concentration": 0.0017167301462614993
+                        "requested concentration": 0.0017167301462614993
                     },
                     "@RG35": {
-                        "configured concentration": 0.002228869716888091
+                        "requested concentration": 0.002228869716888091
                     },
                     "@RG36": {
-                        "configured concentration": 0.002142354336040694
+                        "requested concentration": 0.002142354336040694
                     },
                     "@RG37": {
-                        "configured concentration": 0.0001742114113197013
+                        "requested concentration": 0.0001742114113197013
                     },
                     "@RG38": {
-                        "configured concentration": 0.0016847870147431653
+                        "requested concentration": 0.0016847870147431653
                     },
                     "@RG39": {
-                        "configured concentration": 0.001510575603423464
+                        "requested concentration": 0.001510575603423464
                     },
                     "@RG40": {
-                        "configured concentration": 0.000584421564329269
+                        "requested concentration": 0.000584421564329269
                     },
                     "@RG41": {
-                        "configured concentration": 0.002400457462374664
+                        "requested concentration": 0.002400457462374664
                     },
                     "@RG42": {
-                        "configured concentration": 0.0012360089739866156
+                        "requested concentration": 0.0012360089739866156
                     },
                     "@RG43": {
-                        "configured concentration": 0.0021990255180362596
+                        "requested concentration": 0.0021990255180362596
                     },
                     "@RG44": {
-                        "configured concentration": 0.001984409652886387
+                        "requested concentration": 0.001984409652886387
                     },
                     "@RG45": {
-                        "configured concentration": 0.0013703406646427708
+                        "requested concentration": 0.0013703406646427708
                     },
                     "@RG46": {
-                        "configured concentration": 0.0019007147128096023
+                        "requested concentration": 0.0019007147128096023
                     },
                     "@RG47": {
-                        "configured concentration": 0.0020141226684465617
+                        "requested concentration": 0.0020141226684465617
                     },
                     "@RG48": {
-                        "configured concentration": 0.0020474432245272877
+                        "requested concentration": 0.0020474432245272877
                     },
                     "@RG49": {
-                        "configured concentration": 0.0019406600251189766
+                        "requested concentration": 0.0019406600251189766
                     },
                     "@RG50": {
-                        "configured concentration": 0.00209985094954402
+                        "requested concentration": 0.00209985094954402
                     },
                     "@RG51": {
-                        "configured concentration": 0.002646754092459558
+                        "requested concentration": 0.002646754092459558
                     },
                     "@RG52": {
-                        "configured concentration": 0.0010834428057902206
+                        "requested concentration": 0.0010834428057902206
                     },
                     "@RG53": {
-                        "configured concentration": 0.0018853006760399752
+                        "requested concentration": 0.0018853006760399752
                     },
                     "@RG54": {
-                        "configured concentration": 0.0014337021945128128
+                        "requested concentration": 0.0014337021945128128
                     },
                     "@RG55": {
-                        "configured concentration": 0.002014647401613187
+                        "requested concentration": 0.002014647401613187
                     },
                     "@RG56": {
-                        "configured concentration": 0.0021390747537492843
+                        "requested concentration": 0.0021390747537492843
                     },
                     "@RG57": {
-                        "configured concentration": 0.0015037540722573311
+                        "requested concentration": 0.0015037540722573311
                     },
                     "@RG58": {
-                        "configured concentration": 0.0019720784234706847
+                        "requested concentration": 0.0019720784234706847
                     },
                     "@RG59": {
-                        "configured concentration": 0.0016097501719157037
+                        "requested concentration": 0.0016097501719157037
                     },
                     "@RG60": {
-                        "configured concentration": 0.0006904832556334697
+                        "requested concentration": 0.0006904832556334697
                     },
                     "@RG61": {
-                        "configured concentration": 0.0003493411056809974
+                        "requested concentration": 0.0003493411056809974
                     },
                     "@RG62": {
-                        "configured concentration": 0.0007040607263199073
+                        "requested concentration": 0.0007040607263199073
                     },
                     "@RG63": {
-                        "configured concentration": 0.0018322370345649607
+                        "requested concentration": 0.0018322370345649607
                     },
                     "@RG64": {
-                        "configured concentration": 0.0020071043623429443
+                        "requested concentration": 0.0020071043623429443
                     },
                     "@RG65": {
-                        "configured concentration": 0.0021499629669567656
+                        "requested concentration": 0.0021499629669567656
                     },
                     "@RG66": {
-                        "configured concentration": 0.002311515190631624
+                        "requested concentration": 0.002311515190631624
                     },
                     "@RG67": {
-                        "configured concentration": 0.0020360302781531805
+                        "requested concentration": 0.0020360302781531805
                     },
                     "@RG68": {
-                        "configured concentration": 0.015833232978115216
+                        "requested concentration": 0.015833232978115216
                     },
                     "@RG69": {
-                        "configured concentration": 0.017492045701110414
+                        "requested concentration": 0.017492045701110414
                     },
                     "@RG70": {
-                        "configured concentration": 0.01279522471829044
+                        "requested concentration": 0.01279522471829044
                     },
                     "@RG71": {
-                        "configured concentration": 0.017880676202642505
+                        "requested concentration": 0.017880676202642505
                     },
                     "@RG72": {
-                        "configured concentration": 0.024598506976721002
+                        "requested concentration": 0.024598506976721002
                     },
                     "@RG73": {
-                        "configured concentration": 0.018673416834122138
+                        "requested concentration": 0.018673416834122138
                     },
                     "@RG74": {
-                        "configured concentration": 0.017128602391576354
+                        "requested concentration": 0.017128602391576354
                     },
                     "@RG75": {
-                        "configured concentration": 0.018496778531906795
+                        "requested concentration": 0.018496778531906795
                     },
                     "@RG76": {
-                        "configured concentration": 0.01730235466137526
+                        "requested concentration": 0.01730235466137526
                     },
                     "@RG77": {
-                        "configured concentration": 0.01883562497425528
+                        "requested concentration": 0.01883562497425528
                     },
                     "@RG78": {
-                        "configured concentration": 0.01615489440925671
+                        "requested concentration": 0.01615489440925671
                     },
                     "@RG79": {
-                        "configured concentration": 0.016768504255979533
+                        "requested concentration": 0.016768504255979533
                     },
                     "@RG80": {
-                        "configured concentration": 0.016583863772973145
+                        "requested concentration": 0.016583863772973145
                     },
                     "@RG81": {
-                        "configured concentration": 0.015138551857148741
+                        "requested concentration": 0.015138551857148741
                     },
                     "@RG82": {
-                        "configured concentration": 0.014616179989772951
+                        "requested concentration": 0.014616179989772951
                     },
                     "@RG83": {
-                        "configured concentration": 0.015366023684880941
+                        "requested concentration": 0.015366023684880941
                     },
                     "@RG84": {
-                        "configured concentration": 0.01526619319993042
+                        "requested concentration": 0.01526619319993042
                     },
                     "@RG85": {
-                        "configured concentration": 0.01941814438085553
+                        "requested concentration": 0.01941814438085553
                     },
                     "@RG86": {
-                        "configured concentration": 0.015394556050816209
+                        "requested concentration": 0.015394556050816209
                     },
                     "@RG87": {
-                        "configured concentration": 0.01747099078279956
+                        "requested concentration": 0.01747099078279956
                     },
                     "@RG88": {
-                        "configured concentration": 0.008451614748255327
+                        "requested concentration": 0.008451614748255327
                     },
                     "@RG89": {
-                        "configured concentration": 0.005252513406276491
+                        "requested concentration": 0.005252513406276491
                     },
                     "@RG90": {
-                        "configured concentration": 0.014138148074977023
+                        "requested concentration": 0.014138148074977023
                     },
                     "@RG91": {
-                        "configured concentration": 0.016524831291727764
+                        "requested concentration": 0.016524831291727764
                     },
                     "@RG92": {
-                        "configured concentration": 0.016012166987934548
+                        "requested concentration": 0.016012166987934548
                     },
                     "@RG93": {
-                        "configured concentration": 0.00445124586083919
+                        "requested concentration": 0.00445124586083919
                     },
                     "@RG94": {
-                        "configured concentration": 0.02138379482303505
+                        "requested concentration": 0.02138379482303505
                     },
                     "@RG95": {
-                        "configured concentration": 0.01591259886956734
+                        "requested concentration": 0.01591259886956734
                     },
                     "@RG96": {
-                        "configured concentration": 0.0092072305081962
+                        "requested concentration": 0.0092072305081962
                     },
                     "@RG97": {
-                        "configured concentration": 0.019813202863678783
+                        "requested concentration": 0.019813202863678783
                     },
                     "@RG98": {
-                        "configured concentration": 0.00952515321552549
+                        "requested concentration": 0.00952515321552549
                     },
                     "@RG99": {
-                        "configured concentration": 0.017986016385842594
+                        "requested concentration": 0.017986016385842594
                     },
                     "@control": {
-                        "configured concentration": 0.3201110414090555
+                        "requested concentration": 0.3201110414090555
                     }
                 },
-                "configured noise": 0.08972924030968701,
+                "requested noise": 0.08972924030968701,
                 "substitution frequency transform": {
                     "token": [
                         "0:1:8",

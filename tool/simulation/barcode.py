@@ -101,7 +101,7 @@ class SimulateBarcode(Transcode):
             if 'unclassified' not in compiled: compiled['unclassified'] = {}
             compiled['unclassified']['index'] = 0
             compiled['unclassified']['description'] = 'unclassified'
-            compiled['unclassified']['configured concentration'] = compiled['configured noise']
+            compiled['unclassified']['requested concentration'] = compiled['requested noise']
             compiled['barcode length'] = []
             compiled['nucleotide cardinality'] = 0
             compiled['barcode cardinality'] = len(compiled['codec'])
@@ -122,14 +122,14 @@ class SimulateBarcode(Transcode):
 
             barcode_index = 1
             total_concentration = 0
-            not_noise = 1.0 - compiled['configured noise']
+            not_noise = 1.0 - compiled['requested noise']
             for barcode_key in sorted(compiled['codec'].keys()):
                 barcode = compiled['codec'][barcode_key]
                 barcode['key'] = barcode_key
                 barcode['index'] = barcode_index
                 barcode['description'] = '{}:{}'.format(barcode_index, '-'.join(barcode['barcode']))
-                if 'configured concentration' not in barcode: barcode['configured concentration'] = 1.0
-                total_concentration += barcode['configured concentration']
+                if 'requested concentration' not in barcode: barcode['requested concentration'] = 1.0
+                total_concentration += barcode['requested concentration']
 
                 barcode_length = [ len(i) for i in barcode['barcode'] ]
                 if barcode_length != compiled['barcode length']:
@@ -149,8 +149,8 @@ class SimulateBarcode(Transcode):
             density = 0
             compiled['barcode distribution.compiled'] = []
             for barcode_key, barcode_value in compiled['codec'].items():
-                barcode_value['configured concentration'] = not_noise * (barcode_value['configured concentration'] / total_concentration)
-                density += barcode_value['configured concentration']
+                barcode_value['requested concentration'] = not_noise * (barcode_value['requested concentration'] / total_concentration)
+                density += barcode_value['requested concentration']
                 compiled['barcode distribution.compiled'].append({'density': density, 'item': barcode_value})
 
             if compiled['substitution model reference'] in self.vocabulary['substitution model']:
@@ -347,8 +347,8 @@ class SimulateBarcode(Transcode):
             unclassified['simulated nucleotide'] = unclassified['count'] * decoder['nucleotide cardinality']
             if self.model['count'] > 0:
                 unclassified['simulated concentration'] = unclassified['count'] / self.model['count']
-            if unclassified['configured concentration'] > 0:
-                unclassified['simulated concentration deviation'] = 1.0 - unclassified['simulated concentration'] / unclassified['configured concentration']
+            if unclassified['requested concentration'] > 0:
+                unclassified['simulated concentration deviation'] = 1.0 - unclassified['simulated concentration'] / unclassified['requested concentration']
 
             # classified
             for barcode in decoder['codec'].values():
@@ -359,8 +359,8 @@ class SimulateBarcode(Transcode):
                 barcode['simulated nucleotide'] = barcode['count'] * decoder['nucleotide cardinality']
                 if self.model['count'] > 0:
                     barcode['simulated concentration'] = barcode['count'] / self.model['count']
-                if barcode['configured concentration'] > 0:
-                    barcode['simulated concentration deviation'] = 1.0 - barcode['simulated concentration'] / barcode['configured concentration']
+                if barcode['requested concentration'] > 0:
+                    barcode['simulated concentration deviation'] = 1.0 - barcode['simulated concentration'] / barcode['requested concentration']
 
             decoder['simulated noise'] = 0
             decoder['simulated noise deviation'] = 0
@@ -371,8 +371,8 @@ class SimulateBarcode(Transcode):
 
             if self.model['count'] > 0:
                 decoder['simulated noise'] = unclassified['count'] / self.model['count']
-            if decoder['configured noise'] > 0:
-                decoder['simulated noise deviation'] = 1.0 - decoder['simulated noise'] / decoder['configured noise']
+            if decoder['requested noise'] > 0:
+                decoder['simulated noise deviation'] = 1.0 - decoder['simulated noise'] / decoder['requested noise']
 
     def save_deml_index(self):
         path = os.path.join(self.home, self.location['deml index path'])

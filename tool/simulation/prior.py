@@ -47,7 +47,206 @@ class SensePrior(Shell):
     def ssid(self):
         return self.genealogy['ssid']
 
-    def execute(self):
+    def update_model_prior_estimate(self):
+        def update_classifier_model_prior_estimate(classifier_model, classifier_report):
+            # Noise prior: {decoder low conditional confidence count} / {decoder count}
+            # Barcode prior: {barcode count} + {barcode low confidence count} / {decoder count}
+
+            classifier_estimate = {}
+            classifier_model['estimate'] = classifier_estimate
+            for item in [
+                'count',
+                'classified count',
+                'classified fraction',
+                'average classified confidence',
+                'average classified distance',
+                'pf count',
+                'pf classified count',
+                'pf fraction',
+                'pf classified fraction',
+                'classified pf fraction',
+                'average pf classified confidence',
+                'average pf classified distance',
+                'low confidence count',
+                'low conditional confidence count',
+            ]:
+                if item in classifier_report:
+                    classifier_estimate[item] = classifier_report[item]
+                else:
+                    classifier_estimate[item] = 0
+
+            # noise prior estimation
+            classifier_estimate['estimated noise'] = classifier_estimate['low conditional confidence count'] / classifier_estimate['count']
+            classifier_estimate['estimated noise deviation'] = 1.0 - classifier_estimate['estimated noise'] / classifier_model['simulated noise']
+
+            barcode_report_by_hash = {}
+            for barcode in classifier_report['classified']:
+                hash = ''.join(barcode['barcode'])
+                barcode_report_by_hash[hash] = barcode
+
+            if 'codec' in classifier_model:
+                for barcode_model in classifier_model['codec'].values():
+                    hash = ''.join(barcode_model['barcode'])
+                    if hash in barcode_report_by_hash:
+                        barcode_report = barcode_report_by_hash[hash]
+                        barcode_estimate = {}
+                        barcode_model['estimate'] = barcode_estimate
+                        for item in [
+                            'count',
+                            'average confidence',
+                            'average distance',
+                            'pooled classified fraction',
+                            'pooled fraction',
+                            'pf count',
+                            'pf fraction',
+                            'average pf confidence',
+                            'average pf distance',
+                            'pf pooled classified fraction',
+                            'pf pooled fraction',
+                            'low confidence count',
+                        ]:
+                            if item in barcode_report:
+                                barcode_estimate[item] = barcode_report[item]
+                            else:
+                                barcode_estimate[item] = 0
+
+                        # barcode prior estimation
+                        barcode_estimate['estimated concentration'] = ((barcode_estimate['count'] + barcode_estimate['low confidence count']) / classifier_estimate['count'])
+                        barcode_estimate['estimated concentration deviation'] = 1.0 - barcode_estimate['estimated concentration'] / barcode_model['simulated concentration']
+
+            if 'unclassified' in classifier_model:
+                barcode_model = classifier_model['unclassified']
+                barcode_report = classifier_report['unclassified']
+                barcode_estimate = {}
+                for item in [
+                    'count',
+                    'pf count',
+                    'pf fraction',
+                    'pf pooled fraction',
+                    'pooled classified fraction',
+                    'pooled fraction',
+                ]:
+                    if item in barcode_report:
+                        barcode_estimate[item] = barcode_report[item]
+                    else:
+                        barcode_estimate[item] = 0
+                barcode_model['estimate'] = barcode_estimate
+        def update_classifier_model_prior_estimate_new(classifier_model, classifier_report):
+            classifier_estimate = {}
+            classifier_model['estimate'] = classifier_estimate
+            for item in [
+                'count',
+                'classified count',
+                'classified fraction',
+                'average classified confidence',
+                'average classified distance',
+                'pf count',
+                'pf classified count',
+                'pf fraction',
+                'pf classified fraction',
+                'classified pf fraction',
+                'average pf classified confidence',
+                'average pf classified distance',
+                'low confidence count',
+                'low conditional confidence count',
+            ]:
+                if item in classifier_report:
+                    classifier_estimate[item] = classifier_report[item]
+                else:
+                    classifier_estimate[item] = 0
+
+            # noise prior estimation
+            noise_count = 0
+            if 'low conditional confidence count' in classifier_estimate:
+                noise_count += classifier_estimate['low conditional confidence count']
+
+            if 'low confidence count' in classifier_estimate:
+                noise_count += (classifier_estimate['low confidence count'] * (1.0 - classifier_estimate['average classified confidence']))
+
+            classifier_estimate['estimated noise'] = noise_count / classifier_estimate['count']
+            classifier_estimate['estimated noise deviation'] = 1.0 - classifier_estimate['estimated noise'] / classifier_model['simulated noise']
+
+            self.log.info('estimating noise %s %s %s', noise_count, classifier_estimate['count'], classifier_estimate['estimated noise'])
+            not_noise = 1.0 - classifier_estimate['estimated noise']
+            barcode_report_by_hash = {}
+            for barcode in classifier_report['classified']:
+                hash = ''.join(barcode['barcode'])
+                barcode_report_by_hash[hash] = barcode
+
+            if 'codec' in classifier_model:
+                for barcode_model in classifier_model['codec'].values():
+                    hash = ''.join(barcode_model['barcode'])
+                    if hash in barcode_report_by_hash:
+                        barcode_report = barcode_report_by_hash[hash]
+                        barcode_estimate = {}
+                        barcode_model['estimate'] = barcode_estimate
+                        for item in [
+                            'count',
+                            'average confidence',
+                            'average distance',
+                            'pooled classified fraction',
+                            'pooled fraction',
+                            'pf count',
+                            'pf fraction',
+                            'average pf confidence',
+                            'average pf distance',
+                            'pf pooled classified fraction',
+                            'pf pooled fraction',
+                            'low confidence count',
+                        ]:
+                            if item in barcode_report:
+                                barcode_estimate[item] = barcode_report[item]
+                            else:
+                                barcode_estimate[item] = 0
+
+                        # barcode prior estimation
+                        barcode_estimate['estimated concentration'] = not_noise * barcode_estimate['pf pooled classified fraction']
+                        barcode_estimate['estimated concentration deviation'] = 1.0 - barcode_estimate['estimated concentration'] / barcode_model['simulated concentration']
+
+            if 'unclassified' in classifier_model:
+                barcode_model = classifier_model['unclassified']
+                barcode_report = classifier_report['unclassified']
+                barcode_estimate = {}
+                for item in [
+                    'count',
+                    'pf count',
+                    'pf fraction',
+                    'pf pooled fraction',
+                    'pooled classified fraction',
+                    'pooled fraction',
+                ]:
+                    if item in barcode_report:
+                        barcode_estimate[item] = barcode_report[item]
+                    else:
+                        barcode_estimate[item] = 0
+                barcode_model['estimate'] = barcode_estimate
+
+        path = os.path.join(self.home, self.location['pamld prior estimate path'])
+        if os.path.exists(path):
+            with io.open(path, 'rb') as file:
+                estimation_report = json.loads(file.read().decode('utf8'))
+                for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
+                    if classifier_type in estimation_report:
+                        classifier_report = estimation_report[classifier_type]
+                        classifier_model = self.model[classifier_type]
+
+                        if isinstance(classifier_model, dict):
+                            update_classifier_model_prior_estimate_new(classifier_model, classifier_report)
+                            self.dirty = True
+
+                        elif isinstance(classifier_model, list):
+                            model_by_index = {}
+                            for item in classifier_model:
+                                model_by_index[item['index']]  = item
+
+                            for report_item in classifier_report:
+                                model_item = model_by_index[report_item['index']]
+                                update_classifier_model_prior_estimate_new(model_item, report_item)
+                                self.dirty = True
+
+        else: raise NoConfigurationFileError('estimation file {} not found'.format(path))
+
+    def estimate_with_pheniqs(self):
         product = os.path.join(self.home, self.location['pamld prior estimate path'])
         if not os.path.exists(product):
             command = [ 'pheniqs', 'mux', '--sense-input', '--output', '/dev/null' ]
@@ -91,7 +290,11 @@ class SensePrior(Shell):
             else:
                 self.dirty = True
         else:
-            self.log.info('skipping prior estimation because %s exists', self.location['pamld prior estimate path'])
+            self.log.info('skipping prior estimation pheniqs execution because %s exists', self.location['pamld prior estimate path'])
+
+    def execute(self):
+        self.estimate_with_pheniqs()
+        self.update_model_prior_estimate()
 
 class AdjustPrior(Job):
     def __init__(self, ontology):
@@ -111,10 +314,6 @@ class AdjustPrior(Job):
         return self.ontology['original']
 
     @property
-    def estimate(self):
-        return self.ontology['estimate']
-
-    @property
     def adjusted(self):
         return self.ontology['adjusted']
 
@@ -122,7 +321,6 @@ class AdjustPrior(Job):
         self.instruction['output'] = os.path.join(self.home, self.location['pamld adjusted configuration path'])
         if not os.path.exists(self.instruction['output']):
             self.load_original()
-            self.load_estimate()
             self.adjust_prior()
             self.compare_to_model()
             self.save_adjusted_prior_pamld_config()
@@ -161,52 +359,31 @@ class AdjustPrior(Job):
 
         else: raise NoConfigurationFileError('original configurtion file {} not found'.format(path))
 
-    def load_estimate(self):
-        path = os.path.join(self.home, self.location['pamld prior estimate path'])
-        if os.path.exists(path):
-            with io.open(path, 'rb') as file:
-                self.ontology['estimate'] = json.loads(file.read().decode('utf8'))
-        else: raise NoConfigurationFileError('estimate file {} not found'.format(path))
-
     def adjust_prior(self):
-        def adjust_decoder_prior(estimate, decoder):
-            # Noise prior: {decoder low conditional confidence count} / {decoder count}
-            # Barcode prior: {barcode count} + {barcode low confidence count} / {decoder count}
+        def adjust_decoder_prior(classifier_model, classifier_configuration):
+            if 'estimate' in classifier_model:
+                classifier_configuration['noise'] = classifier_model['estimate']['estimated noise']
 
-            low_conditional_confidence_count = 0
-            if 'low conditional confidence count' in estimate:
-                low_conditional_confidence_count = estimate['low conditional confidence count']
-
-            estimated_barcode_by_hash = {}
-            decoder['noise'] = low_conditional_confidence_count / estimate['count']
-            for barcode in estimate['classified']:
-                hash = ''.join(barcode['barcode'])
-                low_confidence_count = 0
-                if 'low confidence count' in barcode:
-                    low_confidence_count = barcode['low confidence count']
-
-                barcode['prior'] = ((barcode['count'] + low_confidence_count) / estimate['count'])
-                estimated_barcode_by_hash[hash] = barcode
-
-            for barcode in decoder['codec'].values():
-                hash = ''.join(barcode['barcode'])
-                if hash in estimated_barcode_by_hash:
-                    barcode['concentration'] = estimated_barcode_by_hash[hash]['prior']
+                for barcode_key, barcode_model in classifier_model['codec'].items():
+                    barcode_configuration = classifier_configuration['codec'][barcode_key]
+                    if 'estimate' in barcode_model:
+                        barcode_configuration['concentration'] = barcode_model['estimate']['estimated concentration']
 
         self.ontology['adjusted'] = deepcopy(self.original)
-        for topic in [ 'multiplex', 'cellular', 'molecular' ]:
-            if topic in self.estimate and topic in self.adjusted:
-                if isinstance(self.adjusted[topic], dict):
-                    if isinstance(self.estimate[topic], dict):
-                        adjust_decoder_prior(self.estimate[topic], self.adjusted[topic])
-                    else:
-                        self.log.error('%s decoder structure does not match', topic)
-                elif isinstance(self.adjusted[topic], list):
-                    if isinstance(self.estimate[topic], list):
-                        for estimate, decoder in zip(self.estimate[topic], self.adjusted[topic]):
-                            adjust_decoder_prior(estimate, decoder)
-                    else:
-                        self.log.error('%s decoder structure does not match', topic)
+        for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
+            if classifier_type in self.model:
+                classifier_model = self.model[classifier_type]
+                if isinstance(classifier_model, dict):
+                    adjust_decoder_prior(classifier_model, self.adjusted[classifier_type])
+
+                elif isinstance(classifier_model, list):
+                    model_by_index = {}
+                    for item in classifier_model:
+                        model_by_index[item['index']]  = item
+
+                    for configurtion_item in self.adjusted[classifier_type]:
+                        model_item = model_by_index[configurtion_item['index']]
+                        update_classifier_model_prior_estimate(model_item, configurtion_item)
 
     def compare_to_model(self):
         def compare_decoder_to_model(decoder, model):

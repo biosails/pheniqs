@@ -371,7 +371,6 @@ class Benchmark(Job):
         job = None
         self.log.info('estimating priors')
 
-        # load the substitution simulation model
         if ontology['instruction']['bsid'] in self.db['simulation']:
             substitution = self.db['simulation'][ontology['instruction']['bsid']]['substitution']
             if ontology['instruction']['ssid'] in substitution:
@@ -381,6 +380,7 @@ class Benchmark(Job):
                 job.execute()
                 if job.dirty:
                     experiment['sense prior execution'] = job.execution
+                    experiment['model'] = job.summary
                     self.persist_db()
             else:
                 self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
