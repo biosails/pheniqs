@@ -232,7 +232,7 @@ class EstimatePrior(ShellCommand):
                         classifier_model = self.model[classifier_type]
 
                         if isinstance(classifier_model, dict):
-                            update_classifier_model_prior_estimate_original(classifier_model, classifier_report)
+                            update_classifier_model_prior_estimate(classifier_model, classifier_report)
                             self.is_model_dirty = True
 
                         elif isinstance(classifier_model, list):
@@ -242,7 +242,7 @@ class EstimatePrior(ShellCommand):
 
                             for report_item in classifier_report:
                                 model_item = model_by_index[report_item['index']]
-                                update_classifier_model_prior_estimate_original(model_item, report_item)
+                                update_classifier_model_prior_estimate(model_item, report_item)
                                 self.is_model_dirty = True
 
         else: raise NoConfigurationFileError('estimation file {} not found'.format(path))
