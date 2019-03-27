@@ -121,7 +121,7 @@ class Job(object):
 
                 if os.path.exists(self.ontology['persistence']['session db path']):
                     self.log.debug('loading session %s', self.instruction['session'])
-                    with io.open(path, 'rb') as file:
+                    with io.open(self.ontology['persistence']['session db path'], 'rb') as file:
                         try:
                             content = file.read()
                             self.ontology['persistence']['session'] = json.loads(content.decode('utf8'))
