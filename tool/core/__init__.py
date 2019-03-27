@@ -199,7 +199,7 @@ def f_score(precision, recall):
 
 from core.command_line import CommandLineParser
 from core.job import Job
-from core.job import Shell
+from core.job import ShellCommand
 
 def termination_handler(signal, frame):
     sys.exit(0)

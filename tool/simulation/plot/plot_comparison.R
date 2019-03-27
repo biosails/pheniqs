@@ -20,21 +20,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+source("theme.R")
 
-# install.packages("ggplot2")
-# install.packages("gridExtra")
-# install.packages("extrafont")
-
-library(grid)
-library(ggplot2)
 library(reshape2)
-library(gridExtra)
 
 args = commandArgs(trailingOnly = TRUE)
 data_filename = args[1]
 diagram_filename = args[2]
-
-source("theme.R")
 
 diagram_width = 86 * 1
 diagram_height =  72 * 1

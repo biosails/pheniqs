@@ -483,7 +483,7 @@ class Summarize(Job):
         elif self.instruction['preset'] == 'barcode_distribution':
             self.summarize_barcode_distribution_R()
 
-        self.save_session()
+        self.close()
 
     def summarize_decoder_accuracy_benchmark_R(self):
         header = [

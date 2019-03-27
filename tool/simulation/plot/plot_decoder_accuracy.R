@@ -20,20 +20,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-# install.packages("ggplot2")
-# install.packages("gridExtra")
-# install.packages("extrafont")
-
-library(grid)
-library(ggplot2)
-library(gridExtra)
+source("theme.R")
 
 args = commandArgs(trailingOnly = TRUE)
 data_filename = args[1]
 diagram_filename = args[2]
-
-source("theme.R")
 
 diagram_width = 86 * 2
 diagram_height =  72 * 3
@@ -62,6 +53,7 @@ plot_measure <- function(data) {
     # selected <- selected[which(selected$variable != 'FDR'),]
     selected <- selected[which(selected$variable != 'recall'),]
     selected <- selected[which(selected$variable != 'precision'),]
+    # selected <- selected[which(selected$variable == 'fscore'),]
 
     benchmark_plot <- ggplot(selected) +
     pheniqs_plot_theme +

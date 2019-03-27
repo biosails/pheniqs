@@ -40,7 +40,7 @@ from core import merge
 from core import to_json
 from core import prepare_path
 
-from simulation import SensePrior, AdjustPrior
+from simulation import EstimatePrior, AdjustPrior
 from simulation import SimulateBarcode
 from simulation import SimulateSubstitution
 from simulation import PamldDemultiplex
@@ -95,7 +95,7 @@ class Benchmark(Job):
         if 'simulation' not in self.db:
             self.db['simulation'] = {}
 
-    def persist_db(self, clear=False):
+    def save_db(self, clear=False):
         def persist_pickle(checksum):
             prepare_path(self.instruction['pickeled database path'], self.log)
             with io.open(self.instruction['pickeled database path'], 'wb') as file:
@@ -167,7 +167,7 @@ class Benchmark(Job):
 
         elif self.action == 'summarize':
             self.summarize(self.ontology)
-        # self.persist_db()
+        # self.save_db()
 
     def plan(self, ontology):
         path = os.path.realpath(self.instruction['path'])
@@ -312,7 +312,7 @@ class Benchmark(Job):
         job = SimulateBarcode(ontology)
         job.execute()
 
-        if job.dirty:
+        if job.is_model_dirty:
             if job.bsid not in self.db['simulation']:
                 self.db['simulation'][job.bsid] = {}
 
@@ -322,9 +322,9 @@ class Benchmark(Job):
             if 'substitution' not in self.db['simulation'][job.bsid]:
                 self.db['simulation'][job.bsid]['substitution'] = {}
 
-            self.db['simulation'][job.bsid]['barcode']['model'] = job.summary
+            self.db['simulation'][job.bsid]['barcode']['model'] = job.model_summary
 
-            self.persist_db()
+            self.save_db()
         return job
 
     def simulate_substitution(self, ontology):
@@ -342,11 +342,11 @@ class Benchmark(Job):
 
             job = SimulateSubstitution(ontology)
             job.execute()
-            if job.dirty:
+            if job.is_model_dirty:
                 barcode_simulation_node['substitution'][job.ssid] = {
-                    'model': job.summary,
+                    'model': job.model_summary,
                 }
-                self.persist_db()
+                self.save_db()
         else:
             self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
 
@@ -376,12 +376,20 @@ class Benchmark(Job):
             if ontology['instruction']['ssid'] in substitution:
                 experiment = substitution[ontology['instruction']['ssid']]
                 ontology['model'] = deepcopy(experiment['model'])
-                job = SensePrior(ontology)
+                job = EstimatePrior(ontology)
                 job.execute()
-                if job.dirty:
-                    experiment['sense prior execution'] = job.execution
-                    experiment['model'] = job.summary
-                    self.persist_db()
+
+                is_dirty = False
+                if job.is_model_dirty:
+                    experiment['model'] = job.model_summary
+                    is_dirty = True
+
+                if job.is_execution_summary_dirty:
+                    experiment['sense prior execution'] = job.execution_summary
+                    is_dirty = True
+
+                if is_dirty:
+                    self.save_db()
             else:
                 self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
@@ -419,9 +427,9 @@ class Benchmark(Job):
                 ontology['model'] = deepcopy(experiment['model'])
                 job = PamldDemultiplex(ontology)
                 job.execute()
-                if job.dirty:
-                    experiment['pamld demultiplex execution'] = job.execution
-                    self.persist_db()
+                if job.is_execution_summary_dirty:
+                    experiment['pamld demultiplex execution'] = job.execution_summary
+                    self.save_db()
             else:
                 self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
@@ -441,9 +449,9 @@ class Benchmark(Job):
                 ontology['model'] = deepcopy(experiment['model'])
                 job = PamldAccuratePriorDemultiplex(ontology)
                 job.execute()
-                if job.dirty:
-                    experiment['pamld accurate prior demultiplex execution'] = job.execution
-                    self.persist_db()
+                if job.is_execution_summary_dirty:
+                    experiment['pamld accurate prior demultiplex execution'] = job.execution_summary
+                    self.save_db()
             else:
                 self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
@@ -463,9 +471,9 @@ class Benchmark(Job):
                 ontology['model'] = deepcopy(experiment['model'])
                 job = PamldUniformDemultiplex(ontology)
                 job.execute()
-                if job.dirty:
-                    experiment['pamld uniform demultiplex execution'] = job.execution
-                    self.persist_db()
+                if job.is_execution_summary_dirty:
+                    experiment['pamld uniform demultiplex execution'] = job.execution_summary
+                    self.save_db()
             else:
                 self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
@@ -485,9 +493,9 @@ class Benchmark(Job):
                 ontology['model'] = deepcopy(experiment['model'])
                 job = MddDemultiplex(ontology)
                 job.execute()
-                if job.dirty:
-                    experiment['mdd demultiplex execution'] = job.execution
-                    self.persist_db()
+                if job.is_execution_summary_dirty:
+                    experiment['mdd demultiplex execution'] = job.execution_summary
+                    self.save_db()
             else:
                 self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
@@ -507,9 +515,9 @@ class Benchmark(Job):
                 ontology['model'] = deepcopy(experiment['model'])
                 job = DemlDemultiplex(ontology)
                 job.execute()
-                if job.dirty:
-                    experiment['deml demultiplex execution'] = job.execution
-                    self.persist_db()
+                if job.is_execution_summary_dirty:
+                    experiment['deml demultiplex execution'] = job.execution_summary
+                    self.save_db()
             else:
                 self.log.error('unknown ssid %s', ontology['instruction']['bsid'])
         else:
@@ -533,9 +541,8 @@ class Benchmark(Job):
 
                     job = Analyze(ontology)
                     job.execute()
-                    substitution_simulation['pamld demultiplex analysis'] = job.summary
-                    if 'collection' in barcode_simulation: del barcode_simulation['collection']
-                    self.persist_db()
+                    substitution_simulation['pamld demultiplex analysis'] = job.model_summary
+                    self.save_db()
                 else:
                     self.log.info('skipping pamld analysis for %s', ontology['instruction']['ssid'])
             else:
@@ -561,9 +568,8 @@ class Benchmark(Job):
 
                     job = Analyze(ontology)
                     job.execute()
-                    substitution_simulation['pamld accurate prior demultiplex analysis'] = job.summary
-                    if 'collection' in barcode_simulation: del barcode_simulation['collection']
-                    self.persist_db()
+                    substitution_simulation['pamld accurate prior demultiplex analysis'] = job.model_summary
+                    self.save_db()
                 else:
                     self.log.info('skipping pamld accurate prior analysis for %s', ontology['instruction']['ssid'])
             else:
@@ -589,9 +595,8 @@ class Benchmark(Job):
 
                     job = Analyze(ontology)
                     job.execute()
-                    substitution_simulation['pamld uniform demultiplex analysis'] = job.summary
-                    if 'collection' in barcode_simulation: del barcode_simulation['collection']
-                    self.persist_db()
+                    substitution_simulation['pamld uniform demultiplex analysis'] = job.model_summary
+                    self.save_db()
                 else:
                     self.log.info('skipping pamld uniform analysis for %s', ontology['instruction']['ssid'])
             else:
@@ -616,9 +621,8 @@ class Benchmark(Job):
                     ontology['instruction']['input'] = ontology['model']['location']['mdd demultiplex path']
                     job = Analyze(ontology)
                     job.execute()
-                    substitution_simulation['mdd demultiplex analysis'] = job.summary
-                    if 'collection' in barcode_simulation: del barcode_simulation['collection']
-                    self.persist_db()
+                    substitution_simulation['mdd demultiplex analysis'] = job.model_summary
+                    self.save_db()
                 else:
                     self.log.info('skipping mdd analysis for %s', ontology['instruction']['ssid'])
             else:
@@ -643,9 +647,8 @@ class Benchmark(Job):
                     ontology['instruction']['input'] = ontology['model']['location']['deml demultiplex path']
                     job = Analyze(ontology)
                     job.execute()
-                    substitution_simulation['deml demultiplex analysis'] = job.summary
-                    if 'collection' in barcode_simulation: del barcode_simulation['collection']
-                    self.persist_db()
+                    substitution_simulation['deml demultiplex analysis'] = job.model_summary
+                    self.save_db()
                 else:
                     self.log.info('skipping deml analysis for %s', ontology['instruction']['bsid'])
             else:
@@ -664,7 +667,7 @@ class Benchmark(Job):
         else:
             self.log.error('unknown bsid %s', ontology['instruction']['bsid'])
 
-        self.persist_db()
+        self.save_db()
         return job
 
     def rebuild_db(self, ontology):
@@ -737,12 +740,6 @@ class Benchmark(Job):
                                 self.log.debug('compiling %s', key)
                                 substitution_simulation_node[key] = compile_model(substitution_simulation_node[key])
 
-                for key in [
-                    'collection'
-                ]:
-                    if key in barcode_simulation_node:
-                        del barcode_simulation_node[key]
-
         self.log.info('cleaning simulation database')
         if 'bsid' in ontology['instruction']:
             compile_barcode_simulation(ontology['instruction']['bsid'])
@@ -750,7 +747,7 @@ class Benchmark(Job):
             for bsid in self.db['simulation'].keys():
                 compile_barcode_simulation(bsid)
 
-        self.persist_db()
+        self.save_db()
 
 def main():
     logging.basicConfig()

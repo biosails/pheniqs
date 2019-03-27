@@ -30,14 +30,14 @@ from subprocess import Popen, PIPE
 
 from core.error import *
 from core import Job
-from core import Shell
+from core import ShellCommand
 from core import merge
 from core import to_json
 
-class SensePrior(Shell):
+class EstimatePrior(ShellCommand):
     def __init__(self, ontology):
-        Shell.__init__(self, ontology)
-        self.log = logging.getLogger('SensePrior')
+        ShellCommand.__init__(self, ontology)
+        self.log = logging.getLogger('EstimatePrior')
 
     @property
     def bsid(self):
@@ -48,7 +48,7 @@ class SensePrior(Shell):
         return self.genealogy['ssid']
 
     def update_model_prior_estimate(self):
-        def update_classifier_model_prior_estimate(classifier_model, classifier_report):
+        def update_classifier_model_prior_estimate_original(classifier_model, classifier_report):
             # Noise prior: {decoder low conditional confidence count} / {decoder count}
             # Barcode prior: {barcode count} + {barcode low confidence count} / {decoder count}
 
@@ -112,7 +112,7 @@ class SensePrior(Shell):
 
                         # barcode prior estimation
                         barcode_estimate['estimated concentration'] = ((barcode_estimate['count'] + barcode_estimate['low confidence count']) / classifier_estimate['count'])
-                        barcode_estimate['estimated concentration deviation'] = 1.0 - barcode_estimate['estimated concentration'] / barcode_model['simulated concentration']
+                        barcode_estimate['estimated concentration deviation'] = barcode_estimate['estimated concentration'] - barcode_model['simulated concentration']
 
             if 'unclassified' in classifier_model:
                 barcode_model = classifier_model['unclassified']
@@ -131,7 +131,7 @@ class SensePrior(Shell):
                     else:
                         barcode_estimate[item] = 0
                 barcode_model['estimate'] = barcode_estimate
-        def update_classifier_model_prior_estimate_new(classifier_model, classifier_report):
+        def update_classifier_model_prior_estimate(classifier_model, classifier_report):
             classifier_estimate = {}
             classifier_model['estimate'] = classifier_estimate
             for item in [
@@ -201,7 +201,8 @@ class SensePrior(Shell):
 
                         # barcode prior estimation
                         barcode_estimate['estimated concentration'] = not_noise * barcode_estimate['pf pooled classified fraction']
-                        barcode_estimate['estimated concentration deviation'] = 1.0 - barcode_estimate['estimated concentration'] / barcode_model['simulated concentration']
+                        if barcode_model['simulated concentration'] > 0:
+                            barcode_estimate['estimated concentration deviation'] = barcode_estimate['estimated concentration'] - barcode_model['simulated concentration']
 
             if 'unclassified' in classifier_model:
                 barcode_model = classifier_model['unclassified']
@@ -231,8 +232,8 @@ class SensePrior(Shell):
                         classifier_model = self.model[classifier_type]
 
                         if isinstance(classifier_model, dict):
-                            update_classifier_model_prior_estimate_new(classifier_model, classifier_report)
-                            self.dirty = True
+                            update_classifier_model_prior_estimate_original(classifier_model, classifier_report)
+                            self.is_model_dirty = True
 
                         elif isinstance(classifier_model, list):
                             model_by_index = {}
@@ -241,8 +242,8 @@ class SensePrior(Shell):
 
                             for report_item in classifier_report:
                                 model_item = model_by_index[report_item['index']]
-                                update_classifier_model_prior_estimate_new(model_item, report_item)
-                                self.dirty = True
+                                update_classifier_model_prior_estimate_original(model_item, report_item)
+                                self.is_model_dirty = True
 
         else: raise NoConfigurationFileError('estimation file {} not found'.format(path))
 
@@ -257,8 +258,8 @@ class SensePrior(Shell):
             command.append('--report')
             command.append(os.path.join(self.home, self.location['pamld prior estimate path']))
 
-            self.execution['command'] = ' '.join([str(i) for i in command])
-            self.log.debug('executing %s', self.execution['command'])
+            self.execution_summary['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution_summary['command'])
 
             process = Popen(
                 args=self.posix_time_command + command,
@@ -267,12 +268,12 @@ class SensePrior(Shell):
                 stderr=PIPE
             )
             output, error = process.communicate()
-            self.execution['return code'] = process.returncode
+            self.execution_summary['return code'] = process.returncode
 
             for line in output.decode('utf8').splitlines():
                 line = line.strip()
                 if line:
-                    self.execution['stdout'].append(line)
+                    self.execution_summary['stdout'].append(line)
 
             for line in error.decode('utf8').splitlines():
                 line = line.strip()
@@ -280,15 +281,13 @@ class SensePrior(Shell):
                     match = self.posix_time_head_ex.search(line)
                     if match:
                         for k,v in match.groupdict().items():
-                            self.execution[k] = float(v)
+                            self.execution_summary[k] = float(v)
                     else:
-                        self.execution['stderr'].append(line)
+                        self.execution_summary['stderr'].append(line)
 
-            if self.execution['return code'] != 0:
-                print(to_json(self.execution))
-                raise CommandFailedError('pheniqs returned {} when estimating prior'.format(self.execution['return code']))
-            else:
-                self.dirty = True
+            if self.execution_summary['return code'] != 0:
+                print(to_json(self.execution_summary))
+                raise CommandFailedError('pheniqs returned {} when estimating prior'.format(self.execution_summary['return code']))
         else:
             self.log.info('skipping prior estimation pheniqs execution because %s exists', self.location['pamld prior estimate path'])
 
@@ -383,7 +382,7 @@ class AdjustPrior(Job):
 
                     for configurtion_item in self.adjusted[classifier_type]:
                         model_item = model_by_index[configurtion_item['index']]
-                        update_classifier_model_prior_estimate(model_item, configurtion_item)
+                        adjust_decoder_prior(model_item, configurtion_item)
 
     def compare_to_model(self):
         def compare_decoder_to_model(decoder, model):

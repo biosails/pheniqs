@@ -17,8 +17,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# install.packages("ggplot2")
+# install.packages("gridExtra")
+# install.packages("extrafont")
+
 library(extrafont)
 library(Cairo)
+library(grid)
+library(ggplot2)
+library(gridExtra)
 
 maximum_error_rate = 0.1
 diagram_units = "mm"
@@ -132,7 +139,7 @@ tool_color_scale = scale_color_manual (
   name = "Tool",
   breaks = tool_order,
   labels = tool_name,
-  values = tool_color
+  values = tool_color,
 )
 accurecy_variable_order = c (
   "FDR",
@@ -174,6 +181,20 @@ quality_control_name = c (
   "both" = "Both Passed and Failed Quality Control"
 )
 
+bin_order = c (
+  "0",
+  "1",
+  "2",
+  "3",
+  "4"
+)
+bin_color = c (
+  "0" = alpha("#5F9A10", 1),
+  "1" = alpha("#A080C7", 1),
+  "2" = alpha("#3852BB", 1),
+  "3" = alpha("#C00606", 1),
+  "4" = alpha("#5C5151", 1)
+)
 bin_name = c (
   "0" = "% < 0.001",
   "1" = "0.001 < % < 0.003",
@@ -188,6 +209,13 @@ bin_name = c (
 #   "3" = "0.01 < % < 0.03 / 27",
 #   "4" = "0.03 < % / 1"
 # )
+bin_fill_scale = scale_fill_manual (
+  name = "Bin",
+  breaks = bin_order,
+  labels = bin_name,
+  values = bin_color,
+  aesthetics = "fill"
+)
 experiment_id_order = c (
   "37e41038-310c-44e1-a1ed-8979b0f73709",
   "082e6a59-27fe-47ed-ae2c-89da8ceb31ee",

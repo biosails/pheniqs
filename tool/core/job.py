@@ -44,62 +44,37 @@ class Job(object):
         default = {
             'instruction': {
                 'home': '~/.pheniqs',
-                'session': None,
                 'platform': platform.system(),
                 'current working directoy': os.getcwd(),
+                'session': None,
             },
             'model': {
-                'genealogy': {}
+                'genealogy': {},
+                'location': {},
             },
-            'execution': {},
             'persistence': {
-                'dirty': False,
-                'session sha1': None,
+                'model dirty': False,
                 'session': None,
+                'session sha1': None,
+                'voletile session': True,
             },
         }
         self.ontology = merge(default, ontology)
         self.instruction['home'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['home']))))
-        if self.is_persistent:
-            self.instruction['session home'] = os.path.join(self.home, 'session', self.instruction['session'])
-        else:
-            self.instruction['session home'] = self.instruction['home']
-
-        prepare_directory(self.instruction['session home'], self.log)
-
         if 'verbosity' in self.instruction and self.instruction['verbosity']:
             self.log.setLevel(log_levels[self.instruction['verbosity']])
-
-    @property
-    def home(self):
-        return self.instruction['home']
 
     @property
     def instruction(self):
         return self.ontology['instruction']
 
     @property
-    def model(self):
-        return self.ontology['model']
+    def home(self):
+        return self.instruction['home']
 
     @property
-    def location(self):
-        return self.model['location']
-
-    @property
-    def genealogy(self):
-        return self.model['genealogy']
-
-    @property
-    def summary(self):
-        if 'summary' not in self.ontology:
-            self.ontology['summary'] = deepcopy(self.model)
-            remove_compiled(self.ontology['summary'])
-        return self.ontology['summary']
-
-    @property
-    def execution(self):
-        return self.ontology['execution']
+    def action(self):
+        return self.instruction['action']
 
     @property
     def current_working_directoy(self):
@@ -110,80 +85,93 @@ class Job(object):
         return self.instruction['platform']
 
     @property
-    def action(self):
-        return self.instruction['action']
+    def model(self):
+        return self.ontology['model']
+
+    @property
+    def genealogy(self):
+        return self.model['genealogy']
+
+    @property
+    def location(self):
+        return self.model['location']
+
+    @property
+    def model_summary(self):
+        if 'model summary' not in self.ontology:
+            self.ontology['model summary'] = deepcopy(self.model)
+            remove_compiled(self.ontology['model summary'])
+        return self.ontology['model summary']
 
     @property
     def session(self):
         if self.ontology['persistence']['session'] is None:
             self.ontology['persistence']['session'] = {
-                'created': str(datetime.now()),
+                'created': str(datetime.now())
             }
-            self.load_session()
+            self.ontology['persistence']['session sha1']  = hashlib.sha1(to_json(self.ontology['persistence']['session']).encode('utf8')).hexdigest()
+
+            if self.instruction['session'] is not None:
+                self.ontology['persistence']['session home'] = os.path.join(self.home, 'session', self.instruction['session'])
+                prepare_directory(self.ontology['persistence']['session home'], self.log)
+
+                self.ontology['persistence']['session db path'] = os.path.realpath(os.path.join(self.ontology['persistence']['session home'], 'session.json'))
+                prepare_path(self.ontology['persistence']['session db path'], self.log, True)
+                self.ontology['persistence']['voletile session'] = False
+
+                if os.path.exists(self.ontology['persistence']['session db path']):
+                    self.log.debug('loading session %s', self.instruction['session'])
+                    with io.open(path, 'rb') as file:
+                        try:
+                            content = file.read()
+                            self.ontology['persistence']['session'] = json.loads(content.decode('utf8'))
+                            self.ontology['persistence']['session sha1'] = hashlib.sha1(content).hexdigest()
+                        except json.decoder.JSONDecodeError as e:
+                            self.log.warning('ignoring corrupt session %s', self.instruction['session'])
+            else:
+                self.log.debug('using a voletile session')
+
         return self.ontology['persistence']['session']
 
-    @property
-    def dirty(self):
-        return self.ontology['persistence']['dirty']
-
-    @dirty.setter
-    def dirty(self, value):
-        self.ontology['persistence']['dirty'] = value
-
-    @property
-    def is_persistent(self):
-        return self.instruction['session'] is not None
-
-    @property
-    def session_home(self):
-        return self.instruction['session home']
-
-    def load_session(self):
-        if self.is_persistent:
-            path = os.path.realpath(os.path.join(self.session_home, 'session.json'))
-            prepare_path(path, self.log, True)
-
-            if os.path.exists(path):
-                self.log.info('loading session %s', self.instruction['session'])
-                with io.open(path, 'rb') as file:
-                    try:
-                        content = file.read()
-                        self.ontology['persistence']['session'] = json.loads(content.decode('utf8'))
-                        self.ontology['persistence']['session sha1'] = hashlib.sha1(content).hexdigest()
-                    except json.decoder.JSONDecodeError as e:
-                        self.log.warning('ignoring corrupt session %s', self.instruction['session'])
-        else:
-            self.log.info('using a voletile session')
-
     def save_session(self):
-        if self.is_persistent:
+        if not self.ontology['persistence']['voletile session']:
             content = to_json(self.session).encode('utf8')
             checksum  = hashlib.sha1(content).hexdigest()
             if checksum != self.ontology['persistence']['session sha1']:
-                path = os.path.realpath(os.path.join(self.session_home, 'session.json'))
-                prepare_path(path, self.log, True)
-                with io.open(path, 'wb') as file:
-                    self.log.info('saving session %s', self.instruction['session'])
+                # prepare_path(self.ontology['persistence']['session db path'], self.log, True)
+                with io.open(self.ontology['persistence']['session db path'], 'wb') as file:
+                    self.log.debug('saving session %s', self.instruction['session'])
                     file.write(content)
                 self.ontology['persistence']['session sha1'] = checksum
             else:
                 self.log.debug('skipping unnecessary session flush')
 
+    @property
+    def is_model_dirty(self):
+        return self.ontology['persistence']['model dirty']
+
+    @is_model_dirty.setter
+    def is_model_dirty(self, value):
+        self.ontology['persistence']['model dirty'] = value
+
     def execute(self):
         pass
 
     def close(self):
-        pass
+        self.save_session()
 
-class Shell(Job):
+class ShellCommand(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
-        self.log = logging.getLogger('Shell')
+        self.log = logging.getLogger('ShellCommand')
         default = {
-            'execution': {
+            'execution summary': {
                 'stdout': [],
                 'stderr': [],
-            }
+            },
+            'persistence': {
+                'execution summary dirty': False
+            },
         }
         self.ontology = merge(default, self.ontology)
 
@@ -195,3 +183,15 @@ class Shell(Job):
         # %M Maximum resident set size of the process during its lifetime, in Kbytes
         self.posix_time_command = [ '/usr/local/bin/gtime', '-f', 'POSIX_TIME_START%e,%S,%U,%MPOSIX_TIME_END' ]
         self.posix_time_head_ex = re.compile(r'^POSIX_TIME_START(?P<real>[0-9\.]+),(?P<kernel>[0-9\.]+),(?P<user>[0-9\.]+),(?P<memory>[0-9]+)POSIX_TIME_END$')
+
+    @property
+    def execution_summary(self):
+        return self.ontology['execution summary']
+
+    @property
+    def is_execution_summary_dirty(self):
+        return self.ontology['persistence']['execution summary dirty']
+
+    @is_execution_summary_dirty.setter
+    def is_execution_summary_dirty(self, value):
+        self.ontology['persistence']['execution summary dirty'] = value

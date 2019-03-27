@@ -55,6 +55,6 @@ from simulation.demultiplex import PamldUniformDemultiplex
 from simulation.demultiplex import MddDemultiplex
 from simulation.demultiplex import DemlDemultiplex
 from simulation.analyze import Analyze
-from simulation.prior import SensePrior, AdjustPrior
+from simulation.prior import EstimatePrior, AdjustPrior
 from simulation.summarize import Summarize
 # from simulation.collect import Collect

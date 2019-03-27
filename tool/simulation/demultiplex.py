@@ -26,13 +26,13 @@ import logging
 from subprocess import Popen, PIPE
 
 from core.error import *
-from core import Shell
+from core import ShellCommand
 from core import merge
 from core import to_json
 
-class PamldDemultiplex(Shell):
+class PamldDemultiplex(ShellCommand):
     def __init__(self, ontology):
-        Shell.__init__(self, ontology)
+        ShellCommand.__init__(self, ontology)
         self.log = logging.getLogger('PamldDemultiplex')
 
     @property
@@ -62,8 +62,8 @@ class PamldDemultiplex(Shell):
             command.append('--report')
             command.append(os.path.join(self.home, self.location['pamld demultiplex report path']))
 
-            self.execution['command'] = ' '.join([str(i) for i in command])
-            self.log.debug('executing %s', self.execution['command'])
+            self.execution_summary['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution_summary['command'])
 
             process = Popen(
                 args=self.posix_time_command + command,
@@ -72,12 +72,12 @@ class PamldDemultiplex(Shell):
                 stderr=PIPE
             )
             output, error = process.communicate()
-            self.execution['return code'] = process.returncode
+            self.execution_summary['return code'] = process.returncode
 
             for line in output.decode('utf8').splitlines():
                 line = line.strip()
                 if line:
-                    self.execution['stdout'].append(line)
+                    self.execution_summary['stdout'].append(line)
 
             for line in error.decode('utf8').splitlines():
                 line = line.strip()
@@ -85,21 +85,19 @@ class PamldDemultiplex(Shell):
                     match = self.posix_time_head_ex.search(line)
                     if match:
                         for k,v in match.groupdict().items():
-                            self.execution[k] = float(v)
+                            self.execution_summary[k] = float(v)
                     else:
-                        self.execution['stderr'].append(line)
+                        self.execution_summary['stderr'].append(line)
 
-            if self.execution['return code'] != 0:
-                print(to_json(self.execution))
-                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
-            else:
-                self.dirty = True
+            if self.execution_summary['return code'] != 0:
+                print(to_json(self.execution_summary))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution_summary['return code']))
         else:
             self.log.info('skipping pamld demultiplexing because %s exists', self.location['pamld demultiplex path'])
 
-class MddDemultiplex(Shell):
+class MddDemultiplex(ShellCommand):
     def __init__(self, ontology):
-        Shell.__init__(self, ontology)
+        ShellCommand.__init__(self, ontology)
         self.log = logging.getLogger('MddDemultiplex')
 
     @property
@@ -129,8 +127,8 @@ class MddDemultiplex(Shell):
             command.append('--report')
             command.append(os.path.join(self.home, self.location['mdd demultiplex report path']))
 
-            self.execution['command'] = ' '.join([str(i) for i in command])
-            self.log.debug('executing %s', self.execution['command'])
+            self.execution_summary['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution_summary['command'])
 
             process = Popen(
                 args=self.posix_time_command + command,
@@ -139,12 +137,12 @@ class MddDemultiplex(Shell):
                 stderr=PIPE
             )
             output, error = process.communicate()
-            self.execution['return code'] = process.returncode
+            self.execution_summary['return code'] = process.returncode
 
             for line in output.decode('utf8').splitlines():
                 line = line.strip()
                 if line:
-                    self.execution['stdout'].append(line)
+                    self.execution_summary['stdout'].append(line)
 
             for line in error.decode('utf8').splitlines():
                 line = line.strip()
@@ -152,21 +150,19 @@ class MddDemultiplex(Shell):
                     match = self.posix_time_head_ex.search(line)
                     if match:
                         for k,v in match.groupdict().items():
-                            self.execution[k] = float(v)
+                            self.execution_summary[k] = float(v)
                     else:
-                        self.execution['stderr'].append(line)
+                        self.execution_summary['stderr'].append(line)
 
-            if self.execution['return code'] != 0:
-                print(to_json(self.execution))
-                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
-            else:
-                self.dirty = True
+            if self.execution_summary['return code'] != 0:
+                print(to_json(self.execution_summary))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution_summary['return code']))
         else:
             self.log.info('skipping mdd demultiplexing because %s exists', self.location['mdd demultiplex path'])
 
-class PamldAccuratePriorDemultiplex(Shell):
+class PamldAccuratePriorDemultiplex(ShellCommand):
     def __init__(self, ontology):
-        Shell.__init__(self, ontology)
+        ShellCommand.__init__(self, ontology)
         self.log = logging.getLogger('PamldDemultiplex')
 
     @property
@@ -196,8 +192,8 @@ class PamldAccuratePriorDemultiplex(Shell):
             command.append('--report')
             command.append(os.path.join(self.home, self.location['pamld accurate prior demultiplex report path']))
 
-            self.execution['command'] = ' '.join([str(i) for i in command])
-            self.log.debug('executing %s', self.execution['command'])
+            self.execution_summary['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution_summary['command'])
 
             process = Popen(
                 args=self.posix_time_command + command,
@@ -206,12 +202,12 @@ class PamldAccuratePriorDemultiplex(Shell):
                 stderr=PIPE
             )
             output, error = process.communicate()
-            self.execution['return code'] = process.returncode
+            self.execution_summary['return code'] = process.returncode
 
             for line in output.decode('utf8').splitlines():
                 line = line.strip()
                 if line:
-                    self.execution['stdout'].append(line)
+                    self.execution_summary['stdout'].append(line)
 
             for line in error.decode('utf8').splitlines():
                 line = line.strip()
@@ -219,21 +215,19 @@ class PamldAccuratePriorDemultiplex(Shell):
                     match = self.posix_time_head_ex.search(line)
                     if match:
                         for k,v in match.groupdict().items():
-                            self.execution[k] = float(v)
+                            self.execution_summary[k] = float(v)
                     else:
-                        self.execution['stderr'].append(line)
+                        self.execution_summary['stderr'].append(line)
 
-            if self.execution['return code'] != 0:
-                print(to_json(self.execution))
-                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
-            else:
-                self.dirty = True
+            if self.execution_summary['return code'] != 0:
+                print(to_json(self.execution_summary))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution_summary['return code']))
         else:
             self.log.info('skipping accurate prior pamld demultiplexing because %s exists', self.instruction['output'])
 
-class PamldUniformDemultiplex(Shell):
+class PamldUniformDemultiplex(ShellCommand):
     def __init__(self, ontology):
-        Shell.__init__(self, ontology)
+        ShellCommand.__init__(self, ontology)
         self.log = logging.getLogger('PamldDemultiplex')
 
     @property
@@ -263,8 +257,8 @@ class PamldUniformDemultiplex(Shell):
             command.append('--report')
             command.append(os.path.join(self.home, self.location['pamld uniform demultiplex report path']))
 
-            self.execution['command'] = ' '.join([str(i) for i in command])
-            self.log.debug('executing %s', self.execution['command'])
+            self.execution_summary['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution_summary['command'])
 
             process = Popen(
                 args=self.posix_time_command + command,
@@ -273,12 +267,12 @@ class PamldUniformDemultiplex(Shell):
                 stderr=PIPE
             )
             output, error = process.communicate()
-            self.execution['return code'] = process.returncode
+            self.execution_summary['return code'] = process.returncode
 
             for line in output.decode('utf8').splitlines():
                 line = line.strip()
                 if line:
-                    self.execution['stdout'].append(line)
+                    self.execution_summary['stdout'].append(line)
 
             for line in error.decode('utf8').splitlines():
                 line = line.strip()
@@ -286,21 +280,19 @@ class PamldUniformDemultiplex(Shell):
                     match = self.posix_time_head_ex.search(line)
                     if match:
                         for k,v in match.groupdict().items():
-                            self.execution[k] = float(v)
+                            self.execution_summary[k] = float(v)
                     else:
-                        self.execution['stderr'].append(line)
+                        self.execution_summary['stderr'].append(line)
 
-            if self.execution['return code'] != 0:
-                print(to_json(self.execution))
-                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution['return code']))
-            else:
-                self.dirty = True
+            if self.execution_summary['return code'] != 0:
+                print(to_json(self.execution_summary))
+                raise CommandFailedError('pheniqs returned {} when demultiplexing'.format(self.execution_summary['return code']))
         else:
             self.log.info('skipping uniform pamld demultiplexing because %s exists', self.instruction['output'])
 
-class DemlDemultiplex(Shell):
+class DemlDemultiplex(ShellCommand):
     def __init__(self, ontology):
-        Shell.__init__(self, ontology)
+        ShellCommand.__init__(self, ontology)
         self.log = logging.getLogger('DemlDemultiplex')
 
     @property
@@ -329,8 +321,8 @@ class DemlDemultiplex(Shell):
             command.append(os.path.join(self.home, self.location['deml summary path']))
             command.append(self.instruction['input'])
 
-            self.execution['command'] = ' '.join([str(i) for i in command])
-            self.log.debug('executing %s', self.execution['command'])
+            self.execution_summary['command'] = ' '.join([str(i) for i in command])
+            self.log.debug('executing %s', self.execution_summary['command'])
 
             process = Popen(
                 args=self.posix_time_command + command,
@@ -339,12 +331,12 @@ class DemlDemultiplex(Shell):
                 stderr=PIPE
             )
             output, error = process.communicate()
-            self.execution['return code'] = process.returncode
+            self.execution_summary['return code'] = process.returncode
 
             for line in output.decode('utf8').splitlines():
                 line = line.strip()
                 if line:
-                    self.execution['stdout'].append(line)
+                    self.execution_summary['stdout'].append(line)
 
             for line in error.decode('utf8').splitlines():
                 line = line.strip()
@@ -352,14 +344,12 @@ class DemlDemultiplex(Shell):
                     match = self.posix_time_head_ex.search(line)
                     if match:
                         for k,v in match.groupdict().items():
-                            self.execution[k] = float(v)
+                            self.execution_summary[k] = float(v)
                     else:
-                        self.execution['stderr'].append(line)
+                        self.execution_summary['stderr'].append(line)
 
-            if self.execution['return code'] != 0:
-                print(to_json(self.execution))
-                raise CommandFailedError('deML returned {} when demultiplexing'.format(self.execution['return code']))
-            else:
-                self.dirty = True
+            if self.execution_summary['return code'] != 0:
+                print(to_json(self.execution_summary))
+                raise CommandFailedError('deML returned {} when demultiplexing'.format(self.execution_summary['return code']))
         else:
             self.log.info('skipping deML demultiplexing because %s exists', self.location['deml demultiplex path'])

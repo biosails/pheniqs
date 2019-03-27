@@ -54,8 +54,7 @@ class SimulateBarcode(Transcode):
                 'location': {},
                 'run count': 0,
                 'noise model': {},
-            },
-            'execution': {},
+            }
         }
         self.ontology = merge(default, self.ontology)
         self.genealogy['bsid'] = self.instruction['bsid']
@@ -314,7 +313,7 @@ class SimulateBarcode(Transcode):
 
         if not os.path.exists(self.instruction['output']):
             Transcode.execute(self)
-            self.dirty = True
+            self.is_model_dirty = True
         else:
             self.log.info('skipping barcode simulation because %s exists', self.location['simulated barcode path'])
 

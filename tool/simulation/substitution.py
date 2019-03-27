@@ -277,7 +277,7 @@ class SimulateSubstitution(Transcode):
 
         if not os.path.exists(self.instruction['output']):
             Transcode.execute(self)
-            self.dirty = True
+            self.is_model_dirty = True
         else:
             self.log.info('skipping substitution simulation because %s exists', self.location['simulated substitution path'])
 

@@ -20,43 +20,34 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-# install.packages("ggplot2")
-# install.packages("gridExtra")
-# install.packages("extrafont")
-
-library(grid)
-library(ggplot2)
-library(gridExtra)
+source("theme.R")
 
 args = commandArgs(trailingOnly = TRUE)
 data_filename = args[1]
 diagram_filename = args[2]
 
-source("theme.R")
-
-diagram_width = 86 * 3
-diagram_height =  72 * 6
+diagram_width = 86 * 2
+diagram_height =  72 * 2.5
 
 plot_diagram <- function(data) {
     selected <- data
     selected <- selected[which(selected$rate < maximum_error_rate),]
     selected <- selected[which(selected$density > 0),]
     benchmark_plot <- ggplot(selected) +
-    facet_wrap(~ssid, ncol = 3) +
+    facet_wrap(~ssid, ncol = 4) +
     pheniqs_plot_theme +
     theme(
-      text = element_text(size = 16)
+      text = element_text(size = 12)
     ) +
-    geom_bar(
+    geom_col(
       data = selected,
-      stat = "identity",
       position = position_dodge(),
       aes(x = quality, y = density),
       fill = alpha("#5C5151", 0.875),
       alpha = 0.5,
       size = 0.25
-    )
+    ) +
+    scale_y_log10()
     return(benchmark_plot)
 }
 
