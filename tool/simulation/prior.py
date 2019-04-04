@@ -161,12 +161,12 @@ class EstimatePrior(ShellCommand):
                 noise_count += classifier_estimate['low conditional confidence count']
 
             if 'low confidence count' in classifier_estimate:
+                # noise_count += (classifier_estimate['classified pf fraction'] * classifier_estimate['low confidence count'] * (1.0 - classifier_estimate['average classified confidence']))
                 noise_count += (classifier_estimate['low confidence count'] * (1.0 - classifier_estimate['average classified confidence']))
 
             classifier_estimate['estimated noise'] = noise_count / classifier_estimate['count']
             classifier_estimate['estimated noise deviation'] = 1.0 - classifier_estimate['estimated noise'] / classifier_model['simulated noise']
 
-            self.log.info('estimating noise %s %s %s', noise_count, classifier_estimate['count'], classifier_estimate['estimated noise'])
             not_noise = 1.0 - classifier_estimate['estimated noise']
             barcode_report_by_hash = {}
             for barcode in classifier_report['classified']:

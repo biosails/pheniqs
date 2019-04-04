@@ -453,11 +453,17 @@ class Summarize(Job):
         elif self.instruction['preset'] == 'decoder_summary':
             self.summarize_decoder_accuracy_benchmark()
 
+        elif self.instruction['preset'] == 'decoder_prior':
+            self.summarize_decoder_prior_estimation_R()
+
         elif self.instruction['preset'] == 'barcode_summary_R':
             self.summarize_barcode_accuracy_benchmark_R()
 
         elif self.instruction['preset'] == 'barcode_summary':
             self.summarize_barcode_accuracy_benchmark()
+
+        elif self.instruction['preset'] == 'barcode_prior':
+            self.summarize_barcode_prior_estimation_R()
 
         elif self.instruction['preset'] == 'noise_summary_R':
             self.summarize_noise_accuracy_benchmark_R()
@@ -664,6 +670,64 @@ class Summarize(Job):
         table.sort(key=lambda i: i[6])
         table.sort(key=lambda i: i[5])
         table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_barcode_prior_estimation_R(self):
+        header = [
+            'ssid',
+            'rate',
+            'classifier',
+            'index',
+            'simulated',
+            'estimated',
+            'error',
+        ]
+        table = []
+        for ssid, substitution_analysis in self.barcode_simulation['substitution'].items():
+            if 'model' in substitution_analysis:
+                substitution_model = substitution_analysis['model']
+                for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
+                    if classifier_type in substitution_model:
+                        classifier_model = substitution_model['multiplex']
+                        simulated_rate = classifier_model['simulated substitution rate']
+
+                        if 'estimate' in classifier_model:
+                            offset = classifier_model['simulated noise'] - classifier_model['estimate']['estimated noise']
+                            error = classifier_model['unclassified']['count'] * abs(offset)
+                            row = [
+                                ssid,
+                                simulated_rate,
+                                classifier_type,
+                                0,
+                                classifier_model['simulated noise'],
+                                classifier_model['estimate']['estimated noise'],
+                                error,
+                            ]
+                            table.append(row)
+
+                        if 'codec' in classifier_model:
+                            for barcode_model in classifier_model['codec'].values():
+                                if 'estimate' in barcode_model:
+                                    offset = barcode_model['simulated concentration'] - barcode_model['estimate']['estimated concentration']
+                                    # error = barcode_model['simulated concentration'] * abs(offset)
+                                    # error = abs(offset)
+                                    error = barcode_model['count'] * offset
+                                    row = [
+                                        ssid,
+                                        simulated_rate,
+                                        classifier_type,
+                                        barcode_model['index'],
+                                        barcode_model['simulated concentration'],
+                                        barcode_model['estimate']['estimated concentration'],
+                                        error,
+                                    ]
+                                    table.append(row)
+
+        table.sort(key=lambda i: i[3])
+        table.sort(key=lambda i: i[2])
         table.sort(key=lambda i: i[1])
 
         print(','.join(header))

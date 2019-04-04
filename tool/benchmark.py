@@ -51,7 +51,6 @@ from simulation import DemlDemultiplex
 from simulation import ToDeML
 from simulation import Analyze
 from simulation import Summarize
-# from simulation import Collect
 
 class Benchmark(Job):
     def __init__(self, ontology):

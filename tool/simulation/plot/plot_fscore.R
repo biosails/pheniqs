@@ -20,14 +20,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-source("theme.R")
-
-args = commandArgs(trailingOnly = TRUE)
-data_filename = args[1]
-diagram_filename = args[2]
-
-diagram_width = 86 * 1
-diagram_height =  72 * 1
+source("core.R")
 
 accurecy_variable_labeller = labeller (
   tool = tool_name,
@@ -98,28 +91,4 @@ plot <- plot_measure(data)
 plot <- plot +
 # ggtitle( "Overall classifier accuracy" ) +
 xlab( "Expected error rate" )
-sheet <- ggplotGrob(plot)
-
-diagram <- arrangeGrob(sheet, ncol=1)
-grid.draw(diagram)
-if(grepl("\\.eps$", diagram_filename, perl = TRUE)) {
-    ggsave(
-        diagram_filename,
-        diagram,
-        scale = 1,
-        width = diagram_width,
-        height = diagram_height,
-        units = diagram_units,
-        device = cairo_ps,
-        antialias = "subpixel")
-}
-if(grepl("\\.pdf$", diagram_filename, perl = TRUE)) {
-    ggsave(
-        diagram_filename,
-        diagram,
-        scale = 1,
-        width = diagram_width,
-        height = diagram_height,
-        units = diagram_units,
-        device = cairo_pdf)
-}
+draw_diagram(plot, diagram_filename, diagram_width, diagram_height)

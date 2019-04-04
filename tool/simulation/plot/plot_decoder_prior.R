@@ -22,40 +22,31 @@
 
 source("core.R")
 
-accurecy_variable_labeller = labeller (
-  tool = tool_name,
-  variable = accurecy_variable_name,
-  bin = bin_name,
-  ssid = experiment_id_name
-)
-
 plot_diagram <- function(data) {
     selected <- data
+    selected <- selected[which(selected$rate < maximum_error_rate),]
     benchmark_plot <- ggplot(selected) +
     pheniqs_plot_theme +
     theme(
-      legend.position = "top",
-      text = element_text(size = 8)
+      legend.position = "none",
+      text = element_text(size = 10)
     ) +
-    geom_bar(
+    geom_col(
       data = selected,
-      stat = "identity",
-      position = position_dodge(),
-      aes(x = order, y = count, fill = bin),
-      alpha = 0.5,
+      aes(x = ssid, y = error, fill = index),
+      alpha = 0.75,
       size = 0.25
-    ) +
-    scale_y_log10() +
-    bin_fill_scale
+    )
     return(benchmark_plot)
 }
 
 data = read.table(data_filename, header=T, sep=",")
-data$bin = factor(data$bin)
+data$error = as.numeric(data$error)
+data$ssid = factor(data$ssid, labels = experiment_id_name, levels = experiment_id_order)
 plot <- plot_diagram(data)
 plot <- plot +
-ggtitle( "Library density distribution" ) +
-xlab( "Library" ) +
-ylab( "Read Count" )
+ggtitle( "Prior estimation error" ) +
+xlab( "Substitution error rate" ) +
+ylab( "Error" )
 
 draw_diagram(plot, diagram_filename, diagram_width, diagram_height)

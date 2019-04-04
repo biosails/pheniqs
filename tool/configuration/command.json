@@ -256,6 +256,7 @@
                                         "decoder_summary",
                                         "barcode_summary_R",
                                         "barcode_summary",
+                                        "barcode_prior",
                                         "noise_summary_R",
                                         "noise_summary",
                                         "classified_summary_R",

@@ -27,10 +27,19 @@ library(grid)
 library(ggplot2)
 library(gridExtra)
 
-maximum_error_rate = 0.1
+data_filename = NULL
+diagram_filename = NULL
+maximum_error_rate = 0.5
+diagram_width = 86
+diagram_height =  72
+
+args = commandArgs(trailingOnly = TRUE)
+if(length(args) > 0) { data_filename = args[1] }
+if(length(args) > 1) { diagram_filename = args[2] }
+if(length(args) > 2) { maximum_error_rate = as.numeric(args[3]) }
+
 diagram_units = "mm"
 font_family = "Monaco"
-
 text_color = alpha("#3A2323", 1)
 axis_color = alpha("#3A2323", 0.75)
 ticks_color = alpha("#3A2323", 1)
@@ -87,33 +96,6 @@ axis_line = element_line (
   size = rel(0.25),
   linetype = "solid"
 )
-pheniqs_plot_theme = theme (
-  plot.title = plot_title_text,
-  plot.margin = margin(0.5,0.5,0.5,0.5, "char"),
-
-  axis.line = axis_line,
-  axis.ticks = tick_line,
-  axis.title.x = title_text,
-  axis.text.x = vertical_axis_text,
-  axis.title.y = vertical_axis_text,
-  axis.text.y = axis_text,
-
-  strip.text = title_text,
-  strip.background = element_blank(),
-  strip.placement = "outside",
-
-  panel.grid.major = grid_line,
-  panel.background = element_blank(),
-  panel.grid.minor = element_blank(),
-
-  legend.title = legend_title_text,
-  legend.text = legend_text,
-  legend.key.width = unit(0.375, "char"),
-  legend.key.height = unit(0.375, "char"),
-  legend.key = element_rect(fill = NA),
-  legend.margin = margin(0,0,0,0, "char")
-  # legend.justification = c(0,0)
-)
 tool_order = c (
   "pamld",
   "pamld_u",
@@ -165,22 +147,6 @@ accurecy_variable_name = c (
   "TP_FP" = "True Positive + False Positive",
   "TP_FN" = "True Positive + False Negative"
 )
-accurecy_rank_name = c (
-  "real" = "Real reads only",
-  "noise" = "Noise reads only",
-  "both" = "Both Real and Noise reads"
-)
-quality_control_order = c (
-  "both",
-  "fail",
-  "pass"
-)
-quality_control_name = c (
-  "pass" = "Passed Quality Control",
-  "fail" = "Failed Quality Control",
-  "both" = "Both Passed and Failed Quality Control"
-)
-
 bin_order = c (
   "0",
   "1",
@@ -242,38 +208,35 @@ experiment_id_order = c (
   "6d9944ec-a347-4b09-8ebc-0e0b2e54875a"
 )
 experiment_id_name = c (
-  "37e41038-310c-44e1-a1ed-8979b0f73709" = "Error rate 0.00010285707764030215",
-  "082e6a59-27fe-47ed-ae2c-89da8ceb31ee" = "Error rate 0.0005081994200929769",
-  "ce333fb9-5e8d-4b14-a5ee-7101afe2cfa6" = "Error rate 0.0010005303459722477",
-  "b3b1b9af-9a6c-43dd-b5ab-be35bbee9c7f" = "Error rate 0.0010168814073261993",
-  "40a08990-33b3-41f5-b061-2561bc84ca96" = "Error rate 0.0015038010220697069",
-  "8c689128-8483-4ce5-9b67-8cb160550497" = "Error rate 0.0026127871615326784",
-  "b7e78bf9-30a3-4955-9469-0bbd77310476" = "Error rate 0.005027553131321483",
-  "9442e6ea-8033-44b2-b0f3-91470348a7f0" = "Error rate 0.006922762955309007",
-  "156d68c8-abcd-439a-a387-71b3708652ff" = "Error rate 0.009595885064725982",
-  "7d4caa7a-5b9c-4b47-af6a-0217ce344f6a" = "Error rate 0.013481136183436082",
-  "a362969d-fe30-497a-a2ec-42bc0119f398" = "Error rate 0.01608628191772856",
-  "62bdb0f5-affe-4b31-8b27-f5e96899f37f" = "Error rate 0.01927224171392631",
-  "b37d56c6-488a-4121-abf6-8b8a2bf82668" = "Error rate 0.023176701815888906",
-  "424c4ff7-5cc6-4032-bd54-70b492bbcbb5" = "Error rate 0.034072931974215626",
-  "a5b2c471-f1bc-49b7-9650-19bcd78e73ae" = "Error rate 0.04156162437196815",
-  "58020739-79fd-4cab-8f4e-e611a6cfba15" = "Error rate 0.05084681116026185",
-  "ffad3de5-49d4-4c8d-8be9-6db1be42dbda" = "Error rate 0.0620952919053785",
-  "92ffff7e-8c09-447a-96b1-9bcdc2a0da1c" = "Error rate 0.07516804510486658",
-  "a11ae384-a142-4f33-a129-eda212675e2a" = "Error rate 0.10878556956710851",
-  "44eb6f63-6f19-47d2-acce-67f2e59395bf" = "Error rate 0.13098986579957753",
-  "1a0d8c5d-3a1b-48ec-894a-12888c735955" = "Error rate 0.15830773392739628",
-  "3c4383a7-3ce4-4ecd-8518-c9c7cb681e01" = "Error rate 0.19165691826383663",
-  "6d9944ec-a347-4b09-8ebc-0e0b2e54875a" = "Error rate 0.23143485735751052"
+  "37e41038-310c-44e1-a1ed-8979b0f73709" = "0.000103",
+  "082e6a59-27fe-47ed-ae2c-89da8ceb31ee" = "0.000508",
+  "ce333fb9-5e8d-4b14-a5ee-7101afe2cfa6" = "0.001001",
+  "b3b1b9af-9a6c-43dd-b5ab-be35bbee9c7f" = "0.001017",
+  "40a08990-33b3-41f5-b061-2561bc84ca96" = "0.001504",
+  "8c689128-8483-4ce5-9b67-8cb160550497" = "0.002613",
+  "b7e78bf9-30a3-4955-9469-0bbd77310476" = "0.005028",
+  "9442e6ea-8033-44b2-b0f3-91470348a7f0" = "0.006923",
+  "156d68c8-abcd-439a-a387-71b3708652ff" = "0.009596",
+  "7d4caa7a-5b9c-4b47-af6a-0217ce344f6a" = "0.013481",
+  "a362969d-fe30-497a-a2ec-42bc0119f398" = "0.016086",
+  "62bdb0f5-affe-4b31-8b27-f5e96899f37f" = "0.019272",
+  "b37d56c6-488a-4121-abf6-8b8a2bf82668" = "0.023176",
+  "424c4ff7-5cc6-4032-bd54-70b492bbcbb5" = "0.034073",
+  "a5b2c471-f1bc-49b7-9650-19bcd78e73ae" = "0.041562",
+  "58020739-79fd-4cab-8f4e-e611a6cfba15" = "0.050847",
+  "ffad3de5-49d4-4c8d-8be9-6db1be42dbda" = "0.062095",
+  "92ffff7e-8c09-447a-96b1-9bcdc2a0da1c" = "0.075168",
+  "a11ae384-a142-4f33-a129-eda212675e2a" = "0.108786",
+  "44eb6f63-6f19-47d2-acce-67f2e59395bf" = "0.131990",
+  "1a0d8c5d-3a1b-48ec-894a-12888c735955" = "0.158308",
+  "3c4383a7-3ce4-4ecd-8518-c9c7cb681e01" = "0.191628",
+  "6d9944ec-a347-4b09-8ebc-0e0b2e54875a" = "0.231434"
 )
 accurecy_variable_labeller = labeller (
+  ssid = experiment_id_name,
   tool = tool_name,
-  variable = accurecy_variable_name,
-  rank = accurecy_rank_name,
-  qc = quality_control_name,
-  ssid = experiment_id_name
+  variable = accurecy_variable_name
 )
-# rate_scale = scale_x_log10 (
 rate_scale = scale_x_continuous (
     breaks = c (
         0.00010285707764030215,
@@ -326,3 +289,52 @@ rate_scale = scale_x_continuous (
         # 0.231434
     )
 )
+pheniqs_plot_theme = theme (
+  plot.title = plot_title_text,
+  plot.margin = margin(0.5,0.5,0.5,0.5, "char"),
+  axis.line = axis_line,
+  axis.ticks = tick_line,
+  axis.title.x = title_text,
+  axis.text.x = vertical_axis_text,
+  axis.title.y = vertical_axis_text,
+  axis.text.y = axis_text,
+  strip.text = title_text,
+  strip.background = element_blank(),
+  strip.placement = "outside",
+  panel.grid.major = grid_line,
+  panel.background = element_blank(),
+  panel.grid.minor = element_blank(),
+  legend.title = legend_title_text,
+  legend.text = legend_text,
+  legend.key.width = unit(0.375, "char"),
+  legend.key.height = unit(0.375, "char"),
+  legend.key = element_rect(fill = NA),
+  legend.margin = margin(0,0,0,0, "char")
+)
+
+draw_diagram <- function(plot, diagram_filename, diagram_width, diagram_height) {
+  sheet <- ggplotGrob(plot)
+  diagram <- arrangeGrob(sheet, ncol=1)
+  grid.draw(diagram)
+  if(grepl("\\.eps$", diagram_filename, perl = TRUE)) {
+      ggsave(
+          diagram_filename,
+          diagram,
+          scale = 1,
+          width = diagram_width,
+          height = diagram_height,
+          units = diagram_units,
+          device = cairo_ps,
+          antialias = "subpixel")
+  }
+  if(grepl("\\.pdf$", diagram_filename, perl = TRUE)) {
+      ggsave(
+          diagram_filename,
+          diagram,
+          scale = 1,
+          width = diagram_width,
+          height = diagram_height,
+          units = diagram_units,
+          device = cairo_pdf)
+  }
+}

@@ -20,14 +20,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-source("theme.R")
+source("core.R")
 
-args = commandArgs(trailingOnly = TRUE)
-data_filename = args[1]
-diagram_filename = args[2]
-
-diagram_width = 86 * 5
-diagram_height =  72 * 5
+diagram_width = diagram_width * 5
+diagram_height =  diagram_height * 5
 
 accurecy_variable_labeller = labeller (
   tool = tool_name,
@@ -107,28 +103,5 @@ plot <- plot_measure(data)
 plot <- plot +
 ggtitle( "Classification accuracy for libraries are binned by density" ) +
 xlab( "Expected error rate" )
-sheet <- ggplotGrob(plot)
 
-diagram <- arrangeGrob(sheet, ncol=1)
-grid.draw(diagram)
-if(grepl("\\.eps$", diagram_filename, perl = TRUE)) {
-    ggsave(
-        diagram_filename,
-        diagram,
-        scale = 1,
-        width = diagram_width,
-        height = diagram_height,
-        units = diagram_units,
-        device = cairo_ps,
-        antialias = "subpixel")
-}
-if(grepl("\\.pdf$", diagram_filename, perl = TRUE)) {
-    ggsave(
-        diagram_filename,
-        diagram,
-        scale = 1,
-        width = diagram_width,
-        height = diagram_height,
-        units = diagram_units,
-        device = cairo_pdf)
-}
+draw_diagram(plot, diagram_filename, diagram_width, diagram_height)
