@@ -453,9 +453,6 @@ class Summarize(Job):
         elif self.instruction['preset'] == 'decoder_summary':
             self.summarize_decoder_accuracy_benchmark()
 
-        elif self.instruction['preset'] == 'decoder_prior':
-            self.summarize_decoder_prior_estimation_R()
-
         elif self.instruction['preset'] == 'barcode_summary_R':
             self.summarize_barcode_accuracy_benchmark_R()
 
