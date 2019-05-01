@@ -109,6 +109,20 @@ Or `ldd` on Ubuntu:
 ```
 
 ## Building with the Makefile
+
 Pheniqs does not use automake and so does not have a configure stage. The provided Makefile will build pheniqs against existing dependencies, if they are already present. Simply execute `make && make install`. You can execute `make help` for some general instructions.
+
+### Dependecies on ubuntu
+All Pheniqs build dependencies are available on [Ubuntu 19.04 Disco Dingo](http://releases.ubuntu.com/19.04) and can be installed with:
+
+```
+apt-get install -y \
+build-essential \
+rapidjson-dev \
+libhts-dev \
+liblzma-dev \
+libdeflate-dev \
+libbz2-dev
+```
 
 If you want to build Pheniqs against a specific root you may provide a `PREFIX` parameter, but notice that you need to specify it on each make invocation, for instance `make PREFIX=/usr/local && make install PREFIX=/usr/local`. Pheniqs is regularly tested on several versions of both [Clang](https://clang.llvm.org) and [GCC](https://gcc.gnu.org), you can tell `make` which compiler to use by setting the `CXX` parameter. See [travis](https://travis-ci.org/biosails/pheniqs) for a comprehensive list and test results.
