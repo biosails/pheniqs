@@ -1027,7 +1027,8 @@ void Transcode::cross_validate_io() {
 };
 void Transcode::compile_thread_model() {
     int32_t total_threads(decode_value_by_key< int32_t >("threads", ontology));
-    int32_t decoding_threads(max(1, min(total_threads, max(1, total_threads * (decoded_nucleotide_cardinality / 1000)))));
+    int32_t decoding_threads(int32_t(round(double(total_threads) * (double(decoded_nucleotide_cardinality) / 1000.0))));
+    decoding_threads = max(1, min(total_threads, max(1, decoding_threads)));
     encode_key_value("decoding threads", decoding_threads, ontology, ontology);
 };
 /* validate */
