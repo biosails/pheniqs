@@ -132,8 +132,11 @@ ifeq ($(with-static), 1)
     LIBS = $(STATIC_LIBS)
 endif
 
+
+.PHONY: all
 all: $(PHENIQS_SOURCES) generated $(PHENIQS_EXECUTABLE)
 
+.PHONY: help
 help:
 	@printf '\nBuilding Pheniqs\n\
 	\n\
@@ -172,27 +175,29 @@ help:
 	(libhts.a, libz.a, libbz2.a, liblzma.a and libdeflate.a on MacOS) to be available in LIB_PREFIX.\n\
 	For instance: `make with-static=1`.\n\n'
 
+.PHONY: config
 config:
-	$(if $(PHENIQS_VERSION),             @echo 'PHENIQS_VERSION             :  $(PHENIQS_VERSION)' )
-	$(if $(PLATFORM),                    @echo 'PLATFORM                    :  $(PLATFORM)' )
-	$(if $(PREFIX),                      @echo 'PREFIX                      :  $(PREFIX)' )
-	$(if $(BIN_PREFIX),                  @echo 'BIN_PREFIX                  :  $(BIN_PREFIX)' )
-	$(if $(INCLUDE_PREFIX),              @echo 'INCLUDE_PREFIX              :  $(INCLUDE_PREFIX)' )
-	$(if $(LIB_PREFIX),                  @echo 'LIB_PREFIX                  :  $(LIB_PREFIX)' )
-	$(if $(ZSH_PREFIX),                  @echo 'ZSH_PREFIX                  :  $(ZSH_PREFIX)' )
-	$(if $(CXX),                         @echo 'CXX                         :  $(CXX)' )
-	$(if $(CPPFLAGS),                    @echo 'CPPFLAGS                    :  $(CPPFLAGS)' )
-	$(if $(CXXFLAGS),                    @echo 'CXXFLAGS                    :  $(CXXFLAGS)' )
-	$(if $(LDFLAGS),                     @echo 'LDFLAGS                     :  $(LDFLAGS)' )
-	$(if $(LIBS),                        @echo 'LIBS                        :  $(LIBS)' )
-	$(if $(with-libdeflate),             @echo 'with-libdeflate             :  $(with-libdeflate)' )
-	$(if $(with-static),                 @echo 'with-static                 :  $(with-static)' )
-	$(if $(PHENIQS_ZLIB_VERSION),        @echo 'PHENIQS_ZLIB_VERSION        :  $(PHENIQS_ZLIB_VERSION)' )
-	$(if $(PHENIQS_BZIP2_VERSION),       @echo 'PHENIQS_BZIP2_VERSION       :  $(PHENIQS_BZIP2_VERSION)' )
-	$(if $(PHENIQS_XZ_VERSION),          @echo 'PHENIQS_XZ_VERSION          :  $(PHENIQS_XZ_VERSION)' )
-	$(if $(PHENIQS_LIBDEFLATE_VERSION),  @echo 'PHENIQS_LIBDEFLATE_VERSION  :  $(PHENIQS_LIBDEFLATE_VERSION)' )
-	$(if $(PHENIQS_RAPIDJSON_VERSION),   @echo 'PHENIQS_RAPIDJSON_VERSION   :  $(PHENIQS_RAPIDJSON_VERSION)' )
-	$(if $(PHENIQS_HTSLIB_VERSION),      @echo 'PHENIQS_HTSLIB_VERSION      :  $(PHENIQS_HTSLIB_VERSION)' )
+	$(if $(PHENIQS_VERSION),             $(info PHENIQS_VERSION             :  $(PHENIQS_VERSION)))
+	$(if $(PHENIQS_VERSION),             $(info PHENIQS_VERSION             :  $(PHENIQS_VERSION)))
+	$(if $(PLATFORM),                    $(info PLATFORM                    :  $(PLATFORM)))
+	$(if $(PREFIX),                      $(info PREFIX                      :  $(PREFIX)))
+	$(if $(BIN_PREFIX),                  $(info BIN_PREFIX                  :  $(BIN_PREFIX)))
+	$(if $(INCLUDE_PREFIX),              $(info INCLUDE_PREFIX              :  $(INCLUDE_PREFIX)))
+	$(if $(LIB_PREFIX),                  $(info LIB_PREFIX                  :  $(LIB_PREFIX)))
+	$(if $(ZSH_PREFIX),                  $(info ZSH_PREFIX                  :  $(ZSH_PREFIX)))
+	$(if $(CXX),                         $(info CXX                         :  $(CXX)))
+	$(if $(CPPFLAGS),                    $(info CPPFLAGS                    :  $(CPPFLAGS)))
+	$(if $(CXXFLAGS),                    $(info CXXFLAGS                    :  $(CXXFLAGS)))
+	$(if $(LDFLAGS),                     $(info LDFLAGS                     :  $(LDFLAGS)))
+	$(if $(LIBS),                        $(info LIBS                        :  $(LIBS)))
+	$(if $(with-libdeflate),             $(info with-libdeflate             :  $(with-libdeflate)))
+	$(if $(with-static),                 $(info with-static                 :  $(with-static)))
+	$(if $(PHENIQS_ZLIB_VERSION),        $(info PHENIQS_ZLIB_VERSION        :  $(PHENIQS_ZLIB_VERSION)))
+	$(if $(PHENIQS_BZIP2_VERSION),       $(info PHENIQS_BZIP2_VERSION       :  $(PHENIQS_BZIP2_VERSION)))
+	$(if $(PHENIQS_XZ_VERSION),          $(info PHENIQS_XZ_VERSION          :  $(PHENIQS_XZ_VERSION)))
+	$(if $(PHENIQS_LIBDEFLATE_VERSION),  $(info PHENIQS_LIBDEFLATE_VERSION  :  $(PHENIQS_LIBDEFLATE_VERSION)))
+	$(if $(PHENIQS_RAPIDJSON_VERSION),   $(info PHENIQS_RAPIDJSON_VERSION   :  $(PHENIQS_RAPIDJSON_VERSION)))
+	$(if $(PHENIQS_HTSLIB_VERSION),      $(info PHENIQS_HTSLIB_VERSION      :  $(PHENIQS_HTSLIB_VERSION)))
 
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
@@ -202,7 +207,7 @@ $(PHENIQS_EXECUTABLE): $(PHENIQS_OBJECTS)
 
 # Regenerate version.h when PHENIQS_VERSION changes
 version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(shell cat version.h)),,clean.version))
-	@echo version.h generated with PHENIQS_VERSION $(PHENIQS_VERSION)
+	$(info version.h generated with PHENIQS_VERSION $(PHENIQS_VERSION))
 	$(if $(PHENIQS_VERSION),            @printf '#ifndef PHENIQS_VERSION_H\n'                                           >> $@)
 	$(if $(PHENIQS_VERSION),            @printf '#define PHENIQS_VERSION_H\n\n'                                         >> $@)
 	$(if $(PHENIQS_VERSION),            @printf '#define PHENIQS_VERSION "$(PHENIQS_VERSION)"\n'                        >> $@)
@@ -214,59 +219,59 @@ version.h: $(if $(wildcard version.h),$(if $(findstring "$(PHENIQS_VERSION)",$(s
 	$(if $(PHENIQS_HTSLIB_VERSION),     @printf '#define PHENIQS_HTSLIB_VERSION "$(PHENIQS_HTSLIB_VERSION)"\n'          >> $@)
 	$(if $(PHENIQS_VERSION),            @printf '\n#endif /* PHENIQS_VERSION_H */\n'                                    >> $@)
 
+.PHONY: clean.version
 clean.version:
 	-@rm -f version.h
 
 # Regenerate interface configuration.h from configuration.json
 configuration.h: configuration.json
-	@echo generating configuration.h command line interface configuration.
-	$(shell ./tool/serialize_configuration.py > configuration.h)
+	$(and !$(shell ./tool/serialize_configuration.py > configuration.h), \
+    $(info generating configuration.h) \
+  )
 
 # Regenerate zsh completion from configuration.json
 _pheniqs: configuration.json
-	@echo zsh completion _pheniqs generated.
-	$(shell ./tool/shell.py zsh configuration.json > _pheniqs)
+	$(and !$(shell ./tool/shell.py zsh configuration.json > _pheniqs), \
+    $(info zsh completion _pheniqs generated) \
+  )
 
+.PHONY: generated
 generated: version.h configuration.h _pheniqs
 
+.PHONY: clean.generated
 clean.generated: clean.version
 	-@rm -f configuration.h
 	-@rm -f _pheniqs
 
+.PHONY: clean.bin
 clean.bin:
 	-@rm -rf ./bin
 
+.PHONY: clean.object
 clean.object:
 	-@rm -f $(PHENIQS_OBJECTS)
 
+.PHONY: clean
 clean: clean.generated clean.object clean.bin
 	-@rm -f $(PHENIQS_EXECUTABLE)
 
+.PHONY: install
 install: pheniqs install.zsh_completion
-	$(and $(BIN_PREFIX), \
-      $(or $(wildcard $(BIN_PREFIX)),!$(shell mkdir -p $(BIN_PREFIX))), \
-      $(shell cp -f pheniqs $(BIN_PREFIX)/pheniqs) \
-      $(shell chmod a+x $(BIN_PREFIX)/pheniqs) \
-    )
+	install pheniqs $(BIN_PREFIX)
 
+.PHONY: install.zsh_completion
 install.zsh_completion: _pheniqs
-	$(and $(ZSH_PREFIX), \
-      $(or $(wildcard $(ZSH_PREFIX)/site-functions),!$(shell mkdir -p $(ZSH_PREFIX)/site-functions)), \
-      $(shell cp -f _pheniqs $(ZSH_PREFIX)/site-functions/_pheniqs) \
-    )
+	install _pheniqs $(ZSH_PREFIX)/site-functions
 
+.PHONY: uninstall.zsh_completion
 uninstall.zsh_completion:
-	$(and $(ZSH_PREFIX), \
-      $(wildcard $(ZSH_PREFIX)/site-functions/_pheniqs), \
-      $(shell rm -f _pheniqs $(ZSH_PREFIX)/site-functions/_pheniqs) \
-    )
+	-@rm -f $(ZSH_PREFIX)/site-functions/_pheniqs
 
+.PHONY: uninstall
 uninstall: uninstall.zsh_completion
-	$(and $(BIN_PREFIX), \
-      $(wildcard $(BIN_PREFIX)/pheniqs), \
-      $(shell rm -f $(BIN_PREFIX)/pheniqs) \
-    )
+	-@rm -f $(BIN_PREFIX)/pheniqs
 
+.PHONY: test
 test: all
 	./test/BDGGG/run.sh
 
