@@ -27,18 +27,18 @@
 
 /*
     typedef struct {
-        int32_t     tid;
-        int32_t     pos;
-        uint16_t    bin;
-        uint8_t     qual;
-        uint8_t     l_qname;
-        uint16_t    flag;
+        int32_t     tid;            chromosome ID, defined by bam_hdr_t
+        int32_t     pos;            0-based leftmost coordinate
+        uint16_t    bin;            bin calculated by bam_reg2bin()
+        uint8_t     qual;           mapping quality
+        uint8_t     l_qname;        length of the query name
+        uint16_t    flag;           bitwise flag
         uint8_t     unused1;
-        uint8_t     l_extranul;
-        uint32_t    n_cigar;    *
-        int32_t     l_qseq;
-        int32_t     mtid;
-        int32_t     mpos;
+        uint8_t     l_extranul;     length of extra NULs between qname & cigar (for alignment)
+        uint32_t    n_cigar;        number of CIGAR operations
+        int32_t     l_qseq;         length of the query sequence (read)
+        int32_t     mtid;           chromosome ID of next read in template, defined by bam_hdr_t
+        int32_t     mpos;           0-based leftmost coordinate of next read in template
         int32_t     isize;
     } bam1_core_t;
 
@@ -49,32 +49,23 @@
         uint8_t*    data;
         uint64_t    id;
     } bam1_t;
+
+    typedef struct {
+        int32_t n_targets;          number of reference sequences
+        int32_t ignore_sam_err;
+        uint32_t l_text;            length of the plain text in the header
+        uint32_t *target_len;       lengths of the reference sequences
+        int8_t *cigar_tab;
+        char **target_name;         names of the reference sequences
+        char *text;                 plain text
+        void *sdict;                header dictionary
+        uint32_t ref_count;
+    } bam_hdr_t;
 */
 
 #define bam1_seq_set_i(s, i, c) ((s)[(i)>>0x1] = ((s)[(i)>>0x1]&0xf<<(((i)&0x1)<<0x2))|(c)<<((~(i)&0x1)<<0x2))
 
-/*  HTS header */
-class HtsHeader {
-    friend ostream& operator<<(ostream& o, const HtsHeader& head);
-
-    public:
-        HtsHeader(HtsHeader const &) = delete;
-        void operator=(HtsHeader const &) = delete;
-        bam_hdr_t* hdr;
-        HeadHDAtom hd;
-        vector< HeadCOAtom > comments;
-        map< string, const HeadPGAtom > program_by_id;
-        map< string, const HeadRGAtom > read_group_by_id;
-        HtsHeader();
-        ~HtsHeader();
-        void assemble();
-        void decode(htsFile* hts_file);
-        void encode(htsFile* hts_file) const;
-        void add_read_group(const HeadRGAtom& read_group);
-        void add_program(const HeadPGAtom& program);
-        void add_comment(const HeadCOAtom& co);
-};
-ostream& operator<<(ostream& o, const HtsHeader& header);
+ostream& operator<<(ostream& o, const bam1_t& record);
 
 class HtsFeed : public BufferedFeed< bam1_t > {
     friend class Channel;
@@ -82,46 +73,95 @@ class HtsFeed : public BufferedFeed< bam1_t > {
     public:
         HtsFeed(const FeedProxy& proxy) :
             BufferedFeed< bam1_t >(proxy),
-            hts_file(NULL) {
-
-            header.hd.set_alignment_sort_order(HtsSortOrder::UNKNOWN);
-            header.hd.set_alignment_grouping(HtsGrouping::QUERY);
-            for(const auto& record : proxy.program_by_id) {
-                header.add_program(record.second);
-            }
-            for(const auto& record : proxy.read_group_by_id) {
-                header.add_read_group(record.second);
-            }
+            head(proxy.head),
+            hts_file(NULL),
+            hdr(NULL) {
         };
         void open() override {
             if(!opened()) {
+                /*  from htslib hts.h
+                    mode matching / [rwa][bceguxz0-9]* /
+                    With 'r' opens for reading; any further format mode letters are ignored
+                    as the format is detected by checking the first few bytes or BGZF blocks
+                    of the file.  With 'w' or 'a' opens for writing or appending, with format
+                    specifier letters:
+                        b  binary format (BAM, BCF, etc) rather than text (SAM, VCF, etc)
+                        c  CRAM format
+                        g  gzip compressed
+                        u  uncompressed
+                        z  bgzf compressed
+                        [0-9]  zlib compression level
+
+                    and with non-format option letters (for any of 'r'/'w'/'a'):
+                        e  close the file on exec(2) (opens with O_CLOEXEC, where supported)
+                        x  create the file exclusively (opens with O_EXCL, where supported)
+                    Note that there is a distinction between 'u' and '0': the first yields
+                    plain uncompressed output whereas the latter outputs uncompressed data
+                    wrapped in the zlib format.
+
+                    [rw]b  .. compressed BCF, BAM, FAI
+                    [rw]bu .. uncompressed BCF
+                    [rw]z  .. compressed VCF
+                    [rw]   .. uncompressed VCF
+                */
+                string mode;
                 switch(direction) {
                     case IoDirection::IN: {
-                        hts_file = hts_hopen(hfile, url.hfile_name(), "r");
+                        mode.push_back('r');
+                        hts_file = hts_hopen(hfile, url.hfile_name(), mode.c_str());
                         if(hts_file != NULL) {
                             hts_set_thread_pool(hts_file, thread_pool);
-                            header.decode(hts_file);
-                        } else { throw IOError("failed to open hfile " + string(url) + " for reading"); }
+                            hdr = sam_hdr_read(hts_file);
+                            if(hdr != NULL) {
+                                head.decode(hdr);
+                            } else {
+                                throw IOError("failed to read hts header");
+                            }
+                        } else { throw IOError("failed to open hfile " + string(url.path()) + " for reading"); }
                         break;
                     };
                     case IoDirection::OUT: {
+                        mode.push_back('w');
+                        switch(url.compression()) {
+                            case FormatCompression::GZIP: {
+                                mode.push_back('g');
+                                break;
+                            };
+                            case FormatCompression::BGZF: {
+                                mode.push_back('z');
+                                break;
+                            };
+                            case FormatCompression::NONE: {
+                                mode.push_back('u');
+                                break;
+                            };
+                            default: {
+                                mode.push_back('u');
+                                break;
+                            };
+                        };
+                        if(url.zlib_compression_level() != ZlibCompressionLevel::UNKNOWN) {
+                            mode.append(to_string(url.zlib_compression_level()));
+                        }
                         switch(url.type()) {
                             case FormatType::SAM:
-                                hts_file = hts_hopen(hfile, url.hfile_name(), "w");
+                                hts_file = hts_hopen(hfile, url.hfile_name(), mode.c_str());
                                 if(hts_file != NULL) {
                                     hts_file->format.version.major = 1;
                                     hts_file->format.version.minor = 0;
                                 }
                                 break;
                             case FormatType::BAM:
-                                hts_file = hts_hopen(hfile, url.hfile_name(), "wb");
+                                mode.push_back('b');
+                                hts_file = hts_hopen(hfile, url.hfile_name(), mode.c_str());
                                 if(hts_file != NULL) {
                                     hts_file->format.version.major = 1;
                                     hts_file->format.version.minor = 0;
                                 }
                                 break;
                             case FormatType::CRAM:
-                                hts_file = hts_hopen(hfile, url.hfile_name(), "wc");
+                                mode.push_back('c');
+                                hts_file = hts_hopen(hfile, url.hfile_name(), mode.c_str());
                                 if(hts_file != NULL) {
                                     hts_file->format.version.major = 3;
                                     hts_file->format.version.minor = 0;
@@ -131,11 +171,14 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                                 break;
                         }
                         if(hts_file != NULL) {
+                            hdr = bam_hdr_init();
                             hts_set_thread_pool(hts_file, thread_pool);
-                            header.hd.set_version(&(hts_file->format));
-                            header.assemble();
-                            header.encode(hts_file);
-                        } else { throw IOError("failed to open hfile " + string(url) + " for writing"); }
+                            head.hd.set_version(&(hts_file->format));
+                            head.encode(hdr);
+                            if(sam_hdr_write(hts_file, hdr) < 0) {
+                                throw IOError("failed to write SAM header");
+                            }
+                        } else { throw IOError("failed to open hfile " + string(url.path()) + " for writing"); }
                         break;
                     };
                     default:
@@ -149,18 +192,19 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                 // if(hts_close_error) cerr << hts_close_error << endl;
                 hts_close(hts_file);
                 hts_file = NULL;
+
+                bam_hdr_destroy(hdr);
+                hdr = NULL;
             }
         };
         inline bool opened() override {
             return hts_file != NULL;
         };
-        HtsHeader& get_header() {
-            return header;
-        };
 
     protected:
-        HtsHeader header;
+        HtsHead head;
         htsFile* hts_file;
+        bam_hdr_t* hdr;
         inline void encode(bam1_t* record, const Segment& segment) const override {
             /*
                 The total size of a bam1_t record is an int32_t
@@ -275,7 +319,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
         };
         inline void replenish_buffer() override {
             while(opened() && buffer->is_not_full()) {
-                if(sam_read1(hts_file, header.hdr, buffer->vacant()) < 0) {
+                if(sam_read1(hts_file, hdr, buffer->vacant()) < 0) {
                     close();
                     break;
                 } else {
@@ -285,11 +329,12 @@ class HtsFeed : public BufferedFeed< bam1_t > {
         };
         inline void flush_buffer() override {
             while(buffer->is_not_empty()) {
-                if(sam_write1(hts_file, header.hdr, buffer->next()) < 0) {
-                    throw IOError("error writing to " + string(url));
+                if(sam_write1(hts_file, hdr, buffer->next()) < 0) {
+                    throw IOError("error writing to " + string(url.path()));
                 }
                 buffer->decrement();
             }
         };
 };
+
 #endif /* PHENIQS_HTS_H */

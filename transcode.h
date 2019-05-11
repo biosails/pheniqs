@@ -23,7 +23,7 @@
 #define PHENIQS_TRANSCODE_H
 
 #include "include.h"
-#include "pipeline.h"
+#include "job.h"
 #include "accumulator.h"
 #include "fastq.h"
 #include "hts.h"
@@ -60,11 +60,10 @@ class Transcode : public Job {
         uint64_t count;
         uint64_t pf_count;
         double pf_fraction;
-        const Pointer decoder_repository_query;
         inline bool sense_input_layout() const {
             return decode_value_by_key< bool >("sense input layout", interactive);
         };
-        void apply_interactive() override;
+        void apply_interactive_ontology() override;
         void finalize() override;
         Transcode& operator+=(const TranscodePivot& pivot);
 

@@ -9,9 +9,9 @@
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
-    "configuration url": "test/BDGGG/BDGGG_interleave.json",
+    "configuration url": "test/BDGGG/BDGGG_interleave.json?format=json&compression=none",
     "decoding threads": 1,
-    "default output compression": "none",
+    "default output compression": "unknown",
     "default output format": "sam",
     "feed": {
         "input feed": [
@@ -22,7 +22,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s01.fastq.gz"
+                "url": "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz"
             },
             {
                 "capacity": 2048,
@@ -31,7 +31,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s02.fastq.gz"
+                "url": "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz"
             },
             {
                 "capacity": 2048,
@@ -40,7 +40,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s03.fastq.gz"
+                "url": "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
             }
         ],
         "input feed by segment": [
@@ -51,7 +51,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s01.fastq.gz"
+                "url": "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz"
             },
             {
                 "capacity": 2048,
@@ -60,7 +60,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s02.fastq.gz"
+                "url": "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz"
             },
             {
                 "capacity": 2048,
@@ -69,7 +69,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s03.fastq.gz"
+                "url": "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
             }
         ],
         "output feed": [
@@ -80,10 +80,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 3,
-                "url": {
-                    "path": "/dev/stdout",
-                    "type": "sam"
-                }
+                "url": "/dev/stdout?format=sam&compression=none"
             }
         ]
     },
@@ -92,9 +89,9 @@
     "full command": "./pheniqs mux --config test/BDGGG/BDGGG_interleave.json --precision 15 --compile",
     "htslib threads": 1,
     "input": [
-        "test/BDGGG/BDGGG_s01.fastq.gz",
-        "test/BDGGG/BDGGG_s02.fastq.gz",
-        "test/BDGGG/BDGGG_s03.fastq.gz"
+        "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz",
+        "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz",
+        "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
     ],
     "input phred offset": 33,
     "input segment cardinality": 3,
@@ -138,10 +135,7 @@
                         "phred offset": 33,
                         "platform": "ILLUMINA",
                         "resolution": 3,
-                        "url": {
-                            "path": "/dev/stdout",
-                            "type": "sam"
-                        }
+                        "url": "/dev/stdout?format=sam&compression=none"
                     },
                     {
                         "capacity": 6144,
@@ -150,10 +144,7 @@
                         "phred offset": 33,
                         "platform": "ILLUMINA",
                         "resolution": 3,
-                        "url": {
-                            "path": "/dev/stdout",
-                            "type": "sam"
-                        }
+                        "url": "/dev/stdout?format=sam&compression=none"
                     },
                     {
                         "capacity": 6144,
@@ -162,19 +153,16 @@
                         "phred offset": 33,
                         "platform": "ILLUMINA",
                         "resolution": 3,
-                        "url": {
-                            "path": "/dev/stdout",
-                            "type": "sam"
-                        }
+                        "url": "/dev/stdout?format=sam&compression=none"
                     }
                 ]
             },
             "flowcell id": "BDGGG",
             "index": 0,
             "output": [
-                "/dev/stdout",
-                "/dev/stdout",
-                "/dev/stdout"
+                "/dev/stdout?format=sam&compression=none",
+                "/dev/stdout?format=sam&compression=none",
+                "/dev/stdout?format=sam&compression=none"
             ],
             "segment cardinality": 0
         }

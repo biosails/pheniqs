@@ -43,22 +43,22 @@ void print_json(const Value& node, ostream& o, const int32_t& precision) {
     node.Accept(writer);
     o << buffer.GetString() << endl;
 };
-Document* load_json(const string& path) {
-    Document* document(NULL);
-    if(access(path.c_str(), R_OK) != -1) {
-        document = new Document();
-        ifstream file(path);
-        const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
-        file.close();
-        if(document->Parse(content.c_str()).HasParseError()) {
-            string message(GetParseError_En(document->GetParseError()));
-            message += " at position ";
-            message += to_string(document->GetErrorOffset());
-            throw ConfigurationError(message);
-        }
-    }
-    return document;
-};
+// Document* load_json(const string& path) {
+//     Document* document(NULL);
+//     if(access(path.c_str(), R_OK) != -1) {
+//         document = new Document();
+//         ifstream file(path);
+//         const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
+//         file.close();
+//         if(document->Parse(content.c_str()).HasParseError()) {
+//             string message(GetParseError_En(document->GetParseError()));
+//             message += " at position ";
+//             message += to_string(document->GetErrorOffset());
+//             throw ConfigurationError(message);
+//         }
+//     }
+//     return document;
+// };
 
 Document encode_validation_error(const SchemaValidator& validator, const Value& schema, const Value& container) {
     Document error(kObjectType);
@@ -889,6 +889,24 @@ void sort_json_value(Value& ontology, Document& document) {
         for(auto& element : ontology.GetArray()) {
             sort_json_value(element, document);
         }
+    }
+};
+void clean_json_object(Value& ontology, Document& document) {
+    clean_json_value(ontology, document);
+    if(ontology.IsNull()) {
+        ontology.SetObject();
+    }
+};
+void overlay_json_object(Document& ontology, const Value& overlay) {
+    if(!overlay.IsNull()) {
+        if(overlay.IsObject()) {
+            if(!overlay.ObjectEmpty()) {
+                Document overlaid;
+                overlaid.CopyFrom(overlay, overlaid.GetAllocator());
+                merge_json_value(ontology, overlaid, overlaid);
+                ontology.Swap(overlaid);
+            }
+        } else { throw ConfigurationError("Overlay ontology root must be a dictionary"); }
     }
 };
 bool remove_disabled_from_json_value(Value& ontology, Document& document) {

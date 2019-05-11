@@ -54,6 +54,7 @@ class Feed {
             _capacity(proxy.capacity),
             _resolution(proxy.resolution),
             exhausted(false),
+            initiated(false),
             hfile(proxy.hfile),
             thread_pool(NULL) {
         };
@@ -75,6 +76,12 @@ class Feed {
         virtual bool peek(Segment& segment, const int& position) = 0;
         virtual inline bool flush() = 0;
         virtual inline bool replenish() = 0;
+        void initiate() {
+            if(!initiated) {
+                initiated = true;
+                open();
+            }
+        };
         virtual inline bool is_dev_null() {
             return url.is_dev_null();
         };
@@ -90,6 +97,7 @@ class Feed {
         int _capacity;
         int _resolution;
         bool exhausted;
+        bool initiated;
         hFILE* hfile;
         htsThreadPool* thread_pool;
 };

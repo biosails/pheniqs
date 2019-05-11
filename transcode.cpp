@@ -51,7 +51,6 @@ Transcode::Transcode(Document& operation) try :
     count(0),
     pf_count(0),
     pf_fraction(0),
-    decoder_repository_query("/decoder"),
     end_of_input(false),
     decoded_nucleotide_cardinality(0),
     thread_pool({NULL, 0}) {
@@ -146,13 +145,21 @@ Transcode& Transcode::operator+=(const TranscodePivot& pivot) {
 void Transcode::assemble() {
     Job::assemble();
     apply_inheritance();
-    clean();
+    clean_json_object(instruction, instruction);
 };
 void Transcode::apply_inheritance() {
-    apply_repository_inheritence("decoder", ontology, ontology);
+    /* apply inheritence between decoders defined in the repository */
+    apply_repository_inheritence("decoder", instruction, instruction);
+
+    /* Apply inheritence in the indivitual classification categories */
     apply_topic_inheritance("multiplex");
     apply_topic_inheritance("molecular");
     apply_topic_inheritance("cellular");
+
+    /* Remove the decoder repository, it is no longer needed in the compiled instruction */
+    instruction.RemoveMember("decoder");
+
+    sort_json_value(instruction, instruction);
 };
 void Transcode::apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document) {
     if(container.IsObject()) {
@@ -201,9 +208,9 @@ void Transcode::apply_repository_inheritence(const Value::Ch* key, Value& contai
     }
 };
 void Transcode::apply_topic_inheritance(const Value::Ch* key) {
-    if(ontology.IsObject()) {
-        Value::MemberIterator reference = ontology.FindMember(key);
-        if(reference != ontology.MemberEnd()) {
+    if(instruction.IsObject()) {
+        Value::MemberIterator reference = instruction.FindMember(key);
+        if(reference != instruction.MemberEnd()) {
             if(!reference->value.IsNull()) {
                 if(reference->value.IsObject()) {
                     try {
@@ -232,32 +239,37 @@ void Transcode::apply_decoder_inheritance(Value& value) {
     if(value.IsObject()) {
         string base;
         Value::ConstMemberIterator reference;
+        const Pointer decoder_repository_query("/decoder");
         if(decode_value_by_key< string >("base", base, value)) {
-            const Value* decoder_repository(decoder_repository_query.Get(ontology));
+            const Value* decoder_repository(decoder_repository_query.Get(instruction));
             if(decoder_repository != NULL) {
                 reference = decoder_repository->FindMember(base.c_str());
                 if(reference != decoder_repository->MemberEnd()) {
-                    merge_json_value(reference->value, value, ontology);
+                    merge_json_value(reference->value, value, instruction);
                 } else { throw ConfigurationError("reference to an unknown base " + base); }
             }
         }
         value.RemoveMember("base");
-        clean_json_value(value, ontology);
+        clean_json_value(value, instruction);
     }
 };
 
 /* compile */
 void Transcode::compile() {
+    ontology.CopyFrom(instruction, ontology.GetAllocator());
+    remove_disabled_from_json_value(ontology, ontology);
+    clean_json_object(ontology, ontology);
+
     ontology.RemoveMember("feed");
     ontology.RemoveMember("input segment cardinality");
     ontology.RemoveMember("output segment cardinality");
     ontology.RemoveMember("program");
 
     /* overlay on top of the default configuration */
-    apply_default();
+    apply_default_ontology();
 
     /* overlay interactive parameters on top of the configuration */
-    apply_interactive();
+    apply_interactive_ontology();
 
     /* compile a PG SAM header ontology with details about pheniqs */
     compile_PG();
@@ -267,22 +279,20 @@ void Transcode::compile() {
     compile_barcode_decoding();
     compile_output();
 
-    /* Remove the decoder repository, it is no longer needed in the compiled instruction */
-    ontology.RemoveMember("decoder");
     compile_thread_model();
-    Job::compile();
+    clean_json_object(ontology, ontology);
+    validate();
 };
-void Transcode::apply_interactive() {
+void Transcode::apply_interactive_ontology() {
     Document adjusted;
     adjusted.CopyFrom(interactive, adjusted.GetAllocator());
 
-    /* remove flags */
+    /* Remove flags */
     adjusted.RemoveMember("static only");
-    adjusted.RemoveMember("lint only");
     adjusted.RemoveMember("validate only");
     adjusted.RemoveMember("compile only");
 
-    /* format template token array into an output transform */
+    /* Format template token array into an output transform */
     Value::MemberIterator reference = adjusted.FindMember("template token");
     if(reference != adjusted.MemberEnd()) {
         Value transform(kObjectType);
@@ -291,7 +301,7 @@ void Transcode::apply_interactive() {
     }
     adjusted.RemoveMember("template token");
 
-    overlay(adjusted);
+    overlay_json_object(ontology, adjusted);
 };
 void Transcode::compile_PG() {
     Value PG(kObjectType);
@@ -323,11 +333,27 @@ void Transcode::compile_input() {
     encode_key_value("htslib threads", htslib_threads, ontology, ontology);
 
     /* Populate the input_feed_by_index and input_feed_by_segment arrays */
-    expand_url_value_by_key("base input url", ontology, ontology);
+    standardize_url_value_by_key("base input url", ontology, ontology, IoDirection::IN);
     URL base(decode_value_by_key< URL >("base input url", ontology));
 
-    expand_url_array_by_key("input", ontology, ontology, IoDirection::IN);
+    standardize_url_array_by_key("input", ontology, ontology, IoDirection::IN);
     relocate_url_array_by_key("input", ontology, ontology, base);
+
+    /* Collect query parameters from all reoccurring references to the same path */
+    unordered_map< string, URL > url_by_path;
+    list< URL > feed_url_by_index(decode_value_by_key< list< URL > >("input", ontology));
+    for(auto& url : feed_url_by_index) {
+        auto record = url_by_path.find(url.path());
+        if(record == url_by_path.end()) {
+            url_by_path[url.path()] = url;
+        } else {
+            record->second.override_query(url);
+        }
+    }
+    for(auto& url : feed_url_by_index) {
+        url = url_by_path[url.path()];
+    }
+    encode_key_value("input", feed_url_by_index, ontology, ontology);
 
     if(sense_input_layout()) {
         compile_sensed_input();
@@ -388,7 +414,7 @@ void Transcode::compile_sensed_input() {
             case FormatKind::FASTQ: {
                 FastqFeed* fastq_feed = new FastqFeed(proxy);
                 fastq_feed->set_thread_pool(&thread_pool);
-                fastq_feed->open();
+                fastq_feed->initiate();
                 fastq_feed->replenish();
                 if(fastq_feed->peek(segment, resolution)) {
                     ++resolution;
@@ -406,7 +432,7 @@ void Transcode::compile_sensed_input() {
             case FormatKind::HTS: {
                 HtsFeed* hts_feed = new HtsFeed(proxy);
                 hts_feed->set_thread_pool(&thread_pool);
-                hts_feed->open();
+                hts_feed->initiate();
                 hts_feed->replenish();
                 if(hts_feed->peek(segment, resolution)) {
                     feed_read_id.assign(segment.name.s, segment.name.l);
@@ -414,8 +440,8 @@ void Transcode::compile_sensed_input() {
                 }
                 hts_feed->calibrate_resolution(resolution);
                 /*
-                    const HtsHeader& header = ((HtsFeed*)feed)->get_header();
-                    for(const auto& record : header.read_group_by_id) {}
+                    const HtsHead& head = ((HtsFeed*)feed)->get_header();
+                    for(const auto& record : head.read_group_by_id) {}
                 */
                 feed = hts_feed;
                 break;
@@ -828,7 +854,7 @@ void Transcode::compile_decoder_transformation(Value& value) {
 };
 void Transcode::compile_output() {
     /* expand the report URL */
-    expand_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
+    standardize_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
 
     /* load output transform */
     compile_output_transformation();
@@ -857,11 +883,9 @@ void Transcode::compile_output() {
         if(reference->value.IsObject()) {
             Value& decoder_element(reference->value);
 
-            /* expand base output url path */
-            expand_url_value_by_key("base output url", decoder_element, ontology);
-            URL base(decode_value_by_key< URL >("base output url", decoder_element));
-
-            /* collect channel references in a channel_reference_list */
+            /*  Collect channel references in a channel_reference_list
+                This is a convience for iterating over channels in the
+                codec element and the undetermined in once go */
             list< Value* > channel_reference_list;
             reference = decoder_element.FindMember("undetermined");
             if(reference != decoder_element.MemberEnd()) {
@@ -874,37 +898,69 @@ void Transcode::compile_output() {
                 }
             }
 
-            /* assemble a table with the resolution of each feed in each channel */
+            /* expand base output url path */
+            standardize_url_value_by_key("base output url", decoder_element, ontology, IoDirection::OUT);
+            URL base(decode_value_by_key< URL >("base output url", decoder_element));
+
+            /* Collect query parameters from all reoccurring references of the same path */
+            unordered_map< string, URL > canonical_url_by_path;
+            for(auto& element : channel_reference_list) {
+                standardize_url_array_by_key("output", *element, ontology, IoDirection::OUT);
+                relocate_url_array_by_key("output", *element, ontology, base);
+                list< URL > feed_url_array;
+                if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+                    for(auto& url : feed_url_array) {
+                        auto record = canonical_url_by_path.find(url.path());
+                        if(record == canonical_url_by_path.end()) {
+                            canonical_url_by_path[url.path()] = url;
+                        } else {
+                            record->second.override_query(url);
+                        }
+                    }
+                }
+            }
+
+            /* Check for some obvious contradictions and set default type and compression */
+            for(auto& url_record : canonical_url_by_path) {
+                URL& url = url_record.second;
+                if(url.is_stdin()) {
+                    throw ConfigurationError("output stream can not be set to standard input");
+                }
+                if(url.is_stderr()) {
+                    throw ConfigurationError("output stream can not be set to standard error");
+                }
+                if(url.type() == FormatType::UNKNOWN) {
+                    url.set_type(default_output_format);
+                }
+                if(url.compression() == FormatCompression::UNKNOWN) {
+                    url.set_compression(default_output_compression);
+                }
+            }
+
+            /* Apply the consensus query to all reoccurring references of the same path */
+            for(auto& element : channel_reference_list) {
+                list< URL > feed_url_array;
+                if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+                    for(auto& url : feed_url_array) {
+                        url = canonical_url_by_path[url.path()];
+                    }
+                }
+                encode_key_value("output", feed_url_array, *element, ontology);
+            }
+
+            /* Assemble a map with the resolution of each feed in each channel */
             unordered_map< URL, unordered_map< int32_t, int > > feed_resolution;
             for(auto& element : channel_reference_list) {
                 int32_t index(decode_value_by_key< int32_t >("index", *element));
                 encode_key_value("TC", output_segment_cardinality, *element, ontology);
                 pad_url_array_by_key("output", *element, output_segment_cardinality);
-                expand_url_array_by_key("output", *element, ontology, IoDirection::OUT);
-                relocate_url_array_by_key("output", *element, ontology, base);
-
                 list< URL > feed_url_array;
                 if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
                     for(auto& url : feed_url_array) {
-                        if(url.type() == FormatType::UNKNOWN) {
-                            if(url.is_standard_stream()) {
-                                if(url.is_stdout()) {
-                                    url.set_type(default_output_format);
-                                    if(url.type() == FormatType::FASTQ) {
-                                        url.set_compression(default_output_compression);
-                                    }
-                                } else if(url.is_stdin()) {
-                                    throw ConfigurationError("output stream can not be set to standard input");
-                                } else if(url.is_stderr()) {
-                                    throw ConfigurationError("output stream can not be set to standard error");
-                                }
-                            } else { throw ConfigurationError("output stream " + string(url) + "is missing a format extension"); }
-                        }
                         ++(feed_resolution[url][index]);
                     }
                 }
             }
-
             if(feed_resolution.size() > 0) {
                 int32_t index(0);
                 unordered_map< URL, Value > feed_ontology_by_url;
@@ -918,7 +974,7 @@ void Transcode::compile_output() {
                         if(resolution == 0) {
                             resolution = record.second;
                         } else if(resolution != record.second) {
-                            throw ConfigurationError("inconsistent resolution for " + string(url));
+                            throw ConfigurationError("inconsistent resolution for " + string(url.path()));
                         }
                     }
 
@@ -1021,7 +1077,7 @@ void Transcode::cross_validate_io() {
     }
     for(auto& url : output_url_set) {
         if(input_url_set.count(url) > 0) {
-            throw ConfigurationError("URL " + string(url) + " is used for both input and output");
+            throw ConfigurationError("URL " + string(url.path()) + " is used for both input and output");
         }
     }
 };
@@ -1111,7 +1167,7 @@ void Transcode::validate_url_accessibility() {
         for(auto& element : reference->value.GetArray()) {
             if(decode_value_by_key< URL >("url", url, element)) {
                 if(!url.is_readable()) {
-                    throw IOError("could not open " + string(url) + " for reading");
+                    throw IOError("can not open " + string(url.path()) + " for reading");
                 }
             }
         }
@@ -1122,7 +1178,7 @@ void Transcode::validate_url_accessibility() {
         for(auto& element : reference->value.GetArray()) {
             if(decode_value_by_key< URL >("url", url, element)) {
                 if(!url.is_writable()) {
-                    throw IOError("could not open " + string(url) + " for writing");
+                    throw IOError("can not open " + string(url.path()) + " for writing");
                 }
             }
         }
@@ -1185,14 +1241,14 @@ void Transcode::load_input() {
             if(record != feed_by_url.end()) {
                 input_feed_by_segment.push_back(record->second);
             } else {
-                throw InternalError("missing feed for URL " + string(url) + " referenced in input proxy segment array");
+                throw InternalError("missing feed for URL " + string(url.path()) + " referenced in input proxy segment array");
             }
         }
     }
 };
 void Transcode::load_output() {
     /*  Decode feed_proxy_array, a local list of output feed proxy.
-        The list has already been enumerated by the environment
+        The list has already been enumerated by the Pipeline
         and contains only unique url references
     */
     list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("output feed", ontology["feed"]));
@@ -1204,7 +1260,7 @@ void Transcode::load_output() {
     */
     map< URL, FeedProxy* > feed_proxy_by_url;
     for(auto& proxy : feed_proxy_array) {
-        proxy.register_pg(program);
+        proxy.head.add_program(program);
         feed_proxy_by_url.emplace(make_pair(proxy.url, &proxy));
     };
 
@@ -1219,7 +1275,7 @@ void Transcode::load_output() {
                     HeadRGAtom rg(reference->value);
                     list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
                     for(auto& url : output) {
-                        feed_proxy_by_url[url]->register_rg(rg);
+                        feed_proxy_by_url[url]->head.add_read_group(rg);
                     }
                 }
                 reference = classifier.FindMember("codec");
@@ -1228,7 +1284,7 @@ void Transcode::load_output() {
                         HeadRGAtom rg(record.value);
                         list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
                         for(auto& url : output) {
-                            feed_proxy_by_url[url]->register_rg(rg);
+                            feed_proxy_by_url[url]->head.add_read_group(rg);
                         }
                     }
                 }
@@ -1365,10 +1421,10 @@ void Transcode::load_pivot() {
 };
 void Transcode::start() {
     for(auto feed : input_feed_by_index) {
-        feed->open();
+        feed->initiate();
     }
     for(auto feed : output_feed_by_index) {
-        feed->open();
+        feed->initiate();
     }
     for(auto feed : input_feed_by_index) {
         feed->start();

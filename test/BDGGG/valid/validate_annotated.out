@@ -10,7 +10,7 @@ Environment
     Output Phred offset                         33
     Leading segment index                       0
     Default output format                       sam
-    Default output compression                  none
+    Default output compression                  
     Feed buffer capacity                        2048
     Threads                                     1
 
@@ -18,9 +18,9 @@ Input
 
     Input segment cardinality                   3
 
-    Input segment No.0 : test/BDGGG/BDGGG_s01.fastq.gz
-    Input segment No.1 : test/BDGGG/BDGGG_s02.fastq.gz
-    Input segment No.2 : test/BDGGG/BDGGG_s03.fastq.gz
+    Input segment No.0 : test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz
+    Input segment No.1 : test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz
+    Input segment No.2 : test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz
 
     Input feed No.0
         Type : fastq
@@ -28,7 +28,7 @@ Input
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s01.fastq.gz
+        URL : test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz
 
     Input feed No.1
         Type : fastq
@@ -36,7 +36,7 @@ Input
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s02.fastq.gz
+        URL : test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz
 
     Input feed No.2
         Type : fastq
@@ -44,7 +44,7 @@ Input
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s03.fastq.gz
+        URL : test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz
 
 Output transform
 
@@ -102,8 +102,8 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Segment No.0  : /dev/stdout
-        Segment No.1  : /dev/stdout
+        Segment No.0  : /dev/stdout?format=sam&compression=none
+        Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @AGGCAGAA
         ID : BDGGG:AGGCAGAA
@@ -117,8 +117,8 @@ Mutliplex decoding
         PI : 300
         Concentration : 0.183498128559805
         Barcode       : AGGCAGAA
-        Segment No.0  : /dev/stdout
-        Segment No.1  : /dev/stdout
+        Segment No.0  : /dev/stdout?format=sam&compression=none
+        Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @CGTACTAG
         ID : BDGGG:CGTACTAG
@@ -132,8 +132,8 @@ Mutliplex decoding
         PI : 300
         Concentration : 0.199524165988608
         Barcode       : CGTACTAG
-        Segment No.0  : /dev/stdout
-        Segment No.1  : /dev/stdout
+        Segment No.0  : /dev/stdout?format=sam&compression=none
+        Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @GGACTCCT
         ID : BDGGG:GGACTCCT
@@ -147,8 +147,8 @@ Mutliplex decoding
         PI : 300
         Concentration : 0.211944344995932
         Barcode       : GGACTCCT
-        Segment No.0  : /dev/stdout
-        Segment No.1  : /dev/stdout
+        Segment No.0  : /dev/stdout?format=sam&compression=none
+        Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @TAAGGCGA
         ID : BDGGG:TAAGGCGA
@@ -162,8 +162,8 @@ Mutliplex decoding
         PI : 300
         Concentration : 0.222761920260375
         Barcode       : TAAGGCGA
-        Segment No.0  : /dev/stdout
-        Segment No.1  : /dev/stdout
+        Segment No.0  : /dev/stdout?format=sam&compression=none
+        Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @TCCTGAGC
         ID : BDGGG:TCCTGAGC
@@ -177,8 +177,8 @@ Mutliplex decoding
         PI : 300
         Concentration : 0.167071440195281
         Barcode       : TCCTGAGC
-        Segment No.0  : /dev/stdout
-        Segment No.1  : /dev/stdout
+        Segment No.0  : /dev/stdout?format=sam&compression=none
+        Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Output feed No.0
         Type : sam
@@ -186,7 +186,7 @@ Mutliplex decoding
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 4096
-        URL : /dev/stdout
+        URL : /dev/stdout?format=sam&compression=none
 
 Molecular decoding
 

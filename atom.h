@@ -47,7 +47,7 @@ enum class HtsTagCode : uint16_t;
             reference   grouped by RNAME/POS
 */
 class HeadHDAtom {
-    friend class HtsHeader;
+    friend class HtsHead;
     friend ostream& operator<<(ostream& o, const HeadHDAtom& hd);
 
     public:
@@ -70,7 +70,8 @@ class HeadHDAtom {
 };
 ostream& operator<<(ostream& o, const HeadHDAtom& hd);
 
-/*  @SQ Sequence
+/*  @SQ Reference Sequence
+    index corresponds to tid in bam1_core_t
 
     SN  Reference sequence identifier.
         The value of this field is used in the alignment records in RNAME and RNEXT fields.
@@ -87,17 +88,20 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd);
         If it does not start with one of these protocols, it is assumed to be a file-system path.
 */
 class HeadSQAtom {
-    friend class HtsHeader;
+    friend class HtsHead;
     friend ostream& operator<<(ostream& o, const HeadSQAtom& program);
 
     public:
+        int32_t index;
         kstring_t SN;
         int32_t LN;
         kstring_t AH;
         kstring_t AN;
         kstring_t AS;
+        kstring_t DS;
         kstring_t M5;
         kstring_t SP;
+        kstring_t TP;
         kstring_t UR;
 
         HeadSQAtom();
@@ -110,6 +114,7 @@ class HeadSQAtom {
     private:
         void encode(kstring_t& buffer) const;
         char* decode(char* position, const char* end);
+        void update(const HeadSQAtom& other);
 };
 ostream& operator<<(ostream& o, const HeadSQAtom& sq);
 
@@ -165,7 +170,7 @@ ostream& operator<<(ostream& o, const HeadSQAtom& sq);
     also informative: http://gatkforums.broadinstitute.org/gatk/discussion/6472/read-groups
 */
 class HeadRGAtom {
-    friend class HtsHeader;
+    friend class HtsHead;
     friend ostream& operator<<(ostream& o, const HeadRGAtom& read_group);
 
     public:
@@ -217,7 +222,7 @@ bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value&
     VN  Program version
 */
 class HeadPGAtom {
-    friend class HtsHeader;
+    friend class HtsHead;
     friend ostream& operator<<(ostream& o, const HeadPGAtom& program);
 
     public:
@@ -244,7 +249,7 @@ template<> HeadPGAtom decode_value_by_key< HeadPGAtom >(const Value::Ch* key, co
 
 /*  @CO free text comment */
 class HeadCOAtom {
-    friend class HtsHeader;
+    friend class HtsHead;
     friend ostream& operator<<(ostream& o, const HeadCOAtom& co);
 
     public:
@@ -463,6 +468,29 @@ enum class HtsTagCode : uint16_t {
     XR = 0x5852,
     XZ = 0x585a,
     YD = 0x5944,
+    TP = 0x5450,
 };
+
+/*  HTS header */
+class HtsHead {
+    friend ostream& operator<<(ostream& o, const HtsHead& head);
+
+    public:
+        void operator=(HtsHead const &) = delete;
+        HeadHDAtom hd;
+        unordered_map< string, const HeadSQAtom > reference_by_id;
+        unordered_map< string, const HeadRGAtom > read_group_by_id;
+        unordered_map< string, const HeadPGAtom > program_by_id;
+        vector< HeadCOAtom > comments;
+        HtsHead();
+        ~HtsHead();
+        void decode(const bam_hdr_t* hdr);
+        void encode(bam_hdr_t* hdr) const;
+        void add_reference(const HeadSQAtom& sq);
+        void add_read_group(const HeadRGAtom& rg);
+        void add_program(const HeadPGAtom& pg);
+        void add_comment(const HeadCOAtom& co);
+};
+ostream& operator<<(ostream& o, const HtsHead& head);
 
 #endif /* PHENIQS_ATOM_H */

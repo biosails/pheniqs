@@ -62,14 +62,14 @@ PHENIQS_SOURCES = \
 	classifier.cpp \
 	mdd.cpp \
 	pamld.cpp \
-	environment.cpp \
+	pipeline.cpp \
 	fastq.cpp \
 	feed.cpp \
 	hts.cpp \
 	interface.cpp \
 	json.cpp \
 	pheniqs.cpp \
-	pipeline.cpp \
+	job.cpp \
 	transcode.cpp \
 	phred.cpp \
 	proxy.cpp \
@@ -88,14 +88,14 @@ PHENIQS_OBJECTS = \
 	classifier.o \
 	mdd.o \
 	pamld.o \
-	environment.o \
+	pipeline.o \
 	fastq.o \
 	feed.o \
 	hts.o \
 	interface.o \
 	json.o \
 	pheniqs.o \
-	pipeline.o \
+	job.o \
 	transcode.o \
 	phred.o \
 	proxy.o \
@@ -370,10 +370,10 @@ pamld.o: \
 	decoder.o \
 	pamld.h
 
-pipeline.o: \
+job.o: \
 	json.o \
 	url.o \
-	pipeline.h
+	job.h
 
 transcode.o: \
 	accumulator.o \
@@ -383,13 +383,13 @@ transcode.o: \
 	mdd.o \
 	pamld.o \
 	metric.h \
-	pipeline.h \
+	job.h \
 	transcode.h
 
-environment.o: \
+pipeline.o: \
 	interface.o \
 	transcode.o \
-	environment.h
+	pipeline.h
 
 pheniqs.o: \
-	environment.o
+	pipeline.o

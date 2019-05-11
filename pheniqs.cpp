@@ -19,13 +19,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "environment.h"
+#include "pipeline.h"
+
+#include<sys/stat.h>
 
 int main(int argc, char** argv) {
     int return_code(static_cast< int >(ErrorCode::OK));
     try {
-        Environment environment(argc, (const char**)argv);
-        environment.execute();
+
+        Pipeline Pipeline(argc, (const char**)argv);
+        Pipeline.execute();
 
     } catch(Error& error) {
         error.describe(cerr);

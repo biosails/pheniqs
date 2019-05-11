@@ -1,5 +1,4 @@
-/*
-    Pheniqs : PHilology ENcoder wIth Quality Statistics
+/* Pheniqs : PHilology ENcoder wIth Quality Statistics
     Copyright (C) 2018  Lior Galanti
     NYU Center for Genetics and System Biology
 
@@ -19,63 +18,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PHENIQS_PIPELINE_H
-#define PHENIQS_PIPELINE_H
+#ifndef PHENIQS_ENVIRONMENT_H
+#define PHENIQS_ENVIRONMENT_H
 
 #include "include.h"
-#include "json.h"
-#include "url.h"
+#include "interface.h"
+#include "transcode.h"
 
-class Job {
+class Pipeline {
     public:
-        const Document operation;
-        Document ontology;
-        Document report;
-        Job(Document& operation);
-        virtual ~Job() {};
-        inline bool is_static_only() const {
-            return decode_value_by_key< bool >("static only", interactive);
+        Pipeline(const int argc, const char** argv);
+        ~Pipeline();
+        inline const bool is_help_only() const {
+            return _help_only;
         };
-        inline bool is_lint_only() const {
-            return decode_value_by_key< bool >("lint only", interactive);
+        inline const bool is_version_only() const {
+            return _version_only;
         };
-        inline bool is_validate_only() const {
-            return decode_value_by_key< bool >("validate only", interactive);
-        };
-        inline bool is_compile_only() const {
-            return decode_value_by_key< bool >("compile only", interactive);
-        };
-        inline int32_t float_precision() const {
-            return decode_value_by_key< int32_t >("float precision", ontology);
-        };
-        virtual void assemble();
-        virtual void compile();
-        virtual void validate() {};
-        virtual void load() {};
-        virtual void execute() {};
-        virtual void finalize();
-        virtual void clean();
-        virtual void print_ontology(ostream& o);
-        virtual void print_compiled(ostream& o) const;
-        virtual void print_report() const;
-        virtual void describe(ostream& o) const;
-
-    protected:
-        const Value& interactive;
-        const Value& schema_repository;
-        const Value& projection_repository;
-        void apply_default();
-        virtual void apply_interactive();
-        void overlay(const Value& instruction);
-        const Value* find_projection(const string& key) const;
-        const Value* find_schema(const string& key) const;
-        const SchemaDocument* get_schema_document(const string& key);
-        Document read_instruction_document(const URL& url);
+        void execute();
+        void print_help(ostream& o) const;
+        void print_version(ostream& o) const;
+        void push_to_queue(Document& operation);
+        Job* pop_from_queue();
 
     private:
-        unordered_map< string, const SchemaDocument > schema_document_by_name;
-        void remove_disabled();
-        Document load_document_with_import(const URL& url, set< URL >& visited);
+        const Interface interface;
+        list< Job* > job_queue;
+        const bool _help_only;
+        const bool _version_only;
+        void execute_job(Job* job);
 };
 
-#endif /* PHENIQS_PIPELINE_H */
+#endif /* PHENIQS_ENVIRONMENT_H */

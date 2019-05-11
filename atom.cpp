@@ -374,6 +374,8 @@ HeadHDAtom::HeadHDAtom() :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
     GO({ 0, 0, NULL }) {
+    to_kstring(HtsSortOrder::UNKNOWN, SO);
+    to_kstring(HtsGrouping::QUERY, GO);
 };
 HeadHDAtom::HeadHDAtom(const Value& ontology) try :
     VN({ 0, 0, NULL }),
@@ -388,7 +390,6 @@ HeadHDAtom::HeadHDAtom(const Value& ontology) try :
         error.push("HeadHDAtom");
         throw;
 };
-
 HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
@@ -471,6 +472,7 @@ void HeadHDAtom::set_version(const htsFormat* format) {
     }
 };
 ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
+    o << "@HD SAM head atom" << endl;
     if(ks_not_empty(hd.VN)) o << "VN : " << hd.VN.s << endl;
     if(ks_not_empty(hd.SO)) o << "SO : " << hd.SO.s << endl;
     if(ks_not_empty(hd.GO)) o << "GO : " << hd.GO.s << endl;
@@ -479,33 +481,42 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
 
 /* @SQ reference sequence dictionary */
 HeadSQAtom::HeadSQAtom() :
+    index(-1),
     SN({ 0, 0, NULL }),
     LN(0),
     AH({ 0, 0, NULL }),
     AN({ 0, 0, NULL }),
     AS({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
+    TP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
     ks_terminate(SN);
 };
 HeadSQAtom::HeadSQAtom(const Value& ontology) try :
+    index(-1),
     SN({ 0, 0, NULL }),
     LN(0),
     AH({ 0, 0, NULL }),
     AN({ 0, 0, NULL }),
     AS({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
+    TP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
 
+    decode_value_by_key< int32_t >("index", index, ontology);
     decode_value_by_key< kstring_t >("SN", SN, ontology);
     decode_value_by_key< int32_t >("LN", LN, ontology);
     decode_value_by_key< kstring_t >("AH", AH, ontology);
     decode_value_by_key< kstring_t >("AN", AN, ontology);
     decode_value_by_key< kstring_t >("AS", AS, ontology);
+    decode_value_by_key< kstring_t >("DS", DS, ontology);
     decode_value_by_key< kstring_t >("M5", M5, ontology);
     decode_value_by_key< kstring_t >("SP", SP, ontology);
+    decode_value_by_key< kstring_t >("TP", TP, ontology);
     decode_value_by_key< kstring_t >("UR", UR, ontology);
 
     } catch(Error& error) {
@@ -513,22 +524,28 @@ HeadSQAtom::HeadSQAtom(const Value& ontology) try :
         throw;
 };
 HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
+    index(-1),
     SN({ 0, 0, NULL }),
     LN(0),
     AH({ 0, 0, NULL }),
     AN({ 0, 0, NULL }),
     AS({ 0, 0, NULL }),
+    DS({ 0, 0, NULL }),
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
+    TP({ 0, 0, NULL }),
     UR({ 0, 0, NULL }){
     ks_terminate(SN);
+    if(other.index >= 0)       index = other.index;
     if(ks_not_empty(other.SN)) ks_put_string(other.SN, SN);
-    if(other.LN > 0)   LN = other.LN;
+    if(other.LN > 0)           LN = other.LN;
     if(ks_not_empty(other.AH)) ks_put_string(other.AH, AH);
     if(ks_not_empty(other.AN)) ks_put_string(other.AN, AN);
     if(ks_not_empty(other.AS)) ks_put_string(other.AS, AS);
+    if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
     if(ks_not_empty(other.M5)) ks_put_string(other.M5, M5);
     if(ks_not_empty(other.SP)) ks_put_string(other.SP, SP);
+    if(ks_not_empty(other.TP)) ks_put_string(other.TP, TP);
     if(ks_not_empty(other.UR)) ks_put_string(other.UR, UR);
 };
 HeadSQAtom::~HeadSQAtom() {
@@ -536,29 +553,37 @@ HeadSQAtom::~HeadSQAtom() {
     ks_free(AH);
     ks_free(AN);
     ks_free(AS);
+    ks_free(DS);
     ks_free(M5);
     ks_free(SP);
+    ks_free(TP);
     ks_free(UR);
 };
 HeadSQAtom& HeadSQAtom::operator=(const HeadSQAtom& other) {
     if(&other == this) {
         return *this;
     } else {
+        index = -1;
         ks_clear(SN);
         LN = 0;
         ks_clear(AH);
         ks_clear(AN);
         ks_clear(AS);
+        ks_clear(DS);
         ks_clear(M5);
         ks_clear(SP);
+        ks_clear(TP);
         ks_clear(UR);
+        if(other.index >= 0)       index = other.index;
         if(ks_not_empty(other.SN)) ks_put_string(other.SN, SN);
-        if(other.LN > 0)   LN = other.LN;
+        if(other.LN > 0)           LN = other.LN;
         if(ks_not_empty(other.AH)) ks_put_string(other.AH, AH);
         if(ks_not_empty(other.AN)) ks_put_string(other.AN, AN);
         if(ks_not_empty(other.AS)) ks_put_string(other.AS, AS);
+        if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
         if(ks_not_empty(other.M5)) ks_put_string(other.M5, M5);
         if(ks_not_empty(other.SP)) ks_put_string(other.SP, SP);
+        if(ks_not_empty(other.TP)) ks_put_string(other.TP, TP);
         if(ks_not_empty(other.UR)) ks_put_string(other.UR, UR);
     }
     return *this;
@@ -588,6 +613,10 @@ void HeadSQAtom::encode(kstring_t& buffer) const {
         ks_put_string_("\tAS:", 4, buffer);
         ks_put_string_(AS, buffer);
     }
+    if(ks_not_empty(DS)) {
+        ks_put_string_("\tDS:", 4, buffer);
+        ks_put_string_(DS, buffer);
+    }
     if(ks_not_empty(M5)) {
         ks_put_string_("\tM5:", 4, buffer);
         ks_put_string_(M5, buffer);
@@ -595,6 +624,10 @@ void HeadSQAtom::encode(kstring_t& buffer) const {
     if(ks_not_empty(SP)) {
         ks_put_string_("\tSP:", 4, buffer);
         ks_put_string_(SP, buffer);
+    }
+    if(ks_not_empty(TP)) {
+        ks_put_string_("\tTP:", 4, buffer);
+        ks_put_string_(TP, buffer);
     }
     if(ks_not_empty(UR)) {
         ks_put_string_("\tUR:", 4, buffer);
@@ -628,12 +661,20 @@ char* HeadSQAtom::decode(char* position, const char* end) {
                 position = copy_until_tag_end(position, end, AS);
                 break;
             };
+            case uint16_t(HtsTagCode::DS): {
+                position = copy_until_tag_end(position, end, DS);
+                break;
+            };
             case uint16_t(HtsTagCode::M5): {
                 position = copy_until_tag_end(position, end, M5);
                 break;
             };
             case uint16_t(HtsTagCode::SP): {
                 position = copy_until_tag_end(position, end, SP);
+                break;
+            };
+            case uint16_t(HtsTagCode::TP): {
+                position = copy_until_tag_end(position, end, TP);
                 break;
             };
             case uint16_t(HtsTagCode::UR): {
@@ -648,14 +689,30 @@ char* HeadSQAtom::decode(char* position, const char* end) {
     }
     return ++position;
 };
+void HeadSQAtom::update(const HeadSQAtom& other) {
+    if(&other != this) {
+        if(ks_not_empty(other.AH)) ks_put_string(other.AH, AH);
+        if(ks_not_empty(other.AN)) ks_put_string(other.AN, AN);
+        if(ks_not_empty(other.AS)) ks_put_string(other.AS, AS);
+        if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
+        if(ks_not_empty(other.M5)) ks_put_string(other.M5, M5);
+        if(ks_not_empty(other.SP)) ks_put_string(other.SP, SP);
+        if(ks_not_empty(other.TP)) ks_put_string(other.TP, TP);
+        if(ks_not_empty(other.UR)) ks_put_string(other.UR, UR);
+    }
+};
 ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
+    o << "@SQ SAM head atom" << endl;
+    if(sq.index   >= 0)     o << "index : " << sq.index << endl;
     if(ks_not_empty(sq.SN)) o << "SN : " << sq.SN.s << endl;
-    if(sq.LN   > 0)      o << "LN : " << sq.LN   << endl;
+    if(sq.LN   > 0)         o << "LN : " << sq.LN   << endl;
     if(ks_not_empty(sq.AH)) o << "AH : " << sq.AH.s << endl;
     if(ks_not_empty(sq.AN)) o << "AN : " << sq.AN.s << endl;
     if(ks_not_empty(sq.AS)) o << "AS : " << sq.AS.s << endl;
+    if(ks_not_empty(sq.DS)) o << "DS : " << sq.DS.s << endl;
     if(ks_not_empty(sq.M5)) o << "M5 : " << sq.M5.s << endl;
     if(ks_not_empty(sq.SP)) o << "SP : " << sq.SP.s << endl;
+    if(ks_not_empty(sq.TP)) o << "TP : " << sq.TP.s << endl;
     if(ks_not_empty(sq.UR)) o << "UR : " << sq.UR.s << endl;
     return o;
 };
@@ -948,6 +1005,7 @@ void HeadRGAtom::expand(const HeadRGAtom& other) {
     }
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
+    o << "@RG SAM head atom" << endl;
     if(ks_not_empty(rg.ID)) o << "ID : " << rg.ID.s << endl;
     if(ks_not_empty(rg.BC)) o << "BC : " << rg.BC.s << endl;
     if(ks_not_empty(rg.CN)) o << "CN : " << rg.CN.s << endl;
@@ -1175,6 +1233,7 @@ char* HeadPGAtom::decode(char* position, const char* end) {
     return ++position;
 };
 ostream& operator<<(ostream& o, const HeadPGAtom& pg) {
+    o << "@PG SAM head atom" << endl;
     if(ks_not_empty(pg.ID)) o << "ID : " << pg.ID.s << endl;
     if(ks_not_empty(pg.PN)) o << "PN : " << pg.PN.s << endl;
     if(ks_not_empty(pg.CL)) o << "CL : " << pg.CL.s << endl;
@@ -1237,6 +1296,145 @@ void HeadCOAtom::encode(kstring_t& buffer) const {
     }
 };
 ostream& operator<<(ostream& o, const HeadCOAtom& co) {
+    o << "@CO SAM head atom" << endl;
     if(ks_not_empty(co.CO)) o << "CO : " << co.CO.s << endl;
+    return o;
+};
+
+static inline char* skip_to_linebreak(char* source, const char* end) {
+    char* position(source);
+    while (*position != LINE_BREAK && position < end) {
+        ++position;
+    }
+    return position;
+};
+
+HtsHead::HtsHead() {
+};
+HtsHead::~HtsHead() {
+};
+void HtsHead::decode(const bam_hdr_t* hdr) {
+    if(hdr != NULL) {
+        /*  read in @SQ element
+            Seems like if only the SN and LN atoms are present
+            @SQ records are absent from plain text section */
+        for(int32_t index(0); index < hdr->n_targets; ++index) {
+            HeadSQAtom sq;
+            sq.index = index;
+            sq.LN = hdr->target_len[index];
+            ks_put_string(hdr->target_name[index], sq.SN);
+            add_reference(sq);
+        }
+        char* position(hdr->text);
+        char* end(position + hdr->l_text);
+        while(position < end) {
+            if(*position == '@') {
+                ++position;
+                uint16_t code = tag_to_code(position);
+                position += 2;
+                switch (code) {
+                    case uint16_t(HtsTagCode::HD): {
+                        position = hd.decode(position, end);
+                        break;
+                    };
+                    case uint16_t(HtsTagCode::RG): {
+                        HeadRGAtom rg;
+                        position = rg.decode(position, end);
+                        add_read_group(rg);
+                        break;
+                    };
+                    case uint16_t(HtsTagCode::PG): {
+                        HeadPGAtom pg;
+                        position = pg.decode(position, end);
+                        add_program(pg);
+                        break;
+                    };
+                    case uint16_t(HtsTagCode::CO): {
+                        HeadCOAtom co;
+                        position = co.decode(position, end);
+                        add_comment(co);
+                        break;
+                    };
+                    case uint16_t(HtsTagCode::SQ): {
+                        HeadSQAtom sq;
+                        position = sq.decode(position, end);
+                        add_reference(sq);
+                        break;
+                    };
+                    default:
+                        position = skip_to_linebreak(position, end);
+                        ++position;
+                        break;
+                }
+            }
+        }
+    }
+};
+void HtsHead::encode(bam_hdr_t* hdr) const {
+    kstring_t buffer = { 0, 0, NULL };
+    hd.encode(buffer);
+    for(const auto& record : reference_by_id) {
+        record.second.encode(buffer);
+    }
+    for(const auto& record : read_group_by_id) {
+        record.second.encode(buffer);
+    }
+    for(const auto& record : program_by_id) {
+        record.second.encode(buffer);
+    }
+    for(const auto& comment: comments){
+        comment.encode(buffer);
+    }
+    if(buffer.l <= numeric_limits< uint32_t >::max()) {
+        hdr->n_targets = 0;
+        hdr->l_text = static_cast< uint32_t >(buffer.l);
+        if((hdr->text = static_cast< char* >(malloc(hdr->l_text + 1))) == NULL) {
+            throw OutOfMemoryError();
+        }
+        memcpy(hdr->text, buffer.s, hdr->l_text + 1);
+        ks_free(buffer);
+    } else { throw OverflowError("SAM header must not exceed " + to_string(numeric_limits< uint32_t >::max()) + " bytes"); }
+};
+void HtsHead::add_reference(const HeadSQAtom& sq) {
+    string key(sq);
+    auto record = reference_by_id.find(key);
+    if(record != reference_by_id.end()) {
+        HeadSQAtom present(record->second);
+        present.update(sq);
+        reference_by_id.erase(record);
+        reference_by_id.emplace(make_pair(key, present));
+    } else {
+        reference_by_id.insert(make_pair(key, sq));
+    }
+};
+void HtsHead::add_read_group(const HeadRGAtom& rg) {
+    string key(rg);
+    if(read_group_by_id.count(key) == 0) {
+        read_group_by_id.emplace(make_pair(key, rg));
+    }
+};
+void HtsHead::add_program(const HeadPGAtom& pg) {
+    string key(pg);
+    if(program_by_id.count(key) == 0) {
+        program_by_id.emplace(make_pair(key, pg));
+    }
+};
+void HtsHead::add_comment(const HeadCOAtom& co) {
+    comments.push_back(co);
+};
+ostream& operator<<(ostream& o, const HtsHead& head) {
+    o << head.hd;
+    for(const auto& record : head.reference_by_id) {
+        o << record.second;
+    }
+    for(const auto& record : head.read_group_by_id) {
+        o << record.second;
+    }
+    for(const auto& record : head.program_by_id) {
+        o << record.second;
+    }
+    for(const auto& co : head.comments) {
+        o << co;
+    }
     return o;
 };

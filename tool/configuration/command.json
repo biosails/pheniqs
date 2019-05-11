@@ -435,6 +435,126 @@
             }
         }
     },
+    "estimate prior": {
+        "interface": {
+            "argument": [
+                "configuration",
+                "input",
+                "base-input",
+                "base-output",
+                "sense-input",
+                "split-fastq",
+                "prefix",
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "configuration": {
+                    "flag": [
+                        "-c",
+                        "--configuration"
+                    ],
+                    "parameter": {
+                        "help": "Path to original configuration file.",
+                        "metavar": "PATH",
+                        "required": true
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "help": "Input directive for pheniqs",
+                        "nargs": "*",
+                        "metavar": "PATH"
+                    }
+                },
+                "sense-input": {
+                    "flag": [
+                        "-s",
+                        "--sense-input"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "sense input directive for pheniqs"
+                    }
+                },
+                "split-fastq": {
+                    "flag": [
+                        "--split-fastq"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "adjust output configuration to write each segment of each classified read to a separate fastq file"
+                    }
+                },
+                "base-input": {
+                    "flag": [
+                        "-I",
+                        "--base-input"
+                    ],
+                    "parameter": {
+                        "help": "Base input URL directive for pheniqs",
+                        "metavar": "PATH"
+                    }
+                },
+                "base-output": {
+                    "flag": [
+                        "-O",
+                        "--base-output"
+                    ],
+                    "parameter": {
+                        "help": "Base output URL directive for pheniqs",
+                        "metavar": "PATH"
+                    }
+                },
+                "prefix": {
+                    "flag": [
+                        "-p",
+                        "--prefix"
+                    ],
+                    "parameter": {
+                        "default": "library",
+                        "help": "Prefix for generated output file names"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "Logging verbosity level.",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            }
+        }
+    },
     "illumina": {
         "interface": {
             "argument": [

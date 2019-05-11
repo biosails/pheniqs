@@ -328,28 +328,57 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
         };
         void open() override {
             if(!opened()) {
+                /*  from htslib bgzf.h
+                    mode matching /[rwag][u0-9]+/: 'r' for reading, 'w' for
+                    writing, 'a' for appending, 'g' for gzip rather than BGZF
+                    compression (with 'w' only), and digit specifies the zlib
+                    compression level.
+                    Note that there is a distinction between 'u' and '0': the
+                    first yields plain uncompressed output whereas the latter
+                    outputs uncompressed data wrapped in the zlib format.
+                 */
+                string mode;
                 switch(direction) {
                     case IoDirection::IN: {
-                        bgzf_file = bgzf_hopen(hfile, "r");
+                        mode.push_back('r');
+                        bgzf_file = bgzf_hopen(hfile, mode.c_str());
                         if(bgzf_file != NULL) {
                             kseq = kseq_init(bgzf_file);
                             // bgzf_thread_pool(bgzf_file, thread_pool->pool, thread_pool->qsize);
                         } else {
-                            throw IOError("failed to open " + string(url) + " for reading");
+                            throw IOError("failed to open " + string(url.path()) + " for reading");
                         }
                         break;
                     };
                     case IoDirection::OUT: {
-                        if(url.compression() == FormatCompression::GZIP) {
-                            bgzf_file = bgzf_hopen(hfile, "wg");
-                        } else {
-                            bgzf_file = bgzf_hopen(hfile, "wu");
+                        mode.push_back('w');
+                        switch(url.compression()) {
+                            case FormatCompression::GZIP: {
+                                mode.push_back('g');
+                                break;
+                            };
+                            case FormatCompression::BGZF: {
+                                break;
+                            };
+                            case FormatCompression::NONE: {
+                                mode.push_back('u');
+                                break;
+                            };
+                            default: {
+                                mode.push_back('u');
+                                break;
+                            };
+                        };
+                        if(url.zlib_compression_level() != ZlibCompressionLevel::UNKNOWN) {
+                            mode.append(to_string(url.zlib_compression_level()));
                         }
+                        bgzf_file = bgzf_hopen(hfile, mode.c_str());
+
                         if(bgzf_file != NULL) {
                             kseq = kseq_init(bgzf_file);
                             bgzf_thread_pool(bgzf_file, thread_pool->pool, thread_pool->qsize);
                         } else {
-                            throw IOError("failed to open " + string(url) + " for writing");
+                            throw IOError("failed to open " + string(url.path()) + " for writing");
                         }
                         break;
                     };
@@ -406,7 +435,7 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
                     buffer->decrement();
                 }
                 if(bgzf_write(bgzf_file, kbuffer.s, kbuffer.l) < 0) {
-                    throw IOError("error writing to " + string(url));
+                    throw IOError("error writing to " + string(url.path()));
                 }
             }
         };

@@ -2,7 +2,7 @@
     "action": [
         {
             "default": {
-                "default output compression": "none",
+                "default output compression": "unknown",
                 "default output format": "sam",
                 "filter incoming qc fail": false,
                 "filter outgoing qc fail": false,
@@ -185,7 +185,8 @@
                 {
                     "choice": [
                         "none",
-                        "gz"
+                        "gz",
+                        "bgzf"
                     ],
                     "handle": [
                         "-Z",

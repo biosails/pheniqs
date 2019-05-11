@@ -21,198 +21,109 @@
 
 #include "pipeline.h"
 
-Job::Job(Document& operation) try :
-    operation(move(operation)),
-    ontology(kObjectType),
-    report(kObjectType),
-    interactive(this->operation["interactive"]),
-    schema_repository(this->operation["schema"]),
-    projection_repository(this->operation["projection"]) {
+Pipeline::Pipeline(const int argc, const char** argv) try :
+    interface(argc, argv),
+    _help_only(interface.help_triggered()),
+    _version_only(interface.version_triggered()) {
+
+    PhredScale::get_instance();
 
     } catch(Error& error) {
-        error.push("Job");
+        error.push("Pipeline");
         throw;
 };
-void Job::assemble() {
-    /* if a URL to an instruction file was provided in the interactive instruction, load it and overlay on top of the ontology */
-    URL configuration_url;
-    if(decode_value_by_key< URL >("configuration url", configuration_url, interactive)) {
-        configuration_url.normalize(IoDirection::IN);
-        overlay(read_instruction_document(configuration_url));
+Pipeline::~Pipeline() {
+    for(auto& job : job_queue) {
+        delete job;
     }
 };
-void Job::overlay(const Value& instruction) {
-    if(!instruction.IsNull()) {
-        if(instruction.IsObject()) {
-            if(!instruction.ObjectEmpty()) {
-                Document merged;
-                merged.CopyFrom(instruction, merged.GetAllocator());
-                merge_json_value(ontology, merged, merged);
-                ontology.Swap(merged);
-            }
-        } else { throw ConfigurationError("Job document root must be a dictionary"); }
-    }
+void Pipeline::print_help(ostream& o) const {
+    interface.print_help(o);
 };
-void Job::compile() {
-    remove_disabled();
-    clean();
-    validate();
-};
-void Job::remove_disabled() {
-    remove_disabled_from_json_value(ontology, ontology);
-};
-void Job::clean() {
-    clean_json_value(ontology, ontology);
-    if(ontology.IsNull()) {
-        ontology.SetObject();
-    }
-};
-void Job::finalize() {
-    if(decode_value_by_key< bool >("include compiled job", ontology)) {
-        /*  add a copy of the job document */
-        report.AddMember(
-            Value("job", report.GetAllocator()).Move(),
-            Value(ontology, report.GetAllocator()).Move(),
-            report.GetAllocator()
-        );
-    }
-};
-void Job::print_ontology(ostream& o) {
-    sort_json_value(ontology, ontology);
-    print_json(ontology, o);
-};
-void Job::print_compiled(ostream& o) const {
-    Document compiled;
-    compiled.CopyFrom(ontology, compiled.GetAllocator());
-    compiled.RemoveMember("application version");
-    compiled.RemoveMember("program");
-    compiled.RemoveMember("working directory");
-    sort_json_value(compiled, compiled);
-    print_json(compiled, o, float_precision());
-};
-void Job::print_report() const {
-    URL report_url(decode_value_by_key< URL >("report url", ontology));
-    report_url.normalize(IoDirection::OUT);
+void Pipeline::print_version(ostream& o) const {
+    interface.print_version(o);
 
-    if(!report_url.is_dev_null()) {
-        if(report_url.is_stdout()) {
-            print_json(report, cout, float_precision());
+    /*  This is mostly for when building a static pheniqs binary
+        The --version will report the library versions that were built in. */
 
-        } else if(report_url.is_stderr()) {
-            print_json(report, cerr, float_precision());
+    #ifdef PHENIQS_ZLIB_VERSION
+    o << "zlib " << PHENIQS_ZLIB_VERSION << endl;
+    #endif
+
+    #ifdef PHENIQS_BZIP2_VERSION
+    o << "bzlib " << PHENIQS_BZIP2_VERSION << endl;
+    #endif
+
+    #ifdef PHENIQS_XZ_VERSION
+    o << "xzlib " << PHENIQS_XZ_VERSION << endl;
+    #endif
+
+    #ifdef PHENIQS_LIBDEFLATE_VERSION
+    o << "libdeflate " << PHENIQS_LIBDEFLATE_VERSION << endl;
+    #endif
+
+    #ifdef PHENIQS_RAPIDJSON_VERSION
+    o << "rapidjson " << PHENIQS_RAPIDJSON_VERSION << endl;
+    #endif
+
+    #ifdef PHENIQS_HTSLIB_VERSION
+    o << "htslib " << PHENIQS_HTSLIB_VERSION << endl;
+    #endif
+};
+Job* Pipeline::pop_from_queue() {
+    if(!job_queue.empty()) {
+        Job* job(job_queue.front());
+        job_queue.pop_front();
+        return job;
+    } else { return NULL;}
+};
+void Pipeline::push_to_queue(Document& operation) {
+    if(operation.IsObject()) {
+        Job* job(NULL);
+        string implementation(decode_value_by_key< string >("implementation", operation));
+
+        if(implementation == "transcode") { job = new Transcode(operation); }
+        else { job = new Job(operation); }
+
+        job->assemble();
+        job_queue.emplace_back(job);
+    } else { throw ConfigurationError("Job operation element is not a dictionary"); }
+};
+void Pipeline::execute_job(Job* job) {
+    if(job != NULL) {
+        if(job->is_static_only()) {
+            job->print_instruction(cout);
+
+        } else if(job->is_validate_only()) {
+            job->compile();
+            job->describe(cout);
+
+        } else if(job->is_compile_only()) {
+            job->compile();
+            job->print_compiled(cout);
 
         } else {
-            print_json(report, report_url.c_str(), float_precision());
+            job->compile();
+            job->execute();
+            job->print_report();
+        }
+    }
+};
+void Pipeline::execute() {
+    if(is_help_only()) {
+        print_help(cout);
 
-        }
-    }
-};
-void Job::describe(ostream& o) const {
+    } else if(is_version_only()) {
+        print_version(cout);
 
-};
-void Job::apply_default() {
-    /* if the operation defines a default instruction overlay it on top of the ontology */
-    Value::ConstMemberIterator reference = operation.FindMember("default");
-    if(reference != operation.MemberEnd()) {
-        merge_json_value(reference->value, ontology, ontology);
-    }
-};
-void Job::apply_interactive() {
-    overlay(interactive);
-};
-const Value* Job::find_projection(const string& key) const {
-    const Value* element(NULL);
-    if(projection_repository.IsObject()) {
-        Value::ConstMemberIterator reference = projection_repository.FindMember(key.c_str());
-        if(reference != projection_repository.MemberEnd()) {
-            if(reference->value.IsObject()) {
-                element = &reference->value;
-            }
-        }
-    }
-    return element;
-};
-const Value* Job::find_schema(const string& key) const {
-    const Value* element(NULL);
-    if(schema_repository.IsObject()) {
-        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
-        if(reference != schema_repository.MemberEnd()) {
-            if(reference->value.IsObject()) {
-                element = &reference->value;
-            }
-        }
-    }
-    return element;
-};
-const SchemaDocument* Job::get_schema_document(const string& key) {
-    const SchemaDocument* schema_document(NULL);
-    auto record = schema_document_by_name.find(key);
-    if(record != schema_document_by_name.end()) {
-        schema_document = &record->second;
     } else {
-        Value::ConstMemberIterator reference = schema_repository.FindMember(key.c_str());
-        if(reference != schema_repository.MemberEnd()) {
-            schema_document_by_name.emplace(make_pair(key, SchemaDocument(reference->value)));
-            record = schema_document_by_name.find(key);
-            if(record != schema_document_by_name.end()) {
-                schema_document = &record->second;
-            }
+        Document operation(interface.operation());
+        push_to_queue(operation);
+
+        Job* job(NULL);
+        while((job = pop_from_queue()) != NULL) {
+            execute_job(job);
+            delete job;
         }
     }
-    return schema_document;
-};
-Document Job::read_instruction_document(const URL& url) {
-    set< URL > visited;
-    Document document(load_document_with_import(url, visited));
-    return document;
-};
-Document Job::load_document_with_import(const URL& url, set< URL >& visited) {
-    Document document(kNullType);
-    if(url.is_readable()) {
-        ifstream file(url.path());
-        const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
-        file.close();
-        if(!document.Parse(content.c_str()).HasParseError()) {
-            const SchemaDocument* schema_document(get_schema_document("instruction:lax"));
-            if(schema_document != NULL) {
-                SchemaValidator validator(*schema_document);
-                if(document.Accept(validator)) {
-                    visited.emplace(url);
-                    list< string > import;
-                    if(decode_value_by_key< list< string > >("import", import, document)) {
-                        Document aggregated(kNullType);
-                        for(auto& record : import) {
-                            URL import_url(expand_shell(record));
-
-                            /* import url is resolved relative to the dirname of the importing document */
-                            import_url.relocate_sibling(url);
-
-                            /* To avoid cyclical import a url is only visited once,
-                               the first time it is encountered on a depth first recursion.
-                               TODO: This should really use the inode number and not the url */
-                            if(!visited.count(import_url)) {
-                                Document imported(load_document_with_import(import_url, visited));
-                                merge_json_value(aggregated, imported, imported);
-                                aggregated.Swap(imported);
-                            }
-                        }
-                        merge_json_value(aggregated, document, document);
-                    }
-                    document.RemoveMember("import");
-
-                } else {
-                    Document error(encode_validation_error(validator, *find_schema("instruction:lax"), document));
-                    encode_key_value("url", url, error, error);
-                    throw ValidationError(error);
-                }
-            } else { throw InternalError("no schema instruction:lax"); }
-
-        } else {
-            string message(GetParseError_En(document.GetParseError()));
-            message += " at position ";
-            message += to_string(document.GetErrorOffset());
-            throw ConfigurationError(message);
-        }
-    } else { throw ConfigurationError("unable to read job file from " + string(url)); }
-    return document;
 };

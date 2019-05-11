@@ -539,7 +539,7 @@ Argument* Action::parse_argument(const size_t argc, const char** argv, const Pro
             case ParameterType::INTEGER: {
                 string raw(argv[index]);
                 argument = get_argument(prototype);
-                argument->set_value(static_cast < int64_t>(stoll(raw)));
+                argument->set_value(static_cast < int64_t >(stoll(raw)));
                 break;
             };
             case ParameterType::DECIMAL: {

@@ -49,7 +49,7 @@ Document encode_validation_error(const SchemaValidator& validator, const Value& 
 
 void print_json(const Value& node, const char* path, const int32_t& precision=PHENIQS_FLOAT_PRECISION);
 void print_json(const Value& node, ostream& o=cout, const int32_t& precision=PHENIQS_FLOAT_PRECISION);
-Document* load_json(const string& path);
+// Document* load_json(const string& path);
 
 /*  Recursively merge two JSON documents.
     Overlay < base > on < ontology >, using < document > for memory allocation.
@@ -59,6 +59,8 @@ void merge_json_value(const Value& base, Value& ontology, Document& document);
 void project_json_value(const Value& base, const Value& ontology, Value& container, Document& document);
 void clean_json_value(Value& ontology, Document& document);
 void sort_json_value(Value& ontology, Document& document);
+void clean_json_object(Value& ontology, Document& document);
+void overlay_json_object(Document& ontology, const Value& overlay);
 bool remove_disabled_from_json_value(Value& ontology, Document& document);
 
 inline const Value& find_value_by_key(const Value::Ch* key, const Value& container) {

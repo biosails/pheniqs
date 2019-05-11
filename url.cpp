@@ -21,6 +21,610 @@
 
 #include "url.h"
 
+string to_string(const IoDirection& value) {
+    string result;
+    switch (value) {
+        case IoDirection::IN:   result.assign("in");    break;
+        case IoDirection::OUT:  result.assign("out");   break;
+        default:                                        break;
+    }
+    return result;
+};
+bool from_string(const char* value, IoDirection& result) {
+         if(value == NULL)          result = IoDirection::UNKNOWN;
+    else if(!strcmp(value, "in"))   result = IoDirection::IN;
+    else if(!strcmp(value, "out"))  result = IoDirection::OUT;
+    else                            result = IoDirection::UNKNOWN;
+    return (result == IoDirection::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, IoDirection& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const IoDirection& value) {
+    o << to_string(value);
+    return o;
+};
+void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document) {
+    encode_key_value(key, to_string(value), container, document);
+};
+template<> bool decode_value_by_key< IoDirection >(const Value::Ch* key, IoDirection& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> IoDirection decode_value_by_key(const Value::Ch* key, const Value& container) {
+    IoDirection value(IoDirection::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
+};
+
+string to_string(const FormatType& value) {
+    string result;
+    switch (value) {
+        case FormatType::NONE:      result.assign("none");   break;
+        case FormatType::FASTQ:     result.assign("fastq");  break;
+        case FormatType::SAM:       result.assign("sam");    break;
+        case FormatType::BAM:       result.assign("bam");    break;
+        case FormatType::BAI:       result.assign("bai");    break;
+        case FormatType::CRAM:      result.assign("cram");   break;
+        case FormatType::CRAI:      result.assign("crai");   break;
+        case FormatType::VCF:       result.assign("vcf");    break;
+        case FormatType::BCF:       result.assign("bcf");    break;
+        case FormatType::CSI:       result.assign("csi");    break;
+        case FormatType::GZI:       result.assign("gzi");    break;
+        case FormatType::TBI:       result.assign("tbi");    break;
+        case FormatType::BED:       result.assign("bed");    break;
+        case FormatType::JSON:      result.assign("json");   break;
+        default:                                             break;
+    }
+    return result;
+};
+bool from_string(const char* value, FormatType& result) {
+         if(value == NULL)              result = FormatType::UNKNOWN;
+    else if(!strcmp(value, "none"))     result = FormatType::NONE;
+    else if(!strcmp(value, "fastq"))    result = FormatType::FASTQ;
+    else if(!strcmp(value, "fq"))       result = FormatType::FASTQ;
+    else if(!strcmp(value, "sam"))      result = FormatType::SAM;
+    else if(!strcmp(value, "bam"))      result = FormatType::BAM;
+    else if(!strcmp(value, "bai"))      result = FormatType::BAI;
+    else if(!strcmp(value, "cram"))     result = FormatType::CRAM;
+    else if(!strcmp(value, "crai"))     result = FormatType::CRAI;
+    else if(!strcmp(value, "vcf"))      result = FormatType::VCF;
+    else if(!strcmp(value, "bcf"))      result = FormatType::BCF;
+    else if(!strcmp(value, "csi"))      result = FormatType::CSI;
+    else if(!strcmp(value, "gzi"))      result = FormatType::GZI;
+    else if(!strcmp(value, "TBI"))      result = FormatType::TBI;
+    else if(!strcmp(value, "bed"))      result = FormatType::BED;
+    else if(!strcmp(value, "json"))     result = FormatType::JSON;
+    else                                result = FormatType::UNKNOWN;
+    return (result == FormatType::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, FormatType& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const FormatType& value) {
+    o << to_string(value);
+    return o;
+};
+void encode_key_value(const string& key, const FormatType& value, Value& container, Document& document) {
+    encode_key_value(key, to_string(value), container, document);
+};
+template<> bool decode_value_by_key< FormatType >(const Value::Ch* key, FormatType& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> FormatType decode_value_by_key(const Value::Ch* key, const Value& container) {
+    FormatType value(FormatType::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
+};
+
+string to_string(const FormatCompression& value) {
+    string result;
+    switch (value) {
+        case FormatCompression::NONE:      result.assign("none");   break;
+        case FormatCompression::GZIP:      result.assign("gz");     break;
+        case FormatCompression::BGZF:      result.assign("bgzf");   break;
+        case FormatCompression::BZ2:       result.assign("bz2");    break;
+        case FormatCompression::XZ:        result.assign("xz");     break;
+        default:                                                    break;
+    }
+    return result;
+};
+bool from_string(const char* value, FormatCompression& result) {
+         if(value == NULL)              result = FormatCompression::UNKNOWN;
+    else if(!strcmp(value, "none"))     result = FormatCompression::NONE;
+    else if(!strcmp(value, "gz"))       result = FormatCompression::GZIP;
+    else if(!strcmp(value, "bgzf"))     result = FormatCompression::BGZF;
+    else if(!strcmp(value, "bz2"))      result = FormatCompression::BZ2;
+    else if(!strcmp(value, "xz"))       result = FormatCompression::XZ;
+    else                                result = FormatCompression::UNKNOWN;
+    return (result == FormatCompression::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, FormatCompression& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const FormatCompression& value) {
+    o << to_string(value);
+    return o;
+};
+void encode_key_value(const string& key, const FormatCompression& value, Value& container, Document& document) {
+    encode_key_value(key, to_string(value), container, document);
+};
+template<> bool decode_value_by_key< FormatCompression >(const Value::Ch* key, FormatCompression& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            return from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> FormatCompression decode_value_by_key(const Value::Ch* key, const Value& container) {
+    FormatCompression value(FormatCompression::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
+};
+
+string to_string(const URLQueryParameter& value) {
+    string result;
+    switch (value) {
+    case URLQueryParameter::FORMAT_COMPRESSION: result.assign("compression");   break;
+    case URLQueryParameter::FORMAT_TYPE:        result.assign("format");   break;
+    case URLQueryParameter::ZLIB_LEVEL:         result.assign("level");    break;
+    default:                                                                    break;
+    }
+    return result;
+};
+bool from_string(const char* value, URLQueryParameter& result) {
+         if(value == NULL)                  result = URLQueryParameter::UNKNOWN;
+    else if(!strcmp(value, "compression"))  result = URLQueryParameter::FORMAT_COMPRESSION;
+    else if(!strcmp(value, "format"))  result = URLQueryParameter::FORMAT_TYPE;
+    else if(!strcmp(value, "level"))   result = URLQueryParameter::ZLIB_LEVEL;
+    else                                    result = URLQueryParameter::UNKNOWN;
+    return (result == URLQueryParameter::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, URLQueryParameter& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const URLQueryParameter& value) {
+    o << to_string(value);
+    return o;
+};
+
+string to_string(const ZlibCompressionLevel& value) {
+    string result;
+    switch (value) {
+    case ZlibCompressionLevel::LEVEL_0: result.assign("0"); break;
+    case ZlibCompressionLevel::LEVEL_1: result.assign("1"); break;
+    case ZlibCompressionLevel::LEVEL_2: result.assign("2"); break;
+    case ZlibCompressionLevel::LEVEL_3: result.assign("3"); break;
+    case ZlibCompressionLevel::LEVEL_4: result.assign("4"); break;
+    case ZlibCompressionLevel::LEVEL_5: result.assign("5"); break;
+    case ZlibCompressionLevel::LEVEL_6: result.assign("6"); break;
+    case ZlibCompressionLevel::LEVEL_7: result.assign("7"); break;
+    case ZlibCompressionLevel::LEVEL_8: result.assign("8"); break;
+    case ZlibCompressionLevel::LEVEL_9: result.assign("9"); break;
+    default:                                                break;
+    }
+    return result;
+};
+bool from_string(const char* value, ZlibCompressionLevel& result) {
+         if(value == NULL)          result = ZlibCompressionLevel::UNKNOWN;
+    else if(!strcmp(value, "0"))    result = ZlibCompressionLevel::LEVEL_0;
+    else if(!strcmp(value, "1"))    result = ZlibCompressionLevel::LEVEL_1;
+    else if(!strcmp(value, "2"))    result = ZlibCompressionLevel::LEVEL_2;
+    else if(!strcmp(value, "3"))    result = ZlibCompressionLevel::LEVEL_3;
+    else if(!strcmp(value, "4"))    result = ZlibCompressionLevel::LEVEL_4;
+    else if(!strcmp(value, "5"))    result = ZlibCompressionLevel::LEVEL_5;
+    else if(!strcmp(value, "6"))    result = ZlibCompressionLevel::LEVEL_6;
+    else if(!strcmp(value, "7"))    result = ZlibCompressionLevel::LEVEL_7;
+    else if(!strcmp(value, "8"))    result = ZlibCompressionLevel::LEVEL_8;
+    else if(!strcmp(value, "9"))    result = ZlibCompressionLevel::LEVEL_9;
+    else                            result = ZlibCompressionLevel::UNKNOWN;
+    return (result == ZlibCompressionLevel::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, ZlibCompressionLevel& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const ZlibCompressionLevel& value) {
+    o << to_string(value);
+    return o;
+};
+URL::URL() :
+    _format_type(FormatType::UNKNOWN),
+    _format_compression(FormatCompression::UNKNOWN),
+    _zlib_compression_level(ZlibCompressionLevel::UNKNOWN) {
+};
+URL::URL(const URL& other) :
+    _encoded(other._encoded),
+    _path(other._path),
+    _basename(other._basename),
+    _dirname(other._dirname),
+    _query(other._query),
+    _format_type(other._format_type),
+    _format_compression(other._format_compression),
+    _zlib_compression_level(other._zlib_compression_level) {
+};
+URL::URL(const string& encoded) :
+    _format_type(FormatType::UNKNOWN),
+    _format_compression(FormatCompression::UNKNOWN),
+    _zlib_compression_level(ZlibCompressionLevel::UNKNOWN) {
+    parse(encoded);
+};
+void URL::parse(const string& encoded) {
+    clear();
+    if(!encoded.empty()) {
+        _encoded.assign(encoded);
+
+        /* split the path into dirname and basename using the last instance of the path separator */
+        auto position = _encoded.find_last_of('/');
+        if(position != string::npos) {
+            /* the path separator is present */
+            if(position  + 1 < _encoded.size()) {
+                /* if the path separator is not the last character the basename is not empty */
+                _basename.assign(_encoded, position + 1, string::npos);
+            }
+            if(position > 0) {
+                /* if the last path separator is not the first character dirname is not the root */
+                _dirname.assign(_encoded, 0, position);
+            } else {
+                /* if the last path separator is the first character dirname is the root */
+                _dirname.push_back('/');
+            }
+        } else {
+            /* if the path separator is not present this is a relative basename in the current directory */
+            _basename.assign(_encoded);
+        }
+
+        /* split the query from the basename if the query separator is present */
+        position = _basename.find_first_of('?');
+        if(position != string::npos) {
+            /* if the query separator is not the last character the query is not empty */
+            if(position  + 1 < _basename.size()) {
+                _query.assign(_basename, position + 1, string::npos);
+            }
+            _basename.erase(position);
+        }
+        if(_basename == "." || _basename == "..") {
+            /* basename is a reference to the current or parent directory */
+            if(!_dirname.empty()) { _dirname.push_back('/'); }
+            _dirname.append(_basename);
+            _basename.erase(0);
+        } else {
+            /* if the extension separator is present try and extract an implicit compression and type */
+            string buffer(_basename);
+            string extension;
+            position = buffer.find_last_of('.');
+            if(position != string::npos) {
+                if(position > 0) {
+                    if(position + 2 < buffer.size()) {
+                        extension.assign(buffer, position + 1, string::npos);
+                        buffer.erase(position);
+                        /* if the trailing extension is a compression extension
+                           and there is another trailing extension implicitly set the compression
+                           and decode the trailing extension */
+                        if(extension == "gz" || extension == "bz2" || extension == "xz") {
+                            /* set the implicit compression */
+                            from_string(extension, _format_compression);
+                            position = buffer.find_last_of('.');
+                            if(position != string::npos) {
+                                extension.clear();
+                                if(position + 2 < buffer.size()) {
+                                    extension.assign(buffer, position + 1, string::npos);
+                                }
+                            }
+                        }
+                        if(!extension.empty()) {
+                            /* set the implicit format type */
+                            from_string(extension, _format_type);
+                        }
+                    }
+                }
+            }
+        }
+        parse_query();
+        refresh();
+    }
+};
+void URL::parse_query() {
+    if(!_query.empty()) {
+        string key;
+        string value;
+        uint8_t segment = 0;
+        const char* buffer = _query.c_str();
+        for(string::size_type position = 0; position < _query.size(); ++position) {
+            char c(*(buffer + position));
+            switch(c) {
+                case '=':
+                    segment = 1;
+                    break;
+                case '&':
+                    apply_query_parameter(key, value);
+                    key.clear();
+                    value.clear();
+                    segment = 0;
+                    break;
+                default:
+                    switch(segment) {
+                        case 0:
+                            key.push_back(c);
+                            break;
+                        case 1:
+                            value.push_back(c);
+                            break;
+                        default:
+                            break;
+                    };
+                    break;
+            };
+        }
+        apply_query_parameter(key, value);
+    }
+};
+void URL::apply_query_parameter(const string& key, const string& value) {
+    if(!key.empty() && !value.empty()) {
+        URLQueryParameter name;
+        from_string(key, name);
+        switch(name) {
+            case URLQueryParameter::FORMAT_COMPRESSION: {
+                from_string(value, _format_compression);
+                break;
+            };
+            case URLQueryParameter::FORMAT_TYPE: {
+                from_string(value, _format_type);
+                break;
+            };
+            case URLQueryParameter::ZLIB_LEVEL: {
+                from_string(value, _zlib_compression_level);
+                break;
+            };
+            case URLQueryParameter::UNKNOWN: {
+                /* silently ignore unknown parameters */
+                break;
+            };
+        }
+    }
+};
+void URL::refresh() {
+    /* rebuild path */
+    _path.clear();
+    if(!_dirname.empty()) {
+        _path.append(_dirname);
+    }
+    if(!_basename.empty()) {
+        if(!_path.empty() && _path.back() != '/') {
+            _path.push_back('/');
+        }
+        _path.append(_basename);
+    }
+
+    /* rebuild query */
+    _query.clear();
+    if(_format_type != FormatType::UNKNOWN) {
+        if (!_query.empty()) { _query.push_back('&'); }
+        _query.append(to_string(URLQueryParameter::FORMAT_TYPE));
+        _query.push_back('=');
+        _query.append(to_string(_format_type));
+
+        /* make sure only valid compression is specified for each format */
+        switch(_format_type) {
+            case FormatType::SAM: {
+                _format_compression = FormatCompression::NONE;
+                break;
+            };
+            case FormatType::BAM:
+            case FormatType::FASTQ: {
+                switch(_format_compression) {
+                    case FormatCompression::NONE: {
+                        break;
+                    };
+                    case FormatCompression::GZIP: {
+                        break;
+                    };
+                    case FormatCompression::BGZF: {
+                        break;
+                    };
+                    default:
+                        _format_compression = FormatCompression::UNKNOWN;
+                        break;
+                }
+                break;
+            };
+            case FormatType::CRAM: {
+                _format_compression = FormatCompression::UNKNOWN;
+                break;
+            };
+            case FormatType::JSON: {
+                _format_compression = FormatCompression::NONE;
+                break;
+            };
+            default: {
+                _format_compression = FormatCompression::UNKNOWN;
+                break;
+            };
+        }
+
+        /* make sure only valid compression level is specified for each compression */
+        switch(_format_compression) {
+            case FormatCompression::GZIP:
+            case FormatCompression::BGZF: {
+                break;
+            };
+            default:
+                _zlib_compression_level = ZlibCompressionLevel::UNKNOWN;
+                break;
+        }
+
+        if(_format_compression != FormatCompression::UNKNOWN) {
+            if (!_query.empty()) { _query.push_back('&'); }
+            _query.append(to_string(URLQueryParameter::FORMAT_COMPRESSION));
+            _query.push_back('=');
+            _query.append(to_string(_format_compression));
+        }
+
+        if(_zlib_compression_level != ZlibCompressionLevel::UNKNOWN) {
+            if (!_query.empty()) { _query.push_back('&'); }
+            _query.append(to_string(URLQueryParameter::ZLIB_LEVEL));
+            _query.push_back('=');
+            _query.append(to_string(_zlib_compression_level));
+        }
+    }
+
+    /* rebuild encoded */
+    _encoded.clear();
+    if(!_path.empty()) {
+        _encoded.append(_path);
+    }
+    if(!_query.empty()) {
+        _encoded.push_back('?');
+        _encoded.append(_query);
+    }
+};
+void URL::set_type(const FormatType type) {
+    _format_type = type;
+    refresh();
+};
+void URL::set_compression(const FormatCompression& compression) {
+    _format_compression = compression;
+    refresh();
+};
+void URL::set_zlib_compression_level(const ZlibCompressionLevel& level) {
+    _zlib_compression_level = level;
+    refresh();
+};
+void URL::override_query(const URL& other) {
+    if(other._format_type != FormatType::UNKNOWN) {
+        _format_type = other._format_type;
+    }
+    if(other._format_compression != FormatCompression::UNKNOWN) {
+        _format_compression = other._format_compression;
+    }
+    if(other._zlib_compression_level != ZlibCompressionLevel::UNKNOWN) {
+        _zlib_compression_level = other._zlib_compression_level;
+    }
+    refresh();
+};
+void URL::relocate_child(const URL& base) {
+    if(!base._path.empty() && !is_absolute()) {
+        string joined;
+        joined.append(base._path);
+        if(!_dirname.empty()) {
+            if(joined.back() != '/') {
+                joined.push_back('/');
+            }
+            joined.append(_dirname);
+        }
+        _dirname.assign(joined);
+        refresh();
+    }
+};
+void URL::relocate_sibling(const URL& base) {
+    if(!base._dirname.empty() && !is_absolute()) {
+        string joined;
+        joined.append(base._dirname);
+        if(!_dirname.empty()) {
+            if(joined.back() != '/') {
+                joined.push_back('/');
+            }
+            joined.append(_dirname);
+        }
+        _dirname.assign(joined);
+        refresh();
+    }
+};
+bool URL::is_readable() const {
+    if(is_stdin()) {
+        return true;
+    } else if(is_stdout() || is_stderr() || is_dev_null()) {
+        return false;
+    } else {
+        return !access(_path.c_str(), R_OK);
+    }
+};
+bool URL::is_writable() const {
+    if(is_stdin()) {
+        return false;
+    } else if(is_stdout() || is_stderr() || is_dev_null()) {
+        return true;
+    } else {
+        return !access(_path.c_str(), F_OK) ? !access(_path.c_str(), W_OK) : !access(_dirname.c_str(), W_OK);
+    }
+};
+bool URL::operator==(const URL &other) const {
+    return _encoded == other._encoded;
+};
+URL& URL::operator=(const URL& other) {
+    if(this != &other) {
+        clear();
+        _encoded.assign(other._encoded);
+        _path.assign(other._path);
+        _basename.assign(other._basename);
+        _dirname.assign(other._dirname);
+        _query.assign(other._query);
+        _format_type = other._format_type;
+        _format_compression = other._format_compression;
+        _zlib_compression_level = other._zlib_compression_level;
+    }
+    return *this;
+};
+URL::operator string() const {
+    return string(_encoded);
+};
+string URL::description() const {
+    string description;
+    description.append("URL         : ");
+    description.append(_encoded);
+    description.append("\n");
+
+    description.append("Path        : ");
+    description.append(_path);
+    description.append("\n");
+
+    description.append("Basename    : ");
+    description.append(_basename);
+    description.append("\n");
+
+    description.append("Dirname     : ");
+    description.append(_dirname);
+    description.append("\n");
+
+    description.append("Query       : ");
+    description.append(_query);
+    description.append("\n");
+
+    description.append("Compression : ");
+    description.append(to_string(_format_compression));
+    description.append("\n");
+
+    description.append("Type        : ");
+    description.append(to_string(_format_type));
+    description.append("\n");
+
+    description.append("Zlib level  : ");
+    description.append(to_string(_zlib_compression_level));
+    description.append("\n");
+
+    return description;
+};
+
+bool operator<(const URL& lhs, const URL& rhs) {
+    return lhs._encoded < rhs._encoded;
+};
+ostream& operator<<(ostream& o, const URL& url) {
+    o << url._encoded;
+    return o;
+};
+
 string& expand_shell(string& expression) {
     if(!expression.empty()) {
         string resolved;
@@ -140,452 +744,62 @@ void normalize_standard_stream(string& path, const IoDirection& direction) {
         }
     }
 };
-
-string to_string(const FormatType& value) {
-    string result;
-    switch (value) {
-        case FormatType::NONE:      result.assign("none");   break;
-        case FormatType::FASTQ:     result.assign("fastq");  break;
-        case FormatType::SAM:       result.assign("sam");    break;
-        case FormatType::BAM:       result.assign("bam");    break;
-        case FormatType::BAI:       result.assign("bai");    break;
-        case FormatType::CRAM:      result.assign("cram");   break;
-        case FormatType::CRAI:      result.assign("crai");   break;
-        case FormatType::VCF:       result.assign("vcf");    break;
-        case FormatType::BCF:       result.assign("bcf");    break;
-        case FormatType::CSI:       result.assign("csi");    break;
-        case FormatType::GZI:       result.assign("gzi");    break;
-        case FormatType::TBI:       result.assign("tbi");    break;
-        case FormatType::BED:       result.assign("bed");    break;
-        case FormatType::JSON:      result.assign("json");   break;
-        default:                                             break;
-    }
-    return result;
-};
-bool from_string(const char* value, FormatType& result) {
-         if(value == NULL)              result = FormatType::UNKNOWN;
-    else if(!strcmp(value, "none"))     result = FormatType::NONE;
-    else if(!strcmp(value, "fastq"))    result = FormatType::FASTQ;
-    else if(!strcmp(value, "sam"))      result = FormatType::SAM;
-    else if(!strcmp(value, "bam"))      result = FormatType::BAM;
-    else if(!strcmp(value, "bai"))      result = FormatType::BAI;
-    else if(!strcmp(value, "cram"))     result = FormatType::CRAM;
-    else if(!strcmp(value, "crai"))     result = FormatType::CRAI;
-    else if(!strcmp(value, "vcf"))      result = FormatType::VCF;
-    else if(!strcmp(value, "bcf"))      result = FormatType::BCF;
-    else if(!strcmp(value, "csi"))      result = FormatType::CSI;
-    else if(!strcmp(value, "gzi"))      result = FormatType::GZI;
-    else if(!strcmp(value, "TBI"))      result = FormatType::TBI;
-    else if(!strcmp(value, "bed"))      result = FormatType::BED;
-    else if(!strcmp(value, "json"))     result = FormatType::JSON;
-    else                                result = FormatType::UNKNOWN;
-    return (result == FormatType::UNKNOWN ? false : true);
-};
-bool from_string(const string& value, FormatType& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const FormatType& value) {
-    o << to_string(value);
-    return o;
-};
-void encode_key_value(const string& key, const FormatType& value, Value& container, Document& document) {
-    encode_key_value(key, to_string(value), container, document);
-};
-template<> bool decode_value_by_key< FormatType >(const Value::Ch* key, FormatType& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-template <> FormatType decode_value_by_key(const Value::Ch* key, const Value& container) {
-    FormatType value(FormatType::UNKNOWN);
-    decode_value_by_key(key, value, container);
-    return value;
-};
-
-string to_string(const FormatCompression& value) {
-    string result;
-    switch (value) {
-        case FormatCompression::NONE:      result.assign("none");   break;
-        case FormatCompression::GZIP:      result.assign("gz");     break;
-        default:                                                    break;
-    }
-    return result;
-};
-bool from_string(const char* value, FormatCompression& result) {
-         if(value == NULL)              result = FormatCompression::UNKNOWN;
-    else if(!strcmp(value, "none"))     result = FormatCompression::NONE;
-    else if(!strcmp(value, "gz"))       result = FormatCompression::GZIP;
-    else                                result = FormatCompression::UNKNOWN;
-    return (result == FormatCompression::UNKNOWN ? false : true);
-};
-bool from_string(const string& value, FormatCompression& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const FormatCompression& value) {
-    o << to_string(value);
-    return o;
-};
-void encode_key_value(const string& key, const FormatCompression& value, Value& container, Document& document) {
-    encode_key_value(key, to_string(value), container, document);
-};
-template<> bool decode_value_by_key< FormatCompression >(const Value::Ch* key, FormatCompression& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-template <> FormatCompression decode_value_by_key(const Value::Ch* key, const Value& container) {
-    FormatCompression value(FormatCompression::UNKNOWN);
-    decode_value_by_key(key, value, container);
-    return value;
-};
-
-string to_string(const FormatKind& value) {
-    string result;
-    switch(value) {
-        case FormatKind::FASTQ:         result.assign("FASTQ");      break;
-        case FormatKind::HTS:           result.assign("HTS");        break;
-        case FormatKind::DEV_NULL:      result.assign("DEV_NULL");   break;
-        default:                        result.assign("UNKNOWN");    break;
-    }
-    return result;
-};
-bool from_string(const char* value, FormatKind& result) {
-         if(value == NULL)              result = FormatKind::UNKNOWN;
-    else if(!strcmp(value, "FASTQ"))    result = FormatKind::FASTQ;
-    else if(!strcmp(value, "HTS"))      result = FormatKind::HTS;
-    else if(!strcmp(value, "DEV_NULL"))      result = FormatKind::DEV_NULL;
-    else                                result = FormatKind::UNKNOWN;
-
-    return (result == FormatKind::UNKNOWN ? false : true);
-};
-void to_kstring(const FormatKind& value, kstring_t& result) {
-    ks_clear(result);
-    string string_value(to_string(value));
-    ks_put_string(string_value.c_str(), string_value.size(), result);
-};
-bool from_string(const string& value, FormatKind& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const FormatKind& value) {
-    o << to_string(value);
-    return o;
-};
-void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document) {
-    string string_value(to_string(value));
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-template<> bool decode_value_by_key< FormatKind >(const Value::Ch* key, FormatKind& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-
-string to_string(const IoDirection& value) {
-    string result;
-    switch (value) {
-        case IoDirection::IN:   result.assign("in");    break;
-        case IoDirection::OUT:  result.assign("out");   break;
-        default:                                        break;
-    }
-    return result;
-};
-bool from_string(const char* value, IoDirection& result) {
-         if(value == NULL)          result = IoDirection::UNKNOWN;
-    else if(!strcmp(value, "in"))   result = IoDirection::IN;
-    else if(!strcmp(value, "out"))  result = IoDirection::OUT;
-    else                            result = IoDirection::UNKNOWN;
-    return (result == IoDirection::UNKNOWN ? false : true);
-};
-bool from_string(const string& value, IoDirection& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const IoDirection& value) {
-    o << to_string(value);
-    return o;
-};
-void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document) {
-    encode_key_value(key, to_string(value), container, document);
-};
-template<> bool decode_value_by_key< IoDirection >(const Value::Ch* key, IoDirection& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-template <> IoDirection decode_value_by_key(const Value::Ch* key, const Value& container) {
-    IoDirection value(IoDirection::UNKNOWN);
-    decode_value_by_key(key, value, container);
-    return value;
-};
-
-URL::URL() :
-    _compression(FormatCompression::NONE),
-    _type(FormatType::UNKNOWN) {
-};
-URL::URL(const URL& other) :
-    _path(other._path),
-    _basename(other._basename),
-    _dirname(other._dirname),
-    _extension(other._extension),
-    _compression(other._compression),
-    _type(other._type) {
-};
-URL::URL(const string& path) :
-    _type(FormatType::UNKNOWN) {
-    parse_file(path);
-};
-void URL::parse_file(const string& path) {
-    clear();
-    if(!path.empty()) {
-        _path.assign(path);
-
-        // split the path into dirname and basename
-        auto position = _path.find_last_of(PATH_SEPARATOR);
-        if(position != string::npos) {
-            // the path separator is present
-            if(position  + 1 < _path.size()) {
-                _basename.assign(_path, position + 1, string::npos);
+void standardize_url_value(Value& container, Document& document, const IoDirection& direction) {
+    if(!container.IsNull()) {
+        if(container.IsString()) {
+            string buffer(container.GetString(), container.GetStringLength());
+            expand_shell(buffer);
+            URL url(buffer);
+            buffer.assign(url.path());
+            normalize_standard_stream(buffer, direction);
+            if(!url.query().empty()) {
+                buffer.push_back('?');
+                buffer.append(url.query());
             }
-            if(position > 0) {
-                // the last path separator is not the first character
-                _dirname.assign(_path, 0, position);
-            } else {
-                // the last path separator is first character
-                // so this is a file in the root directory
-                _dirname.push_back(PATH_SEPARATOR);
-            }
-        } else {
-            // relative file path in current directory
-            _basename.assign(_path);
+            url.parse(buffer);
+            container.SetString(url.encoded().c_str(), url.encoded().size(), document.GetAllocator());
         }
-
-        if(!is_standard_stream()) {
-            // split extension
-            position = _basename.find_last_of(EXTENSION_SEPARATOR);
-            if(position != string::npos) {
-                if(position > 0) {
-                    if(position + 2 < _basename.size()) {
-                        _extension.assign(_basename, position + 1, string::npos);
-                        _basename.resize(position);
-                    }
-
-                    // if there is a second extension
-                    if(_extension == "gz") {
-                        // and the first is a compression marker
-                        position = _basename.find_last_of(EXTENSION_SEPARATOR);
-                        if(position != string::npos) {
-                            from_string(_extension, _compression);
-                            _extension.clear();
-                            if(position + 2 < _basename.size()) {
-                                _extension.assign(_basename, position + 1, string::npos);
-                                _basename.resize(position);
-                            }
-                        }
-                    }
+    }
+};
+void standardize_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction) {
+    if(container.IsObject()) {
+        Value::MemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            standardize_url_value(reference->value, document, direction);
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+void standardize_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction) {
+    if(container.IsObject()) {
+        Value::MemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd()) {
+            if(reference->value.IsArray()) {
+                for(auto& record : reference->value.GetArray()) {
+                    standardize_url_value(record, document, direction);
                 }
-            }
-            if(!_extension.empty() && _type == FormatType::UNKNOWN) {
-                from_string(_extension, _type);
-            }
+            } else { throw ConfigurationError(string(key) + " is not an array");  }
         }
-        refresh();
-    }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
 };
-void URL::set_basename(const string& name) {
-    _basename.assign(name);
-    refresh();
-};
-void URL::set_dirname(const string& directory) {
-    _dirname.assign(directory);
-    refresh();
-};
-void URL::set_compression(const FormatCompression& compression) {
-    _compression = compression;
-    if(!is_standard_stream()) {
-        refresh();
-    }
-};
-void URL::set_type(const FormatType type) {
-    _type = type;
-    if(!is_standard_stream()) {
-        if(_type != FormatType::UNKNOWN && _extension.empty()) {
-            _extension = to_string(_type);
-        }
-        refresh();
-    }
-};
-void URL::relocate_child(const URL& base) {
-    if(!base._path.empty() && !is_absolute()) {
-        string joined;
-        joined.append(base._path);
-        if(!_dirname.empty()) {
-            if(joined.back() != PATH_SEPARATOR) {
-                joined.push_back(PATH_SEPARATOR);
-            }
-            joined.append(_dirname);
-        }
-        _dirname.assign(joined);
-        refresh();
-    }
-};
-void URL::relocate_sibling(const URL& base) {
-    if(!base._dirname.empty() && !is_absolute()) {
-        string joined;
-        joined.append(base._dirname);
-        if(!_dirname.empty()) {
-            if(joined.back() != PATH_SEPARATOR) {
-                joined.push_back(PATH_SEPARATOR);
-            }
-            joined.append(_dirname);
-        }
-        _dirname.assign(joined);
-        refresh();
-    }
-};
-bool URL::is_readable() const {
-    if(is_stdin()) {
-        return true;
-    } else if(is_stdout() || is_stderr() || is_dev_null()) {
-        return false;
-    } else {
-        return access(_path.c_str(), R_OK) != -1;
-    }
-};
-bool URL::is_writable() const {
-    if(is_stdin()) {
-        return false;
-    } else if(is_stdout() || is_stderr() || is_dev_null()) {
-        return true;
-    } else {
-        return access(_path.c_str(), F_OK) != -1 ? access(_path.c_str(), W_OK) != -1 : access(_dirname.c_str(), W_OK) != -1;
-    }
-};
-const char* const URL::c_str() const {
-    return _path.c_str();
-};
-const size_t URL::size() const {
-    return _path.size();
-};
-bool URL::operator==(const URL &other) const {
-    return _path == other._path;
-};
-URL& URL::operator=(const URL& other) {
-    if(this != &other) {
-        clear();
-        _path.assign(other._path);
-        _basename.assign(other._basename);
-        _dirname.assign(other._dirname);
-        _extension.assign(other._extension);
-        _compression = other._compression;
-        _type = other._type;
-    }
-    return *this;
-};
-URL::operator string() const {
-    return string(_path);
-};
-void URL::refresh() {
-    _path.clear();
-    if(!_dirname.empty()) {
-        _path.append(_dirname);
-    }
-    if(!_basename.empty()) {
-        if(!_path.empty() && _path.back() != PATH_SEPARATOR) {
-            _path.push_back(PATH_SEPARATOR);
-        }
-        _path.append(_basename);
-    }
-    if(!is_standard_stream()) {
-        if(!_extension.empty()) {
-            _path.push_back(EXTENSION_SEPARATOR);
-            _path.append(_extension);
-        }
-        if(_compression != FormatCompression::NONE && _compression != FormatCompression::UNKNOWN) {
-            _path.push_back(EXTENSION_SEPARATOR);
-            _path.append(to_string(_compression));
+void relocate_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base) {
+    list< URL > value;
+    if(decode_value_by_key< list< URL > >(key, value, container)) {
+        for(auto& url : value) {
+            url.relocate_child(base);
         }
     }
-};
-string URL::description() const {
-    string description;
-    description.append("Path        : ");
-    description.append(_path);
-    description.append("\n");
-
-    description.append("Basename    : ");
-    description.append(_basename);
-    description.append("\n");
-
-    description.append("Dirname     : ");
-    description.append(_dirname);
-    description.append("\n");
-
-    description.append("Extension   : ");
-    description.append(_extension);
-    description.append("\n");
-
-    description.append("Compression : ");
-    description.append(to_string(_compression));
-    description.append("\n");
-
-    description.append("Type        : ");
-    description.append(to_string(_type));
-    description.append("\n");
-
-    return description;
-};
-
-bool operator<(const URL& lhs, const URL& rhs) {
-    return lhs._path < rhs._path;
-};
-ostream& operator<<(ostream& o, const URL& url) {
-    o << url._path;
-    return o;
+    encode_key_value(key, value, container, document);
 };
 
 template<> URL decode_value(const Value& container) {
     if(!container.IsNull()) {
-        if(container.IsString() || container.IsObject()) {
+        if(container.IsString()) {
             URL value;
             string buffer;
-            if(container.IsString()) {
-                buffer.assign(container.GetString(), container.GetStringLength());
-                value.parse_file(buffer);
-            } else {
-                if(decode_value_by_key< string >("path", buffer, container)) {
-                    value.parse_file(buffer);
-
-                    FormatType type(FormatType::UNKNOWN);
-                    if(decode_value_by_key< FormatType >("type", type, container)) {
-                        value.set_type(type);
-                    }
-
-                    FormatCompression compression(FormatCompression::UNKNOWN);
-                    if(decode_value_by_key< FormatCompression >("compression", compression, container   )) {
-                        value.set_compression(compression);
-                    }
-                } else { throw ConfigurationError("URL element must contain a non empty path element"); }
-            }
+            buffer.assign(container.GetString(), container.GetStringLength());
+            value.parse(buffer);
             return value;
-        } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
+        } else { throw ConfigurationError("URL element must be a string"); }
     } else { throw ConfigurationError("URL element is null"); }
 };
 template<> URL decode_value_by_key(const Value::Ch* key, const Value& container) {
@@ -598,37 +812,19 @@ template<> URL decode_value_by_key(const Value::Ch* key, const Value& container)
 };
 template<> bool decode_value< URL >(URL& value, const Value& container) {
     if(!container.IsNull()) {
-        if(container.IsString() || container.IsObject()) {
+        if(container.IsString()) {
             try {
-                if(container.IsString()) {
-                    string buffer(container.GetString(), container.GetStringLength());
-                    value.parse_file(buffer);
-                    return true;
-                } else {
-                    string buffer;
-                    if(decode_value_by_key< string >("path", buffer, container)) {
-                        value.parse_file(buffer);
-
-                        FormatType type(FormatType::UNKNOWN);
-                        if(decode_value_by_key< FormatType >("type", type, container)) {
-                            value.set_type(type);
-                        }
-
-                        FormatCompression compression(FormatCompression::UNKNOWN);
-                        if(decode_value_by_key< FormatCompression >("compression", compression, container   )) {
-                            value.set_compression(compression);
-                        }
-                    } else { throw ConfigurationError("URL element must contain a non empty path element"); }
-                }
+                string buffer(container.GetString(), container.GetStringLength());
+                value.parse(buffer);
+                return true;
             } catch(ConfigurationError& e) {
                 value.clear();
                 throw e;
             }
-        } else { throw ConfigurationError("URL element must be either a string or a dictionary"); }
+        } else { throw ConfigurationError("URL element must be a string"); }
     }
     return false;
 };
-
 template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& container) {
     if(container.IsObject()) {
         Value::ConstMemberIterator reference = container.FindMember(key);
@@ -639,7 +835,7 @@ template<> list< URL > decode_value_by_key(const Value::Ch* key, const Value& co
                     for(const auto& element : reference->value.GetArray()) {
                         value.emplace_back(decode_value< URL >(element));
                     }
-                } else if(reference->value.IsString() || reference->value.IsObject()) {
+                } else if(reference->value.IsString()) {
                     value.emplace_back(decode_value< URL >(reference->value));
                 }
                 return value;
@@ -672,16 +868,8 @@ template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< U
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
     return result;
 };
-
 void encode_value(const URL& value, Value& container, Document& document) {
-    if(value.is_standard_stream() && !value.is_dev_null() && (value.type() != FormatType::UNKNOWN || value.compression() != FormatCompression::UNKNOWN)) {
-        container.SetObject();
-        encode_key_value("path", value.path(), container, document);
-        encode_key_value("type", value.type(), container, document);
-        encode_key_value("compression", value.compression(), container, document);
-    } else {
-        container.SetString(value.c_str(), value.size(), document.GetAllocator());
-    }
+    container.SetString(value.encoded().c_str(), value.encoded().size(), document.GetAllocator());
 };
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document) {
     if(!value.empty()) {
@@ -706,59 +894,4 @@ bool encode_key_value(const string& key, const list< URL >& value, Value& contai
         return true;
     }
     return false;
-};
-
-void expand_url_value(Value& container, Document& document, const IoDirection& direction) {
-    if(!container.IsNull()) {
-        string buffer;
-        if(container.IsString()) {
-            expand_shell(buffer.assign(container.GetString(), container.GetStringLength()));
-            if(direction != IoDirection::UNKNOWN) {
-                normalize_standard_stream(buffer, direction);
-            }
-            container.SetString(buffer.c_str(), buffer.size(), document.GetAllocator());
-
-        } else if(container.IsObject()) {
-            if(decode_value_by_key< string >("path", buffer, container)) {
-                expand_shell(buffer);
-                if(direction != IoDirection::UNKNOWN) {
-                    normalize_standard_stream(buffer, direction);
-                }
-                encode_key_value("path", buffer, container, document);
-            }
-        }
-    }
-};
-void expand_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction) {
-    if(container.IsObject()) {
-        Value::MemberIterator reference = container.FindMember(key);
-        if(reference != container.MemberEnd()) {
-            expand_url_value(reference->value, document, direction);
-        }
-    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
-};
-void expand_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction) {
-    if(container.IsObject()) {
-        Value::MemberIterator reference = container.FindMember(key);
-        if(reference != container.MemberEnd()) {
-            if(reference->value.IsArray()) {
-                for(auto& record : reference->value.GetArray()) {
-                    expand_url_value(record, document, direction);
-                }
-            } else { throw ConfigurationError(string(key) + " is not an array");  }
-        }
-    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
-};
-void relocate_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base) {
-    list< URL > value;
-    if(decode_value_by_key< list< URL > >(key, value, container)) {
-        Value array(kArrayType);
-        for(auto& url : value) {
-            url.relocate_child(base);
-            Value element;
-            encode_value(url, element, document);
-            array.PushBack(element.Move(), document.GetAllocator());
-        }
-    }
-    encode_key_value(key, value, container, document);
 };

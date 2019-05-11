@@ -30,8 +30,17 @@
 #define CANONICAL_STDOUT_PATH "/dev/stdout"
 #define CANONICAL_STDERR_PATH "/dev/stderr"
 #define CANONICAL_NULL_DEVICE_PATH "/dev/null"
-const char PATH_SEPARATOR('/');
-const char EXTENSION_SEPARATOR('.');
+
+enum class IoDirection : uint8_t {
+    IN,
+    OUT,
+    UNKNOWN,
+};
+string to_string(const IoDirection& value);
+bool from_string(const char* value, IoDirection& result);
+bool from_string(const string& value, IoDirection& result);
+ostream& operator<<(ostream& o, const IoDirection& direction);
+void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document);
 
 enum class FormatType : uint8_t {
     UNKNOWN,
@@ -61,7 +70,10 @@ template<> FormatType decode_value_by_key< FormatType >(const Value::Ch* key, co
 enum class FormatCompression : uint8_t {
     UNKNOWN,
     NONE,
-    GZIP
+    GZIP,
+    BGZF,
+    BZ2,
+    XZ,
 };
 string to_string(const FormatCompression& value);
 bool from_string(const char* value, FormatCompression& result);
@@ -71,29 +83,34 @@ void encode_key_value(const string& key, const FormatCompression& value, Value& 
 template<> bool decode_value_by_key< FormatCompression >(const Value::Ch* key, FormatCompression& value, const Value& container);
 template<> FormatCompression decode_value_by_key< FormatCompression >(const Value::Ch* key, const Value& container);
 
-enum class FormatKind : uint8_t {
+enum class URLQueryParameter : uint8_t {
     UNKNOWN,
-    DEV_NULL,
-    FASTQ,
-    HTS,
+    FORMAT_COMPRESSION,
+    FORMAT_TYPE,
+    ZLIB_LEVEL,
 };
-string to_string(const FormatKind& value);
-bool from_string(const char* value, FormatKind& result);
-void to_kstring(const FormatKind& value, kstring_t& result);
-bool from_string(const string& value, FormatKind& result);
-ostream& operator<<(ostream& o, const FormatKind& value);
-void encode_key_value(const string& key, const FormatKind& value, Value& container, Document& document);
+string to_string(const URLQueryParameter& value);
+bool from_string(const char* value, URLQueryParameter& result);
+bool from_string(const string& value, URLQueryParameter& result);
+ostream& operator<<(ostream& o, const URLQueryParameter& value);
 
-enum class IoDirection : uint8_t {
-    IN,
-    OUT,
+enum class ZlibCompressionLevel : uint8_t {
     UNKNOWN,
+    LEVEL_0,
+    LEVEL_1,
+    LEVEL_2,
+    LEVEL_3,
+    LEVEL_4,
+    LEVEL_5,
+    LEVEL_6,
+    LEVEL_7,
+    LEVEL_8,
+    LEVEL_9,
 };
-string to_string(const IoDirection& value);
-bool from_string(const char* value, IoDirection& result);
-bool from_string(const string& value, IoDirection& result);
-ostream& operator<<(ostream& o, const IoDirection& direction);
-void encode_key_value(const string& key, const IoDirection& value, Value& container, Document& document);
+string to_string(const ZlibCompressionLevel& value);
+bool from_string(const char* value, ZlibCompressionLevel& result);
+bool from_string(const string& value, ZlibCompressionLevel& result);
+ostream& operator<<(ostream& o, const ZlibCompressionLevel& value);
 
 string& expand_shell(string& expression);
 void normalize_standard_stream(string& path, const IoDirection& direction);
@@ -105,15 +122,17 @@ class URL {
     public:
         URL();
         URL(const URL& other);
-        URL(const string& path);
-        void parse_file(const string& path);
-        void parse_file(const string& path, const IoDirection& direction);
-        void set_basename(const string& name);
-        void set_dirname(const string& directory);
-        void set_compression(const FormatCompression& compression);
+        URL(const string& encoded);
+        void parse(const string& encoded);
         void set_type(const FormatType type);
+        void set_compression(const FormatCompression& compression);
+        void set_zlib_compression_level(const ZlibCompressionLevel& level);
+        void override_query(const URL& other);
         void relocate_child(const URL& base);
         void relocate_sibling(const URL& base);
+        inline const string& encoded() const {
+            return _encoded;
+        };
         inline const string& path() const {
             return _path;
         };
@@ -123,34 +142,20 @@ class URL {
         inline const string& dirname() const {
             return _dirname;
         };
-        inline const string& extension() const {
-            return _extension;
-        };
-        inline const FormatCompression& compression() const {
-            return _compression;
+        inline const string& query() const {
+            return _query;
         };
         inline const FormatType& type() const {
-            return _type;
+            return _format_type;
         };
-        inline FormatKind kind() const {
-            if(!is_dev_null()) {
-                switch(_type) {
-                    case FormatType::SAM:
-                    case FormatType::BAM:
-                    case FormatType::CRAM:
-                        return FormatKind::HTS;
-                        break;
-                    case FormatType::FASTQ:
-                        return FormatKind::FASTQ;
-                        break;
-                    default:
-                        return FormatKind::UNKNOWN;
-                        break;
-                }
-            } else { return FormatKind::DEV_NULL; }
+        inline const FormatCompression& compression() const {
+            return _format_compression;
+        };
+        inline const ZlibCompressionLevel& zlib_compression_level() const {
+            return _zlib_compression_level;
         };
         inline bool empty() const {
-            return _path.empty();
+            return _encoded.empty();
         };
         inline bool is_file() const {
             return !_basename.empty();
@@ -174,12 +179,13 @@ class URL {
             return is_stdin() || is_stdout() || is_stderr() || is_dev_null();
         };
         inline bool is_absolute() const {
-            return !_dirname.empty() && _dirname[0] == PATH_SEPARATOR;
+            return !_dirname.empty() && _dirname[0] == '/';
         };
         inline const char* const hfile_name() const {
             if(is_file()) {
                 if(is_stdout() || is_stdin()) {
                     return STANDARD_STREAM_ALIAS;
+
                 } else if(is_stderr()) {
                     return NULL;
 
@@ -194,39 +200,34 @@ class URL {
             }
         };
         inline void clear() {
+            _encoded.clear();
             _path.clear();
             _basename.clear();
             _dirname.clear();
-            _extension.clear();
-            _compression = FormatCompression::UNKNOWN;
-        };
-        void expand() {
-            expand_shell(_basename);
-            expand_shell(_dirname);
-            refresh();
-        };
-        void normalize(const IoDirection& direction) {
-            string buffer(_path);
-            normalize_standard_stream(buffer, direction);
-            parse_file(buffer);
+            _query.clear();
+            _format_type = FormatType::UNKNOWN;
+            _format_compression = FormatCompression::UNKNOWN;
+            _zlib_compression_level = ZlibCompressionLevel::UNKNOWN;
         };
         bool is_readable() const;
         bool is_writable() const;
-        const char* const c_str() const;
-        const size_t size() const;
         bool operator==(const URL& other) const;
         URL& operator=(const URL& other);
         operator string() const;
         string description() const;
 
     private:
+        string _encoded;
         string _path;
         string _basename;
         string _dirname;
-        string _extension;
-        FormatCompression _compression;
-        FormatType _type;
+        string _query;
+        FormatType _format_type;
+        FormatCompression _format_compression;
+        ZlibCompressionLevel _zlib_compression_level;
         void refresh();
+        void parse_query();
+        void apply_query_parameter(const string& key, const string& value);
 };
 bool operator<(const URL& lhs, const URL& rhs);
 
@@ -250,9 +251,8 @@ void encode_value(const URL& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const URL& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const list< URL >& value, Value& container, Document& document);
 
-void expand_url_value(Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
-void expand_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
-void expand_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction=IoDirection::UNKNOWN);
+void standardize_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction);
+void standardize_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction);
 void relocate_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base);
 
 #endif /* PHENIQS_URL_H */
