@@ -173,7 +173,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                         if(hts_file != NULL) {
                             hdr = bam_hdr_init();
                             hts_set_thread_pool(hts_file, thread_pool);
-                            head.hd.set_version(&(hts_file->format));
+                            head.set_format_version(hts_file->format);
                             head.encode(hdr);
                             if(sam_hdr_write(hts_file, hdr) < 0) {
                                 throw IOError("failed to write SAM header");

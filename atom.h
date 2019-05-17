@@ -61,7 +61,7 @@ class HeadHDAtom {
         ~HeadHDAtom();
         void set_alignment_sort_order(const HtsSortOrder& order);
         void set_alignment_grouping(const HtsGrouping& grouping);
-        void set_version(const htsFormat* format);
+        void set_version(const htsFormat& format);
         HeadHDAtom& operator=(const HeadHDAtom& other);
 
     private:
@@ -174,6 +174,7 @@ class HeadRGAtom {
     friend ostream& operator<<(ostream& o, const HeadRGAtom& read_group);
 
     public:
+        int32_t index;
         kstring_t ID;
         kstring_t BC;
         kstring_t CN;
@@ -195,12 +196,12 @@ class HeadRGAtom {
         ~HeadRGAtom();
         operator string() const;
         void set_platform(const Platform& value);
-        void expand(const HeadRGAtom& other);
         HeadRGAtom& operator=(const HeadRGAtom& other);
 
     private:
         void encode(kstring_t& buffer) const;
         char* decode(char* position, const char* end);
+        void update(const HeadRGAtom& other);
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg);
 template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container);
@@ -226,6 +227,7 @@ class HeadPGAtom {
     friend ostream& operator<<(ostream& o, const HeadPGAtom& program);
 
     public:
+        int32_t index;
         kstring_t ID;
         kstring_t PN;
         kstring_t CL;
@@ -243,6 +245,7 @@ class HeadPGAtom {
     private:
         void encode(kstring_t& buffer) const;
         char* decode(char* position, const char* end);
+        void update(const HeadPGAtom& other);
 };
 ostream& operator<<(ostream& o, const HeadPGAtom& pg);
 template<> HeadPGAtom decode_value_by_key< HeadPGAtom >(const Value::Ch* key, const Value& container);
@@ -477,11 +480,6 @@ class HtsHead {
 
     public:
         void operator=(HtsHead const &) = delete;
-        HeadHDAtom hd;
-        unordered_map< string, const HeadSQAtom > reference_by_id;
-        unordered_map< string, const HeadRGAtom > read_group_by_id;
-        unordered_map< string, const HeadPGAtom > program_by_id;
-        vector< HeadCOAtom > comments;
         HtsHead();
         ~HtsHead();
         void decode(const bam_hdr_t* hdr);
@@ -490,6 +488,16 @@ class HtsHead {
         void add_read_group(const HeadRGAtom& rg);
         void add_program(const HeadPGAtom& pg);
         void add_comment(const HeadCOAtom& co);
+        void set_format_version(const htsFormat& format) {
+            hd.set_version(format);
+        };
+
+    private:
+        HeadHDAtom hd;
+        unordered_map< string, HeadSQAtom > reference_by_id;
+        unordered_map< string, HeadRGAtom > read_group_by_id;
+        unordered_map< string, HeadPGAtom > program_by_id;
+        list< HeadCOAtom > comment_by_index;
 };
 ostream& operator<<(ostream& o, const HtsHead& head);
 

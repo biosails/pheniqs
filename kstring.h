@@ -229,4 +229,11 @@ static inline void ks_put_int64(const int64_t c, kstring_t& s) {
     s.s[s.l] = '\0';
 };
 
+static inline void ks_assign_string(const kstring_t& from, kstring_t& to) {
+    ks_increase_to_size(to, from.l + 2);
+    memcpy(to.s, from.s, from.l);
+    to.l = from.l;
+    to.s[to.l] = '\0';
+};
+
 #endif /* PHENIQS_KSTRING_H */

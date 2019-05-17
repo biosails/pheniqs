@@ -463,13 +463,11 @@ void HeadHDAtom::set_alignment_sort_order(const HtsSortOrder& order) {
 void HeadHDAtom::set_alignment_grouping(const HtsGrouping& grouping) {
     to_kstring(grouping, GO);
 };
-void HeadHDAtom::set_version(const htsFormat* format) {
+void HeadHDAtom::set_version(const htsFormat& format) {
     ks_clear(VN);
-    if(format != NULL) {
-        ks_put_int32(format->version.major, VN);
-        ks_put_character('.', VN);
-        ks_put_int32(format->version.minor, VN);
-    }
+    ks_put_int32(format.version.major, VN);
+    ks_put_character('.', VN);
+    ks_put_int32(format.version.minor, VN);
 };
 ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
     o << "@HD SAM head atom" << endl;
@@ -496,8 +494,8 @@ HeadSQAtom::HeadSQAtom() :
 };
 HeadSQAtom::HeadSQAtom(const Value& ontology) try :
     index(-1),
-    SN({ 0, 0, NULL }),
-    LN(0),
+    SN(decode_value_by_key< kstring_t >("SN", ontology)),
+    LN(decode_value_by_key< int32_t >("LN", ontology)),
     AH({ 0, 0, NULL }),
     AN({ 0, 0, NULL }),
     AS({ 0, 0, NULL }),
@@ -508,8 +506,6 @@ HeadSQAtom::HeadSQAtom(const Value& ontology) try :
     UR({ 0, 0, NULL }){
 
     decode_value_by_key< int32_t >("index", index, ontology);
-    decode_value_by_key< kstring_t >("SN", SN, ontology);
-    decode_value_by_key< int32_t >("LN", LN, ontology);
     decode_value_by_key< kstring_t >("AH", AH, ontology);
     decode_value_by_key< kstring_t >("AN", AN, ontology);
     decode_value_by_key< kstring_t >("AS", AS, ontology);
@@ -534,7 +530,8 @@ HeadSQAtom::HeadSQAtom(const HeadSQAtom& other) :
     M5({ 0, 0, NULL }),
     SP({ 0, 0, NULL }),
     TP({ 0, 0, NULL }),
-    UR({ 0, 0, NULL }){
+    UR({ 0, 0, NULL }) {
+
     ks_terminate(SN);
     if(other.index >= 0)       index = other.index;
     if(ks_not_empty(other.SN)) ks_put_string(other.SN, SN);
@@ -691,14 +688,14 @@ char* HeadSQAtom::decode(char* position, const char* end) {
 };
 void HeadSQAtom::update(const HeadSQAtom& other) {
     if(&other != this) {
-        if(ks_not_empty(other.AH)) ks_put_string(other.AH, AH);
-        if(ks_not_empty(other.AN)) ks_put_string(other.AN, AN);
-        if(ks_not_empty(other.AS)) ks_put_string(other.AS, AS);
-        if(ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
-        if(ks_not_empty(other.M5)) ks_put_string(other.M5, M5);
-        if(ks_not_empty(other.SP)) ks_put_string(other.SP, SP);
-        if(ks_not_empty(other.TP)) ks_put_string(other.TP, TP);
-        if(ks_not_empty(other.UR)) ks_put_string(other.UR, UR);
+        if(ks_not_empty(other.AH)) ks_assign_string(other.AH, AH);
+        if(ks_not_empty(other.AN)) ks_assign_string(other.AN, AN);
+        if(ks_not_empty(other.AS)) ks_assign_string(other.AS, AS);
+        if(ks_not_empty(other.DS)) ks_assign_string(other.DS, DS);
+        if(ks_not_empty(other.M5)) ks_assign_string(other.M5, M5);
+        if(ks_not_empty(other.SP)) ks_assign_string(other.SP, SP);
+        if(ks_not_empty(other.TP)) ks_assign_string(other.TP, TP);
+        if(ks_not_empty(other.UR)) ks_assign_string(other.UR, UR);
     }
 };
 ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
@@ -719,6 +716,7 @@ ostream& operator<<(ostream& o, const HeadSQAtom& sq) {
 
 /* @RG Read Group */
 HeadRGAtom::HeadRGAtom() :
+    index(-1),
     ID({ 0, 0, NULL }),
     BC({ 0, 0, NULL }),
     CN({ 0, 0, NULL }),
@@ -736,6 +734,7 @@ HeadRGAtom::HeadRGAtom() :
     ks_terminate(ID);
 };
 HeadRGAtom::HeadRGAtom(const Value& ontology) try :
+    index(-1),
     ID(decode_value_by_key< kstring_t >("ID", ontology)),
     BC({ 0, 0, NULL }),
     CN({ 0, 0, NULL }),
@@ -751,6 +750,7 @@ HeadRGAtom::HeadRGAtom(const Value& ontology) try :
     PU({ 0, 0, NULL }),
     SM({ 0, 0, NULL }) {
 
+    decode_value_by_key< int32_t >("index", index, ontology);
     decode_value_by_key< kstring_t >("BC", BC, ontology);
     decode_value_by_key< kstring_t >("CN", CN, ontology);
     decode_value_by_key< kstring_t >("DS", DS, ontology);
@@ -770,6 +770,7 @@ HeadRGAtom::HeadRGAtom(const Value& ontology) try :
         throw;
 };
 HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
+    index(-1),
     ID({ 0, 0, NULL }),
     BC({ 0, 0, NULL }),
     CN({ 0, 0, NULL }),
@@ -786,6 +787,7 @@ HeadRGAtom::HeadRGAtom(const HeadRGAtom& other) :
     SM({ 0, 0, NULL }) {
 
     ks_terminate(ID);
+    if(other.index >= 0)       index = other.index;
     if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
     if(ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
     if(ks_not_empty(other.CN)) ks_put_string(other.CN, CN);
@@ -821,6 +823,7 @@ HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
     if(&other == this) {
         return *this;
     } else {
+        index = -1;
         ks_clear(ID);
         ks_clear(BC);
         ks_clear(CN);
@@ -835,6 +838,7 @@ HeadRGAtom& HeadRGAtom::operator=(const HeadRGAtom& other) {
         ks_clear(PM);
         ks_clear(PU);
         ks_clear(SM);
+        if(other.index >= 0)       index = other.index;
         if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
         if(ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
         if(ks_not_empty(other.CN)) ks_put_string(other.CN, CN);
@@ -984,28 +988,29 @@ char* HeadRGAtom::decode(char* position, const char* end) {
     }
     return ++position;
 };
+void HeadRGAtom::update(const HeadRGAtom& other) {
+    if(&other != this) {
+        if(ks_not_empty(other.BC)) ks_assign_string(other.BC, BC);
+        if(ks_not_empty(other.CN)) ks_assign_string(other.CN, CN);
+        if(ks_not_empty(other.DS)) ks_assign_string(other.DS, DS);
+        if(ks_not_empty(other.DT)) ks_assign_string(other.DT, DT);
+        if(ks_not_empty(other.FO)) ks_assign_string(other.FO, FO);
+        if(ks_not_empty(other.KS)) ks_assign_string(other.KS, KS);
+        if(ks_not_empty(other.LB)) ks_assign_string(other.LB, LB);
+        if(ks_not_empty(other.PG)) ks_assign_string(other.PG, PG);
+        if(ks_not_empty(other.PI)) ks_assign_string(other.PI, PI);
+        if(ks_not_empty(other.PL)) ks_assign_string(other.PL, PL);
+        if(ks_not_empty(other.PM)) ks_assign_string(other.PM, PM);
+        if(ks_not_empty(other.PU)) ks_assign_string(other.PU, PU);
+        if(ks_not_empty(other.SM)) ks_assign_string(other.SM, SM);
+    }
+};
 void HeadRGAtom::set_platform(const Platform& value) {
     to_kstring(value, PL);
 };
-void HeadRGAtom::expand(const HeadRGAtom& other) {
-    if(&other != this) {
-        if(ks_empty(BC) && ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
-        if(ks_empty(CN) && ks_not_empty(other.CN)) ks_put_string(other.CN, CN);
-        if(ks_empty(DS) && ks_not_empty(other.DS)) ks_put_string(other.DS, DS);
-        if(ks_empty(DT) && ks_not_empty(other.DT)) ks_put_string(other.DT, DT);
-        if(ks_empty(FO) && ks_not_empty(other.FO)) ks_put_string(other.FO, FO);
-        if(ks_empty(KS) && ks_not_empty(other.KS)) ks_put_string(other.KS, KS);
-        if(ks_empty(LB) && ks_not_empty(other.LB)) ks_put_string(other.LB, LB);
-        if(ks_empty(PG) && ks_not_empty(other.PG)) ks_put_string(other.PG, PG);
-        if(ks_empty(PI) && ks_not_empty(other.PI)) ks_put_string(other.PI, PI);
-        if(ks_empty(PL) && ks_not_empty(other.PL)) ks_put_string(other.PL, PL);
-        if(ks_empty(PM) && ks_not_empty(other.PM)) ks_put_string(other.PM, PM);
-        if(ks_empty(PU) && ks_not_empty(other.PU)) ks_put_string(other.PU, PU);
-        if(ks_empty(SM) && ks_not_empty(other.SM)) ks_put_string(other.SM, SM);
-    }
-};
 ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
     o << "@RG SAM head atom" << endl;
+    if(rg.index   >= 0)     o << "index : " << rg.index << endl;
     if(ks_not_empty(rg.ID)) o << "ID : " << rg.ID.s << endl;
     if(ks_not_empty(rg.BC)) o << "BC : " << rg.BC.s << endl;
     if(ks_not_empty(rg.CN)) o << "CN : " << rg.CN.s << endl;
@@ -1095,6 +1100,7 @@ bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value&
 
 /* @PG program */
 HeadPGAtom::HeadPGAtom() :
+    index(-1),
     ID({ 0, 0, NULL }),
     PN({ 0, 0, NULL }),
     CL({ 0, 0, NULL }),
@@ -1104,6 +1110,7 @@ HeadPGAtom::HeadPGAtom() :
     ks_terminate(ID);
 };
 HeadPGAtom::HeadPGAtom(const Value& ontology) try :
+    index(-1),
     ID(decode_value_by_key< kstring_t >("ID", ontology)),
     PN({ 0, 0, NULL }),
     CL({ 0, 0, NULL }),
@@ -1111,6 +1118,7 @@ HeadPGAtom::HeadPGAtom(const Value& ontology) try :
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
 
+    decode_value_by_key< int32_t >("index", index, ontology);
     decode_value_by_key< kstring_t >("PN", PN, ontology);
     decode_value_by_key< kstring_t >("CL", CL, ontology);
     decode_value_by_key< kstring_t >("PP", PP, ontology);
@@ -1122,13 +1130,16 @@ HeadPGAtom::HeadPGAtom(const Value& ontology) try :
         throw;
 };
 HeadPGAtom::HeadPGAtom(const HeadPGAtom& other) :
+    index(-1),
     ID({ 0, 0, NULL }),
     PN({ 0, 0, NULL }),
     CL({ 0, 0, NULL }),
     PP({ 0, 0, NULL }),
     DS({ 0, 0, NULL }),
     VN({ 0, 0, NULL }){
+
     ks_terminate(ID);
+    if(other.index >= 0)       index = other.index;
     if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
     if(ks_not_empty(other.PN)) ks_put_string(other.PN, PN);
     if(ks_not_empty(other.CL)) ks_put_string(other.CL, CL);
@@ -1148,12 +1159,14 @@ HeadPGAtom& HeadPGAtom::operator=(const HeadPGAtom& other) {
     if(&other == this) {
         return *this;
     } else {
+        index = -1;
         ks_clear(ID);
         ks_clear(PN);
         ks_clear(CL);
         ks_clear(PP);
         ks_clear(DS);
         ks_clear(VN);
+        if(other.index >= 0)       index = other.index;
         if(ks_not_empty(other.ID)) ks_put_string(other.ID, ID);
         if(ks_not_empty(other.PN)) ks_put_string(other.PN, PN);
         if(ks_not_empty(other.CL)) ks_put_string(other.CL, CL);
@@ -1232,8 +1245,18 @@ char* HeadPGAtom::decode(char* position, const char* end) {
     }
     return ++position;
 };
+void HeadPGAtom::update(const HeadPGAtom& other) {
+    if(&other != this) {
+        if(ks_not_empty(other.PN)) ks_assign_string(other.PN, PN);
+        if(ks_not_empty(other.CL)) ks_assign_string(other.CL, CL);
+        if(ks_not_empty(other.PP)) ks_assign_string(other.PP, PP);
+        if(ks_not_empty(other.DS)) ks_assign_string(other.DS, DS);
+        if(ks_not_empty(other.VN)) ks_assign_string(other.VN, VN);
+    }
+};
 ostream& operator<<(ostream& o, const HeadPGAtom& pg) {
     o << "@PG SAM head atom" << endl;
+    if(pg.index   >= 0)     o << "index : " << pg.index << endl;
     if(ks_not_empty(pg.ID)) o << "ID : " << pg.ID.s << endl;
     if(ks_not_empty(pg.PN)) o << "PN : " << pg.PN.s << endl;
     if(ks_not_empty(pg.CL)) o << "CL : " << pg.CL.s << endl;
@@ -1373,18 +1396,35 @@ void HtsHead::decode(const bam_hdr_t* hdr) {
 void HtsHead::encode(bam_hdr_t* hdr) const {
     kstring_t buffer = { 0, 0, NULL };
     hd.encode(buffer);
+
+    vector< const HeadSQAtom* > reference_by_index(reference_by_id.size());
     for(const auto& record : reference_by_id) {
-        record.second.encode(buffer);
+        reference_by_index[record.second.index] = &record.second;
     }
+    for(const auto& record : reference_by_index) {
+        record->encode(buffer);
+    }
+
+    vector< const HeadRGAtom* > read_group_by_index(read_group_by_id.size());
     for(const auto& record : read_group_by_id) {
-        record.second.encode(buffer);
+        read_group_by_index[record.second.index] = &record.second;
     }
+    for(const auto& record : read_group_by_index) {
+        record->encode(buffer);
+    }
+
+    vector< const HeadPGAtom* > program_by_index(program_by_id.size());
     for(const auto& record : program_by_id) {
-        record.second.encode(buffer);
+        program_by_index[record.second.index] = &record.second;
     }
-    for(const auto& comment: comments){
-        comment.encode(buffer);
+    for(const auto& record : program_by_index) {
+        record->encode(buffer);
     }
+
+    for(const auto& record: comment_by_index){
+        record.encode(buffer);
+    }
+
     if(buffer.l <= numeric_limits< uint32_t >::max()) {
         hdr->n_targets = 0;
         hdr->l_text = static_cast< uint32_t >(buffer.l);
@@ -1395,32 +1435,41 @@ void HtsHead::encode(bam_hdr_t* hdr) const {
         ks_free(buffer);
     } else { throw OverflowError("SAM header must not exceed " + to_string(numeric_limits< uint32_t >::max()) + " bytes"); }
 };
-void HtsHead::add_reference(const HeadSQAtom& sq) {
-    string key(sq);
+void HtsHead::add_reference(const HeadSQAtom& atom) {
+    string key(atom);
     auto record = reference_by_id.find(key);
     if(record != reference_by_id.end()) {
-        HeadSQAtom present(record->second);
-        present.update(sq);
-        reference_by_id.erase(record);
-        reference_by_id.emplace(make_pair(key, present));
+        record->second.update(atom);
     } else {
-        reference_by_id.insert(make_pair(key, sq));
+        HeadSQAtom o(atom);
+        o.index = reference_by_id.size();
+        reference_by_id.insert(make_pair(key, o));
     }
 };
-void HtsHead::add_read_group(const HeadRGAtom& rg) {
-    string key(rg);
-    if(read_group_by_id.count(key) == 0) {
-        read_group_by_id.emplace(make_pair(key, rg));
+void HtsHead::add_read_group(const HeadRGAtom& atom) {
+    string key(atom);
+    auto record = read_group_by_id.find(key);
+    if(record != read_group_by_id.end()) {
+        record->second.update(atom);
+    } else {
+        HeadRGAtom o(atom);
+        o.index = read_group_by_id.size();
+        read_group_by_id.insert(make_pair(key, o));
     }
 };
-void HtsHead::add_program(const HeadPGAtom& pg) {
-    string key(pg);
-    if(program_by_id.count(key) == 0) {
-        program_by_id.emplace(make_pair(key, pg));
+void HtsHead::add_program(const HeadPGAtom& atom) {
+    string key(atom);
+    auto record = program_by_id.find(key);
+    if(record != program_by_id.end()) {
+        record->second.update(atom);
+    } else {
+        HeadPGAtom o(atom);
+        o.index = program_by_id.size();
+        program_by_id.insert(make_pair(key, o));
     }
 };
-void HtsHead::add_comment(const HeadCOAtom& co) {
-    comments.push_back(co);
+void HtsHead::add_comment(const HeadCOAtom& atom) {
+    comment_by_index.push_back(atom);
 };
 ostream& operator<<(ostream& o, const HtsHead& head) {
     o << head.hd;
@@ -1433,7 +1482,7 @@ ostream& operator<<(ostream& o, const HtsHead& head) {
     for(const auto& record : head.program_by_id) {
         o << record.second;
     }
-    for(const auto& co : head.comments) {
+    for(const auto& co : head.comment_by_index) {
         o << co;
     }
     return o;
