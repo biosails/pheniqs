@@ -14,7 +14,7 @@ Environment
     Feed buffer capacity                        2048
     Threads                                     1
     Decoding threads                            1
-    HTSLib threads                               1
+    HTSLib threads                              1
 
 Input 
 
