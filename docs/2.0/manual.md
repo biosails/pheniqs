@@ -402,17 +402,26 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 >**Example 2.14** `base input path` and `base output path` do not have to be **absolute** URLs and may contain environment variables enclosed in curly brackets. The `~` character in the beginning of a URL is interpreted as the `HOME` environment variable on most POSIX shells and resolves to the home directory of the currently logged in user. **relative** URLs are resolved against the `working directory` which is the directory where Pheniqs was executed.
 {: .example}
 
+## Query Parameters
+Pheniqs will try to guess output format and compression from the output URL file extensions. You can however specify those explicitly using [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Parameters explicitly specified in the query will override guessed parameters.
+
+| Name | Description | Type |
+| :--- | :---------- | :--- |
+| **format** | file format | `sam`, `bam`, `cram` or `fastq` |
+| **compression** | compression algorithm for `bam` and `fastq` formats | `gz`, `bgzf`, `none`|
+| **level** | zlib compression level when using `gz` or `bgzf` compression | 0-9 |
+
 ## Standard streams
-If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. Pheniqs allocates output format according to the output URL file extension. When writing to **/dev/stdout** you can specify a format with the `-F/--format` command line parameter: `sam`, `bam`, `cram` or `fastq`. For FASTQ output format you can specify compression with `-Z/--compression`: either `none` or `gz`. You can also use the **exploded** URL directive syntax to provide more details about the output stream. You may also specify **/dev/null** as a URL in an `output` directive to discard the output.
+If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. When writing to **/dev/stdout** you will want to explicitly provide a format with a [URL query parameter](https://en.wikipedia.org/wiki/Query_string) or specify a default format with the `-F/--format` command line parameter: `sam`, `bam`, `cram` or `fastq`. For FASTQ output format you can specify compression with `-Z/--compression`: either `none`, `gz` or `bgzf`. You may even specify **/dev/null** as a URL in an `output` directive to discard the output.
 
 >```json
 {
     "output": [
-        { "path": "/dev/stdout", "type": "cram" }
+      "/dev/stdout?format=cram"
     ]
 }
 ```
->**Example 2.15** Declaring interleaved CRAM output to standard output using the **exploded** URL syntax.
+>**Example 2.15** Declaring interleaved CRAM output to standard output using the **format** URL query parameter.
 {: .example}
 
 # Phred offset
