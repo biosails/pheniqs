@@ -1556,6 +1556,12 @@ void Transcode::print_global_instruction(ostream& o) const {
 
     int32_t threads(decode_value_by_key< int32_t >("threads", ontology));
     o << "    Threads                                     " << to_string(threads) << endl;
+
+    int32_t decoding_threads(decode_value_by_key< int32_t >("decoding threads", ontology));
+    o << "    Decoding threads                            " << to_string(decoding_threads) << endl;
+
+    int32_t htslib_threads(decode_value_by_key< int32_t >("htslib threads", ontology));
+    o << "    HTSLib threads                              " << to_string(htslib_threads) << endl;
     o << endl;
 };
 void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {
