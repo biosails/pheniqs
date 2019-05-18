@@ -261,7 +261,10 @@ install: pheniqs install.zsh_completion
 
 .PHONY: install.zsh_completion
 install.zsh_completion: _pheniqs
-	install _pheniqs $(ZSH_PREFIX)/site-functions
+	$(and $(ZSH_PREFIX), \
+    $(or $(wildcard $(ZSH_PREFIX)/site-functions),!$(shell mkdir -p $(ZSH_PREFIX)/site-functions)), \
+    install _pheniqs $(ZSH_PREFIX)/site-functions \
+)
 
 .PHONY: uninstall.zsh_completion
 uninstall.zsh_completion:
