@@ -123,7 +123,7 @@ class Tag {
             length = size;
         };
         inline const char& type() const {
-            return *(reinterpret_cast< char* >(data))   ;
+            return *(reinterpret_cast< char* >(data));
         };
         inline bool empty() const {
             return length == 0;
@@ -303,7 +303,6 @@ class Auxiliary {
             #endif
 
             EE = 0;
-
         };
         void imitate(const Auxiliary& other) {
             ks_clear(FS);

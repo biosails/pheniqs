@@ -32,6 +32,11 @@
     #define PHENIQS_EXTENDED_SAM_TAG
 */
 
+/*  Support for propegating SAM alignment fields
+    Incomplete experimental code pending further reasearch into rules for transformtion
+    #define PHENIQS_SAM_ALIGNMENT
+*/
+
 /* STL dependencies */
 #include <algorithm>
 #include <cmath>

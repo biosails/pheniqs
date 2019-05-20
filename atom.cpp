@@ -244,6 +244,26 @@ ostream& operator<<(ostream& o, const htsCompression& value) {
     return o;
 };
 
+/*
+typedef struct htsFormat {
+    enum htsFormatCategory category;
+    enum htsExactFormat format;
+    struct { short major, minor; } version;
+    enum htsCompression compression;
+    short compression_level;  // currently unused
+    void *specific;  // format specific options; see struct hts_opt.
+} htsFormat;
+*/
+ostream& operator<<(ostream& o, const htsFormat& hts_format) {
+    o << "htsFormatCategory " << hts_format.category << endl;
+    o << "htsExactFormat " << hts_format.format << endl;
+    o << "version " << hts_format.version.major << "." << hts_format.version.minor << endl;
+    o << "htsCompression " << hts_format.compression << endl;
+    o << "compression_level " << int32_t(hts_format.compression_level) << endl;
+    return o;
+};
+
+
 string to_string(const Platform& value) {
     string result;
     switch(value) {
@@ -373,18 +393,20 @@ template <> Algorithm decode_value_by_key(const Value::Ch* key, const Value& con
 HeadHDAtom::HeadHDAtom() :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
-    GO({ 0, 0, NULL }) {
+    GO({ 0, 0, NULL }),
+    SS({ 0, 0, NULL }) {
     to_kstring(HtsSortOrder::UNKNOWN, SO);
     to_kstring(HtsGrouping::QUERY, GO);
 };
 HeadHDAtom::HeadHDAtom(const Value& ontology) try :
-    VN({ 0, 0, NULL }),
+    VN(decode_value_by_key< kstring_t >("VN", ontology)),
     SO({ 0, 0, NULL }),
-    GO({ 0, 0, NULL }) {
+    GO({ 0, 0, NULL }),
+    SS({ 0, 0, NULL }) {
 
-    decode_value_by_key< kstring_t >("VN", VN, ontology);
     decode_value_by_key< kstring_t >("SO", SO, ontology);
     decode_value_by_key< kstring_t >("GO", GO, ontology);
+    decode_value_by_key< kstring_t >("SS", SS, ontology);
 
     } catch(Error& error) {
         error.push("HeadHDAtom");
@@ -393,15 +415,19 @@ HeadHDAtom::HeadHDAtom(const Value& ontology) try :
 HeadHDAtom::HeadHDAtom(const HeadHDAtom& other) :
     VN({ 0, 0, NULL }),
     SO({ 0, 0, NULL }),
-    GO({ 0, 0, NULL }){
+    GO({ 0, 0, NULL }),
+    SS({ 0, 0, NULL }) {
+
     if(ks_not_empty(other.VN)) ks_put_string(other.VN, VN);
     if(ks_not_empty(other.SO)) ks_put_string(other.SO, SO);
     if(ks_not_empty(other.GO)) ks_put_string(other.GO, GO);
+    if(ks_not_empty(other.SS)) ks_put_string(other.SS, SS);
 };
 HeadHDAtom::~HeadHDAtom() {
     ks_free(VN);
     ks_free(SO);
     ks_free(GO);
+    ks_free(SS);
 };
 HeadHDAtom& HeadHDAtom::operator=(const HeadHDAtom& other) {
     if(&other == this) {
@@ -410,9 +436,11 @@ HeadHDAtom& HeadHDAtom::operator=(const HeadHDAtom& other) {
         ks_clear(VN);
         ks_clear(SO);
         ks_clear(GO);
+        ks_clear(SS);
         if(ks_not_empty(other.VN)) ks_put_string(other.VN, VN);
         if(ks_not_empty(other.SO)) ks_put_string(other.SO, SO);
         if(ks_not_empty(other.GO)) ks_put_string(other.GO, GO);
+        if(ks_not_empty(other.SS)) ks_put_string(other.SS, SS);
     }
     return *this;
 };
@@ -429,6 +457,10 @@ void HeadHDAtom::encode(kstring_t& buffer) const {
     if(ks_not_empty(GO)) {
         ks_put_string_("\tGO:", 4, buffer);
         ks_put_string_(GO, buffer);
+    }
+    if(ks_not_empty(SS)) {
+        ks_put_string_("\tSS:", 4, buffer);
+        ks_put_string_(SS, buffer);
     }
     ks_put_character(LINE_BREAK, buffer);
 };
@@ -448,6 +480,10 @@ char* HeadHDAtom::decode(char* position, const char* end) {
             };
             case uint16_t(HtsTagCode::GO): {
                 position = copy_until_tag_end(position, end, GO);
+                break;
+            };
+            case uint16_t(HtsTagCode::SS): {
+                position = copy_until_tag_end(position, end, SS);
                 break;
             };
             default:
@@ -474,6 +510,7 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd) {
     if(ks_not_empty(hd.VN)) o << "VN : " << hd.VN.s << endl;
     if(ks_not_empty(hd.SO)) o << "SO : " << hd.SO.s << endl;
     if(ks_not_empty(hd.GO)) o << "GO : " << hd.GO.s << endl;
+    if(ks_not_empty(hd.SS)) o << "SS : " << hd.SS.s << endl;
     return o;
 };
 
@@ -1348,6 +1385,7 @@ void HtsHead::decode(const bam_hdr_t* hdr) {
             ks_put_string(hdr->target_name[index], sq.SN);
             add_reference(sq);
         }
+
         char* position(hdr->text);
         char* end(position + hdr->l_text);
         while(position < end) {

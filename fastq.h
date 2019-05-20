@@ -369,8 +369,8 @@ class FastqFeed : public BufferedFeed< FastqRecord > {
                                 break;
                             };
                         };
-                        if(url.zlib_compression_level() != ZlibCompressionLevel::UNKNOWN) {
-                            mode.append(to_string(url.zlib_compression_level()));
+                        if(url.compression_level() != CompressionLevel::UNKNOWN) {
+                            mode.append(to_string(url.compression_level()));
                         }
                         bgzf_file = bgzf_hopen(hfile, mode.c_str());
 

@@ -83,18 +83,7 @@ void encode_key_value(const string& key, const FormatCompression& value, Value& 
 template<> bool decode_value_by_key< FormatCompression >(const Value::Ch* key, FormatCompression& value, const Value& container);
 template<> FormatCompression decode_value_by_key< FormatCompression >(const Value::Ch* key, const Value& container);
 
-enum class URLQueryParameter : uint8_t {
-    UNKNOWN,
-    FORMAT_COMPRESSION,
-    FORMAT_TYPE,
-    ZLIB_LEVEL,
-};
-string to_string(const URLQueryParameter& value);
-bool from_string(const char* value, URLQueryParameter& result);
-bool from_string(const string& value, URLQueryParameter& result);
-ostream& operator<<(ostream& o, const URLQueryParameter& value);
-
-enum class ZlibCompressionLevel : uint8_t {
+enum class CompressionLevel : uint8_t {
     UNKNOWN,
     LEVEL_0,
     LEVEL_1,
@@ -107,10 +96,21 @@ enum class ZlibCompressionLevel : uint8_t {
     LEVEL_8,
     LEVEL_9,
 };
-string to_string(const ZlibCompressionLevel& value);
-bool from_string(const char* value, ZlibCompressionLevel& result);
-bool from_string(const string& value, ZlibCompressionLevel& result);
-ostream& operator<<(ostream& o, const ZlibCompressionLevel& value);
+string to_string(const CompressionLevel& value);
+bool from_string(const char* value, CompressionLevel& result);
+bool from_string(const string& value, CompressionLevel& result);
+ostream& operator<<(ostream& o, const CompressionLevel& value);
+
+enum class URLQueryParameter : uint8_t {
+    UNKNOWN,
+    FORMAT_TYPE,
+    FORMAT_COMPRESSION,
+    COMPRESSION_LEVEL,
+};
+string to_string(const URLQueryParameter& value);
+bool from_string(const char* value, URLQueryParameter& result);
+bool from_string(const string& value, URLQueryParameter& result);
+ostream& operator<<(ostream& o, const URLQueryParameter& value);
 
 string& expand_shell(string& expression);
 void normalize_standard_stream(string& path, const IoDirection& direction);
@@ -126,7 +126,7 @@ class URL {
         void parse(const string& encoded);
         void set_type(const FormatType type);
         void set_compression(const FormatCompression& compression);
-        void set_zlib_compression_level(const ZlibCompressionLevel& level);
+        void set_compression_level(const CompressionLevel& level);
         void override_query(const URL& other);
         void relocate_child(const URL& base);
         void relocate_sibling(const URL& base);
@@ -151,8 +151,8 @@ class URL {
         inline const FormatCompression& compression() const {
             return _format_compression;
         };
-        inline const ZlibCompressionLevel& zlib_compression_level() const {
-            return _zlib_compression_level;
+        inline const CompressionLevel& compression_level() const {
+            return _compression_level;
         };
         inline bool empty() const {
             return _encoded.empty();
@@ -207,7 +207,7 @@ class URL {
             _query.clear();
             _format_type = FormatType::UNKNOWN;
             _format_compression = FormatCompression::UNKNOWN;
-            _zlib_compression_level = ZlibCompressionLevel::UNKNOWN;
+            _compression_level = CompressionLevel::UNKNOWN;
         };
         bool is_readable() const;
         bool is_writable() const;
@@ -224,7 +224,7 @@ class URL {
         string _query;
         FormatType _format_type;
         FormatCompression _format_compression;
-        ZlibCompressionLevel _zlib_compression_level;
+        CompressionLevel _compression_level;
         void refresh();
         void parse_query();
         void apply_query_parameter(const string& key, const string& value);

@@ -45,6 +45,16 @@ enum class HtsTagCode : uint16_t;
             none
             query       grouped by QNAME
             reference   grouped by RNAME/POS
+    SS  Sub-sorting order of alignments. Valid values are of the form sort-order:sub-sort,
+        where sort- order is the same value stored in the SO tag and sub-sort is an implementation-dependent
+        colon-separated string further describing the sort order.
+        For example, if an algorithm relies on a coordinate sort that, at each coordinate,
+        is further sorted by query name the header could contain @HD SO:coordinate SS:coordinate:queryname.
+        If the primary sort is not one of the predefined primary sort orders, then unsorted should be used
+        and the subsort is effectively the major sort.
+        For example, if sorted by an auxillary tag MI then by coordinate then the header could contain
+        @HD SO:unsorted SS:unsorted:MI:coordinate.
+        Regular expression: (coordinate|queryname|unsorted)(:[A-Za-z0-9_-]+)+
 */
 class HeadHDAtom {
     friend class HtsHead;
@@ -54,6 +64,7 @@ class HeadHDAtom {
         kstring_t VN;
         kstring_t SO;
         kstring_t GO;
+        kstring_t SS;
 
         HeadHDAtom();
         HeadHDAtom(const Value& ontology);
@@ -82,8 +93,10 @@ ostream& operator<<(ostream& o, const HeadHDAtom& hd);
         Must not be present on sequences in the primary assembly.
     AN  Alternative reference sequence names.
     AS  Genome assembly identifier.
+    DS  Description. UTF-8 encoding may be used.
     M5  MD5 checksum of the sequence in the uppercase, excluding spaces but including pads (as ‘*’s).
     SP  Species.
+    TP  Molecule topology. Valid values: linear (default) and circular.
     UR  URI of the sequence. This value may start with one of the standard protocols, e.g http: or ftp:.
         If it does not start with one of these protocols, it is assumed to be a file-system path.
 */
@@ -360,6 +373,9 @@ ostream& operator<<(ostream& o, const Algorithm& value);
 bool encode_key_value(const string& key, const Algorithm& value, Value& container, Document& document);
 
 /*  defined in htslib/hts.h */
+
+ostream& operator<<(ostream& o, const htsFormat& hts_format);
+
 string to_string(const htsFormatCategory& value);
 bool from_string(const char* value, htsFormatCategory& result);
 ostream& operator<<(ostream& o, const htsFormatCategory& hts_format_category);
@@ -455,7 +471,9 @@ enum class HtsTagCode : uint16_t {
     SO = 0x534f,
     SP = 0x5350,
     SQ = 0x5351,
+    SS = 0x5353,
     TC = 0x5443,
+    TP = 0x5450,
     U2 = 0x5532,
     UQ = 0x5551,
     UR = 0x5552,
@@ -471,7 +489,6 @@ enum class HtsTagCode : uint16_t {
     XR = 0x5852,
     XZ = 0x585a,
     YD = 0x5944,
-    TP = 0x5450,
 };
 
 /*  HTS header */

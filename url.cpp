@@ -175,21 +175,61 @@ template <> FormatCompression decode_value_by_key(const Value::Ch* key, const Va
     return value;
 };
 
+string to_string(const CompressionLevel& value) {
+    string result;
+    switch (value) {
+    case CompressionLevel::LEVEL_0: result.assign("0"); break;
+    case CompressionLevel::LEVEL_1: result.assign("1"); break;
+    case CompressionLevel::LEVEL_2: result.assign("2"); break;
+    case CompressionLevel::LEVEL_3: result.assign("3"); break;
+    case CompressionLevel::LEVEL_4: result.assign("4"); break;
+    case CompressionLevel::LEVEL_5: result.assign("5"); break;
+    case CompressionLevel::LEVEL_6: result.assign("6"); break;
+    case CompressionLevel::LEVEL_7: result.assign("7"); break;
+    case CompressionLevel::LEVEL_8: result.assign("8"); break;
+    case CompressionLevel::LEVEL_9: result.assign("9"); break;
+    default:                                                break;
+    }
+    return result;
+};
+bool from_string(const char* value, CompressionLevel& result) {
+         if(value == NULL)          result = CompressionLevel::UNKNOWN;
+    else if(!strcmp(value, "0"))    result = CompressionLevel::LEVEL_0;
+    else if(!strcmp(value, "1"))    result = CompressionLevel::LEVEL_1;
+    else if(!strcmp(value, "2"))    result = CompressionLevel::LEVEL_2;
+    else if(!strcmp(value, "3"))    result = CompressionLevel::LEVEL_3;
+    else if(!strcmp(value, "4"))    result = CompressionLevel::LEVEL_4;
+    else if(!strcmp(value, "5"))    result = CompressionLevel::LEVEL_5;
+    else if(!strcmp(value, "6"))    result = CompressionLevel::LEVEL_6;
+    else if(!strcmp(value, "7"))    result = CompressionLevel::LEVEL_7;
+    else if(!strcmp(value, "8"))    result = CompressionLevel::LEVEL_8;
+    else if(!strcmp(value, "9"))    result = CompressionLevel::LEVEL_9;
+    else                            result = CompressionLevel::UNKNOWN;
+    return (result == CompressionLevel::UNKNOWN ? false : true);
+};
+bool from_string(const string& value, CompressionLevel& result) {
+    return from_string(value.c_str(), result);
+};
+ostream& operator<<(ostream& o, const CompressionLevel& value) {
+    o << to_string(value);
+    return o;
+};
+
 string to_string(const URLQueryParameter& value) {
     string result;
     switch (value) {
+    case URLQueryParameter::FORMAT_TYPE:        result.assign("format");        break;
     case URLQueryParameter::FORMAT_COMPRESSION: result.assign("compression");   break;
-    case URLQueryParameter::FORMAT_TYPE:        result.assign("format");   break;
-    case URLQueryParameter::ZLIB_LEVEL:         result.assign("level");    break;
+    case URLQueryParameter::COMPRESSION_LEVEL:  result.assign("level");         break;
     default:                                                                    break;
     }
     return result;
 };
 bool from_string(const char* value, URLQueryParameter& result) {
          if(value == NULL)                  result = URLQueryParameter::UNKNOWN;
+    else if(!strcmp(value, "format"))       result = URLQueryParameter::FORMAT_TYPE;
     else if(!strcmp(value, "compression"))  result = URLQueryParameter::FORMAT_COMPRESSION;
-    else if(!strcmp(value, "format"))  result = URLQueryParameter::FORMAT_TYPE;
-    else if(!strcmp(value, "level"))   result = URLQueryParameter::ZLIB_LEVEL;
+    else if(!strcmp(value, "level"))        result = URLQueryParameter::COMPRESSION_LEVEL;
     else                                    result = URLQueryParameter::UNKNOWN;
     return (result == URLQueryParameter::UNKNOWN ? false : true);
 };
@@ -201,49 +241,10 @@ ostream& operator<<(ostream& o, const URLQueryParameter& value) {
     return o;
 };
 
-string to_string(const ZlibCompressionLevel& value) {
-    string result;
-    switch (value) {
-    case ZlibCompressionLevel::LEVEL_0: result.assign("0"); break;
-    case ZlibCompressionLevel::LEVEL_1: result.assign("1"); break;
-    case ZlibCompressionLevel::LEVEL_2: result.assign("2"); break;
-    case ZlibCompressionLevel::LEVEL_3: result.assign("3"); break;
-    case ZlibCompressionLevel::LEVEL_4: result.assign("4"); break;
-    case ZlibCompressionLevel::LEVEL_5: result.assign("5"); break;
-    case ZlibCompressionLevel::LEVEL_6: result.assign("6"); break;
-    case ZlibCompressionLevel::LEVEL_7: result.assign("7"); break;
-    case ZlibCompressionLevel::LEVEL_8: result.assign("8"); break;
-    case ZlibCompressionLevel::LEVEL_9: result.assign("9"); break;
-    default:                                                break;
-    }
-    return result;
-};
-bool from_string(const char* value, ZlibCompressionLevel& result) {
-         if(value == NULL)          result = ZlibCompressionLevel::UNKNOWN;
-    else if(!strcmp(value, "0"))    result = ZlibCompressionLevel::LEVEL_0;
-    else if(!strcmp(value, "1"))    result = ZlibCompressionLevel::LEVEL_1;
-    else if(!strcmp(value, "2"))    result = ZlibCompressionLevel::LEVEL_2;
-    else if(!strcmp(value, "3"))    result = ZlibCompressionLevel::LEVEL_3;
-    else if(!strcmp(value, "4"))    result = ZlibCompressionLevel::LEVEL_4;
-    else if(!strcmp(value, "5"))    result = ZlibCompressionLevel::LEVEL_5;
-    else if(!strcmp(value, "6"))    result = ZlibCompressionLevel::LEVEL_6;
-    else if(!strcmp(value, "7"))    result = ZlibCompressionLevel::LEVEL_7;
-    else if(!strcmp(value, "8"))    result = ZlibCompressionLevel::LEVEL_8;
-    else if(!strcmp(value, "9"))    result = ZlibCompressionLevel::LEVEL_9;
-    else                            result = ZlibCompressionLevel::UNKNOWN;
-    return (result == ZlibCompressionLevel::UNKNOWN ? false : true);
-};
-bool from_string(const string& value, ZlibCompressionLevel& result) {
-    return from_string(value.c_str(), result);
-};
-ostream& operator<<(ostream& o, const ZlibCompressionLevel& value) {
-    o << to_string(value);
-    return o;
-};
 URL::URL() :
     _format_type(FormatType::UNKNOWN),
     _format_compression(FormatCompression::UNKNOWN),
-    _zlib_compression_level(ZlibCompressionLevel::UNKNOWN) {
+    _compression_level(CompressionLevel::UNKNOWN) {
 };
 URL::URL(const URL& other) :
     _encoded(other._encoded),
@@ -253,12 +254,12 @@ URL::URL(const URL& other) :
     _query(other._query),
     _format_type(other._format_type),
     _format_compression(other._format_compression),
-    _zlib_compression_level(other._zlib_compression_level) {
+    _compression_level(other._compression_level) {
 };
 URL::URL(const string& encoded) :
     _format_type(FormatType::UNKNOWN),
     _format_compression(FormatCompression::UNKNOWN),
-    _zlib_compression_level(ZlibCompressionLevel::UNKNOWN) {
+    _compression_level(CompressionLevel::UNKNOWN) {
     parse(encoded);
 };
 void URL::parse(const string& encoded) {
@@ -384,8 +385,8 @@ void URL::apply_query_parameter(const string& key, const string& value) {
                 from_string(value, _format_type);
                 break;
             };
-            case URLQueryParameter::ZLIB_LEVEL: {
-                from_string(value, _zlib_compression_level);
+            case URLQueryParameter::COMPRESSION_LEVEL: {
+                from_string(value, _compression_level);
                 break;
             };
             case URLQueryParameter::UNKNOWN: {
@@ -420,12 +421,14 @@ void URL::refresh() {
         switch(_format_type) {
             case FormatType::SAM: {
                 _format_compression = FormatCompression::NONE;
+                _compression_level = CompressionLevel::UNKNOWN;
                 break;
             };
             case FormatType::BAM:
             case FormatType::FASTQ: {
                 switch(_format_compression) {
                     case FormatCompression::NONE: {
+                        _compression_level = CompressionLevel::UNKNOWN;
                         break;
                     };
                     case FormatCompression::GZIP: {
@@ -446,23 +449,13 @@ void URL::refresh() {
             };
             case FormatType::JSON: {
                 _format_compression = FormatCompression::NONE;
+                _compression_level = CompressionLevel::UNKNOWN;
                 break;
             };
             default: {
                 _format_compression = FormatCompression::UNKNOWN;
                 break;
             };
-        }
-
-        /* make sure only valid compression level is specified for each compression */
-        switch(_format_compression) {
-            case FormatCompression::GZIP:
-            case FormatCompression::BGZF: {
-                break;
-            };
-            default:
-                _zlib_compression_level = ZlibCompressionLevel::UNKNOWN;
-                break;
         }
 
         if(_format_compression != FormatCompression::UNKNOWN) {
@@ -472,11 +465,11 @@ void URL::refresh() {
             _query.append(to_string(_format_compression));
         }
 
-        if(_zlib_compression_level != ZlibCompressionLevel::UNKNOWN) {
+        if(_compression_level != CompressionLevel::UNKNOWN) {
             if (!_query.empty()) { _query.push_back('&'); }
-            _query.append(to_string(URLQueryParameter::ZLIB_LEVEL));
+            _query.append(to_string(URLQueryParameter::COMPRESSION_LEVEL));
             _query.push_back('=');
-            _query.append(to_string(_zlib_compression_level));
+            _query.append(to_string(_compression_level));
         }
     }
 
@@ -498,8 +491,8 @@ void URL::set_compression(const FormatCompression& compression) {
     _format_compression = compression;
     refresh();
 };
-void URL::set_zlib_compression_level(const ZlibCompressionLevel& level) {
-    _zlib_compression_level = level;
+void URL::set_compression_level(const CompressionLevel& level) {
+    _compression_level = level;
     refresh();
 };
 void URL::override_query(const URL& other) {
@@ -509,8 +502,8 @@ void URL::override_query(const URL& other) {
     if(other._format_compression != FormatCompression::UNKNOWN) {
         _format_compression = other._format_compression;
     }
-    if(other._zlib_compression_level != ZlibCompressionLevel::UNKNOWN) {
-        _zlib_compression_level = other._zlib_compression_level;
+    if(other._compression_level != CompressionLevel::UNKNOWN) {
+        _compression_level = other._compression_level;
     }
     refresh();
 };
@@ -573,7 +566,7 @@ URL& URL::operator=(const URL& other) {
         _query.assign(other._query);
         _format_type = other._format_type;
         _format_compression = other._format_compression;
-        _zlib_compression_level = other._zlib_compression_level;
+        _compression_level = other._compression_level;
     }
     return *this;
 };
@@ -582,36 +575,36 @@ URL::operator string() const {
 };
 string URL::description() const {
     string description;
-    description.append("URL         : ");
+    description.append("URL                : ");
     description.append(_encoded);
     description.append("\n");
 
-    description.append("Path        : ");
+    description.append("Path               : ");
     description.append(_path);
     description.append("\n");
 
-    description.append("Basename    : ");
+    description.append("Basename           : ");
     description.append(_basename);
     description.append("\n");
 
-    description.append("Dirname     : ");
+    description.append("Dirname            : ");
     description.append(_dirname);
     description.append("\n");
 
-    description.append("Query       : ");
+    description.append("Query              : ");
     description.append(_query);
     description.append("\n");
 
-    description.append("Compression : ");
-    description.append(to_string(_format_compression));
-    description.append("\n");
-
-    description.append("Type        : ");
+    description.append("Type               : ");
     description.append(to_string(_format_type));
     description.append("\n");
 
-    description.append("Zlib level  : ");
-    description.append(to_string(_zlib_compression_level));
+    description.append("Compression        : ");
+    description.append(to_string(_format_compression));
+    description.append("\n");
+
+    description.append("Compression level  : ");
+    description.append(to_string(_compression_level));
     description.append("\n");
 
     return description;

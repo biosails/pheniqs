@@ -136,12 +136,11 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                                 break;
                             };
                             default: {
-                                mode.push_back('u');
                                 break;
                             };
                         };
-                        if(url.zlib_compression_level() != ZlibCompressionLevel::UNKNOWN) {
-                            mode.append(to_string(url.zlib_compression_level()));
+                        if(url.compression_level() != CompressionLevel::UNKNOWN) {
+                            mode.append(to_string(url.compression_level()));
                         }
                         switch(url.type()) {
                             case FormatType::SAM:

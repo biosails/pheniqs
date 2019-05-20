@@ -409,7 +409,7 @@ Pheniqs will try to guess output format and compression from the output URL file
 | :--- | :---------- | :--- |
 | **format** | file format | `sam`, `bam`, `cram` or `fastq` |
 | **compression** | compression algorithm for `bam` and `fastq` formats | `gz`, `bgzf`, `none`|
-| **level** | zlib compression level when using `gz` or `bgzf` compression | `0`-`9` |
+| **level** | compression level | `0`-`9` |
 
 ## Standard streams
 If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. When writing to **/dev/stdout** you will want to explicitly provide a format with a [URL query parameter](https://en.wikipedia.org/wiki/Query_string) or specify a default format with the `-F/--format` command line parameter: `sam`, `bam`, `cram` or `fastq`. For FASTQ output format you can specify compression with `-Z/--compression`: either `none`, `gz` or `bgzf`. You may even specify **/dev/null** as a URL in an `output` directive to discard the output.
