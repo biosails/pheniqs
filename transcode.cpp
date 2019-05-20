@@ -329,8 +329,12 @@ void Transcode::compile_PG() {
 };
 void Transcode::compile_input() {
     int32_t total_threads(decode_value_by_key< int32_t >("threads", ontology));
-    int32_t htslib_threads(max(1, total_threads));
-    encode_key_value("htslib threads", htslib_threads, ontology, ontology);
+
+    int32_t htslib_threads;
+    if(!decode_value_by_key("htslib threads", htslib_threads, ontology)) {
+        htslib_threads = max(1, total_threads);
+        encode_key_value("htslib threads", htslib_threads, ontology, ontology);
+    }
 
     /* Populate the input_feed_by_index and input_feed_by_segment arrays */
     standardize_url_value_by_key("base input url", ontology, ontology, IoDirection::IN);
@@ -1083,9 +1087,13 @@ void Transcode::cross_validate_io() {
 };
 void Transcode::compile_thread_model() {
     int32_t total_threads(decode_value_by_key< int32_t >("threads", ontology));
-    int32_t decoding_threads(int32_t(round(double(total_threads) * (double(decoded_nucleotide_cardinality) / 1000.0))));
-    decoding_threads = max(1, min(total_threads, max(1, decoding_threads)));
-    encode_key_value("decoding threads", decoding_threads, ontology, ontology);
+
+    int32_t decoding_threads;
+    if(!decode_value_by_key("decoding threads", decoding_threads, ontology)) {
+        decoding_threads = int32_t(round(double(total_threads) * (double(decoded_nucleotide_cardinality) / 1000.0)));
+        decoding_threads = max(1, min(total_threads, max(1, decoding_threads)));
+        encode_key_value("decoding threads", decoding_threads, ontology, ontology);
+    }
 };
 /* validate */
 void Transcode::validate() {

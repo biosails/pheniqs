@@ -291,6 +291,22 @@
                 },
                 {
                     "handle": [
+                        "--decoding-threads"
+                    ],
+                    "help": "Number of parallel decoding threads",
+                    "name": "decoding threads",
+                    "type": "integer"
+                },
+                {
+                    "handle": [
+                        "--htslib-threads"
+                    ],
+                    "help": "Size of htslib thread pool size",
+                    "name": "htslib threads",
+                    "type": "integer"
+                },
+                {
+                    "handle": [
                         "-B",
                         "--buffer"
                     ],
@@ -1357,43 +1373,10 @@
                     "type": "object"
                 },
                 "url": {
-                    "description": "Either provide a file path as a string or a dictionary with a path and type attributes.",
-                    "oneOf": [
-                        {
-                            "properties": {
-                                "compression": {
-                                    "enum": [
-                                        "gz"
-                                    ],
-                                    "type": "string"
-                                },
-                                "path": {
-                                    "minLength": 1,
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "fq",
-                                        "fastq",
-                                        "bam",
-                                        "cram",
-                                        "sam",
-                                        "json"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "path"
-                            ],
-                            "type": "object"
-                        },
-                        {
-                            "minLength": 1,
-                            "type": "string"
-                        }
-                    ],
-                    "title": "URL"
+                    "description": "File path as a string with optional query string.",
+                    "minLength": 1,
+                    "title": "URL",
+                    "type": "string"
                 },
                 "url_array": {
                     "items": {
