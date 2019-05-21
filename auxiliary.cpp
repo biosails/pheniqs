@@ -219,7 +219,6 @@ Auxiliary::~Auxiliary() {
 };
 void Auxiliary::decode(const bam1_t* bam1) {
     if(bam1 != NULL) {
-        Tag tag;
         char* value;
         const uint8_t* position(NULL);
         const uint8_t* next(bam_get_aux(bam1));
