@@ -173,6 +173,10 @@
 <a name="sanger_format" />Sanger Format
 : A Phred quality encoding that encodes quality scores from 0 to 93 using ASCII 33 to 126. Since encoding to ASCII involves adding 33 to the Phred value the encoding offset is said to be **33**. Current Illumina platforms directly produce FASTQ in Sanger format and it is the only quality encoding allowed in [SAM](#htslib) records. See the [FASTQ wikipedia page for more details](https://en.wikipedia.org/wiki/FASTQ_format#Encoding).
 
+<a name="qc_fail" />QC Fail Flag
+: Some reads are marked as failing quality control. This is [signaled](https://en.wikipedia.org/wiki/FASTQ_format#Illumina_sequence_identifiers) on the comment portion of the read identifier in [FASTQ](glossary.html#fastq) files or the **512** flag on a SAM record flag. Reads that pass quality control are called **PF** for **pass-filter** (SAM flag **ON**), while those that fail are often referred to as **QC fail** reads (SAM flag **OFF**).
+
+
 <!--
 <a name="" />
 TERM
