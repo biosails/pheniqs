@@ -84,7 +84,6 @@ template<> bool decode_value_by_key< FormatCompression >(const Value::Ch* key, F
 template<> FormatCompression decode_value_by_key< FormatCompression >(const Value::Ch* key, const Value& container);
 
 enum class CompressionLevel : uint8_t {
-    UNKNOWN,
     LEVEL_0,
     LEVEL_1,
     LEVEL_2,
@@ -95,11 +94,15 @@ enum class CompressionLevel : uint8_t {
     LEVEL_7,
     LEVEL_8,
     LEVEL_9,
+    UNKNOWN,
 };
 string to_string(const CompressionLevel& value);
 bool from_string(const char* value, CompressionLevel& result);
 bool from_string(const string& value, CompressionLevel& result);
 ostream& operator<<(ostream& o, const CompressionLevel& value);
+void encode_key_value(const string& key, const CompressionLevel& value, Value& container, Document& document);
+template<> bool decode_value_by_key< CompressionLevel >(const Value::Ch* key, CompressionLevel& value, const Value& container);
+template<> CompressionLevel decode_value_by_key< CompressionLevel >(const Value::Ch* key, const Value& container);
 
 enum class URLQueryParameter : uint8_t {
     UNKNOWN,

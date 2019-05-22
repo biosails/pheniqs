@@ -3,6 +3,7 @@
         {
             "default": {
                 "default output compression": "unknown",
+                "default output compression level": "5",
                 "default output format": "sam",
                 "filter incoming qc fail": false,
                 "filter outgoing qc fail": false,
@@ -194,6 +195,27 @@
                     ],
                     "help": "Defult output compression",
                     "name": "default output compression",
+                    "type": "string"
+                },
+                {
+                    "choice": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9"
+                    ],
+                    "handle": [
+                        "-L",
+                        "--level"
+                    ],
+                    "help": "Defult output compression level",
+                    "name": "default output compression level",
                     "type": "string"
                 },
                 {
@@ -927,6 +949,9 @@
                         "default output compression": {
                             "$ref": "#/definitions/output_format_compression"
                         },
+                        "default output compression level": {
+                            "$ref": "#/definitions/output_format_compression_level"
+                        },
                         "default output format": {
                             "$ref": "#/definitions/output_format_type"
                         },
@@ -1038,7 +1063,23 @@
                 "output_format_compression": {
                     "enum": [
                         "none",
-                        "gz"
+                        "gz",
+                        "bgzf"
+                    ],
+                    "type": "string"
+                },
+                "output_format_compression_level": {
+                    "enum": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9"
                     ],
                     "type": "string"
                 },

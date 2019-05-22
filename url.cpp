@@ -214,6 +214,23 @@ ostream& operator<<(ostream& o, const CompressionLevel& value) {
     o << to_string(value);
     return o;
 };
+void encode_key_value(const string& key, const CompressionLevel& value, Value& container, Document& document) {
+    encode_key_value(key, to_string(value), container, document);
+};
+template<> bool decode_value_by_key< CompressionLevel >(const Value::Ch* key, CompressionLevel& value, const Value& container) {
+    Value::ConstMemberIterator element = container.FindMember(key);
+    if(element != container.MemberEnd() && !element->value.IsNull()) {
+        if(element->value.IsString()) {
+            from_string(element->value.GetString(), value);
+        } else { throw ConfigurationError(string(key) + " element must be a string"); }
+    }
+    return false;
+};
+template <> CompressionLevel decode_value_by_key(const Value::Ch* key, const Value& container) {
+    CompressionLevel value(CompressionLevel::UNKNOWN);
+    decode_value_by_key(key, value, container);
+    return value;
+};
 
 string to_string(const URLQueryParameter& value) {
     string result;

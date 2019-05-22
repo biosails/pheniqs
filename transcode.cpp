@@ -881,6 +881,7 @@ void Transcode::compile_output() {
     uint8_t phred_offset(decode_value_by_key< uint8_t >("output phred offset", ontology));
     FormatType default_output_format(decode_value_by_key< FormatType >("default output format", ontology));
     FormatCompression default_output_compression(decode_value_by_key< FormatCompression >("default output compression", ontology));
+    CompressionLevel default_output_compression_level(decode_value_by_key< CompressionLevel >("default output compression level", ontology));
 
     Value::MemberIterator reference = ontology.FindMember("multiplex");
     if(reference != ontology.MemberEnd()) {
@@ -938,6 +939,9 @@ void Transcode::compile_output() {
                 }
                 if(url.compression() == FormatCompression::UNKNOWN) {
                     url.set_compression(default_output_compression);
+                }
+                if(url.compression_level() == CompressionLevel::UNKNOWN) {
+                    url.set_compression_level(default_output_compression_level);
                 }
             }
 
@@ -1558,6 +1562,9 @@ void Transcode::print_global_instruction(ostream& o) const {
 
     FormatCompression default_output_compression(decode_value_by_key< FormatCompression >("default output compression", ontology));
     o << "    Default output compression                  " << default_output_compression << endl;
+
+    CompressionLevel default_output_compression_level(decode_value_by_key< CompressionLevel >("default output compression level", ontology));
+    o << "    Default output compression level            " << default_output_compression_level << endl;
 
     int32_t buffer_capacity(decode_value_by_key< int32_t >("buffer capacity", ontology));
     o << "    Feed buffer capacity                        " << to_string(buffer_capacity) << endl;
