@@ -12,6 +12,7 @@
     "configuration url": "test/BDGGG/BDGGG_interleave.json?format=json&compression=none",
     "decoding threads": 1,
     "default output compression": "unknown",
+    "default output compression level": "5",
     "default output format": "sam",
     "feed": {
         "input feed": [

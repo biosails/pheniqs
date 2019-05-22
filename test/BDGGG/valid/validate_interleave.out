@@ -11,6 +11,7 @@ Environment
     Leading segment index                       0
     Default output format                       sam
     Default output compression                  
+    Default output compression level            5
     Feed buffer capacity                        2048
     Threads                                     1
     Decoding threads                            1
