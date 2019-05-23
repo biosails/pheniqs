@@ -88,6 +88,35 @@
     Specification amendment recommendation
     EE  f   Expected number of errors in the segment sequence
 */
+
+enum class AuxiliaryTagType : uint8_t {
+    UNKNOWN,
+    PRINABLE_CHARACTER,
+    SIGNED_INTEGER,
+    FLOAT,
+    STRING,
+    BYTE_ARRAY,
+    NUMERIC_ARRAY,
+};
+string to_string(const AuxiliaryTagType& value);
+bool from_string(const char* value, AuxiliaryTagType& result);
+bool from_string(const string& value, AuxiliaryTagType& result);
+ostream& operator<<(ostream& o, const AuxiliaryTagType& value);
+
+enum class AuxiliaryArrayType : uint8_t {
+    UNKNOWN,
+    INT_8,
+    UNSIGNED_INT_8,
+    INT_16,
+    UNSIGNED_INT_16,
+    INT_32,
+    UNSIGNED_INT_32,
+};
+string to_string(const AuxiliaryArrayType& value);
+bool from_string(const char* value, AuxiliaryArrayType& result);
+bool from_string(const string& value, AuxiliaryArrayType& result);
+ostream& operator<<(ostream& o, const AuxiliaryArrayType& value);
+
 class Tag {
     public:
         uint8_t* data;
@@ -101,6 +130,9 @@ class Tag {
                 throw OutOfMemoryError();
             }
         };
+        ~Tag() {
+            free(data);
+        };
         Tag(const Tag& other) :
             length(other.length),
             capacity(other.capacity) {
@@ -109,16 +141,36 @@ class Tag {
             }
             memcpy(data, other.data, length);
         };
+        inline void increase_to_size(const int32_t& size) {
+            if(size > capacity) {
+                capacity = size;
+                kroundup32(capacity);
+                if((data = static_cast< uint8_t* >(realloc(data, capacity))) == NULL) {
+                    throw OutOfMemoryError();
+                }
+            }
+        };
+        inline void increase_by_size(const int32_t& size) {
+            int32_t increased(length + size);
+            if(increased > capacity) {
+                kroundup32(increased);
+                if((data = static_cast< uint8_t* >(realloc(data, increased))) == NULL) {
+                    throw OutOfMemoryError();
+                }
+                capacity = increased;
+            }
+        };
         void inline assign(const uint8_t* value, const int32_t& size) {
             if(size > 0) {
-                if(size >= capacity) {
-                    capacity = size + 1;
-                    kroundup32(capacity);
-                    if((this->data = static_cast< uint8_t* >(realloc(this->data, capacity))) == NULL) {
-                        throw OutOfMemoryError();
-                    }
-                }
+                increase_to_size(size);
                 memcpy(this->data, value, size);
+            }
+            length = size;
+        };
+        void inline append(const uint8_t* value, const int32_t& size) {
+            if(size > 0) {
+                increase_by_size(size);
+                memcpy(this->data + length, value, size);
             }
             length = size;
         };
@@ -130,15 +182,6 @@ class Tag {
         };
         inline void clear() {
             length = 0;
-        };
-        inline void increase_size(const int32_t& size) {
-            if(size >= capacity) {
-                capacity = length + size;
-                kroundup32(capacity);
-                if((data = static_cast< uint8_t* >(realloc(data, capacity))) == NULL) {
-                    throw OutOfMemoryError();
-                }
-            }
         };
         Tag& operator=(const Tag& other) {
             if(&other == this) {

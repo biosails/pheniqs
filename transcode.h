@@ -43,28 +43,27 @@ class Transcode : public Job {
         void operator=(Transcode const &) = delete;
         Transcode(Document& operation);
         ~Transcode() override;
-        inline bool display_distance() const {
+        inline bool is_display_distance() const {
             return decode_value_by_key< bool >("display distance", ontology);
         };
+        inline bool is_sense_input_layout() const {
+            return decode_value_by_key< bool >("sense input layout", interactive);
+        };
+        bool pull(Read& read);
         void assemble() override;
         void compile() override;
-        void validate() override;
-        void load() override;
-        void execute() override;
         void describe(ostream& o) const override;
-        void start();
-        void stop();
-        bool pull(Read& read);
 
     protected:
         uint64_t count;
         uint64_t pf_count;
         double pf_fraction;
-        inline bool sense_input_layout() const {
-            return decode_value_by_key< bool >("sense input layout", interactive);
-        };
-        void apply_interactive_ontology() override;
+        void validate() override;
+        void load() override;
+        void start() override;
+        void stop() override;
         void finalize() override;
+        void apply_interactive_ontology() override;
         Transcode& operator+=(const TranscodePivot& pivot);
 
     private:
@@ -111,7 +110,6 @@ class Transcode : public Job {
         void load_input();
         void load_output();
         void load_pivot();
-        void populate_channel(Channel& channel);
 
         void load_multiplex_decoding();
         void load_molecular_decoding();

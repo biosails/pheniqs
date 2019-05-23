@@ -92,7 +92,7 @@ void Pipeline::push_to_queue(Document& operation) {
 void Pipeline::execute_job(Job* job) {
     if(job != NULL) {
         if(job->is_static_only()) {
-            job->print_instruction(cout);
+            job->write_instruction(cout);
 
         } else if(job->is_validate_only()) {
             job->compile();
@@ -100,12 +100,12 @@ void Pipeline::execute_job(Job* job) {
 
         } else if(job->is_compile_only()) {
             job->compile();
-            job->print_compiled(cout);
+            job->write_compiled(cout);
 
         } else {
             job->compile();
             job->execute();
-            job->print_report();
+            job->write_report();
         }
     }
 };

@@ -28,12 +28,8 @@
 
 class Job {
     public:
-        const Document operation;
-        Document instruction;
-        Document ontology;
-        Document report;
         Job(Document& operation);
-        virtual ~Job() {};
+        virtual ~Job();
         inline bool is_static_only() const {
             return decode_value_by_key< bool >("static only", interactive);
         };
@@ -48,20 +44,25 @@ class Job {
         };
         virtual void assemble();
         virtual void compile();
-        virtual void validate();
-        virtual void load();
         virtual void execute();
-        virtual void finalize();
-        virtual void print_instruction(ostream& o);
-        virtual void print_ontology(ostream& o);
-        virtual void print_compiled(ostream& o) const;
-        virtual void print_report() const;
         virtual void describe(ostream& o) const;
+        virtual void write_instruction(ostream& o) const;
+        virtual void write_compiled(ostream& o) const;
+        virtual void write_report() const;
 
     protected:
+        const Document operation;
         const Value& interactive;
         const Value& schema_repository;
         const Value& projection_repository;
+        Document instruction;
+        Document ontology;
+        Document report;
+        virtual void validate();
+        virtual void load();
+        virtual void start();
+        virtual void stop();
+        virtual void finalize();
         virtual void apply_default_ontology();
         virtual void apply_interactive_ontology();
         const Value* find_schema(const string& key) const;

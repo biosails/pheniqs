@@ -23,16 +23,19 @@
 
 Job::Job(Document& operation) try :
     operation(move(operation)),
-    instruction(kObjectType),
-    ontology(kObjectType),
-    report(kObjectType),
     interactive(this->operation["interactive"]),
     schema_repository(this->operation["schema"]),
-    projection_repository(this->operation["projection"]) {
+    projection_repository(this->operation["projection"]),
+    instruction(kObjectType),
+    ontology(kObjectType),
+    report(kObjectType) {
 
     } catch(Error& error) {
         error.push("Job");
         throw;
+};
+Job::~Job() {
+
 };
 void Job::assemble() {
     /* if a URL to an instruction file was provided in the interactive instruction,
@@ -53,10 +56,19 @@ void Job::compile() {
 void Job::validate() {
 
 };
+void Job::execute() {
+    load();
+    start();
+    stop();
+    finalize();
+};
 void Job::load() {
 
 };
-void Job::execute() {
+void Job::start() {
+
+};
+void Job::stop() {
 
 };
 void Job::finalize() {
@@ -69,14 +81,10 @@ void Job::finalize() {
         );
     }
 };
-void Job::print_instruction(ostream& o) {
+void Job::write_instruction(ostream& o) const {
     print_json(instruction, o);
 };
-void Job::print_ontology(ostream& o) {
-    sort_json_value(ontology, ontology);
-    print_json(ontology, o);
-};
-void Job::print_compiled(ostream& o) const {
+void Job::write_compiled(ostream& o) const {
     Document compiled;
     compiled.CopyFrom(ontology, compiled.GetAllocator());
     compiled.RemoveMember("application version");
@@ -85,7 +93,7 @@ void Job::print_compiled(ostream& o) const {
     sort_json_value(compiled, compiled);
     print_json(compiled, o, float_precision());
 };
-void Job::print_report() const {
+void Job::write_report() const {
     URL report_url(decode_value_by_key< URL >("report url", ontology));
     // report_url.normalize(IoDirection::OUT);
 

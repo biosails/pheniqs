@@ -103,27 +103,6 @@ bool Transcode::pull(Read& read) {
     }
     return !end_of_input;
 };
-void Transcode::populate_channel(Channel& channel) {
-    map< int32_t, Feed* > feed_by_index;
-    channel.output_feed_by_segment.reserve(channel.output_feed_url_by_segment.size());
-    for(const auto& url : channel.output_feed_url_by_segment) {
-        Feed* feed(output_feed_by_url[url]);
-        channel.output_feed_by_segment.emplace_back(feed);
-        if(feed_by_index.count(feed->index) == 0) {
-            feed_by_index.emplace(make_pair(feed->index, feed));
-        }
-    }
-    channel.output_feed_by_segment.shrink_to_fit();
-
-    channel.output_feed_lock_order.reserve(feed_by_index.size());
-    for(auto& record : feed_by_index) {
-        /* /dev/null is not really being written to so we don't need to lock it */
-        if(!record.second->is_dev_null()) {
-            channel.output_feed_lock_order.push_back(record.second);
-        }
-    }
-    channel.output_feed_lock_order.shrink_to_fit();
-};
 Transcode& Transcode::operator+=(const TranscodePivot& pivot) {
     if(sample_classifier != NULL) {
         *sample_classifier += *(pivot.sample_classifier);
@@ -359,7 +338,7 @@ void Transcode::compile_input() {
     }
     encode_key_value("input", feed_url_by_index, ontology, ontology);
 
-    if(sense_input_layout()) {
+    if(is_sense_input_layout()) {
         compile_sensed_input();
     } else {
         compile_explicit_input();
@@ -1099,6 +1078,7 @@ void Transcode::compile_thread_model() {
         encode_key_value("decoding threads", decoding_threads, ontology, ontology);
     }
 };
+
 /* validate */
 void Transcode::validate() {
     Job::validate();
@@ -1158,12 +1138,6 @@ void Transcode::validate_decoder(Value& value) {
 };
 
 /* execute */
-void Transcode::execute() {
-    load();
-    start();
-    stop();
-    finalize();
-};
 void Transcode::load() {
     validate_url_accessibility();
     load_thread_pool();
@@ -1763,7 +1737,7 @@ void Transcode::print_codec_instruction(const Value& value, const bool& plural, 
                 }
                 o << endl;
 
-                if(display_distance()) {
+                if(is_display_distance()) {
                     CodecMetric metric(value);
                     metric.describe(o);
                 }
