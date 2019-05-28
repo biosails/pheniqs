@@ -49,7 +49,7 @@ The easiest way to do this is to head on over to [anaconda](https://conda.io/min
 ### One time setup - Configure your channels
 Many groups contribute software to conda. Each of these groups corresponds to a different channel. Bioconda is a well known channel for distributing bioinformatics software. It depends on conda-forge, another group for distributing more general software, including R and python packages.
 
-```
+>```shell
 conda config --add channels defaults
 conda config --add channels conda-forge
 conda config --add channels bioconda
@@ -58,7 +58,7 @@ conda config --add channels bioconda
 ### Install Pheniqs
 Simply install pheniqs using the conda package manager
 
-```
+>```shell
 # Installs pheniqs in your 'global' conda install
 conda install pheniqs
 # Installs pheniqs in an isolated environment - recommended
@@ -68,6 +68,6 @@ conda create -n pheniqs pheniqs
 
 If you want to live on the bleeding edge, you can also install pheniqs from our anaconda channel, nyuad-cgsb.
 
-```
+>```shell
 conda install -c nyuad-cgsb pheniqs/latest
 ```

@@ -157,23 +157,29 @@ JSON can be a little picky about syntax and a good JSON linter can make identify
 You will find a small [JSON linting python script]({{ site.github.repository_url }}/blob/master/tool/json_lint.py) in the tool directory that is somewhat customized for the pheniqs config file.
 
 For **python 2** use:
-
+>```shell
     python -c "import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')"
+```
 
 or for **python 3**:
-
+>```shell
     python3 -c "import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))"
+```
 
 You may alternatively set it up as an alias in your shell's profile by adding to your `.zshrc` or `.bashrc`:
-
+>```shell
     alias jsl="python -c \"import json,sys; print json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4).encode('utf8')\""
+```
 
 or
 
+>```shell
     alias jsl="python3 -c \"import json,sys; print(json.dumps(json.load(sys.stdin),sort_keys=True,ensure_ascii=False,indent=4))\""
+```
 
 and than invoke it simply by feeding it a JSON file on standard input:
-
+>```shell
     cat configuration.json|jsl
+```
 
 This will print an easy to read tabulated JSON to standard output and assist you with resolving any syntactical JSON violations.

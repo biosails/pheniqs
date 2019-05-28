@@ -47,7 +47,7 @@ Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson
 ## Building with `ppkg.py`
 Pheniqs comes bundled with a python3 helper tool called `ppkg.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/ppkg.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with `ppkg.py` does not require elevated permissions and is ideal for building an executable on cluster environments.
 
-```
+>```shell
 % ./tool/ppkg.py build build/trunk_static.json
 INFO:Package:unpacking zlib 1.2.11
 INFO:Package:configuring make environment zlib 1.2.11
@@ -75,7 +75,7 @@ INFO:Package:installing with make pheniqs 2.0-trunk
 
 When `ppkg.py` is done you may inspect your binary, statically linked builds made with `ppkg.py` will also report the versions of all built in libraries.
 
-```
+>```shell
 % ./bin/trunk_static/install/bin/pheniqs --version
 pheniqs version 2.0.4
 zlib 1.2.11
@@ -88,7 +88,7 @@ htslib 1.9
 
 You can check that your binary indeed does not link against any of the dependencies dynamically with `otool` on MacOs:
 
-```
+>```shell
 % otool -L ./bin/trunk_static/install/bin/pheniqs
 ./bin/trunk_static/install/bin/pheniqs:
 	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 400.9.4)
@@ -97,7 +97,7 @@ You can check that your binary indeed does not link against any of the dependenc
 
 Or `ldd` on Ubuntu:
 
-```
+>```shell
 % ldd pheniqs
 	linux-vdso.so.1 =>  (0x00007ffff3300000)
 	libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f6910e2d000)
@@ -115,7 +115,7 @@ Pheniqs does not use automake and so does not have a configure stage. The provid
 ### Dependecies on ubuntu
 All Pheniqs build dependencies are available on [Ubuntu 19.04 Disco Dingo](http://releases.ubuntu.com/19.04) and can be installed with:
 
-```
+>```shell
 apt-get install -y \
 build-essential \
 rapidjson-dev \

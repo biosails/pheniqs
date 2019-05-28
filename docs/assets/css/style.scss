@@ -125,7 +125,8 @@ a {
     margin: 0rem 0rem 1rem 0rem;
 }
 
-.main-content .example {
+.main-content .example,
+.main-content .read {
     color: #516168;
     padding: 1.5rem;
     margin: 2rem 0rem;
@@ -147,11 +148,13 @@ a {
 .main-content .example th,
 .main-content .example td,
 .main-content .example p,
+.main-content .read p,
 .main-content .example code {
     font-size: 0.9rem;
 }
 
-.main-content .example p {
+.main-content .example p,
+.main-content .read p {
     font-style: italic;
 }
 
@@ -284,4 +287,85 @@ section.notice_2_0 {
     border-width: 0.2em;
     border-style: solid;
     text-align: center;
+}
+
+.read {
+  clear: both;
+  border-left: 0.3rem solid #dce6f0;
+}
+
+.read p {
+  margin: 1rem 0rem;
+}
+
+#single_index {
+
+}
+#dual_index {
+
+}
+#dual_index_umi {
+
+}
+
+.read .insert,
+.read .binding_primer,
+.read .binding_primer.p5,
+.read .binding_primer.p7,
+.read .sequencing_primer,
+.read .sample_barcode,
+.read .molecular_barcode {
+  float: left;
+  padding: 0.2em 10px;
+  color: #E5E3E2;
+  text-align: center;
+  box-sizing: content-box;
+}
+
+.read {
+  color: #FFFFFF;
+  margin: 2rem 0rem;
+  padding: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: content-box;
+}
+.read .insert {
+  background-color: #51565A;
+  width: 300px;
+}
+.read .binding_primer {
+  background-color: #B1336B;
+  width: 30px;
+}
+.read .binding_primer.p5 {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.read .binding_primer.p7 {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.read .sequencing_primer {
+  background-color: #5C6D3B;
+  width: 30px;
+}
+.read .sample_barcode {
+  background-color: #F1A64C;
+  width: 60px;
+}
+.read .molecular_barcode {
+  background-color: #B8C038;
+  width: 60px;
+}
+
+
+.read .sample_barcode_i5 {
+  background-color: #FF6D1D;
+  width: 60px;
+}
+.read .sample_barcode_i7 {
+  background-color: #5EA8C0;
+  width: 60px;
 }

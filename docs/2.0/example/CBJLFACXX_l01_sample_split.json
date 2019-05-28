@@ -1,0 +1,48 @@
+{
+    "CN": "CGSB",
+    "PL": "ILLUMINA",
+    "PM": "HiSeq",
+    "base input url": "~/CBJLFACXX/raw",
+    "base output url": "~/CBJLFACXX/sample",
+    "filter incoming qc fail": true,
+    "flowcell id": "CBJLFACXX",
+    "input": [
+        "Lane1_S1_L001_R1_001.fastq.gz",
+        "Lane1_S1_L001_I1_001.fastq.gz",
+        "Lane1_S1_L001_I2_001.fastq.gz",
+        "Lane1_S1_L001_R2_001.fastq.gz"
+    ],
+    "transform": { "token": [ "0::", "3::" ] },
+    "multiplex": {
+      "transform": { "token": [ "1::10", "2::10" ] },
+      "algorithm": "pamld",
+      "noise": 0.05,
+      "confidence threshold": 0.95,
+      "codec": {
+          "@GAACTGAGCGCGCTCCACGA": {
+              "SM": "c57bl6 mouse",
+              "LB": "c57bl6 fetal liver",
+              "barcode": [ "GAACTGAGCG", "CGCTCCACGA" ],
+              "output": [
+                  "CBJLFACXX_GAACTGAGCGCGCTCCACGA_l01s01.fastq.gz",
+                  "CBJLFACXX_GAACTGAGCGCGCTCCACGA_l01s02.fastq.gz"
+              ]
+          },
+          "@GACGAGATTAAGGATAATGT": {
+              "SM": "c57bl6 mouse",
+              "LB": "c57bl6 adult bone marrow",
+              "barcode": [ "GACGAGATTA", "AGGATAATGT" ],
+              "output": [
+                  "CBJLFACXX_GACGAGATTAAGGATAATGT_l01s01.fastq.gz",
+                  "CBJLFACXX_GACGAGATTAAGGATAATGT_l01s02.fastq.gz"
+              ]
+          }
+      },
+      "undetermined": {
+          "output": [
+              "CBJLFACXX_undetermined_l01s01.fastq.gz",
+              "CBJLFACXX_undetermined_l01s02.fastq.gz"
+          ]
+      }
+    }
+}
