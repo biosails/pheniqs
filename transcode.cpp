@@ -836,8 +836,13 @@ void Transcode::compile_decoder_transformation(Value& value) {
     }
 };
 void Transcode::compile_output() {
+    /* expand base output url path */
+    standardize_url_value_by_key("base output url", ontology, ontology, IoDirection::OUT);
+    URL base_output(decode_value_by_key< URL >("base output url", ontology));
+
     /* expand the report URL */
     standardize_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
+    relocate_url_by_key("report url", ontology, ontology, base_output);
 
     /* load output transform */
     compile_output_transformation();
@@ -916,7 +921,7 @@ void Transcode::compile_output() {
                 if(url.type() == FormatType::UNKNOWN) {
                     url.set_type(default_output_format);
                 }
-                if(url.compression() == FormatCompression::UNKNOWN) {
+                if(url.explicit_compression() == FormatCompression::UNKNOWN) {
                     url.set_compression(default_output_compression);
                 }
                 if(url.compression_level() == CompressionLevel::UNKNOWN) {
@@ -1568,24 +1573,34 @@ void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {
                         Platform platform(decode_value_by_key< Platform >("platform", element));
                         uint8_t phred_offset(decode_value_by_key< uint8_t >("phred offset", element));
 
-                        o << "    ";
                         switch (direction) {
                             case IoDirection::IN:
-                                o << "Input";
+                                o << "    Input feed No." << index << endl;
+                                o << "        Type : " << url.type() << endl;
+                                if (url.compression() != FormatCompression::NONE) {
+                                o << "        Compression : " << url.compression() << endl;
+                                }
+                                o << "        Resolution : " << resolution << endl;
+                                o << "        Phred offset : " << to_string(phred_offset) << endl;
+                                o << "        Platform : " << platform << endl;
+                                o << "        Buffer capacity : " << capacity << endl;
+                                o << "        URL : " << url << endl;
                                 break;
                             case IoDirection::OUT:
-                                o << "Output";
+                                o << "    Output feed No." << index << endl;
+                                o << "        Type : " << url.type() << endl;
+                                if (url.compression() != FormatCompression::NONE) {
+                                o << "        Compression : " << url.compression() << "@" << url.compression_level() << endl;
+                                }
+                                o << "        Resolution : " << resolution << endl;
+                                o << "        Phred offset : " << to_string(phred_offset) << endl;
+                                o << "        Platform : " << platform << endl;
+                                o << "        Buffer capacity : " << capacity << endl;
+                                o << "        URL : " << url << endl;
                                 break;
                             default:
                                 break;
                         }
-                        o << " feed No." << index << endl;
-                        o << "        Type : " << url.type() << endl;
-                        o << "        Resolution : " << resolution << endl;
-                        o << "        Phred offset : " << to_string(phred_offset) << endl;
-                        o << "        Platform : " << platform << endl;
-                        o << "        Buffer capacity : " << capacity << endl;
-                        o << "        URL : " << url << endl;
                         o << endl;
                     }
                 }

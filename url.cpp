@@ -131,12 +131,13 @@ template <> FormatType decode_value_by_key(const Value::Ch* key, const Value& co
 string to_string(const FormatCompression& value) {
     string result;
     switch (value) {
-        case FormatCompression::NONE:      result.assign("none");   break;
-        case FormatCompression::GZIP:      result.assign("gz");     break;
-        case FormatCompression::BGZF:      result.assign("bgzf");   break;
-        case FormatCompression::BZ2:       result.assign("bz2");    break;
-        case FormatCompression::XZ:        result.assign("xz");     break;
-        default:                                                    break;
+        case FormatCompression::UNKNOWN:   result.assign("unknown");    break;
+        case FormatCompression::NONE:      result.assign("none");       break;
+        case FormatCompression::GZIP:      result.assign("gz");         break;
+        case FormatCompression::BGZF:      result.assign("bgzf");       break;
+        case FormatCompression::BZ2:       result.assign("bz2");        break;
+        case FormatCompression::XZ:        result.assign("xz");         break;
+        default:                                                        break;
     }
     return result;
 };
@@ -260,7 +261,8 @@ ostream& operator<<(ostream& o, const URLQueryParameter& value) {
 
 URL::URL() :
     _format_type(FormatType::UNKNOWN),
-    _format_compression(FormatCompression::UNKNOWN),
+    _implicit_compression(FormatCompression::UNKNOWN),
+    _explicit_compression(FormatCompression::UNKNOWN),
     _compression_level(CompressionLevel::UNKNOWN) {
 };
 URL::URL(const URL& other) :
@@ -270,12 +272,14 @@ URL::URL(const URL& other) :
     _dirname(other._dirname),
     _query(other._query),
     _format_type(other._format_type),
-    _format_compression(other._format_compression),
+    _implicit_compression(other._implicit_compression),
+    _explicit_compression(other._explicit_compression),
     _compression_level(other._compression_level) {
 };
 URL::URL(const string& encoded) :
     _format_type(FormatType::UNKNOWN),
-    _format_compression(FormatCompression::UNKNOWN),
+    _implicit_compression(FormatCompression::UNKNOWN),
+    _explicit_compression(FormatCompression::UNKNOWN),
     _compression_level(CompressionLevel::UNKNOWN) {
     parse(encoded);
 };
@@ -333,7 +337,7 @@ void URL::parse(const string& encoded) {
                            and decode the trailing extension */
                         if(extension == "gz" || extension == "bz2" || extension == "xz") {
                             /* set the implicit compression */
-                            from_string(extension, _format_compression);
+                            from_string(extension, _implicit_compression);
                             position = buffer.find_last_of('.');
                             if(position != string::npos) {
                                 extension.clear();
@@ -395,7 +399,7 @@ void URL::apply_query_parameter(const string& key, const string& value) {
         from_string(key, name);
         switch(name) {
             case URLQueryParameter::FORMAT_COMPRESSION: {
-                from_string(value, _format_compression);
+                from_string(value, _explicit_compression);
                 break;
             };
             case URLQueryParameter::FORMAT_TYPE: {
@@ -413,6 +417,15 @@ void URL::apply_query_parameter(const string& key, const string& value) {
         }
     }
 };
+void URL::append_query_parameter(const URLQueryParameter& name, const string& value) {
+    if (!_query.empty()) {
+        _query.push_back('&');
+    }
+    _query.append(to_string(name));
+    _query.push_back('=');
+    _query.append(value);
+};
+
 void URL::refresh() {
     /* rebuild path */
     _path.clear();
@@ -429,64 +442,52 @@ void URL::refresh() {
     /* rebuild query */
     _query.clear();
     if(_format_type != FormatType::UNKNOWN) {
-        if (!_query.empty()) { _query.push_back('&'); }
-        _query.append(to_string(URLQueryParameter::FORMAT_TYPE));
-        _query.push_back('=');
-        _query.append(to_string(_format_type));
+        append_query_parameter(URLQueryParameter::FORMAT_TYPE, to_string(_format_type));
 
         /* make sure only valid compression is specified for each format */
         switch(_format_type) {
             case FormatType::SAM: {
-                _format_compression = FormatCompression::NONE;
-                _compression_level = CompressionLevel::UNKNOWN;
+                append_query_parameter(URLQueryParameter::FORMAT_COMPRESSION, to_string(FormatCompression::NONE));
                 break;
             };
-            case FormatType::BAM:
-            case FormatType::FASTQ: {
-                switch(_format_compression) {
+            case FormatType::FASTQ:
+            case FormatType::BAM: {
+                switch(compression()) {
                     case FormatCompression::NONE: {
-                        _compression_level = CompressionLevel::UNKNOWN;
+                        append_query_parameter(URLQueryParameter::FORMAT_COMPRESSION, to_string(FormatCompression::NONE));
                         break;
                     };
-                    case FormatCompression::GZIP: {
-                        break;
-                    };
+                    case FormatCompression::GZIP:
                     case FormatCompression::BGZF: {
+                        append_query_parameter(URLQueryParameter::FORMAT_COMPRESSION, to_string(compression()));
+                        if(_compression_level != CompressionLevel::UNKNOWN) {
+                            append_query_parameter(URLQueryParameter::COMPRESSION_LEVEL, to_string(_compression_level));
+                        }
+                        break;
+                    };
+                    case FormatCompression::UNKNOWN: {
+                        if(_format_type == FormatType::BAM && _compression_level != CompressionLevel::UNKNOWN) {
+                            append_query_parameter(URLQueryParameter::COMPRESSION_LEVEL, to_string(_compression_level));
+                        }
                         break;
                     };
                     default:
-                        _format_compression = FormatCompression::UNKNOWN;
                         break;
                 }
                 break;
             };
             case FormatType::CRAM: {
-                _format_compression = FormatCompression::UNKNOWN;
+                if(_compression_level != CompressionLevel::UNKNOWN) {
+                    append_query_parameter(URLQueryParameter::COMPRESSION_LEVEL, to_string(_compression_level));
+                }
                 break;
             };
             case FormatType::JSON: {
-                _format_compression = FormatCompression::NONE;
-                _compression_level = CompressionLevel::UNKNOWN;
                 break;
             };
             default: {
-                _format_compression = FormatCompression::UNKNOWN;
                 break;
             };
-        }
-
-        if(_format_compression != FormatCompression::UNKNOWN) {
-            if (!_query.empty()) { _query.push_back('&'); }
-            _query.append(to_string(URLQueryParameter::FORMAT_COMPRESSION));
-            _query.push_back('=');
-            _query.append(to_string(_format_compression));
-        }
-
-        if(_compression_level != CompressionLevel::UNKNOWN) {
-            if (!_query.empty()) { _query.push_back('&'); }
-            _query.append(to_string(URLQueryParameter::COMPRESSION_LEVEL));
-            _query.push_back('=');
-            _query.append(to_string(_compression_level));
         }
     }
 
@@ -505,7 +506,7 @@ void URL::set_type(const FormatType type) {
     refresh();
 };
 void URL::set_compression(const FormatCompression& compression) {
-    _format_compression = compression;
+    _explicit_compression = compression;
     refresh();
 };
 void URL::set_compression_level(const CompressionLevel& level) {
@@ -516,8 +517,11 @@ void URL::override_query(const URL& other) {
     if(other._format_type != FormatType::UNKNOWN) {
         _format_type = other._format_type;
     }
-    if(other._format_compression != FormatCompression::UNKNOWN) {
-        _format_compression = other._format_compression;
+    if(other._implicit_compression != FormatCompression::UNKNOWN) {
+        _implicit_compression = other._implicit_compression;
+    }
+    if(other._explicit_compression != FormatCompression::UNKNOWN) {
+        _explicit_compression = other._explicit_compression;
     }
     if(other._compression_level != CompressionLevel::UNKNOWN) {
         _compression_level = other._compression_level;
@@ -582,7 +586,7 @@ URL& URL::operator=(const URL& other) {
         _dirname.assign(other._dirname);
         _query.assign(other._query);
         _format_type = other._format_type;
-        _format_compression = other._format_compression;
+        _implicit_compression = other._implicit_compression;
         _compression_level = other._compression_level;
     }
     return *this;
@@ -592,35 +596,39 @@ URL::operator string() const {
 };
 string URL::description() const {
     string description;
-    description.append("URL                : ");
+    description.append("URL                  : ");
     description.append(_encoded);
     description.append("\n");
 
-    description.append("Path               : ");
+    description.append("Path                 : ");
     description.append(_path);
     description.append("\n");
 
-    description.append("Basename           : ");
+    description.append("Basename             : ");
     description.append(_basename);
     description.append("\n");
 
-    description.append("Dirname            : ");
+    description.append("Dirname              : ");
     description.append(_dirname);
     description.append("\n");
 
-    description.append("Query              : ");
+    description.append("Query                : ");
     description.append(_query);
     description.append("\n");
 
-    description.append("Type               : ");
+    description.append("Type                 : ");
     description.append(to_string(_format_type));
     description.append("\n");
 
-    description.append("Compression        : ");
-    description.append(to_string(_format_compression));
+    description.append("Compression          : ");
+    description.append(to_string(_implicit_compression));
     description.append("\n");
 
-    description.append("Compression level  : ");
+    description.append("Explicit Compression : ");
+    description.append(to_string(_explicit_compression));
+    description.append("\n");
+
+    description.append("Compression level    : ");
     description.append(to_string(_compression_level));
     description.append("\n");
 
@@ -790,6 +798,13 @@ void standardize_url_array_by_key(const Value::Ch* key, Value& container, Docume
             } else { throw ConfigurationError(string(key) + " is not an array");  }
         }
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+};
+void relocate_url_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base) {
+    URL value;
+    if(decode_value_by_key< URL >(key, value, container)) {
+        value.relocate_child(base);
+    }
+    encode_key_value(key, value, container, document);
 };
 void relocate_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base) {
     list< URL > value;

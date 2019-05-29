@@ -151,8 +151,14 @@ class URL {
         inline const FormatType& type() const {
             return _format_type;
         };
+        inline const FormatCompression& implicit_compression() const {
+            return  _implicit_compression;
+        };
+        inline const FormatCompression& explicit_compression() const {
+            return  _explicit_compression;
+        };
         inline const FormatCompression& compression() const {
-            return _format_compression;
+            return  _explicit_compression != FormatCompression::UNKNOWN ? _explicit_compression: _implicit_compression;
         };
         inline const CompressionLevel& compression_level() const {
             return _compression_level;
@@ -209,7 +215,8 @@ class URL {
             _dirname.clear();
             _query.clear();
             _format_type = FormatType::UNKNOWN;
-            _format_compression = FormatCompression::UNKNOWN;
+            _explicit_compression = FormatCompression::UNKNOWN;
+            _implicit_compression = FormatCompression::UNKNOWN;
             _compression_level = CompressionLevel::UNKNOWN;
         };
         bool is_readable() const;
@@ -226,11 +233,14 @@ class URL {
         string _dirname;
         string _query;
         FormatType _format_type;
-        FormatCompression _format_compression;
+        FormatCompression _implicit_compression;
+        FormatCompression _explicit_compression;
         CompressionLevel _compression_level;
         void refresh();
         void parse_query();
         void apply_query_parameter(const string& key, const string& value);
+        void append_query_parameter(const URLQueryParameter& name, const string& value);
+
 };
 bool operator<(const URL& lhs, const URL& rhs);
 
@@ -256,6 +266,7 @@ bool encode_key_value(const string& key, const list< URL >& value, Value& contai
 
 void standardize_url_value_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction);
 void standardize_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const IoDirection& direction);
+void relocate_url_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base);
 void relocate_url_array_by_key(const Value::Ch* key, Value& container, Document& document, const URL& base);
 
 #endif /* PHENIQS_URL_H */

@@ -10,7 +10,7 @@ Environment
     Output Phred offset                         33
     Leading segment index                       0
     Default output format                       sam
-    Default output compression                  
+    Default output compression                  unknown
     Default output compression level            5
     Feed buffer capacity                        2048
     Threads                                     1
@@ -27,6 +27,7 @@ Input
 
     Input feed No.0
         Type : fastq
+        Compression : gz
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
@@ -35,6 +36,7 @@ Input
 
     Input feed No.1
         Type : fastq
+        Compression : gz
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
@@ -43,6 +45,7 @@ Input
 
     Input feed No.2
         Type : fastq
+        Compression : gz
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
