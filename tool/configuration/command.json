@@ -439,6 +439,7 @@
         "interface": {
             "argument": [
                 "configuration",
+                "report",
                 "input",
                 "base-input",
                 "base-output",
@@ -461,6 +462,16 @@
                         "help": "Path to original configuration file.",
                         "metavar": "PATH",
                         "required": true
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "help": "Path to report file.",
+                        "metavar": "PATH"
                     }
                 },
                 "input": {
