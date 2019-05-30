@@ -458,40 +458,44 @@ The `-V/--validate` command line flag makes Pheniqs evaluate the supplied instru
 Pheniqs emits a statistical report. If you specify the `-q/--quality` command line flag the report will also include a comprehensive quality control report.
 
 ## Decoder statistics
-For every `multiplex`, `molecular` and `cellular` decoder the following statistics is reported, if applicable.
+For every `multiplex`, `molecular` and `cellular` decoder the following statistics is reported, if applicable. **pf** counters have a slightly different meaning depending on the value of the `filter incoming qc fail` flag. if `filter incoming qc fail` was **true** incoming reads are dropped immediately and are never seen by the decoder and so **pf** counters will only be affected by reads that were marked as **QC fail** by Pheniqs due to barcode decoding failure. If `filter incoming qc fail` was **false** the decoder will attempt to classify all reads and so **pf** counters will also count reads that were already marked as **QC fail** in the input.
 
-| JSON field                                      | Description                                                                                     |
-| :---------------------------------------------- | :---------------------------------------------------------------------------------------------- |
-| **count**                                       | count for all reads processed by the pipeline, both classified and unclassified.                |
-| **classified count**                            | count of all reads classified to some barcode.                                                  |
-| **classified fraction**                         | **classified count** / **count**                                                                |
-| **average classified distance**                 | average hamming distance when decoding classified reads.                                        |
-| **average classified confidence**               | average confidence when decoding classified reads.                                              |
-| **pf count**                                    | count of reads processed by the pipeline that *passed vendor quality control*.                  |
-| **pf fraction**                                 | **pf count** / **count**                                                                        |
-| **pf classified count**                         | count of all reads classified to some barcode that *passed vendor quality control*.             |
-| **pf classified fraction**                      | **pf classified count** / **pf count**                                                          |
-| **classified pf fraction**                      | **pf classified count** / **classified count**                                                  |
-| **average pf classified distance**              | average hamming distance when decoding classified reads that *passed vendor quality control*.   |
-| **average pf classified confidence**            | average confidence when decoding classified reads that *passed vendor quality control*.         |
+| JSON field                           | Description                                                                         |
+| :----------------------------------- | :---------------------------------------------------------------------------------- |
+| **count**                            | count for all reads processed by the pipeline, both classified and unclassified.    |
+| **classified count**                 | count of all reads classified to some barcode.                                      |
+| **classified fraction**              | **classified count** / **count**                                                    |
+| **average classified distance**      | average hamming distance when decoding classified reads.                            |
+| **average classified confidence**    | average confidence when decoding classified reads.                                  |
+| **pf count**                         | count of output reads processed by the pipeline that *passed quality control*.      |
+| **pf fraction**                      | **pf count** / **count**                                                            |
+| **pf classified count**              | count of all output reads classified to some barcode that *passed quality control*. |
+| **pf classified fraction**           | **pf classified count** / **pf count**                                              |
+| **classified pf fraction**           | **pf classified count** / **classified count**                                      |
+| **average pf classified distance**   | average hamming distance of output classified reads that *passed quality control*.  |
+| **average pf classified confidence** | average confidence of classified output reads that *passed vendor quality control*. |
+| **low conditional confidence count** | count of reads that failed to classify due to low conditional confidence.           |
+| **low confidence count**             | count of reads that failed to classify due to low confidence.                       |
 
 ## Barcode statistics
 In every decoder statistics the `unclassified` element reports statistics about reads that failed to be classified, while each element in the `classified` array reports statistics for one of the barcodes.
 The `decoder::` prefix in the table refers to the attribute in the parent decoder statistics.
 
-| JSON field                                      | Description                                                                                                     |
-| :---------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
-| **count**                                       | count of reads classified to the barcode.                                                                       |
-| **average distance**                            | average hamming distance between observed and decoded barcode.                                                  |
-| **average confidence**                          | average confidence of decoding a barcode.                                                                       |
-| **pooled fraction**                             | **count** / **decoder::count**                                                                                  |
-| **pooled classified fraction**                  | **count** / **decoder::classified count**                                                                       |
-| **pf count**                                    | count of reads classified to the barcode that *passed vendor quality control*.                                  |
-| **pf fraction**                                 | **pf count** / **count**                                                                                        |
-| **average pf distance**                         | average hamming distance between observed and decoded barcode in reads that *passed vendor quality control*.    |
-| **average pf confidence**                       | average confidence of decoding a barcode in reads that *passed vendor quality control*.                         |
-| **pf pooled fraction**                          | **pf count** / **decoder::pf count**                                                                            |
-| **pf pooled classified fraction**                | **pf count** / **decoder::pf classified count**                                                                 |
+| JSON field                           | Description                                                                                           |
+| :----------------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **count**                            | count of reads classified to the barcode.                                                             |
+| **average distance**                 | average hamming distance between observed and decoded barcode.                                        |
+| **average confidence**               | average confidence of decoding a barcode.                                                             |
+| **pooled fraction**                  | **count** / **decoder::count**                                                                        |
+| **pooled classified fraction**       | **count** / **decoder::classified count**                                                             |
+| **pf count**                         | count of reads classified to the barcode that *passed quality control*.                               |
+| **pf fraction**                      | **pf count** / **count**                                                                              |
+| **average pf distance**              | average hamming distance between observed and decoded barcode in reads that *passed quality control*. |
+| **average pf confidence**            | average confidence of decoding a barcode in reads that *passed quality control*.                      |
+| **pf pooled fraction**               | **pf count** / **decoder::pf count**                                                                  |
+| **pf pooled classified fraction**    | **pf count** / **decoder::pf classified count**                                                       |
+| **low conditional confidence count** | count of reads that failed to classify due to low conditional confidence.                             |
+| **low confidence count**             | count of reads that failed to classify due to low confidence.                                         |
 
 >```json
 {
