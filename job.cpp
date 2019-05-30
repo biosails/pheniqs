@@ -42,8 +42,11 @@ void Job::assemble() {
        load it and overlay on top of the ontology */
     URL configuration_url;
     if(decode_value_by_key< URL >("configuration url", configuration_url, interactive)) {
-        // configuration_url.normalize(IoDirection::IN);
-        overlay_json_object(instruction, read_instruction_document(configuration_url));
+        string buffer(configuration_url);
+        expand_shell(buffer);
+        normalize_standard_stream(buffer, IoDirection::IN);
+        URL resolved(buffer);
+        overlay_json_object(instruction, read_instruction_document(resolved));
         sort_json_value(instruction, instruction);
     }
 };
@@ -53,14 +56,49 @@ void Job::compile() {
     clean_json_object(ontology, ontology);
     validate();
 };
-void Job::validate() {
-
-};
 void Job::execute() {
     load();
     start();
     stop();
     finalize();
+};
+void Job::write_report() const {
+    URL report_url(decode_value_by_key< URL >("report url", ontology));
+    if(!report_url.is_dev_null()) {
+        if(report_url.is_stdout()) {
+            print_json(report, cout, float_precision());
+
+        } else if(report_url.is_stderr()) {
+            print_json(report, cerr, float_precision());
+
+        } else {
+            print_json(report, report_url.path().c_str(), float_precision());
+
+        }
+    }
+};
+void Job::describe(ostream& o) const {
+
+};
+void Job::write_static_instruction(ostream& o) const {
+    Document assembled;
+    assembled.CopyFrom(instruction, assembled.GetAllocator());
+    apply_interactive_ontology(assembled);
+    sort_json_value(assembled, assembled);
+    clean_json_object(assembled, assembled);
+    print_json(assembled, o);
+};
+void Job::write_compiled_instruction(ostream& o) const {
+    Document compiled;
+    compiled.CopyFrom(ontology, compiled.GetAllocator());
+    compiled.RemoveMember("application version");
+    compiled.RemoveMember("program");
+    compiled.RemoveMember("working directory");
+    sort_json_value(compiled, compiled);
+    print_json(compiled, o, float_precision());
+};
+void Job::validate() {
+
 };
 void Job::load() {
 
@@ -81,47 +119,21 @@ void Job::finalize() {
         );
     }
 };
-void Job::write_instruction(ostream& o) const {
-    print_json(instruction, o);
-};
-void Job::write_compiled(ostream& o) const {
-    Document compiled;
-    compiled.CopyFrom(ontology, compiled.GetAllocator());
-    compiled.RemoveMember("application version");
-    compiled.RemoveMember("program");
-    compiled.RemoveMember("working directory");
-    sort_json_value(compiled, compiled);
-    print_json(compiled, o, float_precision());
-};
-void Job::write_report() const {
-    URL report_url(decode_value_by_key< URL >("report url", ontology));
-    // report_url.normalize(IoDirection::OUT);
-
-    if(!report_url.is_dev_null()) {
-        if(report_url.is_stdout()) {
-            print_json(report, cout, float_precision());
-
-        } else if(report_url.is_stderr()) {
-            print_json(report, cerr, float_precision());
-
-        } else {
-            print_json(report, report_url.path().c_str(), float_precision());
-
-        }
-    }
-};
-void Job::describe(ostream& o) const {
-
-};
-void Job::apply_default_ontology() {
+void Job::apply_default_ontology(Document& document) const {
     /* if the operation defines a default instruction overlay it on top of the ontology */
     Value::ConstMemberIterator reference = operation.FindMember("default");
     if(reference != operation.MemberEnd()) {
-        merge_json_value(reference->value, ontology, ontology);
+        merge_json_value(reference->value, document, document);
     }
 };
-void Job::apply_interactive_ontology() {
-    overlay_json_object(ontology, interactive);
+void Job::apply_interactive_ontology(Document& document) const {
+    Document adjusted;
+    adjusted.CopyFrom(interactive, adjusted.GetAllocator());
+    adjusted.RemoveMember("configuration url");
+    adjusted.RemoveMember("static only");
+    adjusted.RemoveMember("validate only");
+    adjusted.RemoveMember("compile only");
+    overlay_json_object(document, adjusted);
 };
 const Value* Job::find_schema(const string& key) const {
     const Value* element(NULL);

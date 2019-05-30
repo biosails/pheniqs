@@ -245,10 +245,10 @@ void Transcode::compile() {
     ontology.RemoveMember("program");
 
     /* overlay on top of the default configuration */
-    apply_default_ontology();
+    apply_default_ontology(ontology);
 
     /* overlay interactive parameters on top of the configuration */
-    apply_interactive_ontology();
+    apply_interactive_ontology(ontology);
 
     /* compile a PG SAM header ontology with details about pheniqs */
     compile_PG();
@@ -261,26 +261,6 @@ void Transcode::compile() {
     compile_thread_model();
     clean_json_object(ontology, ontology);
     validate();
-};
-void Transcode::apply_interactive_ontology() {
-    Document adjusted;
-    adjusted.CopyFrom(interactive, adjusted.GetAllocator());
-
-    /* Remove flags */
-    adjusted.RemoveMember("static only");
-    adjusted.RemoveMember("validate only");
-    adjusted.RemoveMember("compile only");
-
-    /* Format template token array into an output transform */
-    Value::MemberIterator reference = adjusted.FindMember("template token");
-    if(reference != adjusted.MemberEnd()) {
-        Value transform(kObjectType);
-        transform.AddMember("token", Value(reference->value, adjusted.GetAllocator()).Move(), adjusted.GetAllocator());
-        adjusted.AddMember("transform", transform.Move(), adjusted.GetAllocator());
-    }
-    adjusted.RemoveMember("template token");
-
-    overlay_json_object(ontology, adjusted);
 };
 void Transcode::compile_PG() {
     Value PG(kObjectType);
@@ -1493,6 +1473,24 @@ void Transcode::finalize() {
 
     clean_json_value(report, report);
     sort_json_value(report, report);
+};
+void Transcode::apply_interactive_ontology(Document& document) const {
+    Document adjusted;
+    adjusted.CopyFrom(interactive, adjusted.GetAllocator());
+    adjusted.RemoveMember("configuration url");
+    adjusted.RemoveMember("static only");
+    adjusted.RemoveMember("validate only");
+    adjusted.RemoveMember("compile only");
+
+    /* Format template token array into an output transform */
+    Value::MemberIterator reference = adjusted.FindMember("template token");
+    if(reference != adjusted.MemberEnd()) {
+        Value transform(kObjectType);
+        transform.AddMember("token", Value(reference->value, adjusted.GetAllocator()).Move(), adjusted.GetAllocator());
+        adjusted.AddMember("transform", transform.Move(), adjusted.GetAllocator());
+    }
+    adjusted.RemoveMember("template token");
+    overlay_json_object(document, adjusted);
 };
 
 /* describe */

@@ -45,10 +45,10 @@ class Job {
         virtual void assemble();
         virtual void compile();
         virtual void execute();
-        virtual void describe(ostream& o) const;
-        virtual void write_instruction(ostream& o) const;
-        virtual void write_compiled(ostream& o) const;
         virtual void write_report() const;
+        virtual void describe(ostream& o) const;
+        virtual void write_static_instruction(ostream& o) const;
+        virtual void write_compiled_instruction(ostream& o) const;
 
     protected:
         const Document operation;
@@ -63,8 +63,8 @@ class Job {
         virtual void start();
         virtual void stop();
         virtual void finalize();
-        virtual void apply_default_ontology();
-        virtual void apply_interactive_ontology();
+        virtual void apply_default_ontology(Document& document) const;
+        virtual void apply_interactive_ontology(Document& document) const;
         const Value* find_schema(const string& key) const;
         const Value* find_projection(const string& key) const;
 

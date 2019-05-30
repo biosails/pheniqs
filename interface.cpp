@@ -556,7 +556,7 @@ Argument* Action::parse_argument(const size_t argc, const char** argv, const Pro
             case ParameterType::URL: {
                 argument = get_argument(prototype);
                 string buffer(argv[index]);
-                URL url(expand_shell(buffer));
+                URL url(buffer);
                 argument->set_value(url);
                 break;
             };

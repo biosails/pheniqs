@@ -63,7 +63,7 @@ class Transcode : public Job {
         void start() override;
         void stop() override;
         void finalize() override;
-        void apply_interactive_ontology() override;
+        void apply_interactive_ontology(Document& document) const override;
         Transcode& operator+=(const TranscodePivot& pivot);
 
     private:
