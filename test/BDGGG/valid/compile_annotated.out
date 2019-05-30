@@ -9,7 +9,6 @@
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
-    "configuration url": "test/BDGGG/BDGGG_annotated.json?format=json",
     "decoding threads": 1,
     "default output compression": "unknown",
     "default output compression level": "5",
