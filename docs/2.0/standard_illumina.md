@@ -75,15 +75,12 @@ To emit the two ends of the insert region as two segments of the output read we 
 >**declaring output read segments** Only the segments coming from the first and the forth file are biological sequences and should be included in the output.
 {: .example}
 
-To classify the reads by the i5 and i7 indices we declare the list of possible barcode sequences and a trasnform that tells Pheniqs where to find the barcode sequence.
+To classify the reads by the i5 and i7 indices we declare the list of possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence.
 >```json
 "multiplex": {
   "transform": { "token": [ "1::10", "2::10" ] },
   "codec": {
     "@GAACTGAGCGCGCTCCACGA": { "barcode": [ "GAACTGAGCG", "CGCTCCACGA" ] },
-    "@AGGTCAGATATATCTTGTAG": { "barcode": [ "AGGTCAGATA", "TATCTTGTAG" ] },
-    "@CGTCTCATATAGCTACTATA": { "barcode": [ "CGTCTCATAT", "AGCTACTATA" ] },
-    "@ATTCCATAAGCCACCAGGCA": { "barcode": [ "ATTCCATAAG", "CCACCAGGCA" ] },
     "@GACGAGATTAAGGATAATGT": { "barcode": [ "GACGAGATTA", "AGGATAATGT" ] }
   }
 }
@@ -91,7 +88,7 @@ To classify the reads by the i5 and i7 indices we declare the list of possible b
 >**declaring sample demultiplexing** The standard Illumina dual index protocol allows up to 96 unique dual 10 base barcodes in the i5 and i7 region, but for this example we only use 2 for brevity sake.
 {: .example}
 
-To remove reads that failed the internal Illumina sequencer chastity filter we instruct Pheniqs to filter incoming *qc fail* reads
+To discard reads that failed the internal Illumina sequencer chastity filter we instruct Pheniqs to filter incoming *qc fail* reads
 >```json
 "filter incoming qc fail": true
 ```

@@ -314,6 +314,7 @@ section.notice_2_0 {
 .read .binding_primer.p7,
 .read .sequencing_primer,
 .read .sample_barcode,
+.read .cellular_barcode,
 .read .molecular_barcode {
   float: left;
   padding: 0.2em 10px;
@@ -353,6 +354,10 @@ section.notice_2_0 {
 }
 .read .sample_barcode {
   background-color: #F1A64C;
+  width: 60px;
+}
+.read .cellular_barcode {
+  background-color: #2AB7CA;
   width: 60px;
 }
 .read .molecular_barcode {
