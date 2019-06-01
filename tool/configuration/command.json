@@ -445,6 +445,7 @@
                 "base-output",
                 "sense-input",
                 "split-fastq",
+                "split-bam",
                 "prefix",
                 "version",
                 "verbosity"
@@ -504,6 +505,16 @@
                         "action": "store_true",
                         "default": false,
                         "help": "adjust output configuration to write each segment of each classified read to a separate fastq file"
+                    }
+                },
+                "split-bam": {
+                    "flag": [
+                        "--split-bam"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "adjust output configuration to write the reads from each sample to a separate bam file"
                     }
                 },
                 "base-input": {

@@ -86,6 +86,7 @@ class EstimatePrior(Job):
         self.make_static_configuration()
         self.load_report()
         self.ontology['adjusted configurtion'] = deepcopy(self.ontology['static configurtion'])
+
         if self.instruction['split_fastq']:
             self.make_compiled_configuration()
             if 'multiplex' in self.ontology['adjusted configurtion']:
@@ -102,6 +103,17 @@ class EstimatePrior(Job):
                         hash = ''.join(barcode['barcode'])
                         for segment_index in range(1,segment_cardinality + 1):
                             barcode['output'].append('{}_{}_s{:0>2}.fastq.gz'.format(self.instruction['prefix'], hash, segment_index))
+
+        elif self.instruction['split_bam']:
+            if 'multiplex' in self.ontology['adjusted configurtion']:
+                if 'undetermined' in self.ontology['adjusted configurtion']['multiplex']:
+                    barcode = self.ontology['adjusted configurtion']['multiplex']['undetermined']
+                    barcode['output'] = [ '{}_undetermined.bam'.format(self.instruction['prefix'], segment_index) ]
+
+                if 'codec' in self.ontology['adjusted configurtion']['multiplex']:
+                    for barcode in self.ontology['adjusted configurtion']['multiplex']['codec'].values():
+                        hash = ''.join(barcode['barcode'])
+                        barcode['output'] = [ '{}_{}.bam'.format(self.instruction['prefix'], hash) ]
 
         for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
             if classifier_type in self.ontology['estimation report'] and classifier_type in self.ontology['adjusted configurtion']:

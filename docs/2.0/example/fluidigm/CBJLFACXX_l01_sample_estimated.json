@@ -1,0 +1,253 @@
+{
+    "CN": "CGSB AD",
+    "PL": "ILLUMINA",
+    "PM": "HiSeq",
+    "base input url": "~/CBJLFACXX/raw",
+    "base input url": "~/CBJLFACXX/sample",
+    "filter incoming qc fail": true,
+    "flowcell id": "CBJLFACXX",
+    "flowcell lane number": 1,
+    "input": [
+        "Lane1_S1_L001_R1_001.fastq.gz",
+        "Lane1_S1_L001_I1_001.fastq.gz",
+        "Lane1_S1_L001_R2_001.fastq.gz"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "codec": {
+            "@COL01_PAG069_V2_E2": {
+                "LB": "COL01_PAG069_V2_E2",
+                "SM": "COL01_PAG069",
+                "barcode": [
+                    "GGACTCCT"
+                ],
+                "concentration": 0.05203857058329362,
+                "output": [
+                    "CBJLFACXX_l01_GGACTCCT.bam"
+                ]
+            },
+            "@COL02_PAG069_V2_E2": {
+                "LB": "COL02_PAG069_V2_E2",
+                "SM": "COL02_PAG069",
+                "barcode": [
+                    "TAAGGCGA"
+                ],
+                "concentration": 0.044859952121880944,
+                "output": [
+                    "CBJLFACXX_l01_TAAGGCGA.bam"
+                ]
+            },
+            "@COL03_PAG069_V2_E2": {
+                "LB": "COL03_PAG069_V2_E2",
+                "SM": "COL03_PAG069",
+                "barcode": [
+                    "TAGGCATG"
+                ],
+                "concentration": 0.050049868391028506,
+                "output": [
+                    "CBJLFACXX_l01_TAGGCATG.bam"
+                ]
+            },
+            "@COL04_PAG069_V2_E2": {
+                "LB": "COL04_PAG069_V2_E2",
+                "SM": "COL04_PAG069",
+                "barcode": [
+                    "CGTACTAG"
+                ],
+                "concentration": 0.04315801287184321,
+                "output": [
+                    "CBJLFACXX_l01_CGTACTAG.bam"
+                ]
+            },
+            "@COL05_PAG069_V2_E2": {
+                "LB": "COL05_PAG069_V2_E2",
+                "SM": "COL05_PAG069",
+                "barcode": [
+                    "ATCTCAGG"
+                ],
+                "concentration": 0.04946973769315673,
+                "output": [
+                    "CBJLFACXX_l01_ATCTCAGG.bam"
+                ]
+            },
+            "@COL06_PAG069_V2_E2": {
+                "LB": "COL06_PAG069_V2_E2",
+                "SM": "COL06_PAG069",
+                "barcode": [
+                    "GCTCATGA"
+                ],
+                "concentration": 0.047492368220314295,
+                "output": [
+                    "CBJLFACXX_l01_GCTCATGA.bam"
+                ]
+            },
+            "@COL07_PAG069_V2_E2": {
+                "LB": "COL07_PAG069_V2_E2",
+                "SM": "COL07_PAG069",
+                "barcode": [
+                    "GTAGAGGA"
+                ],
+                "concentration": 0.05082880278482633,
+                "output": [
+                    "CBJLFACXX_l01_GTAGAGGA.bam"
+                ]
+            },
+            "@COL08_PAG069_V2_E2": {
+                "LB": "COL08_PAG069_V2_E2",
+                "SM": "COL08_PAG069",
+                "barcode": [
+                    "AAGAGGCA"
+                ],
+                "concentration": 0.045765179813951694,
+                "output": [
+                    "CBJLFACXX_l01_AAGAGGCA.bam"
+                ]
+            },
+            "@COL09_PAG069_V2_E2": {
+                "LB": "COL09_PAG069_V2_E2",
+                "SM": "COL09_PAG069",
+                "barcode": [
+                    "TCCTGAGC"
+                ],
+                "concentration": 0.031392648471568266,
+                "output": [
+                    "CBJLFACXX_l01_TCCTGAGC.bam"
+                ]
+            },
+            "@COL10_PAG069_V2_E2": {
+                "LB": "COL10_PAG069_V2_E2",
+                "SM": "COL10_PAG069",
+                "barcode": [
+                    "CGAGGCTG"
+                ],
+                "concentration": 0.05682493988017844,
+                "output": [
+                    "CBJLFACXX_l01_CGAGGCTG.bam"
+                ]
+            },
+            "@COL11_PAG123_V2_E2": {
+                "LB": "COL11_PAG123_V2_E2",
+                "SM": "COL11_PAG123",
+                "barcode": [
+                    "AGGCAGAA"
+                ],
+                "concentration": 0.043159931356316364,
+                "output": [
+                    "CBJLFACXX_l01_AGGCAGAA.bam"
+                ]
+            },
+            "@COL12_PAG123_V2_E2": {
+                "LB": "COL12_PAG123_V2_E2",
+                "SM": "COL12_PAG123",
+                "barcode": [
+                    "CTCTCTAC"
+                ],
+                "concentration": 0.04911146814236482,
+                "output": [
+                    "CBJLFACXX_l01_CTCTCTAC.bam"
+                ]
+            },
+            "@COL13_PAG123_V2_E2": {
+                "LB": "COL13_PAG123_V2_E2",
+                "SM": "COL13_PAG123",
+                "barcode": [
+                    "GCGTAGTA"
+                ],
+                "concentration": 0.05520048839617861,
+                "output": [
+                    "CBJLFACXX_l01_GCGTAGTA.bam"
+                ]
+            },
+            "@COL14_PAG123_V2_E2": {
+                "LB": "COL14_PAG123_V2_E2",
+                "SM": "COL14_PAG123",
+                "barcode": [
+                    "CGGAGCCT"
+                ],
+                "concentration": 0.04301085976716886,
+                "output": [
+                    "CBJLFACXX_l01_CGGAGCCT.bam"
+                ]
+            },
+            "@COL15_PAG123_V2_E2": {
+                "LB": "COL15_PAG123_V2_E2",
+                "SM": "COL15_PAG123",
+                "barcode": [
+                    "TACGCTGC"
+                ],
+                "concentration": 0.04148405498512053,
+                "output": [
+                    "CBJLFACXX_l01_TACGCTGC.bam"
+                ]
+            },
+            "@COL16_PAG123_V2_E2": {
+                "LB": "COL16_PAG123_V2_E2",
+                "SM": "COL16_PAG123",
+                "barcode": [
+                    "ATGCGCAG"
+                ],
+                "concentration": 0.03876569909772471,
+                "output": [
+                    "CBJLFACXX_l01_ATGCGCAG.bam"
+                ]
+            },
+            "@COL17_PAG123_V2_E2": {
+                "LB": "COL17_PAG123_V2_E2",
+                "SM": "COL17_PAG123",
+                "barcode": [
+                    "TAGCGCTC"
+                ],
+                "concentration": 0.029352123440220146,
+                "output": [
+                    "CBJLFACXX_l01_TAGCGCTC.bam"
+                ]
+            },
+            "@COL18_PAG123_V2_E2": {
+                "LB": "COL18_PAG123_V2_E2",
+                "SM": "COL18_PAG123",
+                "barcode": [
+                    "ACTGAGCG"
+                ],
+                "concentration": 0.04147425467744295,
+                "output": [
+                    "CBJLFACXX_l01_ACTGAGCG.bam"
+                ]
+            },
+            "@COL19_PAG123_V2_E2": {
+                "LB": "COL19_PAG123_V2_E2",
+                "SM": "COL19_PAG123",
+                "barcode": [
+                    "GGAGCTAC"
+                ],
+                "concentration": 0.04332125036027018,
+                "output": [
+                    "CBJLFACXX_l01_GGAGCTAC.bam"
+                ]
+            },
+            "@COL20_PAG123_V2_E2": {
+                "LB": "COL20_PAG123_V2_E2",
+                "SM": "COL20_PAG123",
+                "barcode": [
+                    "ACTCGCTA"
+                ],
+                "concentration": 0.052709939175854564,
+                "output": [
+                    "CBJLFACXX_l01_ACTCGCTA.bam"
+                ]
+            }
+        },
+        "confidence threshold": 0.95,
+        "noise": 0.09052984976928714,
+        "transform": {
+            "token": [
+                "1::8"
+            ]
+        }
+    },
+    "transform": {
+        "token": [
+            "0::6",
+            "2::"
+        ]
+    }
+}
