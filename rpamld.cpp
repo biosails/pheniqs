@@ -21,20 +21,15 @@
 
 #include "pamld.h"
 
-template < class T > PamlDecoder< T >::PamlDecoder(const Value& ontology) try :
-    ObservingDecoder< T >(ontology),
-    noise(decode_value_by_key< double >("noise", ontology)),
-    confidence_threshold(decode_value_by_key< double >("confidence threshold", ontology)),
-    random_barcode_probability(1.0 / double(pow(4, (this->nucleotide_cardinality)))),
-    adjusted_noise_probability(noise * random_barcode_probability),
-    conditional_decoding_probability(0),
-    decoding_confidence(0) {
+template < class T > PamldNode< T >::PamldNode(const Value& ontology) try :
+    parent(NULL),
+    decendent(NULL) {
 
     } catch(Error& error) {
-        error.push("PamlDecoder");
+        error.push("PamldNode");
         throw;
 };
-template < class T > void PamlDecoder< T >::classify(const Read& input, Read& output) {
+template < class T > void PamldNode< T >::classify(const Read& input, Read& output) {
     this->observation.clear();
     this->rule.apply(input, this->observation);
 
@@ -117,14 +112,14 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
 };
 
 PamlMultiplexDecoder::PamlMultiplexDecoder(const Value& ontology) try :
-    PamlDecoder< Channel >(ontology) {
+    PamldNode< Channel >(ontology) {
 
     } catch(Error& error) {
         error.push("PamlMultiplexDecoder");
         throw;
 };
 void PamlMultiplexDecoder::classify(const Read& input, Read& output) {
-    PamlDecoder< Channel >::classify(input, output);
+    PamldNode< Channel >::classify(input, output);
     output.assign_RG(this->decoded->rg);
     output.update_multiplex_barcode(this->observation);
     output.update_multiplex_distance(this->decoding_hamming_distance);
@@ -132,14 +127,14 @@ void PamlMultiplexDecoder::classify(const Read& input, Read& output) {
 };
 
 PamlCellularDecoder::PamlCellularDecoder(const Value& ontology) try :
-    PamlDecoder< Barcode >(ontology) {
+    PamldNode< Barcode >(ontology) {
 
     } catch(Error& error) {
         error.push("PamlCellularDecoder");
         throw;
 };
 void PamlCellularDecoder::classify(const Read& input, Read& output) {
-    PamlDecoder< Barcode >::classify(input, output);
+    PamldNode< Barcode >::classify(input, output);
     output.update_raw_cellular_barcode(this->observation);
     output.update_cellular_barcode(*this->decoded);
     if(this->decoded->is_classified()) {

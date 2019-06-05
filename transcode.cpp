@@ -1307,11 +1307,11 @@ void Transcode::load_multiplex_decoding() {
         Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
         switch(algorithm) {
             case Algorithm::PAMLD: {
-                sample_classifier = new PAMLMultiplexDecoder(reference->value);
+                sample_classifier = new PamlMultiplexDecoder(reference->value);
                 break;
             };
             case Algorithm::MDD: {
-                sample_classifier = new MDMultiplexDecoder(reference->value);
+                sample_classifier = new MdMultiplexDecoder(reference->value);
                 break;
             };
             case Algorithm::TRANSPARENT: {
@@ -1372,11 +1372,11 @@ void Transcode::load_cellular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
         case Algorithm::PAMLD: {
-            cellular_classifier_array.emplace_back(new PAMLCellularDecoder(value));
+            cellular_classifier_array.emplace_back(new PamlCellularDecoder(value));
             break;
         };
         case Algorithm::MDD: {
-            cellular_classifier_array.emplace_back(new MDCellularDecoder(value));
+            cellular_classifier_array.emplace_back(new MdCellularDecoder(value));
             break;
         };
         default:
@@ -1860,7 +1860,7 @@ void TranscodePivot::load_multiplex_decoding() {
         Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
         switch (algorithm) {
             case Algorithm::PAMLD: {
-                PAMLMultiplexDecoder* pamld_decoder(new PAMLMultiplexDecoder(reference->value));
+                PamlMultiplexDecoder* pamld_decoder(new PamlMultiplexDecoder(reference->value));
                 pamld_decoder->unclassified.populate(job.output_feed_by_url);
                 for(auto& channel : pamld_decoder->element_by_index) {
                     channel.populate(job.output_feed_by_url);
@@ -1869,7 +1869,7 @@ void TranscodePivot::load_multiplex_decoding() {
                 break;
             };
             case Algorithm::MDD: {
-                MDMultiplexDecoder* mdd_decoder(new MDMultiplexDecoder(reference->value));
+                MdMultiplexDecoder* mdd_decoder(new MdMultiplexDecoder(reference->value));
                 mdd_decoder->unclassified.populate(job.output_feed_by_url);
                 for(auto& channel : mdd_decoder->element_by_index) {
                     channel.populate(job.output_feed_by_url);
@@ -1937,12 +1937,12 @@ void TranscodePivot::load_cellular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch (algorithm) {
         case Algorithm::PAMLD: {
-            PAMLCellularDecoder* paml_decoder(new PAMLCellularDecoder(value));
+            PamlCellularDecoder* paml_decoder(new PamlCellularDecoder(value));
             cellular_classifier_array.emplace_back(paml_decoder);
             break;
         };
         case Algorithm::MDD: {
-            MDCellularDecoder* md_decoder(new MDCellularDecoder(value));
+            MdCellularDecoder* md_decoder(new MdCellularDecoder(value));
             cellular_classifier_array.emplace_back(md_decoder);
             break;
         };

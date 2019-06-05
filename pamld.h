@@ -25,7 +25,7 @@
 #include "include.h"
 #include "decoder.h"
 
-template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public ObservingDecoder< T > {
+template < class T > class PamlDecoder : public ObservingDecoder< T > {
     protected:
         const double noise;
         const double confidence_threshold;
@@ -35,7 +35,7 @@ template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public Observ
         double decoding_confidence;
 
     public:
-        PhredAdjustedMaximumLikelihoodDecoder(const Value& ontology);
+        PamlDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
         inline void finalize() override {
             for(auto& element : this->element_by_index) {
@@ -48,15 +48,15 @@ template < class T > class PhredAdjustedMaximumLikelihoodDecoder : public Observ
         };
 };
 
-class PAMLMultiplexDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Channel > {
+class PamlMultiplexDecoder : public PamlDecoder< Channel > {
     public:
-        PAMLMultiplexDecoder(const Value& ontology);
+        PamlMultiplexDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 
-class PAMLCellularDecoder : public PhredAdjustedMaximumLikelihoodDecoder< Barcode > {
+class PamlCellularDecoder : public PamlDecoder< Barcode > {
     public:
-        PAMLCellularDecoder(const Value& ontology);
+        PamlCellularDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 

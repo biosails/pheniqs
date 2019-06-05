@@ -19,36 +19,40 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PHENIQS_MDD_H
-#define PHENIQS_MDD_H
+#ifndef PHENIQS_PAMLD_H
+#define PHENIQS_PAMLD_H
 
 #include "include.h"
 #include "decoder.h"
 
-template < class T > class MdDecoder : public ObservingDecoder< T > {
+template < class T > class PamldNode : public ObservingDecoder< T > {
     protected:
-        const uint8_t quality_masking_threshold;
-        const vector< int32_t > distance_tolerance;
-        unordered_map< string, T* > element_by_sequence;
-
+        T* parent;
+        PamlDecoder* decendent;
     public:
-        MdDecoder(const Value& ontology);
+        PamldNode(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
-
-    private:
-        inline bool match(T& barcode);
+        inline void finalize() override {
+            for(auto& element : this->element_by_index) {
+                this->accumulated_classified_confidence += element.accumulated_confidence;
+                this->accumulated_pf_classified_confidence += element.accumulated_pf_confidence;
+                this->low_conditional_confidence_count += element.low_conditional_confidence_count;
+                this->low_confidence_count += element.low_confidence_count;
+            }
+            ObservingDecoder< T >::finalize();
+        };
 };
 
-class MdMultiplexDecoder : public MdDecoder< Channel > {
+class PamlMultiplexDecoder : public PamldNode< Channel > {
     public:
-        MdMultiplexDecoder(const Value& ontology);
-        inline void classify(const Read& input, Read& output) override;
-};
-
-class MdCellularDecoder : public MdDecoder< Barcode > {
-    public:
-        MdCellularDecoder(const Value& ontology);
+        PamlMultiplexDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 
-#endif /* PHENIQS_MDD_H */
+class PamlCellularDecoder : public PamldNode< Barcode > {
+    public:
+        PamlCellularDecoder(const Value& ontology);
+        inline void classify(const Read& input, Read& output) override;
+};
+
+#endif /* PHENIQS_PAMLD_H */
