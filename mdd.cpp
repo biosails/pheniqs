@@ -21,7 +21,7 @@
 
 #include "mdd.h"
 
-template < class T > MinimumDistanceDecoder< T >::MinimumDistanceDecoder(const Value& ontology) try :
+template < class T > MdDecoder< T >::MdDecoder(const Value& ontology) try :
     ObservingDecoder< T >(ontology),
     quality_masking_threshold(decode_value_by_key< uint8_t >("quality masking threshold", ontology)),
     distance_tolerance(decode_value_by_key< vector< int32_t > >("distance tolerance", ontology)) {
@@ -31,10 +31,10 @@ template < class T > MinimumDistanceDecoder< T >::MinimumDistanceDecoder(const V
     }
 
     } catch(Error& error) {
-        error.push("MinimumDistanceDecoder");
+        error.push("MdDecoder");
         throw;
 };
-template < class T > void MinimumDistanceDecoder< T >::classify(const Read& input, Read& output) {
+template < class T > void MdDecoder< T >::classify(const Read& input, Read& output) {
     this->observation.clear();
     this->rule.apply(input, this->observation);
     this->decoded = &this->unclassified;
@@ -82,29 +82,29 @@ template < class T > void MinimumDistanceDecoder< T >::classify(const Read& inpu
     ObservingDecoder< T >::classify(input, output);
 };
 
-MDMultiplexDecoder::MDMultiplexDecoder(const Value& ontology) try :
-    MinimumDistanceDecoder< Channel >(ontology) {
+MdMultiplexDecoder::MdMultiplexDecoder(const Value& ontology) try :
+    MdDecoder< Channel >(ontology) {
 
     } catch(Error& error) {
-        error.push("MDMultiplexDecoder");
+        error.push("MdMultiplexDecoder");
         throw;
 };
-void MDMultiplexDecoder::classify(const Read& input, Read& output) {
-    MinimumDistanceDecoder< Channel >::classify(input, output);
+void MdMultiplexDecoder::classify(const Read& input, Read& output) {
+    MdDecoder< Channel >::classify(input, output);
     output.assign_RG(this->decoded->rg);
     output.update_multiplex_barcode(this->observation);
     output.update_multiplex_distance(this->decoding_hamming_distance);
 };
 
-MDCellularDecoder::MDCellularDecoder(const Value& ontology) try :
-    MinimumDistanceDecoder< Barcode >(ontology) {
+MdCellularDecoder::MdCellularDecoder(const Value& ontology) try :
+    MdDecoder< Barcode >(ontology) {
 
     } catch(Error& error) {
-        error.push("MDCellularDecoder");
+        error.push("MdCellularDecoder");
         throw;
 };
-void MDCellularDecoder::classify(const Read& input, Read& output) {
-    MinimumDistanceDecoder< Barcode >::classify(input, output);
+void MdCellularDecoder::classify(const Read& input, Read& output) {
+    MdDecoder< Barcode >::classify(input, output);
     output.update_raw_cellular_barcode(this->observation);
     output.update_cellular_barcode(*this->decoded);
     if(this->decoded->is_classified()) {
