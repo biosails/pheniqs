@@ -36,8 +36,115 @@
 </section>
 
 ## Read anatomy design variants for Illumina platform
+<!-- <p>&#8636;&#8637;</p> -->
+<table class="diagram">
+  <tr>
+    <td class="description" >Single index</td>
+    <td>
+      <div class="read" id="single_index">
+        <div class="binding_primer p5">P5</div>
+        <div class="sequencing_primer">SP1</div>
+        <div class="insert">insert</div>
+        <div class="sequencing_primer">SP2</div>
+        <div class="sample_barcode i7">i7</div>
+        <div class="binding_primer p7">P7</div>
+        <div class="clear"></div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td class="description" >Paired-end dual index</td>
+    <td>
+      <div class="read" id="single_index">
+        <div class="binding_primer p5">P5</div>
+        <div class="sample_barcode i5">i5</div>
+        <div class="sequencing_primer">SP1</div>
+        <div class="insert">insert</div>
+        <div class="sequencing_primer">SP2</div>
+        <div class="sample_barcode i7">i7</div>
+        <div class="binding_primer p7">P7</div>
+        <div class="clear"></div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td class="description" >Paired-end dual index with UMI</td>
+    <td>
+      <div class="read" id="single_index">
+        <div class="binding_primer p5">P5</div>
+        <div class="sample_barcode i5">i5</div>
+        <div class="sequencing_primer">SP1</div>
+        <div class="insert">insert</div>
+        <div class="sequencing_primer">SP2</div>
+        <div class="sample_barcode i7">i7</div>
+        <div class="molecular_barcode">UMI</div>
+        <div class="binding_primer p7">P7</div>
+        <div class="clear"></div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td class="description" >Paired-end dual index with inline UMI</td>
+    <td>
+      <div class="read" id="single_index">
+        <div class="binding_primer p5">P5</div>
+        <div class="sample_barcode i5">i5</div>
+        <div class="sequencing_primer">SP1</div>
+        <div class="molecular_barcode">UMI</div>
+        <div class="insert">insert</div>
+        <div class="sequencing_primer">SP2</div>
+        <div class="sample_barcode i7">i7</div>
+        <div class="binding_primer p7">P7</div>
+        <div class="clear"></div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td class="description" >Paired-end dual index, inline UMI and barcode</td>
+    <td>
+      <div class="read" id="single_index">
+        <div class="binding_primer p5">P5</div>
+        <div class="sample_barcode i5">i5</div>
+        <div class="sequencing_primer">SP1</div>
+        <div class="molecular_barcode">UMI</div>
+        <div class="custom_barcode">BC</div>
+        <div class="insert">insert</div>
+        <div class="sequencing_primer">SP2</div>
+        <div class="sample_barcode i7">i7</div>
+        <div class="binding_primer p7">P7</div>
+        <div class="clear"></div>
+      </div>
+    </td>
+  </tr>
+</table>
 
-![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
+<table class="legend">
+  <tr>
+    <td class="label" ><span class="binding_primer p5">P5/P7</span></td>
+    <td class="definition" >Platform specific flow cell binding sequences</td>
+  </tr>
+  <tr>
+    <td class="label" ><span class="sequencing_primer">SP1/SP2</span></td>
+    <td class="definition" >Sequencing primer binding sites (common for all libraries)</td>
+  </tr>
+  <tr>
+    <td class="label" ><span class="sample_barcode">i7/i5</span></td>
+    <td class="definition" >Library specific sample indexes</td>
+  </tr>
+  <tr>
+    <td class="label" ><span class="molecular_barcode">UMI</span></td>
+    <td class="definition" >Unique molecular index (barcode tag for individual molecules)</td>
+  </tr>
+  <tr>
+    <td class="label" ><span class="custom_barcode">BC</span></td>
+    <td class="definition" >User-defined barcode (unique per sample, single cell, etc.)</td>
+  </tr>
+  <tr>
+    <td class="label" ><span class="insert">insert</span></td>
+    <td class="definition" >Target DNA or cDNA fragment (library-specific)</td>
+  </tr>
+</table>
+
 
 <a name="standard_illumina" />
 Standard Illumina dual index, paird end sample demultiplexing

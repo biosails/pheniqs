@@ -42,41 +42,7 @@ This tutorial will walk you through demultiplexing an Illumia sequencing run wit
 
 ## Input Read Layout
 
-<table class="diagram">
-  <tr>
-    <td class="description" ></td>
-    <td>
-      <div class="read" id="single_index">
-        <div class="binding_primer p5">P5</div>
-        <div class="sample_barcode">i5</div>
-        <div class="sequencing_primer">SP1</div>
-        <div class="insert">insert</div>
-        <div class="sequencing_primer">SP2</div>
-        <div class="sample_barcode">i7</div>
-        <div class="binding_primer p7">P7</div>
-        <div class="clear"></div>
-      </div>
-    </td>
-  </tr>
-</table>
-<table class="legend">
-  <tr>
-    <td class="label" ><span class="binding_primer p5">P5/P7</span></td>
-    <td class="definition" >Platform specific flow cell binding sequences</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="sequencing_primer">SP1/SP2</span></td>
-    <td class="definition" >Sequencing primer binding sites (common for all libraries)</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="sample_barcode">i5/i7</span></td>
-    <td class="definition" >Library specific sample indices</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="insert">insert</span></td>
-    <td class="definition" >Target DNA or cDNA fragment (library-specific)</td>
-  </tr>
-</table>
+![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
 Base calling with bc2fastq will produce 4 files per lane: `L001_R1_001.fastq.gz` containing the 3 prime prefix of the insert region, `L001_I1_001.fastq.gz` containing the i7 index, `L001_I2_001.fastq.gz` containing the i5 index and `L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 
