@@ -41,41 +41,19 @@
 This tutorial will walk you through demultiplexing a single index fluidigm sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing the i7 sample index and a cell specific tag. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) respectively, and the decoding error probabilities is written to the [XB](glossary.html#xb_auxiliary_tag).
 
 ## Input Read Layout
-<table class="diagram">
-  <tr>
-    <td class="description" ></td>
-    <td>
-      <div class="read" id="single_index">
-        <div class="binding_primer p5">P5</div>
-        <div class="sequencing_primer">SP1</div>
-        <div class="cellular_barcode">tag</div>
-        <div class="insert">insert</div>
-        <div class="sequencing_primer">SP2</div>
-        <div class="sample_barcode">i7</div>
-        <div class="binding_primer p7">P7</div>
-        <div class="clear"></div>
-      </div>
-    </td>
-  </tr>
-</table>
-<table class="legend">
-  <tr>
-    <td class="label" ><span class="binding_primer p5">P5/P7</span></td>
-    <td class="definition" >Platform specific flow cell binding sequences</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="sequencing_primer">SP1/SP2</span></td>
-    <td class="definition" >Sequencing primer binding sites (common for all libraries)</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="sample_barcode">i7</span></td>
-    <td class="definition" >Library specific sample index</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="insert">insert</span></td>
-    <td class="definition" >Target DNA or cDNA fragment (library-specific)</td>
-  </tr>
-</table>
+
+<div class="read" id="single_index">
+  <div class="binding_primer p5">P5</div>
+  <div class="sequencing_primer">SP5</div>
+  <div class="cellular_barcode">tag</div>
+  <div class="insert">insert</div>
+  <div class="sequencing_primer">SP7</div>
+  <div class="sample_barcode">i7</div>
+  <div class="binding_primer p7">P7</div>
+  <div class="clear"></div>
+
+  <p><strong>P5</strong> and <strong>P7</strong> are the primers binding to the instrument. <strong>SP5</strong> and <strong>SP7</strong> are the sequencing primers. <strong>i7 index</strong> is an 8 base pair barcode specific to a given sample library. <strong>tag</strong> is a 6 base pair tag specific to a cell, and <strong>insert</strong> is the target DNA or RNA fragment from a given sample library.</p>
+</div>
 
 Base calling with bc2fastq will produce 3 files per lane: `L001_R1_001.fastq.gz` containing a 6 base pair long cellular barcode, `L001_I1_001.fastq.gz` containing the 8 base pair sample barcode and `L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 

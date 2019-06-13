@@ -478,7 +478,7 @@ class Illumina(Job):
             command.append('--mask-short-adapter-reads')
             command.append('0')
             command.append('--create-fastq-for-index-reads')
-            # command.append('--with-failed-reads')
+            command.append('--with-failed-reads')
             self.ontology['bcl2fastq'] = ' '.join(command)
 
     def infer_decoder_name(self, lane):
