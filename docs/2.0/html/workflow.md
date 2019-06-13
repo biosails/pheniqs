@@ -148,7 +148,7 @@
 
 <a name="standard_illumina" />
 Standard Illumina dual index, paird end sample demultiplexing
-: This [vignette](illumina.html) will walk you through demultiplexing a standard Illumia high throughput sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding).
+: This [vignette](standard_illumina.html) will walk you through demultiplexing a standard Illumia high throughput sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding).
 
 <a name="fluidigm" />
 Classifying single index fluidigm with a single cellular tag
