@@ -1,6 +1,7 @@
 {
+    "report url": "l04_sample_prior_report.json",
     "import": [
-        "core.json"
+        "../../core.json"
     ],
     "input": [
         "H7LT2DSXX_l04_S4_L004_I1_001.fastq.gz",
