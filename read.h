@@ -196,15 +196,15 @@ class Read : public SequenceArray< Segment > {
         };
         inline void flush() {
             if(multiplex_decoding_confidence > 0 && multiplex_decoding_confidence < 1) {
-                leader->auxiliary.XB = static_cast< float >(1 - multiplex_decoding_confidence);
+                leader->auxiliary.XB = static_cast< float >(1.0 - multiplex_decoding_confidence);
                 // barcode_decoding_confidence *= multiplex_decoding_confidence;
             }
             if(molecular_decoding_confidence > 0 && molecular_decoding_confidence < 1) {
-                leader->auxiliary.XM = static_cast< float >(1 - molecular_decoding_confidence);
+                leader->auxiliary.XM = static_cast< float >(1.0 - molecular_decoding_confidence);
                 // barcode_decoding_confidence *= molecular_decoding_confidence;
             }
             if(cellular_decoding_confidence > 0 && cellular_decoding_confidence < 1) {
-                leader->auxiliary.XC = static_cast< float >(1 - cellular_decoding_confidence);
+                leader->auxiliary.XC = static_cast< float >(1.0 - cellular_decoding_confidence);
                 // barcode_decoding_confidence *= cellular_decoding_confidence;
             }
             // if(barcode_decoding_confidence > 0 && barcode_decoding_confidence < 1) {
@@ -270,7 +270,11 @@ class Read : public SequenceArray< Segment > {
             leader->auxiliary.update_multiplex_barcode(observation);
         };
         inline void update_multiplex_decoding_confidence(const double& confidence) {
-            multiplex_decoding_confidence *= confidence;
+            if(multiplex_decoding_confidence == 1) {
+                multiplex_decoding_confidence = confidence;
+            } else {
+                multiplex_decoding_confidence *= confidence;
+            }
         };
         inline void set_multiplex_decoding_confidence(const double& confidence) {
             multiplex_decoding_confidence = confidence;
@@ -289,7 +293,11 @@ class Read : public SequenceArray< Segment > {
             leader->auxiliary.update_molecular_barcode(observation);
         };
         inline void update_molecular_decoding_confidence(const double& confidence) {
-            molecular_decoding_confidence *= confidence;
+            if(molecular_decoding_confidence == 1) {
+                molecular_decoding_confidence = confidence;
+            } else {
+                molecular_decoding_confidence *= confidence;
+            }
         };
         inline void set_molecular_decoding_confidence(const double& confidence) {
             molecular_decoding_confidence = confidence;
@@ -311,7 +319,11 @@ class Read : public SequenceArray< Segment > {
             leader->auxiliary.update_cellular_barcode(observation);
         };
         inline void update_cellular_decoding_confidence(const double& confidence) {
-            cellular_decoding_confidence *= confidence;
+            if(cellular_decoding_confidence == 1) {
+                cellular_decoding_confidence = confidence;
+            } else {
+                cellular_decoding_confidence *= confidence;
+            }
         };
         inline void set_cellular_decoding_confidence(const double& confidence) {
             cellular_decoding_confidence = confidence;
