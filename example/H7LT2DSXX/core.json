@@ -662,12 +662,6 @@
                         "TTATGCGA"
                     ]
                 }
-            },
-            "transform": {
-                "token": [
-                    "1::8",
-                    "2::8"
-                ]
             }
         },
         "H7LT2DSXX_lane_2_multiplex": {
@@ -1330,12 +1324,6 @@
                         "TTATGCGA"
                     ]
                 }
-            },
-            "transform": {
-                "token": [
-                    "1::8",
-                    "2::8"
-                ]
             }
         },
         "H7LT2DSXX_lane_3_multiplex": {
@@ -2012,12 +2000,6 @@
                         "TTATGCGA"
                     ]
                 }
-            },
-            "transform": {
-                "token": [
-                    "1::8",
-                    "2::8"
-                ]
             }
         },
         "H7LT2DSXX_lane_4_multiplex": {
@@ -2694,20 +2676,8 @@
                         "TTATGCGA"
                     ]
                 }
-            },
-            "transform": {
-                "token": [
-                    "1::8",
-                    "2::8"
-                ]
             }
         }
     },
-    "flowcell id": "H7LT2DSXX",
-    "transform": {
-        "token": [
-            "0::",
-            "3::"
-        ]
-    }
+    "flowcell id": "H7LT2DSXX"
 }
