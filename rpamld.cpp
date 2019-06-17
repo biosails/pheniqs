@@ -110,38 +110,3 @@ template < class T > void PamldNode< T >::classify(const Read& input, Read& outp
     }
     ObservingDecoder< T >::classify(input, output);
 };
-
-PamlMultiplexDecoder::PamlMultiplexDecoder(const Value& ontology) try :
-    PamldNode< Channel >(ontology) {
-
-    } catch(Error& error) {
-        error.push("PamlMultiplexDecoder");
-        throw;
-};
-void PamlMultiplexDecoder::classify(const Read& input, Read& output) {
-    PamldNode< Channel >::classify(input, output);
-    output.assign_RG(this->decoded->rg);
-    output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->decoding_hamming_distance);
-    output.update_multiplex_decoding_confidence(this->decoding_confidence);
-};
-
-PamlCellularDecoder::PamlCellularDecoder(const Value& ontology) try :
-    PamldNode< Barcode >(ontology) {
-
-    } catch(Error& error) {
-        error.push("PamlCellularDecoder");
-        throw;
-};
-void PamlCellularDecoder::classify(const Read& input, Read& output) {
-    PamldNode< Barcode >::classify(input, output);
-    output.update_raw_cellular_barcode(this->observation);
-    output.update_cellular_barcode(*this->decoded);
-    if(this->decoded->is_classified()) {
-        output.update_cellular_decoding_confidence(this->decoding_confidence);
-        output.update_cellular_distance(this->decoding_hamming_distance);
-    } else {
-        output.set_cellular_decoding_confidence(0);
-        output.set_cellular_distance(0);
-    }
-};

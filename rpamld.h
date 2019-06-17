@@ -19,8 +19,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PHENIQS_PAMLD_H
-#define PHENIQS_PAMLD_H
+#ifndef PHENIQS_RPAMLD_H
+#define PHENIQS_RPAMLD_H
 
 #include "include.h"
 #include "decoder.h"
@@ -43,16 +43,4 @@ template < class T > class PamldNode : public ObservingDecoder< T > {
         };
 };
 
-class PamlMultiplexDecoder : public PamldNode< Channel > {
-    public:
-        PamlMultiplexDecoder(const Value& ontology);
-        inline void classify(const Read& input, Read& output) override;
-};
-
-class PamlCellularDecoder : public PamldNode< Barcode > {
-    public:
-        PamlCellularDecoder(const Value& ontology);
-        inline void classify(const Read& input, Read& output) override;
-};
-
-#endif /* PHENIQS_PAMLD_H */
+#endif /* PHENIQS_RPAMLD_H */
