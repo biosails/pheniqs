@@ -1,16 +1,16 @@
 {
     "import": [
-        "core.json"
+        "../core.json"
     ],
     "input": [
-        "H7LT2DSXX_l03_S3_L003_R1_001.fastq.gz",
-        "H7LT2DSXX_l03_S3_L003_I1_001.fastq.gz",
-        "H7LT2DSXX_l03_S3_L003_I2_001.fastq.gz",
-        "H7LT2DSXX_l03_S3_L003_R2_001.fastq.gz"
+        "H7LT2DSXX_l02_S2_L002_R1_001.fastq.gz",
+        "H7LT2DSXX_l02_S2_L002_I1_001.fastq.gz",
+        "H7LT2DSXX_l02_S2_L002_I2_001.fastq.gz",
+        "H7LT2DSXX_l02_S2_L002_R2_001.fastq.gz"
     ],
     "multiplex": {
         "algorithm": "pamld",
-        "base": "H7LT2DSXX_lane_3_multiplex",
+        "base": "H7LT2DSXX_lane_2_multiplex",
         "confidence threshold": 0.95,
         "noise": 0.05,
         "transform": {
@@ -21,7 +21,7 @@
         }
     },
     "output": [
-        "H7LT2DSXX_l03_sample.bam"
+        "H7LT2DSXX_l02_sample.bam"
     ],
     "transform": {
         "token": [

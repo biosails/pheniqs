@@ -1,6 +1,6 @@
 {
     "import": [
-        "core.json"
+        "../core.json"
     ],
     "input": [
         "H7LT2DSXX_l01_S1_L001_R1_001.fastq.gz",

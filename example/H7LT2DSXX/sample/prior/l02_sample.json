@@ -3,10 +3,8 @@
         "core.json"
     ],
     "input": [
-        "H7LT2DSXX_l02_S2_L002_R1_001.fastq.gz",
         "H7LT2DSXX_l02_S2_L002_I1_001.fastq.gz",
-        "H7LT2DSXX_l02_S2_L002_I2_001.fastq.gz",
-        "H7LT2DSXX_l02_S2_L002_R2_001.fastq.gz"
+        "H7LT2DSXX_l02_S2_L002_I2_001.fastq.gz"
     ],
     "multiplex": {
         "algorithm": "pamld",
@@ -15,18 +13,12 @@
         "noise": 0.05,
         "transform": {
             "token": [
-                "1::8",
-                "2::8"
+                "0::8",
+                "1::8"
             ]
         }
     },
     "output": [
-        "H7LT2DSXX_l02_sample.bam"
-    ],
-    "transform": {
-        "token": [
-            "0::",
-            "3::"
-        ]
-    }
+        "/dev/null"
+    ]
 }
