@@ -25,6 +25,7 @@ import os
 import sys
 import json
 import logging
+from copy import deepcopy
 
 from core.error import *
 from core import log_levels
