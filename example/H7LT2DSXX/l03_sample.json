@@ -1,0 +1,26 @@
+{
+    "import": [
+        "core.json"
+    ],
+    "input": [
+        "H7LT2DSXX_l03_S3_L003_I1_001.fastq.gz",
+        "H7LT2DSXX_l03_S3_L003_I2_001.fastq.gz",
+        "H7LT2DSXX_l03_S3_L003_R1_001.fastq.gz",
+        "H7LT2DSXX_l03_S3_L003_R2_001.fastq.gz"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "base": "H7LT2DSXX_lane_3_multiplex"
+    },
+    "output": [
+        "H7LT2DSXX_l03_sample.bam"
+    ],
+    "transform": {
+        "token": [
+            "0::",
+            "3::"
+        ]
+    }
+}

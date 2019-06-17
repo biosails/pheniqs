@@ -1,0 +1,2713 @@
+{
+    "PL": "ILLUMINA",
+    "PM": "A00534",
+    "decoder": {
+        "H7LT2DSXX_lane_1_multiplex": {
+            "codec": {
+                "@A10_PDAC81": {
+                    "LB": "A10_PDAC81",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A11_PDAC490": {
+                    "LB": "A11_PDAC490",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A12_PDAC560": {
+                    "LB": "A12_PDAC560",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A1_PDAC559": {
+                    "LB": "A1_PDAC559",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A2_PDAC609": {
+                    "LB": "A2_PDAC609",
+                    "barcode": [
+                        "CGTACTAG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A3_PDAC483": {
+                    "LB": "A3_PDAC483",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A4_PDAC494": {
+                    "LB": "A4_PDAC494",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A5_PDAC510": {
+                    "LB": "A5_PDAC510",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A6_PDAC511": {
+                    "LB": "A6_PDAC511",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A7_PTHE43": {
+                    "LB": "A7_PTHE43",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A8_PDAC502": {
+                    "LB": "A8_PDAC502",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B10_PDAC90": {
+                    "LB": "B10_PDAC90",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B11_PDAC518": {
+                    "LB": "B11_PDAC518",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B12_PDAC562": {
+                    "LB": "B12_PDAC562",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B1_PTHE34": {
+                    "LB": "B1_PTHE34",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B2_PDAC579": {
+                    "LB": "B2_PDAC579",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B3_PDAC485": {
+                    "LB": "B3_PDAC485",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B4_PDAC553": {
+                    "LB": "B4_PDAC553",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B5_PTHE47": {
+                    "LB": "B5_PTHE47",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B6_PDAC542": {
+                    "LB": "B6_PDAC542",
+                    "barcode": [
+                        "GGACTCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B7_PTHE37": {
+                    "LB": "B7_PTHE37",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B8_PDAC84": {
+                    "LB": "B8_PDAC84",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B9_PDAC505": {
+                    "LB": "B9_PDAC505",
+                    "barcode": [
+                        "TAGGCATG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C10_PDAC491": {
+                    "LB": "C10_PDAC491",
+                    "barcode": [
+                        "GCTCATGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C11_PDAC564": {
+                    "LB": "C11_PDAC564",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C12_PDAC610": {
+                    "LB": "C12_PDAC610",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C1_PDAC582": {
+                    "LB": "C1_PDAC582",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C2_PDAC603": {
+                    "LB": "C2_PDAC603",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C3_PTHE38": {
+                    "LB": "C3_PTHE38",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C4_PDAC592": {
+                    "LB": "C4_PDAC592",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C5_PDAC566": {
+                    "LB": "C5_PDAC566",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C6_PDAC591": {
+                    "LB": "C6_PDAC591",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C7_PDAC548": {
+                    "LB": "C7_PDAC548",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C8_PTHE53": {
+                    "LB": "C8_PTHE53",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C9_PDAC480": {
+                    "LB": "C9_PDAC480",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@D10_PDAC509": {
+                    "LB": "D10_PDAC509",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D11_PDAC457": {
+                    "LB": "D11_PDAC457",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D12_PDAC514": {
+                    "LB": "D12_PDAC514",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D1_PDAC594": {
+                    "LB": "D1_PDAC594",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D2_PDAC573": {
+                    "LB": "D2_PDAC573",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D3_PDAC79": {
+                    "LB": "D3_PDAC79",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D4_PDAC529": {
+                    "LB": "D4_PDAC529",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D5_PDAC598": {
+                    "LB": "D5_PDAC598",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D6_PDAC587": {
+                    "LB": "D6_PDAC587",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D7_PTHE45": {
+                    "LB": "D7_PTHE45",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D8_PTHE55": {
+                    "LB": "D8_PTHE55",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D9_PTHE46": {
+                    "LB": "D9_PTHE46",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@E10_PDAC593": {
+                    "LB": "E10_PDAC593",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E11_PDAC477": {
+                    "LB": "E11_PDAC477",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E12_PTHE56": {
+                    "LB": "E12_PTHE56",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E1_PDAC503": {
+                    "LB": "E1_PDAC503",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E2_PDAC551": {
+                    "LB": "E2_PDAC551",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E3_PDAC578": {
+                    "LB": "E3_PDAC578",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E4_PDAC600": {
+                    "LB": "E4_PDAC600",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E5_PDAC76": {
+                    "LB": "E5_PDAC76",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E6_PDAC497": {
+                    "LB": "E6_PDAC497",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E8_PDAC475": {
+                    "LB": "E8_PDAC475",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E9_PDAC580": {
+                    "LB": "E9_PDAC580",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@F10_PDAC500": {
+                    "LB": "F10_PDAC500",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F11_PDAC86": {
+                    "LB": "F11_PDAC86",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F12_PDAC541": {
+                    "LB": "F12_PDAC541",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F1_PDAC507": {
+                    "LB": "F1_PDAC507",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F2_PDAC595": {
+                    "LB": "F2_PDAC595",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F3_PDAC554": {
+                    "LB": "F3_PDAC554",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F4_PDAC479": {
+                    "LB": "F4_PDAC479",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F5_PDAC577": {
+                    "LB": "F5_PDAC577",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F6_PTHE36": {
+                    "LB": "F6_PTHE36",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F7_PDAC98": {
+                    "LB": "F7_PDAC98",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F8_PDAC73": {
+                    "LB": "F8_PDAC73",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F9_PDAC499": {
+                    "LB": "F9_PDAC499",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G10_PDAC599": {
+                    "LB": "G10_PDAC599",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G11_PDAC95": {
+                    "LB": "G11_PDAC95",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G12_PDAC520": {
+                    "LB": "G12_PDAC520",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G1_PDAC543": {
+                    "LB": "G1_PDAC543",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G2_PDAC533": {
+                    "LB": "G2_PDAC533",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G3_PDAC590": {
+                    "LB": "G3_PDAC590",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G4_PTHE39": {
+                    "LB": "G4_PTHE39",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G5_PDAC88": {
+                    "LB": "G5_PDAC88",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G6_PDAC521": {
+                    "LB": "G6_PDAC521",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G7_PDAC525": {
+                    "LB": "G7_PDAC525",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G8_PDAC546": {
+                    "LB": "G8_PDAC546",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G9_PTHE44": {
+                    "LB": "G9_PTHE44",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H10_PTHE48": {
+                    "LB": "H10_PTHE48",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H11_PDAC585": {
+                    "LB": "H11_PDAC585",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H12_PDAC547": {
+                    "LB": "H12_PDAC547",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H1_PDAC517": {
+                    "LB": "H1_PDAC517",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H2_PDAC476": {
+                    "LB": "H2_PDAC476",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H3_PDAC535": {
+                    "LB": "H3_PDAC535",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H4_PDAC498": {
+                    "LB": "H4_PDAC498",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H5_PDAC563": {
+                    "LB": "H5_PDAC563",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H6_PDAC581": {
+                    "LB": "H6_PDAC581",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H7_PDAC534": {
+                    "LB": "H7_PDAC534",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H8_PDAC516": {
+                    "LB": "H8_PDAC516",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H9_PDAC481": {
+                    "LB": "H9_PDAC481",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TTATGCGA"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
+            }
+        },
+        "H7LT2DSXX_lane_2_multiplex": {
+            "codec": {
+                "@A10_PDAC81": {
+                    "LB": "A10_PDAC81",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A11_PDAC490": {
+                    "LB": "A11_PDAC490",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A12_PDAC560": {
+                    "LB": "A12_PDAC560",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A1_PDAC559": {
+                    "LB": "A1_PDAC559",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A2_PDAC609": {
+                    "LB": "A2_PDAC609",
+                    "barcode": [
+                        "CGTACTAG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A3_PDAC483": {
+                    "LB": "A3_PDAC483",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A4_PDAC494": {
+                    "LB": "A4_PDAC494",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A5_PDAC510": {
+                    "LB": "A5_PDAC510",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A6_PDAC511": {
+                    "LB": "A6_PDAC511",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A7_PTHE43": {
+                    "LB": "A7_PTHE43",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A8_PDAC502": {
+                    "LB": "A8_PDAC502",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B10_PDAC90": {
+                    "LB": "B10_PDAC90",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B11_PDAC518": {
+                    "LB": "B11_PDAC518",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B12_PDAC562": {
+                    "LB": "B12_PDAC562",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B1_PTHE34": {
+                    "LB": "B1_PTHE34",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B2_PDAC579": {
+                    "LB": "B2_PDAC579",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B3_PDAC485": {
+                    "LB": "B3_PDAC485",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B4_PDAC553": {
+                    "LB": "B4_PDAC553",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B5_PTHE47": {
+                    "LB": "B5_PTHE47",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B6_PDAC542": {
+                    "LB": "B6_PDAC542",
+                    "barcode": [
+                        "GGACTCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B7_PTHE37": {
+                    "LB": "B7_PTHE37",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B8_PDAC84": {
+                    "LB": "B8_PDAC84",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B9_PDAC505": {
+                    "LB": "B9_PDAC505",
+                    "barcode": [
+                        "TAGGCATG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C10_PDAC491": {
+                    "LB": "C10_PDAC491",
+                    "barcode": [
+                        "GCTCATGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C11_PDAC564": {
+                    "LB": "C11_PDAC564",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C12_PDAC610": {
+                    "LB": "C12_PDAC610",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C1_PDAC582": {
+                    "LB": "C1_PDAC582",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C2_PDAC603": {
+                    "LB": "C2_PDAC603",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C3_PTHE38": {
+                    "LB": "C3_PTHE38",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C4_PDAC592": {
+                    "LB": "C4_PDAC592",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C5_PDAC566": {
+                    "LB": "C5_PDAC566",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C6_PDAC591": {
+                    "LB": "C6_PDAC591",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C7_PDAC548": {
+                    "LB": "C7_PDAC548",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C8_PTHE53": {
+                    "LB": "C8_PTHE53",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C9_PDAC480": {
+                    "LB": "C9_PDAC480",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@D10_PDAC509": {
+                    "LB": "D10_PDAC509",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D11_PDAC457": {
+                    "LB": "D11_PDAC457",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D12_PDAC514": {
+                    "LB": "D12_PDAC514",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D1_PDAC594": {
+                    "LB": "D1_PDAC594",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D2_PDAC573": {
+                    "LB": "D2_PDAC573",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D3_PDAC79": {
+                    "LB": "D3_PDAC79",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D4_PDAC529": {
+                    "LB": "D4_PDAC529",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D5_PDAC598": {
+                    "LB": "D5_PDAC598",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D6_PDAC587": {
+                    "LB": "D6_PDAC587",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D7_PTHE45": {
+                    "LB": "D7_PTHE45",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D8_PTHE55": {
+                    "LB": "D8_PTHE55",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D9_PTHE46": {
+                    "LB": "D9_PTHE46",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@E10_PDAC593": {
+                    "LB": "E10_PDAC593",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E11_PDAC477": {
+                    "LB": "E11_PDAC477",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E12_PTHE56": {
+                    "LB": "E12_PTHE56",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E1_PDAC503": {
+                    "LB": "E1_PDAC503",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E2_PDAC551": {
+                    "LB": "E2_PDAC551",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E3_PDAC578": {
+                    "LB": "E3_PDAC578",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E4_PDAC600": {
+                    "LB": "E4_PDAC600",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E5_PDAC76": {
+                    "LB": "E5_PDAC76",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E6_PDAC497": {
+                    "LB": "E6_PDAC497",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E8_PDAC475": {
+                    "LB": "E8_PDAC475",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E9_PDAC580": {
+                    "LB": "E9_PDAC580",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@F10_PDAC500": {
+                    "LB": "F10_PDAC500",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F11_PDAC86": {
+                    "LB": "F11_PDAC86",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F12_PDAC541": {
+                    "LB": "F12_PDAC541",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F1_PDAC507": {
+                    "LB": "F1_PDAC507",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F2_PDAC595": {
+                    "LB": "F2_PDAC595",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F3_PDAC554": {
+                    "LB": "F3_PDAC554",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F4_PDAC479": {
+                    "LB": "F4_PDAC479",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F5_PDAC577": {
+                    "LB": "F5_PDAC577",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F6_PTHE36": {
+                    "LB": "F6_PTHE36",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F7_PDAC98": {
+                    "LB": "F7_PDAC98",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F8_PDAC73": {
+                    "LB": "F8_PDAC73",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F9_PDAC499": {
+                    "LB": "F9_PDAC499",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G10_PDAC599": {
+                    "LB": "G10_PDAC599",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G11_PDAC95": {
+                    "LB": "G11_PDAC95",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G12_PDAC520": {
+                    "LB": "G12_PDAC520",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G1_PDAC543": {
+                    "LB": "G1_PDAC543",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G2_PDAC533": {
+                    "LB": "G2_PDAC533",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G3_PDAC590": {
+                    "LB": "G3_PDAC590",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G4_PTHE39": {
+                    "LB": "G4_PTHE39",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G5_PDAC88": {
+                    "LB": "G5_PDAC88",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G6_PDAC521": {
+                    "LB": "G6_PDAC521",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G7_PDAC525": {
+                    "LB": "G7_PDAC525",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G8_PDAC546": {
+                    "LB": "G8_PDAC546",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G9_PTHE44": {
+                    "LB": "G9_PTHE44",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H10_PTHE48": {
+                    "LB": "H10_PTHE48",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H11_PDAC585": {
+                    "LB": "H11_PDAC585",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H12_PDAC547": {
+                    "LB": "H12_PDAC547",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H1_PDAC517": {
+                    "LB": "H1_PDAC517",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H2_PDAC476": {
+                    "LB": "H2_PDAC476",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H3_PDAC535": {
+                    "LB": "H3_PDAC535",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H4_PDAC498": {
+                    "LB": "H4_PDAC498",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H5_PDAC563": {
+                    "LB": "H5_PDAC563",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H6_PDAC581": {
+                    "LB": "H6_PDAC581",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H7_PDAC534": {
+                    "LB": "H7_PDAC534",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H8_PDAC516": {
+                    "LB": "H8_PDAC516",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H9_PDAC481": {
+                    "LB": "H9_PDAC481",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TTATGCGA"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
+            }
+        },
+        "H7LT2DSXX_lane_3_multiplex": {
+            "codec": {
+                "@A10_PDAC607": {
+                    "LB": "A10_PDAC607",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A11_PDAC80": {
+                    "LB": "A11_PDAC80",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A12_PDAC561": {
+                    "LB": "A12_PDAC561",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A1_PDAC549": {
+                    "LB": "A1_PDAC549",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A2_PDAC550": {
+                    "LB": "A2_PDAC550",
+                    "barcode": [
+                        "CGTACTAG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A3_PDAC495": {
+                    "LB": "A3_PDAC495",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A4_PDAC484": {
+                    "LB": "A4_PDAC484",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A5_PDAC515": {
+                    "LB": "A5_PDAC515",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A6_PDAC85": {
+                    "LB": "A6_PDAC85",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A7_PDAC527": {
+                    "LB": "A7_PDAC527",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A8_PDAC82": {
+                    "LB": "A8_PDAC82",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A9_PDAC501": {
+                    "LB": "A9_PDAC501",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B10_PDAC506": {
+                    "LB": "B10_PDAC506",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B11_PDAC512": {
+                    "LB": "B11_PDAC512",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B12_PDAC604": {
+                    "LB": "B12_PDAC604",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B1_PDAC536": {
+                    "LB": "B1_PDAC536",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B2_PDAC455": {
+                    "LB": "B2_PDAC455",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B3_PDAC496": {
+                    "LB": "B3_PDAC496",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B4_PDAC504": {
+                    "LB": "B4_PDAC504",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B5_PDAC488": {
+                    "LB": "B5_PDAC488",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B6_PDAC489": {
+                    "LB": "B6_PDAC489",
+                    "barcode": [
+                        "GGACTCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B7_PDAC596": {
+                    "LB": "B7_PDAC596",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B8_PDAC571": {
+                    "LB": "B8_PDAC571",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B9_PTHE41": {
+                    "LB": "B9_PTHE41",
+                    "barcode": [
+                        "TAGGCATG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C10_PDAC556": {
+                    "LB": "C10_PDAC556",
+                    "barcode": [
+                        "GCTCATGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C11_PDAC583": {
+                    "LB": "C11_PDAC583",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C12_PTHE42": {
+                    "LB": "C12_PTHE42",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C1_PDAC537": {
+                    "LB": "C1_PDAC537",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C2_PDAC575": {
+                    "LB": "C2_PDAC575",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C3_PDAC92": {
+                    "LB": "C3_PDAC92",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C4_PDAC486": {
+                    "LB": "C4_PDAC486",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C5_PDAC574": {
+                    "LB": "C5_PDAC574",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C6_PDAC460": {
+                    "LB": "C6_PDAC460",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C7_PDAC555": {
+                    "LB": "C7_PDAC555",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C8_PDAC99": {
+                    "LB": "C8_PDAC99",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C9_PDAC608": {
+                    "LB": "C9_PDAC608",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@D10_PDAC544": {
+                    "LB": "D10_PDAC544",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D11_PDAC584": {
+                    "LB": "D11_PDAC584",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D12_PDAC78": {
+                    "LB": "D12_PDAC78",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D1_PDAC586": {
+                    "LB": "D1_PDAC586",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D2_PDAC558": {
+                    "LB": "D2_PDAC558",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D3_PDAC522": {
+                    "LB": "D3_PDAC522",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D4_PDAC528": {
+                    "LB": "D4_PDAC528",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D5_PDAC74": {
+                    "LB": "D5_PDAC74",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D6_PDAC601": {
+                    "LB": "D6_PDAC601",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D7_PDAC487": {
+                    "LB": "D7_PDAC487",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D8_PDAC524": {
+                    "LB": "D8_PDAC524",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D9_PTHE35": {
+                    "LB": "D9_PTHE35",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@E10_PDAC482": {
+                    "LB": "E10_PDAC482",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E11_PDAC569": {
+                    "LB": "E11_PDAC569",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E12_PTHE50": {
+                    "LB": "E12_PTHE50",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E1_PDAC530": {
+                    "LB": "E1_PDAC530",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E2_PTHE52": {
+                    "LB": "E2_PTHE52",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E3_PDAC567": {
+                    "LB": "E3_PDAC567",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E4_PDAC576": {
+                    "LB": "E4_PDAC576",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E5_PDAC97": {
+                    "LB": "E5_PDAC97",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E6_PDAC589": {
+                    "LB": "E6_PDAC589",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E7_PDAC570": {
+                    "LB": "E7_PDAC570",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E8_PDAC458": {
+                    "LB": "E8_PDAC458",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E9_PDAC539": {
+                    "LB": "E9_PDAC539",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@F10_PDAC508": {
+                    "LB": "F10_PDAC508",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F11_PTHE54": {
+                    "LB": "F11_PTHE54",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F12_PTHE40": {
+                    "LB": "F12_PTHE40",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F1_PDAC532": {
+                    "LB": "F1_PDAC532",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F2_PDAC523": {
+                    "LB": "F2_PDAC523",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F3_PDAC77": {
+                    "LB": "F3_PDAC77",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F4_PDAC96": {
+                    "LB": "F4_PDAC96",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F5_PDAC605": {
+                    "LB": "F5_PDAC605",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F6_PDAC89": {
+                    "LB": "F6_PDAC89",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F7_PDAC493": {
+                    "LB": "F7_PDAC493",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F8_PDAC478": {
+                    "LB": "F8_PDAC478",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F9_PDAC588": {
+                    "LB": "F9_PDAC588",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G10_PDAC91": {
+                    "LB": "G10_PDAC91",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G11_PDAC538": {
+                    "LB": "G11_PDAC538",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G12_PDAC531": {
+                    "LB": "G12_PDAC531",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G1_PDAC519": {
+                    "LB": "G1_PDAC519",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G2_PDAC597": {
+                    "LB": "G2_PDAC597",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G3_PDAC557": {
+                    "LB": "G3_PDAC557",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G4_PTHE49": {
+                    "LB": "G4_PTHE49",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G5_PDAC94": {
+                    "LB": "G5_PDAC94",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G6_PDAC540": {
+                    "LB": "G6_PDAC540",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G7_PDAC565": {
+                    "LB": "G7_PDAC565",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G8_PDAC492": {
+                    "LB": "G8_PDAC492",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G9_PDAC572": {
+                    "LB": "G9_PDAC572",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H10_PTHE51": {
+                    "LB": "H10_PTHE51",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H11_PDAC606": {
+                    "LB": "H11_PDAC606",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H12_PDAC552": {
+                    "LB": "H12_PDAC552",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H1_PDAC461": {
+                    "LB": "H1_PDAC461",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H2_PDAC568": {
+                    "LB": "H2_PDAC568",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H3_PDAC75": {
+                    "LB": "H3_PDAC75",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H4_PDAC83": {
+                    "LB": "H4_PDAC83",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H5_PDAC526": {
+                    "LB": "H5_PDAC526",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H6_PDAC93": {
+                    "LB": "H6_PDAC93",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H7_PDAC545": {
+                    "LB": "H7_PDAC545",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H8_PDAC87": {
+                    "LB": "H8_PDAC87",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H9_PDAC602": {
+                    "LB": "H9_PDAC602",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TTATGCGA"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
+            }
+        },
+        "H7LT2DSXX_lane_4_multiplex": {
+            "codec": {
+                "@A10_PDAC607": {
+                    "LB": "A10_PDAC607",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A11_PDAC80": {
+                    "LB": "A11_PDAC80",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A12_PDAC561": {
+                    "LB": "A12_PDAC561",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A1_PDAC549": {
+                    "LB": "A1_PDAC549",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A2_PDAC550": {
+                    "LB": "A2_PDAC550",
+                    "barcode": [
+                        "CGTACTAG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A3_PDAC495": {
+                    "LB": "A3_PDAC495",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A4_PDAC484": {
+                    "LB": "A4_PDAC484",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A5_PDAC515": {
+                    "LB": "A5_PDAC515",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A6_PDAC85": {
+                    "LB": "A6_PDAC85",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@A7_PDAC527": {
+                    "LB": "A7_PDAC527",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@A8_PDAC82": {
+                    "LB": "A8_PDAC82",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@A9_PDAC501": {
+                    "LB": "A9_PDAC501",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B10_PDAC506": {
+                    "LB": "B10_PDAC506",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B11_PDAC512": {
+                    "LB": "B11_PDAC512",
+                    "barcode": [
+                        "GCTCATGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B12_PDAC604": {
+                    "LB": "B12_PDAC604",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B1_PDAC536": {
+                    "LB": "B1_PDAC536",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B2_PDAC455": {
+                    "LB": "B2_PDAC455",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B3_PDAC496": {
+                    "LB": "B3_PDAC496",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B4_PDAC504": {
+                    "LB": "B4_PDAC504",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B5_PDAC488": {
+                    "LB": "B5_PDAC488",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B6_PDAC489": {
+                    "LB": "B6_PDAC489",
+                    "barcode": [
+                        "GGACTCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@B7_PDAC596": {
+                    "LB": "B7_PDAC596",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@B8_PDAC571": {
+                    "LB": "B8_PDAC571",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@B9_PTHE41": {
+                    "LB": "B9_PTHE41",
+                    "barcode": [
+                        "TAGGCATG",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C10_PDAC556": {
+                    "LB": "C10_PDAC556",
+                    "barcode": [
+                        "GCTCATGA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C11_PDAC583": {
+                    "LB": "C11_PDAC583",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C12_PTHE42": {
+                    "LB": "C12_PTHE42",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C1_PDAC537": {
+                    "LB": "C1_PDAC537",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C2_PDAC575": {
+                    "LB": "C2_PDAC575",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C3_PDAC92": {
+                    "LB": "C3_PDAC92",
+                    "barcode": [
+                        "CGTACTAG",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C4_PDAC486": {
+                    "LB": "C4_PDAC486",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C5_PDAC574": {
+                    "LB": "C5_PDAC574",
+                    "barcode": [
+                        "GGACTCCT",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C6_PDAC460": {
+                    "LB": "C6_PDAC460",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@C7_PDAC555": {
+                    "LB": "C7_PDAC555",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "ACTGCATA"
+                    ]
+                },
+                "@C8_PDAC99": {
+                    "LB": "C8_PDAC99",
+                    "barcode": [
+                        "TAGGCATG",
+                        "GCGTAAGA"
+                    ]
+                },
+                "@C9_PDAC608": {
+                    "LB": "C9_PDAC608",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "GTAAGGAG"
+                    ]
+                },
+                "@D10_PDAC544": {
+                    "LB": "D10_PDAC544",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D11_PDAC584": {
+                    "LB": "D11_PDAC584",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D12_PDAC78": {
+                    "LB": "D12_PDAC78",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D1_PDAC586": {
+                    "LB": "D1_PDAC586",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D2_PDAC558": {
+                    "LB": "D2_PDAC558",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D3_PDAC522": {
+                    "LB": "D3_PDAC522",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D4_PDAC528": {
+                    "LB": "D4_PDAC528",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D5_PDAC74": {
+                    "LB": "D5_PDAC74",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D6_PDAC601": {
+                    "LB": "D6_PDAC601",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D7_PDAC487": {
+                    "LB": "D7_PDAC487",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D8_PDAC524": {
+                    "LB": "D8_PDAC524",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@D9_PTHE35": {
+                    "LB": "D9_PTHE35",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TATCCTCT"
+                    ]
+                },
+                "@E10_PDAC482": {
+                    "LB": "E10_PDAC482",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E11_PDAC569": {
+                    "LB": "E11_PDAC569",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E12_PTHE50": {
+                    "LB": "E12_PTHE50",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E1_PDAC530": {
+                    "LB": "E1_PDAC530",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E2_PTHE52": {
+                    "LB": "E2_PTHE52",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E3_PDAC567": {
+                    "LB": "E3_PDAC567",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E4_PDAC576": {
+                    "LB": "E4_PDAC576",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E5_PDAC97": {
+                    "LB": "E5_PDAC97",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E6_PDAC589": {
+                    "LB": "E6_PDAC589",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E7_PDAC570": {
+                    "LB": "E7_PDAC570",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E8_PDAC458": {
+                    "LB": "E8_PDAC458",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@E9_PDAC539": {
+                    "LB": "E9_PDAC539",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CCTAGAGT"
+                    ]
+                },
+                "@F10_PDAC508": {
+                    "LB": "F10_PDAC508",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F11_PTHE54": {
+                    "LB": "F11_PTHE54",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F12_PTHE40": {
+                    "LB": "F12_PTHE40",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F1_PDAC532": {
+                    "LB": "F1_PDAC532",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F2_PDAC523": {
+                    "LB": "F2_PDAC523",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F3_PDAC77": {
+                    "LB": "F3_PDAC77",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F4_PDAC96": {
+                    "LB": "F4_PDAC96",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F5_PDAC605": {
+                    "LB": "F5_PDAC605",
+                    "barcode": [
+                        "CGTACTAG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F6_PDAC89": {
+                    "LB": "F6_PDAC89",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@F7_PDAC493": {
+                    "LB": "F7_PDAC493",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@F8_PDAC478": {
+                    "LB": "F8_PDAC478",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@F9_PDAC588": {
+                    "LB": "F9_PDAC588",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G10_PDAC91": {
+                    "LB": "G10_PDAC91",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G11_PDAC538": {
+                    "LB": "G11_PDAC538",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G12_PDAC531": {
+                    "LB": "G12_PDAC531",
+                    "barcode": [
+                        "TAGGCATG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G1_PDAC519": {
+                    "LB": "G1_PDAC519",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G2_PDAC597": {
+                    "LB": "G2_PDAC597",
+                    "barcode": [
+                        "GCTCATGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G3_PDAC557": {
+                    "LB": "G3_PDAC557",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G4_PTHE49": {
+                    "LB": "G4_PTHE49",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G5_PDAC94": {
+                    "LB": "G5_PDAC94",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G6_PDAC540": {
+                    "LB": "G6_PDAC540",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@G7_PDAC565": {
+                    "LB": "G7_PDAC565",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TCGACTAG"
+                    ]
+                },
+                "@G8_PDAC492": {
+                    "LB": "G8_PDAC492",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "TTATGCGA"
+                    ]
+                },
+                "@G9_PDAC572": {
+                    "LB": "G9_PDAC572",
+                    "barcode": [
+                        "GGACTCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H10_PTHE51": {
+                    "LB": "H10_PTHE51",
+                    "barcode": [
+                        "CGGAGCCT",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H11_PDAC606": {
+                    "LB": "H11_PDAC606",
+                    "barcode": [
+                        "TAGGCATG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H12_PDAC552": {
+                    "LB": "H12_PDAC552",
+                    "barcode": [
+                        "GTAGAGGA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H1_PDAC461": {
+                    "LB": "H1_PDAC461",
+                    "barcode": [
+                        "GCTCATGA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H2_PDAC568": {
+                    "LB": "H2_PDAC568",
+                    "barcode": [
+                        "CGAGGCTG",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H3_PDAC75": {
+                    "LB": "H3_PDAC75",
+                    "barcode": [
+                        "AAGAGGCA",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H4_PDAC83": {
+                    "LB": "H4_PDAC83",
+                    "barcode": [
+                        "AGGCAGAA",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H5_PDAC526": {
+                    "LB": "H5_PDAC526",
+                    "barcode": [
+                        "TAAGGCGA",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H6_PDAC93": {
+                    "LB": "H6_PDAC93",
+                    "barcode": [
+                        "CGTACTAG",
+                        "TTATGCGA"
+                    ]
+                },
+                "@H7_PDAC545": {
+                    "LB": "H7_PDAC545",
+                    "barcode": [
+                        "TAGCGCTC",
+                        "CGTCTAAT"
+                    ]
+                },
+                "@H8_PDAC87": {
+                    "LB": "H8_PDAC87",
+                    "barcode": [
+                        "GGACTCCT",
+                        "TCGACTAG"
+                    ]
+                },
+                "@H9_PDAC602": {
+                    "LB": "H9_PDAC602",
+                    "barcode": [
+                        "CTCTCTAC",
+                        "TTATGCGA"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
+            }
+        }
+    },
+    "flowcell id": "H7LT2DSXX",
+    "transform": {
+        "token": [
+            "0::",
+            "3::"
+        ]
+    }
+}
