@@ -31,6 +31,7 @@ from core.error import *
 from core import log_levels
 from core import CommandLineParser
 from core import Job
+from core import to_json
 
 class Illumina(Job):
     def __init__(self, ontology):
