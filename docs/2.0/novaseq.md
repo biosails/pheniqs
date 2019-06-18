@@ -50,7 +50,7 @@ To generate a core configuration file execute `core` subcommand of `illumina2phe
 illumina2pheniqs.py core illumina/181014_A00534_0024_AH7LT2DSXX > core.json
 ```
 
-[core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from the [xml files]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX). It is imported by most other configuration files in this example.
+[core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this example.
 
 ## Input Read Layout
 
@@ -62,16 +62,9 @@ Base calling with bc2fastq produced 4 files per lane:
   "H7LT2DSXX_l01_S1_L001_I1_001.fastq.gz",
   "H7LT2DSXX_l01_S1_L001_I2_001.fastq.gz",
   "H7LT2DSXX_l01_S1_L001_R2_001.fastq.gz"
-],
+]
 ```
->**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling. `H7LT2DSXX_l01_S1_L001_R1_001.fastq.gz` containing the 3 prime prefix of the insert region, `H7LT2DSXX_l01_S1_L001_I1_001.fastq.gz` containing the i7 index, `H7LT2DSXX_l01_S1_L001_I2_001.fastq.gz` containing the i5 index and `H7LT2DSXX_l01_S1_L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
-{: .example}
-
-To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
->```json
-"transform": { "token": [ "0::", "3::" ] }
-```
->**declaring output read segments** Only the segments coming from the first and the forth file are biological sequences and should be included in the output.
+>**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling. `R1` containing the 3 prime prefix of the insert region, `I1` containing the i7 index, `I2` containing the i5 index and `R2` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 {: .example}
 
 To classify the reads by the i5 and i7 indices we need to declare the list of possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence. The [core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) configuration file conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). If you import `core.json` You can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files.
@@ -85,7 +78,7 @@ To classify the reads by the i5 and i7 indices we need to declare the list of po
 ```
 >**core configuration** already contains [PL](glossary.html#pl_auxiliary_tag)
 [PM](glossary.html#pm_auxiliary_tag)
-and the flowcell id. Those were extracted from RunInfo.xml
+and the flowcell id. Those were extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml)
 {: .example}
 
 >```json
@@ -113,7 +106,7 @@ and the flowcell id. Those were extracted from RunInfo.xml
     }
 }
 ```
->**H7LT2DSXX_lane_1_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the LB tag extracted from SampleSheet.csv.
+>**H7LT2DSXX_lane_1_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary.html#lb_auxiliary_tag) tag extracted from SampleSheet.csv.
 {: .example}
 
 To estimate priors for sample barcodes we don't actually need to read the 2 segments containing the biological sequences. We declare input only for the two segments containing the indices and declare a `multiplex` directive that expands the `H7LT2DSXX_lane_1_multiplex` decoder that we have seen defined in `core.json`. Because there are only two inputs the correct tokens are the first 8 bases of segment 0 and 1. `output` is routed to `/dev/null` to tell Pheniqs it should not write output reads. The report is written to a file instead of standard error with `report url`. To discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed we speficy `filter incoming qc fail`.
@@ -149,12 +142,21 @@ To estimate priors for sample barcodes we don't actually need to read the 2 segm
 >**Prior estimation configuration** refraining from reading the biological sequences and producing no output significantly speeds things up.
 {: .example}
 
-```
+Executing this configuration will yield a report in `sample/prior/l01_sample_report.json`. This is the standard report pheniqs produces and it contains decoding statistics that are used to estimate the priors.
+
+>```shell
 pheniqs mux --config sample/prior/l01_sample.json --base-input ~/H7LT2DSXX --base-output sample/prior
 ```
 
-Executing this configuration will yield a report in `sample/prior/l01_sample_report.json`. This is the standard report pheniqs produces and it contains decoding statistics that are used to estimate the priors.
+Producing an adjusted configuration from the report
 
-```
+>```shell
 estimate_prior.py --report sample/prior/l01_sample_report.json --configuration sample/uniform/l01_sample.json > sample/adjusted/l01_sample.json
 ```
+
+To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
+>```json
+"transform": { "token": [ "0::", "3::" ] }
+```
+>**declaring output read segments** Only the segments coming from the first and the forth file are biological sequences and should be included in the output.
+{: .example}
