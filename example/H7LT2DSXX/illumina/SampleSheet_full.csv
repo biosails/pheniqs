@@ -1,0 +1,23 @@
+[Header]
+IEMFileVersion,5
+Experiment Name,DatePalm
+Date,14/10/2018
+Workflow,GenerateFASTQ
+Application,NovaSeq FASTQ Only
+Instrument Type,NovaSeq
+Assay,Nextera DNA Flex
+Index Adapters,"Nextera DNA CD Indexes (96 Indexes plated)"
+Chemistry,Amplicon
+
+[Reads]
+151
+151
+
+[Settings]
+
+[Data]
+FCID,Lane,Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_Plate_Well,I7_Index_ID,index,I5_Index_ID,index2,Sample_Project,Description
+H7LT2DSXX,1,H7LT2DSXX_l01,,,,,,,,,,
+H7LT2DSXX,2,H7LT2DSXX_l02,,,,,,,,,,
+H7LT2DSXX,3,H7LT2DSXX_l03,,,,,,,,,,
+H7LT2DSXX,4,H7LT2DSXX_l04,,,,,,,,,,

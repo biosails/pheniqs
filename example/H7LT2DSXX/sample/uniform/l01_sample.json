@@ -1,16 +1,16 @@
 {
     "import": [
-        "../core.json"
+        "../../core.json"
     ],
     "input": [
-        "H7LT2DSXX_l02_S2_L002_R1_001.fastq.gz",
-        "H7LT2DSXX_l02_S2_L002_I1_001.fastq.gz",
-        "H7LT2DSXX_l02_S2_L002_I2_001.fastq.gz",
-        "H7LT2DSXX_l02_S2_L002_R2_001.fastq.gz"
+        "H7LT2DSXX_l01_S1_L001_R1_001.fastq.gz",
+        "H7LT2DSXX_l01_S1_L001_I1_001.fastq.gz",
+        "H7LT2DSXX_l01_S1_L001_I2_001.fastq.gz",
+        "H7LT2DSXX_l01_S1_L001_R2_001.fastq.gz"
     ],
     "multiplex": {
         "algorithm": "pamld",
-        "base": "H7LT2DSXX_lane_2_multiplex",
+        "base": "H7LT2DSXX_lane_1_multiplex",
         "confidence threshold": 0.95,
         "noise": 0.05,
         "transform": {
@@ -21,11 +21,9 @@
         }
     },
     "output": [
-        "H7LT2DSXX_l02_sample.bam"
+        "H7LT2DSXX_l01_sample.bam"
     ],
-    "report url": [
-        "H7LT2DSXX_l02_sample_report.json"
-    ],
+    "report url": "H7LT2DSXX_l01_sample_report.json",
     "transform": {
         "token": [
             "0::",

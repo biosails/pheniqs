@@ -776,9 +776,7 @@
     "output": [
         "H7LT2DSXX_l01_sample.bam"
     ],
-    "report url": [
-        "H7LT2DSXX_l01_sample_report.json"
-    ],
+    "report url": "H7LT2DSXX_l01_sample_report.json",
     "transform": {
         "token": [
             "0::",

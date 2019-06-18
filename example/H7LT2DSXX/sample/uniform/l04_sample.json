@@ -1,6 +1,6 @@
 {
     "import": [
-        "../core.json"
+        "../../core.json"
     ],
     "input": [
         "H7LT2DSXX_l04_S4_L004_R1_001.fastq.gz",
@@ -23,9 +23,7 @@
     "output": [
         "H7LT2DSXX_l04_sample.bam"
     ],
-    "report url": [
-        "H7LT2DSXX_l04_sample_report.json"
-    ],
+    "report url": "H7LT2DSXX_l04_sample_report.json",
     "transform": {
         "token": [
             "0::",
