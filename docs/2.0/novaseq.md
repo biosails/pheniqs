@@ -150,7 +150,7 @@ To estimate priors for sample barcodes we need to collect statistics about the s
 {: .example}
 
 Executing this configuration will yield the report
-[l01_sample_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/prior/l01_sample_report.json). This is the standard report Pheniqs produces and it contains decoding statistics that are used to estimate the priors.
+[l01_sample_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/prior/l01_sample_report.json). The [standard Pheniqs report](manual.html#quality-control-and-statistics) contains decoding statistics that are used to estimate the priors.
 
 >```shell
 pheniqs mux --config sample/prior/l01_sample.json \
@@ -158,7 +158,7 @@ pheniqs mux --config sample/prior/l01_sample.json \
 --base-output sample/prior
 ```
 
-Producing an adjusted configuration from the report
+The report can now be used to generate an adjusted configuration
 
 >```shell
 estimate_prior.py \
@@ -166,6 +166,8 @@ estimate_prior.py \
 --configuration sample/uniform/l01_sample.json \
 > sample/adjusted/l01_sample.json
 ```
+
+## Decoding with the estimated prior
 
 To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
 >```json
