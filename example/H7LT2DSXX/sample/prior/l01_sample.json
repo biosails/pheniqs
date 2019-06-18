@@ -1,5 +1,5 @@
 {
-    "report url": "l01_sample_prior_report.json",
+    "report url": "l01_sample_report.json",
     "import": [
         "../../core.json"
     ],
