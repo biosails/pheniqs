@@ -40,9 +40,19 @@
 
 This tutorial will walk you through demultiplexing an Illumia NovaSeq 600 sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The read has 4 segments, 2 151bp biological from the DNA or RNA fragment and 2 8bp technical containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) respectively, and the decoding error probabilities is written to the [XB](glossary.html#xb_auxiliary_tag).
 
-## Input Read Layout
-
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
+
+## Core configuration
+
+To generate a core configuration file execute `core` subcommand of `illumina2pheniqs.py` and provide it the illumina run folder.
+
+```
+illumina2pheniqs.py core illumina/181014_A00534_0024_AH7LT2DSXX > core.json
+```
+
+[core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from the [xml files]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX). It is imported by most other configuration files in this example.
+
+## Input Read Layout
 
 Base calling with bc2fastq produced 4 files per lane:
 
@@ -57,16 +67,6 @@ Base calling with bc2fastq produced 4 files per lane:
 >**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling. `H7LT2DSXX_l01_S1_L001_R1_001.fastq.gz` containing the 3 prime prefix of the insert region, `H7LT2DSXX_l01_S1_L001_I1_001.fastq.gz` containing the i7 index, `H7LT2DSXX_l01_S1_L001_I2_001.fastq.gz` containing the i5 index and `H7LT2DSXX_l01_S1_L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 {: .example}
 
-## Core configuration
-
-To generate a core configuration file execute `core` subcommand of `illumina2pheniqs.py` and provide it the illumina run folder.
-
-```
-illumina2pheniqs.py core illumina/181014_A00534_0024_AH7LT2DSXX > core.json
-```
-
-[core.json](/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from the [xml files](/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX). It is imported by most other configuration files in this example.
-
 To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
 >```json
 "transform": { "token": [ "0::", "3::" ] }
@@ -74,7 +74,7 @@ To emit the two ends of the insert region as two segments of the output read we 
 >**declaring output read segments** Only the segments coming from the first and the forth file are biological sequences and should be included in the output.
 {: .example}
 
-To classify the reads by the i5 and i7 indices we need to declare the list of possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence. The [/example/H7LT2DSXX/core.json](core.json) configuration file conveniently declares an array of decoders that where recovered from the [SampleSheet.csv](/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml](/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). If you import `core.json` You can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files.
+To classify the reads by the i5 and i7 indices we need to declare the list of possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence. The [core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) configuration file conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). If you import `core.json` You can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files.
 
 >```json
 {
@@ -83,8 +83,8 @@ To classify the reads by the i5 and i7 indices we need to declare the list of po
     "flowcell id": "H7LT2DSXX"
 }
 ```
->**core configuration** already contains [PL](https://biosails.github.io/pheniqs/2.0/glossary.html#pl_auxiliary_tag)
-[PM](https://biosails.github.io/pheniqs/2.0/glossary.html#pm_auxiliary_tag)
+>**core configuration** already contains [PL](glossary.html#pl_auxiliary_tag)
+[PM](glossary.html#pm_auxiliary_tag)
 and the flowcell id. Those were extracted from RunInfo.xml
 {: .example}
 
