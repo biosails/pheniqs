@@ -25,8 +25,6 @@ This is an example folder for processing a dual index paired end run performed b
 
 **All shell commands mentioned bellow are executed in this folder.**
 
-The [181014_A00534_0024_AH7LT2DSXX](illumina/181014_A00534_0024_AH7LT2DSXX) folder contains relevant metadata files from the run.
-
 [core.json](core.json) is a core configuration file that summarizes metadata extracted from the [xml files](illumina/181014_A00534_0024_AH7LT2DSXX). It is imported by most other configuration files in this example. It was created by executing
 
 ```
