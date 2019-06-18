@@ -114,9 +114,51 @@ In `core.json` you will find a `decoder` directive that defines a dictionary of 
 
 You can use those decoders as a starting point in the `multiplex`, `cellular`, and `molecular` directive with `base`. Any directive you specify in your instantiation will override values provided by the base.
 
+## Decoding without priors
+
+To decode sample barcodes without prior estimation we declare a `multiplex` directive that expands the `H7LT2DSXX_lane_1_multiplex` decoder that we have seen defined in `core.json`. The report is written to a file instead of standard error with `report url`. To discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed we specify `filter incoming qc fail`. You should still specify your best guess for the `noise` prior. For example [uniform/l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/uniform/l01_sample.json) is a uniform configuration for the first lane.
+
+>```json
+{
+    "import": [
+        "../../core.json"
+    ],
+    "input": [
+        "H7LT2DSXX_l01_S1_L001_R1_001.fastq.gz",
+        "H7LT2DSXX_l01_S1_L001_I1_001.fastq.gz",
+        "H7LT2DSXX_l01_S1_L001_I2_001.fastq.gz",
+        "H7LT2DSXX_l01_S1_L001_R2_001.fastq.gz"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "H7LT2DSXX_lane_1_multiplex",
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "transform": {
+            "token": [
+                "1::8",
+                "2::8"
+            ]
+        }
+    },
+    "output": [
+        "H7LT2DSXX_l01_sample.bam"
+    ],
+    "report url": "H7LT2DSXX_l01_sample_report.json",
+    "transform": {
+        "token": [
+            "0::",
+            "3::"
+        ]
+    }
+}
+```
+>**Decoding with a uniform prior** output is written to a bam file.
+{: .example}
+
 ## Prior estimation
 
-To estimate priors for sample barcodes we need to collect statistics about the sequences identified by the tokens. We don't actually need to read the 2 segments containing the biological sequences so we declare input only for the two segments containing the indices. We then declare a `multiplex` directive that expands the `H7LT2DSXX_lane_1_multiplex` decoder that we have seen defined in `core.json`. The correct tokenization for the two inputs is the first 8 bases of segment 0 and 1. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output. The report is written to a file instead of standard error with `report url`. To discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed we specify `filter incoming qc fail`.
+To estimate priors for sample barcodes we need to collect statistics about the sequences identified by the tokens. We don't actually need to read the 2 segments containing the biological sequences so we declare input only for the two segments containing the indices. We then declare a `multiplex` directive that expands the `H7LT2DSXX_lane_1_multiplex` decoder that we have seen defined in `core.json`. The correct tokenization for the modified input is the first 8 bases of segment 0 and 1. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output. The report is written to a file instead of standard error with `report url`. To discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed we specify `filter incoming qc fail`.
 
 >```json
 {
@@ -158,7 +200,7 @@ pheniqs mux --config sample/prior/l01_sample.json \
 --base-output sample/prior
 ```
 
-The report can now be used to generate an adjusted configuration
+The report can now be used to generate an adjusted configuration from the uniform one
 
 >```shell
 estimate_prior.py \
@@ -166,12 +208,15 @@ estimate_prior.py \
 --configuration sample/uniform/l01_sample.json \
 > sample/adjusted/l01_sample.json
 ```
+>**decoding a lane with an estimated prior** [sample/adjusted/l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/adjusted/l01_sample.json) is similar to [sample/uniform/l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/uniform/l01_sample.json) with the addition of the estimated priors.
+{: .example}
 
 ## Decoding with the estimated prior
 
-To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
->```json
-"transform": { "token": [ "0::", "3::" ] }
+>```shell
+pheniqs mux --config sample/adjusted/l01_sample.json \
+--base-input ~/H7LT2DSXX \
+--base-output sample/adjusted
 ```
->**declaring output read segments** Only the segments coming from the first and the forth file are biological sequences and should be included in the output.
+>**decoding a lane with an estimated prior** the report will be written to [sample/adjusted/l01_sample_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/adjusted/l01_sample_report.json) because it is relative to the base output.
 {: .example}
