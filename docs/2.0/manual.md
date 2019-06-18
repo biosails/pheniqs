@@ -460,7 +460,7 @@ Pheniqs emits a statistical report. If you specify the `-q/--quality` command li
 ## Decoder statistics
 For every `multiplex`, `molecular` and `cellular` decoder the following statistics is reported, if applicable. Counters have a slightly different meaning depending on the value of the `filter incoming qc fail` flag. if `filter incoming qc fail` was **true** incoming reads are dropped immediately and are never seen by the decoder and so counters will only be affected by reads that were marked as **QC fail** by Pheniqs due to barcode decoding failure. If `filter incoming qc fail` was **false** the decoder will attempt to classify all reads and so counters will also count reads that were already marked as **QC fail** in the input. **pf** counters will always only apply to reads that were either marked **QC fail** by Pheniqs nor were already marked **QC fail** in the input.
 
-	| JSON field                           | Description                                                                         |
+  | JSON field                           | Description                                                                         |
 	| :----------------------------------- | :---------------------------------------------------------------------------------- |
 	| **count**                            | count for all reads processed by the pipeline, both classified and unclassified.    |
 	| **classified count**                 | count of all reads classified to some barcode.                                      |
