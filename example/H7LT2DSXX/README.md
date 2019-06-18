@@ -20,13 +20,12 @@
 -->
 
 # NovaSeq 6000
-{:.page-title}
 
 This is an example folder for processing a dual index paired end run performed by a NovaSeq 6000. The flowcell has 4 lanes each with 4 segments containing 151, 8, 8, and 151 cycles.
 
 **All shell commands mentioned bellow are executed in this folder.**
 
-The [181014_A00534_0024_AH7LT2DSXX](Illumia/181014_A00534_0024_AH7LT2DSXX) folder contains relevant metadata files from the run.
+The [181014_A00534_0024_AH7LT2DSXX](illumina/181014_A00534_0024_AH7LT2DSXX) folder contains relevant metadata files from the run.
 
 [core.json](core.json) is a core configuration file that summarized metadata extracted from the run and will be imported into the other configuration files. It was created by executing
 
