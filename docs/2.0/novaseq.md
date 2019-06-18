@@ -65,7 +65,7 @@ To generate a core configuration file execute `core` subcommand of `illumina2phe
 illumina2pheniqs.py core illumina/181014_A00534_0024_AH7LT2DSXX > core.json
 ```
 
-[/example/H7LT2DSXX/core.json](core.json) is a core configuration file that summarizes metadata extracted from the [xml files](/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX). It is imported by most other configuration files in this example.
+[core.json](/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from the [xml files](/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX). It is imported by most other configuration files in this example.
 
 To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
 >```json
