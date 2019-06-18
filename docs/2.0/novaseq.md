@@ -76,9 +76,9 @@ To classify the reads by the i5 and i7 indices we need to declare the list of po
     "flowcell id": "H7LT2DSXX"
 }
 ```
->**core configuration** already contains [PL](glossary.html#pl_auxiliary_tag)
-[PM](glossary.html#pm_auxiliary_tag)
-and the flowcell id. Those were extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml)
+>**core configuration** already contains [PL](glossary.html#pl_auxiliary_tag),
+[PM](glossary.html#pm_auxiliary_tag),
+and the `flowcell id`. Those were extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml)
 {: .example}
 
 >```json
@@ -142,16 +142,22 @@ To estimate priors for sample barcodes we don't actually need to read the 2 segm
 >**Prior estimation configuration** refraining from reading the biological sequences and producing no output significantly speeds things up.
 {: .example}
 
-Executing this configuration will yield a report in `sample/prior/l01_sample_report.json`. This is the standard report pheniqs produces and it contains decoding statistics that are used to estimate the priors.
+Executing this configuration will yield the report
+[l01_sample_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/prior/l01_sample_report.json). This is the standard report Pheniqs produces and it contains decoding statistics that are used to estimate the priors.
 
 >```shell
-pheniqs mux --config sample/prior/l01_sample.json --base-input ~/H7LT2DSXX --base-output sample/prior
+pheniqs mux --config sample/prior/l01_sample.json \
+--base-input ~/H7LT2DSXX \
+--base-output sample/prior
 ```
 
 Producing an adjusted configuration from the report
 
 >```shell
-estimate_prior.py --report sample/prior/l01_sample_report.json --configuration sample/uniform/l01_sample.json > sample/adjusted/l01_sample.json
+estimate_prior.py \
+--report sample/prior/l01_sample_report.json \
+--configuration sample/uniform/l01_sample.json \
+> sample/adjusted/l01_sample.json
 ```
 
 To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
