@@ -42,6 +42,22 @@ This tutorial will walk you through demultiplexing an Illumia NovaSeq 600 sequen
 
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
+## Basecalling
+
+>```shell
+bcl2fastq \
+--runfolder-dir 181014_A00534_0024_AH7LT2DSXX \
+--sample-sheet no_barcode_samplesheet.csv \
+--create-fastq-for-index-reads \
+--fastq-compression-level 3 \
+--output-dir basecalled \
+--adapter-stringency 0 \
+--minimum-trimmed-read-length 0 \
+--mask-short-adapter-reads 0
+```
+>**base calling with bcl2fastq** We must provide bcl2fastq an alternative sample sheet or it will default to using the one in the run folder. A simple sample sheet that does not perform any barcode decoding [is provided]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/no_barcode_samplesheet.csv) with this example. You may also choose the gzip compression level. For temporary files it is better to choose low values since IO will be faster and file size only marginally larger.
+{: .example}
+
 ## Core configuration
 
 [core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `illumina2pheniqs.py`
