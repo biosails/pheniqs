@@ -227,10 +227,10 @@ To estimate priors for sample barcodes we need to collect statistics about the s
 {: .example}
 
 Executing this configuration will yield the report
-[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/prior/H7LT2DSXX_l01_estimate_report.json). The [standard Pheniqs report](manual.html#quality-control-and-statistics) contains decoding statistics that are used to estimate the priors.
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). The [standard Pheniqs report](manual.html#quality-control-and-statistics) contains decoding statistics that are used to estimate the priors.
 
 >```shell
-pheniqs mux --config sample/prior/l01_sample.json
+pheniqs mux --config H7LT2DSXX_l01_estimate.json
 ```
 
 The report can now be used to generate an adjusted configuration from the uniform one
