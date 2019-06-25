@@ -89,7 +89,7 @@ pheniqs-illumina-api.py core illumina/181014_A00534_0024_AH7LT2DSXX --no-input-n
 >**input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling. `R1` containing the 3 prime prefix of the insert region, `I1` containing the i7 index, `I2` containing the i5 index and `R2` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 {: .example}
 
-To classify the reads by the i5 and i7 indices we need to declare the list of possible barcode sequences and a tokens that tell Pheniqs where to find the barcode sequence. The [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) configuration file conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). If you import `H7LT2DSXX_core.json` You can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files.
+To classify the reads by the i5 and i7 indices we need to declare the list of possible barcode sequences and a tokens that tell Pheniqs where to find the barcode sequence. The [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) configuration file conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). If you import [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) You can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files.
 
 >```json
 {
@@ -105,7 +105,7 @@ and the `flowcell id`. Those were extracted from [RunInfo.xml]({{ site.github.re
 
 ## decoder configuration element
 
-In `H7LT2DSXX_core.json` you will find a `decoder` directive that defines a dictionary of abstract decoders.
+In [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) you will find a `decoder` directive that defines a dictionary of abstract decoders.
 
 >```json
 {
@@ -146,7 +146,7 @@ The `multiplex` sub command will generate a basic sample demultiplexing configur
 pheniqs-illumina-api.py multiplex illumina/181014_A00534_0024_AH7LT2DSXX
 ```
 
-To decode sample barcodes without prior estimation we declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in `H7LT2DSXX_core.json`. The report is written to a file instead of standard error with `report url`.  You should still specify your best guess for the `noise` prior. For example [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) is a uniform configuration for the first lane.
+To decode sample barcodes without prior estimation we declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json). The report is written to a file instead of standard error with `report url`.  You should still specify your best guess for the `noise` prior. For example [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) is a uniform configuration for the first lane.
 
 >```json
 {
@@ -175,7 +175,8 @@ To decode sample barcodes without prior estimation we declare a `multiplex` dire
             "3::"
         ]
     }
-}```
+}
+```
 >**Decoding with a uniform prior** output is written to a bam file.
 {: .example}
 
@@ -187,7 +188,7 @@ The `estimate` sub command will generate a sample prior estimation optimized con
 pheniqs-illumina-api.py estimate illumina/181014_A00534_0024_AH7LT2DSXX
 ```
 
-To estimate priors for sample barcodes we need to collect statistics about the sequences identified by the tokens. We don't actually need to read the 2 segments containing the biological sequences so we declare input only for the two segments containing the indices. We then declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in `H7LT2DSXX_core.json`. The correct tokenization for the modified input is the first 8 bases of segment 0 and 1. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output. The report is written to a file instead of standard error with `report url`. For example [H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) is a uniform configuration for the first lane.
+To estimate priors for sample barcodes we need to collect statistics about the sequences identified by the tokens. We don't actually need to read the 2 segments containing the biological sequences so we declare input only for the two segments containing the indices. We then declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json). The correct tokenization for the modified input is the first 8 bases of segment 0 and 1. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output. The report is written to a file instead of standard error with `report url`. For example [H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) is a uniform configuration for the first lane.
 
 >```json
 {
