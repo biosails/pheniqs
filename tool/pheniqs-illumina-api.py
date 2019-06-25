@@ -34,7 +34,7 @@ from core import CommandLineParser
 from core import Job
 from core import to_json
 
-class IlluminaRecipe(Job):
+class IlluminaApi(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
 
@@ -668,7 +668,7 @@ def main():
             if 'verbosity' in command.instruction and command.instruction['verbosity']:
                 logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
 
-            pipeline = IlluminaRecipe(command.configuration)
+            pipeline = IlluminaApi(command.configuration)
             pipeline.execute()
 
     except (
