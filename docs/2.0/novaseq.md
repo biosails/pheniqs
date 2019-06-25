@@ -38,58 +38,76 @@
 # NovaSeq 6000
 {:.page-title}
 
-This tutorial will walk you through demultiplexing an Illumia NovaSeq 600 sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The read has 4 segments: 2x151bp biological from the DNA or RNA fragment and 2x8bp technical containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) respectively, and the decoding error probabilities is written to the [XB](glossary.html#xb_auxiliary_tag).
+This tutorial will walk you through prior estimation and demultiplexing of an Illumia NovaSeq 6000 sequencing run with [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
 
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
+In this example we will be using `pheniqs-illumina-api.py` to generate configuration files from metadata present in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). We will also be demonstrating using the `import` directive for reusing configuration instructions. For each read, the sample barcode and its quality scores will be written to the [BC tag](glossary.html#bc_auxiliary_tag) and [QT tag](glossary.html#qt_auxiliary_tag) respectively, and the decoding error probability to the [XB tag](glossary.html#xb_auxiliary_tag). **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX), where you can also find pre generated files for this example**.
+
 ## Basecalling
 
-The `pheniqs-illumina-recipe.py` script can help you execute bcl2fastq to perform basecalling without barcode decoding.
+Generate a bcl2fastq shell command for base calling without decoding the sample barcodes with `pheniqs-illumina-api.py`.
 
+>```shell
+    pheniqs-illumina-api.py basecall \
+    --output-dir . \
+    --fastq-compression-level 3 \
+    181014_A00534_0024_AH7LT2DSXX
 ```
-pheniqs-illumina-recipe.py basecall --fastq-compression-level 3 181014_A00534_0024_AH7LT2DSXX
-```
+>**generating a bcl2fastq command** we want output fastq files to be written to this directory and we want lower gzip compression since we will not be archiving those files.
+{: .example}
 
-will write `H7LT2DSXX_basecall.sh` and `basecall_samplesheet.csv` to the current folder. You can also provide values for some relevant *bcl2fastq* parameters.
+This will produce [H7LT2DSXX_basecall.sh]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_basecall.sh) and [H7LT2DSXX_basecall_sample_sheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/HH7LT2DSXX_basecall_sample_sheet.csv). `pheniqs-illumina-api.py basecall` allows you to forward several relevant *bcl2fastq* parameters to be included in the script, but you can also manually adjust it.
 
 >```shell
     bcl2fastq \
-    --runfolder-dir \
-    illumina/181014_A00534_0024_AH7LT2DSXX \
-    --sample-sheet basecall_samplesheet.csv \
+    --runfolder-dir 181014_A00534_0024_AH7LT2DSXX \
+    --sample-sheet H7LT2DSXX_basecall_sample_sheet.csv \
     --create-fastq-for-index-reads \
     --adapter-stringency 0 \
     --minimum-trimmed-read-length 0 \
     --mask-short-adapter-reads 0 \
+    --output-dir . \
     --fastq-compression-level 3
+
 ```
->**example bcl2fastq basecall shell script** We must provide bcl2fastq an alternative sample sheet or it will default to using the one in the run folder. A simple sample sheet that does not perform any barcode decoding [is generated]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/basecall_samplesheet.csv) by `pheniqs-illumina-recipe.py basecall`. You may also choose the gzip compression level. For temporary files it is better to choose low values since IO will be faster and file size only marginally larger.
+>**bcl2fastq basecall shell script** We must provide bcl2fastq an alternative sample sheet or it will default to using the one in the run folder. A simple sample sheet that does not perform any barcode decoding [is generated]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/HH7LT2DSXX_basecall_sample_sheet.csv) by `pheniqs-illumina-api.py basecall`.
+{: .example}
+
+Base calling with bcl2fastq took about 6 hours on a *dual socket Intel Xeon E5-2620* with a total of 12 cores and produced 4 files per lane.
+
+>```shell
+H7LT2DSXX_S1_L001_I1_001.fastq.gz
+H7LT2DSXX_S1_L001_I2_001.fastq.gz
+H7LT2DSXX_S1_L001_R1_001.fastq.gz
+H7LT2DSXX_S1_L001_R2_001.fastq.gz
+H7LT2DSXX_S1_L002_I1_001.fastq.gz
+H7LT2DSXX_S1_L002_I2_001.fastq.gz
+H7LT2DSXX_S1_L002_R1_001.fastq.gz
+H7LT2DSXX_S1_L002_R2_001.fastq.gz
+H7LT2DSXX_S1_L003_I1_001.fastq.gz
+H7LT2DSXX_S1_L003_I2_001.fastq.gz
+H7LT2DSXX_S1_L003_R1_001.fastq.gz
+H7LT2DSXX_S1_L003_R2_001.fastq.gz
+```
+>**bcl2fastq output** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling. `R1` containing the 3 prime prefix of the insert region, `I1` containing the i7 index, `I2` containing the i5 index and `R2` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 {: .example}
 
 ## Core configuration
 
-[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) is a core configuration file that summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `pheniqs-illumina-api.py`
+[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `pheniqs-illumina-api.py`
 
 >```shell
-pheniqs-illumina-api.py core illumina/181014_A00534_0024_AH7LT2DSXX --no-input-npf
+pheniqs-illumina-api.py core \
+--base-input-url . \
+--base-output-url . \
+--no-input-npf \
+181014_A00534_0024_AH7LT2DSXX
 ```
 >**Generating a core configuration** `--no-input-npf` will add a global `filter incoming qc fail` instruction to discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed.
 {: .example}
 
-*bc2fastq* will produced 4 files per lane:
-
->```json
-"input": [
-  "H7LT2DSXX_S1_L001_R1_001.fastq.gz",
-  "H7LT2DSXX_S1_L001_I1_001.fastq.gz",
-  "H7LT2DSXX_S1_L001_I2_001.fastq.gz",
-  "H7LT2DSXX_S1_L001_R2_001.fastq.gz"
-]
-```
->**input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling. `R1` containing the 3 prime prefix of the insert region, `I1` containing the i7 index, `I2` containing the i5 index and `R2` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
-{: .example}
-
-To classify the reads by the i5 and i7 indices we need to declare the list of possible barcode sequences and a tokens that tell Pheniqs where to find the barcode sequence. The [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) configuration file conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). If you import [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) You can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files.
+[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). When you import [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) you can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files. Anything specified in a configuration file will override an imported directive.
 
 >```json
 {
@@ -99,18 +117,17 @@ To classify the reads by the i5 and i7 indices we need to declare the list of po
 }
 ```
 >**core configuration** already declares [PL](glossary.html#pl_auxiliary_tag),
-[PM](glossary.html#pm_auxiliary_tag),
-and the `flowcell id`. Those were extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) but you can modify them.
+[PM](glossary.html#pm_auxiliary_tag), and `flowcell id`. Those were extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) but you can modify them.
 {: .example}
 
 ## decoder configuration element
 
-In [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) you will find a `decoder` directive that defines a dictionary of abstract decoders.
+[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) declares a `decoder` directive that defines a dictionary of abstract decoders.
 
 >```json
 {
     "decoder": {
-        "H7LT2DSXX_lane_1_multiplex": {
+        "H7LT2DSXX_l01_multiplex": {
             "transform": { "token": [ "1::8", "2::8" ] },
             "codec": {
                 "@A10_PDAC81": {
@@ -132,21 +149,26 @@ In [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7
     }
 }
 ```
->**H7LT2DSXX_l01_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary.html#lb_auxiliary_tag) tag extracted from
-[SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv).
+>**H7LT2DSXX_l01_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary.html#lb_auxiliary_tag) tag extracted from [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv).
 {: .example}
 
-You can use those decoders as a starting point in the `multiplex`, `cellular`, and `molecular` directive with `base`. Any directive you specify in your instantiation will override values provided by the base.
+You can the `base` property on a decoder to use those decoders as a starting point in the `multiplex`, `cellular`, and `molecular`. Any directive you specify in your instantiation will override values provided by the referenced base.
 
 ## Decoding without priors
 
 The `multiplex` sub command will generate a basic sample demultiplexing configuration file for each lane.
 
+>```shell
+pheniqs-illumina-api.py multiplex \
+--confidence 0.95 \
+--noise 0.05 \
+181014_A00534_0024_AH7LT2DSXX
 ```
-pheniqs-illumina-api.py multiplex illumina/181014_A00534_0024_AH7LT2DSXX
-```
+>**pheniqs-illumina-api multiplex** will produce a basic sample demultiplexing configuration that we will adjust later with the prior estimates. Some pheniqs parameters can be forwarded like `--noise` and `--confidence` shown in this example.
+{: .example}
 
-To decode sample barcodes without prior estimation we declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json). The report is written to a file instead of standard error with `report url`.  You should still specify your best guess for the `noise` prior. For example [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) is a uniform configuration for the first lane.
+[H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json)
+is a configuration for demuliplexing the first lane. It declares a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder we have seen defined in [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json).
 
 >```json
 {
@@ -168,13 +190,7 @@ To decode sample barcodes without prior estimation we declare a `multiplex` dire
     "output": [
         "H7LT2DSXX_l01.bam"
     ],
-    "report url": "H7LT2DSXX_l01_sample_report.json",
-    "transform": {
-        "token": [
-            "0::",
-            "3::"
-        ]
-    }
+    "report url": "H7LT2DSXX_l01_sample_report.json"
 }
 ```
 >**Decoding with a uniform prior** output is written to a bam file.
@@ -184,11 +200,18 @@ To decode sample barcodes without prior estimation we declare a `multiplex` dire
 
 The `estimate` sub command will generate a sample prior estimation optimized configuration file for each lane.
 
+>```shell
+pheniqs-illumina-api.py estimate \
+--confidence 0.95 \
+--noise 0.05 \
+181014_A00534_0024_AH7LT2DSXX
 ```
-pheniqs-illumina-api.py estimate illumina/181014_A00534_0024_AH7LT2DSXX
-```
+>**pheniqs-illumina-api estimate** will produce a sample demultiplexing configuration optimized for prior estimation.
+{: .example}
 
-To estimate priors for sample barcodes we need to collect statistics about the sequences identified by the tokens. We don't actually need to read the 2 segments containing the biological sequences so we declare input only for the two segments containing the indices. We then declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json). The correct tokenization for the modified input is the first 8 bases of segment 0 and 1. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output. The report is written to a file instead of standard error with `report url`. For example [H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) is a uniform configuration for the first lane.
+To estimate priors for sample barcodes we need to collect some statistics about the sample barcodes. Since don't need to read the 2 segments containing the biological sequences input is declared only for the two segments containing the indices.
+
+[H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) declares a `multiplex` directive that expands `H7LT2DSXX_l01_multiplex` and adjusts the tokenization for the modified input. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output.
 
 >```json
 {
@@ -223,17 +246,19 @@ To estimate priors for sample barcodes we need to collect statistics about the s
     }
 }
 ```
->**Prior estimation configuration** refraining from reading the biological sequences and producing no output significantly speeds things up.
+>**Prior estimation configuration** refrains from reading the biological sequences and produces no output which significantly speeds things up..
 {: .example}
 
 Executing this configuration will yield the report
-[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). The [standard Pheniqs report](manual.html#quality-control-and-statistics) contains decoding statistics that are used to estimate the priors.
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that we can use to estimate the priors.
 
 >```shell
 pheniqs mux --config H7LT2DSXX_l01_estimate.json
 ```
+>**executing pheniqs with a prior estimation configuration** will produce [H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json).
+{: .example}
 
-The report can now be used to generate an adjusted configuration from the uniform one
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json) and [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) can now be used to generate an adjusted configuration.
 
 >```shell
 estimate_prior.py \

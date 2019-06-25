@@ -9,9 +9,9 @@
         "H7LT2DSXX_S1_L004_R2_001.fastq.gz"
     ],
     "output": [
-        "H7LT2DSXX_l04_interleaved.bam"
+        "H7LT2DSXX_l04_interleave.bam"
     ],
-    "report url": "H7LT2DSXX_l04_interleaved_report.json",
+    "report url": "H7LT2DSXX_l04_interleave_report.json",
     "transform": {
         "token": [
             "0::",

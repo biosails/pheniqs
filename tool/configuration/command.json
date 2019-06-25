@@ -797,9 +797,7 @@
                     },
                     {
                         "argument": [
-                            "illumina_run_directory",
-                            "confidence",
-                            "noise"
+                            "illumina_run_directory"
                         ],
                         "instruction": {
                             "help": "Interleaved job file for each lane",

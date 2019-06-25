@@ -21,7 +21,8 @@
 
 # NovaSeq 6000
 
-This is an example folder for processing a dual index paired end run performed by a NovaSeq 6000. The flowcell has 4 lanes each with 4 segments containing 151, 8, 8, and 151 cycles.
+This is an example of processing a dual index paired end run performed by a NovaSeq 6000.
+The flowcell has 4 lanes each with 4 segments containing 151, 8, 8, and 151 cycles.
 
 **All shell commands mentioned bellow are executed in this folder.**
 

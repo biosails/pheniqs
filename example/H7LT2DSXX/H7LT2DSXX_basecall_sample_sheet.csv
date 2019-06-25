@@ -8,6 +8,7 @@ Instrument Type,NovaSeq
 Assay,Nextera DNA Flex
 Index Adapters,"Nextera DNA CD Indexes (96 Indexes plated)"
 Chemistry,Amplicon
+
 [Data]
 FCID,Lane,Sample_ID,Sample_Name
 H7LT2DSXX,0,H7LT2DSXX,

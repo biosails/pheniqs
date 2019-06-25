@@ -38,34 +38,11 @@ class IlluminaApi(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
 
+        # load preset
         if 'preset' in self.instruction and self.instruction['preset'] in self.ontology['preset']:
             self.ontology['selected preset'] = deepcopy(self.ontology['preset'][self.instruction['preset']])
         else:
             self.ontology['selected preset'] = deepcopy(self.ontology['preset']['default'])
-
-    def execute(self):
-        self.load_illumina()
-        queue = None
-        if self.action == 'basecall':
-            command = self.write_bcl2fastq_command()
-            self.log.info(command)
-
-        elif self.action == 'core':
-            # print(to_json(self.instruction))
-            # exit(0)
-            queue = self.write_core_instruction()
-
-        elif self.action == 'interleave':
-            queue = self.write_interleave_instruction_per_lane()
-
-        elif self.action == 'multiplex':
-            queue = self.write_multiplex_instruction_per_lane()
-
-        elif self.action == 'estimate':
-            queue = self.write_prior_estimate_instruction_per_lane()
-
-        # if queue is not None:
-        #     print(to_json(queue))
 
     @property
     def illumina(self):
@@ -76,28 +53,14 @@ class IlluminaApi(Job):
         return self.ontology['namespace']
 
     @property
-    def core(self):
-        return self.ontology['core']
-
-    @property
-    def interleave(self):
-        return self.ontology['interleave']
-
-    @property
-    def demultiplex(self):
-        return self.ontology['demultiplex']
-
-    @property
-    def bcl2fastq(self):
-        return self.ontology['bcl2fastq']
-
-    @property
     def selected_preset(self):
         return self.ontology['selected preset']
 
+    def make_bcl2fastq_file_name(self, flowcell_id, lane_number, segment_name):
+        return '{}_S1_L00{}_{}_001.fastq.gz'.format(flowcell_id, lane_number, segment_name)
+
     def decode_value_by_preset(self, record, preset):
         value = None
-        # figure out a key for the record
         if isinstance(preset, str):
             try: value = preset.format(**record)
             except KeyError: pass
@@ -107,194 +70,211 @@ class IlluminaApi(Job):
                 try: value = pattern.format(**record)
                 except KeyError: pass
                 else: break
-
         return value
+
+
+    def load(self):
+        self.load_illumina()
+        self.location['core instruction'] = '{}_core.json'.format(self.illumina['flowcell id'])
 
     def load_illumina(self):
         self.instruction['illumina'] = {}
         self.parse_run_info()
         self.parse_run_parameters()
         self.parse_sample_sheet()
-        self.assemble_platform_model()
-        self.assemble_sample_sheet_barcode()
-        self.assemble_sample_sheet_lane()
+        self.compile_platform_model()
+        self.compile_lane()
 
     def parse_run_info(self):
-        if 'illumina_run_directory' in self.instruction:
-            path = os.path.join(self.instruction['illumina_run_directory'], 'RunInfo.xml')
-            if os.path.exists(path):
-                try:
-                    import xml.etree.ElementTree
-                    tree = xml.etree.ElementTree.parse(path)
-                    run = tree.getroot().find('Run')
+        path = os.path.join(self.instruction['illumina_run_directory'], 'RunInfo.xml')
+        if os.path.exists(path):
+            try:
+                import xml.etree.ElementTree
+                tree = xml.etree.ElementTree.parse(path)
+                run = tree.getroot().find('Run')
 
-                    # decode the run date
-                    illumina_date_string = run.find('Date').text
-                    if illumina_date_string:
-                        illumina_date_ex = re.compile(r'^(?P<year>[0-9]{2})(?P<month>[0-9]{2})(?P<day>[0-9]{2})$')
-                        match = illumina_date_ex.search(illumina_date_string)
-                        if match:
-                            illumina_date = dict([(k,int(v)) for k,v in match.groupdict().items()])
-                            illumina_date['year'] += 2000
-                            run_date = date(**illumina_date)
-                            self.illumina['DT'] = run_date.isoformat()
+                # decode the run date
+                illumina_date_string = run.find('Date').text
+                if illumina_date_string:
+                    illumina_date_ex = re.compile(r'^(?P<year>[0-9]{2})(?P<month>[0-9]{2})(?P<day>[0-9]{2})$')
+                    match = illumina_date_ex.search(illumina_date_string)
+                    if match:
+                        illumina_date = dict([(k,int(v)) for k,v in match.groupdict().items()])
+                        illumina_date['year'] += 2000
+                        run_date = date(**illumina_date)
+                        self.illumina['DT'] = run_date.isoformat()
 
-                    # flowcell
-                    self.illumina['flowcell id'] = run.find('Flowcell').text
+                # flowcell
+                self.illumina['flowcell id'] = run.find('Flowcell').text
 
-                    flowcell_layout = run.find('FlowcellLayout')
-                    self.illumina['lane cardinality'] = int(flowcell_layout.attrib['LaneCount'])
+                flowcell_layout = run.find('FlowcellLayout')
+                self.illumina['lane cardinality'] = int(flowcell_layout.attrib['LaneCount'])
 
-                    # instrument
-                    self.illumina['instrument id'] = run.find('Instrument').text
+                # instrument
+                self.illumina['instrument id'] = run.find('Instrument').text
 
-                    # read layout
-                    self.illumina['segment'] = []
-                    index_segment_count = 0
-                    not_index_segment_count = 0
-                    for read in run.find('Reads'):
-                        element = { 'is index': False }
-                        is_index = read.attrib['IsIndexedRead']
-                        if is_index == 'Y': element['is index'] = True
+                # read layout
+                self.illumina['segment'] = []
+                index_segment_count = 0
+                not_index_segment_count = 0
+                for read in run.find('Reads'):
+                    element = { 'is index': False }
+                    is_index = read.attrib['IsIndexedRead']
+                    if is_index == 'Y': element['is index'] = True
 
-                        element['cycle cardinality'] = int(read.attrib['NumCycles'])
-                        element['illumina segment index'] = int(read.attrib['Number'])
-                        element['index'] = element['illumina segment index'] - 1
+                    element['cycle cardinality'] = int(read.attrib['NumCycles'])
+                    element['illumina segment index'] = int(read.attrib['Number'])
+                    element['index'] = element['illumina segment index'] - 1
 
-                        if element['is index']:
-                            index_segment_count += 1
-                            element['illumina segment name'] = 'I{}'.format(index_segment_count)
-                        else:
-                            not_index_segment_count += 1
-                            element['illumina segment name'] = 'R{}'.format(not_index_segment_count)
+                    if element['is index']:
+                        index_segment_count += 1
+                        element['illumina segment name'] = 'I{}'.format(index_segment_count)
+                    else:
+                        not_index_segment_count += 1
+                        element['illumina segment name'] = 'R{}'.format(not_index_segment_count)
 
-                        self.illumina['segment'].append(element)
+                    self.illumina['segment'].append(element)
 
-                    self.illumina['template segment'] = []
-                    self.illumina['index segment'] = []
-                    for segment in self.illumina['segment']:
-                        if segment['is index']:
-                            self.illumina['index segment'].append(segment)
-                        else:
-                            self.illumina['template segment'].append(segment)
+                self.illumina['template segment'] = []
+                self.illumina['index segment'] = []
+                for segment in self.illumina['segment']:
+                    if segment['is index']:
+                        self.illumina['index segment'].append(segment)
+                    else:
+                        self.illumina['template segment'].append(segment)
 
-                except Exception as error:
-                    self.log.warning('failed to parse RunInfo.xml ' + str(error))
-            else:
-                self.log.warning('RunInfo.xml not found')
+            except Exception as error:
+                self.log.warning('failed to parse RunInfo.xml ' + str(error))
+        else:
+            self.log.warning('RunInfo.xml not found')
 
     def parse_run_parameters(self):
-        if 'illumina_run_directory' in self.instruction:
-            path = os.path.join(self.instruction['illumina_run_directory'], 'RunParameters.xml')
+        path = os.path.join(self.instruction['illumina_run_directory'], 'RunParameters.xml')
+        if not os.path.exists(path):
+            path = os.path.join(self.instruction['illumina_run_directory'], 'runParameters.xml')
             if not os.path.exists(path):
-                path = os.path.join(self.instruction['illumina_run_directory'], 'runParameters.xml')
-                if not os.path.exists(path):
-                    path = None
+                path = None
 
-            if path is not None:
-                try:
-                    import xml.etree.ElementTree
-                    tree = xml.etree.ElementTree.parse(path)
-                    run_parameters = tree.getroot()
-                    if run_parameters is not None:
-                        setup = run_parameters.find('Setup')
-                        if setup is not None:
-                            application_name = setup.find('ApplicationName')
-                            if application_name is not None:
-                                self.illumina['instrument platform'] = application_name.text.split()[0]
+        if path is not None:
+            try:
+                import xml.etree.ElementTree
+                tree = xml.etree.ElementTree.parse(path)
+                run_parameters = tree.getroot()
+                if run_parameters is not None:
+                    setup = run_parameters.find('Setup')
+                    if setup is not None:
+                        application_name = setup.find('ApplicationName')
+                        if application_name is not None:
+                            self.illumina['instrument platform'] = application_name.text.split()[0]
 
-                            application_version = setup.find('ApplicationVersion')
-                            if application_version is not None:
-                                self.illumina['instrument platform version'] = application_version.text
-                except Exception as error:
-                    self.log.warning('failed to parse RunParameters.xml ' + str(error))
-            else:
-                self.log.warning('RunParameters.xml not found')
+                        application_version = setup.find('ApplicationVersion')
+                        if application_version is not None:
+                            self.illumina['instrument platform version'] = application_version.text
+            except Exception as error:
+                self.log.warning('failed to parse RunParameters.xml ' + str(error))
+        else:
+            self.log.warning('RunParameters.xml not found')
 
     def parse_sample_sheet(self):
-        if 'illumina_run_directory' in self.instruction:
-            path = os.path.join(self.instruction['illumina_run_directory'], 'SampleSheet.csv')
-            if os.path.exists(path):
-                try:
-                    content = None
-                    with open(path, 'rb') as file:
-                        content = file.read().decode('utf8').splitlines()
+        path = os.path.join(self.instruction['illumina_run_directory'], 'SampleSheet.csv')
+        if os.path.exists(path):
+            try:
+                content = None
+                with open(path, 'rb') as file:
+                    content = file.read().decode('utf8').splitlines()
 
-                    if content != None:
-                        section = None
-                        self.illumina['sample sheet'] = {}
-                        section_header_re = re.compile('^\s*\[\s*(?P<section>{})\s*\]'.format('|'.join(self.namespace['sample sheet'].keys())))
+                if content != None:
+                    section = None
+                    self.illumina['sample sheet'] = {}
+                    section_header_re = re.compile('^\s*\[\s*(?P<section>{})\s*\]'.format('|'.join(self.namespace['sample sheet'].keys())))
 
-                        for line in content:
-                            header_match = section_header_re.search(line)
-                            if header_match:
+                    for line in content:
+                        header_match = section_header_re.search(line)
+                        if header_match:
 
-                                # wrap up current section
-                                if section != None:
-                                    if section == 'Header':
-                                        pass
-                                    elif section == 'Reads':
-                                        pass
-                                    elif section == 'Settings':
-                                        pass
-                                    elif section == 'Data':
-                                        pass
-
-                                # update current section
-                                section = header_match.group('section')
-
-                                # initialize next section
+                            # wrap up current section
+                            if section != None:
                                 if section == 'Header':
-                                    self.illumina['sample sheet']['header'] = []
                                     pass
                                 elif section == 'Reads':
                                     pass
                                 elif section == 'Settings':
                                     pass
                                 elif section == 'Data':
-                                    self.illumina['sample sheet']['data'] = { 'row': [], 'head': [] }
-
-                            else:
-                                # process a line in a section
-                                if section == 'Header':
-                                    line = line.strip()
-                                    if line:
-                                        self.illumina['sample sheet']['header'].append(line)
-
-                                elif section == 'Reads':
                                     pass
-                                elif section == 'Settings':
-                                    pass
-                                elif section == 'Data':
-                                    row = [ x.strip() for x in line.split(',') ]
-                                    if len(self.illumina['sample sheet']['data']['head']) == 0:
-                                        for key in row:
-                                            if key in self.namespace['sample sheet']['Data']['column']:
-                                                self.illumina['sample sheet']['data']['head'].append(key)
-                                            else:
-                                                self.illumina['sample sheet']['data']['head'].append(None)
-                                    else:
-                                        head = self.illumina['sample sheet']['data']['head']
-                                        record = {}
-                                        for index,column in enumerate(row):
-                                            if index < len(head) and head[index] != None:
-                                                if column:
-                                                    record[head[index]] = column
 
-                                        if 'Lane' in record:
-                                            try:
-                                                record['lane number'] = int(record['Lane'])
-                                            except ValueError as e:
-                                                pass
+                            # update current section
+                            section = header_match.group('section')
 
-                                        if record:
-                                            self.illumina['sample sheet']['data']['row'].append(record)
-                except Exception as error:
-                    self.log.warning('failed to parse SampleSheet.csv ' + str(error))
-            else:
-                self.log.warning('SampleSheet.csv not found')
+                            # initialize next section
+                            if section == 'Header':
+                                self.illumina['sample sheet']['header'] = []
+                                pass
+                            elif section == 'Reads':
+                                pass
+                            elif section == 'Settings':
+                                pass
+                            elif section == 'Data':
+                                self.illumina['sample sheet']['data'] = { 'row': [], 'head': [] }
 
-    def assemble_platform_model(self):
+                        else:
+                            # process a line in a section
+                            if section == 'Header':
+                                line = line.strip()
+                                if line:
+                                    self.illumina['sample sheet']['header'].append(line)
+
+                            elif section == 'Reads':
+                                pass
+                            elif section == 'Settings':
+                                pass
+                            elif section == 'Data':
+                                row = [ x.strip() for x in line.split(',') ]
+                                if len(self.illumina['sample sheet']['data']['head']) == 0:
+                                    for key in row:
+                                        if key in self.namespace['sample sheet']['Data']['column']:
+                                            self.illumina['sample sheet']['data']['head'].append(key)
+                                        else:
+                                            self.illumina['sample sheet']['data']['head'].append(None)
+                                else:
+                                    head = self.illumina['sample sheet']['data']['head']
+                                    record = {}
+                                    for index,column in enumerate(row):
+                                        if index < len(head) and head[index] != None:
+                                            if column:
+                                                record[head[index]] = column
+
+                                    if 'Lane' in record:
+                                        try:
+                                            record['lane number'] = int(record['Lane'])
+                                        except ValueError as e:
+                                            pass
+
+                                    if record:
+                                        self.illumina['sample sheet']['data']['row'].append(record)
+            except Exception as error:
+                self.log.warning('failed to parse SampleSheet.csv ' + str(error))
+        else:
+            self.log.warning('SampleSheet.csv not found')
+
+        if 'sample sheet' in self.illumina and 'data' in self.illumina['sample sheet']:
+            for row in self.illumina['sample sheet']['data']['row']:
+                barcode_length = []
+                barcode = []
+                if 'index' in row and row['index']:
+                    barcode.append(row['index'])
+                    barcode_length.append(len(row['index']))
+
+                if 'index2' in row and row['index2']:
+                    barcode.append(row['index2'])
+                    barcode_length.append(len(row['index2']))
+
+                if barcode:
+                    row['barcode'] = barcode
+                    row['barcode length'] = barcode_length
+                    row['concatenated barcode'] = ''.join(barcode)
+
+    def compile_platform_model(self):
         PM = None
         if 'instrument platform' in self.illumina:
             PM = self.illumina['instrument platform']
@@ -314,26 +294,8 @@ class IlluminaApi(Job):
         if PM is not None:
             self.illumina['PM'] = PM
 
-    def assemble_sample_sheet_barcode(self):
-        if 'data' in self.illumina['sample sheet'] and self.illumina['sample sheet']['data']['row']:
-            for record in self.illumina['sample sheet']['data']['row']:
-                barcode_length = []
-                barcode = []
-                if 'index' in record and record['index']:
-                    barcode.append(record['index'])
-                    barcode_length.append(len(record['index']))
-
-                if 'index2' in record and record['index2']:
-                    barcode.append(record['index2'])
-                    barcode_length.append(len(record['index2']))
-
-                if barcode:
-                    record['barcode'] = barcode
-                    record['barcode length'] = barcode_length
-                    record['concatenated barcode'] = ''.join(barcode)
-
-    def assemble_sample_sheet_lane(self):
-        if 'data' in self.illumina['sample sheet'] and self.illumina['sample sheet']['data']['row']:
+    def compile_lane(self):
+        if 'sample sheet' in self.illumina and 'data' in self.illumina['sample sheet'] and self.illumina['sample sheet']['data']['row']:
             if all([('lane number' in c) for c in self.illumina['sample sheet']['data']['row']]):
                 lane_by_index = {}
                 for record in self.illumina['sample sheet']['data']['row']:
@@ -352,10 +314,10 @@ class IlluminaApi(Job):
                         lane['row'].append(record)
                     self.illumina['lane'] = [ lane ]
             else:
-                raise BadConfigurationError('Incoherent sample sheet, some barcode records define a lane and others dont')
+                raise BadConfigurationError('Incoherent sample sheet, some rows define a lane and others dont')
 
             for lane in self.illumina['lane']:
-                # assemble multiplex decoder name
+                # compile multiplex decoder name
                 value = ''
                 if 'flowcell id' in self.illumina:
                     value = self.illumina['flowcell id']
@@ -367,7 +329,7 @@ class IlluminaApi(Job):
                 value += '_multiplex'
                 lane['multiplex decoder name'] = value
 
-                # assemble multiplex transform
+                # compile multiplex transform
                 try:
                     if all(lane['row'][0]['barcode length'] == b['barcode length'] for b in lane['row']):
                         lane['barcode length'] = lane['row'][0]['barcode length']
@@ -389,13 +351,123 @@ class IlluminaApi(Job):
                 except BadConfigurationError as error:
                     self.log.warning(str(error))
 
-    def assemble_illumina_templte_transform(self, container):
-        if 'template segment' in self.illumina:
-            container['transform'] = { 'token': [] }
-            for segment in self.illumina['template segment']:
-                container['transform']['token'].append('{}::'.format(segment['index']))
 
-    def assemble_illumina_multiplex_decoder(self, lane):
+    def execute(self):
+        self.load()
+        if self.action == 'basecall':
+            self.write_bcl2fastq_command()
+
+        elif self.action == 'core':
+            self.write_core_instruction()
+
+        elif self.action == 'multiplex':
+            self.write_multiplex_instruction_per_lane()
+
+        elif self.action == 'estimate':
+            self.write_prior_estimate_instruction_per_lane()
+
+        elif self.action == 'interleave':
+            self.write_interleave_instruction_per_lane()
+
+    def write_bcl2fastq_command(self):
+        self.write_basecalling_sample_sheet()
+
+        self.location['basecall shell script'] = '{}_basecall.sh'.format(self.illumina['flowcell id'])
+        buffer = [ 'bcl2fastq' ]
+        buffer.append('--runfolder-dir {}'.format(self.instruction['illumina_run_directory']))
+        buffer.append('--sample-sheet {}'.format(self.location['basecall samplesheet'])),
+        buffer.append('--create-fastq-for-index-reads')
+        buffer.append('--adapter-stringency 0')
+        buffer.append('--minimum-trimmed-read-length 0')
+        buffer.append('--mask-short-adapter-reads 0')
+
+        for key in [
+            'no_bgzf_compression',
+            'ignore_missing_bcls',
+            'ignore_missing_filter',
+            'ignore_missing_positions'
+        ]:
+            if key in self.instruction and self.instruction[key]:
+                buffer.append('--{}'.format(key.replace('_', '-')))
+
+        if 'output_dir' in self.instruction and self.instruction['output_dir']:
+            buffer.append('--output-dir {}'.format(self.instruction['output_dir']))
+
+        if 'fastq_compression_level' in self.instruction:
+            buffer.append('--fastq-compression-level {}'.format(self.instruction['fastq_compression_level']))
+
+        command = '{}\n'.format(' \\\n'.join(buffer))
+        with io.open(self.location['basecall shell script'], 'wb') as file:
+            file.write(command.encode('utf8'))
+
+        self.log.info('basecall shell script written to %s', self.location['basecall shell script'])
+        self.log.debug('basecall shell script\n%s', command)
+        return command
+
+    def write_basecalling_sample_sheet(self):
+        self.location['basecall samplesheet'] = '{}_basecall_sample_sheet.csv'.format(self.illumina['flowcell id'])
+
+        buffer = []
+        # copy the header
+        if 'header' in self.illumina['sample sheet']:
+            buffer.append('[Header]')
+            for line in self.illumina['sample sheet']['header']:
+                buffer.append(line)
+            buffer.append('')
+
+        # make a Data section with one line for each lane so that the output files will be
+        # {flowcell id}_S1_L00{lane number}_{segment name}_001.fastq.gz
+        buffer.append('[Data]')
+        buffer.append('FCID,Lane,Sample_ID,Sample_Name')
+        for lane_number in range(0,self.illumina['lane cardinality']):
+            buffer.append('{0},{1},{0},'.format(self.illumina['flowcell id'], lane_number))
+
+        # add a line break at the end of the file
+        buffer.append('')
+        content = '\n'.join(buffer)
+        with io.open(self.location['basecall samplesheet'], 'wb') as file:
+            file.write(content.encode('utf8'))
+
+        self.log.info('basecall sample sheet written to %s', self.location['basecall samplesheet'])
+        self.log.debug('basecall sample sheet\n%s', content)
+        return content
+
+    def write_core_instruction(self):
+        job = { 'PL': 'ILLUMINA' }
+        for key in [
+            'DT',
+            'PM',
+            'flowcell id',
+        ]:
+            if key in self.illumina:
+                job[key] = self.illumina[key]
+
+        for key, name in {
+            'base_input_url': 'base input url',
+            'base_output_url': 'base output url',
+            'no_input_npf': 'filter incoming qc fail',
+            'no_output_npf': 'filter outgoing qc fail',
+        }.items():
+            if key in self.instruction and self.instruction[key]:
+                job[name] = self.instruction[key]
+
+        # assemble a default transform that outputs the biological segments
+        if 'template segment' in self.illumina:
+            job['transform'] = { 'token': [] }
+            for segment in self.illumina['template segment']:
+                job['transform']['token'].append('{}::'.format(segment['index']))
+
+        if 'lane' in self.illumina and self.illumina['lane']:
+            job['decoder'] = {}
+            for lane in self.illumina['lane']:
+                job['decoder'][lane['multiplex decoder name']] = self.make_lane_multiplex_decoder(lane)
+
+        with io.open(self.location['core instruction'], 'wb') as file:
+            file.write(to_json(job).encode('utf8'))
+
+        self.log.info('core instruction written to %s', self.location['core instruction'])
+
+    def make_lane_multiplex_decoder(self, lane):
         preset = self.selected_preset['sample sheet record']
         decoder = { 'codec': {} }
         if 'multiplex transform' in lane:
@@ -427,232 +499,98 @@ class IlluminaApi(Job):
 
         return decoder
 
-
-    def write_bcl2fastq_command(self):
-        bcl2fastq = None
-        if 'illumina_run_directory' in self.instruction:
-            self.location['basecall samplesheet'] = os.path.join(self.current_working_directoy, 'basecall_samplesheet.csv')
-            self.write_basecalling_sample_sheet(self.location['basecall samplesheet'])
-
-            command = [ 'bcl2fastq' ]
-            command.append('--runfolder-dir')
-            command.append(self.instruction['illumina_run_directory'])
-            command.append('--sample-sheet'),
-            command.append('basecall_samplesheet.csv')
-            command.append('--create-fastq-for-index-reads')
-            command.append('--adapter-stringency')
-            command.append('0')
-            command.append('--minimum-trimmed-read-length')
-            command.append('0')
-            command.append('--mask-short-adapter-reads')
-            command.append('0')
-
-            for key in [
-                'no_bgzf_compression',
-                'ignore_missing_bcls',
-                'ignore_missing_filter',
-                'ignore_missing_positions'
-            ]:
-                if key in self.instruction and self.instruction[key]:
-                    command.append('--{}'.format(key.replace('_', '-')))
-
-            if 'output_dir' in self.instruction and self.instruction['output_dir']:
-                command.append('--output-dir')
-                command.append(self.instruction['output_dir'])
-
-            if 'fastq_compression_level' in self.instruction:
-                command.append('--fastq-compression-level')
-                command.append(str(self.instruction['fastq_compression_level']))
-
-            command.append('\n')
-
-            bcl2fastq = ' '.join(command)
-            path = '{}_basecall.sh'.format(self.illumina['flowcell id'])
-            self.log.debug('writing ' + path)
-            with io.open(path, 'wb') as file:
-                file.write(bcl2fastq.encode('utf8'))
-
-        return bcl2fastq
-
-    def write_basecalling_sample_sheet(self, path):
-        buffer = []
-        if 'illumina_run_directory' in self.instruction:
-            if 'header' in self.illumina['sample sheet']:
-                buffer.append('[Header]')
-                for line in self.illumina['sample sheet']['header']:
-                    buffer.append(line)
-
-            buffer.append('[Data]')
-            buffer.append('FCID,Lane,Sample_ID,Sample_Name')
-            for lane_number in range(0,self.illumina['lane cardinality']):
-                buffer.append('{0},{1},{0},'.format(self.illumina['flowcell id'], lane_number))
-
-        buffer.append('')
-        with io.open(path, 'wb') as file:
-            file.write('\n'.join(buffer).encode('utf8'))
-
-        self.log.info('writing basecalling sample sheet to ' + path)
-
-    def write_core_instruction(self):
-        job = {
-            'PL': 'ILLUMINA'
-        }
-        for key in [
-            'DT',
-            'PM',
-            'flowcell id',
-        ]:
-            if key in self.illumina:
-                job[key] = self.illumina[key]
-
-        for key, name in {
-            'base_input_url': 'base input url',
-            'base_output_url': 'base output url',
-            'no_input_npf': 'filter incoming qc fail',
-            'no_output_npf': 'filter outgoing qc fail',
-        }.items():
-            if key in self.instruction and self.instruction[key]:
-                job[name] = self.instruction[key]
-
-        if 'sample sheet' in self.illumina:
-            self.assemble_illumina_templte_transform(job)
-
-            if 'lane' in self.illumina and self.illumina['lane']:
-                job['decoder'] = {}
-                for lane in self.illumina['lane']:
-                    job['decoder'][lane['multiplex decoder name']] = self.assemble_illumina_multiplex_decoder(lane)
-
-        path = '{}_core.json'.format(self.illumina['flowcell id'])
-        self.log.debug('writing ' + path)
-        with io.open(path, 'wb') as file:
-            file.write(to_json(job).encode('utf8'))
-        return [ job ]
-
     def write_multiplex_instruction_per_lane(self):
-        if 'sample sheet' in self.illumina:
-            if 'lane' in self.illumina and self.illumina['lane']:
-                queue = []
-                core_path = '{}_core.json'.format(self.illumina['flowcell id'])
-                for lane in self.illumina['lane']:
-                    job = {
-                        'import': [ core_path ],
-                        'input': [],
-                        'output': [],
-                        'report url': None,
-                        'transform': { 'token': [] },
-                        'multiplex': {
-                            'algorithm': 'pamld',
-                            'base': lane['multiplex decoder name'],
-                            'confidence threshold': self.instruction['confidence'],
-                            'noise': self.instruction['noise']
-                        }
+        if 'lane' in self.illumina and self.illumina['lane']:
+            queue = []
+            for lane in self.illumina['lane']:
+                job = {
+                    'import': [ self.location['core instruction'] ],
+                    'input': [],
+                    'output': [],
+                    'report url': None,
+                    'multiplex': {
+                        'base': lane['multiplex decoder name'],
+                        'algorithm': 'pamld',
+                        'noise': self.instruction['noise'],
+                        'confidence threshold': self.instruction['confidence'],
                     }
-                    segment_index = 0
-                    for segment in self.illumina['segment']:
-                        fastq_filename = '{}_S1_L00{}_{}_001.fastq.gz'.format(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name'])
-                        job['input'].append(fastq_filename)
-                        if not segment['is index']:
-                            job['transform']['token'].append('{}::'.format(segment_index))
-                        segment_index += 1
+                }
+                for segment in self.illumina['segment']:
+                    job['input'].append(self.make_bcl2fastq_file_name(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name']))
+                job['output'].append('{}_l{:02d}.bam'.format(self.illumina['flowcell id'], lane['lane number']))
+                job['report url'] = '{}_l{:02d}_sample_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
 
-                    job['output'].append('{}_l{:02d}.bam'.format(self.illumina['flowcell id'], lane['lane number']))
-                    job['report url'] = '{}_l{:02d}_sample_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
+                path = '{}_l{:02d}_sample.json'.format(self.illumina['flowcell id'], lane['lane number'])
+                with io.open(path, 'wb') as file:
+                    file.write(to_json(job).encode('utf8'))
 
-                    path = '{}_l{:02d}_sample.json'.format(self.illumina['flowcell id'], lane['lane number'])
-                    self.log.debug('writing ' + path)
-                    with io.open(path, 'wb') as file:
-                        file.write(to_json(job).encode('utf8'))
-
-                    queue.append(job)
-        return queue
+                self.log.info('multiplex instruction written to %s', path)
+                queue.append(job)
 
     def write_prior_estimate_instruction_per_lane(self):
-        if 'sample sheet' in self.illumina:
-            if 'lane' in self.illumina and self.illumina['lane']:
-                queue = []
-                core_path = '{}_core.json'.format(self.illumina['flowcell id'])
-                for lane in self.illumina['lane']:
-                    job = {
-                        'import': [ core_path ],
-                        'input': [],
-                        'output': [ '/dev/null' ],
-                        'report url': None,
-                        'transform': { 'token': [] },
-                        'multiplex': {
-                            'algorithm': 'pamld',
-                            'base': lane['multiplex decoder name'],
-                            'confidence threshold': self.instruction['confidence'],
-                            'noise': self.instruction['noise'],
-                            'transform': { 'token': [] }
-                        }
-                    }
-                    segment_index = 0
-                    for segment in self.illumina['index segment']:
-                        fastq_filename = '{}_S1_L00{}_{}_001.fastq.gz'.format(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name'])
-                        job['input'].append(fastq_filename)
-                        token = '{}::'.format(segment_index)
-                        job['transform']['token'].append(token)
-                        job['multiplex']['transform']['token'].append(token)
-                        segment_index += 1
-
-                    job['report url'] = '{}_l{:02d}_estimate_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
-
-                    path = '{}_l{:02d}_estimate.json'.format(self.illumina['flowcell id'], lane['lane number'])
-                    self.log.debug('writing ' + path)
-                    with io.open(path, 'wb') as file:
-                        file.write(to_json(job).encode('utf8'))
-
-                    queue.append(job)
-        return queue
-
-    def write_interleave_instruction_per_lane(self):
-        if 'sample sheet' in self.illumina:
-            if 'lane' in self.illumina and self.illumina['lane']:
-                queue = []
-                for lane in self.illumina['lane']:
-                    job = {
-                        'PL': 'ILLUMINA',
-                        'input': [],
-                        'output': [],
-                        'report url': None,
+        if 'lane' in self.illumina and self.illumina['lane']:
+            self.location['core instruction'] = '{}_core.json'.format(self.illumina['flowcell id'])
+            queue = []
+            for lane in self.illumina['lane']:
+                job = {
+                    'import': [ self.location['core instruction'] ],
+                    'input': [],
+                    'output': [ '/dev/null' ],
+                    'report url': None,
+                    'transform': { 'token': [] },
+                    'multiplex': {
+                        'base': lane['multiplex decoder name'],
+                        'algorithm': 'pamld',
+                        'noise': self.instruction['noise'],
+                        'confidence threshold': self.instruction['confidence'],
                         'transform': { 'token': [] }
                     }
-                    for key in [
-                        'DT',
-                        'PM',
-                        'flowcell id',
-                    ]:
-                        if key in self.illumina:
-                            job[key] = self.illumina[key]
+                }
+                for segment_index,segment in enumerate(self.illumina['index segment']):
+                    job['input'].append(self.make_bcl2fastq_file_name(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name']))
+                    token = '{}::'.format(segment_index)
+                    job['transform']['token'].append(token)
+                    job['multiplex']['transform']['token'].append(token)
+                job['report url'] = '{}_l{:02d}_estimate_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
 
-                    segment_index = 0
-                    for segment in self.illumina['segment']:
-                        fastq_filename = '{}_S1_L00{}_{}_001.fastq.gz'.format(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name'])
-                        job['input'].append(fastq_filename)
-                        job['transform']['token'].append('{}::'.format(segment_index))
-                        segment_index += 1
+                path = '{}_l{:02d}_estimate.json'.format(self.illumina['flowcell id'], lane['lane number'])
+                with io.open(path, 'wb') as file:
+                    file.write(to_json(job).encode('utf8'))
 
-                    job['report url'] = '{}_l{:02d}_interleaved_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
-                    job['output'].append('{}_l{:02d}_interleaved.bam'.format(self.illumina['flowcell id'], lane['lane number']))
+                self.log.info('prior estimate instruction written to %s', path)
+                queue.append(job)
 
-                    path = '{}_l{:02d}_interleaved.json'.format(self.illumina['flowcell id'], lane['lane number'])
-                    self.log.debug('writing ' + path)
-                    with io.open(path, 'wb') as file:
-                        file.write(to_json(job).encode('utf8'))
+    def write_interleave_instruction_per_lane(self):
+        if 'lane' in self.illumina and self.illumina['lane']:
+            queue = []
+            for lane in self.illumina['lane']:
+                job = {
+                    'PL': 'ILLUMINA',
+                    'input': [],
+                    'output': [],
+                    'report url': None,
+                    'transform': { 'token': [] }
+                }
+                for key in [
+                    'DT',
+                    'PM',
+                    'flowcell id',
+                ]:
+                    if key in self.illumina:
+                        job[key] = self.illumina[key]
 
-                    queue.append(job)
-        return queue
+                for segment_index,segment in enumerate(self.illumina['segment']):
+                    job['input'].append(self.make_bcl2fastq_file_name(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name']))
+                    job['transform']['token'].append('{}::'.format(segment_index))
+                job['report url'] = '{}_l{:02d}_interleave_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
+                job['output'].append('{}_l{:02d}_interleave.bam'.format(self.illumina['flowcell id'], lane['lane number']))
 
+                path = '{}_l{:02d}_interleave.json'.format(self.illumina['flowcell id'], lane['lane number'])
+                with io.open(path, 'wb') as file:
+                    file.write(to_json(job).encode('utf8'))
 
-        job = {
-            'PL': 'ILLUMINA'
-        }
-
-
-        if 'segment' in self.illumina:
-            for segment in self.illumina['segment']:
-                job['transform']['token'].append('{}::'.format(segment['index']))
-        self.assemble_interleave_transform(self.interleave)
+                self.log.info('interleave instruction written to %s', path)
+                queue.append(job)
 
 def main():
     logging.basicConfig()

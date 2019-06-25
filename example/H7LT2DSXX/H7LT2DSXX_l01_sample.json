@@ -17,11 +17,5 @@
     "output": [
         "H7LT2DSXX_l01.bam"
     ],
-    "report url": "H7LT2DSXX_l01_sample_report.json",
-    "transform": {
-        "token": [
-            "0::",
-            "3::"
-        ]
-    }
+    "report url": "H7LT2DSXX_l01_sample_report.json"
 }
