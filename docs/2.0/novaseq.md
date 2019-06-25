@@ -50,7 +50,7 @@ The `pheniqs-illumina-recipe.py` script can help you execute bcl2fastq to perfor
 pheniqs-illumina-recipe.py basecall --fastq-compression-level 3 181014_A00534_0024_AH7LT2DSXX
 ```
 
-will write a `H7LT2DSXX_basecall.sh` and `basecall_samplesheet.csv` to the current folder.
+will write `H7LT2DSXX_basecall.sh` and `basecall_samplesheet.csv` to the current folder. You can also provide values for some relevant *bcl2fastq* parameters.
 
 >```shell
     bcl2fastq \
@@ -63,27 +63,27 @@ will write a `H7LT2DSXX_basecall.sh` and `basecall_samplesheet.csv` to the curre
     --mask-short-adapter-reads 0 \
     --fastq-compression-level 3
 ```
->**example bcl2fastq basecall shell script** We must provide bcl2fastq an alternative sample sheet or it will default to using the one in the run folder. A simple sample sheet that does not perform any barcode decoding [is provided]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/basecall_samplesheet.csv) with this example. You may also choose the gzip compression level. For temporary files it is better to choose low values since IO will be faster and file size only marginally larger.
+>**example bcl2fastq basecall shell script** We must provide bcl2fastq an alternative sample sheet or it will default to using the one in the run folder. A simple sample sheet that does not perform any barcode decoding [is generated]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/basecall_samplesheet.csv) by `pheniqs-illumina-recipe.py basecall`. You may also choose the gzip compression level. For temporary files it is better to choose low values since IO will be faster and file size only marginally larger.
 {: .example}
 
 ## Core configuration
 
-[core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) is a core configuration file that summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `pheniqs-illumina-api.py`
+[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) is a core configuration file that summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `pheniqs-illumina-api.py`
 
+>```shell
+pheniqs-illumina-api.py core illumina/181014_A00534_0024_AH7LT2DSXX --no-input-npf
 ```
-pheniqs-illumina-api.py core illumina/181014_A00534_0024_AH7LT2DSXX
-```
+>**Generating a core configuration** `--no-input-npf` will add a global `filter incoming qc fail` instruction to discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed.
+{: .example}
 
-## Input Read Layout
-
-Base calling with bc2fastq produced 4 files per lane:
+*bc2fastq* will produced 4 files per lane:
 
 >```json
 "input": [
-  "H7LT2DSXX_l01_S1_L001_R1_001.fastq.gz",
-  "H7LT2DSXX_l01_S1_L001_I1_001.fastq.gz",
-  "H7LT2DSXX_l01_S1_L001_I2_001.fastq.gz",
-  "H7LT2DSXX_l01_S1_L001_R2_001.fastq.gz"
+  "H7LT2DSXX_S1_L001_R1_001.fastq.gz",
+  "H7LT2DSXX_S1_L001_I1_001.fastq.gz",
+  "H7LT2DSXX_S1_L001_I2_001.fastq.gz",
+  "H7LT2DSXX_S1_L001_R2_001.fastq.gz"
 ]
 ```
 >**input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling. `R1` containing the 3 prime prefix of the insert region, `I1` containing the i7 index, `I2` containing the i5 index and `R2` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
@@ -132,7 +132,7 @@ In `H7LT2DSXX_core.json` you will find a `decoder` directive that defines a dict
     }
 }
 ```
->**H7LT2DSXX_lane_1_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary.html#lb_auxiliary_tag) tag extracted from
+>**H7LT2DSXX_l01_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary.html#lb_auxiliary_tag) tag extracted from
 [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv).
 {: .example}
 
@@ -140,12 +140,18 @@ You can use those decoders as a starting point in the `multiplex`, `cellular`, a
 
 ## Decoding without priors
 
-To decode sample barcodes without prior estimation we declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in `H7LT2DSXX_core.json`. The report is written to a file instead of standard error with `report url`. To discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed we specify `filter incoming qc fail`. You should still specify your best guess for the `noise` prior. For example [uniform/l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/uniform/l01_sample.json) is a uniform configuration for the first lane.
+The `multiplex` sub command will generate a basic sample demultiplexing configuration file for each lane.
+
+```
+pheniqs-illumina-api.py multiplex illumina/181014_A00534_0024_AH7LT2DSXX
+```
+
+To decode sample barcodes without prior estimation we declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in `H7LT2DSXX_core.json`. The report is written to a file instead of standard error with `report url`.  You should still specify your best guess for the `noise` prior. For example [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) is a uniform configuration for the first lane.
 
 >```json
 {
     "import": [
-        "core.json"
+        "H7LT2DSXX_core.json"
     ],
     "input": [
         "H7LT2DSXX_S1_L001_R1_001.fastq.gz",
@@ -157,16 +163,10 @@ To decode sample barcodes without prior estimation we declare a `multiplex` dire
         "algorithm": "pamld",
         "base": "H7LT2DSXX_l01_multiplex",
         "confidence threshold": 0.95,
-        "noise": 0.05,
-        "transform": {
-            "token": [
-                "1::8",
-                "2::8"
-            ]
-        }
+        "noise": 0.05
     },
     "output": [
-        "H7LT2DSXX_l01_sample.bam"
+        "H7LT2DSXX_l01.bam"
     ],
     "report url": "H7LT2DSXX_l01_sample_report.json",
     "transform": {
@@ -175,25 +175,28 @@ To decode sample barcodes without prior estimation we declare a `multiplex` dire
             "3::"
         ]
     }
-}
-```
+}```
 >**Decoding with a uniform prior** output is written to a bam file.
 {: .example}
 
 ## Prior estimation
 
-To estimate priors for sample barcodes we need to collect statistics about the sequences identified by the tokens. We don't actually need to read the 2 segments containing the biological sequences so we declare input only for the two segments containing the indices. We then declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in `H7LT2DSXX_core.json`. The correct tokenization for the modified input is the first 8 bases of segment 0 and 1. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output. The report is written to a file instead of standard error with `report url`. To discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed we specify `filter incoming qc fail`.
+The `estimate` sub command will generate a sample prior estimation optimized configuration file for each lane.
+
+```
+pheniqs-illumina-api.py estimate illumina/181014_A00534_0024_AH7LT2DSXX
+```
+
+To estimate priors for sample barcodes we need to collect statistics about the sequences identified by the tokens. We don't actually need to read the 2 segments containing the biological sequences so we declare input only for the two segments containing the indices. We then declare a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder that we have seen defined in `H7LT2DSXX_core.json`. The correct tokenization for the modified input is the first 8 bases of segment 0 and 1. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output. The report is written to a file instead of standard error with `report url`. For example [H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) is a uniform configuration for the first lane.
 
 >```json
 {
-    "filter incoming qc fail": true,
-    "report url": "l01_sample_report.json",
     "import": [
-        "core.json"
+        "H7LT2DSXX_core.json"
     ],
     "input": [
-        "H7LT2DSXX_l01_S1_L001_I1_001.fastq.gz",
-        "H7LT2DSXX_l01_S1_L001_I2_001.fastq.gz"
+        "H7LT2DSXX_S1_L001_I1_001.fastq.gz",
+        "H7LT2DSXX_S1_L001_I2_001.fastq.gz"
     ],
     "multiplex": {
         "algorithm": "pamld",
@@ -202,45 +205,48 @@ To estimate priors for sample barcodes we need to collect statistics about the s
         "noise": 0.05,
         "transform": {
             "token": [
-                "0::8",
-                "1::8"
+                "0::",
+                "1::"
             ]
         }
     },
     "output": [
         "/dev/null"
-    ]
+    ],
+    "report url": "H7LT2DSXX_l01_estimate_report.json",
+    "transform": {
+        "token": [
+            "0::",
+            "1::"
+        ]
+    }
 }
 ```
 >**Prior estimation configuration** refraining from reading the biological sequences and producing no output significantly speeds things up.
 {: .example}
 
 Executing this configuration will yield the report
-[l01_sample_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/prior/l01_sample_report.json). The [standard Pheniqs report](manual.html#quality-control-and-statistics) contains decoding statistics that are used to estimate the priors.
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/prior/H7LT2DSXX_l01_estimate_report.json). The [standard Pheniqs report](manual.html#quality-control-and-statistics) contains decoding statistics that are used to estimate the priors.
 
 >```shell
-pheniqs mux --config sample/prior/l01_sample.json \
---base-input ~/H7LT2DSXX \
---base-output sample/prior
+pheniqs mux --config sample/prior/l01_sample.json
 ```
 
 The report can now be used to generate an adjusted configuration from the uniform one
 
 >```shell
 estimate_prior.py \
---report sample/prior/l01_sample_report.json \
---configuration sample/uniform/l01_sample.json \
-> sample/adjusted/l01_sample.json
+--report H7LT2DSXX_l01_estimate_report.json \
+--configuration sH7LT2DSXX_l01_sample.json \
+> H7LT2DSXX_l01_adjusted.json
 ```
->**decoding a lane with an estimated prior** [sample/adjusted/l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/adjusted/l01_sample.json) is similar to [sample/uniform/l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/uniform/l01_sample.json) with the addition of the estimated priors.
+>**decoding a lane with an estimated prior** [H7LT2DSXX_l01_adjusted.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_adjusted.json) is similar to [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) with the addition of the estimated priors.
 {: .example}
 
 ## Decoding with the estimated prior
 
 >```shell
-pheniqs mux --config sample/adjusted/l01_sample.json \
---base-input ~/H7LT2DSXX \
---base-output sample/adjusted
+pheniqs mux --config H7LT2DSXX_l01_adjusted.json
 ```
->**decoding a lane with an estimated prior** the report will be written to [sample/adjusted/l01_sample_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/sample/adjusted/l01_sample_report.json) because it is relative to the base output.
+>**decoding a lane with an estimated prior** the report will be written to [H7LT2DSXX_l01_adjusted_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_adjusted_report.json) because it is relative to the base output.
 {: .example}
