@@ -13,8 +13,8 @@
         "noise": 0.05,
         "transform": {
             "token": [
-                "0::",
-                "1::"
+                "0::8",
+                "1::8"
             ]
         }
     },
@@ -24,8 +24,8 @@
     "report url": "H7LT2DSXX_l03_estimate_report.json",
     "transform": {
         "token": [
-            "0::",
-            "1::"
+            "0::8",
+            "1::8"
         ]
     }
 }

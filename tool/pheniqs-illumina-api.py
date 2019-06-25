@@ -76,6 +76,7 @@ class IlluminaApi(Job):
     def load(self):
         self.load_illumina()
         self.location['core instruction'] = '{}_core.json'.format(self.illumina['flowcell id'])
+        # print(to_json(self.instruction))
 
     def load_illumina(self):
         self.instruction['illumina'] = {}
@@ -546,9 +547,9 @@ class IlluminaApi(Job):
                         'transform': { 'token': [] }
                     }
                 }
-                for segment_index,segment in enumerate(self.illumina['index segment']):
+                for segment_index,segment_length,segment in zip(range(len(self.illumina['index segment'])), lane['barcode length'], self.illumina['index segment']):
                     job['input'].append(self.make_bcl2fastq_file_name(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name']))
-                    token = '{}::'.format(segment_index)
+                    token = '{}::{}'.format(segment_index, segment_length)
                     job['transform']['token'].append(token)
                     job['multiplex']['transform']['token'].append(token)
                 job['report url'] = '{}_l{:02d}_estimate_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
