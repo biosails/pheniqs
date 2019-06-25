@@ -454,69 +454,6 @@
                 "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
             },
             "prototype": {
-                "configuration": {
-                    "flag": [
-                        "-c",
-                        "--configuration"
-                    ],
-                    "parameter": {
-                        "help": "Path to original configuration file.",
-                        "metavar": "PATH",
-                        "required": true
-                    }
-                },
-                "report": {
-                    "flag": [
-                        "-r",
-                        "--report"
-                    ],
-                    "parameter": {
-                        "help": "Path to report file.",
-                        "metavar": "PATH"
-                    }
-                },
-                "input": {
-                    "flag": [
-                        "-i",
-                        "--input"
-                    ],
-                    "parameter": {
-                        "help": "Input directive for pheniqs",
-                        "nargs": "*",
-                        "metavar": "PATH"
-                    }
-                },
-                "sense-input": {
-                    "flag": [
-                        "-s",
-                        "--sense-input"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "default": false,
-                        "help": "sense input directive for pheniqs"
-                    }
-                },
-                "split-fastq": {
-                    "flag": [
-                        "--split-fastq"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "default": false,
-                        "help": "adjust output configuration to write each segment of each classified read to a separate fastq file"
-                    }
-                },
-                "split-bam": {
-                    "flag": [
-                        "--split-bam"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "default": false,
-                        "help": "adjust output configuration to write the reads from each sample to a separate bam file"
-                    }
-                },
                 "base-input": {
                     "flag": [
                         "-I",
@@ -537,6 +474,28 @@
                         "metavar": "PATH"
                     }
                 },
+                "configuration": {
+                    "flag": [
+                        "-c",
+                        "--configuration"
+                    ],
+                    "parameter": {
+                        "help": "Path to original configuration file.",
+                        "metavar": "PATH",
+                        "required": true
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "help": "Input directive for pheniqs",
+                        "metavar": "PATH",
+                        "nargs": "*"
+                    }
+                },
                 "prefix": {
                     "flag": [
                         "-p",
@@ -545,6 +504,47 @@
                     "parameter": {
                         "default": "library",
                         "help": "Prefix for generated output file names"
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "help": "Path to report file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "sense-input": {
+                    "flag": [
+                        "-s",
+                        "--sense-input"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "sense input directive for pheniqs"
+                    }
+                },
+                "split-bam": {
+                    "flag": [
+                        "--split-bam"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "adjust output configuration to write the reads from each sample to a separate bam file"
+                    }
+                },
+                "split-fastq": {
+                    "flag": [
+                        "--split-fastq"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "adjust output configuration to write each segment of each classified read to a separate fastq file"
                     }
                 },
                 "verbosity": {
@@ -572,289 +572,6 @@
                     "parameter": {
                         "action": "version",
                         "version": "%[prog]s 1.0"
-                    }
-                }
-            }
-        }
-    },
-    "illumina recipe": {
-        "interface": {
-            "argument": [
-                "version",
-                "verbosity"
-            ],
-            "instruction": {
-                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-            },
-            "prototype": {
-                "illumina_run_directory": {
-                    "flag": [
-                        "illumina_run_directory"
-                    ],
-                    "parameter": {
-                        "help": "illumina_run_directory",
-                        "metavar": "PATH"
-                    }
-                },
-                "confidence": {
-                    "flag": [
-                        "--confidence"
-                    ],
-                    "parameter": {
-                        "default": 0.95,
-                        "help": "pheniqs: confidence threshold",
-                        "metavar": "PROBABILITY",
-                        "type": "float"
-                    }
-                },
-                "noise": {
-                    "flag": [
-                        "--noise"
-                    ],
-                    "parameter": {
-                        "default": 0.05,
-                        "help": "pheniqs: noise prior",
-                        "metavar": "PROBABILITY",
-                        "type": "float"
-                    }
-                },
-                "verbosity": {
-                    "flag": [
-                        "-v",
-                        "--verbosity"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "debug",
-                            "info",
-                            "warning",
-                            "error",
-                            "critical"
-                        ],
-                        "dest": "verbosity",
-                        "help": "logging verbosity level",
-                        "metavar": "LEVEL"
-                    }
-                },
-                "version": {
-                    "flag": [
-                        "--version"
-                    ],
-                    "parameter": {
-                        "action": "version",
-                        "version": "%[prog]s 1.0"
-                    }
-                }
-            },
-            "section": {
-                "action": [
-                    {
-                        "argument": [
-                            "illumina_run_directory",
-                            "output_dir",
-                            "no_bgzf_compression",
-                            "fastq_compression_level",
-                            "ignore_missing_bcls",
-                            "ignore_missing_filter",
-                            "ignore_missing_positions"
-                        ],
-                        "implementation": "basecall",
-                        "instruction": {
-                            "help": "bcl2fastq command to write all segments to FASTQ",
-                            "name": "basecall"
-                        },
-                        "prototype": {
-                            "output_dir": {
-                                "flag": [
-                                    "--output-dir"
-                                ],
-                                "parameter": {
-                                    "help": "bcl2fastq: path to output directory",
-                                    "metavar": "PATH"
-                                }
-                            },
-                            "fastq_compression_level": {
-                                "flag": [
-                                    "--fastq-compression-level"
-                                ],
-                                "parameter": {
-                                    "default": 3,
-                                    "help": "bcl2fastq: zlib compression level (1-9) used for FASTQ files",
-                                    "metavar": "INT",
-                                    "type": "int"
-                                }
-                            },
-                            "ignore_missing_bcls": {
-                                "flag": [
-                                    "--ignore-missing-bcls"
-                                ],
-                                "parameter": {
-                                    "help": "bcl2fastq: assume 'N'/'#' for missing calls",
-                                    "action": "store_true"
-                                }
-                            },
-                            "ignore_missing_filter": {
-                                "flag": [
-                                    "--ignore-missing-filter"
-                                ],
-                                "parameter": {
-                                    "help": "bcl2fastq: assume 'true' for missing filters",
-                                    "action": "store_true"
-                                }
-                            },
-                            "ignore_missing_positions": {
-                                "flag": [
-                                    "--ignore-missing-positions"
-                                ],
-                                "parameter": {
-                                    "help": "bcl2fastq: assume [0,i] for missing positions, where i is incremented starting from 0",
-                                    "action": "store_true"
-                                }
-                            },
-                            "no_bgzf_compression": {
-                                "flag": [
-                                    "--no-bgzf-compression"
-                                ],
-                                "parameter": {
-                                    "help": "bcl2fastq: turn off BGZF compression for FASTQ files",
-                                    "action": "store_true"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "argument": [
-                            "illumina_run_directory",
-                            "base_input_url",
-                            "base_output_url",
-                            "no_input_npf",
-                            "no_output_npf"
-                        ],
-                        "instruction": {
-                            "help": "Core instruction. Imported by the rest.",
-                            "name": "core"
-                        },
-                        "prototype": {
-                            "base_input_url": {
-                                "flag": [
-                                    "--base-input-url"
-                                ],
-                                "parameter": {
-                                    "help": "pheniqs: base input url",
-                                    "metavar": "PATH"
-                                }
-                            },
-                            "base_output_url": {
-                                "flag": [
-                                    "--base-output-url"
-                                ],
-                                "parameter": {
-                                    "help": "pheniqs: base output url",
-                                    "metavar": "PATH"
-                                }
-                            },
-                            "no_input_npf": {
-                                "flag": [
-                                    "--no-input-npf"
-                                ],
-                                "parameter": {
-                                    "help": "pheniqs: Filter incoming QC failed reads.",
-                                    "action": "store_true"
-                                }
-                            },
-                            "no_output_npf": {
-                                "flag": [
-                                    "--no-output-npf"
-                                ],
-                                "parameter": {
-                                    "help": "pheniqs: Filter outgoing QC failed reads.",
-                                    "action": "store_true"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "argument": [
-                            "illumina_run_directory",
-                            "confidence",
-                            "noise"
-                        ],
-                        "instruction": {
-                            "help": "Multiplex job file for each lane",
-                            "name": "multiplex"
-                        }
-                    },
-                    {
-                        "argument": [
-                            "illumina_run_directory",
-                            "confidence",
-                            "noise"
-                        ],
-                        "instruction": {
-                            "help": "Prior estimate job file for each lane",
-                            "name": "estimate"
-                        }
-                    },
-                    {
-                        "argument": [
-                            "illumina_run_directory",
-                            "confidence",
-                            "noise"
-                        ],
-                        "instruction": {
-                            "help": "Interleaved job file for each lane",
-                            "name": "interleave"
-                        }
-                    }
-                ],
-                "instruction": {
-                    "description": "Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that RunInfo.xml, RunParameters.xml and SampleSheet.csv files in the directory.",
-                    "dest": "action",
-                    "help": null,
-                    "metavar": "ACTION",
-                    "title": "pipeline operations"
-                }
-            }
-        },
-        "namespace": {
-            "sample sheet": {
-                "Data": {
-                    "column": {
-                        "Description": {},
-                        "I5_index_ID": {},
-                        "I7_Index_ID": {},
-                        "Lane": {},
-                        "Sample_ID": {},
-                        "Sample_Name": {},
-                        "Sample_Plate": {},
-                        "Sample_Project": {},
-                        "Sample_Well": {},
-                        "index": {},
-                        "index2": {}
-                    }
-                },
-                "Header": {
-                    "Date": {}
-                },
-                "Reads": {},
-                "Settings": {}
-            }
-        },
-        "preset": {
-            "default": {
-                "sample sheet record": {
-                    "key": [
-                        "@{Sample_ID}",
-                        "{flowcell id}:{lane number}:{concatenated barcode}",
-                        "{flowcell id}:{concatenated barcode}"
-                    ],
-                    "value": {
-                        "DS": "{Description}",
-                        "LB": [
-                            "{Sample_Name}",
-                            "{Sample_ID}"
-                        ],
-                        "SM": "{Sample_Project}"
                     }
                 }
             }
@@ -957,6 +674,289 @@
                         "instruction": {
                             "help": "Demultiplex a single lane",
                             "name": "demultiplex"
+                        }
+                    }
+                ],
+                "instruction": {
+                    "description": "Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that RunInfo.xml, RunParameters.xml and SampleSheet.csv files in the directory.",
+                    "dest": "action",
+                    "help": null,
+                    "metavar": "ACTION",
+                    "title": "pipeline operations"
+                }
+            }
+        },
+        "namespace": {
+            "sample sheet": {
+                "Data": {
+                    "column": {
+                        "Description": {},
+                        "I5_index_ID": {},
+                        "I7_Index_ID": {},
+                        "Lane": {},
+                        "Sample_ID": {},
+                        "Sample_Name": {},
+                        "Sample_Plate": {},
+                        "Sample_Project": {},
+                        "Sample_Well": {},
+                        "index": {},
+                        "index2": {}
+                    }
+                },
+                "Header": {
+                    "Date": {}
+                },
+                "Reads": {},
+                "Settings": {}
+            }
+        },
+        "preset": {
+            "default": {
+                "sample sheet record": {
+                    "key": [
+                        "@{Sample_ID}",
+                        "{flowcell id}:{lane number}:{concatenated barcode}",
+                        "{flowcell id}:{concatenated barcode}"
+                    ],
+                    "value": {
+                        "DS": "{Description}",
+                        "LB": [
+                            "{Sample_Name}",
+                            "{Sample_ID}"
+                        ],
+                        "SM": "{Sample_Project}"
+                    }
+                }
+            }
+        }
+    },
+    "illumina recipe": {
+        "interface": {
+            "argument": [
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "confidence": {
+                    "flag": [
+                        "--confidence"
+                    ],
+                    "parameter": {
+                        "default": 0.95,
+                        "help": "pheniqs: confidence threshold",
+                        "metavar": "PROBABILITY",
+                        "type": "float"
+                    }
+                },
+                "illumina_run_directory": {
+                    "flag": [
+                        "illumina_run_directory"
+                    ],
+                    "parameter": {
+                        "help": "illumina_run_directory",
+                        "metavar": "PATH"
+                    }
+                },
+                "noise": {
+                    "flag": [
+                        "--noise"
+                    ],
+                    "parameter": {
+                        "default": 0.05,
+                        "help": "pheniqs: noise prior",
+                        "metavar": "PROBABILITY",
+                        "type": "float"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            },
+            "section": {
+                "action": [
+                    {
+                        "argument": [
+                            "illumina_run_directory",
+                            "output_dir",
+                            "no_bgzf_compression",
+                            "fastq_compression_level",
+                            "ignore_missing_bcls",
+                            "ignore_missing_filter",
+                            "ignore_missing_positions"
+                        ],
+                        "implementation": "basecall",
+                        "instruction": {
+                            "help": "bcl2fastq command to write all segments to FASTQ",
+                            "name": "basecall"
+                        },
+                        "prototype": {
+                            "fastq_compression_level": {
+                                "flag": [
+                                    "--fastq-compression-level"
+                                ],
+                                "parameter": {
+                                    "default": 3,
+                                    "help": "bcl2fastq: zlib compression level (1-9) used for FASTQ files",
+                                    "metavar": "INT",
+                                    "type": "int"
+                                }
+                            },
+                            "ignore_missing_bcls": {
+                                "flag": [
+                                    "--ignore-missing-bcls"
+                                ],
+                                "parameter": {
+                                    "action": "store_true",
+                                    "help": "bcl2fastq: assume 'N'/'#' for missing calls"
+                                }
+                            },
+                            "ignore_missing_filter": {
+                                "flag": [
+                                    "--ignore-missing-filter"
+                                ],
+                                "parameter": {
+                                    "action": "store_true",
+                                    "help": "bcl2fastq: assume 'true' for missing filters"
+                                }
+                            },
+                            "ignore_missing_positions": {
+                                "flag": [
+                                    "--ignore-missing-positions"
+                                ],
+                                "parameter": {
+                                    "action": "store_true",
+                                    "help": "bcl2fastq: assume [0,i] for missing positions, where i is incremented starting from 0"
+                                }
+                            },
+                            "no_bgzf_compression": {
+                                "flag": [
+                                    "--no-bgzf-compression"
+                                ],
+                                "parameter": {
+                                    "action": "store_true",
+                                    "help": "bcl2fastq: turn off BGZF compression for FASTQ files"
+                                }
+                            },
+                            "output_dir": {
+                                "flag": [
+                                    "--output-dir"
+                                ],
+                                "parameter": {
+                                    "help": "bcl2fastq: path to output directory",
+                                    "metavar": "PATH"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina_run_directory",
+                            "base_input_url",
+                            "base_output_url",
+                            "no_input_npf",
+                            "no_output_npf"
+                        ],
+                        "instruction": {
+                            "help": "Core instruction. Imported by the rest.",
+                            "name": "core"
+                        },
+                        "prototype": {
+                            "base_input_url": {
+                                "flag": [
+                                    "--base-input-url"
+                                ],
+                                "parameter": {
+                                    "help": "pheniqs: base input url",
+                                    "metavar": "PATH"
+                                }
+                            },
+                            "base_output_url": {
+                                "flag": [
+                                    "--base-output-url"
+                                ],
+                                "parameter": {
+                                    "help": "pheniqs: base output url",
+                                    "metavar": "PATH"
+                                }
+                            },
+                            "no_input_npf": {
+                                "flag": [
+                                    "--no-input-npf"
+                                ],
+                                "parameter": {
+                                    "action": "store_true",
+                                    "help": "pheniqs: Filter incoming QC failed reads."
+                                }
+                            },
+                            "no_output_npf": {
+                                "flag": [
+                                    "--no-output-npf"
+                                ],
+                                "parameter": {
+                                    "action": "store_true",
+                                    "help": "pheniqs: Filter outgoing QC failed reads."
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina_run_directory",
+                            "confidence",
+                            "noise"
+                        ],
+                        "instruction": {
+                            "help": "Multiplex job file for each lane",
+                            "name": "multiplex"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina_run_directory",
+                            "confidence",
+                            "noise"
+                        ],
+                        "instruction": {
+                            "help": "Prior estimate job file for each lane",
+                            "name": "estimate"
+                        }
+                    },
+                    {
+                        "argument": [
+                            "illumina_run_directory",
+                            "confidence",
+                            "noise"
+                        ],
+                        "instruction": {
+                            "help": "Interleaved job file for each lane",
+                            "name": "interleave"
                         }
                     }
                 ],
