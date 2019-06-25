@@ -2703,6 +2703,7 @@
             }
         }
     },
+    "filter incoming qc fail": true,
     "flowcell id": "H7LT2DSXX",
     "transform": {
         "token": [
