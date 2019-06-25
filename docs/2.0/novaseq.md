@@ -35,7 +35,7 @@
     <div class="clear" />
 </section>
 
-# NovaSeq 6000
+# NovaSeq 6000 with pheniqs-illumina-api
 {:.page-title}
 
 This tutorial will walk you through prior estimation and demultiplexing of an Illumia NovaSeq 6000 sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
