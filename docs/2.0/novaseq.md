@@ -38,13 +38,13 @@
 # NovaSeq 6000
 {:.page-title}
 
-This tutorial will walk you through prior estimation and demultiplexing of an Illumia NovaSeq 6000 sequencing run with [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
+This tutorial will walk you through prior estimation and demultiplexing of an Illumia NovaSeq 6000 sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
 
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
-In this example we will be using `pheniqs-illumina-api.py` to generate configuration files from metadata present in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). We will also be demonstrating using the `import` directive for reusing configuration instructions. For each read, the sample barcode and its quality scores will be written to the [BC tag](glossary.html#bc_auxiliary_tag) and [QT tag](glossary.html#qt_auxiliary_tag) respectively, and the decoding error probability to the [XB tag](glossary.html#xb_auxiliary_tag). **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX), where you can also find pre generated files for this example**.
+In this example we will be using `pheniqs-illumina-api.py` to generate configuration files from metadata present in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). We will also be demonstrating using the `import` directive for reusing configuration instructions. For each read, the sample barcode and its quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) tag and [QT](glossary.html#qt_auxiliary_tag) tag, respectively. The decoding error probability can be found in the [XB](glossary.html#xb_auxiliary_tag) tag. **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find pre generated files for this example.
 
-## Basecalling
+## Base calling
 
 Generate a bcl2fastq shell command for base calling without decoding the sample barcodes with `pheniqs-illumina-api.py`.
 
@@ -69,7 +69,6 @@ This will produce [H7LT2DSXX_basecall.sh]({{ site.github.repository_url }}/blob/
     --mask-short-adapter-reads 0 \
     --output-dir . \
     --fastq-compression-level 3
-
 ```
 >**bcl2fastq basecall shell script** We must provide bcl2fastq an alternative sample sheet or it will default to using the one in the run folder. A simple sample sheet that does not perform any barcode decoding [is generated]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/HH7LT2DSXX_basecall_sample_sheet.csv) by `pheniqs-illumina-api.py basecall`.
 {: .example}
@@ -95,7 +94,7 @@ H7LT2DSXX_S1_L003_R2_001.fastq.gz
 
 ## Core configuration
 
-[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `pheniqs-illumina-api.py`
+[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `pheniqs-illumina-api.py`
 
 >```shell
 pheniqs-illumina-api.py core \
@@ -107,7 +106,7 @@ pheniqs-illumina-api.py core \
 >**Generating a core configuration** `--no-input-npf` will add a global `filter incoming qc fail` instruction to discard reads that failed the internal Illumina sequencer chastity filter from the incoming feed.
 {: .example}
 
-[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). When you import [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) you can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files. Anything specified in a configuration file will override an imported directive.
+[H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) conveniently declares an array of decoders that where recovered from the [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv) file as well as transformation rules from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml). When you import [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json) you can reuse those in your configuration file and expand them so you don't need to constantly be editing big configuration files. Anything specified in a configuration file will override an imported directive.
 
 >```json
 {
