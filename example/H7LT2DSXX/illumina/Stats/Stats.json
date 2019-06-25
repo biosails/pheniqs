@@ -1,0 +1,255 @@
+{
+ "Flowcell" : "H7LT2DSXX",
+ "RunNumber" : 24,
+ "RunId" : "181014_A00534_0024_AH7LT2DSXX",
+ "ReadInfosForLanes" : [
+  {
+   "LaneNumber" : 1,
+   "ReadInfos" : [
+    {
+     "Number" : 1,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    },
+    {
+     "Number" : 1,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    }
+   ]
+  },
+  {
+   "LaneNumber" : 2,
+   "ReadInfos" : [
+    {
+     "Number" : 1,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    },
+    {
+     "Number" : 1,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    }
+   ]
+  },
+  {
+   "LaneNumber" : 3,
+   "ReadInfos" : [
+    {
+     "Number" : 1,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    },
+    {
+     "Number" : 1,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    }
+   ]
+  },
+  {
+   "LaneNumber" : 4,
+   "ReadInfos" : [
+    {
+     "Number" : 1,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    },
+    {
+     "Number" : 1,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 151,
+     "IsIndexedRead" : false
+    }
+   ]
+  }
+ ],
+ "ConversionResults" : [
+  {
+   "LaneNumber" : 1,
+   "TotalClustersRaw" : 7660044288,
+   "TotalClustersPF" : 2894717093,
+   "Yield" : 874204562086,
+   "DemuxResults" : [
+    {
+     "SampleId" : "H7LT2DSXX_l01",
+     "SampleName" : "H7LT2DSXX_l01",
+     "NumberReads" : 2894717093,
+     "Yield" : 874204562086,
+     "ReadMetrics" : [
+      {
+       "ReadNumber" : 1,
+       "Yield" : 437102281043,
+       "YieldQ30" : 391320187598,
+       "QualityScoreSum" : 15359814020089,
+       "TrimmedBases" : 0
+      },
+      {
+       "ReadNumber" : 2,
+       "Yield" : 437102281043,
+       "YieldQ30" : 378012936974,
+       "QualityScoreSum" : 15094026589738,
+       "TrimmedBases" : 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "LaneNumber" : 2,
+   "TotalClustersRaw" : 7660044288,
+   "TotalClustersPF" : 2909211934,
+   "Yield" : 878582004068,
+   "DemuxResults" : [
+    {
+     "SampleId" : "H7LT2DSXX_l02",
+     "SampleName" : "H7LT2DSXX_l02",
+     "NumberReads" : 2909211934,
+     "Yield" : 878582004068,
+     "ReadMetrics" : [
+      {
+       "ReadNumber" : 1,
+       "Yield" : 439291002034,
+       "YieldQ30" : 393913291198,
+       "QualityScoreSum" : 15448742323728,
+       "TrimmedBases" : 0
+      },
+      {
+       "ReadNumber" : 2,
+       "Yield" : 439291002034,
+       "YieldQ30" : 381087363524,
+       "QualityScoreSum" : 15192146284155,
+       "TrimmedBases" : 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "LaneNumber" : 3,
+   "TotalClustersRaw" : 7660044288,
+   "TotalClustersPF" : 2903974975,
+   "Yield" : 877000442450,
+   "DemuxResults" : [
+    {
+     "SampleId" : "H7LT2DSXX_l03",
+     "SampleName" : "H7LT2DSXX_l03",
+     "NumberReads" : 2903974975,
+     "Yield" : 877000442450,
+     "ReadMetrics" : [
+      {
+       "ReadNumber" : 1,
+       "Yield" : 438500221225,
+       "YieldQ30" : 392128556621,
+       "QualityScoreSum" : 15399672649159,
+       "TrimmedBases" : 0
+      },
+      {
+       "ReadNumber" : 2,
+       "Yield" : 438500221225,
+       "YieldQ30" : 378774175338,
+       "QualityScoreSum" : 15133122162900,
+       "TrimmedBases" : 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "LaneNumber" : 4,
+   "TotalClustersRaw" : 7660044288,
+   "TotalClustersPF" : 2866882435,
+   "Yield" : 865798495370,
+   "DemuxResults" : [
+    {
+     "SampleId" : "H7LT2DSXX_l04",
+     "SampleName" : "H7LT2DSXX_l04",
+     "NumberReads" : 2866882435,
+     "Yield" : 865798495370,
+     "ReadMetrics" : [
+      {
+       "ReadNumber" : 1,
+       "Yield" : 432899247685,
+       "YieldQ30" : 385225264033,
+       "QualityScoreSum" : 15165667492434,
+       "TrimmedBases" : 0
+      },
+      {
+       "ReadNumber" : 2,
+       "Yield" : 432899247685,
+       "YieldQ30" : 372401391819,
+       "QualityScoreSum" : 14909731728775,
+       "TrimmedBases" : 0
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "UnknownBarcodes" : [
+  {
+   "Lane" : 1,
+   "Barcodes" : {
+    "unknown" : 2894716820
+   }
+  },
+  {
+   "Lane" : 2,
+   "Barcodes" : {
+    "unknown" : 2909211740
+   }
+  },
+  {
+   "Lane" : 3,
+   "Barcodes" : {
+    "unknown" : 2903974720
+   }
+  },
+  {
+   "Lane" : 4,
+   "Barcodes" : {
+    "unknown" : 2866882220
+   }
+  }
+ ]
+}
