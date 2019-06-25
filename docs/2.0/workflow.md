@@ -145,12 +145,13 @@
   </tr>
 </table>
 
+<a name="novaseq_6000" />
+Illumina NovaSeq6000 with `pheniqs-illumina-api`
+: The [NovaSeq 6000 vignette](novaseq.html) will walk you through demultiplexing a dual indexed paired end NovaSeq 6000 run with the `pheniqs-illumina-api` python interface. It will show you how to generate configuration files from the Illumina run folder, estimate the sample barcode priors and demultiplex the run. It will apply to almost every standard sample multiplex Illumina run with minor changes.
+
 <a name="standard_illumina" />
 Standard Illumina dual index, paird end sample demultiplexing
 : This [vignette](illumina.html) will walk you through demultiplexing a standard Illumia high throughput sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding).
-
-<a name="novaseq_6000" />
-: The [NovaSeq 6000 vignette](novaseq.html) will walk you through demultiplexing a dual indexed paired end NovaSeq 6000 run with the `pheniqs-illumina-api` python interface. It will show you how to generate configuration files from the Illumina run folder, estimate the sample barcode priors and demultiplex the run. It will apply to almost every standard sample multiplex Illumina run with minor changes.
 
 <a name="fluidigm" />
 Classifying single index fluidigm with a single cellular tag
