@@ -114,11 +114,11 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 # Pheniqs tools
 In the tool folder you will find several python scripts to assist with Pheniqs deployment and interfacing with existing tools.
 
-## `illumina2pheniqs.py`
+## `pheniqs-illumina-api.py`
 
 Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that `RunInfo.xml`, `RunParameters.xml` and `SampleSheet.csv` files in the directory. The `Data` section of the `SampleSheet.csv` must either have all records declare a `Lane` or none.
 
-    usage: illumina2pheniqs.py [-h] [--version] [-v LEVEL] ACTION ...
+    usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
 
     Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
 
@@ -134,21 +134,21 @@ Generate pheniqs configuration files or a bcl2fastq command from an illumina run
       RunParameters.xml and SampleSheet.csv files in the directory.
 
       ACTION
-        bcl2fastq           bcl2fastq command to write all segments to FASTQ
-        core                Single decoder directive for each lane
-        interleave          Interleave both template and index segments to SAM
-        demultiplex         Demultiplex a single lane
+        basecall            bcl2fastq command to write all segments to FASTQ
+        core                Core instruction. Imported by the rest.
+        multiplex           Multiplex job file for each lane
+        estimate            Prior estimate job file for each lane
+        interleave          Interleaved job file for each lane
 
-The `core` sub command generates a configuration that contains a single multiplex decoder directive in the global `decoder` directive for each lane
-in the sample sheet or just one if the integer `Lane` column is missing from the sample sheet.
-Those declarations are not used in the `multiplex` directive but are merely made available for other configurations to import, where the exact output layout and possible additional decoders can be declared.
+ * **basecall** sub command generates a shell script with a bcl2fastq command and an accompanying sample sheet for basecaling with illumina *bcl2fastq* without demupltiplexing.
 
-The `demultiplex` sub command will declare an inline multiplex decoder for a single lane, specified with the `-l/--lane-number` command line parameter.
-not specifying a lane will create a multiplex decoder with all records for sample sheets that do not declare a `Lane`, like the MiSeq.
+ * **core** generates a configuration that contains a single multiplex decoder directive in the global `decoder` directive for each lane in the sample sheet or just one if the integer `Lane` column is missing from the sample sheet.
 
-The `interleave` sub command generates a configuration file that will interleave all FASTQ files containing the segments of the read into a single stream. By default this will emit the segments to stdout in SAM format but you may explicitly specify an output file path in any other format.
+ * **multiplex** generates a multiplex job file for each lane with a uniform prior.
 
-The `bcl2fastq` sub command generates a shell command for executing `bcl2fastq 2.x` that will disable all post processing and demultiplexing done with bcl2fastq and only convert the data in the bcl files into a FASTQ file for each segment.
+ * **estimate** generates a prior estimation optimized job file for each lane.
+
+ * **interleave** generates an interleave job file for each lane. This can be used to pack the fastq files into a SAM format or just Interleaved fastq.
 
 # JSON validation
 

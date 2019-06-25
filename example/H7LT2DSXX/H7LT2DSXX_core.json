@@ -2,7 +2,7 @@
     "PL": "ILLUMINA",
     "PM": "A00534",
     "decoder": {
-        "H7LT2DSXX_lane_1_multiplex": {
+        "H7LT2DSXX_l01_multiplex": {
             "codec": {
                 "@A10_PDAC81": {
                     "LB": "A10_PDAC81",
@@ -662,9 +662,15 @@
                         "TTATGCGA"
                     ]
                 }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
             }
         },
-        "H7LT2DSXX_lane_2_multiplex": {
+        "H7LT2DSXX_l02_multiplex": {
             "codec": {
                 "@A10_PDAC81": {
                     "LB": "A10_PDAC81",
@@ -1324,9 +1330,15 @@
                         "TTATGCGA"
                     ]
                 }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
             }
         },
-        "H7LT2DSXX_lane_3_multiplex": {
+        "H7LT2DSXX_l03_multiplex": {
             "codec": {
                 "@A10_PDAC607": {
                     "LB": "A10_PDAC607",
@@ -2000,9 +2012,15 @@
                         "TTATGCGA"
                     ]
                 }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
             }
         },
-        "H7LT2DSXX_lane_4_multiplex": {
+        "H7LT2DSXX_l04_multiplex": {
             "codec": {
                 "@A10_PDAC607": {
                     "LB": "A10_PDAC607",
@@ -2676,8 +2694,20 @@
                         "TTATGCGA"
                     ]
                 }
+            },
+            "transform": {
+                "token": [
+                    "1::8",
+                    "2::8"
+                ]
             }
         }
     },
-    "flowcell id": "H7LT2DSXX"
+    "flowcell id": "H7LT2DSXX",
+    "transform": {
+        "token": [
+            "0::",
+            "3::"
+        ]
+    }
 }

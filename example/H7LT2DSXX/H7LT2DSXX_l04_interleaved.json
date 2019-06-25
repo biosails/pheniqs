@@ -1,0 +1,23 @@
+{
+    "PL": "ILLUMINA",
+    "PM": "A00534",
+    "flowcell id": "H7LT2DSXX",
+    "input": [
+        "H7LT2DSXX_S1_L004_R1_001.fastq.gz",
+        "H7LT2DSXX_S1_L004_I1_001.fastq.gz",
+        "H7LT2DSXX_S1_L004_I2_001.fastq.gz",
+        "H7LT2DSXX_S1_L004_R2_001.fastq.gz"
+    ],
+    "output": [
+        "H7LT2DSXX_l04_interleaved.bam"
+    ],
+    "report url": "H7LT2DSXX_l04_interleaved_report.json",
+    "transform": {
+        "token": [
+            "0::",
+            "1::",
+            "2::",
+            "3::"
+        ]
+    }
+}

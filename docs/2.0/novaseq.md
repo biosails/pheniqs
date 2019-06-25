@@ -44,13 +44,20 @@ This tutorial will walk you through demultiplexing an Illumia NovaSeq 600 sequen
 
 ## Basecalling
 
+The `pheniqs-illumina-recipe.py` script can help you execute bcl2fastq to perform basecalling without barcode decoding.
+
+```
+pheniqs-illumina-recipe.py basecall --fastq-compression-level 3 181014_A00534_0024_AH7LT2DSXX | zsh
+```
+
+will write a suitable sample sheet to the current folder and emit something like this, which will be redirected to the shell for execution.
+
 >```shell
 bcl2fastq \
 --runfolder-dir 181014_A00534_0024_AH7LT2DSXX \
---sample-sheet no_barcode_samplesheet.csv \
+--sample-sheet basecall_samplesheet.csv \
+--fastq-compression-level 3\
 --create-fastq-for-index-reads \
---fastq-compression-level 3 \
---output-dir basecalled \
 --adapter-stringency 0 \
 --minimum-trimmed-read-length 0 \
 --mask-short-adapter-reads 0
@@ -60,10 +67,10 @@ bcl2fastq \
 
 ## Core configuration
 
-[core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `illumina2pheniqs.py`
+[core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/core.json) is a core configuration file that summarizes metadata extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) and [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/illumina/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv). It is imported by most other configuration files in this tutorial. To generate one use the `core` subcommand of `pheniqs-illumina-api.py`
 
 ```
-illumina2pheniqs.py core illumina/181014_A00534_0024_AH7LT2DSXX > core.json
+pheniqs-illumina-api.py core illumina/181014_A00534_0024_AH7LT2DSXX > core.json
 ```
 
 ## Input Read Layout

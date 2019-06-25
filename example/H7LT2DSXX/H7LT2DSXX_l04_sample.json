@@ -1,0 +1,27 @@
+{
+    "import": [
+        "H7LT2DSXX_core.json"
+    ],
+    "input": [
+        "H7LT2DSXX_S1_L004_R1_001.fastq.gz",
+        "H7LT2DSXX_S1_L004_I1_001.fastq.gz",
+        "H7LT2DSXX_S1_L004_I2_001.fastq.gz",
+        "H7LT2DSXX_S1_L004_R2_001.fastq.gz"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "H7LT2DSXX_l04_multiplex",
+        "confidence threshold": 0.95,
+        "noise": 0.05
+    },
+    "output": [
+        "H7LT2DSXX_l04.bam"
+    ],
+    "report url": "H7LT2DSXX_l04_sample_report.json",
+    "transform": {
+        "token": [
+            "0::",
+            "3::"
+        ]
+    }
+}
