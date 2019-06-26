@@ -420,7 +420,7 @@ class IlluminaApi(Job):
         # {flowcell id}_S1_L00{lane number}_{segment name}_001.fastq.gz
         buffer.append('[Data]')
         buffer.append('FCID,Lane,Sample_ID,Sample_Name')
-        for lane_number in range(0,self.illumina['lane cardinality']):
+        for lane_number in range(1, self.illumina['lane cardinality'] + 1):
             buffer.append('{0},{1},{0},'.format(self.illumina['flowcell id'], lane_number))
 
         # add a line break at the end of the file
