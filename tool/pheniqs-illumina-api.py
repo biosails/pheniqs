@@ -76,7 +76,6 @@ class IlluminaApi(Job):
     def load(self):
         self.load_illumina()
         self.location['core instruction'] = '{}_core.json'.format(self.illumina['flowcell id'])
-        # print(to_json(self.instruction))
 
     def load_illumina(self):
         self.instruction['illumina'] = {}
@@ -599,7 +598,7 @@ def main():
     pipeline = None
 
     try:
-        command = CommandLineParser('illumina recipe')
+        command = CommandLineParser('illumina api')
         if command.help_triggered:
             command.help()
             sys.exit(0)

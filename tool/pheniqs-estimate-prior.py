@@ -42,6 +42,10 @@ class EstimatePrior(Job):
         self.log = logging.getLogger('EstimatePrior')
 
     @property
+    def report(self):
+        return self.ontology['estimation report']
+
+    @property
     def original(self):
         return self.ontology['original']
 
@@ -50,41 +54,80 @@ class EstimatePrior(Job):
         return self.ontology['adjusted']
 
     def execute(self):
-        self.estimate_prior_from_report()
-
-    def estimate_prior_from_report(self):
-        def estimate_classifier_prior(m, r):
-            if 'average classified confidence' in r:
-
-                # estimate noise prior
-                noise_count = 0
-                if 'low conditional confidence count' in r:
-                    noise_count += r['low conditional confidence count']
-
-                if 'low confidence count' in r:
-                    noise_count += (r['low confidence count'] * (1.0 - r['average classified confidence']))
-
-                m['noise'] = noise_count / r['count']
-                not_noise = 1.0 - m['noise']
-
-                # estimate each barcode prior
-                barcode_report_by_hash = {}
-                for barcode in r['classified']:
-                    hash = ''.join(barcode['barcode'])
-                    barcode_report_by_hash[hash] = barcode
-
-                if 'codec' in m:
-                    for bm in m['codec'].values():
-                        hash = ''.join(bm['barcode'])
-                        if hash in barcode_report_by_hash:
-                            br = barcode_report_by_hash[hash]
-                            if 'pf pooled classified fraction' in br and br['pf pooled classified fraction'] > 0:
-                                bm['concentration'] = not_noise * br['pf pooled classified fraction']
-                            else:
-                                bm['concentration'] = 0
-
         self.make_static_configuration()
         self.load_report()
+        self.make_adjusted_configuration()
+        print(to_json(self.ontology['adjusted configurtion']))
+
+    def load_report(self):
+        # if a report was provided load it
+        if 'report' in self.instruction:
+            self.location['report'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['report']))))
+            if os.path.exists(self.location['report']):
+                with io.open(self.location['report'], 'rb') as file:
+                    self.ontology['estimation report'] = json.loads(file.read().decode('utf8'))
+            else:
+                raise BadConfigurationError('could not find report file {}'.format(self.instruction['report']))
+        else:
+            self.make_estimation_configuration()
+            self.location['estimation configurtion'] = os.path.join(self.current_working_directoy, '{}_estimation_configurtion.json'.format(self.instruction['prefix']))
+            with io.open(self.location['estimation configurtion'], 'w') as file:
+                file.write(to_json(self.ontology['estimation configurtion']))
+
+            command = [ 'pheniqs', 'mux' ]
+            command.append('--config')
+            command.append(self.location['estimation configurtion'])
+
+            if self.instruction['sense_input']:
+                command.append('--sense-input')
+
+            process = Popen(
+                args=command,
+                cwd=self.current_working_directoy,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            output, error = process.communicate()
+            return_code = process.returncode
+
+            if return_code == 0:
+                self.ontology['estimation report'] = json.loads(output.decode('utf8'))
+            else:
+                print(error)
+                raise BadConfigurationError('pheniqs returned {} when estimating prior'.format(return_code))
+                for line in error.decode('utf8').splitlines():
+                    print(error.decode('utf8'))
+
+    def make_estimation_configuration(self):
+        self.ontology['estimation configurtion'] = deepcopy(self.ontology['static configurtion'])
+        configuration = self.ontology['estimation configurtion']
+        queue = [ configuration ]
+        if 'multiplex' in configuration:
+            queue += [ configuration['multiplex'] ]
+            if 'undetermined' in configuration['multiplex']:
+                queue += [ configuration['multiplex']['undetermined'] ]
+            if 'codec' in configuration['multiplex']:
+                for barcode in configuration['multiplex']['codec'].values():
+                    queue += [ barcode ]
+        for node in queue:
+            if 'output' in node:
+                del node['output']
+
+        self.ontology['estimation configurtion']['output'] = [ '/dev/null' ]
+        self.ontology['estimation configurtion']['report url'] = '/dev/stdout'
+
+        if 'base_input' in self.instruction:
+            self.ontology['estimation configurtion']['base input url'] = self.instruction['base_input']
+
+        if 'base_output' in self.instruction:
+            self.ontology['estimation configurtion']['base output url'] = self.instruction['base_output']
+
+        if 'input' in self.instruction:
+            self.ontology['estimation configurtion']['input'] = []
+            for value in self.instruction['input']:
+                self.ontology['estimation configurtion']['input'].append(value)
+
+    def make_adjusted_configuration(self):
         self.ontology['adjusted configurtion'] = deepcopy(self.ontology['static configurtion'])
 
         if self.instruction['split_fastq']:
@@ -116,12 +159,12 @@ class EstimatePrior(Job):
                         barcode['output'] = [ '{}_{}.bam'.format(self.instruction['prefix'], hash) ]
 
         for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
-            if classifier_type in self.ontology['estimation report'] and classifier_type in self.ontology['adjusted configurtion']:
+            if classifier_type in self.report and classifier_type in self.ontology['adjusted configurtion']:
                 m = self.ontology['adjusted configurtion'][classifier_type]
-                r = self.ontology['estimation report'][classifier_type]
+                r = self.report[classifier_type]
 
                 if isinstance(m, dict):
-                    estimate_classifier_prior(m, r)
+                    self.estimate_classifier_prior(m, r)
 
                 elif isinstance(m, list):
                     index = 0
@@ -133,9 +176,37 @@ class EstimatePrior(Job):
 
                     for report_item in r:
                         model_item = model_by_index[report_item['index']]
-                        estimate_classifier_prior(model_item, report_item)
+                        self.estimate_classifier_prior(model_item, report_item)
 
-        print(to_json(self.ontology['adjusted configurtion']))
+    def estimate_classifier_prior(self, model, report):
+        if 'average classified confidence' in report:
+
+            # estimate noise prior
+            noise_count = 0
+            if 'low conditional confidence count' in report:
+                noise_count += report['low conditional confidence count']
+
+            if 'low confidence count' in report:
+                noise_count += (report['low confidence count'] * (1.0 - report['average classified confidence']))
+
+            model['noise'] = noise_count / report['count']
+            not_noise = 1.0 - model['noise']
+
+            # estimate each barcode prior
+            barcode_report_by_hash = {}
+            for barcode in report['classified']:
+                hash = ''.join(barcode['barcode'])
+                barcode_report_by_hash[hash] = barcode
+
+            if 'codec' in model:
+                for barcode_model in model['codec'].values():
+                    hash = ''.join(barcode_model['barcode'])
+                    if hash in barcode_report_by_hash:
+                        barcode_report = barcode_report_by_hash[hash]
+                        if 'pf pooled classified fraction' in barcode_report and barcode_report['pf pooled classified fraction'] > 0:
+                            barcode_model['concentration'] = not_noise * barcode_report['pf pooled classified fraction']
+                        else:
+                            barcode_model['concentration'] = 0
 
     def make_static_configuration(self):
         self.location['original configuration'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['configuration']))))
@@ -220,74 +291,6 @@ class EstimatePrior(Job):
                     print(error.decode('utf8'))
         else:
             raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
-
-    def load_report(self):
-        # if a report was provided load it
-        if 'report' in self.instruction:
-            self.location['report'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['report']))))
-            if os.path.exists(self.location['report']):
-                with io.open(self.location['report'], 'rb') as file:
-                    self.ontology['estimation report'] = json.loads(file.read().decode('utf8'))
-            else:
-                raise BadConfigurationError('could not find report file {}'.format(self.instruction['report']))
-        else:
-            self.make_estimation_configuration()
-            self.location['estimation configurtion'] = os.path.join(self.current_working_directoy, '{}_estimation_configurtion.json'.format(self.instruction['prefix']))
-            with io.open(self.location['estimation configurtion'], 'w') as file:
-                file.write(to_json(self.ontology['estimation configurtion']))
-
-            command = [ 'pheniqs', 'mux' ]
-            command.append('--config')
-            command.append(self.location['estimation configurtion'])
-
-            if self.instruction['sense_input']:
-                command.append('--sense-input')
-
-            process = Popen(
-                args=command,
-                cwd=self.current_working_directoy,
-                stdout=PIPE,
-                stderr=PIPE
-            )
-            output, error = process.communicate()
-            return_code = process.returncode
-
-            if return_code == 0:
-                self.ontology['estimation report'] = json.loads(output.decode('utf8'))
-            else:
-                print(error)
-                raise BadConfigurationError('pheniqs returned {} when estimating prior'.format(return_code))
-                for line in error.decode('utf8').splitlines():
-                    print(error.decode('utf8'))
-
-    def make_estimation_configuration(self):
-        self.ontology['estimation configurtion'] = deepcopy(self.ontology['static configurtion'])
-        configuration = self.ontology['estimation configurtion']
-        queue = [ configuration ]
-        if 'multiplex' in configuration:
-            queue += [ configuration['multiplex'] ]
-            if 'undetermined' in configuration['multiplex']:
-                queue += [ configuration['multiplex']['undetermined'] ]
-            if 'codec' in configuration['multiplex']:
-                for barcode in configuration['multiplex']['codec'].values():
-                    queue += [ barcode ]
-        for node in queue:
-            if 'output' in node:
-                del node['output']
-
-        self.ontology['estimation configurtion']['output'] = [ '/dev/null' ]
-        self.ontology['estimation configurtion']['report url'] = '/dev/stdout'
-
-        if 'base_input' in self.instruction:
-            self.ontology['estimation configurtion']['base input url'] = self.instruction['base_input']
-
-        if 'base_output' in self.instruction:
-            self.ontology['estimation configurtion']['base output url'] = self.instruction['base_output']
-
-        if 'input' in self.instruction:
-            self.ontology['estimation configurtion']['input'] = []
-            for value in self.instruction['input']:
-                self.ontology['estimation configurtion']['input'].append(value)
 
 def main():
     logging.basicConfig()
