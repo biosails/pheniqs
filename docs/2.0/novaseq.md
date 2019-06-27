@@ -269,6 +269,30 @@ pheniqs-prior-api.py \
 >**decoding a lane with an estimated prior** [H7LT2DSXX_l01_adjusted.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_adjusted.json) is similar to [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) with the addition of the estimated priors.
 {: .example}
 
+## IO manipulation
+If you require the input to be split into files by either library of segment you can use `pheniqs-io-api.py` to adjust the necessary instructions in your configuration. Splitting by segment means every read segment is written to a separate file, rather than interleaved into the same file. Splitting by library means reads classified to different libraries are written to different files.
+
+>```shell
+pheniqs-io-api.py \
+--configuration H7LT2DSXX_l01_adjusted.json \
+--format fastq \
+--split-segment \
+--split-library \
+> H7LT2DSXX_l01_adjusted_split.json
+```
+>**splitting both library and segment** will adjust the output directives in the configuration file and generate the necessary file names for splitting by both library and segment.
+{: .example}
+
+>```shell
+pheniqs-io-api.py \
+--configuration H7LT2DSXX_l01_adjusted.json \
+--format bam \
+--split-library \
+> H7LT2DSXX_l01_adjusted_split.json
+```
+>**splitting by library** when working with SAM encoded files it makes less sense to split the segments into separate files.
+{: .example}
+
 ## Decoding with the estimated prior
 
 >```shell
