@@ -1257,7 +1257,7 @@
                     "parameter": {
                         "action": "store_true",
                         "dest": "static",
-                        "help": "Static configuratio output"
+                        "help": "Static configuration output"
                     }
                 },
                 "verbosity": {
