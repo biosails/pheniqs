@@ -43,37 +43,32 @@
 `pheniqs-illumina-api.py` can generate Pheniqs configuration files from metadata found in an Illumina run folder.
 
 
->```shell
-usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
+    usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
 
-Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
+    Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --version             show program's version number and exit
-  -v LEVEL, --verbosity LEVEL
-                        logging verbosity level
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show program's version number and exit
+      -v LEVEL, --verbosity LEVEL
+                            logging verbosity level
 
-pipeline operations:
-  Generate pheniqs configuration files or a bcl2fastq command from an
-  illumina run directory. This tool parses that RunInfo.xml,
-  RunParameters.xml and SampleSheet.csv files in the directory.
+    pipeline operations:
+      Generate pheniqs configuration files or a bcl2fastq command from an
+      illumina run directory. This tool parses that RunInfo.xml,
+      RunParameters.xml and SampleSheet.csv files in the directory.
 
-  ACTION
-    basecall            bcl2fastq command to write all segments to FASTQ
-    core                Core instruction. Imported by the rest.
-    multiplex           Multiplex job file for each lane
-    estimate            Prior estimate job file for each lane
-    interleave          Interleaved job file for each lane
-```
->**pheniqs-illumina-api main help** each action has its own separate help accessible with the `pheniqs-illumina-api.py {command} -h` syntax.
-{: .example}
+      ACTION
+        basecall            bcl2fastq command to write all segments to FASTQ
+        core                Core instruction. Imported by the rest.
+        multiplex           Multiplex job file for each lane
+        estimate            Prior estimate job file for each lane
+        interleave          Interleaved job file for each lane
 
 ## IO API
 
 `pheniqs-io-api.py` can manipulate a output format and splitting layout of Pheniqs configuration file.
 
->```shell
     usage: pheniqs-io-api.py [-h] -c PATH [-p PREFIX] [-f {fastq,sam,bam,cram}]
                              [--compression {uncompressed,gz,bgzf}]
                              [--compression-level {0,1,2,3,4,5,6,7,8,9}] [-l] [-s]
@@ -105,15 +100,11 @@ pipeline operations:
       --version             show program's version number and exit
       -v LEVEL, --verbosity LEVEL
                             logging verbosity level
-```
->**pheniqs-io-api help** manipulate output layout.
-{: .example}
 
 ## Prior API
 
 `pheniqs-prior-api.py` can use an exiting configuration file and a Pheniqs demultiplex report for the same data to compile a new configuration file with adjusted priors.
 
->```shell
     usage: pheniqs-prior-api.py [-h] -c PATH [-r PATH] [-i [PATH [PATH ...]]]
                                 [-I PATH] [-O PATH] [-s] [-p PREFIX] [--version]
                                 [-v LEVEL]
@@ -138,6 +129,3 @@ pipeline operations:
       --version             show program's version number and exit
       -v LEVEL, --verbosity LEVEL
                             Logging verbosity level.
-```
->**pheniqs-prior-api help** compile a prior adjusted configuration from a demultiplex report.
-{: .example}
