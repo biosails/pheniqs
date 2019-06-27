@@ -263,7 +263,7 @@ You can now use `pheniqs-prior-api.py` to generate a prior adjusted configuratio
 >```shell
 pheniqs-prior-api.py \
 --report H7LT2DSXX_l01_estimate_report.json \
---configuration sH7LT2DSXX_l01_sample.json \
+--configuration H7LT2DSXX_l01_sample.json \
 > H7LT2DSXX_l01_adjusted.json
 ```
 >**decoding a lane with an estimated prior** [H7LT2DSXX_l01_adjusted.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_adjusted.json) is similar to [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) with the addition of the estimated priors.
