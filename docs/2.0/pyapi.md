@@ -66,7 +66,8 @@
         estimate            Prior estimate job file for each lane
         interleave          Interleaved job file for each lane
 ```
->
+>**pheniqs-illumina-api main help** each action has its own separate help accessible with the `pheniqs-illumina-api.py {command} -h` syntax.
+{: .example}
 
 ## IO API
 
@@ -100,11 +101,13 @@
                             Base input URL directive for pheniqs
       -O PATH, --base-output PATH
                             Base output URL directive for pheniqs
-      --static              Static configuratio output
+      --static              Static configuration output
       --version             show program's version number and exit
       -v LEVEL, --verbosity LEVEL
                             logging verbosity level
 ```
+>**pheniqs-io-api help** manipulate output layout.
+{: .example}
 
 ## Prior API
 
@@ -136,3 +139,5 @@
       -v LEVEL, --verbosity LEVEL
                             Logging verbosity level.
 ```
+>**pheniqs-prior-api help** compile a prior adjusted configuration from a demultiplex report.
+{: .example}
