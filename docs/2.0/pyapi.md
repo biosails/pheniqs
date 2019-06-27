@@ -44,27 +44,27 @@
 
 
 >```shell
-    usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
+usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
 
-    Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
+Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      --version             show program's version number and exit
-      -v LEVEL, --verbosity LEVEL
-                            logging verbosity level
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -v LEVEL, --verbosity LEVEL
+                        logging verbosity level
 
-    pipeline operations:
-      Generate pheniqs configuration files or a bcl2fastq command from an
-      illumina run directory. This tool parses that RunInfo.xml,
-      RunParameters.xml and SampleSheet.csv files in the directory.
+pipeline operations:
+  Generate pheniqs configuration files or a bcl2fastq command from an
+  illumina run directory. This tool parses that RunInfo.xml,
+  RunParameters.xml and SampleSheet.csv files in the directory.
 
-      ACTION
-        basecall            bcl2fastq command to write all segments to FASTQ
-        core                Core instruction. Imported by the rest.
-        multiplex           Multiplex job file for each lane
-        estimate            Prior estimate job file for each lane
-        interleave          Interleaved job file for each lane
+  ACTION
+    basecall            bcl2fastq command to write all segments to FASTQ
+    core                Core instruction. Imported by the rest.
+    multiplex           Multiplex job file for each lane
+    estimate            Prior estimate job file for each lane
+    interleave          Interleaved job file for each lane
 ```
 >**pheniqs-illumina-api main help** each action has its own separate help accessible with the `pheniqs-illumina-api.py {command} -h` syntax.
 {: .example}
