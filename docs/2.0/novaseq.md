@@ -38,11 +38,11 @@
 # NovaSeq 6000 with pheniqs-illumina-api
 {:.page-title}
 
-This tutorial will walk you through prior estimation and demultiplexing of an Illumia NovaSeq 6000 sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
+This tutorial will walk you through prior estimation and demultiplexing of a standard Illumia sequencing run using `pheniqs-illumina-api.py` and `pheniqs-prior-api.py` to generate configuration files for the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) from metadata in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). You will also see an example of using the `import` directive to make configuration more reusable. For each read, the sample barcode and its quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) tag and [QT](glossary.html#qt_auxiliary_tag) tag, respectively. The decoding error probability can be found in the [XB](glossary.html#xb_auxiliary_tag) tag. **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find pre generated files for this example.
 
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
-In this example we will be using `pheniqs-illumina-api.py` and `pheniqs-prior-api.py` to generate configuration files from metadata present in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). We will also be demonstrating using the `import` directive for reusing configuration instructions. For each read, the sample barcode and its quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) tag and [QT](glossary.html#qt_auxiliary_tag) tag, respectively. The decoding error probability can be found in the [XB](glossary.html#xb_auxiliary_tag) tag. **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find pre generated files for this example.
+The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
 
 ## Base calling
 
