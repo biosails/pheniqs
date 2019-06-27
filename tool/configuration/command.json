@@ -435,368 +435,6 @@
             }
         }
     },
-    "estimate prior": {
-        "interface": {
-            "argument": [
-                "configuration",
-                "report",
-                "input",
-                "base-input",
-                "base-output",
-                "sense-input",
-                "split-fastq",
-                "split-bam",
-                "prefix",
-                "version",
-                "verbosity"
-            ],
-            "instruction": {
-                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-            },
-            "prototype": {
-                "base-input": {
-                    "flag": [
-                        "-I",
-                        "--base-input"
-                    ],
-                    "parameter": {
-                        "help": "Base input URL directive for pheniqs",
-                        "metavar": "PATH"
-                    }
-                },
-                "base-output": {
-                    "flag": [
-                        "-O",
-                        "--base-output"
-                    ],
-                    "parameter": {
-                        "help": "Base output URL directive for pheniqs",
-                        "metavar": "PATH"
-                    }
-                },
-                "configuration": {
-                    "flag": [
-                        "-c",
-                        "--configuration"
-                    ],
-                    "parameter": {
-                        "help": "Path to original configuration file.",
-                        "metavar": "PATH",
-                        "required": true
-                    }
-                },
-                "input": {
-                    "flag": [
-                        "-i",
-                        "--input"
-                    ],
-                    "parameter": {
-                        "help": "Input directive for pheniqs",
-                        "metavar": "PATH",
-                        "nargs": "*"
-                    }
-                },
-                "prefix": {
-                    "flag": [
-                        "-p",
-                        "--prefix"
-                    ],
-                    "parameter": {
-                        "default": "library",
-                        "help": "Prefix for generated output file names"
-                    }
-                },
-                "report": {
-                    "flag": [
-                        "-r",
-                        "--report"
-                    ],
-                    "parameter": {
-                        "help": "Path to report file.",
-                        "metavar": "PATH"
-                    }
-                },
-                "sense-input": {
-                    "flag": [
-                        "-s",
-                        "--sense-input"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "default": false,
-                        "help": "sense input directive for pheniqs"
-                    }
-                },
-                "split-bam": {
-                    "flag": [
-                        "--split-bam"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "default": false,
-                        "help": "adjust output configuration to write the reads from each sample to a separate bam file"
-                    }
-                },
-                "split-fastq": {
-                    "flag": [
-                        "--split-fastq"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "default": false,
-                        "help": "adjust output configuration to write each segment of each classified read to a separate fastq file"
-                    }
-                },
-                "verbosity": {
-                    "flag": [
-                        "-v",
-                        "--verbosity"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "debug",
-                            "info",
-                            "warning",
-                            "error",
-                            "critical"
-                        ],
-                        "dest": "verbosity",
-                        "help": "Logging verbosity level.",
-                        "metavar": "LEVEL"
-                    }
-                },
-                "version": {
-                    "flag": [
-                        "--version"
-                    ],
-                    "parameter": {
-                        "action": "version",
-                        "version": "%[prog]s 1.0"
-                    }
-                }
-            }
-        }
-    },
-    "split output": {
-        "interface": {
-            "argument": [
-                "configuration",
-                "prefix",
-                "format",
-                "compression",
-                "compression_level",
-                "split_library",
-                "split_segment",
-                "sense_input",
-                "base_input",
-                "base_output",
-                "static",
-                "version",
-                "verbosity"
-            ],
-            "instruction": {
-                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-            },
-            "prototype": {
-                "static": {
-                    "flag": [
-                        "--static"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "dest": "static",
-                        "help": "Static configuratio output"
-                    }
-                },
-                "split_library": {
-                    "flag": [
-                        "-l",
-                        "--split-library"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "dest": "split_library",
-                        "help": "Library output routing"
-                    }
-                },
-                "split_segment": {
-                    "flag": [
-                        "-s",
-                        "--split-segment"
-                    ],
-                    "parameter": {
-                        "action": "store_true",
-                        "dest": "split_segment",
-                        "help": "Segment output routing"
-                    }
-                },
-                "format": {
-                    "flag": [
-                        "-f",
-                        "--format"
-                    ],
-                    "parameter": {
-                        "default": "bam",
-                        "choices": [
-                            "fastq",
-                            "sam",
-                            "bam",
-                            "cram"
-                        ],
-                        "dest": "format",
-                        "help": "Output format"
-                    }
-                },
-                "compression": {
-                    "flag": [
-                        "--compression"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "uncompressed",
-                            "gz",
-                            "bgzf"
-                        ],
-                        "dest": "compression",
-                        "help": "Output compression"
-                    }
-                },
-                "compression_level": {
-                    "flag": [
-                        "--compression-level"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "0",
-                            "1",
-                            "2",
-                            "3",
-                            "4",
-                            "5",
-                            "6",
-                            "7",
-                            "8",
-                            "9"
-                        ],
-                        "dest": "compression_level",
-                        "help": "Output compression level"
-                    }
-                },
-                "base_input": {
-                    "flag": [
-                        "-I",
-                        "--base-input"
-                    ],
-                    "parameter": {
-                        "help": "Base input URL directive for pheniqs",
-                        "metavar": "PATH"
-                    }
-                },
-                "base_output": {
-                    "flag": [
-                        "-O",
-                        "--base-output"
-                    ],
-                    "parameter": {
-                        "help": "Base output URL directive for pheniqs",
-                        "metavar": "PATH"
-                    }
-                },
-                "configuration": {
-                    "flag": [
-                        "-c",
-                        "--configuration"
-                    ],
-                    "parameter": {
-                        "help": "Path to original configuration file.",
-                        "metavar": "PATH",
-                        "required": true
-                    }
-                },
-                "input": {
-                    "flag": [
-                        "-i",
-                        "--input"
-                    ],
-                    "parameter": {
-                        "help": "Input directive for pheniqs",
-                        "metavar": "PATH",
-                        "nargs": "*"
-                    }
-                },
-                "prefix": {
-                    "flag": [
-                        "-p",
-                        "--prefix"
-                    ],
-                    "parameter": {
-                        "help": "Prefix for generated output file names"
-                    }
-                },
-                "sense_input": {
-                    "flag": [
-                        "-S",
-                        "--sense-input"
-                    ],
-                    "parameter": {
-                        "dest": "sense_input",
-                        "action": "store_true",
-                        "default": false,
-                        "help": "sense input directive for pheniqs"
-                    }
-                },
-                "confidence": {
-                    "flag": [
-                        "--confidence"
-                    ],
-                    "parameter": {
-                        "default": 0.95,
-                        "help": "pheniqs: confidence threshold",
-                        "metavar": "PROBABILITY",
-                        "type": "float"
-                    }
-                },
-                "noise": {
-                    "flag": [
-                        "--noise"
-                    ],
-                    "parameter": {
-                        "default": 0.05,
-                        "help": "pheniqs: noise prior",
-                        "metavar": "PROBABILITY",
-                        "type": "float"
-                    }
-                },
-                "verbosity": {
-                    "flag": [
-                        "-v",
-                        "--verbosity"
-                    ],
-                    "parameter": {
-                        "choices": [
-                            "debug",
-                            "info",
-                            "warning",
-                            "error",
-                            "critical"
-                        ],
-                        "dest": "verbosity",
-                        "help": "logging verbosity level",
-                        "metavar": "LEVEL"
-                    }
-                },
-                "version": {
-                    "flag": [
-                        "--version"
-                    ],
-                    "parameter": {
-                        "action": "version",
-                        "version": "%[prog]s 1.0"
-                    }
-                }
-            }
-        }
-    },
     "illumina api": {
         "interface": {
             "argument": [
@@ -1222,6 +860,146 @@
             }
         }
     },
+    "prior api": {
+        "interface": {
+            "argument": [
+                "configuration",
+                "report",
+                "input",
+                "base-input",
+                "base-output",
+                "sense-input",
+                "prefix",
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "base-input": {
+                    "flag": [
+                        "-I",
+                        "--base-input"
+                    ],
+                    "parameter": {
+                        "help": "Base input URL directive for pheniqs",
+                        "metavar": "PATH"
+                    }
+                },
+                "base-output": {
+                    "flag": [
+                        "-O",
+                        "--base-output"
+                    ],
+                    "parameter": {
+                        "help": "Base output URL directive for pheniqs",
+                        "metavar": "PATH"
+                    }
+                },
+                "configuration": {
+                    "flag": [
+                        "-c",
+                        "--configuration"
+                    ],
+                    "parameter": {
+                        "help": "Path to original configuration file.",
+                        "metavar": "PATH",
+                        "required": true
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "help": "Input directive for pheniqs",
+                        "metavar": "PATH",
+                        "nargs": "*"
+                    }
+                },
+                "prefix": {
+                    "flag": [
+                        "-p",
+                        "--prefix"
+                    ],
+                    "parameter": {
+                        "default": "library",
+                        "help": "Prefix for generated output file names"
+                    }
+                },
+                "report": {
+                    "flag": [
+                        "-r",
+                        "--report"
+                    ],
+                    "parameter": {
+                        "help": "Path to report file.",
+                        "metavar": "PATH"
+                    }
+                },
+                "sense-input": {
+                    "flag": [
+                        "-s",
+                        "--sense-input"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "sense input directive for pheniqs"
+                    }
+                },
+                "split-bam": {
+                    "flag": [
+                        "--split-bam"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "adjust output configuration to write the reads from each sample to a separate bam file"
+                    }
+                },
+                "split-fastq": {
+                    "flag": [
+                        "--split-fastq"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "help": "adjust output configuration to write each segment of each classified read to a separate fastq file"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "Logging verbosity level.",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
+                }
+            }
+        }
+    },
     "shell": {
         "interface": {
             "argument": [
@@ -1288,6 +1066,226 @@
                     "help": null,
                     "metavar": "ACTION",
                     "title": "pipeline operations"
+                }
+            }
+        }
+    },
+    "split output": {
+        "interface": {
+            "argument": [
+                "configuration",
+                "prefix",
+                "format",
+                "compression",
+                "compression_level",
+                "split_library",
+                "split_segment",
+                "sense_input",
+                "base_input",
+                "base_output",
+                "static",
+                "version",
+                "verbosity"
+            ],
+            "instruction": {
+                "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
+            },
+            "prototype": {
+                "base_input": {
+                    "flag": [
+                        "-I",
+                        "--base-input"
+                    ],
+                    "parameter": {
+                        "help": "Base input URL directive for pheniqs",
+                        "metavar": "PATH"
+                    }
+                },
+                "base_output": {
+                    "flag": [
+                        "-O",
+                        "--base-output"
+                    ],
+                    "parameter": {
+                        "help": "Base output URL directive for pheniqs",
+                        "metavar": "PATH"
+                    }
+                },
+                "compression": {
+                    "flag": [
+                        "--compression"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "uncompressed",
+                            "gz",
+                            "bgzf"
+                        ],
+                        "dest": "compression",
+                        "help": "Output compression"
+                    }
+                },
+                "compression_level": {
+                    "flag": [
+                        "--compression-level"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "0",
+                            "1",
+                            "2",
+                            "3",
+                            "4",
+                            "5",
+                            "6",
+                            "7",
+                            "8",
+                            "9"
+                        ],
+                        "dest": "compression_level",
+                        "help": "Output compression level"
+                    }
+                },
+                "confidence": {
+                    "flag": [
+                        "--confidence"
+                    ],
+                    "parameter": {
+                        "default": 0.95,
+                        "help": "pheniqs: confidence threshold",
+                        "metavar": "PROBABILITY",
+                        "type": "float"
+                    }
+                },
+                "configuration": {
+                    "flag": [
+                        "-c",
+                        "--configuration"
+                    ],
+                    "parameter": {
+                        "help": "Path to original configuration file.",
+                        "metavar": "PATH",
+                        "required": true
+                    }
+                },
+                "format": {
+                    "flag": [
+                        "-f",
+                        "--format"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "fastq",
+                            "sam",
+                            "bam",
+                            "cram"
+                        ],
+                        "default": "bam",
+                        "dest": "format",
+                        "help": "Output format"
+                    }
+                },
+                "input": {
+                    "flag": [
+                        "-i",
+                        "--input"
+                    ],
+                    "parameter": {
+                        "help": "Input directive for pheniqs",
+                        "metavar": "PATH",
+                        "nargs": "*"
+                    }
+                },
+                "noise": {
+                    "flag": [
+                        "--noise"
+                    ],
+                    "parameter": {
+                        "default": 0.05,
+                        "help": "pheniqs: noise prior",
+                        "metavar": "PROBABILITY",
+                        "type": "float"
+                    }
+                },
+                "prefix": {
+                    "flag": [
+                        "-p",
+                        "--prefix"
+                    ],
+                    "parameter": {
+                        "help": "Prefix for generated output file names"
+                    }
+                },
+                "sense_input": {
+                    "flag": [
+                        "-S",
+                        "--sense-input"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "default": false,
+                        "dest": "sense_input",
+                        "help": "sense input directive for pheniqs"
+                    }
+                },
+                "split_library": {
+                    "flag": [
+                        "-l",
+                        "--split-library"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "dest": "split_library",
+                        "help": "Library output routing"
+                    }
+                },
+                "split_segment": {
+                    "flag": [
+                        "-s",
+                        "--split-segment"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "dest": "split_segment",
+                        "help": "Segment output routing"
+                    }
+                },
+                "static": {
+                    "flag": [
+                        "--static"
+                    ],
+                    "parameter": {
+                        "action": "store_true",
+                        "dest": "static",
+                        "help": "Static configuratio output"
+                    }
+                },
+                "verbosity": {
+                    "flag": [
+                        "-v",
+                        "--verbosity"
+                    ],
+                    "parameter": {
+                        "choices": [
+                            "debug",
+                            "info",
+                            "warning",
+                            "error",
+                            "critical"
+                        ],
+                        "dest": "verbosity",
+                        "help": "logging verbosity level",
+                        "metavar": "LEVEL"
+                    }
+                },
+                "version": {
+                    "flag": [
+                        "--version"
+                    ],
+                    "parameter": {
+                        "action": "version",
+                        "version": "%[prog]s 1.0"
+                    }
                 }
             }
         }

@@ -36,21 +36,25 @@ from core import Job
 from core import merge
 from core import to_json
 
-class SplitOutput(Job):
+class PheniqsIoApi(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
-        self.log = logging.getLogger('SplitOutput')
-        self.ontology['static'] = None
-        self.ontology['original'] = None
-        self.ontology['compiled'] = None
-        self.ontology['adjusted'] = None
-        self.location['original configuration'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['configuration']))))
+        self.log = logging.getLogger('PheniqsIoApi')
+        default = {
+            'original': None,
+            'static': None,
+            'estimating': None,
+            'adjusted': None,
+            'compiled': None,
+        }
+        self.ontology = merge(default, self.ontology)
+        self.location['original'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['configuration']))))
 
     @property
     def original(self):
         if self.ontology['original'] is None:
-            if os.path.exists(self.location['original configuration']):
-                with io.open(self.location['original configuration'], 'rb') as file:
+            if os.path.exists(self.location['original']):
+                with io.open(self.location['original'], 'rb') as file:
                     self.ontology['original'] = json.loads(file.read().decode('utf8'))
             else:
                 raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
@@ -59,10 +63,10 @@ class SplitOutput(Job):
     @property
     def static(self):
         if self.ontology['static'] is None:
-            if os.path.exists(self.location['original configuration']):
+            if os.path.exists(self.location['original']):
                 command = [ 'pheniqs', 'mux', '--static' ]
                 command.append('--config')
-                command.append(self.location['original configuration'])
+                command.append(self.location['original'])
 
                 if self.instruction['sense_input']:
                     command.append('--sense-input')
@@ -103,10 +107,10 @@ class SplitOutput(Job):
     @property
     def compiled(self):
         if self.ontology['compiled'] is None:
-            if os.path.exists(self.location['original configuration']):
+            if os.path.exists(self.location['original']):
                 command = [ 'pheniqs', 'mux', '--compile' ]
                 command.append('--config')
-                command.append(self.location['original configuration'])
+                command.append(self.location['original'])
 
                 if self.instruction['sense_input']:
                     command.append('--sense-input')
@@ -146,10 +150,52 @@ class SplitOutput(Job):
 
     @property
     def adjusted(self):
+        if self.ontology['adjusted'] is None:
+            prefix = self.make_format_prefix()
+            suffix = self.make_format_suffix()
+
+            overlay = {}
+            if 'multiplex' in self.compiled and self.instruction['split_library']:
+                overlay['multiplex'] = {}
+                segment_cardinality = self.compiled['multiplex']['segment cardinality']
+                if 'undetermined' in self.compiled['multiplex']:
+                    overlay['multiplex']['undetermined'] = { 'output': [] }
+                    if self.instruction['split_segment'] == 'split':
+                        for segment_index in range(1,segment_cardinality + 1):
+                            overlay['multiplex']['undetermined']['output'].append('{}_undetermined_s{:0>2}.{}'.format(prefix, segment_index, suffix))
+                    else:
+                        overlay['multiplex']['undetermined']['output'].append('{}_undetermined.{}'.format(prefix, suffix))
+
+                if 'codec' in self.compiled['multiplex']:
+                    overlay['multiplex']['codec'] = {}
+                    for barcode_key, barcode in self.compiled['multiplex']['codec'].items():
+                        name = self.make_library_name(barcode)
+                        overlay['multiplex']['codec'][barcode_key] = { 'output': [] }
+                        if self.instruction['split_segment']:
+                            for segment_index in range(1,segment_cardinality + 1):
+                                overlay['multiplex']['codec'][barcode_key]['output'].append('{}_{}_s{:0>2}.{}'.format(prefix, name, segment_index, suffix))
+                        else:
+                            overlay['multiplex']['codec'][barcode_key]['output'].append('{}_{}.{}'.format(prefix, name, suffix))
+            else:
+                overlay['output'] = []
+                if self.instruction['split_segment']:
+                    segment_cardinality = self.compiled['multiplex']['segment cardinality']
+                    for segment_index in range(1,segment_cardinality + 1):
+                        overlay['output'].append('{}_s{:0>2}.{}'.format(prefix, segment_index, suffix))
+                else:
+                    overlay['output'].append('{}.{}'.format(prefix, suffix))
+
+            if self.instruction['static']:
+                self.ontology['adjusted'] = deepcopy(self.static)
+            else:
+                self.ontology['adjusted'] = deepcopy(self.original)
+
+            self.strip_output_directive(self.ontology['adjusted'])
+            self.ontology['adjusted'] = merge(self.ontology['adjusted'], overlay)
+
         return self.ontology['adjusted']
 
     def execute(self):
-        self.make_adjusted_instruction()
         print(to_json(self.adjusted))
 
     def make_format_suffix(self):
@@ -197,49 +243,6 @@ class SplitOutput(Job):
                     if 'output' in barcode:
                         del barcode['output']
 
-    def make_adjusted_instruction(self):
-        prefix = self.make_format_prefix()
-        suffix = self.make_format_suffix()
-
-        overlay = {}
-        if 'multiplex' in self.compiled and self.instruction['split_library']:
-            overlay['multiplex'] = {}
-            segment_cardinality = self.compiled['multiplex']['segment cardinality']
-            if 'undetermined' in self.compiled['multiplex']:
-                overlay['multiplex']['undetermined'] = { 'output': [] }
-                if self.instruction['split_segment'] == 'split':
-                    for segment_index in range(1,segment_cardinality + 1):
-                        overlay['multiplex']['undetermined']['output'].append('{}_undetermined_s{:0>2}.{}'.format(prefix, segment_index, suffix))
-                else:
-                    overlay['multiplex']['undetermined']['output'].append('{}_undetermined.{}'.format(prefix, suffix))
-
-            if 'codec' in self.compiled['multiplex']:
-                overlay['multiplex']['codec'] = {}
-                for barcode_key, barcode in self.compiled['multiplex']['codec'].items():
-                    name = self.make_library_name(barcode)
-                    overlay['multiplex']['codec'][barcode_key] = { 'output': [] }
-                    if self.instruction['split_segment']:
-                        for segment_index in range(1,segment_cardinality + 1):
-                            overlay['multiplex']['codec'][barcode_key]['output'].append('{}_{}_s{:0>2}.{}'.format(prefix, name, segment_index, suffix))
-                    else:
-                        overlay['multiplex']['codec'][barcode_key]['output'].append('{}_{}.{}'.format(prefix, name, suffix))
-        else:
-            overlay['output'] = []
-            if self.instruction['split_segment']:
-                segment_cardinality = self.compiled['multiplex']['segment cardinality']
-                for segment_index in range(1,segment_cardinality + 1):
-                    overlay['output'].append('{}_s{:0>2}.{}'.format(prefix, segment_index, suffix))
-            else:
-                overlay['output'].append('{}.{}'.format(prefix, suffix))
-
-        if self.instruction['static']:
-            self.ontology['adjusted'] = deepcopy(self.static)
-        else:
-            self.ontology['adjusted'] = deepcopy(self.original)
-
-        self.strip_output_directive(self.ontology['adjusted'])
-        self.ontology['adjusted'] = merge(self.ontology['adjusted'], overlay)
-
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
@@ -254,7 +257,7 @@ def main():
             if 'verbosity' in command.instruction and command.instruction['verbosity']:
                 logging.getLogger().setLevel(log_levels[command.instruction['verbosity']])
 
-            job = SplitOutput(command.configuration)
+            job = PheniqsIoApi(command.configuration)
             job.execute()
 
     except (
