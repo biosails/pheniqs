@@ -167,9 +167,17 @@ Document Job::read_instruction_document(const URL& url) {
 Document Job::load_instruction_with_import(const URL& url, set< URL >& visited) {
     Document document(kNullType);
     if(url.is_readable()) {
-        ifstream file(url.path());
-        const string content((istreambuf_iterator< char >(file)), istreambuf_iterator< char >());
-        file.close();
+        istream* stream(&cin);
+        ifstream* file(NULL);
+        if(!url.is_stdin()) {
+            file = new ifstream(url.path());
+            stream = file;
+        }
+        const string content((istreambuf_iterator< char >(*stream)), istreambuf_iterator< char >());
+        if(file != NULL) {
+            file->close();
+            delete file;
+        }
         if(!document.Parse(content.c_str()).HasParseError()) {
             const SchemaDocument* schema_document(get_schema_document("instruction:lax"));
             if(schema_document != NULL) {

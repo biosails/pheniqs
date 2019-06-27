@@ -543,17 +543,19 @@ void URL::relocate_child(const URL& base) {
     }
 };
 void URL::relocate_sibling(const URL& base) {
-    if(!base._dirname.empty() && !is_absolute()) {
-        string joined;
-        joined.append(base._dirname);
-        if(!_dirname.empty()) {
-            if(joined.back() != '/') {
-                joined.push_back('/');
+    if(!base.is_standard_stream()) {
+        if(!base._dirname.empty() && !is_absolute()) {
+            string joined;
+            joined.append(base._dirname);
+            if(!_dirname.empty()) {
+                if(joined.back() != '/') {
+                    joined.push_back('/');
+                }
+                joined.append(_dirname);
             }
-            joined.append(_dirname);
+            _dirname.assign(joined);
+            refresh();
         }
-        _dirname.assign(joined);
-        refresh();
     }
 };
 bool URL::is_readable() const {
