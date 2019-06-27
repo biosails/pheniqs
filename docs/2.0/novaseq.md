@@ -42,7 +42,7 @@ This tutorial will walk you through prior estimation and demultiplexing of an Il
 
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
-In this example we will be using `pheniqs-illumina-api.py` to generate configuration files from metadata present in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). We will also be demonstrating using the `import` directive for reusing configuration instructions. For each read, the sample barcode and its quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) tag and [QT](glossary.html#qt_auxiliary_tag) tag, respectively. The decoding error probability can be found in the [XB](glossary.html#xb_auxiliary_tag) tag. **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find pre generated files for this example.
+In this example we will be using `pheniqs-illumina-api.py` and `pheniqs-prior-api.py` to generate configuration files from metadata present in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). We will also be demonstrating using the `import` directive for reusing configuration instructions. For each read, the sample barcode and its quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) tag and [QT](glossary.html#qt_auxiliary_tag) tag, respectively. The decoding error probability can be found in the [XB](glossary.html#xb_auxiliary_tag) tag. **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find pre generated files for this example.
 
 ## Base calling
 
@@ -151,7 +151,7 @@ pheniqs-illumina-api.py core \
 >**H7LT2DSXX_l01_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary.html#lb_auxiliary_tag) tag extracted from [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv).
 {: .example}
 
-You can the `base` property on a decoder to use those decoders as a starting point in the `multiplex`, `cellular`, and `molecular`. Any directive you specify in your instantiation will override values provided by the referenced base.
+You can use the `base` property in a decoder declaration to use those decoders as a starting point in the `multiplex`, `cellular`, and `molecular`. Any directive you specify in your instantiation will override values provided by the referenced base.
 
 ## Decoding without priors
 
@@ -208,7 +208,7 @@ pheniqs-illumina-api.py estimate \
 >**pheniqs-illumina-api estimate** will produce a sample demultiplexing configuration optimized for prior estimation.
 {: .example}
 
-To estimate priors for sample barcodes we need to collect some statistics about the sample barcodes. Since don't need to read the 2 segments containing the biological sequences input is declared only for the two segments containing the indices.
+To estimate priors for sample barcodes we need to collect some statistics about the sample barcodes. Since reading the biological segments is not necessary for estimating the priors on the standard Illumina indices input is declared only for the two index segments.
 
 [H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) declares a `multiplex` directive that expands `H7LT2DSXX_l01_multiplex` and adjusts the tokenization for the modified input. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output.
 
@@ -249,7 +249,7 @@ To estimate priors for sample barcodes we need to collect some statistics about 
 {: .example}
 
 Executing this configuration will yield the report
-[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that we can use to estimate the priors.
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that we can use to estimate the priors. This took about 1:45 hours per lane on our *dual socket Intel Xeon E5-2620*.
 
 >```shell
 pheniqs mux --config H7LT2DSXX_l01_estimate.json
@@ -257,10 +257,11 @@ pheniqs mux --config H7LT2DSXX_l01_estimate.json
 >**executing pheniqs with a prior estimation configuration** will produce [H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json).
 {: .example}
 
-[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json) and [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json) can now be used to generate an adjusted configuration.
+You can now use `pheniqs-prior-api.py` to generate a prior adjusted configuration with
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json) and [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json).
 
 >```shell
-estimate_prior.py \
+pheniqs-prior-api.py \
 --report H7LT2DSXX_l01_estimate_report.json \
 --configuration sH7LT2DSXX_l01_sample.json \
 > H7LT2DSXX_l01_adjusted.json
