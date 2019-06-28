@@ -264,9 +264,10 @@ a {
     margin: 0rem 1rem 0rem 0rem;
 }
 
-#footer-navigation a.github {
-    // background-color: rgba(203,86,28,0.9);
-    // float: right !important;
+#footer-navigation a.github:link,
+#footer-navigation a.github:visited {
+    color: rgba(203,86,28,0.9);
+    float: right !important;
 }
 
 #footer-navigation a:link,
