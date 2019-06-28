@@ -46,7 +46,15 @@ class CommandLineParser(object):
     def load(self):
         with io.open(self.ontology['configuration path'], 'rb') as file:
             content = json.loads(file.read().decode('utf8'))
-            self.ontology = merge(self.ontology, content[self.ontology['name']])
+            if 'implementation' in content:
+                if self.ontology['name'] in content['implementation']:
+                    if 'interface' in content:
+                        self.ontology['interface'] = merge(content['interface'], self.ontology['interface'])
+                    self.ontology = merge(self.ontology, content['implementation'][self.ontology['name']])
+                else:
+                    raise BadConfigurationError('unknown implementation {}'.format(self.ontology['name']))
+            else:
+                raise BadConfigurationError('missing implementation element')
 
         self.parser = ArgumentParser(**self.interface['instruction'])
 
@@ -58,6 +66,8 @@ class CommandLineParser(object):
         # add global arguments
         for argument in self.interface['argument']:
             prototype = self.interface['prototype'][argument]
+
+            # See https://docs.python.org/3/library/argparse.html?highlight=add_argument#argparse.ArgumentParser.add_argument
             self.parser.add_argument(*prototype['flag'], **prototype['parameter'])
 
         if self.sectioned:

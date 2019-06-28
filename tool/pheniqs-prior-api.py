@@ -48,15 +48,13 @@ class PheniqsPriorApi(Job):
             'report': None,
         }
         self.ontology = merge(default, self.ontology)
-
-        if 'configuration' in self.instruction:
-            self.location['original'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['configuration']))))
         if 'report' in self.instruction:
             self.location['report'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['report']))))
-        self.location['estimating'] = os.path.join(self.current_working_directoy, '{}_estimation_configurtion.json'.format(self.instruction['prefix']))
-
+        if 'configuration' in self.instruction:
+            self.location['original'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['configuration']))))
         if 'prefix' not in self.instruction and 'flowcell id' in self.static:
             self.instruction['prefix'] = self.static['flowcell id']
+        self.location['estimating'] = os.path.join(self.current_working_directoy, '{}_estimation_configurtion.json'.format(self.instruction['prefix']))
 
     @property
     def original(self):

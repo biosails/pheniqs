@@ -443,8 +443,8 @@ class IlluminaApi(Job):
                 job[key] = self.illumina[key]
 
         for key, name in {
-            'base_input_url': 'base input url',
-            'base_output_url': 'base output url',
+            'base_input': 'base input url',
+            'base_output': 'base output url',
             'no_input_npf': 'filter incoming qc fail',
             'no_output_npf': 'filter outgoing qc fail',
         }.items():

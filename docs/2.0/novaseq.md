@@ -98,8 +98,8 @@ H7LT2DSXX_S1_L003_R2_001.fastq.gz
 
 >```shell
 pheniqs-illumina-api.py core \
---base-input-url . \
---base-output-url . \
+--base-input . \
+--base-output . \
 --no-input-npf \
 181014_A00534_0024_AH7LT2DSXX
 ```
@@ -294,6 +294,8 @@ pheniqs-io-api.py \
 {: .example}
 
 ## Decoding with the estimated prior
+
+Now that you have a prior adjusted configuration file you can execute it with Pheniqs. Decoding each of the 4 lanes took about 5:40 hours and produced a 488GB bam file on our *dual socket Intel Xeon E5-2620*. 
 
 >```shell
 pheniqs mux --config H7LT2DSXX_l01_adjusted.json

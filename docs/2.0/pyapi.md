@@ -42,7 +42,6 @@
 
 `pheniqs-illumina-api.py` can generate Pheniqs configuration files from metadata found in an Illumina run folder.
 
-
     usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
 
     Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
@@ -55,8 +54,8 @@
 
     pipeline operations:
       Generate pheniqs configuration files or a bcl2fastq command from an
-      illumina run directory. This tool parses that RunInfo.xml,
-      RunParameters.xml and SampleSheet.csv files in the directory.
+      illumina run directory. This tool parses RunInfo.xml, RunParameters.xml
+      and SampleSheet.csv files.
 
       ACTION
         basecall            bcl2fastq command to write all segments to FASTQ
@@ -69,34 +68,32 @@
 
 `pheniqs-io-api.py` can manipulate a output format and splitting layout of Pheniqs configuration file.
 
-    usage: pheniqs-io-api.py [-h] -c PATH [-p PREFIX] [-f {fastq,sam,bam,cram}]
+    usage: pheniqs-io-api.py [-h] -c PATH [-F {fastq,sam,bam,cram}]
                              [--compression {uncompressed,gz,bgzf}]
-                             [--compression-level {0,1,2,3,4,5,6,7,8,9}] [-l] [-s]
-                             [-S] [-I PATH] [-O PATH] [--static] [--version]
-                             [-v LEVEL]
+                             [--compression-level {0,1,2,3,4,5,6,7,8,9}] [-L] [-S]
+                             [--base-input PATH] [--base-output PATH] [-s]
+                             [--static] [-p PREFIX] [--version] [-v LEVEL]
 
     Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
 
     optional arguments:
       -h, --help            show this help message and exit
       -c PATH, --configuration PATH
-                            Path to original configuration file.
-      -p PREFIX, --prefix PREFIX
-                            Prefix for generated output file names
-      -f {fastq,sam,bam,cram}, --format {fastq,sam,bam,cram}
+                            Path to original pheniqs configuration file.
+      -F {fastq,sam,bam,cram}, --format {fastq,sam,bam,cram}
                             Output format
       --compression {uncompressed,gz,bgzf}
                             Output compression
       --compression-level {0,1,2,3,4,5,6,7,8,9}
                             Output compression level
-      -l, --split-library   Library output routing
-      -s, --split-segment   Segment output routing
-      -S, --sense-input     sense input directive for pheniqs
-      -I PATH, --base-input PATH
-                            Base input URL directive for pheniqs
-      -O PATH, --base-output PATH
-                            Base output URL directive for pheniqs
+      -L, --split-library   Library output routing
+      -S, --split-segment   Segment output routing
+      --base-input PATH     Forwarded to pheniqs -I/--base-input parameter.
+      --base-output PATH    Forwarded to pheniqs -O/--base-output parameter.
+      -s, --sense-input     sense input directive for pheniqs
       --static              Static configuration output
+      -p PREFIX, --prefix PREFIX
+                            Prefix for generated output file names
       --version             show program's version number and exit
       -v LEVEL, --verbosity LEVEL
                             logging verbosity level
@@ -105,27 +102,25 @@
 
 `pheniqs-prior-api.py` can use an exiting configuration file and a Pheniqs demultiplex report for the same data to compile a new configuration file with adjusted priors.
 
-    usage: pheniqs-prior-api.py [-h] -c PATH [-r PATH] [-i [PATH [PATH ...]]]
-                                [-I PATH] [-O PATH] [-s] [-p PREFIX] [--version]
-                                [-v LEVEL]
+    usage: pheniqs-prior-api.py [-h] -c PATH [-r PATH] [-p PREFIX] [-i PATH] [-s]
+                                [--base-input PATH] [--base-output PATH]
+                                [--version] [-v LEVEL]
 
     Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
 
     optional arguments:
       -h, --help            show this help message and exit
       -c PATH, --configuration PATH
-                            Path to original configuration file.
+                            Path to original pheniqs configuration file.
       -r PATH, --report PATH
-                            Path to report file.
-      -i [PATH [PATH ...]], --input [PATH [PATH ...]]
-                            Input directive for pheniqs
-      -I PATH, --base-input PATH
-                            Base input URL directive for pheniqs
-      -O PATH, --base-output PATH
-                            Base output URL directive for pheniqs
-      -s, --sense-input     sense input directive for pheniqs
+                            Path to pheniqs prior estimation report file.
       -p PREFIX, --prefix PREFIX
-                            Prefix for generated output file names
+                            Generated file names prefix.
+      -i PATH, --input PATH
+                            Forwarded to pheniqs -i/--input parameter.
+      -s, --sense-input     Forwarded to pheniqs -s/--sense-input parameter.
+      --base-input PATH     Forwarded to pheniqs -I/--base-input parameter.
+      --base-output PATH    Forwarded to pheniqs -O/--base-output parameter.
       --version             show program's version number and exit
       -v LEVEL, --verbosity LEVEL
-                            Logging verbosity level.
+                            logging verbosity level

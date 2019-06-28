@@ -249,7 +249,7 @@ def main():
     job = None
 
     try:
-        command = CommandLineParser('split output')
+        command = CommandLineParser('io api')
         if command.help_triggered:
             command.help()
             sys.exit(0)
