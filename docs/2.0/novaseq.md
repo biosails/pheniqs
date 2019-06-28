@@ -35,7 +35,7 @@
     <div class="clear" />
 </section>
 
-# NovaSeq 6000 with pheniqs-illumina-api
+# Standard Illumina sample barcoding with the Pheniqs python API
 {:.page-title}
 
 This tutorial will walk you through prior estimation and demultiplexing of a standard Illumia sequencing run using `pheniqs-illumina-api.py` and `pheniqs-prior-api.py` to generate configuration files for the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) from metadata in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). You will also see an example of using the `import` directive to make configuration more reusable. For each read, the sample barcode and its quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) tag and [QT](glossary.html#qt_auxiliary_tag) tag, respectively. The decoding error probability can be found in the [XB](glossary.html#xb_auxiliary_tag) tag. **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find pre generated files for this example.
@@ -295,7 +295,7 @@ pheniqs-io-api.py \
 
 ## Decoding with the estimated prior
 
-Now that you have a prior adjusted configuration file you can execute it with Pheniqs. Decoding each of the 4 lanes took about 5:40 hours and produced a 488GB bam file on our *dual socket Intel Xeon E5-2620*. 
+Now that you have a prior adjusted configuration file you can execute it with Pheniqs. Decoding each of the 4 lanes took about 5:40 hours and produced a 488GB bam file on our *dual socket Intel Xeon E5-2620*.
 
 >```shell
 pheniqs mux --config H7LT2DSXX_l01_adjusted.json
