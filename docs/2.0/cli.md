@@ -112,9 +112,9 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
 # Pheniqs tools
 In the tool folder you will find several python scripts to assist with Pheniqs deployment and interfacing with existing tools.
 
-## `pheniqs-illumina-api.py`
+## Illumina API
 
-Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that `RunInfo.xml`, `RunParameters.xml` and `SampleSheet.csv` files in the directory. The `Data` section of the `SampleSheet.csv` must either have all records declare a `Lane` or none.
+`pheniqs-illumina-api.py` can generate Pheniqs configuration files from metadata found in an Illumina run folder.
 
     usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
 
@@ -128,8 +128,8 @@ Generate pheniqs configuration files or a bcl2fastq command from an illumina run
 
     pipeline operations:
       Generate pheniqs configuration files or a bcl2fastq command from an
-      illumina run directory. This tool parses that RunInfo.xml,
-      RunParameters.xml and SampleSheet.csv files in the directory.
+      illumina run directory. This tool parses RunInfo.xml, RunParameters.xml
+      and SampleSheet.csv files.
 
       ACTION
         basecall            bcl2fastq command to write all segments to FASTQ
@@ -138,15 +138,76 @@ Generate pheniqs configuration files or a bcl2fastq command from an illumina run
         estimate            Prior estimate job file for each lane
         interleave          Interleaved job file for each lane
 
- * **basecall** sub command generates a shell script with a bcl2fastq command and an accompanying sample sheet for basecaling with illumina *bcl2fastq* without demupltiplexing.
+* **basecall** sub command generates a shell script with a bcl2fastq command and an accompanying sample sheet for basecaling with illumina *bcl2fastq* without demupltiplexing.
 
- * **core** generates a configuration that contains a single multiplex decoder directive in the global `decoder` directive for each lane in the sample sheet or just one if the integer `Lane` column is missing from the sample sheet.
+* **core** generates a configuration that contains a single multiplex decoder directive in the global `decoder` directive for each lane in the sample sheet or just one if the integer `Lane` column is missing from the sample sheet.
 
- * **multiplex** generates a multiplex job file for each lane with a uniform prior.
+* **multiplex** generates a multiplex job file for each lane with a uniform prior.
 
- * **estimate** generates a prior estimation optimized job file for each lane.
+* **estimate** generates a prior estimation optimized job file for each lane.
 
- * **interleave** generates an interleave job file for each lane. This can be used to pack the fastq files into a SAM format or just Interleaved fastq.
+* **interleave** generates an interleave job file for each lane. This can be used to pack the fastq files into a SAM format or just Interleaved fastq.
+
+## IO API
+
+`pheniqs-io-api.py` can manipulate a output format and splitting layout of Pheniqs configuration file.
+
+    usage: pheniqs-io-api.py [-h] -c PATH [-F {fastq,sam,bam,cram}]
+                             [--compression {uncompressed,gz,bgzf}]
+                             [--compression-level {0,1,2,3,4,5,6,7,8,9}] [-L] [-S]
+                             [--base-input PATH] [--base-output PATH] [-s]
+                             [--static] [-p PREFIX] [--version] [-v LEVEL]
+
+    Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c PATH, --configuration PATH
+                            Path to original pheniqs configuration file.
+      -F {fastq,sam,bam,cram}, --format {fastq,sam,bam,cram}
+                            Output format
+      --compression {uncompressed,gz,bgzf}
+                            Output compression
+      --compression-level {0,1,2,3,4,5,6,7,8,9}
+                            Output compression level
+      -L, --split-library   Library output routing
+      -S, --split-segment   Segment output routing
+      --base-input PATH     Forwarded to pheniqs -I/--base-input parameter.
+      --base-output PATH    Forwarded to pheniqs -O/--base-output parameter.
+      -s, --sense-input     sense input directive for pheniqs
+      --static              Static configuration output
+      -p PREFIX, --prefix PREFIX
+                            Prefix for generated output file names
+      --version             show program's version number and exit
+      -v LEVEL, --verbosity LEVEL
+                            logging verbosity level
+
+## Prior API
+
+`pheniqs-prior-api.py` can use an exiting configuration file and a Pheniqs demultiplex report for the same data to compile a new configuration file with adjusted priors.
+
+    usage: pheniqs-prior-api.py [-h] -c PATH [-r PATH] [-p PREFIX] [-i PATH] [-s]
+                                [--base-input PATH] [--base-output PATH]
+                                [--version] [-v LEVEL]
+
+    Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c PATH, --configuration PATH
+                            Path to original pheniqs configuration file.
+      -r PATH, --report PATH
+                            Path to pheniqs prior estimation report file.
+      -p PREFIX, --prefix PREFIX
+                            Generated file names prefix.
+      -i PATH, --input PATH
+                            Forwarded to pheniqs -i/--input parameter.
+      -s, --sense-input     Forwarded to pheniqs -s/--sense-input parameter.
+      --base-input PATH     Forwarded to pheniqs -I/--base-input parameter.
+      --base-output PATH    Forwarded to pheniqs -O/--base-output parameter.
+      --version             show program's version number and exit
+      -v LEVEL, --verbosity LEVEL
+                            logging verbosity level
 
 # JSON validation
 
