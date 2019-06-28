@@ -36,7 +36,7 @@
 </section>
 
 <a name="illumina_python_api" />
-[Illumina python API](illumina_python_api.html)
+[Prior estimated Illumina with the python API](illumina_python_api.html)
 : This vignette will walk you through demultiplexing a dual indexed paired end NovaSeq 6000 run with the Pheniqs python API. It will show you how to generate configuration files from the Illumina run folder, estimate the sample barcode priors and demultiplex the run. It loosely applies to almost every standard sample multiplex Illumina run.
 
 <a name="standard_illumina" />
