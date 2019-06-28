@@ -23,13 +23,11 @@
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
+        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/pheniqs/2.0/best_practices.html">Best Practice</a></li>
-        <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
+        <li><a class="active"   href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
@@ -498,7 +496,7 @@ The `decoder::` prefix in the table refers to the attribute in the parent decode
 	| **low confidence count**             | count of reads that failed to classify due to low confidence.                                         |
 
 ## Prior estimation
-The **PAMLD** decoder **low conditional confidence count** counts reads where the conditional probability of the maximum likelihood decoded barcode is lower than the probability of a observing a random sequence. Those reads are much more likely to be noise than anything else. This makes the ratio of **low conditional confidence count** to **count** a good initial candidate for the decoder noise prior, the decoder `noise` directive. When overall quality of the run is low this can under estimate the noise prior since a lower signal to noise ratio makes it more difficult to tell random sequences from errors. We adjust for this by counting as noise a fraction of the reads counted by **low confidence count**, which counts reads that passed the previous filter but have been marked **QC fail** because the posterior probability of correctly decoding the barcode was lower than **confidence threshold**. We estimate the **signal to noise ratio** as **1** - **average classified confidence**. So an adjusted estimate of the noise prior is **low conditional confidence count** + **signal to noise ratio** * **low confidence count** divided by **count**. Once we establish an estimate of the noise prior, estimating the prior of each barcode is straight forward since we can rely on the high quality reads. For each barcode we estimate the `concentration` as **pf pooled classified fraction** multiplied by the probability of it not being noise, which is **1** - `noise`. The `estimate_prior.py` script can adjust your configuration file with those priors from a configuration file. The initial priors can be either left blank, suggesting a uniform prior, or your best guess.
+The **PAMLD** decoder **low conditional confidence count** counts reads where the conditional probability of the maximum likelihood decoded barcode is lower than the probability of a observing a random sequence. Those reads are much more likely to be noise than anything else. This makes the ratio of **low conditional confidence count** to **count** a good initial candidate for the decoder noise prior, the decoder `noise` directive. When overall quality of the run is low this can under estimate the noise prior since a lower signal to noise ratio makes it more difficult to tell random sequences from errors. We adjust for this by counting as noise a fraction of the reads counted by **low confidence count**, which counts reads that passed the previous filter but have been marked **QC fail** because the posterior probability of correctly decoding the barcode was lower than **confidence threshold**. We estimate the **signal to noise ratio** as **1** - **average classified confidence**. So an adjusted estimate of the noise prior is **low conditional confidence count** + **signal to noise ratio** * **low confidence count** divided by **count**. Once we establish an estimate of the noise prior, estimating the prior of each barcode is straight forward since we can rely on the high quality reads. For each barcode we estimate the `concentration` as **pf pooled classified fraction** multiplied by the probability of it not being noise, which is **1** - `noise`. The `pheniqs-prior-api.py` script can adjust your configuration file with those priors from a configuration file. The initial priors can be either left blank, suggesting a uniform prior, or your best guess.
 
 >```json
 {
