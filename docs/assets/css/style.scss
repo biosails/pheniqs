@@ -250,17 +250,17 @@ a {
 }
 
 #footer-navigation {
-    padding: 1.5rem 1rem 0rem 1rem;
+    padding: 0;
     font-size: 0.8rem;
     margin-bottom: 4rem;
 }
 
 #footer-navigation a {
-    padding: 0;
+    padding: 0.25rem 0.5rem 0.35rem 0.5rem;
     float: left;
     display: block;
     font-weight: bold;
-    margin: 0rem 0.5rem 0rem 0rem;
+    margin: 0rem 1.5rem 0rem 0rem;
 }
 
 #footer-navigation a.github {
