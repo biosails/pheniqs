@@ -271,12 +271,13 @@ a {
 
 #footer-navigation a:link,
 #footer-navigation a:visited {
-    color: rgba(36,41,36,0.9);
+    color: rgba(36,41,36,0.6);
     font-weight: bold;
 }
 
 #footer-navigation a:hover,
 #footer-navigation a.active {
+    color: rgba(36,41,36,1);
     text-decoration:none;
     color: #FFF;
     font-weight: bold;
