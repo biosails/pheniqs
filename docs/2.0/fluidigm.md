@@ -21,16 +21,14 @@
 
 <section id="navigation">
     <ul>
-        <li><a                  href="/Pheniqs/2.0/">Home</a></li>
-        <li><a                  href="/Pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a                  href="/Pheniqs/2.0/install.html">Install</a></li>
-        <li><a                  href="/Pheniqs/2.0/build.html">Build</a></li>
-        <li><a class="active"   href="/Pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/Pheniqs/2.0/best_practices.html">Best Practice</a></li>
-        <li><a                  href="/Pheniqs/2.0/glossary.html">Glossary</a></li>
-        <li><a                  href="/Pheniqs/2.0/manual.html">Manual</a></li>
-        <li><a                  href="/Pheniqs/2.0/cli.html">CLI</a></li>
-        <li><a class="github"   href="http://github.com/biosails/Pheniqs">View on GitHub</a></li>
+        <li><a                  href="/pheniqs/2.0/">Home</a></li>
+        <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
+        <li><a class="active"   href="/pheniqs/2.0/workflow.html">Workflow</a></li>
+        <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
+        <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
+        <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
+        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
@@ -174,10 +172,10 @@ pheniqs mux --config CBJLFACXX_l01_sample.json --compile
 
 ## Prior estimation
 
-Better estimation of the prior distribution of the samples will improve accuracy. Pheniqs provides a simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run. The `estimate_prior.py` script, distributed with Pheniqs, will either execute Pheniqs with a slightly modified configuration, optimized to refrains from writing the output reads and save time, and emit a modified configuration file with adjusted priors. You may alternatively provide the script a [report from a run you execute yourself]([compile configuration](example/fluidigm/CBJLFACXX_l01_sample_report.json). The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
+Better estimation of the prior distribution of the samples will improve accuracy. Pheniqs provides a simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run. The `pheniqs-prior-api.py` script, distributed with Pheniqs, will either execute Pheniqs with a slightly modified configuration, optimized to refrains from writing the output reads and save time, and emit a modified configuration file with adjusted priors. You may alternatively provide the script a [report from a run you execute yourself]([compile configuration](example/fluidigm/CBJLFACXX_l01_sample_report.json). The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
 
 >```shell
-estimate_prior.py --configuration CBJLFACXX_l01_sample.json \
+pheniqs-prior-api.py --configuration CBJLFACXX_l01_sample.json \
 --split-bam \
 --prefix CBJLFACXX_l01
 ```
@@ -185,7 +183,7 @@ estimate_prior.py --configuration CBJLFACXX_l01_sample.json \
 or if you already have a report from a preliminary run
 
 >```shell
-estimate_prior.py --configuration CBJLFACXX_l01_sample.json \
+pheniqs-prior-api.py --configuration CBJLFACXX_l01_sample.json \
 --report CBJLFACXX_l01_sample_report.json \
 --split-bam \
 --prefix CBJLFACXX_l01
@@ -256,19 +254,19 @@ Since the cellular barcodes are identical for all first phase bam files we inten
 An advantage of decoding cellular barcodes on each sample separately is that we can estimate the sample conditional priors.
 
 >```shell
-estimate_prior.py --configuration CBJLFACXX_l01_cellular.json \
+pheniqs-prior-api.py --configuration CBJLFACXX_l01_cellular.json \
 --input CBJLFACXX_l01_COL01_PAG069_V2_E2.bam \
 --prefix CBJLFACXX_l01_COL01_PAG069_V2_E2 \
 --split-fastq \
 --sense-input
 ```
->**estimating cellular priors** We execute this for each of the bam files produced in the first phase. the `--input` command line parameter for `estimate_prior.py` will be forwarded to Pheniqs when estimating the priors and will also be present in the generated configuration with the adjusted priors. The `--split-fastq` parameter will declare an `output` directive in each of the barcodes so that the configuration produce the desired, split fastq, output.
+>**estimating cellular priors** We execute this for each of the bam files produced in the first phase. the `--input` command line parameter for `pheniqs-prior-api.py` will be forwarded to Pheniqs when estimating the priors and will also be present in the generated configuration with the adjusted priors. The `--split-fastq` parameter will declare an `output` directive in each of the barcodes so that the configuration produce the desired, split fastq, output.
 {: .example}
 
 If you already have a [report](example/fluidigm/CBJLFACXX_l01_COL01_PAG069_V2_E2_report.json) from a preliminary run.
 
 >```shell
-estimate_prior.py --configuration CBJLFACXX_l01_cellular.json \
+pheniqs-prior-api.py --configuration CBJLFACXX_l01_cellular.json \
 --report CBJLFACXX_l01_COL01_PAG069_V2_E2_report.json \
 --input CBJLFACXX_l01_COL01_PAG069_V2_E2.bam CBJLFACXX_l01_COL01_PAG069_V2_E2.bam \
 --prefix CBJLFACXX_l01_COL01_PAG069_V2_E2 \

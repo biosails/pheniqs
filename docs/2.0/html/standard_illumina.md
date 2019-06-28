@@ -385,8 +385,8 @@ If you want to split the libraries and their segments into separate fastq files 
 
 ## Prior estimation
 
-Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run. The `estimate_prior.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
+Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run. The `pheniqs-prior-api.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
 
 >```shell
-estimate_prior.py --configuration CBJLFACXX_l01_sample.json
+pheniqs-prior-api.py --configuration CBJLFACXX_l01_sample.json
 ```
