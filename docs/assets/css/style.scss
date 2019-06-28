@@ -256,7 +256,7 @@ a {
 }
 
 #footer-navigation a {
-    padding: 0.25rem 0.5rem 0.35rem 0.5rem;
+    padding: 0;
     float: left;
     display: block;
     font-weight: bold;
@@ -270,7 +270,7 @@ a {
 
 #footer-navigation a:link,
 #footer-navigation a:visited {
-    color: #FFF;
+    color: rgba(36,41,36,0.9);
     font-weight: bold;
 }
 
