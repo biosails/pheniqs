@@ -63,7 +63,6 @@ Simply install pheniqs using the conda package manager
 conda install pheniqs
 # Installs pheniqs in an isolated environment - recommended
 conda create -n pheniqs pheniqs
-
 ```
 
 If you want to live on the bleeding edge, you can also install pheniqs from our anaconda channel, nyuad-cgsb.
