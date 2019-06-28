@@ -39,9 +39,6 @@
 ## Dependencies
 Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson.org) and [zlib](https://zlib.net). HTSLib further depends on [bzip2](http://www.bzip.org), [LZMA](https://tukaani.org/xz) and optionally [libdeflate](https://github.com/ebiggers/libdeflate) for improved gzip compressed FASTQ manipulation. Pheniqs requires [HTSLib version 1.8](https://github.com/samtools/htslib/releases/tag/1.8) or later and [RapidJSON version 1.1.0](https://github.com/Tencent/rapidjson/releases/tag/v1.1.0) or later. The versions packaged in most linux distributions are very outdated and cannot be used to build Pheniqs.
 
-## Build with the One Liner
-**coming soon**
-
 ## Building with `ppkg.py`
 Pheniqs comes bundled with a python3 helper tool called `ppkg.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/ppkg.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with `ppkg.py` does not require elevated permissions and is ideal for building an executable on cluster environments.
 
