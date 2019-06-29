@@ -273,6 +273,37 @@ pheniqs-io-api.py \
 >**splitting both library and segment** will adjust the output directives in the configuration file and generate the necessary file names for splitting by both library and segment.
 {: .example}
 
+>```json
+{
+    "multiplex": {
+        "codec": {
+            "@A10_PDAC81": {
+                "LB": "A10_PDAC81",
+                "output": [
+                    "H7LT2DSXX_A10_PDAC81_s01.fastq.gz",
+                    "H7LT2DSXX_A10_PDAC81_s02.fastq.gz"
+                ]
+            },
+            "@A11_PDAC490": {
+                "LB": "A11_PDAC490",
+                "output": [
+                    "H7LT2DSXX_A11_PDAC490_s01.fastq.gz",
+                    "H7LT2DSXX_A11_PDAC490_s02.fastq.gz"
+                ]
+            }
+        },
+        "undetermined": {
+            "output": [
+                "H7LT2DSXX_undetermined_s01.fastq.gz",
+                "H7LT2DSXX_undetermined_s02.fastq.gz"
+            ]
+        }
+    }
+}
+```
+>**Configuration adjustments for splitting by library and segment** adjustments made by `pheniqs-io-api.py`. Global output directives are stripped and each barcode is generated a new output directive. In this case we split by both segment and library and output gzip compressed fastq.
+{: .example}
+
 >```shell
 pheniqs-io-api.py \
 --configuration H7LT2DSXX_l01_adjusted.json \
@@ -281,6 +312,35 @@ pheniqs-io-api.py \
 > H7LT2DSXX_l01_adjusted_split.json
 ```
 >**splitting by library** when working with SAM encoded files it makes less sense to split the segments into separate files.
+{: .example}
+
+
+>```json
+{
+    "multiplex": {
+        "codec": {
+            "@A10_PDAC81": {
+                "LB": "A10_PDAC81",
+                "output": [
+                    "H7LT2DSXX_A10_PDAC81.bam"
+                ]
+            },
+            "@A11_PDAC490": {
+                "LB": "A11_PDAC490",
+                "output": [
+                    "H7LT2DSXX_A11_PDAC490.bam"
+                ]
+            }
+        },
+        "undetermined": {
+            "output": [
+                "H7LT2DSXX_undetermined.bam"
+            ]
+        }
+    }
+}
+```
+>**Configuration adjustments for splitting by library** adjustments made by `pheniqs-io-api.py`. Global output directives are stripped and each barcode is generated a new output directive. In this case we split by library and interleave all segments into bam files.
 {: .example}
 
 ## Decoding with the estimated prior
