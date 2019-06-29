@@ -160,7 +160,7 @@ class PheniqsIoApi(Job):
                 segment_cardinality = self.compiled['multiplex']['segment cardinality']
                 if 'undetermined' in self.compiled['multiplex']:
                     overlay['multiplex']['undetermined'] = { 'output': [] }
-                    if self.instruction['split_segment'] == 'split':
+                    if self.instruction['split_segment']:
                         for segment_index in range(1,segment_cardinality + 1):
                             overlay['multiplex']['undetermined']['output'].append('{}_undetermined_s{:0>2}.{}'.format(prefix, segment_index, suffix))
                     else:
