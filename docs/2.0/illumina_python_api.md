@@ -350,5 +350,5 @@ Now that you have a prior adjusted configuration file you can execute it with Ph
 >```shell
 pheniqs mux --config H7LT2DSXX_l01_adjusted.json
 ```
->**decoding a lane with an estimated prior** the report will be written to [H7LT2DSXX_l01_adjusted_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_adjusted_report.json) because it is relative to the base output. Decoding each of the 4 lanes took about 5:40 hours and produced a 488GB bam file on our *dual socket Intel Xeon E5-2620*.
+>**decoding a lane with an estimated prior** the report will be written to [H7LT2DSXX_l01_sample_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample_report.json) because it is relative to the base output. Decoding each of the 4 lanes took about 5:40 hours and produced a 488GB bam file on our *dual socket Intel Xeon E5-2620*.
 {: .example}
