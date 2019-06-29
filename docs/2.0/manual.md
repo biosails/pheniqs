@@ -55,10 +55,10 @@ The instruction `input` directive is an ordered list of file paths. Pheniqs asse
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
@@ -70,10 +70,10 @@ The instruction `input` directive is an ordered list of file paths. Pheniqs asse
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ]
 }
 ```
@@ -85,14 +85,14 @@ You can even mix-and-match the two layout styles
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1_biological.fastq.gz",
-        "HK5NHBGXX_Lane1_technical.fastq.gz",
-        "HK5NHBGXX_Lane1_technical.fastq.gz",
-        "HK5NHBGXX_Lane1_biological.fastq.gz",
+        "HK5NHBGXX_l01_biological.fastq.gz",
+        "HK5NHBGXX_l01_technical.fastq.gz",
+        "HK5NHBGXX_l01_technical.fastq.gz",
+        "HK5NHBGXX_l01_biological.fastq.gz",
     ]
 }
 ```
->**Example 2.3** Constructing a four segment  input read from a mixed style layout. The two biological segments, 0 and 3, are [interleaved](glossary.html#interleaved_file_layout) in `HK5NHBGXX_Lane1_biological.fastq.gz` while the two technical segments, 1 and 2, are interleaved into `HK5NHBGXX_Lane1_technical.fastq.gz`.
+>**Example 2.3** Constructing a four segment  input read from a mixed style layout. The two biological segments, 0 and 3, are [interleaved](glossary.html#interleaved_file_layout) in `HK5NHBGXX_l01_biological.fastq.gz` while the two technical segments, 1 and 2, are interleaved into `HK5NHBGXX_l01_technical.fastq.gz`.
 {: .example}
 
 The `input` directive defaults to expecting interleaved input from standard input. While input format is automatically detected interleaving layout is not unless you specify the `-s/--sense-input` command line flag.
@@ -198,10 +198,10 @@ A `transform` directive declared in the root of the instruction assembles the [o
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ],
     "transform": {
         "token": [ "0:6:", "3::-6" ]
@@ -259,10 +259,10 @@ A single closed class decoder can be declared in the `multiplex` directive. When
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ],
     "multiplex": {
         "transform": { "token": [ "1::8", "2::8" ] },
@@ -286,10 +286,10 @@ Since each class decoded by the multiplex decoder corresponds to a read group yo
     "flowcell id": "HK5NHBGXX",
     "flowcell lane number": 1,
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ],
     "multiplex": {
         "CN": "NYU CGSB",
@@ -363,12 +363,12 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 
 >```json
 {
-    "base input path": "/volume/alpha/HK5NHBGXX/lane_01",
+    "base input path": "/volume/alpha/HK5NHBGXX",
     "input": [
-        "HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
@@ -378,10 +378,10 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 >```json
 {
     "input": [
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
@@ -392,10 +392,10 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 {
     "base input path": "~/HK5NHBGXX",
     "input": [
-        "HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```

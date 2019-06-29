@@ -57,7 +57,7 @@ Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segm
 
 The first four lines of each of the files are
 
-**000000000-BDGGG_Lane1_S1_L001_R1_001.fastq.gz**
+**000000000-BDGGG_S1_L001_R1_001.fastq.gz**
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 1:N:0:
 CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
@@ -65,7 +65,7 @@ CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
 CCCCCGGGFGGGAFDFGFGGFGFGFGGGGGGGDEFDFFGGFEFGCFEFGEG
 ```
 
-**000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz**
+**000000000-BDGGG_S1_L001_I1_001.fastq.gz**
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 2:N:0:
 GGACTCCT
@@ -73,7 +73,7 @@ GGACTCCT
 B@CCCFC<
 ```
 
-**000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz**
+**000000000-BDGGG_S1_L001_R2_001.fastq.gz**
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 3:N:0:
 GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA
@@ -86,9 +86,9 @@ We declare those files as input with an input directive
 >```json
 {
     "input": [
-        "000000000-BDGGG_Lane1_S1_L001_R1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz"
+        "000000000-BDGGG_S1_L001_R1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_I1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_R2_001.fastq.gz"
     ]
 }
 ```
@@ -113,9 +113,9 @@ This simple example is very useful for interleaving raw split read segments into
 >```json
 {
     "input": [
-        "000000000-BDGGG_Lane1_S1_L001_R1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz"
+        "000000000-BDGGG_S1_L001_R1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_I1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_R2_001.fastq.gz"
     ],
     "output": [ "000000000-BDGGG_raw.cram" ]
 }
@@ -129,9 +129,9 @@ The `transform` directive can be used to manipulate the structure of the output 
 >```json
 {
     "input": [
-        "000000000-BDGGG_Lane1_S1_L001_R1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz"
+        "000000000-BDGGG_S1_L001_R1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_I1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_R2_001.fastq.gz"
     ],
     "transform": { "token": [ "0::", "2::" ] }
 }
@@ -178,9 +178,9 @@ In this example we declare a `multiplex` directive that uses the [phred-adjusted
 >```json
 {
     "input": [
-        "000000000-BDGGG_Lane1_S1_L001_R1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_I1_001.fastq.gz",
-        "000000000-BDGGG_Lane1_S1_L001_R2_001.fastq.gz"
+        "000000000-BDGGG_S1_L001_R1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_I1_001.fastq.gz",
+        "000000000-BDGGG_S1_L001_R2_001.fastq.gz"
     ],
     "transform": { "token": [ "0::", "2::" ] },
     "multiplex": {
