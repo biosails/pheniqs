@@ -19,7 +19,7 @@
 # demultiplex each lane
 for lane in {1..8}
 do
-pheniqs mux -n \
+pheniqs mux --no-output-npf \
 --config ~/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_lane${lane}.json \
 --output CBJLFACXX_l0${lane}_demultiplexed.bam \
 --report CBJLFACXX_l0${lane}_report.json \
