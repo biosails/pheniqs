@@ -251,7 +251,7 @@ pheniqs mux --config H7LT2DSXX_l01_estimate.json
 >**executing pheniqs with a prior estimation configuration** will produce [H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). This took about 1:45 hours per lane on our dual socket Intel Xeon E5-2620.
 {: .example}
 
-Now that you have [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json), a sample decoding configuration, and [H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json), a report with decoding statistics, you can use `pheniqs-prior-api.py` to generate a prior adjusted configuration file.
+Now that you have [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json), a sample decoding configuration, and [H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json), a report with decoding statistics, you can use `pheniqs-prior-api.py` to generate a [prior adjusted configuration file]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_adjusted.json).
 
 >```shell
 pheniqs-prior-api.py \
