@@ -147,7 +147,7 @@ pheniqs-illumina-api.py core \
 
 In the importing file, you can use the `base` property in a decoder to use those as a starting point in the `multiplex`, `cellular`, and `molecular`. Any directive you specify in your instantiation will override values provided by the referenced base. You will see an example of how it is used in the next section.
 
-## Decoding without priors
+## Sample barcode decoding
 
 The `multiplex` sub command will generate a basic sample demultiplexing configuration file for each lane.
 
@@ -189,9 +189,9 @@ is a configuration for demuliplexing the first lane. It declares a `multiplex` d
 >**Configuration for decoding with a uniform prior** in this case, the output is interleaved into a single bam file.
 {: .example}
 
-## Prior estimation
+## Estimating noise and sample priors
 
-The `estimate` sub command will generate, for each lane, an optimized configuration for sample prior estimation.
+To estimate priors for sample barcodes we need to collect some statistics. The `estimate` sub command will generate, for each lane, an optimized configuration for sample prior estimation.
 
 >```shell
 pheniqs-illumina-api.py estimate \
@@ -202,7 +202,7 @@ pheniqs-illumina-api.py estimate \
 >**pheniqs-illumina-api estimate** will produce a sample demultiplexing configuration optimized for prior estimation.
 {: .example}
 
-To estimate priors for sample barcodes we need to collect some statistics about the sample barcodes. Since reading the biological segments is not necessary for estimating the priors on the standard Illumina indices input is declared only for the two index segments.
+Since it is not necessary to read the biological segments when estimating the priors, input is declared only for the two index segments.
 
 [H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) declares a `multiplex` directive that expands `H7LT2DSXX_l01_multiplex` and adjusts the tokenization for the modified input. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output.
 
@@ -242,8 +242,8 @@ To estimate priors for sample barcodes we need to collect some statistics about 
 >**Prior estimation configuration** refrains from reading the biological sequences and produces no output which significantly speeds things up..
 {: .example}
 
-Executing this configuration will yield the report
-[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that we can use to estimate the priors.
+Executing this configuration will yield the
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json) report. Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that we can use to estimate the priors.
 
 >```shell
 pheniqs mux --config H7LT2DSXX_l01_estimate.json
@@ -251,8 +251,7 @@ pheniqs mux --config H7LT2DSXX_l01_estimate.json
 >**executing pheniqs with a prior estimation configuration** will produce [H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json). This took about 1:45 hours per lane on our dual socket Intel Xeon E5-2620.
 {: .example}
 
-Next, you use `pheniqs-prior-api.py` to generate a prior adjusted configuration with
-[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json) and [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json).
+Now that you have [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json), a sample decoding configuration, and [H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json), a report with decoding statistics, you can use `pheniqs-prior-api.py` to generate a prior adjusted configuration file.
 
 >```shell
 pheniqs-prior-api.py \
@@ -264,7 +263,8 @@ pheniqs-prior-api.py \
 {: .example}
 
 ## IO manipulation
-If you require the output to be split into files by either library of segment you can use `pheniqs-io-api.py` to adjust the necessary instructions in your configuration. Splitting by segment means every read segment is written to a separate file, rather than interleaved into the same file. Splitting by library means reads classified to different libraries are written to different files.
+
+If you need the output to be split into files by either library or segment you can use `pheniqs-io-api.py` to adjust the necessary directives in your configuration. Splitting by segment means every read segment is written to a separate file, rather than interleaved into the same file. Splitting by library means reads classified to different libraries are written to different files.
 
 >```shell
 pheniqs-io-api.py \
