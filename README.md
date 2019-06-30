@@ -27,7 +27,7 @@ Barcode decoding error probabilities are encoded in tags reserved for local use 
 **Open Source:** Pheniqs is released under the terms of the [AGPL 3.0 license agreement](http://opensource.org/licenses/AGPL-3.0).
 
 ## Getting started
-You can [install](https://biosails.github.io/pheniqs/2.0/install.html) Pheniqs from many common package managers or [build](https://biosails.github.io/pheniqs/2.0/build.html) it from source. The [quick tutorial](https://biosails.github.io/pheniqs/2.0/tutorial.html) will walk you though a very basic scenario of using Pheniqs. In the [manual](manual.html) you will find a more detailed discussion of each of the configuration parameters. In the [workflow](https://biosails.github.io/pheniqs/2.0/workflow.html) page you can find vignettes that will walk you through some standard protocols. **Please request specific protocols you wish to be included.**
+You can [install](https://biosails.github.io/pheniqs/2.0/install.html) Pheniqs from many common package managers or [build](https://biosails.github.io/pheniqs/2.0/build.html) it from source. The [quick tutorial](https://biosails.github.io/pheniqs/2.0/tutorial.html) will walk you though a very basic scenario of using Pheniqs. In the [manual](https://biosails.github.io/pheniqs/2.0/manual.html) you will find a more detailed discussion of each of the configuration parameters. In the [workflow](https://biosails.github.io/pheniqs/2.0/workflow.html) page you can find vignettes that will walk you through some standard protocols. **Please request specific protocols you wish to be included.**
 
 ## Getting started
 Head over to the [Pheniqs web site](https://biosails.github.io/pheniqs/2.0) for more details.
