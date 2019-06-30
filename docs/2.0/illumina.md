@@ -35,10 +35,12 @@
     <div class="clear" />
 </section>
 
-# Standard Illumina Sample demultiplexing
+# Standard Illumina sample decoding
 {:.page-title}
 
-This tutorial will walk you through demultiplexing an Illumia sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The read has 4 segments, 2 biological from the DNA or RNA fragment and 2 technical containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) respectively, and the decoding error probabilities is written to the [XB](glossary.html#xb_auxiliary_tag).
+This tutorial will walk you through hand writing configuration files for decoding sample barcodes in a standard Illumia sequencing run. For a tutorial that uses the python api to generate those configuration files see the [Standard Illumina sample decoding with the python API](illumina_python_api.html).
+
+In this example the run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments, 2 biological from the DNA or RNA fragment and 2 technical containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) tags, and the decoding error probabilities is written to [XB](glossary.html#xb_auxiliary_tag).
 
 ## Input Read Layout
 

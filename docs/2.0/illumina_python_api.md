@@ -33,18 +33,22 @@
     <div class="clear" />
 </section>
 
-# Standard Illumina sample barcoding with the Pheniqs python API
+# Standard Illumina sample decoding with the python API
 {:.page-title}
 
-This tutorial will walk you through prior estimation and demultiplexing of a standard Illumia sequencing run using `pheniqs-illumina-api.py`, `pheniqs-prior-api.py` and `pheniqs-io-api.py`. The python API can generate configuration files for the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding) from metadata in the [Illumina run folder]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). You will also see how you can cascade your configuration using the `import` directive to make it more reusable. For each read, the sample barcode and its quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) auxiliary tags. The decoding error probability will be stored in the [XB](glossary.html#xb_auxiliary_tag) tag. **All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find all pre generated files for this example.
+This tutorial will walk you through prior estimation and demultiplexing of a standard Illumia sequencing run using `pheniqs-illumina-api.py`, `pheniqs-prior-api.py` and `pheniqs-io-api.py`. In this example we use the python API to generate configuration files for [PAMLD](glossary.html#phred_adjusted_maximum_likelihood_decoding) from metadata found in an output [Illumina run folder for flowcell H7LT2DSXX]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). For an overview of manually write such configuration files for a similar scenario see the [Standard Illumina sample decoding](illumina.html). This example also demonstrates using the `import` directive to cascade configuration files.
+
+Sample barcode sequence and quality scores will be written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) auxiliary tags. The decoding error probability will be stored in the [XB](glossary.html#xb_auxiliary_tag) tag.
 
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
 The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
 
+**All shell commands bellow are executed in the [H7LT2DSXX example directory]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX)**, where you can also find all other files related to this example.
+
 ## Base calling
 
-Generate a bcl2fastq shell command for base calling without decoding the sample barcodes with `pheniqs-illumina-api.py`.
+Base calling is done with the Illumina bcl2fastq utility. Since we will want to decode barcodes by other means we need to adjust bcl2fastq's configuration to simply write the 4 segments of the reads to 4 files. The `basecall` sub command of `pheniqs-illumina-api.py` can generate a bcl2fastq shell command for base calling without decoding the sample barcodes.
 
 >```shell
     pheniqs-illumina-api.py basecall \
