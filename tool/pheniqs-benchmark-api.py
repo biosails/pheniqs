@@ -137,8 +137,8 @@ class Benchmark(Job):
         elif self.action == 'todeml':
             self.todeml(self.ontology)
 
-        elif self.action == 'sense_prior':
-            self.sense_prior(self.ontology)
+        elif self.action == 'estimate_prior':
+            self.estimate_prior(self.ontology)
 
         elif self.action == 'adjust_prior':
             self.adjust_prior(self.ontology)
@@ -197,8 +197,8 @@ class Benchmark(Job):
                             elif job['instruction']['action'] == 'todeml':
                                 self.todeml(self.ontology)
 
-                            elif job['instruction']['action'] == 'sense_prior':
-                                self.sense_prior(job)
+                            elif job['instruction']['action'] == 'estimate_prior':
+                                self.estimate_prior(job)
 
                             elif job['instruction']['action'] == 'adjust_prior':
                                 self.adjust_prior(job)
@@ -241,9 +241,9 @@ class Benchmark(Job):
         job = self.todeml(o)
 
         o = deepcopy(ontology)
-        o['instruction']['action'] = 'sense_prior'
+        o['instruction']['action'] = 'estimate_prior'
         o['instruction']['ssid'] = ssid
-        job = self.sense_prior(o)
+        job = self.estimate_prior(o)
 
         o = deepcopy(ontology)
         o['instruction']['action'] = 'adjust_prior'
@@ -366,7 +366,7 @@ class Benchmark(Job):
                     job.execute()
         return job
 
-    def sense_prior(self, ontology):
+    def estimate_prior(self, ontology):
         job = None
         self.log.info('estimating priors')
 
@@ -377,7 +377,6 @@ class Benchmark(Job):
                 ontology['model'] = deepcopy(experiment['model'])
                 job = EstimatePrior(ontology)
                 job.execute()
-
                 is_dirty = False
                 if job.is_model_dirty:
                     experiment['model'] = job.model_summary

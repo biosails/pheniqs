@@ -314,11 +314,11 @@
                                 "ssid",
                                 "sid"
                             ],
-                            "implementation": "sense_prior",
+                            "implementation": "estimate_prior",
                             "instruction": {
                                 "description": "Exectue pheniqs with a flat configuration and no output to estimste priors.",
                                 "help": "Estimate distrbution prior from data.",
-                                "name": "sense_prior"
+                                "name": "estimate_prior"
                             }
                         },
                         {

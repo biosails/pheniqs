@@ -36,6 +36,36 @@ from core import Job
 from core import merge
 from core import to_json
 
+def estimate_decoder_voodoo_prior(decoder, report):
+    if 'average classified confidence' in report:
+
+        # estimate noise prior
+        noise_count = 0
+        if 'low conditional confidence count' in report:
+            noise_count += report['low conditional confidence count']
+
+        if 'low confidence count' in report:
+            noise_count += (report['low confidence count'] * (1.0 - report['average classified confidence']))
+
+        decoder['noise'] = noise_count / report['count']
+        not_noise = 1.0 - decoder['noise']
+
+        if 'codec' in decoder and 'classified' in report:
+            # estimate each barcode prior
+            barcode_report_by_hash = {}
+            for barcode_report in report['classified']:
+                hash = ''.join(barcode_report['barcode'])
+                barcode_report_by_hash[hash] = barcode_report
+
+            for barcode_model in decoder['codec'].values():
+                hash = ''.join(barcode_model['barcode'])
+                if hash in barcode_report_by_hash:
+                    barcode_report = barcode_report_by_hash[hash]
+                    if 'pf pooled classified fraction' in barcode_report and barcode_report['pf pooled classified fraction'] > 0:
+                        barcode_model['concentration'] = not_noise * barcode_report['pf pooled classified fraction']
+                    else:
+                        barcode_model['concentration'] = 0
+
 class PheniqsPriorApi(Job):
     def __init__(self, ontology):
         Job.__init__(self, ontology)
@@ -137,7 +167,7 @@ class PheniqsPriorApi(Job):
                     r = self.report[classifier_type]
 
                     if isinstance(m, dict):
-                        self.estimate_classifier_prior(m, r)
+                        estimate_decoder_voodoo_prior(m, r)
 
                     elif isinstance(m, list):
                         index = 0
@@ -149,7 +179,7 @@ class PheniqsPriorApi(Job):
 
                         for report_item in r:
                             model_item = model_by_index[report_item['index']]
-                            self.estimate_classifier_prior(model_item, report_item)
+                            estimate_decoder_voodoo_prior(model_item, report_item)
 
         return self.ontology['adjusted']
 
@@ -205,36 +235,6 @@ class PheniqsPriorApi(Job):
                 for barcode in instruction['multiplex']['codec'].values():
                     if 'output' in barcode:
                         del barcode['output']
-
-    def estimate_classifier_prior(self, model, report):
-        if 'average classified confidence' in report:
-
-            # estimate noise prior
-            noise_count = 0
-            if 'low conditional confidence count' in report:
-                noise_count += report['low conditional confidence count']
-
-            if 'low confidence count' in report:
-                noise_count += (report['low confidence count'] * (1.0 - report['average classified confidence']))
-
-            model['noise'] = noise_count / report['count']
-            not_noise = 1.0 - model['noise']
-
-            # estimate each barcode prior
-            barcode_report_by_hash = {}
-            for barcode in report['classified']:
-                hash = ''.join(barcode['barcode'])
-                barcode_report_by_hash[hash] = barcode
-
-            if 'codec' in model:
-                for barcode_model in model['codec'].values():
-                    hash = ''.join(barcode_model['barcode'])
-                    if hash in barcode_report_by_hash:
-                        barcode_report = barcode_report_by_hash[hash]
-                        if 'pf pooled classified fraction' in barcode_report and barcode_report['pf pooled classified fraction'] > 0:
-                            barcode_model['concentration'] = not_noise * barcode_report['pf pooled classified fraction']
-                        else:
-                            barcode_model['concentration'] = 0
 
 def main():
     logging.basicConfig()
