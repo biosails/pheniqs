@@ -46,7 +46,7 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 
 # Read anatomy
 
-Illumina sequencing platforms typically produce four different sequence elements: two Index sequences (referred by Illumina as the **i5** and **i7** barcodes), and two Insert sequences (referred by Illumina as **Read 1** and **Read 2**). Collectively, these are commonly referred to as read segments. For example, consider a standard paired-end, dual index library design:
+Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **Read 1** and **Read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
 
 ![read anatomy](/pheniqs/assets/img/diagram1.png)
 
