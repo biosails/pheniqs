@@ -39,11 +39,13 @@
 Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs. The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below. Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](workflow.html) of the documentation.
 
 # Experimental designs
+
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
 
 ![experimental designs](/pheniqs/assets/img/diagram8.png)
 
 # Read anatomy
+
 Illumina sequencing platforms typically produce four different sequence elements: two Index sequences (referred by Illumina as the **i5** and **i7** barcodes), and two Insert sequences (referred by Illumina as **Read 1** and **Read 2**). Collectively, these are commonly referred to as read segments. For example, consider a standard paired-end, dual index library design:
 
 ![read anatomy](/pheniqs/assets/img/diagram1.png)
@@ -53,6 +55,7 @@ The read segments for this standard design thus comprise two technical sequences
 ![read anatomy](/pheniqs/assets/img/diagram2.png)
 
 # Sequence Classification
+
 The combination of the barcodes contained in the **I1** and **I2** index positions specifies the sample library. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
 
 To identify which biological sequences belong to which library, the sequences belonging each one need to be separated from each other. This process of deconvolving libraries is called demultiplexing and is done by classifying each of the sequences using the barcode indexes:
@@ -60,6 +63,7 @@ To identify which biological sequences belong to which library, the sequences be
 ![read anatomy](/pheniqs/assets/img/diagram5.png)
 
 # Tokenization
+
 Pheniqs uses tokens to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (I1, I2, R1, R2) and a length.
 
 It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
