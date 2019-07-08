@@ -64,13 +64,13 @@ To identify which biological sequences belong to which library, the sequences be
 
 # Tokenization
 
-Pheniqs uses tokens to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (I1, I2, R1, R2) and a length.
+Pheniqs uses tokens to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length.
 
 It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
 ![read anatomy](/pheniqs/assets/img/diagram7.png)
 
-For a standard paired-end, dual indexed Illumina run, the sample barcodes comprise the full I1 and I2 read segments. The biological sequences start at the first position of Read 1 and Read 2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
+For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Since Illumina sequencing is calibrated in relation to the previous sequenced base, those segments are sometimes sequenced one nucleotide longer to ensure good quality on the last nucleotide. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
 
 For this design, the barcode tokens begin at position 0 in I1 and I2 and extend for 10 bases. The tokens for biological sequences begin at position 0 of Read 1 and Read 2 and extend for the full span of those read segments.
 
@@ -83,9 +83,9 @@ After sequence classification, the various tokenized sequences extracted are wri
 
 | Name                                      | Description                                                    | Example                       |
 | :---------------------------------------- | :------------------------------------------------------------- | :---------------------------- |
-| **[RG](glossary.html#rg_auxiliary_tag)**  | Read group identifier matching an RG filed in the header.      | H7LT2DSXX:1:CGTACTAGACTGCATA  |
-| **[BC](glossary.html#bc_auxiliary_tag)**  | Raw uncorrected sample barcode sequence.                       | CGTACTAG-ACTGCATT             |
-| **[QT](glossary.html#qt_auxiliary_tag)**  | Phred quality of the sample barcode sequence in the BC tag.    | ,FF::F:F-,,FF::FF             |
+| **[RG](glossary.html#rg_auxiliary_tag)**  | Read group identifier matching an RG filed in the header.      | H7LT2DSXX:1:GAACTGAGCGTCGTGGAGCG  |
+| **[BC](glossary.html#bc_auxiliary_tag)**  | Raw uncorrected sample barcode sequence.                       | GAACTGAGCG-TCGTGGAGCG             |
+| **[QT](glossary.html#qt_auxiliary_tag)**  | Phred quality of the sample barcode sequence in the BC tag.    | ,FF::F:F:F-,,FF::FF:F             |
 | **[XB](glossary.html#xb_auxiliary_tag)**  | The probability that sample barcode decoding is incorrect.     | 2.27479e-06                   |
 | **[CB](glossary.html#cb_auxiliary_tag)**  | Cellular identifier.                                           | ACTGCATA                      |
 | **[CR](glossary.html#cr_auxiliary_tag)**  | Raw uncorrected cellular barcode sequence.                     | ACTGCATT                      |
