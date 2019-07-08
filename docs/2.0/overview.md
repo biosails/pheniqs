@@ -27,7 +27,7 @@
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
@@ -46,7 +46,7 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 
 # Read anatomy
 
-Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **Read 1** and **Read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
+Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **read 1** and **read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
 
 ![read anatomy](/pheniqs/assets/img/diagram1.png)
 
@@ -64,13 +64,11 @@ To identify which biological sequences belong to which library, the sequences be
 
 # Tokenization
 
-Pheniqs uses tokens to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length.
-
-It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
+Pheniqs uses [tokens](manual.html#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
 ![read anatomy](/pheniqs/assets/img/diagram7.png)
 
-For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Since Illumina sequencing is calibrated in relation to the previous sequenced base, those segments are sometimes sequenced one nucleotide longer to ensure good quality on the last nucleotide. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
+For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Because Illumina sequencing is calibrated in relation to the previously sequenced base, those segments are sometimes sequenced one nucleotide longer than necessary to ensure good quality on the last nucleotide. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
 
 For this design, the barcode tokens begin at position 0 in I1 and I2 and extend for 10 bases. The tokens for biological sequences begin at position 0 of Read 1 and Read 2 and extend for the full span of those read segments.
 
