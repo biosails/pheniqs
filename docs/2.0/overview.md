@@ -61,9 +61,6 @@ The combination of the barcodes contained in the **I1** and **I2** index positio
 To identify which biological sequences belong to which library, the sequences belonging each one need to be separated from each other. This process of deconvolving libraries is called demultiplexing and is done by classifying each of the sequences using the barcode indexes:
 
 ![read anatomy](/pheniqs/assets/img/diagram5.png)
-**Note** *The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand*
-
-![read anatomy](/pheniqs/assets/img/diagram5.png)
 >**Note** *The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand*
 {: .example}
 
