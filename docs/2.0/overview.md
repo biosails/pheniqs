@@ -63,6 +63,10 @@ To identify which biological sequences belong to which library, the sequences be
 ![read anatomy](/pheniqs/assets/img/diagram5.png)
 **Note** *The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand*
 
+![read anatomy](/pheniqs/assets/img/diagram5.png)
+>**Note** *The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand*
+{: .example}
+
 # Tokenization
 
 Pheniqs uses [tokens](manual.html#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
