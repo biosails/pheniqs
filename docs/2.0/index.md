@@ -36,6 +36,8 @@
 # Pheniqs
 {:.page-title}
 
+**This is Lior's private repo**
+
 Pheniqs is a generic DNA sequence multiplexer, demultiplexer and quality analyzer that caters to a wide variety of experimental designs. It is written in multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11) and is can easily be to extend with new decoding algorithms. A python API for generating configuration files for common experimental designs is also available and actively maintained. Pheniqs is pronounced ***phoe·nix*** and stands for **PH**ilology **EN**coder w**I**th **Q**uality **S**tatistics.
 
 ## Pheniqs at a glance
