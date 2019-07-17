@@ -23,13 +23,11 @@
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
+        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/pheniqs/2.0/best_practices.html">Best Practice</a></li>
-        <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
+        <li><a class="active"   href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
@@ -57,10 +55,10 @@ The instruction `input` directive is an ordered list of file paths. Pheniqs asse
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
@@ -72,10 +70,10 @@ The instruction `input` directive is an ordered list of file paths. Pheniqs asse
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ]
 }
 ```
@@ -87,14 +85,14 @@ You can even mix-and-match the two layout styles
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1_biological.fastq.gz",
-        "HK5NHBGXX_Lane1_technical.fastq.gz",
-        "HK5NHBGXX_Lane1_technical.fastq.gz",
-        "HK5NHBGXX_Lane1_biological.fastq.gz",
+        "HK5NHBGXX_l01_biological.fastq.gz",
+        "HK5NHBGXX_l01_technical.fastq.gz",
+        "HK5NHBGXX_l01_technical.fastq.gz",
+        "HK5NHBGXX_l01_biological.fastq.gz",
     ]
 }
 ```
->**Example 2.3** Constructing a four segment  input read from a mixed style layout. The two biological segments, 0 and 3, are [interleaved](glossary.html#interleaved_file_layout) in `HK5NHBGXX_Lane1_biological.fastq.gz` while the two technical segments, 1 and 2, are interleaved into `HK5NHBGXX_Lane1_technical.fastq.gz`.
+>**Example 2.3** Constructing a four segment  input read from a mixed style layout. The two biological segments, 0 and 3, are [interleaved](glossary.html#interleaved_file_layout) in `HK5NHBGXX_l01_biological.fastq.gz` while the two technical segments, 1 and 2, are interleaved into `HK5NHBGXX_l01_technical.fastq.gz`.
 {: .example}
 
 The `input` directive defaults to expecting interleaved input from standard input. While input format is automatically detected interleaving layout is not unless you specify the `-s/--sense-input` command line flag.
@@ -200,10 +198,10 @@ A `transform` directive declared in the root of the instruction assembles the [o
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ],
     "transform": {
         "token": [ "0:6:", "3::-6" ]
@@ -261,10 +259,10 @@ A single closed class decoder can be declared in the `multiplex` directive. When
 >```json
 {
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ],
     "multiplex": {
         "transform": { "token": [ "1::8", "2::8" ] },
@@ -288,10 +286,10 @@ Since each class decoded by the multiplex decoder corresponds to a read group yo
     "flowcell id": "HK5NHBGXX",
     "flowcell lane number": 1,
     "input": [
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram",
-        "HK5NHBGXX_Lane1.cram"
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram",
+        "HK5NHBGXX_l01.cram"
     ],
     "multiplex": {
         "CN": "NYU CGSB",
@@ -365,12 +363,12 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 
 >```json
 {
-    "base input path": "/volume/alpha/HK5NHBGXX/lane_01",
+    "base input path": "/volume/alpha/HK5NHBGXX",
     "input": [
-        "HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
@@ -380,10 +378,10 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 >```json
 {
     "input": [
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "/volume/alpha/HK5NHBGXX/lane_01/HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "/volume/alpha/HK5NHBGXX/HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
@@ -394,10 +392,10 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 {
     "base input path": "~/HK5NHBGXX",
     "input": [
-        "HK5NHBGXX_Lane1_S1_L001_R1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I1_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_I2_001.fastq.gz",
-        "HK5NHBGXX_Lane1_S1_L001_R2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I1_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
+        "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
 }
 ```
@@ -460,7 +458,7 @@ Pheniqs emits a statistical report. If you specify the `-q/--quality` command li
 ## Decoder statistics
 For every `multiplex`, `molecular` and `cellular` decoder the following statistics is reported, if applicable. Counters have a slightly different meaning depending on the value of the `filter incoming qc fail` flag. if `filter incoming qc fail` was **true** incoming reads are dropped immediately and are never seen by the decoder and so counters will only be affected by reads that were marked as **QC fail** by Pheniqs due to barcode decoding failure. If `filter incoming qc fail` was **false** the decoder will attempt to classify all reads and so counters will also count reads that were already marked as **QC fail** in the input. **pf** counters will always only apply to reads that were either marked **QC fail** by Pheniqs nor were already marked **QC fail** in the input.
 
-	| JSON field                           | Description                                                                         |
+  | JSON field                           | Description                                                                         |
 	| :----------------------------------- | :---------------------------------------------------------------------------------- |
 	| **count**                            | count for all reads processed by the pipeline, both classified and unclassified.    |
 	| **classified count**                 | count of all reads classified to some barcode.                                      |
@@ -498,7 +496,7 @@ The `decoder::` prefix in the table refers to the attribute in the parent decode
 	| **low confidence count**             | count of reads that failed to classify due to low confidence.                                         |
 
 ## Prior estimation
-The **PAMLD** decoder **low conditional confidence count** counts reads where the conditional probability of the maximum likelihood decoded barcode is lower than the probability of a observing a random sequence. Those reads are much more likely to be noise than anything else. This makes the ratio of **low conditional confidence count** to **count** a good initial candidate for the decoder noise prior, the decoder `noise` directive. When overall quality of the run is low this can under estimate the noise prior since a lower signal to noise ratio makes it more difficult to tell random sequences from errors. We adjust for this by counting as noise a fraction of the reads counted by **low confidence count**, which counts reads that passed the previous filter but have been marked **QC fail** because the posterior probability of correctly decoding the barcode was lower than **confidence threshold**. We estimate the **signal to noise ratio** as **1** - **average classified confidence**. So an adjusted estimate of the noise prior is **low conditional confidence count** + **signal to noise ratio** * **low confidence count** divided by **count**. Once we establish an estimate of the noise prior, estimating the prior of each barcode is straight forward since we can rely on the high quality reads. For each barcode we estimate the `concentration` as **pf pooled classified fraction** multiplied by the probability of it not being noise, which is **1** - `noise`. The `estimate_prior.py` script can adjust your configuration file with those priors from a configuration file. The initial priors can be either left blank, suggesting a uniform prior, or your best guess.
+The **PAMLD** decoder **low conditional confidence count** counts reads where the conditional probability of the maximum likelihood decoded barcode is lower than the probability of a observing a random sequence. Those reads are much more likely to be noise than anything else. This makes the ratio of **low conditional confidence count** to **count** a good initial candidate for the decoder noise prior, the decoder `noise` directive. When overall quality of the run is low this can under estimate the noise prior since a lower signal to noise ratio makes it more difficult to tell random sequences from errors. We adjust for this by counting as noise a fraction of the reads counted by **low confidence count**, which counts reads that passed the previous filter but have been marked **QC fail** because the posterior probability of correctly decoding the barcode was lower than **confidence threshold**. We estimate the **signal to noise ratio** as **1** - **average classified confidence**. So an adjusted estimate of the noise prior is **low conditional confidence count** + **signal to noise ratio** * **low confidence count** divided by **count**. Once we establish an estimate of the noise prior, estimating the prior of each barcode is straight forward since we can rely on the high quality reads. For each barcode we estimate the `concentration` as **pf pooled classified fraction** multiplied by the probability of it not being noise, which is **1** - `noise`. The `pheniqs-prior-api.py` script can adjust your configuration file with those priors from a configuration file. The initial priors can be either left blank, suggesting a uniform prior, or your best guess.
 
 >```json
 {

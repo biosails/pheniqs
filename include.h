@@ -66,12 +66,14 @@
 
 using std::cerr;
 using std::condition_variable;
+using std::cin;
 using std::cout;
 using std::endl;
 using std::exception;
 using std::fixed;
 using std::hash;
 using std::hex;
+using std::istream;
 using std::ifstream;
 using std::int16_t;
 using std::int32_t;

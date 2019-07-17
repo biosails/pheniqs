@@ -74,6 +74,7 @@ a {
 }
 
 .site-footer {
+    width: 66rem;
     margin-top: 4rem;
     padding: 2rem;
     border-width: 0;
@@ -103,15 +104,15 @@ a {
 }
 
 .main-content h1.page-title {
-    font-size: 2rem;
+    font-size: 1.6rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
     font-weight: bold;
-    color: rgba(165, 48, 75, 0.9);
+    color: rgba(36,41,36,0.9);
 }
 
 .main-content h2 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
@@ -120,13 +121,11 @@ a {
     font-size: 1.25rem;
 }
 
-.main-content p,
-.main-content table {
+.main-content p {
     margin: 0rem 0rem 1rem 0rem;
 }
 
-.main-content .example,
-.main-content .read {
+.main-content .example {
     color: #516168;
     padding: 1.5rem;
     margin: 2rem 0rem;
@@ -245,6 +244,39 @@ a {
     display: block;
 }
 
+#footer-navigation ul {
+    list-style-type: none;
+    list-style-position: inside;
+    display: block;
+}
+
+#footer-navigation {
+    padding: 0;
+    font-size: 0.8rem;
+    margin-bottom: 4rem;
+}
+
+#footer-navigation a {
+    padding: 0.25rem 0.5rem 0.35rem 0.5rem;
+    float: left;
+    display: block;
+    font-weight: bold;
+    margin: 0rem 1rem 0rem 0rem;
+}
+
+#footer-navigation a:link,
+#footer-navigation a:visited {
+    color: rgba(36,41,36,0.8);
+    font-weight: bold;
+}
+
+#footer-navigation a:hover,
+#footer-navigation a.active {
+    color: rgba(36,41,36,1);
+    text-decoration:none;
+    font-weight: bold;
+}
+
 #markdown-toc {
     float: right;
     font-size: 0.8rem;
@@ -253,7 +285,7 @@ a {
     list-style-type: none;
     list-style-position: inside;
     border-radius: 0.3rem;
-    background-color: rgba(203,86,28,0.9);
+    background-color: rgba(36,41,36,0.9);
 }
 
 #markdown-toc a {
@@ -277,21 +309,59 @@ a {
     clear: both;
 }
 
-section.notice_2_0 {
-    background-color: rgba(153,56, 48, 1);
-    color: #FEFEFE;
-    font-weight: bold;
-    padding: 1em 2em;
-    border-radius: 0rem;
-    border-color: rgba(36,41,36,0.9);
-    border-width: 0.2em;
-    border-style: solid;
-    text-align: center;
+.main-content table.diagram,
+.main-content table.legend {
+  border: none;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  // border-left: 0.3rem solid #dce6f0;
+  // background-color: rgba(239,240,241,0.5);
+}
+
+.main-content table.diagram td,
+.main-content table.diagram th,
+.main-content table.legend td,
+.main-content table.legend th {
+  border: none;
+  padding: 0.5rem 0rem;
+  vertical-align: top;
+}
+
+.main-content table.diagram td.description {
+  width: 20%;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding-right: 0.5rem;
+}
+
+.main-content table.legend td {
+  font-size: 0.8rem;
+  padding: 0.2rem 0rem;
+}
+.main-content table.legend td.label {
+  width: 20%;
+  padding-right: 0.5rem;
+  color: #FFFFFF;
+}
+.main-content table.legend td.definition {
+  font-weight: bold;
+}
+.main-content table.legend td.label span {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  padding: 0rem 0.5rem;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.main-content table.legend td.label span:hover {
+  padding-left: 1rem;
 }
 
 .read {
+  color: #FFFFFF;
+  padding: 1.5rem;
+  margin: 0rem 0rem;
   clear: both;
-  border-left: 0.3rem solid #dce6f0;
 }
 
 .read p {
@@ -315,17 +385,18 @@ section.notice_2_0 {
 .read .sequencing_primer,
 .read .sample_barcode,
 .read .cellular_barcode,
-.read .molecular_barcode {
+.read .molecular_barcode,
+.read .custom_barcode {
   float: left;
   padding: 0.2em 10px;
-  color: #E5E3E2;
+  color: #FFFFFF;
   text-align: center;
   box-sizing: content-box;
 }
 
 .read {
   color: #FFFFFF;
-  margin: 2rem 0rem;
+  margin: 0rem;
   padding: 0;
   display: block;
   margin-left: auto;
@@ -333,11 +404,9 @@ section.notice_2_0 {
   box-sizing: content-box;
 }
 .read .insert {
-  background-color: #51565A;
-  width: 300px;
+  width: 200px;
 }
 .read .binding_primer {
-  background-color: #B1336B;
   width: 30px;
 }
 .read .binding_primer.p5 {
@@ -349,28 +418,54 @@ section.notice_2_0 {
   border-bottom-right-radius: 5px;
 }
 .read .sequencing_primer {
-  background-color: #5C6D3B;
   width: 30px;
 }
 .read .sample_barcode {
-  background-color: #F1A64C;
-  width: 60px;
+  width: 30px;
+}
+.read .custom_barcode {
+}
+.read .sample_barcode.i7 {
+}
+.read .sample_barcode.i5 {
 }
 .read .cellular_barcode {
-  background-color: #2AB7CA;
-  width: 60px;
+  width: 30px;
 }
 .read .molecular_barcode {
-  background-color: #B8C038;
-  width: 60px;
+  width: 30px;
 }
 
-
-.read .sample_barcode_i5 {
-  background-color: #FF6D1D;
-  width: 60px;
+.insert {
+  background-color: rgba(0,149,254, 1);
 }
-.read .sample_barcode_i7 {
-  background-color: #5EA8C0;
-  width: 60px;
+.binding_primer {
+  background-color: rgb(123,123,123);
+}
+.binding_primer.p5 {
+  background-color: rgba(123,123,123, 0.9);
+}
+.binding_primer.p7 {
+  background-color: rgba(123,123,123, 0.6);
+}
+.sequencing_primer {
+  background-color: rgba(191,191,191, 1);
+}
+.sample_barcode {
+  background-color: #00B0F0;
+}
+.custom_barcode {
+  background-color: rgba(112,48,160, 1);
+}
+.sample_barcode.i7 {
+  background-color: rgba(0,176,240, 0.9);
+}
+.sample_barcode.i5 {
+  background-color: rgba(0,176,240, 0.6);
+}
+.cellular_barcode {
+  background-color: #2AB7CA;
+}
+.molecular_barcode {
+  background-color: rgba(255,217,102,1);
 }

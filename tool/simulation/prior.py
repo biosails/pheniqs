@@ -48,10 +48,7 @@ class EstimatePrior(ShellCommand):
         return self.genealogy['ssid']
 
     def update_model_prior_estimate(self):
-        def update_classifier_model_prior_estimate_original(classifier_model, classifier_report):
-            # Noise prior: {decoder low conditional confidence count} / {decoder count}
-            # Barcode prior: {barcode count} + {barcode low confidence count} / {decoder count}
-
+        def update_classifier_model_prior_estimate(classifier_model, classifier_report):
             classifier_estimate = {}
             classifier_model['estimate'] = classifier_estimate
             for item in [
@@ -75,16 +72,25 @@ class EstimatePrior(ShellCommand):
                 else:
                     classifier_estimate[item] = 0
 
-            # noise prior estimation
-            classifier_estimate['estimated noise'] = classifier_estimate['low conditional confidence count'] / classifier_estimate['count']
+            noise_count = 0
+            if 'low conditional confidence count' in classifier_estimate:
+                noise_count += classifier_estimate['low conditional confidence count']
+
+            confident_noise = noise_count / (noise_count + classifier_estimate['pf classified count'])
+
+            if 'low confidence count' in classifier_estimate:
+                noise_count += classifier_estimate['low confidence count'] * confident_noise
+
+            classifier_estimate['estimated noise'] = noise_count / classifier_estimate['count']
             classifier_estimate['estimated noise deviation'] = 1.0 - classifier_estimate['estimated noise'] / classifier_model['simulated noise']
 
-            barcode_report_by_hash = {}
-            for barcode in classifier_report['classified']:
-                hash = ''.join(barcode['barcode'])
-                barcode_report_by_hash[hash] = barcode
+            not_noise = 1.0 - classifier_estimate['estimated noise']
+            if 'codec' in classifier_model and 'classified' in classifier_report:
+                barcode_report_by_hash = {}
+                for barcode in classifier_report['classified']:
+                    hash = ''.join(barcode['barcode'])
+                    barcode_report_by_hash[hash] = barcode
 
-            if 'codec' in classifier_model:
                 for barcode_model in classifier_model['codec'].values():
                     hash = ''.join(barcode_model['barcode'])
                     if hash in barcode_report_by_hash:
@@ -111,8 +117,9 @@ class EstimatePrior(ShellCommand):
                                 barcode_estimate[item] = 0
 
                         # barcode prior estimation
-                        barcode_estimate['estimated concentration'] = ((barcode_estimate['count'] + barcode_estimate['low confidence count']) / classifier_estimate['count'])
-                        barcode_estimate['estimated concentration deviation'] = barcode_estimate['estimated concentration'] - barcode_model['simulated concentration']
+                        barcode_estimate['estimated concentration'] = not_noise * barcode_estimate['pf pooled classified fraction']
+                        if barcode_model['simulated concentration'] > 0:
+                            barcode_estimate['estimated concentration deviation'] = barcode_estimate['estimated concentration'] - barcode_model['simulated concentration']
 
             if 'unclassified' in classifier_model:
                 barcode_model = classifier_model['unclassified']
@@ -131,7 +138,8 @@ class EstimatePrior(ShellCommand):
                     else:
                         barcode_estimate[item] = 0
                 barcode_model['estimate'] = barcode_estimate
-        def update_classifier_model_prior_estimate(classifier_model, classifier_report):
+
+        def update_classifier_model_prior_estimate_voodoo(classifier_model, classifier_report):
             classifier_estimate = {}
             classifier_model['estimate'] = classifier_estimate
             for item in [

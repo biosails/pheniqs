@@ -23,13 +23,11 @@
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
+        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/pheniqs/2.0/best_practices.html">Best Practice</a></li>
-        <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
-        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="active"   href="/pheniqs/2.0/cli.html">CLI</a></li>
+        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
@@ -62,63 +60,67 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.
 
-# Demux sub command help
+# `mux` sub command help
 
-    pheniqs version 2.0.6
+    pheniqs version 2.0.6-144
     Multiplex and Demultiplex annotated DNA sequence reads
 
     Usage : pheniqs mux [-h] [-i PATH]* [-o PATH]* [-c PATH] [-R PATH] [-I URL]
-                    [-O URL] [-s] [-f] [-l INT] [-F fastq|sam|bam|cram] [-Z none|gz]
-                    [-T SEGMENT:START:END]*
-                    [-P CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-q] [-V]
-                    [-D] [-C] [-S] [-j] [-t INT] [-B INT] [--precision INT]
+                        [-O URL] [-s] [-n] [-N] [-l INT] [-F fastq|sam|bam|cram] [-Z none|gz|bgzf]
+                        [-L 0|1|2|3|4|5|6|7|8|9] [-T SEGMENT:START:END]*
+                        [-P CAPILLARY|LS454|ILLUMINA|SOLID|HELICOS|IONTORRENT|ONT|PACBIO] [-q] [-V]
+                        [-D] [-C] [-S] [-j] [-t INT] [--decoding-threads INT] [--htslib-threads INT]
+                        [-B INT] [--precision INT]
     Optional :
-    -h, --help                       Show this help
-    -i, --input PATH                 Path to an input file. May be repeated.
-    -o, --output PATH                Path to an output file. May be repeated.
-    -c, --config PATH                Path to configuration file
-    -R, --report PATH                Path to report file
-    -I, --base-input URL             Base input url
-    -O, --base-output URL            Base output url
-    -s, --sense-input                Sense input segment layout
-    -f, --filtered                   Include reads not passing vendor QC in output
-    -l, --leading INT                Leading read segment index
-    -F, --format STRING              Defult output format
-    -Z, --compression STRING         Defult output compression
-    -T, --token SEGMENT:START:END    Output read token
-    -P, --platform STRING            Sequencing platform
-    -q, --quality                    Enable quality control
-    -V, --validate                   Validate configuration file and emit a report
-    -D, --distance                   Display pairwise barcode distance during validation
-    -C, --compile                    Compiled JSON configuration file
-    -S, --static                     Static configuration JSON file
-    -j, --job                        Include a copy of the compiled job in the report
-    -t, --threads INT                Thread pool size
-    -B, --buffer INT                 Feed buffer capacity
-    --precision INT                  Output floating point precision
+      -h, --help                       Show this help
+      -i, --input PATH                 Path to an input file. May be repeated.
+      -o, --output PATH                Path to an output file. May be repeated.
+      -c, --config PATH                Path to configuration file
+      -R, --report PATH                Path to report file
+      -I, --base-input URL             Base input url
+      -O, --base-output URL            Base output url
+      -s, --sense-input                Sense input segment layout
+      -n, --no-output-npf              Filter outgoing QC failed reads
+      -N, --no-input-npf               Filter incoming QC failed reads.
+      -l, --leading INT                Leading read segment index
+      -F, --format STRING              Defult output format
+      -Z, --compression STRING         Defult output compression
+      -L, --level STRING               Defult output compression level
+      -T, --token SEGMENT:START:END    Output read token
+      -P, --platform STRING            Sequencing platform
+      -q, --quality                    Enable quality control
+      -V, --validate                   Validate configuration file and emit a report
+      -D, --distance                   Display pairwise barcode distance during validation
+      -C, --compile                    Compiled JSON configuration file
+      -S, --static                     Static configuration JSON file
+      -j, --job                        Include a copy of the compiled job in the report
+      -t, --threads INT                Thread pool size
+      --decoding-threads INT           Number of parallel decoding threads
+      --htslib-threads INT             Size of htslib thread pool size
+      -B, --buffer INT                 Feed buffer capacity
+      --precision INT                  Output floating point precision
 
-    -i/--input defaults to /dev/stdin with inputing layout sensing.
-    -o/--output default to /dev/stdout with SAM format.
-    -I/--base-input and -O/--base-output default to the working directory.
-    -V/--validate, -C/--compile and -S/--static disable job excution and only emit information.
-    -s/--sense-input will guess input layout by examining the first few reads of each input file.
-    -S/--static emits a static configuration file with all imports resolved.
-    -C/--compile emits a compiled configuration file ready for execution with implicit attributes resolved.
-    -i/--input and -o/--output can be repeated to provide multiple paths,
-    i.e. `pheniqs mux -i in_segment_1.fastq -i in_segment_2.fastq -o out_segment_1.fastq -o out_segment_2.fastq`
+      -i/--input defaults to /dev/stdin with inputing layout sensing.
+      -o/--output default to /dev/stdout with SAM format.
+      -I/--base-input and -O/--base-output default to the working directory.
+      -V/--validate, -C/--compile and -S/--static disable job excution and only emit information.
+      -s/--sense-input will guess input layout by examining the first few reads of each input file.
+      -S/--static emits a static configuration file with all imports resolved.
+      -C/--compile emits a compiled configuration file ready for execution with implicit attributes resolved.
+      -i/--input and -o/--output can be repeated to provide multiple paths,
+      i.e. `pheniqs mux -i in_segment_1.fastq -i in_segment_2.fastq -o out_segment_1.fastq -o out_segment_2.fastq`
 
     This program comes with ABSOLUTELY NO WARRANTY. This is free software,
     and you are welcome to redistribute it under certain conditions.
 
-
 # Pheniqs tools
 In the tool folder you will find several python scripts to assist with Pheniqs deployment and interfacing with existing tools.
 
-## `illumina2pheniqs.py`
+## Illumina API
 
-Generate pheniqs configuration files or a bcl2fastq command from an illumina run directory. This tool parses that `RunInfo.xml`, `RunParameters.xml` and `SampleSheet.csv` files in the directory. The `Data` section of the `SampleSheet.csv` must either have all records declare a `Lane` or none.
+`pheniqs-illumina-api.py` can generate Pheniqs configuration files from metadata found in an Illumina run folder.
 
-    usage: illumina2pheniqs.py [-h] [--version] [-v LEVEL] ACTION ...
+    usage: pheniqs-illumina-api.py [-h] [--version] [-v LEVEL] ACTION ...
 
     Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
 
@@ -130,25 +132,86 @@ Generate pheniqs configuration files or a bcl2fastq command from an illumina run
 
     pipeline operations:
       Generate pheniqs configuration files or a bcl2fastq command from an
-      illumina run directory. This tool parses that RunInfo.xml,
-      RunParameters.xml and SampleSheet.csv files in the directory.
+      illumina run directory. This tool parses RunInfo.xml, RunParameters.xml
+      and SampleSheet.csv files.
 
       ACTION
-        bcl2fastq           bcl2fastq command to write all segments to FASTQ
-        core                Single decoder directive for each lane
-        interleave          Interleave both template and index segments to SAM
-        demultiplex         Demultiplex a single lane
+        basecall            bcl2fastq command to write all segments to FASTQ
+        core                Core instruction. Imported by the rest.
+        multiplex           Multiplex job file for each lane
+        estimate            Prior estimate job file for each lane
+        interleave          Interleaved job file for each lane
 
-The `core` sub command generates a configuration that contains a single multiplex decoder directive in the global `decoder` directive for each lane
-in the sample sheet or just one if the integer `Lane` column is missing from the sample sheet.
-Those declarations are not used in the `multiplex` directive but are merely made available for other configurations to import, where the exact output layout and possible additional decoders can be declared.
+* **basecall** sub command generates a shell script with a bcl2fastq command and an accompanying sample sheet for basecaling with illumina *bcl2fastq* without demupltiplexing.
 
-The `demultiplex` sub command will declare an inline multiplex decoder for a single lane, specified with the `-l/--lane-number` command line parameter.
-not specifying a lane will create a multiplex decoder with all records for sample sheets that do not declare a `Lane`, like the MiSeq.
+* **core** generates a configuration that contains a single multiplex decoder directive in the global `decoder` directive for each lane in the sample sheet or just one if the integer `Lane` column is missing from the sample sheet.
 
-The `interleave` sub command generates a configuration file that will interleave all FASTQ files containing the segments of the read into a single stream. By default this will emit the segments to stdout in SAM format but you may explicitly specify an output file path in any other format.
+* **multiplex** generates a multiplex job file for each lane with a uniform prior.
 
-The `bcl2fastq` sub command generates a shell command for executing `bcl2fastq 2.x` that will disable all post processing and demultiplexing done with bcl2fastq and only convert the data in the bcl files into a FASTQ file for each segment.
+* **estimate** generates a prior estimation optimized job file for each lane.
+
+* **interleave** generates an interleave job file for each lane. This can be used to pack the fastq files into a SAM format or just Interleaved fastq.
+
+## IO API
+
+`pheniqs-io-api.py` can manipulate a output format and splitting layout of Pheniqs configuration file.
+
+    usage: pheniqs-io-api.py [-h] -c PATH [-F {fastq,sam,bam,cram}]
+                             [--compression {uncompressed,gz,bgzf}]
+                             [--compression-level {0,1,2,3,4,5,6,7,8,9}] [-L] [-S]
+                             [--base-input PATH] [--base-output PATH] [-s]
+                             [--static] [-p PREFIX] [--version] [-v LEVEL]
+
+    Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c PATH, --configuration PATH
+                            Path to original pheniqs configuration file.
+      -F {fastq,sam,bam,cram}, --format {fastq,sam,bam,cram}
+                            Output format
+      --compression {uncompressed,gz,bgzf}
+                            Output compression
+      --compression-level {0,1,2,3,4,5,6,7,8,9}
+                            Output compression level
+      -L, --split-library   Library output routing
+      -S, --split-segment   Segment output routing
+      --base-input PATH     Forwarded to pheniqs -I/--base-input parameter.
+      --base-output PATH    Forwarded to pheniqs -O/--base-output parameter.
+      -s, --sense-input     sense input directive for pheniqs
+      --static              Static configuration output
+      -p PREFIX, --prefix PREFIX
+                            Prefix for generated output file names
+      --version             show program's version number and exit
+      -v LEVEL, --verbosity LEVEL
+                            logging verbosity level
+
+## Prior API
+
+`pheniqs-prior-api.py` can use an exiting configuration file and a Pheniqs demultiplex report for the same data to compile a new configuration file with adjusted priors.
+
+    usage: pheniqs-prior-api.py [-h] -c PATH [-r PATH] [-p PREFIX] [-i PATH] [-s]
+                                [--base-input PATH] [--base-output PATH]
+                                [--version] [-v LEVEL]
+
+    Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c PATH, --configuration PATH
+                            Path to original pheniqs configuration file.
+      -r PATH, --report PATH
+                            Path to pheniqs prior estimation report file.
+      -p PREFIX, --prefix PREFIX
+                            Generated file names prefix.
+      -i PATH, --input PATH
+                            Forwarded to pheniqs -i/--input parameter.
+      -s, --sense-input     Forwarded to pheniqs -s/--sense-input parameter.
+      --base-input PATH     Forwarded to pheniqs -I/--base-input parameter.
+      --base-output PATH    Forwarded to pheniqs -O/--base-output parameter.
+      --version             show program's version number and exit
+      -v LEVEL, --verbosity LEVEL
+                            logging verbosity level
 
 # JSON validation
 

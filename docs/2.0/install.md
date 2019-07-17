@@ -21,15 +21,13 @@
 
 <section id="navigation">
     <ul>
-        <li><a                  href="/pheniqs/2.0/">Home</a></li>
+        <li><a class="active"   href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
+        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a class="active"   href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/pheniqs/2.0/best_practices.html">Best Practice</a></li>
-        <li><a                  href="/pheniqs/2.0/glossary.html">Glossary</a></li>
-        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
+        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
@@ -63,7 +61,6 @@ Simply install pheniqs using the conda package manager
 conda install pheniqs
 # Installs pheniqs in an isolated environment - recommended
 conda create -n pheniqs pheniqs
-
 ```
 
 If you want to live on the bleeding edge, you can also install pheniqs from our anaconda channel, nyuad-cgsb.
