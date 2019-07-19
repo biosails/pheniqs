@@ -603,6 +603,7 @@
                     "compression_level",
                     "split_library",
                     "split_segment",
+                    "input",
                     "base_input",
                     "base_output",
                     "sense_input",

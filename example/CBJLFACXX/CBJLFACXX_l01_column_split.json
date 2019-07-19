@@ -1,0 +1,132 @@
+{
+    "flowcell lane number": 1,
+    "import": [
+        "CBJLFACXX_core.json"
+    ],
+    "input": [
+        "CBJLFACXX_S1_L001_R1_001.fastq.gz",
+        "CBJLFACXX_S1_L001_I1_001.fastq.gz",
+        "CBJLFACXX_S1_L001_R2_001.fastq.gz"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "@CBJLFACXX_column",
+        "codec": {
+            "@AAGAGGCA": {
+                "output": [
+                    "CBJLFACXX_AAGAGGCA.bam"
+                ]
+            },
+            "@ACTCGCTA": {
+                "output": [
+                    "CBJLFACXX_ACTCGCTA.bam"
+                ]
+            },
+            "@ACTGAGCG": {
+                "output": [
+                    "CBJLFACXX_ACTGAGCG.bam"
+                ]
+            },
+            "@AGGCAGAA": {
+                "output": [
+                    "CBJLFACXX_AGGCAGAA.bam"
+                ]
+            },
+            "@ATCTCAGG": {
+                "output": [
+                    "CBJLFACXX_ATCTCAGG.bam"
+                ]
+            },
+            "@ATGCGCAG": {
+                "output": [
+                    "CBJLFACXX_ATGCGCAG.bam"
+                ]
+            },
+            "@CGAGGCTG": {
+                "output": [
+                    "CBJLFACXX_CGAGGCTG.bam"
+                ]
+            },
+            "@CGGAGCCT": {
+                "output": [
+                    "CBJLFACXX_CGGAGCCT.bam"
+                ]
+            },
+            "@CGTACTAG": {
+                "output": [
+                    "CBJLFACXX_CGTACTAG.bam"
+                ]
+            },
+            "@CTCTCTAC": {
+                "output": [
+                    "CBJLFACXX_CTCTCTAC.bam"
+                ]
+            },
+            "@GCGTAGTA": {
+                "output": [
+                    "CBJLFACXX_GCGTAGTA.bam"
+                ]
+            },
+            "@GCTCATGA": {
+                "output": [
+                    "CBJLFACXX_GCTCATGA.bam"
+                ]
+            },
+            "@GGACTCCT": {
+                "output": [
+                    "CBJLFACXX_GGACTCCT.bam"
+                ]
+            },
+            "@GGAGCTAC": {
+                "output": [
+                    "CBJLFACXX_GGAGCTAC.bam"
+                ]
+            },
+            "@GTAGAGGA": {
+                "output": [
+                    "CBJLFACXX_GTAGAGGA.bam"
+                ]
+            },
+            "@TAAGGCGA": {
+                "output": [
+                    "CBJLFACXX_TAAGGCGA.bam"
+                ]
+            },
+            "@TACGCTGC": {
+                "output": [
+                    "CBJLFACXX_TACGCTGC.bam"
+                ]
+            },
+            "@TAGCGCTC": {
+                "output": [
+                    "CBJLFACXX_TAGCGCTC.bam"
+                ]
+            },
+            "@TAGGCATG": {
+                "output": [
+                    "CBJLFACXX_TAGGCATG.bam"
+                ]
+            },
+            "@TCCTGAGC": {
+                "output": [
+                    "CBJLFACXX_TCCTGAGC.bam"
+                ]
+            }
+        },
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "undetermined": {
+            "output": [
+                "CBJLFACXX_undetermined.bam"
+            ]
+        }
+    },
+    "template": {
+        "transform": {
+            "token": [
+                "0::6",
+                "2::"
+            ]
+        }
+    }
+}

@@ -145,7 +145,9 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
 
 >```json
 {
-    "transform": { "token": [ "0::", "1::8" ] }
+    "template": {
+        "transform": { "token": [ "0::", "1::8" ] }
+    }
 }
 ```
 >**Example 2.6** In this `transform` directive the first token spans the entire first input segment. The second spans the first 8 cycles of the second segment. Since the `segment pattern` directive is omitted each token effectively declares a segment.
@@ -153,9 +155,11 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
 
 >```json
 {
-    "transform": {
-        "token": [ "0:0:", "1:0:8" ],
-        "segment pattern": [ "0", "1" ]
+    "template": {
+        "transform": {
+            "token": [ "0:0:", "1:0:8" ],
+            "segment pattern": [ "0", "1" ]
+        }
     }
 }
 ```
@@ -203,8 +207,10 @@ A `transform` directive declared in the root of the instruction assembles the [o
         "HK5NHBGXX_l01.cram",
         "HK5NHBGXX_l01.cram"
     ],
-    "transform": {
-        "token": [ "0:6:", "3::-6" ]
+    "template": {
+        "transform": {
+            "token": [ "0:6:", "3::-6" ]
+        }
     },
     "multiplex": {
         "transform": { "token": [ "1::8", "2::8" ] }

@@ -231,11 +231,13 @@ Since it is not necessary to read the biological segments when estimating the pr
         "/dev/null"
     ],
     "report url": "H7LT2DSXX_l01_estimate_report.json",
-    "transform": {
-        "token": [
-            "0::",
-            "1::"
-        ]
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "1::"
+            ]
+        }
     }
 }
 ```

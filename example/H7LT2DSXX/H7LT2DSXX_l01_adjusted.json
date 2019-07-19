@@ -1,8 +1,6 @@
 {
     "PL": "ILLUMINA",
     "PM": "A00534",
-    "base input url": ".",
-    "base output url": ".",
     "filter incoming qc fail": true,
     "flowcell id": "H7LT2DSXX",
     "input": [

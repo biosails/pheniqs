@@ -1,8 +1,6 @@
 {
     "PL": "ILLUMINA",
     "PM": "A00534",
-    "base input url": ".",
-    "base output url": ".",
     "decoder": {
         "H7LT2DSXX_l01_multiplex": {
             "codec": {

@@ -1,13 +1,10 @@
 #!/usr/bin/env zsh
 
 pheniqs-illumina-api.py -v debug basecall \
---output-dir . \
 --fastq-compression-level 3 \
 181014_A00534_0024_AH7LT2DSXX
 
 pheniqs-illumina-api.py -v debug core \
---base-input . \
---base-output . \
 --no-input-npf \
 181014_A00534_0024_AH7LT2DSXX
 

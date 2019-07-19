@@ -1,32 +1,30 @@
 {
+    "flowcell lane number": 1,
     "import": [
-        "H7LT2DSXX_core.json"
+        "CBJLFACXX_core.json"
     ],
     "input": [
-        "H7LT2DSXX_S1_L003_I1_001.fastq.gz",
-        "H7LT2DSXX_S1_L003_I2_001.fastq.gz"
+        "CBJLFACXX_S1_L001_I1_001.fastq.gz"
     ],
     "multiplex": {
         "algorithm": "pamld",
-        "base": "H7LT2DSXX_l03_multiplex",
+        "base": "@CBJLFACXX_column",
         "confidence threshold": 0.95,
         "noise": 0.05,
         "transform": {
             "token": [
-                "0::8",
-                "1::8"
+                "0::8"
             ]
         }
     },
     "output": [
         "/dev/null"
     ],
-    "report url": "H7LT2DSXX_l03_estimate_report.json",
+    "report url": "CBJLFACXX_l01_column_estimate_report.json",
     "template": {
         "transform": {
             "token": [
-                "0::8",
-                "1::8"
+                "0::8"
             ]
         }
     }

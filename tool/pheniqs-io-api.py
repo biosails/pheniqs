@@ -49,7 +49,7 @@ class PheniqsIoApi(Job):
         }
         self.ontology = merge(default, self.ontology)
         self.location['original'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['configuration']))))
-
+        print(to_json(self.instruction))
     @property
     def original(self):
         if self.ontology['original'] is None:
@@ -97,9 +97,9 @@ class PheniqsIoApi(Job):
                     compiled = json.loads(output.decode('utf8'))
                     self.ontology['static'] = compiled
                 else:
-                    raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
                     for line in error.decode('utf8').splitlines():
                         print(error.decode('utf8'))
+                    raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
             else:
                 raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
         return self.ontology['static']
@@ -141,9 +141,9 @@ class PheniqsIoApi(Job):
                     compiled = json.loads(output.decode('utf8'))
                     self.ontology['compiled'] = compiled
                 else:
-                    raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
                     for line in error.decode('utf8').splitlines():
                         print(error.decode('utf8'))
+                    raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
             else:
                 raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
         return self.ontology['compiled']
@@ -222,8 +222,6 @@ class PheniqsIoApi(Job):
     def make_library_name(self, barcode):
         value = None
         if 'LB' in barcode:
-            value = barcode['LB']
-        elif 'PU' in barcode:
             value = barcode['LB']
         elif 'barcode' in barcode:
             value = ''.join(barcode['barcode'])

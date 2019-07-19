@@ -1,0 +1,854 @@
+{
+    "CN": "CGSB AD",
+    "PL": "ILLUMINA",
+    "PM": "HiSeq",
+    "decoder": {
+        "@CBJLFACXX_column": {
+            "codec": {
+                "@AAGAGGCA": {
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@ACTCGCTA": {
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                },
+                "@ACTGAGCG": {
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@AGGCAGAA": {
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@ATCTCAGG": {
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@ATGCGCAG": {
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@CGAGGCTG": {
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@CGGAGCCT": {
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@CGTACTAG": {
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@CTCTCTAC": {
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@GCGTAGTA": {
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@GCTCATGA": {
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@GGACTCCT": {
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@GGAGCTAC": {
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@GTAGAGGA": {
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@TAAGGCGA": {
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@TACGCTGC": {
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@TAGCGCTC": {
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@TAGGCATG": {
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@TCCTGAGC": {
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "1::8"
+                ]
+            }
+        },
+        "@CBJLFACXX_column_l01": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_PAG069_V2_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_PAG123_V2_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_PAG123_V2_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_PAG123_V2_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_PAG069_V2_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_PAG123_V2_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_PAG069_V2_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_PAG123_V2_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_PAG069_V2_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_PAG123_V2_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_PAG123_V2_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_PAG069_V2_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_PAG069_V2_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_PAG123_V2_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_PAG069_V2_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_PAG069_V2_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_PAG123_V2_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_PAG123_V2_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_PAG069_V2_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_PAG069_V2_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_column_l02": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_PAG069_V4_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_PAG123_V4_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_PAG123_V4_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_PAG123_V4_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_PAG069_V4_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_PAG123_V4_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_PAG069_V4_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_PAG123_V4_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_PAG069_V4_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_PAG123_V4_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_PAG123_V4_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_PAG069_V4_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_PAG069_V4_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_PAG123_V4_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_PAG069_V4_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_PAG069_V4_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_PAG123_V4_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_PAG123_V4_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_PAG069_V4_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_PAG069_V4_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_column_l03": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_PAG069_V3_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_PAG123_V3_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_PAG123_V3_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_PAG123_V3_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_PAG069_V3_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_PAG123_V3_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_PAG069_V3_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_PAG123_V3_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_PAG069_V3_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_PAG123_V3_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_PAG123_V3_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_PAG069_V3_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_PAG069_V3_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_PAG123_V3_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_PAG069_V3_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_PAG069_V3_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_PAG123_V3_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_PAG123_V3_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_PAG069_V3_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_PAG069_V3_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_column_l04": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_PAG069_V1_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_PAG123_V1_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_PAG123_V1_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_PAG123_V1_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_PAG069_V1_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_PAG123_V1_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_PAG069_V1_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_PAG123_V1_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_PAG069_V1_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_PAG123_V1_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_PAG123_V1_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_PAG069_V1_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_PAG069_V1_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_PAG123_V1_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_PAG069_V1_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_PAG069_V1_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_PAG123_V1_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_PAG123_V1_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_PAG069_V1_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_PAG069_V1_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_column_l05": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_PAG165_V2_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_PAG165_V4_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_PAG165_V4_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_PAG165_V4_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_PAG165_V2_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_PAG165_V4_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_PAG165_V2_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_PAG165_V4_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_PAG165_V2_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_PAG165_V4_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_PAG165_V4_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_PAG165_V2_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_PAG165_V2_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_PAG165_V4_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_PAG165_V2_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_PAG165_V2_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_PAG165_V4_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_PAG165_V4_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_PAG165_V2_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_PAG165_V2_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_column_l06": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_PAG165_V1_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_PAG165_V3_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_PAG165_V3_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_PAG165_V3_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_PAG165_V1_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_PAG165_V3_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_PAG165_V1_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_PAG165_V3_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_PAG165_V1_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_PAG165_V3_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_PAG165_V3_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_PAG165_V1_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_PAG165_V1_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_PAG165_V3_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_PAG165_V1_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_PAG165_V1_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_PAG165_V3_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_PAG165_V3_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_PAG165_V1_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_PAG165_V1_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_column_l07": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_Jurk_GFP2Negsec_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_Jurk_GFPpospossec_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_Jurk_GFPpospossec_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_Jurk_GFPpospossec_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_Jurk_GFP2Negsec_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_Jurk_GFPpospossec_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_Jurk_GFP2Negsec_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_Jurk_GFPpospossec_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_Jurk_GFP2Negsec_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_Jurk_GFPpospossec_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_Jurk_GFPpospossec_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_Jurk_GFP2Negsec_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_Jurk_GFP2Negsec_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_Jurk_GFPpospossec_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_Jurk_GFP2Negsec_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_Jurk_GFP2Negsec_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_Jurk_GFPpospossec_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_Jurk_GFPpospossec_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_Jurk_GFP2Negsec_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_Jurk_GFP2Negsec_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_column_l08": {
+            "base": "@CBJLFACXX_column",
+            "codec": {
+                "@AAGAGGCA": {
+                    "LB": "COL08_Jurk_GFPposfirst_E2"
+                },
+                "@ACTCGCTA": {
+                    "LB": "COL20_Jurk_GFPpospossec_E2"
+                },
+                "@ACTGAGCG": {
+                    "LB": "COL18_Jurk_GFPpospossec_E2"
+                },
+                "@AGGCAGAA": {
+                    "LB": "COL11_Jurk_GFPpospossec_E2"
+                },
+                "@ATCTCAGG": {
+                    "LB": "COL05_Jurk_GFPposfirst_E2"
+                },
+                "@ATGCGCAG": {
+                    "LB": "COL16_Jurk_GFPpospossec_E2"
+                },
+                "@CGAGGCTG": {
+                    "LB": "COL10_Jurk_GFPposfirst_E2"
+                },
+                "@CGGAGCCT": {
+                    "LB": "COL14_Jurk_GFPpospossec_E2"
+                },
+                "@CGTACTAG": {
+                    "LB": "COL04_Jurk_GFPposfirst_E2"
+                },
+                "@CTCTCTAC": {
+                    "LB": "COL12_Jurk_GFPpospossec_E2"
+                },
+                "@GCGTAGTA": {
+                    "LB": "COL13_Jurk_GFPpospossec_E2"
+                },
+                "@GCTCATGA": {
+                    "LB": "COL06_Jurk_GFPposfirst_E2"
+                },
+                "@GGACTCCT": {
+                    "LB": "COL01_Jurk_GFPposfirst_E2"
+                },
+                "@GGAGCTAC": {
+                    "LB": "COL19_Jurk_GFPpospossec_E2"
+                },
+                "@GTAGAGGA": {
+                    "LB": "COL07_Jurk_GFPposfirst_E2"
+                },
+                "@TAAGGCGA": {
+                    "LB": "COL02_Jurk_GFPposfirst_E2"
+                },
+                "@TACGCTGC": {
+                    "LB": "COL15_Jurk_GFPpospossec_E2"
+                },
+                "@TAGCGCTC": {
+                    "LB": "COL17_Jurk_GFPpospossec_E2"
+                },
+                "@TAGGCATG": {
+                    "LB": "COL03_Jurk_GFPposfirst_E2"
+                },
+                "@TCCTGAGC": {
+                    "LB": "COL09_Jurk_GFPposfirst_E2"
+                }
+            }
+        },
+        "@CBJLFACXX_row": {
+            "codec": {
+                "@ACACTG": {
+                    "barcode": [
+                        "ACACTG"
+                    ]
+                },
+                "@ACATGC": {
+                    "barcode": [
+                        "ACATGC"
+                    ]
+                },
+                "@ACGTCA": {
+                    "barcode": [
+                        "ACGTCA"
+                    ]
+                },
+                "@ACTCGA": {
+                    "barcode": [
+                        "ACTCGA"
+                    ]
+                },
+                "@AGATCG": {
+                    "barcode": [
+                        "AGATCG"
+                    ]
+                },
+                "@AGCACT": {
+                    "barcode": [
+                        "AGCACT"
+                    ]
+                },
+                "@ATCAGC": {
+                    "barcode": [
+                        "ATCAGC"
+                    ]
+                },
+                "@ATCGTG": {
+                    "barcode": [
+                        "ATCGTG"
+                    ]
+                },
+                "@ATGACG": {
+                    "barcode": [
+                        "ATGACG"
+                    ]
+                },
+                "@ATGCTC": {
+                    "barcode": [
+                        "ATGCTC"
+                    ]
+                },
+                "@CACAGT": {
+                    "barcode": [
+                        "CACAGT"
+                    ]
+                },
+                "@CACGTA": {
+                    "barcode": [
+                        "CACGTA"
+                    ]
+                },
+                "@CAGATC": {
+                    "barcode": [
+                        "CAGATC"
+                    ]
+                },
+                "@CATCTG": {
+                    "barcode": [
+                        "CATCTG"
+                    ]
+                },
+                "@CATGCT": {
+                    "barcode": [
+                        "CATGCT"
+                    ]
+                },
+                "@CGACTA": {
+                    "barcode": [
+                        "CGACTA"
+                    ]
+                },
+                "@CGATGT": {
+                    "barcode": [
+                        "CGATGT"
+                    ]
+                },
+                "@CGTAGA": {
+                    "barcode": [
+                        "CGTAGA"
+                    ]
+                },
+                "@CGTCAT": {
+                    "barcode": [
+                        "CGTCAT"
+                    ]
+                },
+                "@CTAGTC": {
+                    "barcode": [
+                        "CTAGTC"
+                    ]
+                },
+                "@CTCACA": {
+                    "barcode": [
+                        "CTCACA"
+                    ]
+                },
+                "@CTCGAT": {
+                    "barcode": [
+                        "CTCGAT"
+                    ]
+                },
+                "@GACTCA": {
+                    "barcode": [
+                        "GACTCA"
+                    ]
+                },
+                "@GAGCTA": {
+                    "barcode": [
+                        "GAGCTA"
+                    ]
+                },
+                "@GCAGTA": {
+                    "barcode": [
+                        "GCAGTA"
+                    ]
+                },
+                "@GCATCT": {
+                    "barcode": [
+                        "GCATCT"
+                    ]
+                },
+                "@GCTACA": {
+                    "barcode": [
+                        "GCTACA"
+                    ]
+                },
+                "@GCTGAT": {
+                    "barcode": [
+                        "GCTGAT"
+                    ]
+                },
+                "@GTCTAC": {
+                    "barcode": [
+                        "GTCTAC"
+                    ]
+                },
+                "@GTGCAT": {
+                    "barcode": [
+                        "GTGCAT"
+                    ]
+                },
+                "@TACGAG": {
+                    "barcode": [
+                        "TACGAG"
+                    ]
+                },
+                "@TACTGC": {
+                    "barcode": [
+                        "TACTGC"
+                    ]
+                },
+                "@TAGCAC": {
+                    "barcode": [
+                        "TAGCAC"
+                    ]
+                },
+                "@TAGTCG": {
+                    "barcode": [
+                        "TAGTCG"
+                    ]
+                },
+                "@TCACGT": {
+                    "barcode": [
+                        "TCACGT"
+                    ]
+                },
+                "@TCAGAC": {
+                    "barcode": [
+                        "TCAGAC"
+                    ]
+                },
+                "@TCTAGC": {
+                    "barcode": [
+                        "TCTAGC"
+                    ]
+                },
+                "@TCTCAG": {
+                    "barcode": [
+                        "TCTCAG"
+                    ]
+                },
+                "@TGCATC": {
+                    "barcode": [
+                        "TGCATC"
+                    ]
+                },
+                "@TGTACG": {
+                    "barcode": [
+                        "TGTACG"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "0::6"
+                ]
+            }
+        }
+    },
+    "filter incoming qc fail": true,
+    "flowcell id": "CBJLFACXX",
+    "template": {
+        "transform": {
+            "token": [
+                "2::"
+            ]
+        }
+    }
+}
