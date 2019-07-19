@@ -796,10 +796,12 @@
         "H7LT2DSXX_l03.bam"
     ],
     "report url": "H7LT2DSXX_l03_sample_report.json",
-    "transform": {
-        "token": [
-            "0::",
-            "3::"
-        ]
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "3::"
+            ]
+        }
     }
 }

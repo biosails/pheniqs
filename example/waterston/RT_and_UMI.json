@@ -1,7 +1,13 @@
 {
     "decoder": {
         "384_RT": {
+            "algorithm": "pamld",
             "codec": {
+                "@293T_3T3_cell": {
+                    "barcode": [
+                        "ATTCGACCAA"
+                    ]
+                },
                 "@293T_cell": {
                     "barcode": [
                         "CATTCGACGG"
@@ -17,23 +23,17 @@
                         "GGCTCTCTAT"
                     ]
                 },
-                "@293T_3T3_cell": {
+                "@hela_293T_cell": {
                     "barcode": [
-                        "ATTCGACCAA"
+                        "AATCTGGAGT"
                     ]
                 },
                 "@hela_3T3_cell": {
                     "barcode": [
                         "TATCGTCGGC"
                     ]
-                },
-                "@hela_293T_cell": {
-                    "barcode": [
-                        "AATCTGGAGT"
-                    ]
                 }
             },
-            "algorithm": "pamld",
             "confidence threshold": 0.99,
             "noise": 0.05,
             "transform": {
@@ -42,54 +42,19 @@
                 ]
             }
         },
+        "UMI": {
+            "transform": {
+                "token": [
+                    "0::8"
+                ]
+            }
+        },
         "rt_c_elegans": {
             "algorithm": "pamld",
-            "confidence threshold": 0.99,
-            "noise": 0.05,
             "codec": {
                 "@1": {
                     "barcode": [
                         "GATCAGTCAT"
-                    ]
-                },
-                "@2": {
-                    "barcode": [
-                        "GGAACGATGG"
-                    ]
-                },
-                "@3": {
-                    "barcode": [
-                        "TGAGGTAGAA"
-                    ]
-                },
-                "@4": {
-                    "barcode": [
-                        "AATTGCCTAC"
-                    ]
-                },
-                "@5": {
-                    "barcode": [
-                        "CGATCATTAC"
-                    ]
-                },
-                "@6": {
-                    "barcode": [
-                        "AAGCCGGCTG"
-                    ]
-                },
-                "@7": {
-                    "barcode": [
-                        "ACTTCCGAAT"
-                    ]
-                },
-                "@8": {
-                    "barcode": [
-                        "AGGATTACCA"
-                    ]
-                },
-                "@9": {
-                    "barcode": [
-                        "ACGCAACTCC"
                     ]
                 },
                 "@10": {
@@ -142,6 +107,11 @@
                         "AACTACGGCT"
                     ]
                 },
+                "@2": {
+                    "barcode": [
+                        "GGAACGATGG"
+                    ]
+                },
                 "@20": {
                     "barcode": [
                         "CGCAATATCA"
@@ -190,6 +160,11 @@
                 "@29": {
                     "barcode": [
                         "ATCTAGGTTC"
+                    ]
+                },
+                "@3": {
+                    "barcode": [
+                        "TGAGGTAGAA"
                     ]
                 },
                 "@30": {
@@ -242,6 +217,11 @@
                         "GAGGAGTTCG"
                     ]
                 },
+                "@4": {
+                    "barcode": [
+                        "AATTGCCTAC"
+                    ]
+                },
                 "@40": {
                     "barcode": [
                         "TCGTAGCATC"
@@ -290,6 +270,11 @@
                 "@49": {
                     "barcode": [
                         "GGCATGGCCA"
+                    ]
+                },
+                "@5": {
+                    "barcode": [
+                        "CGATCATTAC"
                     ]
                 },
                 "@50": {
@@ -342,6 +327,11 @@
                         "CCGAGTACTA"
                     ]
                 },
+                "@6": {
+                    "barcode": [
+                        "AAGCCGGCTG"
+                    ]
+                },
                 "@60": {
                     "barcode": [
                         "TTAGAGCCTG"
@@ -390,6 +380,11 @@
                 "@69": {
                     "barcode": [
                         "TGCTGCCGGA"
+                    ]
+                },
+                "@7": {
+                    "barcode": [
+                        "ACTTCCGAAT"
                     ]
                 },
                 "@70": {
@@ -442,6 +437,11 @@
                         "ACTAGTTGCA"
                     ]
                 },
+                "@8": {
+                    "barcode": [
+                        "AGGATTACCA"
+                    ]
+                },
                 "@80": {
                     "barcode": [
                         "GAGGAACTCA"
@@ -492,6 +492,11 @@
                         "TCTCAGATAT"
                     ]
                 },
+                "@9": {
+                    "barcode": [
+                        "ACGCAACTCC"
+                    ]
+                },
                 "@90": {
                     "barcode": [
                         "CGCATTCTTA"
@@ -528,16 +533,11 @@
                     ]
                 }
             },
+            "confidence threshold": 0.99,
+            "noise": 0.05,
             "transform": {
                 "token": [
                     "0:8:18"
-                ]
-            }
-        },
-        "UMI": {
-            "transform": {
-                "token": [
-                    "0::8"
                 ]
             }
         }

@@ -1,9 +1,15 @@
 {
-    "import": [ "BDGGG_interleave.json" ],
+    "import": [
+        "BDGGG_interleave.json"
+    ],
     "molecular": [
         {
             "algorithm": "naive",
-            "transform": { "token": [ "0:8:16" ] }
+            "transform": {
+                "token": [
+                    "0:8:16"
+                ]
+            }
         }
     ],
     "multiplex": {
@@ -34,7 +40,12 @@
         "confidence threshold": 0.99,
         "noise": 0.0152
     },
-    "transform": {
-        "token": [ "0::", "2::" ]
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "2::"
+            ]
+        }
     }
 }

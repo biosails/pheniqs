@@ -451,15 +451,17 @@
     "output segment cardinality": 2,
     "platform": "ILLUMINA",
     "report url": "/dev/stderr",
-    "threads": 1,
-    "transform": {
-        "segment pattern": [
-            "0",
-            "1"
-        ],
-        "token": [
-            "0::",
-            "2::"
-        ]
-    }
+    "template": {
+        "transform": {
+            "segment pattern": [
+                "0",
+                "1"
+            ],
+            "token": [
+                "0::",
+                "2::"
+            ]
+        }
+    },
+    "threads": 1
 }

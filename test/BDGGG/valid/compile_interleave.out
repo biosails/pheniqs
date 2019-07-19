@@ -174,17 +174,19 @@
     "output segment cardinality": 3,
     "platform": "ILLUMINA",
     "report url": "/dev/stderr",
-    "threads": 1,
-    "transform": {
-        "segment pattern": [
-            "0",
-            "1",
-            "2"
-        ],
-        "token": [
-            "0::",
-            "1::",
-            "2::"
-        ]
-    }
+    "template": {
+        "transform": {
+            "segment pattern": [
+                "0",
+                "1",
+                "2"
+            ],
+            "token": [
+                "0::",
+                "1::",
+                "2::"
+            ]
+        }
+    },
+    "threads": 1
 }

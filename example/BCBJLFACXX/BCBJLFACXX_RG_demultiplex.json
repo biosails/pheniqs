@@ -1,11 +1,22 @@
 {
-    "import": [ "BCBJLFACXX_core.json" ],
+    "import": [
+        "BCBJLFACXX_core.json"
+    ],
     "multiplex": {
         "algorithm": "pamld",
         "base": "@BCBJLFACXX_multiplex",
         "confidence threshold": 0.99,
         "noise": 0.05
     },
-    "transform": { "token": [ "0::", "3::" ] },
-    "output": [ "BCBJLFACXX_RG_demultiplexed.cram" ]
+    "output": [
+        "BCBJLFACXX_RG_demultiplexed.cram"
+    ],
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "3::"
+            ]
+        }
+    }
 }

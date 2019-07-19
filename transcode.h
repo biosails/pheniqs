@@ -94,7 +94,7 @@ class Transcode : public Job {
         void compile_decoder_transformation(Value& value);
         void apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document);
         void compile_output();
-        void compile_output_transformation();
+        void compile_template();
         void compile_transformation(Value& value);
         bool infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
         bool infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);

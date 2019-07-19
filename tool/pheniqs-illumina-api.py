@@ -453,9 +453,10 @@ class IlluminaApi(Job):
 
         # assemble a default transform that outputs the biological segments
         if 'template segment' in self.illumina:
-            job['transform'] = { 'token': [] }
+            job['template'] = { 'transform': { 'token': [] } }
+            job['template']['transform'] = { 'token': [] }
             for segment in self.illumina['template segment']:
-                job['transform']['token'].append('{}::'.format(segment['index']))
+                job['template']['transform']['token'].append('{}::'.format(segment['index']))
 
         if 'lane' in self.illumina and self.illumina['lane']:
             job['decoder'] = {}
@@ -537,7 +538,7 @@ class IlluminaApi(Job):
                     'input': [],
                     'output': [ '/dev/null' ],
                     'report url': None,
-                    'transform': { 'token': [] },
+                    'template': { 'transform': { 'token': [] } },
                     'multiplex': {
                         'base': lane['multiplex decoder name'],
                         'algorithm': 'pamld',
@@ -549,7 +550,7 @@ class IlluminaApi(Job):
                 for segment_index,segment_length,segment in zip(range(len(self.illumina['index segment'])), lane['barcode length'], self.illumina['index segment']):
                     job['input'].append(self.make_bcl2fastq_file_name(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name']))
                     token = '{}::{}'.format(segment_index, segment_length)
-                    job['transform']['token'].append(token)
+                    job['template']['transform']['token'].append(token)
                     job['multiplex']['transform']['token'].append(token)
                 job['report url'] = '{}_l{:02d}_estimate_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
 
@@ -569,7 +570,7 @@ class IlluminaApi(Job):
                     'input': [],
                     'output': [],
                     'report url': None,
-                    'transform': { 'token': [] }
+                    'template': { 'transform': { 'token': [] } },
                 }
                 for key in [
                     'DT',
@@ -581,7 +582,7 @@ class IlluminaApi(Job):
 
                 for segment_index,segment in enumerate(self.illumina['segment']):
                     job['input'].append(self.make_bcl2fastq_file_name(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name']))
-                    job['transform']['token'].append('{}::'.format(segment_index))
+                    job['template']['transform']['token'].append('{}::'.format(segment_index))
                 job['report url'] = '{}_l{:02d}_interleave_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
                 job['output'].append('{}_l{:02d}_interleave.bam'.format(self.illumina['flowcell id'], lane['lane number']))
 

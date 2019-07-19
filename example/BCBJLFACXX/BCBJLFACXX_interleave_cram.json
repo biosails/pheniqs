@@ -1,4 +1,8 @@
 {
-    "import": [ "BCBJLFACXX_core.json" ],
-    "output": [ "BCBJLFACXX_raw.cram" ]
+    "import": [
+        "BCBJLFACXX_core.json"
+    ],
+    "output": [
+        "BCBJLFACXX_raw.cram"
+    ]
 }

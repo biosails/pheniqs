@@ -7,24 +7,51 @@
     "SM": "trinidad",
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
-    "flowcell id": "BDGGG",
+    "decoder": {
+        "BDGGG_multiplex": {
+            "codec": {
+                "@AGGCAGAA": {
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@CGTACTAG": {
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@GGACTCCT": {
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@TAAGGCGA": {
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@TCCTGAGC": {
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                }
+            },
+            "transform": {
+                "segment pattern": [
+                    "0"
+                ],
+                "token": [
+                    "1::8"
+                ]
+            }
+        }
+    },
     "filter incoming qc fail": false,
+    "flowcell id": "BDGGG",
     "input": [
         "BDGGG_s01.fastq.gz",
         "BDGGG_s02.fastq.gz",
         "BDGGG_s03.fastq.gz"
     ],
-    "decoder": {
-        "BDGGG_multiplex": {
-            "transform": { "token": [ "1::8" ], "segment pattern": [ "0" ] },
-            "codec": {
-                "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
-                "@CGTACTAG": { "barcode": [ "CGTACTAG" ] },
-                "@GGACTCCT": { "barcode": [ "GGACTCCT" ] },
-                "@TAAGGCGA": { "barcode": [ "TAAGGCGA" ] },
-                "@TCCTGAGC": { "barcode": [ "TCCTGAGC" ] }
-            }
-        }
-    },
     "threads": 1
 }

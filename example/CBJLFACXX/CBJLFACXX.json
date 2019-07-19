@@ -4,265 +4,1403 @@
     "PM": "HiSeq",
     "base input url": "/volume/albireo/waverly/CBJLFACXX",
     "base output url": "/volume/albireo/canal/CBJLFACXX",
-    "transform": { "token": [ "2::" ] },
-    "flowcell id": "CBJLFACXX",
-    "filter incoming qc fail": true,
-    "threads": 16,
-    "cellular": [ { "base": "@CBJLFACXX_cellular" } ],
+    "cellular": [
+        {
+            "base": "@CBJLFACXX_cellular"
+        }
+    ],
     "decoder": {
         "@CBJLFACXX_cellular": {
             "algorithm": "pamld",
+            "codec": {
+                "@ACACTG": {
+                    "barcode": [
+                        "ACACTG"
+                    ]
+                },
+                "@ACATGC": {
+                    "barcode": [
+                        "ACATGC"
+                    ]
+                },
+                "@ACGTCA": {
+                    "barcode": [
+                        "ACGTCA"
+                    ]
+                },
+                "@ACTCGA": {
+                    "barcode": [
+                        "ACTCGA"
+                    ]
+                },
+                "@AGATCG": {
+                    "barcode": [
+                        "AGATCG"
+                    ]
+                },
+                "@AGCACT": {
+                    "barcode": [
+                        "AGCACT"
+                    ]
+                },
+                "@ATCAGC": {
+                    "barcode": [
+                        "ATCAGC"
+                    ]
+                },
+                "@ATCGTG": {
+                    "barcode": [
+                        "ATCGTG"
+                    ]
+                },
+                "@ATGACG": {
+                    "barcode": [
+                        "ATGACG"
+                    ]
+                },
+                "@ATGCTC": {
+                    "barcode": [
+                        "ATGCTC"
+                    ]
+                },
+                "@CACAGT": {
+                    "barcode": [
+                        "CACAGT"
+                    ]
+                },
+                "@CACGTA": {
+                    "barcode": [
+                        "CACGTA"
+                    ]
+                },
+                "@CAGATC": {
+                    "barcode": [
+                        "CAGATC"
+                    ]
+                },
+                "@CATCTG": {
+                    "barcode": [
+                        "CATCTG"
+                    ]
+                },
+                "@CATGCT": {
+                    "barcode": [
+                        "CATGCT"
+                    ]
+                },
+                "@CGACTA": {
+                    "barcode": [
+                        "CGACTA"
+                    ]
+                },
+                "@CGATGT": {
+                    "barcode": [
+                        "CGATGT"
+                    ]
+                },
+                "@CGTAGA": {
+                    "barcode": [
+                        "CGTAGA"
+                    ]
+                },
+                "@CGTCAT": {
+                    "barcode": [
+                        "CGTCAT"
+                    ]
+                },
+                "@CTAGTC": {
+                    "barcode": [
+                        "CTAGTC"
+                    ]
+                },
+                "@CTCACA": {
+                    "barcode": [
+                        "CTCACA"
+                    ]
+                },
+                "@CTCGAT": {
+                    "barcode": [
+                        "CTCGAT"
+                    ]
+                },
+                "@GACTCA": {
+                    "barcode": [
+                        "GACTCA"
+                    ]
+                },
+                "@GAGCTA": {
+                    "barcode": [
+                        "GAGCTA"
+                    ]
+                },
+                "@GCAGTA": {
+                    "barcode": [
+                        "GCAGTA"
+                    ]
+                },
+                "@GCATCT": {
+                    "barcode": [
+                        "GCATCT"
+                    ]
+                },
+                "@GCTACA": {
+                    "barcode": [
+                        "GCTACA"
+                    ]
+                },
+                "@GCTGAT": {
+                    "barcode": [
+                        "GCTGAT"
+                    ]
+                },
+                "@GTCTAC": {
+                    "barcode": [
+                        "GTCTAC"
+                    ]
+                },
+                "@GTGCAT": {
+                    "barcode": [
+                        "GTGCAT"
+                    ]
+                },
+                "@TACGAG": {
+                    "barcode": [
+                        "TACGAG"
+                    ]
+                },
+                "@TACTGC": {
+                    "barcode": [
+                        "TACTGC"
+                    ]
+                },
+                "@TAGCAC": {
+                    "barcode": [
+                        "TAGCAC"
+                    ]
+                },
+                "@TAGTCG": {
+                    "barcode": [
+                        "TAGTCG"
+                    ]
+                },
+                "@TCACGT": {
+                    "barcode": [
+                        "TCACGT"
+                    ]
+                },
+                "@TCAGAC": {
+                    "barcode": [
+                        "TCAGAC"
+                    ]
+                },
+                "@TCTAGC": {
+                    "barcode": [
+                        "TCTAGC"
+                    ]
+                },
+                "@TCTCAG": {
+                    "barcode": [
+                        "TCTCAG"
+                    ]
+                },
+                "@TGCATC": {
+                    "barcode": [
+                        "TGCATC"
+                    ]
+                },
+                "@TGTACG": {
+                    "barcode": [
+                        "TGTACG"
+                    ]
+                }
+            },
             "confidence threshold": 0.95,
             "noise": 0.05,
-            "transform": { "token": [ "0::6" ] },
-            "codec": {
-                "@CACGTA": { "barcode": [ "CACGTA" ] },
-                "@CTCACA": { "barcode": [ "CTCACA" ] },
-                "@TGCATC": { "barcode": [ "TGCATC" ] },
-                "@TCAGAC": { "barcode": [ "TCAGAC" ] },
-                "@CGATGT": { "barcode": [ "CGATGT" ] },
-                "@TACTGC": { "barcode": [ "TACTGC" ] },
-                "@ATGCTC": { "barcode": [ "ATGCTC" ] },
-                "@CATCTG": { "barcode": [ "CATCTG" ] },
-                "@GACTCA": { "barcode": [ "GACTCA" ] },
-                "@AGATCG": { "barcode": [ "AGATCG" ] },
-                "@ATCAGC": { "barcode": [ "ATCAGC" ] },
-                "@GCTACA": { "barcode": [ "GCTACA" ] },
-                "@CAGATC": { "barcode": [ "CAGATC" ] },
-                "@CACAGT": { "barcode": [ "CACAGT" ] },
-                "@TACGAG": { "barcode": [ "TACGAG" ] },
-                "@CGACTA": { "barcode": [ "CGACTA" ] },
-                "@GCATCT": { "barcode": [ "GCATCT" ] },
-                "@AGCACT": { "barcode": [ "AGCACT" ] },
-                "@ACACTG": { "barcode": [ "ACACTG" ] },
-                "@CGTAGA": { "barcode": [ "CGTAGA" ] },
-                "@ACTCGA": { "barcode": [ "ACTCGA" ] },
-                "@ACATGC": { "barcode": [ "ACATGC" ] },
-                "@CGTCAT": { "barcode": [ "CGTCAT" ] },
-                "@TGTACG": { "barcode": [ "TGTACG" ] },
-                "@GCAGTA": { "barcode": [ "GCAGTA" ] },
-                "@TCACGT": { "barcode": [ "TCACGT" ] },
-                "@ACGTCA": { "barcode": [ "ACGTCA" ] },
-                "@CTCGAT": { "barcode": [ "CTCGAT" ] },
-                "@ATCGTG": { "barcode": [ "ATCGTG" ] },
-                "@GCTGAT": { "barcode": [ "GCTGAT" ] },
-                "@GTCTAC": { "barcode": [ "GTCTAC" ] },
-                "@CATGCT": { "barcode": [ "CATGCT" ] },
-                "@TAGCAC": { "barcode": [ "TAGCAC" ] },
-                "@GTGCAT": { "barcode": [ "GTGCAT" ] },
-                "@TAGTCG": { "barcode": [ "TAGTCG" ] },
-                "@TCTCAG": { "barcode": [ "TCTCAG" ] },
-                "@CTAGTC": { "barcode": [ "CTAGTC" ] },
-                "@TCTAGC": { "barcode": [ "TCTAGC" ] },
-                "@ATGACG": { "barcode": [ "ATGACG" ] },
-                "@GAGCTA": { "barcode": [ "GAGCTA" ] }
+            "transform": {
+                "token": [
+                    "0::6"
+                ]
             }
         },
         "@CBJLFACXX_multiplex": {
             "algorithm": "pamld",
-            "noise": 0.05,
             "confidence threshold": 0.95,
-            "transform": { "token": [ "1::8" ] }
+            "noise": 0.05,
+            "transform": {
+                "token": [
+                    "1::8"
+                ]
+            }
         },
         "@CBJLFACXX_multiplex_lane_1": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_PAG069_V2_E2": { "barcode": [ "GGACTCCT" ], "LB": "COL01_PAG069_V2_E2", "SM": "COL01_PAG069" },
-                "@COL20_PAG123_V2_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_PAG123_V2_E2", "SM": "COL20_PAG123" },
-                "@COL03_PAG069_V2_E2": { "barcode": [ "TAGGCATG" ], "LB": "COL03_PAG069_V2_E2", "SM": "COL03_PAG069" },
-                "@COL12_PAG123_V2_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_PAG123_V2_E2", "SM": "COL12_PAG123" },
-                "@COL10_PAG069_V2_E2": { "barcode": [ "CGAGGCTG" ], "LB": "COL10_PAG069_V2_E2", "SM": "COL10_PAG069" },
-                "@COL08_PAG069_V2_E2": { "barcode": [ "AAGAGGCA" ], "LB": "COL08_PAG069_V2_E2", "SM": "COL08_PAG069" },
-                "@COL07_PAG069_V2_E2": { "barcode": [ "GTAGAGGA" ], "LB": "COL07_PAG069_V2_E2", "SM": "COL07_PAG069" },
-                "@COL06_PAG069_V2_E2": { "barcode": [ "GCTCATGA" ], "LB": "COL06_PAG069_V2_E2", "SM": "COL06_PAG069" },
-                "@COL05_PAG069_V2_E2": { "barcode": [ "ATCTCAGG" ], "LB": "COL05_PAG069_V2_E2", "SM": "COL05_PAG069" },
-                "@COL02_PAG069_V2_E2": { "barcode": [ "TAAGGCGA" ], "LB": "COL02_PAG069_V2_E2", "SM": "COL02_PAG069" },
-                "@COL04_PAG069_V2_E2": { "barcode": [ "CGTACTAG" ], "LB": "COL04_PAG069_V2_E2", "SM": "COL04_PAG069" },
-                "@COL19_PAG123_V2_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_PAG123_V2_E2", "SM": "COL19_PAG123" },
-                "@COL13_PAG123_V2_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_PAG123_V2_E2", "SM": "COL13_PAG123" },
-                "@COL14_PAG123_V2_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_PAG123_V2_E2", "SM": "COL14_PAG123" },
-                "@COL15_PAG123_V2_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_PAG123_V2_E2", "SM": "COL15_PAG123" },
-                "@COL16_PAG123_V2_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_PAG123_V2_E2", "SM": "COL16_PAG123" },
-                "@COL17_PAG123_V2_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_PAG123_V2_E2", "SM": "COL17_PAG123" },
-                "@COL18_PAG123_V2_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_PAG123_V2_E2", "SM": "COL18_PAG123" },
-                "@COL11_PAG123_V2_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_PAG123_V2_E2", "SM": "COL11_PAG123" },
-                "@COL09_PAG069_V2_E2": { "barcode": [ "TCCTGAGC" ], "LB": "COL09_PAG069_V2_E2", "SM": "COL09_PAG069" }
+                "@COL01_PAG069_V2_E2": {
+                    "LB": "COL01_PAG069_V2_E2",
+                    "SM": "COL01_PAG069",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_PAG069_V2_E2": {
+                    "LB": "COL02_PAG069_V2_E2",
+                    "SM": "COL02_PAG069",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_PAG069_V2_E2": {
+                    "LB": "COL03_PAG069_V2_E2",
+                    "SM": "COL03_PAG069",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_PAG069_V2_E2": {
+                    "LB": "COL04_PAG069_V2_E2",
+                    "SM": "COL04_PAG069",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_PAG069_V2_E2": {
+                    "LB": "COL05_PAG069_V2_E2",
+                    "SM": "COL05_PAG069",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_PAG069_V2_E2": {
+                    "LB": "COL06_PAG069_V2_E2",
+                    "SM": "COL06_PAG069",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_PAG069_V2_E2": {
+                    "LB": "COL07_PAG069_V2_E2",
+                    "SM": "COL07_PAG069",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_PAG069_V2_E2": {
+                    "LB": "COL08_PAG069_V2_E2",
+                    "SM": "COL08_PAG069",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_PAG069_V2_E2": {
+                    "LB": "COL09_PAG069_V2_E2",
+                    "SM": "COL09_PAG069",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_PAG069_V2_E2": {
+                    "LB": "COL10_PAG069_V2_E2",
+                    "SM": "COL10_PAG069",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_PAG123_V2_E2": {
+                    "LB": "COL11_PAG123_V2_E2",
+                    "SM": "COL11_PAG123",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_PAG123_V2_E2": {
+                    "LB": "COL12_PAG123_V2_E2",
+                    "SM": "COL12_PAG123",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_PAG123_V2_E2": {
+                    "LB": "COL13_PAG123_V2_E2",
+                    "SM": "COL13_PAG123",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_PAG123_V2_E2": {
+                    "LB": "COL14_PAG123_V2_E2",
+                    "SM": "COL14_PAG123",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_PAG123_V2_E2": {
+                    "LB": "COL15_PAG123_V2_E2",
+                    "SM": "COL15_PAG123",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_PAG123_V2_E2": {
+                    "LB": "COL16_PAG123_V2_E2",
+                    "SM": "COL16_PAG123",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_PAG123_V2_E2": {
+                    "LB": "COL17_PAG123_V2_E2",
+                    "SM": "COL17_PAG123",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_PAG123_V2_E2": {
+                    "LB": "COL18_PAG123_V2_E2",
+                    "SM": "COL18_PAG123",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_PAG123_V2_E2": {
+                    "LB": "COL19_PAG123_V2_E2",
+                    "SM": "COL19_PAG123",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_PAG123_V2_E2": {
+                    "LB": "COL20_PAG123_V2_E2",
+                    "SM": "COL20_PAG123",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         },
         "@CBJLFACXX_multiplex_lane_2": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_PAG069_V4_E2": { "barcode": [ "GGACTCCT" ], "LB": "COL01_PAG069_V4_E2", "SM": "COL01_PAG069" },
-                "@COL20_PAG123_V4_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_PAG123_V4_E2", "SM": "COL20_PAG123" },
-                "@COL03_PAG069_V4_E2": { "barcode": [ "TAGGCATG" ], "LB": "COL03_PAG069_V4_E2", "SM": "COL03_PAG069" },
-                "@COL12_PAG123_V4_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_PAG123_V4_E2", "SM": "COL12_PAG123" },
-                "@COL10_PAG069_V4_E2": { "barcode": [ "CGAGGCTG" ], "LB": "COL10_PAG069_V4_E2", "SM": "COL10_PAG069" },
-                "@COL08_PAG069_V4_E2": { "barcode": [ "AAGAGGCA" ], "LB": "COL08_PAG069_V4_E2", "SM": "COL08_PAG069" },
-                "@COL07_PAG069_V4_E2": { "barcode": [ "GTAGAGGA" ], "LB": "COL07_PAG069_V4_E2", "SM": "COL07_PAG069" },
-                "@COL06_PAG069_V4_E2": { "barcode": [ "GCTCATGA" ], "LB": "COL06_PAG069_V4_E2", "SM": "COL06_PAG069" },
-                "@COL05_PAG069_V4_E2": { "barcode": [ "ATCTCAGG" ], "LB": "COL05_PAG069_V4_E2", "SM": "COL05_PAG069" },
-                "@COL02_PAG069_V4_E2": { "barcode": [ "TAAGGCGA" ], "LB": "COL02_PAG069_V4_E2", "SM": "COL02_PAG069" },
-                "@COL04_PAG069_V4_E2": { "barcode": [ "CGTACTAG" ], "LB": "COL04_PAG069_V4_E2", "SM": "COL04_PAG069" },
-                "@COL19_PAG123_V4_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_PAG123_V4_E2", "SM": "COL19_PAG123" },
-                "@COL13_PAG123_V4_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_PAG123_V4_E2", "SM": "COL13_PAG123" },
-                "@COL14_PAG123_V4_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_PAG123_V4_E2", "SM": "COL14_PAG123" },
-                "@COL15_PAG123_V4_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_PAG123_V4_E2", "SM": "COL15_PAG123" },
-                "@COL16_PAG123_V4_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_PAG123_V4_E2", "SM": "COL16_PAG123" },
-                "@COL17_PAG123_V4_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_PAG123_V4_E2", "SM": "COL17_PAG123" },
-                "@COL18_PAG123_V4_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_PAG123_V4_E2", "SM": "COL18_PAG123" },
-                "@COL11_PAG123_V4_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_PAG123_V4_E2", "SM": "COL11_PAG123" },
-                "@COL09_PAG069_V4_E2": { "barcode": [ "TCCTGAGC" ], "LB": "COL09_PAG069_V4_E2", "SM": "COL09_PAG069" }
+                "@COL01_PAG069_V4_E2": {
+                    "LB": "COL01_PAG069_V4_E2",
+                    "SM": "COL01_PAG069",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_PAG069_V4_E2": {
+                    "LB": "COL02_PAG069_V4_E2",
+                    "SM": "COL02_PAG069",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_PAG069_V4_E2": {
+                    "LB": "COL03_PAG069_V4_E2",
+                    "SM": "COL03_PAG069",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_PAG069_V4_E2": {
+                    "LB": "COL04_PAG069_V4_E2",
+                    "SM": "COL04_PAG069",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_PAG069_V4_E2": {
+                    "LB": "COL05_PAG069_V4_E2",
+                    "SM": "COL05_PAG069",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_PAG069_V4_E2": {
+                    "LB": "COL06_PAG069_V4_E2",
+                    "SM": "COL06_PAG069",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_PAG069_V4_E2": {
+                    "LB": "COL07_PAG069_V4_E2",
+                    "SM": "COL07_PAG069",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_PAG069_V4_E2": {
+                    "LB": "COL08_PAG069_V4_E2",
+                    "SM": "COL08_PAG069",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_PAG069_V4_E2": {
+                    "LB": "COL09_PAG069_V4_E2",
+                    "SM": "COL09_PAG069",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_PAG069_V4_E2": {
+                    "LB": "COL10_PAG069_V4_E2",
+                    "SM": "COL10_PAG069",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_PAG123_V4_E2": {
+                    "LB": "COL11_PAG123_V4_E2",
+                    "SM": "COL11_PAG123",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_PAG123_V4_E2": {
+                    "LB": "COL12_PAG123_V4_E2",
+                    "SM": "COL12_PAG123",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_PAG123_V4_E2": {
+                    "LB": "COL13_PAG123_V4_E2",
+                    "SM": "COL13_PAG123",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_PAG123_V4_E2": {
+                    "LB": "COL14_PAG123_V4_E2",
+                    "SM": "COL14_PAG123",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_PAG123_V4_E2": {
+                    "LB": "COL15_PAG123_V4_E2",
+                    "SM": "COL15_PAG123",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_PAG123_V4_E2": {
+                    "LB": "COL16_PAG123_V4_E2",
+                    "SM": "COL16_PAG123",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_PAG123_V4_E2": {
+                    "LB": "COL17_PAG123_V4_E2",
+                    "SM": "COL17_PAG123",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_PAG123_V4_E2": {
+                    "LB": "COL18_PAG123_V4_E2",
+                    "SM": "COL18_PAG123",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_PAG123_V4_E2": {
+                    "LB": "COL19_PAG123_V4_E2",
+                    "SM": "COL19_PAG123",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_PAG123_V4_E2": {
+                    "LB": "COL20_PAG123_V4_E2",
+                    "SM": "COL20_PAG123",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         },
         "@CBJLFACXX_multiplex_lane_3": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_PAG069_V3_E2": { "barcode": [ "GGACTCCT" ], "LB": "COL01_PAG069_V3_E2", "SM": "COL01_PAG069" },
-                "@COL20_PAG123_V3_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_PAG123_V3_E2", "SM": "COL20_PAG123" },
-                "@COL03_PAG069_V3_E2": { "barcode": [ "TAGGCATG" ], "LB": "COL03_PAG069_V3_E2", "SM": "COL03_PAG069" },
-                "@COL12_PAG123_V3_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_PAG123_V3_E2", "SM": "COL12_PAG123" },
-                "@COL10_PAG069_V3_E2": { "barcode": [ "CGAGGCTG" ], "LB": "COL10_PAG069_V3_E2", "SM": "COL10_PAG069" },
-                "@COL08_PAG069_V3_E2": { "barcode": [ "AAGAGGCA" ], "LB": "COL08_PAG069_V3_E2", "SM": "COL08_PAG069" },
-                "@COL07_PAG069_V3_E2": { "barcode": [ "GTAGAGGA" ], "LB": "COL07_PAG069_V3_E2", "SM": "COL07_PAG069" },
-                "@COL06_PAG069_V3_E2": { "barcode": [ "GCTCATGA" ], "LB": "COL06_PAG069_V3_E2", "SM": "COL06_PAG069" },
-                "@COL05_PAG069_V3_E2": { "barcode": [ "ATCTCAGG" ], "LB": "COL05_PAG069_V3_E2", "SM": "COL05_PAG069" },
-                "@COL02_PAG069_V3_E2": { "barcode": [ "TAAGGCGA" ], "LB": "COL02_PAG069_V3_E2", "SM": "COL02_PAG069" },
-                "@COL04_PAG069_V3_E2": { "barcode": [ "CGTACTAG" ], "LB": "COL04_PAG069_V3_E2", "SM": "COL04_PAG069" },
-                "@COL19_PAG123_V3_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_PAG123_V3_E2", "SM": "COL19_PAG123" },
-                "@COL13_PAG123_V3_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_PAG123_V3_E2", "SM": "COL13_PAG123" },
-                "@COL14_PAG123_V3_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_PAG123_V3_E2", "SM": "COL14_PAG123" },
-                "@COL15_PAG123_V3_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_PAG123_V3_E2", "SM": "COL15_PAG123" },
-                "@COL16_PAG123_V3_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_PAG123_V3_E2", "SM": "COL16_PAG123" },
-                "@COL17_PAG123_V3_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_PAG123_V3_E2", "SM": "COL17_PAG123" },
-                "@COL18_PAG123_V3_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_PAG123_V3_E2", "SM": "COL18_PAG123" },
-                "@COL11_PAG123_V3_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_PAG123_V3_E2", "SM": "COL11_PAG123" },
-                "@COL09_PAG069_V3_E2": { "barcode": [ "TCCTGAGC" ], "LB": "COL09_PAG069_V3_E2", "SM": "COL09_PAG069" }
+                "@COL01_PAG069_V3_E2": {
+                    "LB": "COL01_PAG069_V3_E2",
+                    "SM": "COL01_PAG069",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_PAG069_V3_E2": {
+                    "LB": "COL02_PAG069_V3_E2",
+                    "SM": "COL02_PAG069",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_PAG069_V3_E2": {
+                    "LB": "COL03_PAG069_V3_E2",
+                    "SM": "COL03_PAG069",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_PAG069_V3_E2": {
+                    "LB": "COL04_PAG069_V3_E2",
+                    "SM": "COL04_PAG069",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_PAG069_V3_E2": {
+                    "LB": "COL05_PAG069_V3_E2",
+                    "SM": "COL05_PAG069",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_PAG069_V3_E2": {
+                    "LB": "COL06_PAG069_V3_E2",
+                    "SM": "COL06_PAG069",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_PAG069_V3_E2": {
+                    "LB": "COL07_PAG069_V3_E2",
+                    "SM": "COL07_PAG069",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_PAG069_V3_E2": {
+                    "LB": "COL08_PAG069_V3_E2",
+                    "SM": "COL08_PAG069",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_PAG069_V3_E2": {
+                    "LB": "COL09_PAG069_V3_E2",
+                    "SM": "COL09_PAG069",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_PAG069_V3_E2": {
+                    "LB": "COL10_PAG069_V3_E2",
+                    "SM": "COL10_PAG069",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_PAG123_V3_E2": {
+                    "LB": "COL11_PAG123_V3_E2",
+                    "SM": "COL11_PAG123",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_PAG123_V3_E2": {
+                    "LB": "COL12_PAG123_V3_E2",
+                    "SM": "COL12_PAG123",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_PAG123_V3_E2": {
+                    "LB": "COL13_PAG123_V3_E2",
+                    "SM": "COL13_PAG123",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_PAG123_V3_E2": {
+                    "LB": "COL14_PAG123_V3_E2",
+                    "SM": "COL14_PAG123",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_PAG123_V3_E2": {
+                    "LB": "COL15_PAG123_V3_E2",
+                    "SM": "COL15_PAG123",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_PAG123_V3_E2": {
+                    "LB": "COL16_PAG123_V3_E2",
+                    "SM": "COL16_PAG123",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_PAG123_V3_E2": {
+                    "LB": "COL17_PAG123_V3_E2",
+                    "SM": "COL17_PAG123",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_PAG123_V3_E2": {
+                    "LB": "COL18_PAG123_V3_E2",
+                    "SM": "COL18_PAG123",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_PAG123_V3_E2": {
+                    "LB": "COL19_PAG123_V3_E2",
+                    "SM": "COL19_PAG123",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_PAG123_V3_E2": {
+                    "LB": "COL20_PAG123_V3_E2",
+                    "SM": "COL20_PAG123",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         },
         "@CBJLFACXX_multiplex_lane_4": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_PAG069_V1_E2": { "barcode": [ "GGACTCCT" ], "LB": "COL01_PAG069_V1_E2", "SM": "COL01_PAG069" },
-                "@COL20_PAG123_V1_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_PAG123_V1_E2", "SM": "COL20_PAG123" },
-                "@COL03_PAG069_V1_E2": { "barcode": [ "TAGGCATG" ], "LB": "COL03_PAG069_V1_E2", "SM": "COL03_PAG069" },
-                "@COL12_PAG123_V1_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_PAG123_V1_E2", "SM": "COL12_PAG123" },
-                "@COL10_PAG069_V1_E2": { "barcode": [ "CGAGGCTG" ], "LB": "COL10_PAG069_V1_E2", "SM": "COL10_PAG069" },
-                "@COL08_PAG069_V1_E2": { "barcode": [ "AAGAGGCA" ], "LB": "COL08_PAG069_V1_E2", "SM": "COL08_PAG069" },
-                "@COL07_PAG069_V1_E2": { "barcode": [ "GTAGAGGA" ], "LB": "COL07_PAG069_V1_E2", "SM": "COL07_PAG069" },
-                "@COL06_PAG069_V1_E2": { "barcode": [ "GCTCATGA" ], "LB": "COL06_PAG069_V1_E2", "SM": "COL06_PAG069" },
-                "@COL05_PAG069_V1_E2": { "barcode": [ "ATCTCAGG" ], "LB": "COL05_PAG069_V1_E2", "SM": "COL05_PAG069" },
-                "@COL02_PAG069_V1_E2": { "barcode": [ "TAAGGCGA" ], "LB": "COL02_PAG069_V1_E2", "SM": "COL02_PAG069" },
-                "@COL04_PAG069_V1_E2": { "barcode": [ "CGTACTAG" ], "LB": "COL04_PAG069_V1_E2", "SM": "COL04_PAG069" },
-                "@COL19_PAG123_V1_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_PAG123_V1_E2", "SM": "COL19_PAG123" },
-                "@COL13_PAG123_V1_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_PAG123_V1_E2", "SM": "COL13_PAG123" },
-                "@COL14_PAG123_V1_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_PAG123_V1_E2", "SM": "COL14_PAG123" },
-                "@COL15_PAG123_V1_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_PAG123_V1_E2", "SM": "COL15_PAG123" },
-                "@COL16_PAG123_V1_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_PAG123_V1_E2", "SM": "COL16_PAG123" },
-                "@COL17_PAG123_V1_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_PAG123_V1_E2", "SM": "COL17_PAG123" },
-                "@COL18_PAG123_V1_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_PAG123_V1_E2", "SM": "COL18_PAG123" },
-                "@COL11_PAG123_V1_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_PAG123_V1_E2", "SM": "COL11_PAG123" },
-                "@COL09_PAG069_V1_E2": { "barcode": [ "TCCTGAGC" ], "LB": "COL09_PAG069_V1_E2", "SM": "COL09_PAG069" }
+                "@COL01_PAG069_V1_E2": {
+                    "LB": "COL01_PAG069_V1_E2",
+                    "SM": "COL01_PAG069",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_PAG069_V1_E2": {
+                    "LB": "COL02_PAG069_V1_E2",
+                    "SM": "COL02_PAG069",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_PAG069_V1_E2": {
+                    "LB": "COL03_PAG069_V1_E2",
+                    "SM": "COL03_PAG069",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_PAG069_V1_E2": {
+                    "LB": "COL04_PAG069_V1_E2",
+                    "SM": "COL04_PAG069",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_PAG069_V1_E2": {
+                    "LB": "COL05_PAG069_V1_E2",
+                    "SM": "COL05_PAG069",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_PAG069_V1_E2": {
+                    "LB": "COL06_PAG069_V1_E2",
+                    "SM": "COL06_PAG069",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_PAG069_V1_E2": {
+                    "LB": "COL07_PAG069_V1_E2",
+                    "SM": "COL07_PAG069",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_PAG069_V1_E2": {
+                    "LB": "COL08_PAG069_V1_E2",
+                    "SM": "COL08_PAG069",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_PAG069_V1_E2": {
+                    "LB": "COL09_PAG069_V1_E2",
+                    "SM": "COL09_PAG069",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_PAG069_V1_E2": {
+                    "LB": "COL10_PAG069_V1_E2",
+                    "SM": "COL10_PAG069",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_PAG123_V1_E2": {
+                    "LB": "COL11_PAG123_V1_E2",
+                    "SM": "COL11_PAG123",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_PAG123_V1_E2": {
+                    "LB": "COL12_PAG123_V1_E2",
+                    "SM": "COL12_PAG123",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_PAG123_V1_E2": {
+                    "LB": "COL13_PAG123_V1_E2",
+                    "SM": "COL13_PAG123",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_PAG123_V1_E2": {
+                    "LB": "COL14_PAG123_V1_E2",
+                    "SM": "COL14_PAG123",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_PAG123_V1_E2": {
+                    "LB": "COL15_PAG123_V1_E2",
+                    "SM": "COL15_PAG123",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_PAG123_V1_E2": {
+                    "LB": "COL16_PAG123_V1_E2",
+                    "SM": "COL16_PAG123",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_PAG123_V1_E2": {
+                    "LB": "COL17_PAG123_V1_E2",
+                    "SM": "COL17_PAG123",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_PAG123_V1_E2": {
+                    "LB": "COL18_PAG123_V1_E2",
+                    "SM": "COL18_PAG123",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_PAG123_V1_E2": {
+                    "LB": "COL19_PAG123_V1_E2",
+                    "SM": "COL19_PAG123",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_PAG123_V1_E2": {
+                    "LB": "COL20_PAG123_V1_E2",
+                    "SM": "COL20_PAG123",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         },
         "@CBJLFACXX_multiplex_lane_5": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_PAG165_V2_E2": { "barcode": [ "GGACTCCT" ], "LB": "COL01_PAG165_V2_E2", "SM": "COL01_PAG165" },
-                "@COL20_PAG165_V4_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_PAG165_V4_E2", "SM": "COL20_PAG165" },
-                "@COL03_PAG165_V2_E2": { "barcode": [ "TAGGCATG" ], "LB": "COL03_PAG165_V2_E2", "SM": "COL03_PAG165" },
-                "@COL12_PAG165_V4_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_PAG165_V4_E2", "SM": "COL12_PAG165" },
-                "@COL10_PAG165_V2_E2": { "barcode": [ "CGAGGCTG" ], "LB": "COL10_PAG165_V2_E2", "SM": "COL10_PAG165" },
-                "@COL08_PAG165_V2_E2": { "barcode": [ "AAGAGGCA" ], "LB": "COL08_PAG165_V2_E2", "SM": "COL08_PAG165" },
-                "@COL07_PAG165_V2_E2": { "barcode": [ "GTAGAGGA" ], "LB": "COL07_PAG165_V2_E2", "SM": "COL07_PAG165" },
-                "@COL06_PAG165_V2_E2": { "barcode": [ "GCTCATGA" ], "LB": "COL06_PAG165_V2_E2", "SM": "COL06_PAG165" },
-                "@COL05_PAG165_V2_E2": { "barcode": [ "ATCTCAGG" ], "LB": "COL05_PAG165_V2_E2", "SM": "COL05_PAG165" },
-                "@COL02_PAG165_V2_E2": { "barcode": [ "TAAGGCGA" ], "LB": "COL02_PAG165_V2_E2", "SM": "COL02_PAG165" },
-                "@COL04_PAG165_V2_E2": { "barcode": [ "CGTACTAG" ], "LB": "COL04_PAG165_V2_E2", "SM": "COL04_PAG165" },
-                "@COL19_PAG165_V4_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_PAG165_V4_E2", "SM": "COL19_PAG165" },
-                "@COL13_PAG165_V4_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_PAG165_V4_E2", "SM": "COL13_PAG165" },
-                "@COL14_PAG165_V4_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_PAG165_V4_E2", "SM": "COL14_PAG165" },
-                "@COL15_PAG165_V4_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_PAG165_V4_E2", "SM": "COL15_PAG165" },
-                "@COL16_PAG165_V4_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_PAG165_V4_E2", "SM": "COL16_PAG165" },
-                "@COL17_PAG165_V4_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_PAG165_V4_E2", "SM": "COL17_PAG165" },
-                "@COL18_PAG165_V4_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_PAG165_V4_E2", "SM": "COL18_PAG165" },
-                "@COL11_PAG165_V4_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_PAG165_V4_E2", "SM": "COL11_PAG165" },
-                "@COL09_PAG165_V2_E2": { "barcode": [ "TCCTGAGC" ], "LB": "COL09_PAG165_V2_E2", "SM": "COL09_PAG165" }
+                "@COL01_PAG165_V2_E2": {
+                    "LB": "COL01_PAG165_V2_E2",
+                    "SM": "COL01_PAG165",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_PAG165_V2_E2": {
+                    "LB": "COL02_PAG165_V2_E2",
+                    "SM": "COL02_PAG165",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_PAG165_V2_E2": {
+                    "LB": "COL03_PAG165_V2_E2",
+                    "SM": "COL03_PAG165",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_PAG165_V2_E2": {
+                    "LB": "COL04_PAG165_V2_E2",
+                    "SM": "COL04_PAG165",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_PAG165_V2_E2": {
+                    "LB": "COL05_PAG165_V2_E2",
+                    "SM": "COL05_PAG165",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_PAG165_V2_E2": {
+                    "LB": "COL06_PAG165_V2_E2",
+                    "SM": "COL06_PAG165",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_PAG165_V2_E2": {
+                    "LB": "COL07_PAG165_V2_E2",
+                    "SM": "COL07_PAG165",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_PAG165_V2_E2": {
+                    "LB": "COL08_PAG165_V2_E2",
+                    "SM": "COL08_PAG165",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_PAG165_V2_E2": {
+                    "LB": "COL09_PAG165_V2_E2",
+                    "SM": "COL09_PAG165",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_PAG165_V2_E2": {
+                    "LB": "COL10_PAG165_V2_E2",
+                    "SM": "COL10_PAG165",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_PAG165_V4_E2": {
+                    "LB": "COL11_PAG165_V4_E2",
+                    "SM": "COL11_PAG165",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_PAG165_V4_E2": {
+                    "LB": "COL12_PAG165_V4_E2",
+                    "SM": "COL12_PAG165",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_PAG165_V4_E2": {
+                    "LB": "COL13_PAG165_V4_E2",
+                    "SM": "COL13_PAG165",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_PAG165_V4_E2": {
+                    "LB": "COL14_PAG165_V4_E2",
+                    "SM": "COL14_PAG165",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_PAG165_V4_E2": {
+                    "LB": "COL15_PAG165_V4_E2",
+                    "SM": "COL15_PAG165",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_PAG165_V4_E2": {
+                    "LB": "COL16_PAG165_V4_E2",
+                    "SM": "COL16_PAG165",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_PAG165_V4_E2": {
+                    "LB": "COL17_PAG165_V4_E2",
+                    "SM": "COL17_PAG165",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_PAG165_V4_E2": {
+                    "LB": "COL18_PAG165_V4_E2",
+                    "SM": "COL18_PAG165",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_PAG165_V4_E2": {
+                    "LB": "COL19_PAG165_V4_E2",
+                    "SM": "COL19_PAG165",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_PAG165_V4_E2": {
+                    "LB": "COL20_PAG165_V4_E2",
+                    "SM": "COL20_PAG165",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         },
         "@CBJLFACXX_multiplex_lane_6": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_PAG165_V1_E2": { "barcode": [ "GGACTCCT" ], "LB": "COL01_PAG165_V1_E2", "SM": "COL01_PAG165" },
-                "@COL20_PAG165_V3_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_PAG165_V3_E2", "SM": "COL20_PAG165" },
-                "@COL03_PAG165_V1_E2": { "barcode": [ "TAGGCATG" ], "LB": "COL03_PAG165_V1_E2", "SM": "COL03_PAG165" },
-                "@COL12_PAG165_V3_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_PAG165_V3_E2", "SM": "COL12_PAG165" },
-                "@COL10_PAG165_V1_E2": { "barcode": [ "CGAGGCTG" ], "LB": "COL10_PAG165_V1_E2", "SM": "COL10_PAG165" },
-                "@COL08_PAG165_V1_E2": { "barcode": [ "AAGAGGCA" ], "LB": "COL08_PAG165_V1_E2", "SM": "COL08_PAG165" },
-                "@COL07_PAG165_V1_E2": { "barcode": [ "GTAGAGGA" ], "LB": "COL07_PAG165_V1_E2", "SM": "COL07_PAG165" },
-                "@COL06_PAG165_V1_E2": { "barcode": [ "GCTCATGA" ], "LB": "COL06_PAG165_V1_E2", "SM": "COL06_PAG165" },
-                "@COL05_PAG165_V1_E2": { "barcode": [ "ATCTCAGG" ], "LB": "COL05_PAG165_V1_E2", "SM": "COL05_PAG165" },
-                "@COL02_PAG165_V1_E2": { "barcode": [ "TAAGGCGA" ], "LB": "COL02_PAG165_V1_E2", "SM": "COL02_PAG165" },
-                "@COL04_PAG165_V1_E2": { "barcode": [ "CGTACTAG" ], "LB": "COL04_PAG165_V1_E2", "SM": "COL04_PAG165" },
-                "@COL19_PAG165_V3_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_PAG165_V3_E2", "SM": "COL19_PAG165" },
-                "@COL13_PAG165_V3_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_PAG165_V3_E2", "SM": "COL13_PAG165" },
-                "@COL14_PAG165_V3_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_PAG165_V3_E2", "SM": "COL14_PAG165" },
-                "@COL15_PAG165_V3_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_PAG165_V3_E2", "SM": "COL15_PAG165" },
-                "@COL16_PAG165_V3_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_PAG165_V3_E2", "SM": "COL16_PAG165" },
-                "@COL17_PAG165_V3_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_PAG165_V3_E2", "SM": "COL17_PAG165" },
-                "@COL18_PAG165_V3_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_PAG165_V3_E2", "SM": "COL18_PAG165" },
-                "@COL11_PAG165_V3_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_PAG165_V3_E2", "SM": "COL11_PAG165" },
-                "@COL09_PAG165_V1_E2": { "barcode": [ "TCCTGAGC" ], "LB": "COL09_PAG165_V1_E2", "SM": "COL09_PAG165" }
+                "@COL01_PAG165_V1_E2": {
+                    "LB": "COL01_PAG165_V1_E2",
+                    "SM": "COL01_PAG165",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_PAG165_V1_E2": {
+                    "LB": "COL02_PAG165_V1_E2",
+                    "SM": "COL02_PAG165",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_PAG165_V1_E2": {
+                    "LB": "COL03_PAG165_V1_E2",
+                    "SM": "COL03_PAG165",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_PAG165_V1_E2": {
+                    "LB": "COL04_PAG165_V1_E2",
+                    "SM": "COL04_PAG165",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_PAG165_V1_E2": {
+                    "LB": "COL05_PAG165_V1_E2",
+                    "SM": "COL05_PAG165",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_PAG165_V1_E2": {
+                    "LB": "COL06_PAG165_V1_E2",
+                    "SM": "COL06_PAG165",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_PAG165_V1_E2": {
+                    "LB": "COL07_PAG165_V1_E2",
+                    "SM": "COL07_PAG165",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_PAG165_V1_E2": {
+                    "LB": "COL08_PAG165_V1_E2",
+                    "SM": "COL08_PAG165",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_PAG165_V1_E2": {
+                    "LB": "COL09_PAG165_V1_E2",
+                    "SM": "COL09_PAG165",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_PAG165_V1_E2": {
+                    "LB": "COL10_PAG165_V1_E2",
+                    "SM": "COL10_PAG165",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_PAG165_V3_E2": {
+                    "LB": "COL11_PAG165_V3_E2",
+                    "SM": "COL11_PAG165",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_PAG165_V3_E2": {
+                    "LB": "COL12_PAG165_V3_E2",
+                    "SM": "COL12_PAG165",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_PAG165_V3_E2": {
+                    "LB": "COL13_PAG165_V3_E2",
+                    "SM": "COL13_PAG165",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_PAG165_V3_E2": {
+                    "LB": "COL14_PAG165_V3_E2",
+                    "SM": "COL14_PAG165",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_PAG165_V3_E2": {
+                    "LB": "COL15_PAG165_V3_E2",
+                    "SM": "COL15_PAG165",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_PAG165_V3_E2": {
+                    "LB": "COL16_PAG165_V3_E2",
+                    "SM": "COL16_PAG165",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_PAG165_V3_E2": {
+                    "LB": "COL17_PAG165_V3_E2",
+                    "SM": "COL17_PAG165",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_PAG165_V3_E2": {
+                    "LB": "COL18_PAG165_V3_E2",
+                    "SM": "COL18_PAG165",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_PAG165_V3_E2": {
+                    "LB": "COL19_PAG165_V3_E2",
+                    "SM": "COL19_PAG165",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_PAG165_V3_E2": {
+                    "LB": "COL20_PAG165_V3_E2",
+                    "SM": "COL20_PAG165",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         },
         "@CBJLFACXX_multiplex_lane_7": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_Jurk_GFP2Negsec_E2":   { "barcode": [ "GGACTCCT" ], "LB": "COL01_Jurk_GFP2Negsec_E2", "SM": "COL01_Jurk_GFP2Negsec" },
-                "@COL20_Jurk_GFPpospossec_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_Jurk_GFPpospossec_E2", "SM": "COL20_Jurk_GFPpospossec" },
-                "@COL03_Jurk_GFP2Negsec_E2":   { "barcode": [ "TAGGCATG" ], "LB": "COL03_Jurk_GFP2Negsec_E2", "SM": "COL03_Jurk_GFP2Negsec" },
-                "@COL12_Jurk_GFPpospossec_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_Jurk_GFPpospossec_E2", "SM": "COL12_Jurk_GFPpospossec" },
-                "@COL10_Jurk_GFP2Negsec_E2":   { "barcode": [ "CGAGGCTG" ], "LB": "COL10_Jurk_GFP2Negsec_E2", "SM": "COL10_Jurk_GFP2Negsec" },
-                "@COL08_Jurk_GFP2Negsec_E2":   { "barcode": [ "AAGAGGCA" ], "LB": "COL08_Jurk_GFP2Negsec_E2", "SM": "COL08_Jurk_GFP2Negsec" },
-                "@COL07_Jurk_GFP2Negsec_E2":   { "barcode": [ "GTAGAGGA" ], "LB": "COL07_Jurk_GFP2Negsec_E2", "SM": "COL07_Jurk_GFP2Negsec" },
-                "@COL06_Jurk_GFP2Negsec_E2":   { "barcode": [ "GCTCATGA" ], "LB": "COL06_Jurk_GFP2Negsec_E2", "SM": "COL06_Jurk_GFP2Negsec" },
-                "@COL05_Jurk_GFP2Negsec_E2":   { "barcode": [ "ATCTCAGG" ], "LB": "COL05_Jurk_GFP2Negsec_E2", "SM": "COL05_Jurk_GFP2Negsec" },
-                "@COL02_Jurk_GFP2Negsec_E2":   { "barcode": [ "TAAGGCGA" ], "LB": "COL02_Jurk_GFP2Negsec_E2", "SM": "COL02_Jurk_GFP2Negsec" },
-                "@COL04_Jurk_GFP2Negsec_E2":   { "barcode": [ "CGTACTAG" ], "LB": "COL04_Jurk_GFP2Negsec_E2", "SM": "COL04_Jurk_GFP2Negsec" },
-                "@COL19_Jurk_GFPpospossec_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_Jurk_GFPpospossec_E2", "SM": "COL19_Jurk_GFPpospossec" },
-                "@COL13_Jurk_GFPpospossec_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_Jurk_GFPpospossec_E2", "SM": "COL13_Jurk_GFPpospossec" },
-                "@COL14_Jurk_GFPpospossec_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_Jurk_GFPpospossec_E2", "SM": "COL14_Jurk_GFPpospossec" },
-                "@COL15_Jurk_GFPpospossec_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_Jurk_GFPpospossec_E2", "SM": "COL15_Jurk_GFPpospossec" },
-                "@COL16_Jurk_GFPpospossec_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_Jurk_GFPpospossec_E2", "SM": "COL16_Jurk_GFPpospossec" },
-                "@COL17_Jurk_GFPpospossec_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_Jurk_GFPpospossec_E2", "SM": "COL17_Jurk_GFPpospossec" },
-                "@COL18_Jurk_GFPpospossec_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_Jurk_GFPpospossec_E2", "SM": "COL18_Jurk_GFPpospossec" },
-                "@COL11_Jurk_GFPpospossec_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_Jurk_GFPpospossec_E2", "SM": "COL11_Jurk_GFPpospossec" },
-                "@COL09_Jurk_GFP2Negsec_E2":   { "barcode": [ "TCCTGAGC" ], "LB": "COL09_Jurk_GFP2Negsec_E2", "SM": "COL09_Jurk_GFP2Negsec" }
+                "@COL01_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL01_Jurk_GFP2Negsec_E2",
+                    "SM": "COL01_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL02_Jurk_GFP2Negsec_E2",
+                    "SM": "COL02_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL03_Jurk_GFP2Negsec_E2",
+                    "SM": "COL03_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL04_Jurk_GFP2Negsec_E2",
+                    "SM": "COL04_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL05_Jurk_GFP2Negsec_E2",
+                    "SM": "COL05_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL06_Jurk_GFP2Negsec_E2",
+                    "SM": "COL06_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL07_Jurk_GFP2Negsec_E2",
+                    "SM": "COL07_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL08_Jurk_GFP2Negsec_E2",
+                    "SM": "COL08_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL09_Jurk_GFP2Negsec_E2",
+                    "SM": "COL09_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_Jurk_GFP2Negsec_E2": {
+                    "LB": "COL10_Jurk_GFP2Negsec_E2",
+                    "SM": "COL10_Jurk_GFP2Negsec",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_Jurk_GFPpospossec_E2": {
+                    "LB": "COL11_Jurk_GFPpospossec_E2",
+                    "SM": "COL11_Jurk_GFPpospossec",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_Jurk_GFPpospossec_E2": {
+                    "LB": "COL12_Jurk_GFPpospossec_E2",
+                    "SM": "COL12_Jurk_GFPpospossec",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_Jurk_GFPpospossec_E2": {
+                    "LB": "COL13_Jurk_GFPpospossec_E2",
+                    "SM": "COL13_Jurk_GFPpospossec",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_Jurk_GFPpospossec_E2": {
+                    "LB": "COL14_Jurk_GFPpospossec_E2",
+                    "SM": "COL14_Jurk_GFPpospossec",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_Jurk_GFPpospossec_E2": {
+                    "LB": "COL15_Jurk_GFPpospossec_E2",
+                    "SM": "COL15_Jurk_GFPpospossec",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_Jurk_GFPpospossec_E2": {
+                    "LB": "COL16_Jurk_GFPpospossec_E2",
+                    "SM": "COL16_Jurk_GFPpospossec",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_Jurk_GFPpospossec_E2": {
+                    "LB": "COL17_Jurk_GFPpospossec_E2",
+                    "SM": "COL17_Jurk_GFPpospossec",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_Jurk_GFPpospossec_E2": {
+                    "LB": "COL18_Jurk_GFPpospossec_E2",
+                    "SM": "COL18_Jurk_GFPpospossec",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_Jurk_GFPpospossec_E2": {
+                    "LB": "COL19_Jurk_GFPpospossec_E2",
+                    "SM": "COL19_Jurk_GFPpospossec",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_Jurk_GFPpospossec_E2": {
+                    "LB": "COL20_Jurk_GFPpospossec_E2",
+                    "SM": "COL20_Jurk_GFPpospossec",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         },
         "@CBJLFACXX_multiplex_lane_8": {
             "base": "@CBJLFACXX_multiplex",
             "codec": {
-                "@COL01_Jurk_GFPposfirst_E2":  { "barcode": [ "GGACTCCT" ], "LB": "COL01_Jurk_GFPposfirst_E2", "SM": "COL01_Jurk_GFPposfirst" },
-                "@COL20_Jurk_GFPpospossec_E2": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_Jurk_GFPpospossec_E2", "SM": "COL20_Jurk_GFPpospossec" },
-                "@COL03_Jurk_GFPposfirst_E2":  { "barcode": [ "TAGGCATG" ], "LB": "COL03_Jurk_GFPposfirst_E2", "SM": "COL03_Jurk_GFPposfirst" },
-                "@COL12_Jurk_GFPpospossec_E2": { "barcode": [ "CTCTCTAC" ], "LB": "COL12_Jurk_GFPpospossec_E2", "SM": "COL12_Jurk_GFPpospossec" },
-                "@COL10_Jurk_GFPposfirst_E2":  { "barcode": [ "CGAGGCTG" ], "LB": "COL10_Jurk_GFPposfirst_E2", "SM": "COL10_Jurk_GFPposfirst" },
-                "@COL08_Jurk_GFPposfirst_E2":  { "barcode": [ "AAGAGGCA" ], "LB": "COL08_Jurk_GFPposfirst_E2", "SM": "COL08_Jurk_GFPposfirst" },
-                "@COL07_Jurk_GFPposfirst_E2":  { "barcode": [ "GTAGAGGA" ], "LB": "COL07_Jurk_GFPposfirst_E2", "SM": "COL07_Jurk_GFPposfirst" },
-                "@COL06_Jurk_GFPposfirst_E2":  { "barcode": [ "GCTCATGA" ], "LB": "COL06_Jurk_GFPposfirst_E2", "SM": "COL06_Jurk_GFPposfirst" },
-                "@COL05_Jurk_GFPposfirst_E2":  { "barcode": [ "ATCTCAGG" ], "LB": "COL05_Jurk_GFPposfirst_E2", "SM": "COL05_Jurk_GFPposfirst" },
-                "@COL02_Jurk_GFPposfirst_E2":  { "barcode": [ "TAAGGCGA" ], "LB": "COL02_Jurk_GFPposfirst_E2", "SM": "COL02_Jurk_GFPposfirst" },
-                "@COL04_Jurk_GFPposfirst_E2":  { "barcode": [ "CGTACTAG" ], "LB": "COL04_Jurk_GFPposfirst_E2", "SM": "COL04_Jurk_GFPposfirst" },
-                "@COL19_Jurk_GFPpospossec_E2": { "barcode": [ "GGAGCTAC" ], "LB": "COL19_Jurk_GFPpospossec_E2", "SM": "COL19_Jurk_GFPpospossec" },
-                "@COL13_Jurk_GFPpospossec_E2": { "barcode": [ "GCGTAGTA" ], "LB": "COL13_Jurk_GFPpospossec_E2", "SM": "COL13_Jurk_GFPpospossec" },
-                "@COL14_Jurk_GFPpospossec_E2": { "barcode": [ "CGGAGCCT" ], "LB": "COL14_Jurk_GFPpospossec_E2", "SM": "COL14_Jurk_GFPpospossec" },
-                "@COL15_Jurk_GFPpospossec_E2": { "barcode": [ "TACGCTGC" ], "LB": "COL15_Jurk_GFPpospossec_E2", "SM": "COL15_Jurk_GFPpospossec" },
-                "@COL16_Jurk_GFPpospossec_E2": { "barcode": [ "ATGCGCAG" ], "LB": "COL16_Jurk_GFPpospossec_E2", "SM": "COL16_Jurk_GFPpospossec" },
-                "@COL17_Jurk_GFPpospossec_E2": { "barcode": [ "TAGCGCTC" ], "LB": "COL17_Jurk_GFPpospossec_E2", "SM": "COL17_Jurk_GFPpospossec" },
-                "@COL18_Jurk_GFPpospossec_E2": { "barcode": [ "ACTGAGCG" ], "LB": "COL18_Jurk_GFPpospossec_E2", "SM": "COL18_Jurk_GFPpospossec" },
-                "@COL11_Jurk_GFPpospossec_E2": { "barcode": [ "AGGCAGAA" ], "LB": "COL11_Jurk_GFPpospossec_E2", "SM": "COL11_Jurk_GFPpospossec" },
-                "@COL09_Jurk_GFPposfirst_E2":  { "barcode": [ "TCCTGAGC" ], "LB": "COL09_Jurk_GFPposfirst_E2", "SM": "COL09_Jurk_GFPposfirst" }
+                "@COL01_Jurk_GFPposfirst_E2": {
+                    "LB": "COL01_Jurk_GFPposfirst_E2",
+                    "SM": "COL01_Jurk_GFPposfirst",
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "@COL02_Jurk_GFPposfirst_E2": {
+                    "LB": "COL02_Jurk_GFPposfirst_E2",
+                    "SM": "COL02_Jurk_GFPposfirst",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "@COL03_Jurk_GFPposfirst_E2": {
+                    "LB": "COL03_Jurk_GFPposfirst_E2",
+                    "SM": "COL03_Jurk_GFPposfirst",
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "@COL04_Jurk_GFPposfirst_E2": {
+                    "LB": "COL04_Jurk_GFPposfirst_E2",
+                    "SM": "COL04_Jurk_GFPposfirst",
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "@COL05_Jurk_GFPposfirst_E2": {
+                    "LB": "COL05_Jurk_GFPposfirst_E2",
+                    "SM": "COL05_Jurk_GFPposfirst",
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "@COL06_Jurk_GFPposfirst_E2": {
+                    "LB": "COL06_Jurk_GFPposfirst_E2",
+                    "SM": "COL06_Jurk_GFPposfirst",
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "@COL07_Jurk_GFPposfirst_E2": {
+                    "LB": "COL07_Jurk_GFPposfirst_E2",
+                    "SM": "COL07_Jurk_GFPposfirst",
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "@COL08_Jurk_GFPposfirst_E2": {
+                    "LB": "COL08_Jurk_GFPposfirst_E2",
+                    "SM": "COL08_Jurk_GFPposfirst",
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@COL09_Jurk_GFPposfirst_E2": {
+                    "LB": "COL09_Jurk_GFPposfirst_E2",
+                    "SM": "COL09_Jurk_GFPposfirst",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "@COL10_Jurk_GFPposfirst_E2": {
+                    "LB": "COL10_Jurk_GFPposfirst_E2",
+                    "SM": "COL10_Jurk_GFPposfirst",
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "@COL11_Jurk_GFPpospossec_E2": {
+                    "LB": "COL11_Jurk_GFPpospossec_E2",
+                    "SM": "COL11_Jurk_GFPpospossec",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "@COL12_Jurk_GFPpospossec_E2": {
+                    "LB": "COL12_Jurk_GFPpospossec_E2",
+                    "SM": "COL12_Jurk_GFPpospossec",
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "@COL13_Jurk_GFPpospossec_E2": {
+                    "LB": "COL13_Jurk_GFPpospossec_E2",
+                    "SM": "COL13_Jurk_GFPpospossec",
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "@COL14_Jurk_GFPpospossec_E2": {
+                    "LB": "COL14_Jurk_GFPpospossec_E2",
+                    "SM": "COL14_Jurk_GFPpospossec",
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "@COL15_Jurk_GFPpospossec_E2": {
+                    "LB": "COL15_Jurk_GFPpospossec_E2",
+                    "SM": "COL15_Jurk_GFPpospossec",
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "@COL16_Jurk_GFPpospossec_E2": {
+                    "LB": "COL16_Jurk_GFPpospossec_E2",
+                    "SM": "COL16_Jurk_GFPpospossec",
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "@COL17_Jurk_GFPpospossec_E2": {
+                    "LB": "COL17_Jurk_GFPpospossec_E2",
+                    "SM": "COL17_Jurk_GFPpospossec",
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "@COL18_Jurk_GFPpospossec_E2": {
+                    "LB": "COL18_Jurk_GFPpospossec_E2",
+                    "SM": "COL18_Jurk_GFPpospossec",
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "@COL19_Jurk_GFPpospossec_E2": {
+                    "LB": "COL19_Jurk_GFPpospossec_E2",
+                    "SM": "COL19_Jurk_GFPpospossec",
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "@COL20_Jurk_GFPpospossec_E2": {
+                    "LB": "COL20_Jurk_GFPpospossec_E2",
+                    "SM": "COL20_Jurk_GFPpospossec",
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
             }
         }
-    }
+    },
+    "filter incoming qc fail": true,
+    "flowcell id": "CBJLFACXX",
+    "template": {
+        "transform": {
+            "token": [
+                "2::"
+            ]
+        }
+    },
+    "threads": 16
 }

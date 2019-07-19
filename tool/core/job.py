@@ -195,3 +195,109 @@ class ShellCommand(Job):
     @is_execution_summary_dirty.setter
     def is_execution_summary_dirty(self, value):
         self.ontology['persistence']['execution summary dirty'] = value
+
+class PheniqsCommand(ShellCommand):
+    def __init__(self, ontology):
+        ShellCommand.__init__(self, ontology)
+        self.log = logging.getLogger('Pheniqs')
+        default = {
+            'report': None,
+            'execution summary': {
+                'return code': 0,
+            },
+            'command': [ 'pheniqs' ],
+            'pheniqs job': { }
+        }
+
+        if self.instruction['sense_input']:
+            self.command.append('--sense-input')
+
+        self.ontology = merge(default, self.ontology)
+
+    @property
+    def command(self):
+        return self.ontology['command']
+
+    @property
+    def return_code(self):
+        return self.execution_summary['return code']
+
+    @property
+    def stderr(self):
+        return self.execution_summary['stderr']
+
+    @property
+    def stdout(self):
+        return self.execution_summary['stdout']
+
+    @property
+    def pheniqs_job(self):
+        return self.ontology['pheniqs job']
+
+    def execute(self):
+        self.execution_summary['command'] = ' '.join([str(i) for i in self.command])
+        self.log.debug('executing %s', self.execution_summary['command'])
+
+        process = Popen (
+            args=self.posix_time_command + self.command,
+            cwd=self.current_working_directoy,
+            stdout=PIPE,
+            stderr=PIPE
+        )
+        output, error = process.communicate()
+        self.execution_summary['return code'] = process.returncode
+
+        for line in error.decode('utf8').splitlines():
+            line = line.strip()
+            if line:
+                match = self.posix_time_head_ex.search(line)
+                if match:
+                    for k,v in match.groupdict().items():
+                        self.execution_summary[k] = float(v)
+                else:
+                    self.stderr.append(line)
+
+        for line in output.decode('utf8').splitlines():
+            line = line.strip()
+            if line:
+                self.stdout.append(line)
+
+        if self.return_code == 0:
+            self.ontology['report'] = json.loads('\n'.join(self.stderr))
+        else:
+            print(to_json(self.execution_summary))
+            # print('\n'.join(self.stderr))
+            raise BadConfigurationError('pheniqs returned {}'.format(self.return_code))
+
+
+
+
+        process = Popen(
+            args=self.command,
+            cwd=self.current_working_directoy,
+            stdout=PIPE,
+            stderr=PIPE
+        )
+        output, error = process.communicate()
+        return_code = process.returncode
+
+        if return_code == 0:
+            self.ontology['report'] = json.loads(error.decode('utf8'))
+        else:
+            print(error)
+            raise BadConfigurationError('pheniqs returned {} when estimating prior'.format(return_code))
+            for line in error.decode('utf8').splitlines():
+                print(error.decode('utf8'))
+        return return_code
+
+    @property
+    def execution_summary(self):
+        return self.ontology['execution summary']
+
+    @property
+    def is_execution_summary_dirty(self):
+        return self.ontology['persistence']['execution summary dirty']
+
+    @is_execution_summary_dirty.setter
+    def is_execution_summary_dirty(self, value):
+        self.ontology['persistence']['execution summary dirty'] = value
