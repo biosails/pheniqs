@@ -232,13 +232,13 @@ Better estimation of the prior distribution improves accuracy. The `pheniqs-prio
 >**Column Prior estimation configuration** refrains from reading the biological sequences and produces no output which significantly speeds things up.
 {: .example}
 
-Executing [CBJLFACXX_l01_column_estimate.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate.json) will yield the [CBJLFACXX_l01_column_estimate_report.json]([compile configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json) report. Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that you can use to estimate the priors.
+Executing [CBJLFACXX_l01_column_estimate.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate.json) will yield the [CBJLFACXX_l01_column_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json) report. Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that you can use to estimate the priors.
 
 >```shell
 pheniqs mux --config CBJLFACXX_l01_column_estimate.json
 ```
 
-Now that you have [CBJLFACXX_l01_column_split.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split.json), a decoding configuration, and [CBJLFACXX_l01_column_estimate_report.json]([compile configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json), a report with decoding statistics, you can use `pheniqs-prior-api` to generate a [prior adjusted configuration file]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_adjusted.json).
+Now that you have [CBJLFACXX_l01_column_split.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split.json), a decoding configuration, and [CBJLFACXX_l01_column_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json), a report with decoding statistics, you can use `pheniqs-prior-api` to generate a [prior adjusted configuration file]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_adjusted.json).
 
 >```shell
 pheniqs-prior-api.py \
