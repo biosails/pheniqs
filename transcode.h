@@ -52,7 +52,7 @@ class Transcode : public Job {
         bool pull(Read& read);
         void assemble() override;
         void compile() override;
-        void describe(ostream& o) const override;
+        void describe() const override;
 
     protected:
         uint64_t count;

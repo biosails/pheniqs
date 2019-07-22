@@ -30,6 +30,34 @@ class Job {
     public:
         Job(Document& operation);
         virtual ~Job();
+        virtual void assemble();
+        inline void run() {
+            if(is_static_only()) {
+                write_static_instruction();
+
+            } else if(is_validate_only()) {
+                compile();
+                describe();
+
+            } else if(is_compile_only()) {
+                compile();
+                write_compiled_instruction();
+
+            } else {
+                compile();
+                execute();
+                write_report();
+            }
+        };
+
+    protected:
+        const Document operation;
+        const Value& interactive;
+        const Value& schema_repository;
+        const Value& projection_repository;
+        Document instruction;
+        Document ontology;
+        Document report;
         inline bool is_static_only() const {
             return decode_value_by_key< bool >("static only", interactive);
         };
@@ -42,27 +70,17 @@ class Job {
         inline int32_t float_precision() const {
             return decode_value_by_key< int32_t >("float precision", ontology);
         };
-        virtual void assemble();
-        virtual void compile();
-        virtual void execute();
-        virtual void write_report() const;
-        virtual void describe(ostream& o) const;
-        virtual void write_static_instruction(ostream& o) const;
-        virtual void write_compiled_instruction(ostream& o) const;
-
-    protected:
-        const Document operation;
-        const Value& interactive;
-        const Value& schema_repository;
-        const Value& projection_repository;
-        Document instruction;
-        Document ontology;
-        Document report;
-        virtual void validate();
         virtual void load();
         virtual void start();
         virtual void stop();
         virtual void finalize();
+        virtual void compile();
+        virtual void describe() const;
+        virtual void execute();
+        virtual void write_report() const;
+        virtual void write_static_instruction() const;
+        virtual void write_compiled_instruction() const;
+        virtual void validate();
         virtual void apply_default_ontology(Document& document) const;
         virtual void apply_interactive_ontology(Document& document) const;
         const Value* find_schema(const string& key) const;

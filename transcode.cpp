@@ -1514,7 +1514,8 @@ void Transcode::apply_interactive_ontology(Document& document) const {
 };
 
 /* describe */
-void Transcode::describe(ostream& o) const {
+void Transcode::describe() const {
+    ostream& o(cout);
     print_global_instruction(o);
     print_input_instruction(o);
     print_transform_instruction(o);
