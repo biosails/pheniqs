@@ -1,0 +1,292 @@
+{
+    "decoder": {
+        "Illumina TruSeq Targeted RNA Expression i5": {
+            "codec": {
+                "A501": {
+                    "barcode": [
+                        "TGAACCTT"
+                    ]
+                },
+                "A502": {
+                    "barcode": [
+                        "TGCTAAGT"
+                    ]
+                },
+                "A503": {
+                    "barcode": [
+                        "TGTTCTCT"
+                    ]
+                },
+                "A504": {
+                    "barcode": [
+                        "TAAGACAC"
+                    ]
+                },
+                "A505": {
+                    "barcode": [
+                        "CTAATCGA"
+                    ]
+                },
+                "A506": {
+                    "barcode": [
+                        "CTAGAACA"
+                    ]
+                },
+                "A507": {
+                    "barcode": [
+                        "TAAGTTCC"
+                    ]
+                },
+                "A508": {
+                    "barcode": [
+                        "TAGACCTA"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSeq Targeted RNA Expression i7": {
+            "codec": {
+                "R701": {
+                    "barcode": [
+                        "ATCACG"
+                    ]
+                },
+                "R702": {
+                    "barcode": [
+                        "CGATGT"
+                    ]
+                },
+                "R703": {
+                    "barcode": [
+                        "TTAGGC"
+                    ]
+                },
+                "R704": {
+                    "barcode": [
+                        "TGACCA"
+                    ]
+                },
+                "R705": {
+                    "barcode": [
+                        "ACAGTG"
+                    ]
+                },
+                "R706": {
+                    "barcode": [
+                        "GCCAAT"
+                    ]
+                },
+                "R707": {
+                    "barcode": [
+                        "CAGATC"
+                    ]
+                },
+                "R708": {
+                    "barcode": [
+                        "ACTTGA"
+                    ]
+                },
+                "R709": {
+                    "barcode": [
+                        "GATCAG"
+                    ]
+                },
+                "R710": {
+                    "barcode": [
+                        "TAGCTT"
+                    ]
+                },
+                "R711": {
+                    "barcode": [
+                        "GGCTAC"
+                    ]
+                },
+                "R712": {
+                    "barcode": [
+                        "CTTGTA"
+                    ]
+                },
+                "R713": {
+                    "barcode": [
+                        "AGTCAA"
+                    ]
+                },
+                "R714": {
+                    "barcode": [
+                        "AGTTCC"
+                    ]
+                },
+                "R715": {
+                    "barcode": [
+                        "ATGTCA"
+                    ]
+                },
+                "R716": {
+                    "barcode": [
+                        "CCGTCC"
+                    ]
+                },
+                "R717": {
+                    "barcode": [
+                        "GTAGAG"
+                    ]
+                },
+                "R718": {
+                    "barcode": [
+                        "GTCCGC"
+                    ]
+                },
+                "R719": {
+                    "barcode": [
+                        "GTGAAA"
+                    ]
+                },
+                "R720": {
+                    "barcode": [
+                        "GTGGCC"
+                    ]
+                },
+                "R721": {
+                    "barcode": [
+                        "GTTTCG"
+                    ]
+                },
+                "R722": {
+                    "barcode": [
+                        "CGTACG"
+                    ]
+                },
+                "R723": {
+                    "barcode": [
+                        "GAGTGG"
+                    ]
+                },
+                "R724": {
+                    "barcode": [
+                        "GGTAGC"
+                    ]
+                },
+                "R725": {
+                    "barcode": [
+                        "ACTGAT"
+                    ]
+                },
+                "R726": {
+                    "barcode": [
+                        "ATGAGC"
+                    ]
+                },
+                "R727": {
+                    "barcode": [
+                        "ATTCCT"
+                    ]
+                },
+                "R728": {
+                    "barcode": [
+                        "CAAAAG"
+                    ]
+                },
+                "R729": {
+                    "barcode": [
+                        "CAACTA"
+                    ]
+                },
+                "R730": {
+                    "barcode": [
+                        "CACCGG"
+                    ]
+                },
+                "R731": {
+                    "barcode": [
+                        "CACGAT"
+                    ]
+                },
+                "R732": {
+                    "barcode": [
+                        "CACTCA"
+                    ]
+                },
+                "R733": {
+                    "barcode": [
+                        "CAGGCG"
+                    ]
+                },
+                "R734": {
+                    "barcode": [
+                        "CATGGC"
+                    ]
+                },
+                "R735": {
+                    "barcode": [
+                        "CATTTT"
+                    ]
+                },
+                "R736": {
+                    "barcode": [
+                        "CCAACA"
+                    ]
+                },
+                "R737": {
+                    "barcode": [
+                        "CGGAAT"
+                    ]
+                },
+                "R738": {
+                    "barcode": [
+                        "CTAGCT"
+                    ]
+                },
+                "R739": {
+                    "barcode": [
+                        "CTATAC"
+                    ]
+                },
+                "R740": {
+                    "barcode": [
+                        "CTCAGA"
+                    ]
+                },
+                "R741": {
+                    "barcode": [
+                        "GACGAC"
+                    ]
+                },
+                "R742": {
+                    "barcode": [
+                        "TAATCG"
+                    ]
+                },
+                "R743": {
+                    "barcode": [
+                        "TACAGC"
+                    ]
+                },
+                "R744": {
+                    "barcode": [
+                        "TATAAT"
+                    ]
+                },
+                "R745": {
+                    "barcode": [
+                        "TCATTC"
+                    ]
+                },
+                "R746": {
+                    "barcode": [
+                        "TCCCGA"
+                    ]
+                },
+                "R747": {
+                    "barcode": [
+                        "TCGAAG"
+                    ]
+                },
+                "R748": {
+                    "barcode": [
+                        "TCGGCA"
+                    ]
+                }
+            }
+        }
+    }
+}

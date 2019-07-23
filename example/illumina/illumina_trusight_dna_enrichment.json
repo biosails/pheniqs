@@ -1,0 +1,117 @@
+{
+    "decoder": {
+        "Illumina TruSight DNA Enrichment i5": {
+            "codec": {
+                "E501": {
+                    "barcode": [
+                        "TAGATCGC"
+                    ]
+                },
+                "E502": {
+                    "barcode": [
+                        "CTCTCTAT"
+                    ]
+                },
+                "E503": {
+                    "barcode": [
+                        "TATCCTCT"
+                    ]
+                },
+                "E504": {
+                    "barcode": [
+                        "AGAGTAGA"
+                    ]
+                },
+                "E505": {
+                    "barcode": [
+                        "GTAAGGAG"
+                    ]
+                },
+                "E506": {
+                    "barcode": [
+                        "ACTGCATA"
+                    ]
+                },
+                "E507": {
+                    "barcode": [
+                        "AAGGAGTA"
+                    ]
+                },
+                "E508": {
+                    "barcode": [
+                        "CTAAGCCT"
+                    ]
+                },
+                "E517": {
+                    "barcode": [
+                        "GCGTAAGA"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSight DNA Enrichment i7": {
+            "codec": {
+                "N701": {
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "N702": {
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "N703": {
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "N704": {
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "N705": {
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "N706": {
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "N707": {
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "N708": {
+                    "barcode": [
+                        "CAGAGAGG"
+                    ]
+                },
+                "N709": {
+                    "barcode": [
+                        "GCTACGCT"
+                    ]
+                },
+                "N710": {
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "N711": {
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "N712": {
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                }
+            }
+        }
+    }
+}

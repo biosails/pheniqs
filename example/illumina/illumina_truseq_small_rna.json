@@ -1,0 +1,248 @@
+{
+    "decoder": {
+        "Illumina TruSeq Small RNA": {
+            "codec": {
+                "RPI1": {
+                    "barcode": [
+                        "ATCACG"
+                    ]
+                },
+                "RPI10": {
+                    "barcode": [
+                        "TAGCTT"
+                    ]
+                },
+                "RPI11": {
+                    "barcode": [
+                        "GGCTAC"
+                    ]
+                },
+                "RPI12": {
+                    "barcode": [
+                        "CTTGTA"
+                    ]
+                },
+                "RPI13": {
+                    "barcode": [
+                        "AGTCAA"
+                    ]
+                },
+                "RPI14": {
+                    "barcode": [
+                        "AGTTCC"
+                    ]
+                },
+                "RPI15": {
+                    "barcode": [
+                        "ATGTCA"
+                    ]
+                },
+                "RPI16": {
+                    "barcode": [
+                        "CCGTCC"
+                    ]
+                },
+                "RPI17": {
+                    "barcode": [
+                        "GTAGAG"
+                    ]
+                },
+                "RPI18": {
+                    "barcode": [
+                        "GTCCGC"
+                    ]
+                },
+                "RPI19": {
+                    "barcode": [
+                        "GTGAAA"
+                    ]
+                },
+                "RPI2": {
+                    "barcode": [
+                        "CGATGT"
+                    ]
+                },
+                "RPI20": {
+                    "barcode": [
+                        "GTGGCC"
+                    ]
+                },
+                "RPI21": {
+                    "barcode": [
+                        "GTTTCG"
+                    ]
+                },
+                "RPI22": {
+                    "barcode": [
+                        "CGTACG"
+                    ]
+                },
+                "RPI23": {
+                    "barcode": [
+                        "GAGTGG"
+                    ]
+                },
+                "RPI24": {
+                    "barcode": [
+                        "GGTAGC"
+                    ]
+                },
+                "RPI25": {
+                    "barcode": [
+                        "ACTGAT"
+                    ]
+                },
+                "RPI26": {
+                    "barcode": [
+                        "ATGAGC"
+                    ]
+                },
+                "RPI27": {
+                    "barcode": [
+                        "ATTCCT"
+                    ]
+                },
+                "RPI28": {
+                    "barcode": [
+                        "CAAAAG"
+                    ]
+                },
+                "RPI29": {
+                    "barcode": [
+                        "CAACTA"
+                    ]
+                },
+                "RPI3": {
+                    "barcode": [
+                        "TTAGGC"
+                    ]
+                },
+                "RPI30": {
+                    "barcode": [
+                        "CACCGG"
+                    ]
+                },
+                "RPI31": {
+                    "barcode": [
+                        "CACGAT"
+                    ]
+                },
+                "RPI32": {
+                    "barcode": [
+                        "CACTCA"
+                    ]
+                },
+                "RPI33": {
+                    "barcode": [
+                        "CAGGCG"
+                    ]
+                },
+                "RPI34": {
+                    "barcode": [
+                        "CATGGC"
+                    ]
+                },
+                "RPI35": {
+                    "barcode": [
+                        "CATTTT"
+                    ]
+                },
+                "RPI36": {
+                    "barcode": [
+                        "CCAACA"
+                    ]
+                },
+                "RPI37": {
+                    "barcode": [
+                        "CGGAAT"
+                    ]
+                },
+                "RPI38": {
+                    "barcode": [
+                        "CTAGCT"
+                    ]
+                },
+                "RPI39": {
+                    "barcode": [
+                        "CTATAC"
+                    ]
+                },
+                "RPI4": {
+                    "barcode": [
+                        "TGACCA"
+                    ]
+                },
+                "RPI40": {
+                    "barcode": [
+                        "CTCAGA"
+                    ]
+                },
+                "RPI41": {
+                    "barcode": [
+                        "GACGAC"
+                    ]
+                },
+                "RPI42": {
+                    "barcode": [
+                        "TAATCG"
+                    ]
+                },
+                "RPI43": {
+                    "barcode": [
+                        "TACAGC"
+                    ]
+                },
+                "RPI44": {
+                    "barcode": [
+                        "TATAAT"
+                    ]
+                },
+                "RPI45": {
+                    "barcode": [
+                        "TCATTC"
+                    ]
+                },
+                "RPI46": {
+                    "barcode": [
+                        "TCCCGA"
+                    ]
+                },
+                "RPI47": {
+                    "barcode": [
+                        "TCGAAG"
+                    ]
+                },
+                "RPI48": {
+                    "barcode": [
+                        "TCGGCA"
+                    ]
+                },
+                "RPI5": {
+                    "barcode": [
+                        "ACAGTG"
+                    ]
+                },
+                "RPI6": {
+                    "barcode": [
+                        "GCCAAT"
+                    ]
+                },
+                "RPI7": {
+                    "barcode": [
+                        "CAGATC"
+                    ]
+                },
+                "RPI8": {
+                    "barcode": [
+                        "ACTTGA"
+                    ]
+                },
+                "RPI9": {
+                    "barcode": [
+                        "GATCAG"
+                    ]
+                }
+            }
+        }
+    }
+}
