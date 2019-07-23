@@ -1,6 +1,6 @@
 {
     "decoder": {
-        "TruSight Amplicon i5": {
+        "TruSight Amplicon i5 workflow A": {
             "codec": {
                 "A501": {
                     "barcode": [
@@ -40,6 +40,50 @@
                 "A508": {
                     "barcode": [
                         "TAGACCTA"
+                    ]
+                }
+            }
+        },
+        "TruSight Amplicon i5 workflow B": {
+            "codec": {
+                "A501": {
+                    "barcode": [
+                        "AAGGTTCA"
+                    ]
+                },
+                "A502": {
+                    "barcode": [
+                        "ACTTAGCA"
+                    ]
+                },
+                "A503": {
+                    "barcode": [
+                        "AGAGAACA"
+                    ]
+                },
+                "A504": {
+                    "barcode": [
+                        "GTGTCTTA"
+                    ]
+                },
+                "A505": {
+                    "barcode": [
+                        "TCGATTAG"
+                    ]
+                },
+                "A506": {
+                    "barcode": [
+                        "TGTTCTAG"
+                    ]
+                },
+                "A507": {
+                    "barcode": [
+                        "GGAACTTA"
+                    ]
+                },
+                "A508": {
+                    "barcode": [
+                        "TAGGTCTA"
                     ]
                 }
             }

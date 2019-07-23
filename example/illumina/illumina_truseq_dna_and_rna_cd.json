@@ -1,6 +1,6 @@
 {
     "decoder": {
-        "Illumina TruSeq DNA and RNA CD i5": {
+        "Illumina TruSeq DNA and RNA CD i5 workflow A": {
             "codec": {
                 "D501": {
                     "barcode": [
@@ -40,6 +40,50 @@
                 "D508": {
                     "barcode": [
                         "GTACTGAC"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSeq DNA and RNA CD i5 workflow B": {
+            "codec": {
+                "D501": {
+                    "barcode": [
+                        "AGGCTATA"
+                    ]
+                },
+                "D502": {
+                    "barcode": [
+                        "GCCTCTAT"
+                    ]
+                },
+                "D503": {
+                    "barcode": [
+                        "AGGATAGG"
+                    ]
+                },
+                "D504": {
+                    "barcode": [
+                        "TCAGAGCC"
+                    ]
+                },
+                "D505": {
+                    "barcode": [
+                        "CTTCGCCT"
+                    ]
+                },
+                "D506": {
+                    "barcode": [
+                        "TAAGATTA"
+                    ]
+                },
+                "D507": {
+                    "barcode": [
+                        "ACGTCCTG"
+                    ]
+                },
+                "D508": {
+                    "barcode": [
+                        "GTCAGTAC"
                     ]
                 }
             }

@@ -1,6 +1,6 @@
 {
     "decoder": {
-        "Illumina AmpliSeq i5": {
+        "Illumina AmpliSeq i5 workflow A": {
             "codec": {
                 "Q5001": {
                     "barcode": [
@@ -120,6 +120,130 @@
                 "Q5040": {
                     "barcode": [
                         "GTATTATG"
+                    ]
+                }
+            }
+        },
+        "Illumina AmpliSeq i5 workflow B": {
+            "codec": {
+                "Q5001": {
+                    "barcode": [
+                        "CTAGCGCT"
+                    ]
+                },
+                "Q5002": {
+                    "barcode": [
+                        "TCGATATC"
+                    ]
+                },
+                "Q5003": {
+                    "barcode": [
+                        "CGTCTGCG"
+                    ]
+                },
+                "Q5004": {
+                    "barcode": [
+                        "TACTCATA"
+                    ]
+                },
+                "Q5007": {
+                    "barcode": [
+                        "CGCTATGT"
+                    ]
+                },
+                "Q5008": {
+                    "barcode": [
+                        "TATCGCAC"
+                    ]
+                },
+                "Q5009": {
+                    "barcode": [
+                        "TCTGTTGG"
+                    ]
+                },
+                "Q5010": {
+                    "barcode": [
+                        "CTCACCAA"
+                    ]
+                },
+                "Q5013": {
+                    "barcode": [
+                        "CCGCGGTT"
+                    ]
+                },
+                "Q5014": {
+                    "barcode": [
+                        "TTATAACC"
+                    ]
+                },
+                "Q5017": {
+                    "barcode": [
+                        "CAAGCTAG"
+                    ]
+                },
+                "Q5018": {
+                    "barcode": [
+                        "TGGATCGA"
+                    ]
+                },
+                "Q5025": {
+                    "barcode": [
+                        "CTTGGTAT"
+                    ]
+                },
+                "Q5026": {
+                    "barcode": [
+                        "TCCAACGC"
+                    ]
+                },
+                "Q5027": {
+                    "barcode": [
+                        "CCGTGAAG"
+                    ]
+                },
+                "Q5028": {
+                    "barcode": [
+                        "TTACAGGA"
+                    ]
+                },
+                "Q5029": {
+                    "barcode": [
+                        "TACCGAGG"
+                    ]
+                },
+                "Q5030": {
+                    "barcode": [
+                        "CGTTAGAA"
+                    ]
+                },
+                "Q5031": {
+                    "barcode": [
+                        "CACGAGCG"
+                    ]
+                },
+                "Q5032": {
+                    "barcode": [
+                        "TGTAGATA"
+                    ]
+                },
+                "Q5035": {
+                    "barcode": [
+                        "CAACAATG"
+                    ]
+                },
+                "Q5036": {
+                    "barcode": [
+                        "TGGTGGCA"
+                    ]
+                },
+                "Q5039": {
+                    "barcode": [
+                        "TGCGGCGT"
+                    ]
+                },
+                "Q5040": {
+                    "barcode": [
+                        "CATAATAC"
                     ]
                 }
             }

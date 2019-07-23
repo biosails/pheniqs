@@ -1,6 +1,6 @@
 {
     "decoder": {
-        "Illumina TruSight DNA Enrichment i5": {
+        "Illumina TruSight DNA Enrichment i5 workflow A": {
             "codec": {
                 "E501": {
                     "barcode": [
@@ -45,6 +45,55 @@
                 "E517": {
                     "barcode": [
                         "GCGTAAGA"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSight DNA Enrichment i5 workflow B": {
+            "codec": {
+                "E501": {
+                    "barcode": [
+                        "GCGATCTA"
+                    ]
+                },
+                "E502": {
+                    "barcode": [
+                        "ATAGAGAG"
+                    ]
+                },
+                "E503": {
+                    "barcode": [
+                        "AGAGGATA"
+                    ]
+                },
+                "E504": {
+                    "barcode": [
+                        "TCTACTCT"
+                    ]
+                },
+                "E505": {
+                    "barcode": [
+                        "CTCCTTAC"
+                    ]
+                },
+                "E506": {
+                    "barcode": [
+                        "TATGCAGT"
+                    ]
+                },
+                "E507": {
+                    "barcode": [
+                        "TACTCCTT"
+                    ]
+                },
+                "E508": {
+                    "barcode": [
+                        "AGGCTTAG"
+                    ]
+                },
+                "E517": {
+                    "barcode": [
+                        "TCTTACGC"
                     ]
                 }
             }

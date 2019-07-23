@@ -1,6 +1,6 @@
 {
     "decoder": {
-        "IDT for Illumina TruSeq DNA and RNA UD": {
+        "IDT for Illumina TruSeq DNA and RNA UD workflow A": {
             "codec": {
                 "UDI0001": {
                     "barcode": [
@@ -576,6 +576,586 @@
                     "barcode": [
                         "CTAGCGCT",
                         "GTGTAGAC"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina TruSeq DNA and RNA UD workflow B": {
+            "codec": {
+                "UDI0001": {
+                    "barcode": [
+                        "CCGCGGTT",
+                        "CTAGCGCT"
+                    ]
+                },
+                "UDI0002": {
+                    "barcode": [
+                        "TTATAACC",
+                        "TCGATATC"
+                    ]
+                },
+                "UDI0003": {
+                    "barcode": [
+                        "GGACTTGG",
+                        "CGTCTGCG"
+                    ]
+                },
+                "UDI0004": {
+                    "barcode": [
+                        "AAGTCCAA",
+                        "TACTCATA"
+                    ]
+                },
+                "UDI0005": {
+                    "barcode": [
+                        "ATCCACTG",
+                        "ACGCACCT"
+                    ]
+                },
+                "UDI0006": {
+                    "barcode": [
+                        "GCTTGTCA",
+                        "GTATGTTC"
+                    ]
+                },
+                "UDI0007": {
+                    "barcode": [
+                        "CAAGCTAG",
+                        "CGCTATGT"
+                    ]
+                },
+                "UDI0008": {
+                    "barcode": [
+                        "TGGATCGA",
+                        "TATCGCAC"
+                    ]
+                },
+                "UDI0009": {
+                    "barcode": [
+                        "AGTTCAGG",
+                        "TCTGTTGG"
+                    ]
+                },
+                "UDI0010": {
+                    "barcode": [
+                        "GACCTGAA",
+                        "CTCACCAA"
+                    ]
+                },
+                "UDI0011": {
+                    "barcode": [
+                        "TCTCTACT",
+                        "GAACCGCG"
+                    ]
+                },
+                "UDI0012": {
+                    "barcode": [
+                        "CTCTCGTC",
+                        "AGGTTATA"
+                    ]
+                },
+                "UDI0013": {
+                    "barcode": [
+                        "CCAAGTCT",
+                        "TCATCCTT"
+                    ]
+                },
+                "UDI0014": {
+                    "barcode": [
+                        "TTGGACTC",
+                        "CTGCTTCC"
+                    ]
+                },
+                "UDI0015": {
+                    "barcode": [
+                        "GGCTTAAG",
+                        "GGTCACGA"
+                    ]
+                },
+                "UDI0016": {
+                    "barcode": [
+                        "AATCCGGA",
+                        "AACTGTAG"
+                    ]
+                },
+                "UDI0017": {
+                    "barcode": [
+                        "TAATACAG",
+                        "GTGAATAT"
+                    ]
+                },
+                "UDI0018": {
+                    "barcode": [
+                        "CGGCGTGA",
+                        "ACAGGCGC"
+                    ]
+                },
+                "UDI0019": {
+                    "barcode": [
+                        "ATGTAAGT",
+                        "CATAGAGT"
+                    ]
+                },
+                "UDI0020": {
+                    "barcode": [
+                        "GCACGGAC",
+                        "TGCGAGAC"
+                    ]
+                },
+                "UDI0021": {
+                    "barcode": [
+                        "GGTACCTT",
+                        "GACGTCTT"
+                    ]
+                },
+                "UDI0022": {
+                    "barcode": [
+                        "AACGTTCC",
+                        "AGTACTCC"
+                    ]
+                },
+                "UDI0023": {
+                    "barcode": [
+                        "GCAGAATT",
+                        "TGGCCGGT"
+                    ]
+                },
+                "UDI0024": {
+                    "barcode": [
+                        "ATGAGGCC",
+                        "CAATTAAC"
+                    ]
+                },
+                "UDI0025": {
+                    "barcode": [
+                        "ACTAAGAT",
+                        "CCGCGGTT"
+                    ]
+                },
+                "UDI0026": {
+                    "barcode": [
+                        "GTCGGAGC",
+                        "TTATAACC"
+                    ]
+                },
+                "UDI0027": {
+                    "barcode": [
+                        "CTTGGTAT",
+                        "GGACTTGG"
+                    ]
+                },
+                "UDI0028": {
+                    "barcode": [
+                        "TCCAACGC",
+                        "AAGTCCAA"
+                    ]
+                },
+                "UDI0029": {
+                    "barcode": [
+                        "CCGTGAAG",
+                        "ATCCACTG"
+                    ]
+                },
+                "UDI0030": {
+                    "barcode": [
+                        "TTACAGGA",
+                        "GCTTGTCA"
+                    ]
+                },
+                "UDI0031": {
+                    "barcode": [
+                        "GGCATTCT",
+                        "CAAGCTAG"
+                    ]
+                },
+                "UDI0032": {
+                    "barcode": [
+                        "AATGCCTC",
+                        "TGGATCGA"
+                    ]
+                },
+                "UDI0033": {
+                    "barcode": [
+                        "TACCGAGG",
+                        "AGTTCAGG"
+                    ]
+                },
+                "UDI0034": {
+                    "barcode": [
+                        "CGTTAGAA",
+                        "GACCTGAA"
+                    ]
+                },
+                "UDI0035": {
+                    "barcode": [
+                        "AGCCTCAT",
+                        "TCTCTACT"
+                    ]
+                },
+                "UDI0036": {
+                    "barcode": [
+                        "GATTCTGC",
+                        "CTCTCGTC"
+                    ]
+                },
+                "UDI0037": {
+                    "barcode": [
+                        "TCGTAGTG",
+                        "CCAAGTCT"
+                    ]
+                },
+                "UDI0038": {
+                    "barcode": [
+                        "CTACGACA",
+                        "TTGGACTC"
+                    ]
+                },
+                "UDI0039": {
+                    "barcode": [
+                        "TAAGTGGT",
+                        "GGCTTAAG"
+                    ]
+                },
+                "UDI0040": {
+                    "barcode": [
+                        "CGGACAAC",
+                        "AATCCGGA"
+                    ]
+                },
+                "UDI0041": {
+                    "barcode": [
+                        "ATATGGAT",
+                        "TAATACAG"
+                    ]
+                },
+                "UDI0042": {
+                    "barcode": [
+                        "GCGCAAGC",
+                        "CGGCGTGA"
+                    ]
+                },
+                "UDI0043": {
+                    "barcode": [
+                        "AAGATACT",
+                        "ATGTAAGT"
+                    ]
+                },
+                "UDI0044": {
+                    "barcode": [
+                        "GGAGCGTC",
+                        "GCACGGAC"
+                    ]
+                },
+                "UDI0045": {
+                    "barcode": [
+                        "ATGGCATG",
+                        "GGTACCTT"
+                    ]
+                },
+                "UDI0046": {
+                    "barcode": [
+                        "GCAATGCA",
+                        "AACGTTCC"
+                    ]
+                },
+                "UDI0047": {
+                    "barcode": [
+                        "GTTCCAAT",
+                        "GCAGAATT"
+                    ]
+                },
+                "UDI0048": {
+                    "barcode": [
+                        "ACCTTGGC",
+                        "ATGAGGCC"
+                    ]
+                },
+                "UDI0049": {
+                    "barcode": [
+                        "ATATCTCG",
+                        "ACTAAGAT"
+                    ]
+                },
+                "UDI0050": {
+                    "barcode": [
+                        "GCGCTCTA",
+                        "GTCGGAGC"
+                    ]
+                },
+                "UDI0051": {
+                    "barcode": [
+                        "AACAGGTT",
+                        "CTTGGTAT"
+                    ]
+                },
+                "UDI0052": {
+                    "barcode": [
+                        "GGTGAACC",
+                        "TCCAACGC"
+                    ]
+                },
+                "UDI0053": {
+                    "barcode": [
+                        "CAACAATG",
+                        "CCGTGAAG"
+                    ]
+                },
+                "UDI0054": {
+                    "barcode": [
+                        "TGGTGGCA",
+                        "TTACAGGA"
+                    ]
+                },
+                "UDI0055": {
+                    "barcode": [
+                        "AGGCAGAG",
+                        "GGCATTCT"
+                    ]
+                },
+                "UDI0056": {
+                    "barcode": [
+                        "GAATGAGA",
+                        "AATGCCTC"
+                    ]
+                },
+                "UDI0057": {
+                    "barcode": [
+                        "TGCGGCGT",
+                        "TACCGAGG"
+                    ]
+                },
+                "UDI0058": {
+                    "barcode": [
+                        "CATAATAC",
+                        "CGTTAGAA"
+                    ]
+                },
+                "UDI0059": {
+                    "barcode": [
+                        "GATCTATC",
+                        "AGCCTCAT"
+                    ]
+                },
+                "UDI0060": {
+                    "barcode": [
+                        "AGCTCGCT",
+                        "GATTCTGC"
+                    ]
+                },
+                "UDI0061": {
+                    "barcode": [
+                        "CGGAACTG",
+                        "TCGTAGTG"
+                    ]
+                },
+                "UDI0062": {
+                    "barcode": [
+                        "TAAGGTCA",
+                        "CTACGACA"
+                    ]
+                },
+                "UDI0063": {
+                    "barcode": [
+                        "TTGCCTAG",
+                        "TAAGTGGT"
+                    ]
+                },
+                "UDI0064": {
+                    "barcode": [
+                        "CCATTCGA",
+                        "CGGACAAC"
+                    ]
+                },
+                "UDI0065": {
+                    "barcode": [
+                        "ACACTAAG",
+                        "ATATGGAT"
+                    ]
+                },
+                "UDI0066": {
+                    "barcode": [
+                        "GTGTCGGA",
+                        "GCGCAAGC"
+                    ]
+                },
+                "UDI0067": {
+                    "barcode": [
+                        "TTCCTGTT",
+                        "AAGATACT"
+                    ]
+                },
+                "UDI0068": {
+                    "barcode": [
+                        "CCTTCACC",
+                        "GGAGCGTC"
+                    ]
+                },
+                "UDI0069": {
+                    "barcode": [
+                        "GCCACAGG",
+                        "ATGGCATG"
+                    ]
+                },
+                "UDI0070": {
+                    "barcode": [
+                        "ATTGTGAA",
+                        "GCAATGCA"
+                    ]
+                },
+                "UDI0071": {
+                    "barcode": [
+                        "ACTCGTGT",
+                        "GTTCCAAT"
+                    ]
+                },
+                "UDI0072": {
+                    "barcode": [
+                        "GTCTACAC",
+                        "ACCTTGGC"
+                    ]
+                },
+                "UDI0073": {
+                    "barcode": [
+                        "CAATTAAC",
+                        "ATATCTCG"
+                    ]
+                },
+                "UDI0074": {
+                    "barcode": [
+                        "TGGCCGGT",
+                        "GCGCTCTA"
+                    ]
+                },
+                "UDI0075": {
+                    "barcode": [
+                        "AGTACTCC",
+                        "AACAGGTT"
+                    ]
+                },
+                "UDI0076": {
+                    "barcode": [
+                        "GACGTCTT",
+                        "GGTGAACC"
+                    ]
+                },
+                "UDI0077": {
+                    "barcode": [
+                        "TGCGAGAC",
+                        "CAACAATG"
+                    ]
+                },
+                "UDI0078": {
+                    "barcode": [
+                        "CATAGAGT",
+                        "TGGTGGCA"
+                    ]
+                },
+                "UDI0079": {
+                    "barcode": [
+                        "ACAGGCGC",
+                        "AGGCAGAG"
+                    ]
+                },
+                "UDI0080": {
+                    "barcode": [
+                        "GTGAATAT",
+                        "GAATGAGA"
+                    ]
+                },
+                "UDI0081": {
+                    "barcode": [
+                        "AACTGTAG",
+                        "TGCGGCGT"
+                    ]
+                },
+                "UDI0082": {
+                    "barcode": [
+                        "GGTCACGA",
+                        "CATAATAC"
+                    ]
+                },
+                "UDI0083": {
+                    "barcode": [
+                        "CTGCTTCC",
+                        "GATCTATC"
+                    ]
+                },
+                "UDI0084": {
+                    "barcode": [
+                        "TCATCCTT",
+                        "AGCTCGCT"
+                    ]
+                },
+                "UDI0085": {
+                    "barcode": [
+                        "AGGTTATA",
+                        "CGGAACTG"
+                    ]
+                },
+                "UDI0086": {
+                    "barcode": [
+                        "GAACCGCG",
+                        "TAAGGTCA"
+                    ]
+                },
+                "UDI0087": {
+                    "barcode": [
+                        "CTCACCAA",
+                        "TTGCCTAG"
+                    ]
+                },
+                "UDI0088": {
+                    "barcode": [
+                        "TCTGTTGG",
+                        "CCATTCGA"
+                    ]
+                },
+                "UDI0089": {
+                    "barcode": [
+                        "TATCGCAC",
+                        "ACACTAAG"
+                    ]
+                },
+                "UDI0090": {
+                    "barcode": [
+                        "CGCTATGT",
+                        "GTGTCGGA"
+                    ]
+                },
+                "UDI0091": {
+                    "barcode": [
+                        "GTATGTTC",
+                        "TTCCTGTT"
+                    ]
+                },
+                "UDI0092": {
+                    "barcode": [
+                        "ACGCACCT",
+                        "CCTTCACC"
+                    ]
+                },
+                "UDI0093": {
+                    "barcode": [
+                        "TACTCATA",
+                        "GCCACAGG"
+                    ]
+                },
+                "UDI0094": {
+                    "barcode": [
+                        "CGTCTGCG",
+                        "ATTGTGAA"
+                    ]
+                },
+                "UDI0095": {
+                    "barcode": [
+                        "TCGATATC",
+                        "ACTCGTGT"
+                    ]
+                },
+                "UDI0096": {
+                    "barcode": [
+                        "CTAGCGCT",
+                        "GTCTACAC"
                     ]
                 }
             }

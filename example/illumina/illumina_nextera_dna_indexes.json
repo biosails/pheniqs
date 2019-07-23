@@ -1,6 +1,6 @@
 {
     "decoder": {
-        "Nextera DNA i5": {
+        "Nextera DNA i5 workflow A": {
             "codec": {
                 "501": {
                     "barcode": [
@@ -90,6 +90,100 @@
                 "522": {
                     "barcode": [
                         "TTATGCGA"
+                    ]
+                }
+            }
+        },
+        "Nextera DNA i5 workflow B": {
+            "codec": {
+                "501": {
+                    "barcode": [
+                        "GCGATCTA"
+                    ]
+                },
+                "502": {
+                    "barcode": [
+                        "ATAGAGAG"
+                    ]
+                },
+                "503": {
+                    "barcode": [
+                        "AGAGGATA"
+                    ]
+                },
+                "504": {
+                    "barcode": [
+                        "TCTACTCT"
+                    ]
+                },
+                "505": {
+                    "barcode": [
+                        "CTCCTTAC"
+                    ]
+                },
+                "506": {
+                    "barcode": [
+                        "TATGCAGT"
+                    ]
+                },
+                "507": {
+                    "barcode": [
+                        "TACTCCTT"
+                    ]
+                },
+                "508": {
+                    "barcode": [
+                        "AGGCTTAG"
+                    ]
+                },
+                "510": {
+                    "barcode": [
+                        "ATTAGACG"
+                    ]
+                },
+                "511": {
+                    "barcode": [
+                        "CGGAGAGA"
+                    ]
+                },
+                "513": {
+                    "barcode": [
+                        "CTAGTCGA"
+                    ]
+                },
+                "515": {
+                    "barcode": [
+                        "AGCTAGAA"
+                    ]
+                },
+                "516": {
+                    "barcode": [
+                        "ACTCTAGG"
+                    ]
+                },
+                "517": {
+                    "barcode": [
+                        "TCTTACGC"
+                    ]
+                },
+                "518": {
+                    "barcode": [
+                        "CTTAATAG"
+                    ]
+                },
+                "520": {
+                    "barcode": [
+                        "ATAGCCTT"
+                    ]
+                },
+                "521": {
+                    "barcode": [
+                        "TAAGGCTC"
+                    ]
+                },
+                "522": {
+                    "barcode": [
+                        "TCGCATAA"
                     ]
                 }
             }

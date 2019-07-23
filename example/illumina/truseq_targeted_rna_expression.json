@@ -1,289 +1,373 @@
 {
     "decoder": {
-        "Illumina TruSeq Targeted RNA Expression i5": {
+        "Illumina AmpliSeq i5 workflow A": {
             "codec": {
-                "A501": {
+                "Q5001": {
                     "barcode": [
-                        "TGAACCTT"
+                        "AGCGCTAG"
                     ]
                 },
-                "A502": {
+                "Q5002": {
                     "barcode": [
-                        "TGCTAAGT"
+                        "GATATCGA"
                     ]
                 },
-                "A503": {
+                "Q5003": {
                     "barcode": [
-                        "TGTTCTCT"
+                        "CGCAGACG"
                     ]
                 },
-                "A504": {
+                "Q5004": {
                     "barcode": [
-                        "TAAGACAC"
+                        "TATGAGTA"
                     ]
                 },
-                "A505": {
+                "Q5007": {
                     "barcode": [
-                        "CTAATCGA"
+                        "ACATAGCG"
                     ]
                 },
-                "A506": {
+                "Q5008": {
                     "barcode": [
-                        "CTAGAACA"
+                        "GTGCGATA"
                     ]
                 },
-                "A507": {
+                "Q5009": {
                     "barcode": [
-                        "TAAGTTCC"
+                        "CCAACAGA"
                     ]
                 },
-                "A508": {
+                "Q5010": {
                     "barcode": [
-                        "TAGACCTA"
+                        "TTGGTGAG"
+                    ]
+                },
+                "Q5013": {
+                    "barcode": [
+                        "AACCGCGG"
+                    ]
+                },
+                "Q5014": {
+                    "barcode": [
+                        "GGTTATAA"
+                    ]
+                },
+                "Q5017": {
+                    "barcode": [
+                        "CTAGCTTG"
+                    ]
+                },
+                "Q5018": {
+                    "barcode": [
+                        "TCGATCCA"
+                    ]
+                },
+                "Q5025": {
+                    "barcode": [
+                        "ATACCAAG"
+                    ]
+                },
+                "Q5026": {
+                    "barcode": [
+                        "GCGTTGGA"
+                    ]
+                },
+                "Q5027": {
+                    "barcode": [
+                        "CTTCACGG"
+                    ]
+                },
+                "Q5028": {
+                    "barcode": [
+                        "TCCTGTAA"
+                    ]
+                },
+                "Q5029": {
+                    "barcode": [
+                        "CCTCGGTA"
+                    ]
+                },
+                "Q5030": {
+                    "barcode": [
+                        "TTCTAACG"
+                    ]
+                },
+                "Q5031": {
+                    "barcode": [
+                        "CGCTCGTG"
+                    ]
+                },
+                "Q5032": {
+                    "barcode": [
+                        "TATCTACA"
+                    ]
+                },
+                "Q5035": {
+                    "barcode": [
+                        "CATTGTTG"
+                    ]
+                },
+                "Q5036": {
+                    "barcode": [
+                        "TGCCACCA"
+                    ]
+                },
+                "Q5039": {
+                    "barcode": [
+                        "ACGCCGCA"
+                    ]
+                },
+                "Q5040": {
+                    "barcode": [
+                        "GTATTATG"
                     ]
                 }
             }
         },
-        "Illumina TruSeq Targeted RNA Expression i7": {
+        "Illumina AmpliSeq i5 workflow B": {
             "codec": {
-                "R701": {
+                "Q5001": {
                     "barcode": [
-                        "ATCACG"
+                        "CTAGCGCT"
                     ]
                 },
-                "R702": {
+                "Q5002": {
                     "barcode": [
-                        "CGATGT"
+                        "TCGATATC"
                     ]
                 },
-                "R703": {
+                "Q5003": {
                     "barcode": [
-                        "TTAGGC"
+                        "CGTCTGCG"
                     ]
                 },
-                "R704": {
+                "Q5004": {
                     "barcode": [
-                        "TGACCA"
+                        "TACTCATA"
                     ]
                 },
-                "R705": {
+                "Q5007": {
                     "barcode": [
-                        "ACAGTG"
+                        "CGCTATGT"
                     ]
                 },
-                "R706": {
+                "Q5008": {
                     "barcode": [
-                        "GCCAAT"
+                        "TATCGCAC"
                     ]
                 },
-                "R707": {
+                "Q5009": {
                     "barcode": [
-                        "CAGATC"
+                        "TCTGTTGG"
                     ]
                 },
-                "R708": {
+                "Q5010": {
                     "barcode": [
-                        "ACTTGA"
+                        "CTCACCAA"
                     ]
                 },
-                "R709": {
+                "Q5013": {
                     "barcode": [
-                        "GATCAG"
+                        "CCGCGGTT"
                     ]
                 },
-                "R710": {
+                "Q5014": {
                     "barcode": [
-                        "TAGCTT"
+                        "TTATAACC"
                     ]
                 },
-                "R711": {
+                "Q5017": {
                     "barcode": [
-                        "GGCTAC"
+                        "CAAGCTAG"
                     ]
                 },
-                "R712": {
+                "Q5018": {
                     "barcode": [
-                        "CTTGTA"
+                        "TGGATCGA"
                     ]
                 },
-                "R713": {
+                "Q5025": {
                     "barcode": [
-                        "AGTCAA"
+                        "CTTGGTAT"
                     ]
                 },
-                "R714": {
+                "Q5026": {
                     "barcode": [
-                        "AGTTCC"
+                        "TCCAACGC"
                     ]
                 },
-                "R715": {
+                "Q5027": {
                     "barcode": [
-                        "ATGTCA"
+                        "CCGTGAAG"
                     ]
                 },
-                "R716": {
+                "Q5028": {
                     "barcode": [
-                        "CCGTCC"
+                        "TTACAGGA"
                     ]
                 },
-                "R717": {
+                "Q5029": {
                     "barcode": [
-                        "GTAGAG"
+                        "TACCGAGG"
                     ]
                 },
-                "R718": {
+                "Q5030": {
                     "barcode": [
-                        "GTCCGC"
+                        "CGTTAGAA"
                     ]
                 },
-                "R719": {
+                "Q5031": {
                     "barcode": [
-                        "GTGAAA"
+                        "CACGAGCG"
                     ]
                 },
-                "R720": {
+                "Q5032": {
                     "barcode": [
-                        "GTGGCC"
+                        "TGTAGATA"
                     ]
                 },
-                "R721": {
+                "Q5035": {
                     "barcode": [
-                        "GTTTCG"
+                        "CAACAATG"
                     ]
                 },
-                "R722": {
+                "Q5036": {
                     "barcode": [
-                        "CGTACG"
+                        "TGGTGGCA"
                     ]
                 },
-                "R723": {
+                "Q5039": {
                     "barcode": [
-                        "GAGTGG"
+                        "TGCGGCGT"
                     ]
                 },
-                "R724": {
+                "Q5040": {
                     "barcode": [
-                        "GGTAGC"
+                        "CATAATAC"
+                    ]
+                }
+            }
+        },
+        "Illumina AmpliSeq i7": {
+            "codec": {
+                "Q7005": {
+                    "barcode": [
+                        "GTGAATAT"
                     ]
                 },
-                "R725": {
+                "Q7006": {
                     "barcode": [
-                        "ACTGAT"
+                        "ACAGGCGC"
                     ]
                 },
-                "R726": {
+                "Q7007": {
                     "barcode": [
-                        "ATGAGC"
+                        "CATAGAGT"
                     ]
                 },
-                "R727": {
+                "Q7008": {
                     "barcode": [
-                        "ATTCCT"
+                        "TGCGAGAC"
                     ]
                 },
-                "R728": {
+                "Q7015": {
                     "barcode": [
-                        "CAAAAG"
+                        "TCTCTACT"
                     ]
                 },
-                "R729": {
+                "Q7016": {
                     "barcode": [
-                        "CAACTA"
+                        "CTCTCGTC"
                     ]
                 },
-                "R730": {
+                "Q7017": {
                     "barcode": [
-                        "CACCGG"
+                        "CCAAGTCT"
                     ]
                 },
-                "R731": {
+                "Q7018": {
                     "barcode": [
-                        "CACGAT"
+                        "TTGGACTC"
                     ]
                 },
-                "R732": {
+                "Q7023": {
                     "barcode": [
-                        "CACTCA"
+                        "GCAGAATT"
                     ]
                 },
-                "R733": {
+                "Q7024": {
                     "barcode": [
-                        "CAGGCG"
+                        "ATGAGGCC"
                     ]
                 },
-                "R734": {
+                "Q7025": {
                     "barcode": [
-                        "CATGGC"
+                        "ACTAAGAT"
                     ]
                 },
-                "R735": {
+                "Q7026": {
                     "barcode": [
-                        "CATTTT"
+                        "GTCGGAGC"
                     ]
                 },
-                "R736": {
+                "Q7027": {
                     "barcode": [
-                        "CCAACA"
+                        "AGCCTCAT"
                     ]
                 },
-                "R737": {
+                "Q7028": {
                     "barcode": [
-                        "CGGAAT"
+                        "GATTCTGC"
                     ]
                 },
-                "R738": {
+                "Q7029": {
                     "barcode": [
-                        "CTAGCT"
+                        "TCGTAGTG"
                     ]
                 },
-                "R739": {
+                "Q7030": {
                     "barcode": [
-                        "CTATAC"
+                        "CTACGACA"
                     ]
                 },
-                "R740": {
+                "Q7035": {
                     "barcode": [
-                        "CTCAGA"
+                        "ATGGCATG"
                     ]
                 },
-                "R741": {
+                "Q7036": {
                     "barcode": [
-                        "GACGAC"
+                        "GCAATGCA"
                     ]
                 },
-                "R742": {
+                "Q7039": {
                     "barcode": [
-                        "TAATCG"
+                        "CTTATCGG"
                     ]
                 },
-                "R743": {
+                "Q7040": {
                     "barcode": [
-                        "TACAGC"
+                        "TCCGCTAA"
                     ]
                 },
-                "R744": {
+                "Q7041": {
                     "barcode": [
-                        "TATAAT"
+                        "GATCTATC"
                     ]
                 },
-                "R745": {
+                "Q7042": {
                     "barcode": [
-                        "TCATTC"
+                        "AGCTCGCT"
                     ]
                 },
-                "R746": {
+                "Q7047": {
                     "barcode": [
-                        "TCCCGA"
+                        "ACACTAAG"
                     ]
                 },
-                "R747": {
+                "Q7048": {
                     "barcode": [
-                        "TCGAAG"
-                    ]
-                },
-                "R748": {
-                    "barcode": [
-                        "TCGGCA"
+                        "GTGTCGGA"
                     ]
                 }
             }
