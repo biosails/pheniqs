@@ -26,7 +26,7 @@ template < class T > MdDecoder< T >::MdDecoder(const Value& ontology) try :
     quality_masking_threshold(decode_value_by_key< uint8_t >("quality masking threshold", ontology)),
     distance_tolerance(decode_value_by_key< vector< int32_t > >("distance tolerance", ontology)) {
 
-    for(auto& element : this->element_by_index) {
+    for(auto& element : this->tag_by_index) {
         element_by_sequence.emplace(make_pair(string(element), &element));
     }
 
@@ -47,7 +47,7 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
 
     } else {
         /* If no exact match was not found try error correction */
-        for(auto& barcode : this->element_by_index) {
+        for(auto& barcode : this->tag_by_index) {
             int32_t distance(0);
             bool successful(true);
             if(this->quality_masking_threshold > 0) {

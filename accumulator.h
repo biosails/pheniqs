@@ -25,10 +25,10 @@
 #include "include.h"
 #include "json.h"
 
-class AccumulatingIdentifier;
+class AccumulatingTag;
 class AccumulatingClassifier;
 
-class AccumulatingIdentifier {
+class AccumulatingTag {
     public:
         uint64_t count;
         uint64_t pf_count;
@@ -49,12 +49,12 @@ class AccumulatingIdentifier {
         double pooled_classified_fraction;      /*  count / decoder.classified_count */
         double pf_pooled_classified_fraction;   /*  pf_count / decoder.pf_classified_count */
 
-        AccumulatingIdentifier();
-        AccumulatingIdentifier(const AccumulatingIdentifier& other);
-        virtual ~AccumulatingIdentifier() {};
+        AccumulatingTag();
+        AccumulatingTag(const AccumulatingTag& other);
+        virtual ~AccumulatingTag() {};
         virtual void finalize(const AccumulatingClassifier& parent);
         virtual void encode(Value& container, Document& document) const;
-        AccumulatingIdentifier& operator+=(const AccumulatingIdentifier& rhs);
+        AccumulatingTag& operator+=(const AccumulatingTag& rhs);
 };
 
 class AccumulatingClassifier {

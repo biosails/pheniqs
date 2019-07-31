@@ -57,7 +57,7 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
     double conditional_probability(0);
     double adjusted_conditional_decoding_probability(0);
 
-    for(auto& barcode : this->element_by_index) {
+    for(auto& barcode : this->tag_by_index) {
         /*  The conditional probability, P(r|b), is the probability of the observation r
             given b was expected.
             P(b), barcode.concentration, is the prior probability of observing b

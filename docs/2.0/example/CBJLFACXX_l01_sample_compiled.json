@@ -236,7 +236,7 @@
             3
         ],
         "transform": {
-            "segment pattern": [
+            "knit": [
                 "0",
                 "1"
             ],
@@ -298,7 +298,7 @@
     "report url": "/dev/stderr",
     "threads": 8,
     "transform": {
-        "segment pattern": [
+        "knit": [
             "0",
             "1"
         ],

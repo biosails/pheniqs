@@ -21,7 +21,7 @@
 
 #include "accumulator.h"
 
-AccumulatingIdentifier::AccumulatingIdentifier() :
+AccumulatingTag::AccumulatingTag() :
     count(0),
     pf_count(0),
     accumulated_distance(0),
@@ -41,7 +41,7 @@ AccumulatingIdentifier::AccumulatingIdentifier() :
     pooled_classified_fraction(0),
     pf_pooled_classified_fraction(0) {
 };
-AccumulatingIdentifier::AccumulatingIdentifier(const AccumulatingIdentifier& other) :
+AccumulatingTag::AccumulatingTag(const AccumulatingTag& other) :
     count(other.count),
     pf_count(other.pf_count),
     accumulated_distance(other.accumulated_distance),
@@ -51,7 +51,7 @@ AccumulatingIdentifier::AccumulatingIdentifier(const AccumulatingIdentifier& oth
     accumulated_pf_distance(other.accumulated_pf_distance),
     accumulated_pf_confidence(other.accumulated_pf_confidence) {
 };
-void AccumulatingIdentifier::finalize(const AccumulatingClassifier& parent) {
+void AccumulatingTag::finalize(const AccumulatingClassifier& parent) {
     if(count > 0) {
         average_distance = accumulated_distance / double(count);
         average_confidence = accumulated_confidence / double(count);
@@ -75,7 +75,7 @@ void AccumulatingIdentifier::finalize(const AccumulatingClassifier& parent) {
         }
     }
 };
-void AccumulatingIdentifier::encode(Value& container, Document& document) const {
+void AccumulatingTag::encode(Value& container, Document& document) const {
     encode_key_value("count", count, container, document);
     if(average_distance > 0) {
         encode_key_value("average distance", average_distance, container, document);
@@ -106,7 +106,7 @@ void AccumulatingIdentifier::encode(Value& container, Document& document) const 
         encode_key_value("pf pooled classified fraction", pf_pooled_classified_fraction, container, document);
     }
 };
-AccumulatingIdentifier& AccumulatingIdentifier::operator+=(const AccumulatingIdentifier& rhs) {
+AccumulatingTag& AccumulatingTag::operator+=(const AccumulatingTag& rhs) {
     count += rhs.count;
     pf_count += rhs.pf_count;
     accumulated_distance += rhs.accumulated_distance;

@@ -59,7 +59,7 @@ template < class T > class ObservingDecoder : public RoutingClassifier< T > {
             RoutingClassifier< T >::classify(input, output);
         };
         inline void finalize() override {
-            for(auto& element : this->element_by_index) {
+            for(auto& element : this->tag_by_index) {
                 this->accumulated_classified_distance += element.accumulated_distance;
                 this->accumulated_pf_classified_distance += element.accumulated_pf_distance;
             }

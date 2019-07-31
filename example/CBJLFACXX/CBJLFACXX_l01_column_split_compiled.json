@@ -1165,7 +1165,7 @@
             1
         ],
         "transform": {
-            "segment pattern": [
+            "knit": [
                 "0"
             ],
             "token": [
@@ -1225,7 +1225,7 @@
     "report url": "/dev/stderr",
     "template": {
         "transform": {
-            "segment pattern": [
+            "knit": [
                 "0",
                 "1"
             ],

@@ -1026,7 +1026,7 @@
         ],
         "template": {
             "transform": {
-                "segment pattern": [
+                "knit": [
                     "0"
                 ],
                 "token": [
@@ -1088,7 +1088,7 @@
     "threads": 8,
     "template": {
         "transform": {
-            "segment pattern": [
+            "knit": [
                 "0",
                 "1"
             ],

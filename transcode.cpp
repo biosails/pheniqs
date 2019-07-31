@@ -530,15 +530,15 @@ void Transcode::compile_transformation(Value& value) {
                     if(reference->value.IsArray()) {
                         size_t token_cardinality(reference->value.Size());
 
-                        reference = transform_element.FindMember("segment pattern");
+                        reference = transform_element.FindMember("knit");
                         if(reference == transform_element.MemberEnd() || reference->value.IsNull() || (reference->value.IsArray() && reference->value.Empty())) {
                             Value observation(kArrayType);
                             for(size_t i(0); i < token_cardinality; ++i) {
                                 string element(to_string(i));
                                 observation.PushBack(Value(element.c_str(), element.size(),ontology.GetAllocator()).Move(), ontology.GetAllocator());
                             }
-                            transform_element.RemoveMember("segment pattern");
-                            transform_element.AddMember(Value("segment pattern", ontology.GetAllocator()).Move(), observation.Move(), ontology.GetAllocator());
+                            transform_element.RemoveMember("knit");
+                            transform_element.AddMember(Value("knit", ontology.GetAllocator()).Move(), observation.Move(), ontology.GetAllocator());
                         }
                     } else { throw ConfigurationError("transform token element is not an array"); }
                 } else { throw ConfigurationError("transform element is missing a token array"); }
@@ -1883,7 +1883,7 @@ void TranscodePivot::load_multiplex_decoding() {
             case Algorithm::PAMLD: {
                 PamlMultiplexDecoder* pamld_decoder(new PamlMultiplexDecoder(reference->value));
                 pamld_decoder->unclassified.populate(job.output_feed_by_url);
-                for(auto& channel : pamld_decoder->element_by_index) {
+                for(auto& channel : pamld_decoder->tag_by_index) {
                     channel.populate(job.output_feed_by_url);
                 }
                 sample_classifier = pamld_decoder;
@@ -1892,7 +1892,7 @@ void TranscodePivot::load_multiplex_decoding() {
             case Algorithm::MDD: {
                 MdMultiplexDecoder* mdd_decoder(new MdMultiplexDecoder(reference->value));
                 mdd_decoder->unclassified.populate(job.output_feed_by_url);
-                for(auto& channel : mdd_decoder->element_by_index) {
+                for(auto& channel : mdd_decoder->tag_by_index) {
                     channel.populate(job.output_feed_by_url);
                 }
                 sample_classifier = mdd_decoder;
