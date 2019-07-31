@@ -176,7 +176,7 @@
     "report url": "/dev/stderr",
     "template": {
         "transform": {
-            "segment pattern": [
+            "knit": [
                 "0",
                 "1",
                 "2"

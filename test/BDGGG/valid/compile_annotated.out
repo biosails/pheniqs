@@ -109,7 +109,7 @@
             "quality masking threshold": 0,
             "segment cardinality": 1,
             "transform": {
-                "segment pattern": [
+                "knit": [
                     "0"
                 ],
                 "token": [
@@ -391,6 +391,9 @@
             2
         ],
         "transform": {
+            "knit": [
+                "0"
+            ],
             "segment pattern": [
                 "0"
             ],
@@ -453,7 +456,7 @@
     "report url": "/dev/stderr",
     "template": {
         "transform": {
-            "segment pattern": [
+            "knit": [
                 "0",
                 "1"
             ],
