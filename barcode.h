@@ -26,7 +26,7 @@
 #include "sequence.h"
 #include "accumulator.h"
 
-class Barcode : public SequenceArray< Sequence >, public AccumulatingIdentifier {
+class Barcode : public SequenceArray< Sequence >, public AccumulatingTag {
     friend ostream& operator<<(ostream& o, const Barcode& barcode);
     friend bool encode_key_value(const string& key, const Barcode& value, Value& node, Document& document);
 

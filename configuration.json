@@ -1293,7 +1293,7 @@
                     "title": "Segment cardinality",
                     "type": "integer"
                 },
-                "segment_pattern": {
+                "knit": {
                     "Description": "Pattern made of token references to assemble a segment",
                     "format": "regex",
                     "pattern": "^(~)?[0-9]+(:(~)?[0-9]+)*$",
@@ -1344,9 +1344,9 @@
                 "transform": {
                     "Tile": "Transform",
                     "properties": {
-                        "segment pattern": {
+                        "knit": {
                             "items": {
-                                "$ref": "#/definitions/segment_pattern"
+                                "$ref": "#/definitions/knit"
                             },
                             "minItems": 1,
                             "type": "array"

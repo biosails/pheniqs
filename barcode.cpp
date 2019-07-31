@@ -23,7 +23,7 @@
 
 Barcode::Barcode(const Value& ontology) try :
     SequenceArray< Sequence >(decode_value_by_key< int32_t >("segment cardinality", ontology)),
-    AccumulatingIdentifier(),
+    AccumulatingTag(),
     index(decode_value_by_key< int32_t >("index", ontology)),
     concentration(decode_value_by_key< double >("concentration", ontology)) {
 
@@ -46,12 +46,12 @@ Barcode::Barcode(const Value& ontology) try :
 };
 Barcode::Barcode(const Barcode& other) :
     SequenceArray< Sequence >(other),
-    AccumulatingIdentifier(other),
+    AccumulatingTag(other),
     index(other.index),
     concentration(other.concentration) {
 };
 void Barcode::encode(Value& container, Document& document) const {
-    AccumulatingIdentifier::encode(container, document);
+    AccumulatingTag::encode(container, document);
     if(container.IsObject()) {
         encode_key_value("index", index, container, document);
         if(is_classified()) {
@@ -65,7 +65,7 @@ void Barcode::encode(Value& container, Document& document) const {
     } else { throw ConfigurationError("element must be a dictionary"); }
 };
 Barcode& Barcode::operator+=(const Barcode& rhs) {
-    AccumulatingIdentifier::operator+=(rhs);
+    AccumulatingTag::operator+=(rhs);
     return *this;
 };
 ostream& operator<<(ostream& o, const Barcode& barcode) {

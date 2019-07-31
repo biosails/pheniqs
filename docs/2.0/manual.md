@@ -138,7 +138,7 @@ CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 {: .example}
 
 # The `transform` directive
-Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the embedded `token` directive and [segment assembly](#segment_assembly) with the `segment pattern` directive. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). In the segment assembly step one or more [segment patterns](manual.html#transform-pattern) reference tokens to assemble a new segment. The optional `segment pattern` directive is only necessary when assembling segments from multiple, non contiguous, tokens or if a token needs to be reverse complemented. If the `segment pattern` directive is omitted from a `transform` directive, each token implicitly declares a single segment.
+Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the embedded `token` directive and [segment assembly](#segment_assembly) with the `knit` directive. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). In the segment assembly step one or more [segment patterns](manual.html#transform-pattern) reference tokens to assemble a new segment. The optional `knit` directive is only necessary when assembling segments from multiple, non contiguous, tokens or if a token needs to be reverse complemented. If the `knit` directive is omitted from a `transform` directive, each token implicitly declares a single segment.
 
 ## Tokenization
 A token pattern is made of 3 colon separated integers. The first is the mandatory [zero based](glossary.html#zero_based_coordinate) [input segment index](glossary.html#input_segment) enumerated by `input`. The second is an inclusive [zero based](glossary.html#zero_based_coordinate) **start** coordinate to the beginning of the token and defaults to **0** if omitted. The third is an exclusive [zero based](glossary.html#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. **start** coordinate and **end** coordinate can take positive or negative values to access the segment from either the 5' (left) or 3' (right) end and mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax. The two colons are always mandatory.
@@ -150,7 +150,7 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
     }
 }
 ```
->**Example 2.6** In this `transform` directive the first token spans the entire first input segment. The second spans the first 8 cycles of the second segment. Since the `segment pattern` directive is omitted each token effectively declares a segment.
+>**Example 2.6** In this `transform` directive the first token spans the entire first input segment. The second spans the first 8 cycles of the second segment. Since the `knit` directive is omitted each token effectively declares a segment.
 {: .example}
 
 >```json
@@ -158,12 +158,12 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
     "template": {
         "transform": {
             "token": [ "0:0:", "1:0:8" ],
-            "segment pattern": [ "0", "1" ]
+            "knit": [ "0", "1" ]
         }
     }
 }
 ```
->**Example 2.7** This `transform` directive is semantically identical to the one provided in **Example 2.6** but explicitly declares the `segment pattern` directive and token **start** coordinate.
+>**Example 2.7** This `transform` directive is semantically identical to the one provided in **Example 2.6** but explicitly declares the `knit` directive and token **start** coordinate.
 {: .example}
 
 >| **Cycle**      | `012345678` |
@@ -182,7 +182,7 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
 {: .example}
 
 ## Segment assembly
-A `segment pattern` is made of one or more token references separated by the **:** concatenation operator. A token reference is the [zero based](glossary.html#zero_based_coordinate) index of the token pattern in the adjacent `token` directive. Appending the left hand side reverse complementarity **~** operator will concatenate the reverse complemented sequence of the token. Each token reference is evaluated before concatenation so **~** evaluation precedes **:** evaluation.
+A `knit` is made of one or more token references separated by the **:** concatenation operator. A token reference is the [zero based](glossary.html#zero_based_coordinate) index of the token pattern in the adjacent `token` directive. Appending the left hand side reverse complementarity **~** operator will concatenate the reverse complemented sequence of the token. Each token reference is evaluated before concatenation so **~** evaluation precedes **:** evaluation.
 
 >| Pattern | Description                                                                                        |
 >| ------- | :------------------------------------------------------------------------------------------------- |
@@ -191,7 +191,7 @@ A `segment pattern` is made of one or more token references separated by the **:
 >| `0:1`   | Assemble a segment by concatenating token 0 and token 1                                            |
 >| `~0:1`  | Assemble a segment by concatenating the reverse complement of token 0 and token 1.                 |
 >
->**Example 2.8** Several examples of `segment pattern` syntax for constructing new segments.
+>**Example 2.8** Several examples of `knit` syntax for constructing new segments.
 {: .example}
 
 Notice that a negative token **start** coordinate is equivalent to the corresponding positive token **end** coordinate on the reverse complemented strand and vice verse. More formally the token `0:-x:-y` is equivalent to `0:y:x` if applied to the reverse complement of the segment. For instance to concatenate to the first output segment the first 6 bases of the reverse complemented strand of the first input segment you would define token `0:-6:` and then reference it in the transform pattern for output segment 0 as `~0`.
@@ -219,7 +219,7 @@ A `transform` directive declared in the root of the instruction assembles the [o
         {
             "transform": {
                 "token": [ "0::6", "3:-6:" ],
-                "segment pattern": [ "4", "~5" ]
+                "knit": [ "4", "~5" ]
             }
         }
     ]

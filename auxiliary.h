@@ -117,12 +117,12 @@ bool from_string(const char* value, AuxiliaryArrayType& result);
 bool from_string(const string& value, AuxiliaryArrayType& result);
 ostream& operator<<(ostream& o, const AuxiliaryArrayType& value);
 
-class Tag {
+class AuxiliaryTag {
     public:
         uint8_t* data;
         int32_t length;
         int32_t capacity;
-        Tag() :
+        AuxiliaryTag() :
             data(NULL),
             length(0),
             capacity(8) {
@@ -130,10 +130,10 @@ class Tag {
                 throw OutOfMemoryError();
             }
         };
-        ~Tag() {
+        ~AuxiliaryTag() {
             free(data);
         };
-        Tag(const Tag& other) :
+        AuxiliaryTag(const AuxiliaryTag& other) :
             length(other.length),
             capacity(other.capacity) {
             if((data = static_cast< uint8_t* >(malloc(capacity))) == NULL) {
@@ -183,7 +183,7 @@ class Tag {
         inline void clear() {
             length = 0;
         };
-        Tag& operator=(const Tag& other) {
+        AuxiliaryTag& operator=(const AuxiliaryTag& other) {
             if(&other == this) {
                 return *this;
             } else {
@@ -234,7 +234,7 @@ class Auxiliary {
         #endif
 
         #if defined(PHENIQS_EXTENDED_SAM_TAG)
-        unordered_map< uint16_t, Tag > extended;
+        unordered_map< uint16_t, AuxiliaryTag > extended;
         #endif
 
         /* expected error */

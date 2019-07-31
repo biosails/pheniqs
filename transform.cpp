@@ -246,7 +246,7 @@ template<> Rule decode_value_by_key(const Value::Ch* key, const Value& container
         if(!rule_element.IsNull()) {
             if(rule_element.IsObject()) {
                 vector< Token > token_array(decode_value_by_key< vector< Token > >("token", rule_element));
-                reference = rule_element.FindMember("segment pattern");
+                reference = rule_element.FindMember("knit");
                 if(reference != rule_element.MemberEnd()) {
                     const Value& observation_element(reference->value);
                     if(!observation_element.IsNull()) {

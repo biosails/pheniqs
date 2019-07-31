@@ -58,7 +58,8 @@ static inline string get_cwd() {
     free(buffer);
     return directory;
 };
-static inline string assemble_full_command(const size_t argc, const char** argv) {
+static inline string format_command(const size_t argc, const char** argv) {
+    //TODO : quote if value has spaces in it
     string value;
     value.append(argv[0]);
     for(size_t i(1); i < argc; ++i) {
@@ -1028,7 +1029,7 @@ Interface::Interface(const size_t argc, const char** argv) try :
     argv(argv),
     application_name(argv[0]),
     application_version(PHENIQS_VERSION),
-    full_command(assemble_full_command(argc, argv)),
+    full_command(format_command(argc, argv)),
     working_directory(get_cwd()),
     command(NULL),
     selected(NULL) {
