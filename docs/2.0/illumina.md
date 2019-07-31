@@ -38,15 +38,19 @@
 # Standard Illumina sample decoding
 {:.page-title}
 
-This tutorial will walk you through hand writing configuration files for decoding sample barcodes in a standard Illumia sequencing run. For a tutorial that uses the python api to generate those configuration files see the [Standard Illumina sample decoding with the python API](illumina_python_api.html).
+This tutorial demonstrates how to manually prepare configuration files for decoding sample barcodes for a standard Illumina sequencing run. Pheniqs includes a Python API that helps users create configuration files automatically. For a tutorial that uses the Python API to generate the configuration files for this example, see the [Standard Illumina sample decoding with the python API](illumina_python_api.html).
 
-In this example the run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments, 2 biological from the DNA or RNA fragment and 2 technical containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) tags, and the decoding error probabilities is written to [XB](glossary.html#xb_auxiliary_tag).
+In this example the run has paired-end dual-index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments: 2 biological sequences (cDNA, genomic DNA, etc.) read from both ends of the insert fragment, and 2 technical sequences containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) tags, and the decoding error probabilities are written to the [XB](glossary.html#xb_auxiliary_tag) tag.
 
 ## Input Read Layout
 
-![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
+![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/Illumina_paired-end_dual-index.png)
 
-Base calling with bc2fastq will produce 4 files per lane: `L001_R1_001.fastq.gz` containing the 3 prime prefix of the insert region, `L001_I1_001.fastq.gz` containing the i7 index, `L001_I2_001.fastq.gz` containing the i5 index and `L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
+Base calling with bc2fastq will produce 4 files per lane:
+- `L001_R1_001.fastq.gz`: Read 1, starting from the beginning of the insert fragment ("top" strand).
+- `L001_I1_001.fastq.gz`: Index 1, the i7 index.
+- `L001_I2_001.fastq.gz`: Index 2, the i5 index.
+- `L001_R2_001.fastq.gz`: Read 2, starting from the other end of the insert fragment ("bottom" strand); note that this sequence is reverse complemented relative to the Read 1 sequence.
 
 >```json
 "input": [
@@ -59,16 +63,17 @@ Base calling with bc2fastq will produce 4 files per lane: `L001_R1_001.fastq.gz`
 >**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling.
 {: .example}
 
-To emit the two ends of the insert region as two segments of the output read we declare the global transform directives
+To emit the two ends of the insert region as two segments of the output read, we declare the global transform directives
 >```json
 "transform": { "token": [ "0::", "3::" ] }
 ```
->**declaring output read segments** Only the segments coming from the first and the forth file are biological sequences and should be included in the output.
+>**declaring output read segments** Only the segments coming from the first and the fourth file are biological sequences and should be included in the output.
 {: .example}
 
-To classify the reads by the i5 and i7 indices we declare the list of possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence.
+To classify the reads by the i5 and i7 indices, we declare a `codec`, which is the list of possible barcode sequences, and a `transform` that tells Pheniqs which read segment(s) and coordinates correspond to the barcode sequence(s).
 >```json
 "multiplex": {
+  "comment": "Sample barcodes are 96 unique combinations of i5 (10nt) + i7 (10nt) sequences.",
   "transform": { "token": [ "1::10", "2::10" ] },
   "codec": {
     "@GAACTGAGCGCGCTCCACGA": { "barcode": [ "GAACTGAGCG", "CGCTCCACGA" ] },
@@ -76,15 +81,15 @@ To classify the reads by the i5 and i7 indices we declare the list of possible b
   }
 }
 ```
->**declaring sample demultiplexing** The standard Illumina dual index protocol allows up to 96 unique dual 10 base barcodes in the i5 and i7 region, but for this example we only use 2 for brevity sake.
+>**declaring sample demultiplexing** The standard Illumina dual-index protocol allows up to 96 unique dual 10 base barcodes in the i5 and i7 region, but for the sake of brevity we only show 2 here. Comments are allowed within any dictionary element in the configuration file and are ignored by Pheniqs. Alternatively, a codec may also be inherited from a base decoder rather than being enumerated explicitly here (see **inheritance**).
 {: .example}
 
-To discard reads that failed the internal Illumina sequencer chastity filter we instruct Pheniqs to filter incoming *qc fail* reads
+To discard reads that failed the internal Illumina sequencer noise filter, we instruct Pheniqs to filter incoming *qc fail* reads
 >```json
 "filter incoming qc fail": true
 ```
 
-Putting things together we get a configuration for demultiplexing the reads in the three files with *PAMLD*. We expect **5%** of reads to be foreign DNA that should not classify to any of the barcodes, for instance spiked PhiX sequences, so we specify the noise prior with the `"noise": 0.05` directive. To mark as *qc fail* read where the posterior probability of correctly decoding the barcode is bellow **0.95** we specify `"confidence threshold": 0.95`.
+Putting things together, we can generate a configuration for demultiplexing the reads into three output files using the *PAMLD* decoder. Here, we declare that we expect **5%** of reads to be foreign DNA, which should not classify to any of the barcodes (for instance spiked-in PhiX sequences). We specify the noise prior with the `"noise": 0.05` directive. To mark as *qc fail* those reads with a posterior probability of correct barcode decoding that is below **0.95**, we specify `"confidence threshold": 0.95`.
 
 >```json
 {
@@ -103,7 +108,7 @@ Putting things together we get a configuration for demultiplexing the reads in t
     ],
     "transform": { "token": [ "0::", "3::" ] },
     "multiplex": {
-        "transform": { "token": [ "1::10", "2::10" ] },
+      "transform": { "token": [ "1::10", "2::10" ] },
       "algorithm": "pamld",
       "noise": 0.05,
       "confidence threshold": 0.95,
@@ -125,7 +130,7 @@ Putting things together we get a configuration for demultiplexing the reads in t
 >**Single index Paired end Illumina protocol** Classifying the 2 barcodes using the 4 fastq files produced by bcl2fastq.
 {: .example}
 
-Before we proceed we validate the configuration with Pheniqs
+Before we proceed we validate the configuration with Pheniqs:
 
 >```shell
 pheniqs mux --config CBJLFACXX_l01_sample.json --validate
