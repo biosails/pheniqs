@@ -133,7 +133,9 @@ The `transform` directive can be used to manipulate the structure of the output 
         "000000000-BDGGG_S1_L001_I1_001.fastq.gz",
         "000000000-BDGGG_S1_L001_R2_001.fastq.gz"
     ],
-    "transform": { "token": [ "0::", "2::" ] }
+    "template": {
+        "transform": { "token": [ "0::", "2::" ] }
+    }
 }
 ```
 >**Example 1.4** Adding a transform directive composing the output read from only the untouched first and third input segments. Input segments in pheniqs are indexed and referenced using a [zero based coordinate system](glossary.html#zero_based_coordinate) so the first segment is 0.
@@ -182,7 +184,9 @@ In this example we declare a `multiplex` directive that uses the [phred-adjusted
         "000000000-BDGGG_S1_L001_I1_001.fastq.gz",
         "000000000-BDGGG_S1_L001_R2_001.fastq.gz"
     ],
-    "transform": { "token": [ "0::", "2::" ] },
+    "template": {
+        "transform": { "token": [ "0::", "2::" ] }    
+    },
     "multiplex": {
         "transform": { "token": [ "1::8" ] },
         "codec": {
@@ -263,7 +267,9 @@ As we mentioned before reading input from CRAM input can be vastly superior to r
         "000000000-BDGGG_raw.cram",
         "000000000-BDGGG_raw.cram"
     ],
-    "transform": { "token": [ "0::", "2::" ] },
+    "template": {
+        "transform": { "token": [ "0::", "2::" ] }
+    },
     "multiplex": {
         "transform": { "token": [ "1::8" ] },
         "codec": {

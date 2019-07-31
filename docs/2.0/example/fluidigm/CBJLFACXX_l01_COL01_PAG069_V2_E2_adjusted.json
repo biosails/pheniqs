@@ -382,9 +382,11 @@
             ]
         }
     },
-    "transform": {
-        "token": [
-            "1::"
-        ]
+    "template": {
+        "transform": {
+            "token": [
+                "1::"
+            ]
+        }
     }
 }

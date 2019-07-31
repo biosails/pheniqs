@@ -1,0 +1,156 @@
+{
+    "decoder": {
+        "Illumina TruSeq Amplicon i5 workflow A": {
+            "codec": {
+                "A501": {
+                    "barcode": [
+                        "TGAACCTT"
+                    ]
+                },
+                "A502": {
+                    "barcode": [
+                        "TGCTAAGT"
+                    ]
+                },
+                "A503": {
+                    "barcode": [
+                        "TGTTCTCT"
+                    ]
+                },
+                "A504": {
+                    "barcode": [
+                        "TAAGACAC"
+                    ]
+                },
+                "A505": {
+                    "barcode": [
+                        "CTAATCGA"
+                    ]
+                },
+                "A506": {
+                    "barcode": [
+                        "CTAGAACA"
+                    ]
+                },
+                "A507": {
+                    "barcode": [
+                        "TAAGTTCC"
+                    ]
+                },
+                "A508": {
+                    "barcode": [
+                        "TAGACCTA"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSeq Amplicon i5 workflow B": {
+            "codec": {
+                "A501": {
+                    "barcode": [
+                        "AAGGTTCA"
+                    ]
+                },
+                "A502": {
+                    "barcode": [
+                        "ACTTAGCA"
+                    ]
+                },
+                "A503": {
+                    "barcode": [
+                        "AGAGAACA"
+                    ]
+                },
+                "A504": {
+                    "barcode": [
+                        "GTGTCTTA"
+                    ]
+                },
+                "A505": {
+                    "barcode": [
+                        "TCGATTAG"
+                    ]
+                },
+                "A506": {
+                    "barcode": [
+                        "TGTTCTAG"
+                    ]
+                },
+                "A507": {
+                    "barcode": [
+                        "GGAACTTA"
+                    ]
+                },
+                "A508": {
+                    "barcode": [
+                        "TAGGTCTA"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSeq Amplicon i7": {
+            "codec": {
+                "A701": {
+                    "barcode": [
+                        "ATCACGAC"
+                    ]
+                },
+                "A702": {
+                    "barcode": [
+                        "ACAGTGGT"
+                    ]
+                },
+                "A703": {
+                    "barcode": [
+                        "CAGATCCA"
+                    ]
+                },
+                "A704": {
+                    "barcode": [
+                        "ACAAACGG"
+                    ]
+                },
+                "A705": {
+                    "barcode": [
+                        "ACCCAGCA"
+                    ]
+                },
+                "A706": {
+                    "barcode": [
+                        "AACCCCTC"
+                    ]
+                },
+                "A707": {
+                    "barcode": [
+                        "CCCAACCT"
+                    ]
+                },
+                "A708": {
+                    "barcode": [
+                        "CACCACAC"
+                    ]
+                },
+                "A709": {
+                    "barcode": [
+                        "GAAACCCA"
+                    ]
+                },
+                "A710": {
+                    "barcode": [
+                        "TGTGACCA"
+                    ]
+                },
+                "A711": {
+                    "barcode": [
+                        "AGGGTCAA"
+                    ]
+                },
+                "A712": {
+                    "barcode": [
+                        "AGGAGTGG"
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,510 @@
+Environment 
+
+    Base input URL                              /Users/lg/code/biosails/pheniqs/example/CBJLFACXX
+    Base output URL                             /Users/lg/code/biosails/pheniqs/example/CBJLFACXX
+    Platform                                    ILLUMINA
+    Quality tracking                            disabled
+    Filter incoming QC failed reads             enabled
+    Filter outgoing QC failed reads             disabled
+    Input Phred offset                          33
+    Output Phred offset                         33
+    Leading segment index                       0
+    Default output format                       sam
+    Default output compression                  unknown
+    Default output compression level            5
+    Feed buffer capacity                        2048
+    Threads                                     8
+    Decoding threads                            1
+    HTSLib threads                              8
+
+Input 
+
+    Input segment cardinality                   3
+
+    Input segment No.0 : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
+    Input segment No.1 : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
+    Input segment No.2 : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
+
+    Input feed No.0
+        Type : fastq
+        Compression : gz
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
+
+    Input feed No.1
+        Type : fastq
+        Compression : gz
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
+
+    Input feed No.2
+        Type : fastq
+        Compression : gz
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
+
+Output transform
+
+    Output segment cardinality                  2
+
+    Token No.0
+        Length        6
+        Pattern       0::6
+        Description   cycles 0 to 6 of input segment 0
+
+    Token No.1
+        Length        variable
+        Pattern       2::
+        Description   cycles 0 to end of input segment 2
+
+    Assembly instruction
+        Append token 0 of input segment 0 to output segment 0
+        Append token 1 of input segment 2 to output segment 1
+
+Mutliplex decoding
+
+    Decoding algorithm                          pamld
+    Shannon bound                               1
+    Noise                                       0.05
+    Confidence threshold                        0.95
+    Segment cardinality                         1
+    Nucleotide cardinality                      8
+
+    Transform
+
+        Token No.0
+            Length        8
+            Pattern       1::8
+            Description   cycles 0 to 8 of input segment 1
+
+        Assembly instruction
+            Append token 0 of input segment 1 to output segment 0
+
+
+    Barcode undetermined
+        ID : CBJLFACXX:1:undetermined
+        PU : CBJLFACXX:1:undetermined
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5
+
+    Barcode @AAGAGGCA
+        ID : CBJLFACXX:1:AAGAGGCA
+        PU : CBJLFACXX:1:AAGAGGCA
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : AAGAGGCA
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5
+
+    Barcode @ACTCGCTA
+        ID : CBJLFACXX:1:ACTCGCTA
+        PU : CBJLFACXX:1:ACTCGCTA
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : ACTCGCTA
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5
+
+    Barcode @ACTGAGCG
+        ID : CBJLFACXX:1:ACTGAGCG
+        PU : CBJLFACXX:1:ACTGAGCG
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : ACTGAGCG
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5
+
+    Barcode @AGGCAGAA
+        ID : CBJLFACXX:1:AGGCAGAA
+        PU : CBJLFACXX:1:AGGCAGAA
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : AGGCAGAA
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5
+
+    Barcode @ATCTCAGG
+        ID : CBJLFACXX:1:ATCTCAGG
+        PU : CBJLFACXX:1:ATCTCAGG
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : ATCTCAGG
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5
+
+    Barcode @ATGCGCAG
+        ID : CBJLFACXX:1:ATGCGCAG
+        PU : CBJLFACXX:1:ATGCGCAG
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : ATGCGCAG
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5
+
+    Barcode @CGAGGCTG
+        ID : CBJLFACXX:1:CGAGGCTG
+        PU : CBJLFACXX:1:CGAGGCTG
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : CGAGGCTG
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5
+
+    Barcode @CGGAGCCT
+        ID : CBJLFACXX:1:CGGAGCCT
+        PU : CBJLFACXX:1:CGGAGCCT
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : CGGAGCCT
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5
+
+    Barcode @CGTACTAG
+        ID : CBJLFACXX:1:CGTACTAG
+        PU : CBJLFACXX:1:CGTACTAG
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : CGTACTAG
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5
+
+    Barcode @CTCTCTAC
+        ID : CBJLFACXX:1:CTCTCTAC
+        PU : CBJLFACXX:1:CTCTCTAC
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : CTCTCTAC
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5
+
+    Barcode @GCGTAGTA
+        ID : CBJLFACXX:1:GCGTAGTA
+        PU : CBJLFACXX:1:GCGTAGTA
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : GCGTAGTA
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5
+
+    Barcode @GCTCATGA
+        ID : CBJLFACXX:1:GCTCATGA
+        PU : CBJLFACXX:1:GCTCATGA
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : GCTCATGA
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5
+
+    Barcode @GGACTCCT
+        ID : CBJLFACXX:1:GGACTCCT
+        PU : CBJLFACXX:1:GGACTCCT
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : GGACTCCT
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5
+
+    Barcode @GGAGCTAC
+        ID : CBJLFACXX:1:GGAGCTAC
+        PU : CBJLFACXX:1:GGAGCTAC
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : GGAGCTAC
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5
+
+    Barcode @GTAGAGGA
+        ID : CBJLFACXX:1:GTAGAGGA
+        PU : CBJLFACXX:1:GTAGAGGA
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : GTAGAGGA
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5
+
+    Barcode @TAAGGCGA
+        ID : CBJLFACXX:1:TAAGGCGA
+        PU : CBJLFACXX:1:TAAGGCGA
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : TAAGGCGA
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5
+
+    Barcode @TACGCTGC
+        ID : CBJLFACXX:1:TACGCTGC
+        PU : CBJLFACXX:1:TACGCTGC
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : TACGCTGC
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5
+
+    Barcode @TAGCGCTC
+        ID : CBJLFACXX:1:TAGCGCTC
+        PU : CBJLFACXX:1:TAGCGCTC
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : TAGCGCTC
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5
+
+    Barcode @TAGGCATG
+        ID : CBJLFACXX:1:TAGGCATG
+        PU : CBJLFACXX:1:TAGGCATG
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : TAGGCATG
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5
+
+    Barcode @TCCTGAGC
+        ID : CBJLFACXX:1:TCCTGAGC
+        PU : CBJLFACXX:1:TCCTGAGC
+        PL : ILLUMINA
+        PM : HiSeq
+        CN : CGSB AD
+        Concentration : 0.0475
+        Barcode       : TCCTGAGC
+        Segment No.0  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5
+        Segment No.1  : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5
+
+    Output feed No.20
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5
+
+    Output feed No.19
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5
+
+    Output feed No.18
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5
+
+    Output feed No.17
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5
+
+    Output feed No.16
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5
+
+    Output feed No.15
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5
+
+    Output feed No.14
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5
+
+    Output feed No.13
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5
+
+    Output feed No.12
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5
+
+    Output feed No.11
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5
+
+    Output feed No.9
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5
+
+    Output feed No.6
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5
+
+    Output feed No.8
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5
+
+    Output feed No.7
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5
+
+    Output feed No.10
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5
+
+    Output feed No.4
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5
+
+    Output feed No.5
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5
+
+    Output feed No.3
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5
+
+    Output feed No.2
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5
+
+    Output feed No.1
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5
+
+    Output feed No.0
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5
+

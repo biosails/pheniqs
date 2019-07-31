@@ -280,15 +280,17 @@
             2,
             3
         ],
-        "transform": {
-            "segment pattern": [
-                "0",
-                "1"
-            ],
-            "token": [
-                "1::10",
-                "2::10"
-            ]
+        "template": {
+            "transform": {
+                "segment pattern": [
+                    "0",
+                    "1"
+                ],
+                "token": [
+                    "1::10",
+                    "2::10"
+                ]
+            }
         },
         "undetermined": {
             "CN": "CGSB",
@@ -342,14 +344,16 @@
     "platform": "ILLUMINA",
     "report url": "/dev/stderr",
     "threads": 8,
-    "transform": {
-        "segment pattern": [
-            "0",
-            "1"
-        ],
-        "token": [
-            "0::",
-            "3::"
-        ]
+    "template": {
+        "transform": {
+            "segment pattern": [
+                "0",
+                "1"
+            ],
+            "token": [
+                "0::",
+                "3::"
+            ]
+        }
     }
 }

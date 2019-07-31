@@ -29,14 +29,7 @@ class Pipeline {
     public:
         Pipeline(const int argc, const char** argv);
         ~Pipeline();
-        inline const bool is_help_only() const {
-            return _help_only;
-        };
-        inline const bool is_version_only() const {
-            return _version_only;
-        };
         void execute();
-        void print_help(ostream& o) const;
         void print_version(ostream& o) const;
         void push_to_queue(Document& operation);
         Job* pop_from_queue();
@@ -44,9 +37,6 @@ class Pipeline {
     private:
         const Interface interface;
         list< Job* > job_queue;
-        const bool _help_only;
-        const bool _version_only;
-        void execute_job(Job* job);
 };
 
 #endif /* PHENIQS_ENVIRONMENT_H */

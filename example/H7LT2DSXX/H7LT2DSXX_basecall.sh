@@ -5,5 +5,4 @@ bcl2fastq \
 --adapter-stringency 0 \
 --minimum-trimmed-read-length 0 \
 --mask-short-adapter-reads 0 \
---output-dir . \
 --fastq-compression-level 3

@@ -12,12 +12,14 @@
         "H7LT2DSXX_l02_interleave.bam"
     ],
     "report url": "H7LT2DSXX_l02_interleave_report.json",
-    "transform": {
-        "token": [
-            "0::",
-            "1::",
-            "2::",
-            "3::"
-        ]
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "1::",
+                "2::",
+                "3::"
+            ]
+        }
     }
 }

@@ -22,9 +22,7 @@
 #include "pipeline.h"
 
 Pipeline::Pipeline(const int argc, const char** argv) try :
-    interface(argc, argv),
-    _help_only(interface.help_triggered()),
-    _version_only(interface.version_triggered()) {
+    interface(argc, argv) {
 
     PhredScale::get_instance();
 
@@ -36,9 +34,6 @@ Pipeline::~Pipeline() {
     for(auto& job : job_queue) {
         delete job;
     }
-};
-void Pipeline::print_help(ostream& o) const {
-    interface.print_help(o);
 };
 void Pipeline::print_version(ostream& o) const {
     interface.print_version(o);
@@ -89,31 +84,11 @@ void Pipeline::push_to_queue(Document& operation) {
         job_queue.emplace_back(job);
     } else { throw ConfigurationError("Job operation element is not a dictionary"); }
 };
-void Pipeline::execute_job(Job* job) {
-    if(job != NULL) {
-        if(job->is_static_only()) {
-            job->write_static_instruction(cout);
-
-        } else if(job->is_validate_only()) {
-            job->compile();
-            job->describe(cout);
-
-        } else if(job->is_compile_only()) {
-            job->compile();
-            job->write_compiled_instruction(cout);
-
-        } else {
-            job->compile();
-            job->execute();
-            job->write_report();
-        }
-    }
-};
 void Pipeline::execute() {
-    if(is_help_only()) {
-        print_help(cout);
+    if(interface.help_triggered()) {
+        interface.print_help(cout);
 
-    } else if(is_version_only()) {
+    } else if(interface.version_triggered()) {
         print_version(cout);
 
     } else {
@@ -122,7 +97,7 @@ void Pipeline::execute() {
 
         Job* job(NULL);
         while((job = pop_from_queue()) != NULL) {
-            execute_job(job);
+            job->run();
             delete job;
         }
     }

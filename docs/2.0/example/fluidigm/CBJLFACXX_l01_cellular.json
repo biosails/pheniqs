@@ -4,7 +4,9 @@
     "PM": "HiSeq",
     "base input url": "~/CBJLFACXX/sample",
     "base input url": "~/CBJLFACXX/cellular",
-    "transform": { "token": [ "1::" ] },
+    "template": {
+        "transform": { "token": [ "1::" ] }
+    },
     "flowcell id": "CBJLFACXX",
     "filter incoming qc fail": true,
     "filter outgoing qc fail": true,

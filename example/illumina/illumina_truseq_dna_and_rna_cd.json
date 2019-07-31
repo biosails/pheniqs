@@ -1,0 +1,156 @@
+{
+    "decoder": {
+        "Illumina TruSeq DNA and RNA CD i5 workflow A": {
+            "codec": {
+                "D501": {
+                    "barcode": [
+                        "TATAGCCT"
+                    ]
+                },
+                "D502": {
+                    "barcode": [
+                        "ATAGAGGC"
+                    ]
+                },
+                "D503": {
+                    "barcode": [
+                        "CCTATCCT"
+                    ]
+                },
+                "D504": {
+                    "barcode": [
+                        "GGCTCTGA"
+                    ]
+                },
+                "D505": {
+                    "barcode": [
+                        "AGGCGAAG"
+                    ]
+                },
+                "D506": {
+                    "barcode": [
+                        "TAATCTTA"
+                    ]
+                },
+                "D507": {
+                    "barcode": [
+                        "CAGGACGT"
+                    ]
+                },
+                "D508": {
+                    "barcode": [
+                        "GTACTGAC"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSeq DNA and RNA CD i5 workflow B": {
+            "codec": {
+                "D501": {
+                    "barcode": [
+                        "AGGCTATA"
+                    ]
+                },
+                "D502": {
+                    "barcode": [
+                        "GCCTCTAT"
+                    ]
+                },
+                "D503": {
+                    "barcode": [
+                        "AGGATAGG"
+                    ]
+                },
+                "D504": {
+                    "barcode": [
+                        "TCAGAGCC"
+                    ]
+                },
+                "D505": {
+                    "barcode": [
+                        "CTTCGCCT"
+                    ]
+                },
+                "D506": {
+                    "barcode": [
+                        "TAAGATTA"
+                    ]
+                },
+                "D507": {
+                    "barcode": [
+                        "ACGTCCTG"
+                    ]
+                },
+                "D508": {
+                    "barcode": [
+                        "GTCAGTAC"
+                    ]
+                }
+            }
+        },
+        "Illumina TruSeq DNA and RNA CD i7": {
+            "codec": {
+                "D701": {
+                    "barcode": [
+                        "ATTACTCG"
+                    ]
+                },
+                "D702": {
+                    "barcode": [
+                        "TCCGGAGA"
+                    ]
+                },
+                "D703": {
+                    "barcode": [
+                        "CGCTCATT"
+                    ]
+                },
+                "D704": {
+                    "barcode": [
+                        "GAGATTCC"
+                    ]
+                },
+                "D705": {
+                    "barcode": [
+                        "ATTCAGAA"
+                    ]
+                },
+                "D706": {
+                    "barcode": [
+                        "GAATTCGT"
+                    ]
+                },
+                "D707": {
+                    "barcode": [
+                        "CTGAAGCT"
+                    ]
+                },
+                "D708": {
+                    "barcode": [
+                        "TAATGCGC"
+                    ]
+                },
+                "D709": {
+                    "barcode": [
+                        "CGGCTATG"
+                    ]
+                },
+                "D710": {
+                    "barcode": [
+                        "TCCGCGAA"
+                    ]
+                },
+                "D711": {
+                    "barcode": [
+                        "TCTCGCGC"
+                    ]
+                },
+                "D712": {
+                    "barcode": [
+                        "AGCGATAG"
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -113,10 +113,10 @@
                 "low confidence count": 159,
                 "pf count": 1318,
                 "pf fraction": 1.0,
-                "pf pooled classified fraction": 0.000097433125059,
-                "pf pooled fraction": 0.000086449789201,
-                "pooled classified fraction": 0.000097433125059,
-                "pooled fraction": 0.000086449789201
+                "pf pooled classified fraction": 9.7433125059e-05,
+                "pf pooled fraction": 8.6449789201e-05,
+                "pooled classified fraction": 9.7433125059e-05,
+                "pooled fraction": 8.6449789201e-05
             },
             {
                 "ID": "A5KVK:GTACCGGAATACCT",
@@ -274,10 +274,10 @@
                 "low confidence count": 57,
                 "pf count": 193,
                 "pf fraction": 1.0,
-                "pf pooled classified fraction": 0.000014267521347,
-                "pf pooled fraction": 0.000012659187644,
-                "pooled classified fraction": 0.000014267521347,
-                "pooled fraction": 0.000012659187644
+                "pf pooled classified fraction": 1.4267521347e-05,
+                "pf pooled fraction": 1.2659187644e-05,
+                "pooled classified fraction": 1.4267521347e-05,
+                "pooled fraction": 1.2659187644e-05
             },
             {
                 "ID": "A5KVK:AACCAAGAGCAGGT",
@@ -504,10 +504,10 @@
                 "low confidence count": 128,
                 "pf count": 1076,
                 "pf fraction": 1.0,
-                "pf pooled classified fraction": 0.000079543279638,
-                "pf pooled fraction": 0.000070576610911,
-                "pooled classified fraction": 0.000079543279638,
-                "pooled fraction": 0.000070576610911
+                "pf pooled classified fraction": 7.9543279638e-05,
+                "pf pooled fraction": 7.0576610911e-05,
+                "pooled classified fraction": 7.9543279638e-05,
+                "pooled fraction": 7.0576610911e-05
             },
             {
                 "ID": "A5KVK:AGAAGACGCAGTCC",
@@ -665,10 +665,10 @@
                 "low confidence count": 57,
                 "pf count": 294,
                 "pf fraction": 1.0,
-                "pf pooled classified fraction": 0.000021733944436,
-                "pf pooled fraction": 0.000019283943873,
-                "pooled classified fraction": 0.000021733944436,
-                "pooled fraction": 0.000019283943873
+                "pf pooled classified fraction": 2.1733944436e-05,
+                "pf pooled fraction": 1.9283943873e-05,
+                "pooled classified fraction": 2.1733944436e-05,
+                "pooled fraction": 1.9283943873e-05
             },
             {
                 "ID": "A5KVK:AGCCTTGGACGATT",

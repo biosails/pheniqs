@@ -19,6 +19,62 @@
                 ],
                 "concentration": 0.0018843168013525523
             },
+            "@RG02": {
+                "barcode": [
+                    "CGCGCAG",
+                    "TCATGGT"
+                ],
+                "concentration": 0.0009020163134294172
+            },
+            "@RG03": {
+                "barcode": [
+                    "AAGGTCT",
+                    "AGAACCG"
+                ],
+                "concentration": 0.0009214314405945646
+            },
+            "@RG04": {
+                "barcode": [
+                    "ACTGGAC",
+                    "TGGAATA"
+                ],
+                "concentration": 0.001777074460423444
+            },
+            "@RG05": {
+                "barcode": [
+                    "AGCAGGT",
+                    "CAGGAGG"
+                ],
+                "concentration": 9.687886088825256e-05
+            },
+            "@RG06": {
+                "barcode": [
+                    "GTACCGG",
+                    "AATACCT"
+                ],
+                "concentration": 0.001272018787546298
+            },
+            "@RG07": {
+                "barcode": [
+                    "GGTCAAG",
+                    "CGAATGC"
+                ],
+                "concentration": 0.0006384690804917064
+            },
+            "@RG08": {
+                "barcode": [
+                    "AATGATG",
+                    "TTCGCAA"
+                ],
+                "concentration": 0.0006936972462790516
+            },
+            "@RG09": {
+                "barcode": [
+                    "AGTCAGA",
+                    "AATTCAA"
+                ],
+                "concentration": 0.00029417853153948054
+            },
             "@RG10": {
                 "barcode": [
                     "AACTAGA",
@@ -88,13 +144,6 @@
                     "CTATGGC"
                 ],
                 "concentration": 0.0015832511470011106
-            },
-            "@RG02": {
-                "barcode": [
-                    "CGCGCAG",
-                    "TCATGGT"
-                ],
-                "concentration": 0.0009020163134294172
             },
             "@RG20": {
                 "barcode": [
@@ -166,13 +215,6 @@
                 ],
                 "concentration": 2.3022667685698475e-05
             },
-            "@RG03": {
-                "barcode": [
-                    "AAGGTCT",
-                    "AGAACCG"
-                ],
-                "concentration": 0.0009214314405945646
-            },
             "@RG30": {
                 "barcode": [
                     "AGCCTTG",
@@ -242,13 +284,6 @@
                     "CCAACCT"
                 ],
                 "concentration": 0.001510575603423464
-            },
-            "@RG04": {
-                "barcode": [
-                    "ACTGGAC",
-                    "TGGAATA"
-                ],
-                "concentration": 0.001777074460423444
             },
             "@RG40": {
                 "barcode": [
@@ -320,13 +355,6 @@
                 ],
                 "concentration": 0.0019406600251189766
             },
-            "@RG05": {
-                "barcode": [
-                    "AGCAGGT",
-                    "CAGGAGG"
-                ],
-                "concentration": 9.687886088825256e-05
-            },
             "@RG50": {
                 "barcode": [
                     "CTCTGCA",
@@ -396,13 +424,6 @@
                     "AGAACCG"
                 ],
                 "concentration": 0.0016097501719157037
-            },
-            "@RG06": {
-                "barcode": [
-                    "GTACCGG",
-                    "AATACCT"
-                ],
-                "concentration": 0.001272018787546298
             },
             "@RG60": {
                 "barcode": [
@@ -474,13 +495,6 @@
                 ],
                 "concentration": 0.017492045701110414
             },
-            "@RG07": {
-                "barcode": [
-                    "GGTCAAG",
-                    "CGAATGC"
-                ],
-                "concentration": 0.0006384690804917064
-            },
             "@RG70": {
                 "barcode": [
                     "CGAATGC",
@@ -551,13 +565,6 @@
                 ],
                 "concentration": 0.016768504255979533
             },
-            "@RG08": {
-                "barcode": [
-                    "AATGATG",
-                    "TTCGCAA"
-                ],
-                "concentration": 0.0006936972462790516
-            },
             "@RG80": {
                 "barcode": [
                     "AGGTACC",
@@ -627,13 +634,6 @@
                     "TGCGTCC"
                 ],
                 "concentration": 0.005252513406276491
-            },
-            "@RG09": {
-                "barcode": [
-                    "AGTCAGA",
-                    "AATTCAA"
-                ],
-                "concentration": 0.00029417853153948054
             },
             "@RG90": {
                 "barcode": [
@@ -722,10 +722,12 @@
             ]
         }
     },
-    "transform": {
-        "token": [
-            "0::",
-            "3::"
-        ]
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "3::"
+            ]
+        }
     }
 }

@@ -104,9 +104,9 @@ tool_order = c (
   "mdd"
 )
 tool_name = c (
-  "pamld" = "PAMLD Estimated",
-  "pamld_u" = "PAMLD Uniform",
-  "pamld_ap" = "PAMLD Accurate",
+  "pamld" = "PAMLD estimated",
+  "pamld_u" = "PAMLD uniform",
+  "pamld_ap" = "PAMLD true",
   "deml" = "deML",
   "mdd" = "MDD"
 )

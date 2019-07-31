@@ -1,0 +1,27 @@
+{
+    "flowcell lane number": 1,
+    "import": [
+        "CBJLFACXX_core.json"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "@CBJLFACXX_row",
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "transform": {
+            "token": [
+                "0::6"
+            ]
+        }
+    },
+    "output": [
+        "/dev/null"
+    ],
+    "template": {
+        "transform": {
+            "token": [
+                "0::6"
+            ]
+        }
+    }
+}

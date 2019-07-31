@@ -1024,13 +1024,15 @@
         "shannon bound": [
             1
         ],
-        "transform": {
-            "segment pattern": [
-                "0"
-            ],
-            "token": [
-                "1::8"
-            ]
+        "template": {
+            "transform": {
+                "segment pattern": [
+                    "0"
+                ],
+                "token": [
+                    "1::8"
+                ]
+            }
         },
         "undetermined": {
             "CN": "CGSB AD",
@@ -1084,14 +1086,16 @@
     "platform": "ILLUMINA",
     "report url": "/dev/stderr",
     "threads": 8,
-    "transform": {
-        "segment pattern": [
-            "0",
-            "1"
-        ],
-        "token": [
-            "0::6",
-            "2::"
-        ]
+    "template": {
+        "transform": {
+            "segment pattern": [
+                "0",
+                "1"
+            ],
+            "token": [
+                "0::6",
+                "2::"
+            ]
+        }
     }
 }

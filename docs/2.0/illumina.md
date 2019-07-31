@@ -101,7 +101,9 @@ Putting things together we get a configuration for demultiplexing the reads in t
         "Lane1_S1_L001_I2_001.fastq.gz",
         "Lane1_S1_L001_R2_001.fastq.gz"
     ],
-    "transform": { "token": [ "0::", "3::" ] },
+    "template": {
+        "transform": { "token": [ "0::", "3::" ] }
+    },
     "multiplex": {
         "transform": { "token": [ "1::10", "2::10" ] },
       "algorithm": "pamld",

@@ -1,7 +1,4 @@
 {
-    "import": [
-        "../RT_and_UMI.json"
-    ],
     "DT": "2017-01-24",
     "PL": "ILLUMINA",
     "PM": "NextSeq NS500272 2.1.0.31",
@@ -10,8 +7,8 @@
             "base": "rt_c_elegans"
         },
         {
-            "base": "H7HYGBGX2_multiplex",
             "algorithm": "pamld",
+            "base": "H7HYGBGX2_multiplex",
             "confidence threshold": 0.99,
             "noise": 0.05
         }
@@ -2017,15 +2014,20 @@
         }
     },
     "flowcell id": "H7HYGBGX2",
-    "transform": {
-        "token": [
-            "3::"
-        ]
-    },
+    "import": [
+        "../RT_and_UMI.json"
+    ],
     "input": [
         "Undetermined_S0_L001_R1_001.fastq.gz",
         "Undetermined_S0_L001_I1_001.fastq.gz",
         "Undetermined_S0_L001_I2_001.fastq.gz",
         "Undetermined_S0_L001_R2_001.fastq.gz"
-    ]
+    ],
+    "template": {
+        "transform": {
+            "token": [
+                "3::"
+            ]
+        }
+    }
 }

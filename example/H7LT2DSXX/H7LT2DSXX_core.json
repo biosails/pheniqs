@@ -1,8 +1,6 @@
 {
     "PL": "ILLUMINA",
     "PM": "A00534",
-    "base input url": ".",
-    "base output url": ".",
     "decoder": {
         "H7LT2DSXX_l01_multiplex": {
             "codec": {
@@ -2707,10 +2705,12 @@
     },
     "filter incoming qc fail": true,
     "flowcell id": "H7LT2DSXX",
-    "transform": {
-        "token": [
-            "0::",
-            "3::"
-        ]
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "3::"
+            ]
+        }
     }
 }

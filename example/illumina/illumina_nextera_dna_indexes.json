@@ -1,0 +1,326 @@
+{
+    "decoder": {
+        "Nextera DNA i5 workflow A": {
+            "codec": {
+                "501": {
+                    "barcode": [
+                        "TAGATCGC"
+                    ]
+                },
+                "502": {
+                    "barcode": [
+                        "CTCTCTAT"
+                    ]
+                },
+                "503": {
+                    "barcode": [
+                        "TATCCTCT"
+                    ]
+                },
+                "504": {
+                    "barcode": [
+                        "AGAGTAGA"
+                    ]
+                },
+                "505": {
+                    "barcode": [
+                        "GTAAGGAG"
+                    ]
+                },
+                "506": {
+                    "barcode": [
+                        "ACTGCATA"
+                    ]
+                },
+                "507": {
+                    "barcode": [
+                        "AAGGAGTA"
+                    ]
+                },
+                "508": {
+                    "barcode": [
+                        "CTAAGCCT"
+                    ]
+                },
+                "510": {
+                    "barcode": [
+                        "CGTCTAAT"
+                    ]
+                },
+                "511": {
+                    "barcode": [
+                        "TCTCTCCG"
+                    ]
+                },
+                "513": {
+                    "barcode": [
+                        "TCGACTAG"
+                    ]
+                },
+                "515": {
+                    "barcode": [
+                        "TTCTAGCT"
+                    ]
+                },
+                "516": {
+                    "barcode": [
+                        "CCTAGAGT"
+                    ]
+                },
+                "517": {
+                    "barcode": [
+                        "GCGTAAGA"
+                    ]
+                },
+                "518": {
+                    "barcode": [
+                        "CTATTAAG"
+                    ]
+                },
+                "520": {
+                    "barcode": [
+                        "AAGGCTAT"
+                    ]
+                },
+                "521": {
+                    "barcode": [
+                        "GAGCCTTA"
+                    ]
+                },
+                "522": {
+                    "barcode": [
+                        "TTATGCGA"
+                    ]
+                }
+            }
+        },
+        "Nextera DNA i5 workflow B": {
+            "codec": {
+                "501": {
+                    "barcode": [
+                        "GCGATCTA"
+                    ]
+                },
+                "502": {
+                    "barcode": [
+                        "ATAGAGAG"
+                    ]
+                },
+                "503": {
+                    "barcode": [
+                        "AGAGGATA"
+                    ]
+                },
+                "504": {
+                    "barcode": [
+                        "TCTACTCT"
+                    ]
+                },
+                "505": {
+                    "barcode": [
+                        "CTCCTTAC"
+                    ]
+                },
+                "506": {
+                    "barcode": [
+                        "TATGCAGT"
+                    ]
+                },
+                "507": {
+                    "barcode": [
+                        "TACTCCTT"
+                    ]
+                },
+                "508": {
+                    "barcode": [
+                        "AGGCTTAG"
+                    ]
+                },
+                "510": {
+                    "barcode": [
+                        "ATTAGACG"
+                    ]
+                },
+                "511": {
+                    "barcode": [
+                        "CGGAGAGA"
+                    ]
+                },
+                "513": {
+                    "barcode": [
+                        "CTAGTCGA"
+                    ]
+                },
+                "515": {
+                    "barcode": [
+                        "AGCTAGAA"
+                    ]
+                },
+                "516": {
+                    "barcode": [
+                        "ACTCTAGG"
+                    ]
+                },
+                "517": {
+                    "barcode": [
+                        "TCTTACGC"
+                    ]
+                },
+                "518": {
+                    "barcode": [
+                        "CTTAATAG"
+                    ]
+                },
+                "520": {
+                    "barcode": [
+                        "ATAGCCTT"
+                    ]
+                },
+                "521": {
+                    "barcode": [
+                        "TAAGGCTC"
+                    ]
+                },
+                "522": {
+                    "barcode": [
+                        "TCGCATAA"
+                    ]
+                }
+            }
+        },
+        "Nextera DNA i7": {
+            "codec": {
+                "701": {
+                    "barcode": [
+                        "TAAGGCGA"
+                    ]
+                },
+                "702": {
+                    "barcode": [
+                        "CGTACTAG"
+                    ]
+                },
+                "703": {
+                    "barcode": [
+                        "AGGCAGAA"
+                    ]
+                },
+                "704": {
+                    "barcode": [
+                        "TCCTGAGC"
+                    ]
+                },
+                "705": {
+                    "barcode": [
+                        "GGACTCCT"
+                    ]
+                },
+                "706": {
+                    "barcode": [
+                        "TAGGCATG"
+                    ]
+                },
+                "707": {
+                    "barcode": [
+                        "CTCTCTAC"
+                    ]
+                },
+                "708": {
+                    "barcode": [
+                        "CAGAGAGG"
+                    ]
+                },
+                "709": {
+                    "barcode": [
+                        "GCTACGCT"
+                    ]
+                },
+                "710": {
+                    "barcode": [
+                        "CGAGGCTG"
+                    ]
+                },
+                "711": {
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "712": {
+                    "barcode": [
+                        "GTAGAGGA"
+                    ]
+                },
+                "714": {
+                    "barcode": [
+                        "GCTCATGA"
+                    ]
+                },
+                "715": {
+                    "barcode": [
+                        "ATCTCAGG"
+                    ]
+                },
+                "716": {
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                },
+                "718": {
+                    "barcode": [
+                        "GGAGCTAC"
+                    ]
+                },
+                "719": {
+                    "barcode": [
+                        "GCGTAGTA"
+                    ]
+                },
+                "720": {
+                    "barcode": [
+                        "CGGAGCCT"
+                    ]
+                },
+                "721": {
+                    "barcode": [
+                        "TACGCTGC"
+                    ]
+                },
+                "722": {
+                    "barcode": [
+                        "ATGCGCAG"
+                    ]
+                },
+                "723": {
+                    "barcode": [
+                        "TAGCGCTC"
+                    ]
+                },
+                "724": {
+                    "barcode": [
+                        "ACTGAGCG"
+                    ]
+                },
+                "726": {
+                    "barcode": [
+                        "CCTAAGAC"
+                    ]
+                },
+                "727": {
+                    "barcode": [
+                        "CGATCAGT"
+                    ]
+                },
+                "728": {
+                    "barcode": [
+                        "TGCAGCTA"
+                    ]
+                },
+                "729": {
+                    "barcode": [
+                        "TCGACGTC"
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -56,6 +56,9 @@ void Job::compile() {
     clean_json_object(ontology, ontology);
     validate();
 };
+void Job::describe() const {
+
+};
 void Job::execute() {
     load();
     start();
@@ -77,25 +80,22 @@ void Job::write_report() const {
         }
     }
 };
-void Job::describe(ostream& o) const {
-
-};
-void Job::write_static_instruction(ostream& o) const {
+void Job::write_static_instruction() const {
     Document assembled;
     assembled.CopyFrom(instruction, assembled.GetAllocator());
     apply_interactive_ontology(assembled);
     sort_json_value(assembled, assembled);
     clean_json_object(assembled, assembled);
-    print_json(assembled, o);
+    print_json(assembled, cout);
 };
-void Job::write_compiled_instruction(ostream& o) const {
+void Job::write_compiled_instruction() const {
     Document compiled;
     compiled.CopyFrom(ontology, compiled.GetAllocator());
     compiled.RemoveMember("application version");
     compiled.RemoveMember("program");
     compiled.RemoveMember("working directory");
     sort_json_value(compiled, compiled);
-    print_json(compiled, o, float_precision());
+    print_json(compiled, cout, float_precision());
 };
 void Job::validate() {
 

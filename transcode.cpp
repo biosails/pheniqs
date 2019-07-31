@@ -135,6 +135,16 @@ void Transcode::apply_inheritance() {
     apply_topic_inheritance("molecular");
     apply_topic_inheritance("cellular");
 
+    if(instruction.HasMember("transform")) {
+        if(!instruction.HasMember("template")) {
+            instruction.AddMember("template", Value(kObjectType).Move(), instruction.GetAllocator());
+        }
+        if(!instruction["template"].HasMember("transform")) {
+            instruction["template"].AddMember("transform", Value(kObjectType).Move(), instruction.GetAllocator());
+        }
+        merge_json_value(instruction["transform"], instruction["template"]["transform"], instruction);
+    }
+
     /* Remove the decoder repository, it is no longer needed in the compiled instruction */
     instruction.RemoveMember("decoder");
 
@@ -824,9 +834,9 @@ void Transcode::compile_output() {
     standardize_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
     relocate_url_by_key("report url", ontology, ontology, base_output);
 
-    /* load output transform */
-    compile_output_transformation();
-    Rule rule(decode_value_by_key< Rule >("transform", ontology));
+    /* load output template */
+    compile_template();
+    Rule rule(decode_value_by_key< Rule >("transform", ontology["template"]));
 
     /* encode the output_segment_cardinality deduced from the rule */
     const int32_t output_segment_cardinality(rule.output_segment_cardinality);
@@ -989,24 +999,32 @@ void Transcode::compile_output() {
         }
     }
 };
-void Transcode::compile_output_transformation() {
-    const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
+void Transcode::compile_template() {
+    if(!ontology.HasMember("template")) {
+        ontology.AddMember("template", Value(kObjectType).Move(), ontology.GetAllocator());
+    }
+    Value::MemberIterator reference = ontology.FindMember("template");
+    Value& template_value(reference->value);
 
-    /* if the output transform was not defined add an empty dictionary */
-    if(!ontology.HasMember("transform")) {
-        ontology.AddMember("transform", Value(kObjectType).Move(), ontology.GetAllocator());
+    if(!template_value.HasMember("transform")) {
+        template_value.AddMember("transform", Value(kObjectType).Move(), ontology.GetAllocator());
     }
 
+    reference = template_value.FindMember("transform");
+    Value& transform_value(reference->value);
+
+    const int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
+
     /* if transform does not define a token array route all input segments to the output verbatim */
-    if(!ontology["transform"].HasMember("token")) {
+    if(!transform_value.HasMember("token")) {
         Value token_array(kArrayType);
         for(int32_t i(0); i < input_segment_cardinality; ++i) {
             string token(to_string(i) + "::");
             token_array.PushBack(Value(token.c_str(), token.size(), ontology.GetAllocator()), ontology.GetAllocator());
         }
-        ontology["transform"].AddMember("token", token_array.Move(), ontology.GetAllocator());
+        transform_value.AddMember("token", token_array.Move(), ontology.GetAllocator());
     }
-    compile_transformation(ontology);
+    compile_transformation(template_value);
 };
 void Transcode::pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality) {
     list< URL > array;
@@ -1485,16 +1503,19 @@ void Transcode::apply_interactive_ontology(Document& document) const {
     /* Format template token array into an output transform */
     Value::MemberIterator reference = adjusted.FindMember("template token");
     if(reference != adjusted.MemberEnd()) {
-        Value transform(kObjectType);
-        transform.AddMember("token", Value(reference->value, adjusted.GetAllocator()).Move(), adjusted.GetAllocator());
-        adjusted.AddMember("transform", transform.Move(), adjusted.GetAllocator());
+        Value template_value(kObjectType);
+        Value transform_value(kObjectType);
+        transform_value.AddMember("token", Value(reference->value, adjusted.GetAllocator()).Move(), adjusted.GetAllocator());
+        template_value.AddMember("transform", transform_value.Move(), adjusted.GetAllocator());
+        adjusted.AddMember("template", template_value.Move(), adjusted.GetAllocator());
     }
     adjusted.RemoveMember("template token");
     overlay_json_object(document, adjusted);
 };
 
 /* describe */
-void Transcode::describe(ostream& o) const {
+void Transcode::describe() const {
+    ostream& o(cout);
     print_global_instruction(o);
     print_input_instruction(o);
     print_transform_instruction(o);
@@ -1634,7 +1655,7 @@ void Transcode::print_transform_instruction(ostream& o) const {
         o << "    Output segment cardinality                  " << to_string(output_segment_cardinality) << endl;
     }
 
-    Rule rule(decode_value_by_key< Rule >("transform", ontology));
+    Rule rule(decode_value_by_key< Rule >("transform", ontology["template"]));
     o << endl;
     for(auto& token : rule.token_array) {
         o << "    Token No." << token.index << endl;
@@ -1733,7 +1754,7 @@ void Transcode::print_codec_instruction(const Value& value, const bool& plural, 
 
             o << endl << "    Transform" << endl;
 
-            if(ontology.HasMember("transform")) {
+            if(value.HasMember("transform")) {
                 Rule rule(decode_value_by_key< Rule >("transform", value));
                 o << endl;
                 for(auto& token : rule.token_array) {
@@ -1839,7 +1860,7 @@ TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
     job(job),
     filter_incoming_qc_fail(decode_value_by_key< bool >("filter incoming qc fail", job.ontology)),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", job.ontology)),
-    template_rule(decode_value_by_key< Rule >("transform", job.ontology)) {
+    template_rule(decode_value_by_key< Rule >("transform", job.ontology["template"])) {
 
     load_decoding();
 

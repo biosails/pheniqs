@@ -36,300 +36,342 @@
 # Single index Fluidigm
 {:.page-title}
 
-This tutorial will walk you through demultiplexing a single index fluidigm sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing the i7 sample index and a cell specific tag. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary.html#bc_auxiliary_tag) and [QT](glossary.html#qt_auxiliary_tag) respectively, and the decoding error probabilities is written to the [XB](glossary.html#xb_auxiliary_tag).
+This tutorial will walk you through demultiplexing a fluidigm sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing a row cellular barcode in the first 6 cycles of the forward read segment and a column cellular barcode on the first 8 cycles of the i7 index segment.
 
 ## Input Read Layout
-<table class="diagram">
-  <tr>
-    <td class="description" ></td>
-    <td>
-      <div class="read" id="single_index">
-        <div class="binding_primer p5">P5</div>
-        <div class="sequencing_primer">SP1</div>
-        <div class="cellular_barcode">tag</div>
-        <div class="insert">insert</div>
-        <div class="sequencing_primer">SP2</div>
-        <div class="sample_barcode">i7</div>
-        <div class="binding_primer p7">P7</div>
-        <div class="clear"></div>
-      </div>
-    </td>
-  </tr>
-</table>
-<table class="legend">
-  <tr>
-    <td class="label" ><span class="binding_primer p5">P5/P7</span></td>
-    <td class="definition" >Platform specific flow cell binding sequences</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="sequencing_primer">SP1/SP2</span></td>
-    <td class="definition" >Sequencing primer binding sites (common for all libraries)</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="sample_barcode">i7</span></td>
-    <td class="definition" >Library specific sample index</td>
-  </tr>
-  <tr>
-    <td class="label" ><span class="insert">insert</span></td>
-    <td class="definition" >Target DNA or cDNA fragment (library-specific)</td>
-  </tr>
-</table>
-
-Base calling with bc2fastq will produce 3 files per lane: `L001_R1_001.fastq.gz` containing a 6 base pair long cellular barcode, `L001_I1_001.fastq.gz` containing the 8 base pair sample barcode and `L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 
 >```json
 "input": [
-    "Lane1_S1_L001_R1_001.fastq.gz",
-    "Lane1_S1_L001_I1_001.fastq.gz",
-    "Lane1_S1_L001_R2_001.fastq.gz"
+    "CBJLFACXX_S1_L001_R1_001.fastq.gz",
+    "CBJLFACXX_S1_L001_I1_001.fastq.gz",
+    "CBJLFACXX_S1_L001_R2_001.fastq.gz"
 ],
 ```
->**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling.
+>**declaring input read segments** Base calling with bc2fastq produced 3 files per lane: `CBJLFACXX_S1_L001_R1_001.fastq.gz` containing a 6 base pair long row cellular barcode, `CBJLFACXX_S1_L001_I1_001.fastq.gz` containing the 8 base pair column cellular barcode and `CBJLFACXX_S1_L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 {: .example}
 
-Pheniqs could theoretically perform both sample and cellular classification in one run but that can make estimating the priors more tricky. Our downstream pipeline also expected reads for each cell of each sample to be in a separate fastq file. While this may not be ideal for performance and retaining metadata, it is a real world constraint we sometime have to live with to reuse existing workflows we have in place and demonstrates some of  Pheniq's flexibly.
+In this example our downstream pipeline expected reads for each cell, identified by the combination a row and a column tag, to be in a separate fastq file. Producing so many files makes processing verbose and inefficient, but is sometimes a real world constraint you have to live with to reuse existing code, and demonstrates some of Pheniq's flexibly. We estimate the prior for the row and column cellular barcodes in a conditional fashion. We will first estimate the prior for the column tag and split the reads matching each column to separate bam file. We then estimate the prior for the row tag independently for each column and further split reads matching each tag to a separate fastq file.
 
-# Phase one: sample classification
-In the first phase we will estimate the priors for the sample barcode and split the reads of each sample to a bam file containing the two remaining segments: the cellular barcode and the biological sequence.
+# Column classification
 
->```json
-"transform": { "token": [ "0::6", "2::" ] }
-```
->**declaring output read segments** Classifying the reads by the sample barcode. We retain the first segment containing the cell tag and the third segment containing the biological sequence.
-{: .example}
-
-To classify the reads by the 8 base pair sample barcode we declare the list of possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence.
->```json
-"multiplex": {
-  "transform": { "token": [ "1::8" ] }
-  "codec": {
-    "@GGACTCCT": { "barcode": [ "GGACTCCT" ], "LB": "COL01_PAG069_V2_E2", "SM": "COL01_PAG069" },
-    "@ACTCGCTA": { "barcode": [ "ACTCGCTA" ], "LB": "COL20_PAG123_V2_E2", "SM": "COL20_PAG123" },
-  }
-}
-```
->**declaring sample demultiplexing** The transform tells Pheniqs where to locate the sequence that should match the barcode.
-{: .example}
-
-To discard reads that failed the internal Illumina sequencer chastity filter we instruct Pheniqs to filter incoming **QC fail** reads
->```json
-"filter incoming qc fail": true
-```
-
-Since we expect **5%** of reads to be foreign DNA that should not classify to any of the barcodes, we specify the noise prior with the `"noise": 0.05` directive. To mark as **QC fail** read where the posterior probability of correctly decoding the barcode is bellow **0.95** we specify `"confidence threshold": 0.95`.
+In the first step you classify the cellular barcode in the i7 segment and split the reads for each column to a separate bam file containing the two remaining segments: the row cellular barcode and the biological sequence. Since the sequences identifying the columns are the same in each lane, you declare a decoder in a [CBJLFACXX_core.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_core.json) that you will reuse in all other configuration files. This decoder lists the possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence.
 
 >```json
 {
     "CN": "CGSB AD",
     "PL": "ILLUMINA",
     "PM": "HiSeq",
-    "base input url": "~/CBJLFACXX/raw",
+    "decoder": {
+        "@CBJLFACXX_column": {
+            "codec": {
+                "@AAGAGGCA": {
+                    "barcode": [
+                        "AAGAGGCA"
+                    ]
+                },
+                "@ACTCGCTA": {
+                    "barcode": [
+                        "ACTCGCTA"
+                    ]
+                }
+            },
+            "transform": {
+                "token": [
+                    "1::8"
+                ]
+            }
+        }
+    },
     "filter incoming qc fail": true,
-    "flowcell id": "CBJLFACXX",
+    "flowcell id": "CBJLFACXX"
+}
+```
+>**declaring column demultiplexing** The `@CBJLFACXX_column` transform tells Pheniqs where to locate the sequence that should match the column cellular barcode. To discard reads that failed the internal Illumina sequencer chastity filter you instruct Pheniqs to filter incoming **QC fail** reads with `"filter incoming qc fail": true`. The actual configuration has more sample barcodes but you only show two here for brevity.
+{: .example}
+
+To decode the column cellular barcode for the first lane you create a [configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column.json) that will retain the row cellular barcode and the biological sequence in the reverse read.
+
+>```json
+{
     "flowcell lane number": 1,
+    "import": [
+        "CBJLFACXX_core.json"
+    ],
     "input": [
-        "Lane1_S1_L001_R1_001.fastq.gz",
-        "Lane1_S1_L001_I1_001.fastq.gz",
-        "Lane1_S1_L001_R2_001.fastq.gz"
+        "CBJLFACXX_S1_L001_R1_001.fastq.gz",
+        "CBJLFACXX_S1_L001_I1_001.fastq.gz",
+        "CBJLFACXX_S1_L001_R2_001.fastq.gz"
     ],
     "multiplex": {
         "algorithm": "pamld",
-        "codec": {
-            "@COL01_PAG069_V2_E2": {
-                "LB": "COL01_PAG069_V2_E2",
-                "SM": "COL01_PAG069",
-                "barcode": [ "GGACTCCT" ]
-            },
-            "@COL02_PAG069_V2_E2": {
-                "LB": "COL02_PAG069_V2_E2",
-                "SM": "COL02_PAG069",
-                "barcode": [ "TAAGGCGA" ]
-            }
-        },
+        "base": "@CBJLFACXX_column",
         "confidence threshold": 0.95,
-        "noise": 0.05,
-        "transform": { "token": [ "1::8" ] }
+        "noise": 0.05
     },
-    "transform": { "token": [ "0::6", "2::" ] }
-}
-```
->**Phase one** Classifying the sample barcodes using the 3 fastq files produced by bcl2fastq. Here we keep the cellular tag in a separate segment for further processing in the next phase. The actual configuration has more sample barcodes but we only show two here for brevity. The [complete configuration](example/fluidigm/CBJLFACXX_l01_sample.json) is also available.
-{: .example}
-
-Before we proceed we validate the configuration.
-
->```shell
-pheniqs mux --config CBJLFACXX_l01_sample.json --validate
-```
-
-The [validation output](example/fluidigm/CBJLFACXX_l01_sample_validation.txt) is a readable description of all the explicit and implicit parameters after applying defaults. You can check how Pheniqs detects the input format, compression and layout as well as the output you can expect. In The *Output transform* section is a verbal description of how the output read segments will be assembled from the input. similarly *Transform* in the *Mutliplex decoding* section describes how the segment that will be matched against the barcodes is assembled. the You can also see how each of the read groups will be tagged and the prior probability PAMLD will assume for each barcode. You can see that Pheniqs computes the uniform prior.
-
-While not strictly necessary, You may examine the [compile configuration](example/fluidigm/CBJLFACXX_l01_sample_compiled.json), which is the actual configuration Pheniqs will execute with all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
-
->```shell
-pheniqs mux --config CBJLFACXX_l01_sample.json --compile
-```
-
-## Prior estimation
-
-Better estimation of the prior distribution of the samples will improve accuracy. Pheniqs provides a simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run. The `pheniqs-prior-api.py` script, distributed with Pheniqs, will either execute Pheniqs with a slightly modified configuration, optimized to refrains from writing the output reads and save time, and emit a modified configuration file with adjusted priors. You may alternatively provide the script a [report from a run you execute yourself]([compile configuration](example/fluidigm/CBJLFACXX_l01_sample_report.json). The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
-
->```shell
-pheniqs-prior-api.py --configuration CBJLFACXX_l01_sample.json \
---split-bam \
---prefix CBJLFACXX_l01
-```
-
-or if you already have a report from a preliminary run
-
->```shell
-pheniqs-prior-api.py --configuration CBJLFACXX_l01_sample.json \
---report CBJLFACXX_l01_sample_report.json \
---split-bam \
---prefix CBJLFACXX_l01
-```
-
-This will produce a [new configuration](example/fluidigm/CBJLFACXX_l01_sample_estimated.json) file with the adjusted priors. For connivence, the script allows you to generate file names in the barcode decelerations so that reads from each barcode are written to a separate file. The method for estimating the prior is [described in the manual](manual.html#prior-estimation).
-
-You can now proceed to demultiplex the sample barcode with the adjusted configuration and produce a separate bam file with reads from each of the samples.
-
->```shell
-pheniqs mux --config CBJLFACXX_l01_sample_estimated.json
-```
-
-# Phase two: cellular classification
-
-Our existing pipeline required to have reads from each cell in each sample in a separate fast files. Pheniqs 2.0 does not yet support splitting reads into separate files using cellular barcodes but this is only a minor inconvenience. Since the methodology for decoding the barcodes is essentially the same and since fastq files do not actually contain metadata we can simply use the generic `multiplex` directive to classify the reads by cellular barcodes, in the same fashion we did in the first step. In the first step we produced multiple bam files, one for each sample. In this second phase we will estimate priors and decode cellular barcodes on each of those bam files independently so the following should be applied to each of the bam files produced in the first phase.
-
-First we notice that this time we have 2 input segments. The first is the 6 base pair cellular barcode and the second is our DNA or RNA fragment.
-
->```json
-"transform": { "token": [ 1::" ] }
-```
->**declaring output read segments** Classifying the reads by the cellular barcode. We retain the second segment containing the biological sequence.
-{: .example}
-
-To classify the reads by the 6 base pair sample barcode we declare the list of possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence.
-
->```json
-"multiplex": {
-  "transform": { "token": [ "0::6" ] }
-  "codec": {
-    "@CACGTA": { "barcode": [ "CACGTA" ]},
-    "@CTCACA": { "barcode": [ "CTCACA" ]}
-  }
-}
-```
->**declaring cellular demultiplexing** The transform tells Pheniqs where to locate the sequence that should match the barcode.
-{: .example}
-
-Since the cellular barcodes are identical for all first phase bam files we intentionally refrain from declaring the input directive in the configuration file and will provide it on the command line so that we can reuse the same configuration file all, sample specific, bam files.
-
->```json
-{
-    "CN": "CGSB AD",
-    "PL": "ILLUMINA",
-    "PM": "HiSeq",
-    "base input url": "~/CBJLFACXX/sample",
-    "base output url": "~/CBJLFACXX/cellular",
-    "transform": { "token": [ "1::" ] },
-    "flowcell id": "CBJLFACXX",
-    "filter incoming qc fail": true,
-    "filter outgoing qc fail": true,
-    "multiplex": {
-        "algorithm": "pamld",
-        "confidence threshold": 0.95,
-        "noise": 0.05,
-        "transform": { "token": [ "0::6" ] },
-        "codec": {
-            "@CACGTA": { "barcode": [ "CACGTA" ]},
-            "@CTCACA": { "barcode": [ "CTCACA" ]}
+    "template": {
+        "transform": {
+            "token": [
+                "0::6",
+                "2::"
+            ]
         }
     }
 }
 ```
->**Phase two** Classifying the cellular barcodes. The actual configuration has more sample barcodes but we only show two here for brevity. The [complete configuration](example/fluidigm/CBJLFACXX_l01_cellular.json) is also available.
+>**Classifying reads by the column cellular barcode** You keep the cellular tag in a separate segment for further processing in the next phase.
 {: .example}
 
-An advantage of decoding cellular barcodes on each sample separately is that we can estimate the sample conditional priors.
+To split the reads by the column cellular barcode into separate bam files you can use the `pheniqs-io-api` to add the necessary directives to our configuration.
 
 >```shell
-pheniqs-prior-api.py --configuration CBJLFACXX_l01_cellular.json \
---input CBJLFACXX_l01_COL01_PAG069_V2_E2.bam \
---prefix CBJLFACXX_l01_COL01_PAG069_V2_E2 \
---split-fastq \
---sense-input
+pheniqs-io-api.py \
+--split-library \
+--format bam \
+--configuration CBJLFACXX_l01_column.json \
+> CBJLFACXX_l01_column_split.json
 ```
->**estimating cellular priors** We execute this for each of the bam files produced in the first phase. the `--input` command line parameter for `pheniqs-prior-api.py` will be forwarded to Pheniqs when estimating the priors and will also be present in the generated configuration with the adjusted priors. The `--split-fastq` parameter will declare an `output` directive in each of the barcodes so that the configuration produce the desired, split fastq, output.
-{: .example}
 
-If you already have a [report](example/fluidigm/CBJLFACXX_l01_COL01_PAG069_V2_E2_report.json) from a preliminary run.
-
->```shell
-pheniqs-prior-api.py --configuration CBJLFACXX_l01_cellular.json \
---report CBJLFACXX_l01_COL01_PAG069_V2_E2_report.json \
---input CBJLFACXX_l01_COL01_PAG069_V2_E2.bam CBJLFACXX_l01_COL01_PAG069_V2_E2.bam \
---prefix CBJLFACXX_l01_COL01_PAG069_V2_E2 \
---split-fastq
-```
->**estimating cellular priors with existing report** Since the `--input` command line parameter is forwarded to Pheniqs we specify the input twice to tell Pheniqs we expect two segments to be pulled from the file. Using the automatic input sensing can be simple but requires access to the actual input file.
-{: .example}
-
-This will produce an [adjusted configuration](example/fluidigm/CBJLFACXX_l01_COL01_PAG069_V2_E2_adjusted.json) with the estimated priors, specific to this particular sample.
-
+This will create the [CBJLFACXX_l01_column_split.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split.json) with additional `output` directives for each barcode.
 
 >```json
 {
-    "CN": "CGSB AD",
-    "PL": "ILLUMINA",
-    "PM": "HiSeq",
-    "base input url": "~/CBJLFACXX/sample",
-    "base output url": "~/CBJLFACXX/cellular",
-    "filter incoming qc fail": true,
-    "filter outgoing qc fail": true,
-    "flowcell id": "CBJLFACXX",
+    "flowcell lane number": 1,
+    "import": [
+        "CBJLFACXX_core.json"
+    ],
     "input": [
-        "CBJLFACXX_l01_COL01_PAG069_V2_E2.bam?format=bam",
-        "CBJLFACXX_l01_COL01_PAG069_V2_E2.bam?format=bam"
+        "CBJLFACXX_S1_L001_R1_001.fastq.gz",
+        "CBJLFACXX_S1_L001_I1_001.fastq.gz",
+        "CBJLFACXX_S1_L001_R2_001.fastq.gz"
     ],
     "multiplex": {
         "algorithm": "pamld",
+        "base": "@CBJLFACXX_column",
         "codec": {
-            "@ACACTG": {
-                "barcode": [
-                    "ACACTG"
-                ],
-                "concentration": 0.04284168923365803,
+            "@AAGAGGCA": {
                 "output": [
-                    "CBJLFACXX_l01_COL01_PAG069_V2_E2_ACACTG_s01.fastq.gz"
+                    "CBJLFACXX_AAGAGGCA.bam"
                 ]
             },
-            "@ACATGC": {
-                "barcode": [
-                    "ACATGC"
-                ],
-                "concentration": 0.031949147727610774,
+            "@ACTCGCTA": {
                 "output": [
-                    "CBJLFACXX_l01_COL01_PAG069_V2_E2_ACATGC_s01.fastq.gz"
+                    "CBJLFACXX_ACTCGCTA.bam"
                 ]
             }
         },
         "confidence threshold": 0.95,
-        "noise": 0.0990339866699282,
+        "noise": 0.05,
+        "undetermined": {
+            "output": [
+                "CBJLFACXX_undetermined.bam"
+            ]
+        }
+    },
+    "template": {
+        "transform": {
+            "token": [
+                "0::6",
+                "2::"
+            ]
+        }
+    }
+}
+```
+>**splitting by the column cellular barcode** with the `pheniqs-io-api` adds an `output` directive to each barcode in the codec. File names use the `LB` auxiliary tag, if available, or the barcode sequence otherwise.
+{: .example}
+
+You can validate the configuration with Pheniqs. The [validation output]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split_validation.txt) is a readable description of all the explicit and implicit parameters after applying defaults. You can check how Pheniqs detects the input format, compression and layout as well as the output you can expect. In The *Output transform* section you can find a verbal description of how the output read segments will be assembled from the input. similarly *Transform* in the *Mutliplex decoding* section describes how the segment that will be matched against the barcodes is assembled. You can also see how each of the read groups will be tagged and the prior probability PAMLD will assume for each barcode. Since no prior was provided, Pheniqs computes the uniform prior.
+
+>```shell
+pheniqs mux --config CBJLFACXX_l01_column.json --validate
+```
+
+We can also examine the [compile configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split_compiled.json), which is the actual configuration Pheniqs will execute with all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
+
+>```shell
+pheniqs mux --config CBJLFACXX_l01_column.json --compile
+```
+
+## Prior estimation
+
+Better estimation of the prior distribution improves accuracy. The `pheniqs-prior-api` can adjust your configuration to include priors estimated from a report emitted by a preliminary run. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether, which assumes a uniform prior. Since you are only interested in collecting statistics and not the output from this run, you create an optimized configuration that will execute much faster by only examining the relevant input and produce no sequence output. [CBJLFACXX_l01_column_estimate.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate.json) declares a `multiplex` directive that expands `CBJLFACXX_column` and adjusts the tokenization for the modified input. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output.
+
+>```json
+{
+    "flowcell lane number": 1,
+    "import": [
+        "CBJLFACXX_core.json"
+    ],
+    "input": [
+        "CBJLFACXX_S1_L001_I1_001.fastq.gz"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "@CBJLFACXX_column",
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "transform": {
+            "token": [
+                "0::8"
+            ]
+        }
+    },
+    "output": [
+        "/dev/null"
+    ],
+    "report url": "CBJLFACXX_l01_column_estimate_report.json",
+    "template": {
+        "transform": {
+            "token": [
+                "0::8"
+            ]
+        }
+    }
+}
+```
+>**Column Prior estimation configuration** refrains from reading the biological sequences and produces no output which significantly speeds things up.
+{: .example}
+
+Executing [CBJLFACXX_l01_column_estimate.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate.json) will yield the [CBJLFACXX_l01_column_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json) report. Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that you can use to estimate the priors.
+
+>```shell
+pheniqs mux --config CBJLFACXX_l01_column_estimate.json
+```
+
+Now that you have [CBJLFACXX_l01_column_split.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split.json), a decoding configuration, and [CBJLFACXX_l01_column_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json), a report with decoding statistics, you can use `pheniqs-prior-api` to generate a [prior adjusted configuration file]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_adjusted.json).
+
+>```shell
+pheniqs-prior-api.py \
+--report CBJLFACXX_l01_column_estimate_report.json \
+--configuration CBJLFACXX_l01_column_split.json \
+> CBJLFACXX_l01_column_adjusted.json
+```
+>**column barcode decoding with an estimated prior** [CBJLFACXX_l01_column_adjusted.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_adjusted.json) is similar to [CBJLFACXX_l01_column_split.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split.json) with the addition of the estimated priors.
+{: .example}
+
+This will produce [CBJLFACXX_l01_sample_estimated.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_sample_estimated.json), a new configuration file with the adjusted priors. The method for estimating the prior is [described in the manual](manual.html#prior-estimation) and makes some assumptions about the preparation protocol. You can also devise your own methods of estimating the priors and plug them into the configurtion.
+
+You can now proceed to demultiplex the column cellular barcode with the adjusted configuration and produce a separate bam file with reads from each column.
+
+>```shell
+pheniqs mux --config CBJLFACXX_l01_column_adjusted.json
+```
+
+# Row classification
+
+In the first step you produced multiple bam files, one for each column. In this second phase you will estimate priors and decode the row cellular barcode on each of those bam files independently. Notice that this time you only have 2 input segments. The first is the 6 base pair row cellular barcode and the second is the DNA or RNA fragment. Since you want to reuse configuration files in this step for every one of the bam files you produced in the first step you intentionally leave out the `input` and `output` directive and will specify them on the command line.
+
+First we write the [configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_row.json) file for decoding the row tag
+
+>```json
+{
+    "flowcell lane number": 1,
+    "import": [
+        "CBJLFACXX_core.json"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "@CBJLFACXX_row",
+        "confidence threshold": 0.95,
+        "noise": 0.05,
         "transform": {
             "token": [
                 "0::6"
             ]
         }
     },
-    "transform": {
-        "token": [
-            "1::"
-        ]
+    "template": {
+        "transform": {
+            "token": [
+                "1::"
+            ]
+        }
     }
 }
 ```
->**Classifying cellular barcodes with estimated priors** The actual configuration has more cellular barcodes but we only show two here for brevity. The [complete configuration](example/fluidigm/CBJLFACXX_l01_COL01_PAG069_V2_E2_adjusted.json) is also available.
+>**Classifying by the row cellular barcode** using the bam files produced in the first step.
 {: .example}
 
-Executing Pheniqs with this configuration will generate the desired individual fastq files, each contaning only reads for one cellular barcode in one sample.
+To estimate the row cellular barcode prior we have a similar reusable [configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_row_estimate.json)
+
+>```json
+{
+    "flowcell lane number": 1,
+    "import": [
+        "CBJLFACXX_core.json"
+    ],
+    "multiplex": {
+        "algorithm": "pamld",
+        "base": "@CBJLFACXX_row",
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "transform": {
+            "token": [
+                "0::6"
+            ]
+        }
+    },
+    "output": [
+        "/dev/null"
+    ],
+    "template": {
+        "transform": {
+            "token": [
+                "0::6"
+            ]
+        }
+    }
+}
+```
+>**Row prior estimation configuration**** will produce statistics about the bam files produced in the first step.
+{: .example}
+
+We can execute the prior estimation configuration on each column bam file using a simple shell loop
+
+>```shell
+for file in *.bam; do
+pheniqs mux --config CBJLFACXX_l01_row_estimate.json --input "$file" --report "${x/.bam/_estimate_report.json}";
+done;
+```
+>**estimating cellular priors** this shell loop will execute Pheniqs for each of the bam files produced in the first phase.
+{: .example}
+
+To create a splitting configuration for each column bam file we use the `pheniqs-io-api` again
+
+>```shell
+for file in *.bam; do
+pheniqs-io-api.py \
+--split-library \
+--format fastq \
+--configuration CBJLFACXX_l01_row.json \
+--input "$file" \
+--input "$file" \
+--prefix "${file/.bam/}" \
+> "${file/.bam/_split.json}"
+done;
+```
+>**generating a splitting configuration for each column by row** this will produce a splitting configuration for each of the bam files produced in the first phase.
+{: .example}
+
+adjusting the priors on each with `pheniqs-prior-api`
+
+>```shell
+for file in *.bam; do
+pheniqs-prior-api.py \
+--report "${x/.bam/_estimate_report.json}" \
+--configuration "${file/.bam/_split.json}" \
+> "${file/.bam/_adjusted.json}"
+```
+>**estimating row priors on each column** this will produce a splitting configuration for each of the bam files produced in the first phase.
+{: .example}
+
+and finally executing the adjusted configuration
+
+>```shell
+for file in *.bam; do
+pheniqs mux \
+--config "${file/.bam/_adjusted.json}" \
+--report "${x/.bam/_report.json}"
+```
+>**splitting each column by row** this will produce a splitting configuration for each of the bam files produced in the first phase.
+{: .example}

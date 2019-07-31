@@ -1,0 +1,4649 @@
+{
+    "decoder": {
+        "IDT for Illumina Nextera DNA UD Plate A workflow A": {
+            "codec": {
+                "UDP0001": {
+                    "barcode": [
+                        "GAACTGAGCG",
+                        "TCGTGGAGCG"
+                    ]
+                },
+                "UDP0002": {
+                    "barcode": [
+                        "AGGTCAGATA",
+                        "CTACAAGATA"
+                    ]
+                },
+                "UDP0003": {
+                    "barcode": [
+                        "CGTCTCATAT",
+                        "TATAGTAGCT"
+                    ]
+                },
+                "UDP0004": {
+                    "barcode": [
+                        "ATTCCATAAG",
+                        "TGCCTGGTGG"
+                    ]
+                },
+                "UDP0005": {
+                    "barcode": [
+                        "GACGAGATTA",
+                        "ACATTATCCT"
+                    ]
+                },
+                "UDP0006": {
+                    "barcode": [
+                        "AACATCGCGC",
+                        "GTCCACTTGT"
+                    ]
+                },
+                "UDP0007": {
+                    "barcode": [
+                        "CTAGTGCTCT",
+                        "TGGAACAGTA"
+                    ]
+                },
+                "UDP0008": {
+                    "barcode": [
+                        "GATCAAGGCA",
+                        "CCTTGTTAAT"
+                    ]
+                },
+                "UDP0009": {
+                    "barcode": [
+                        "GACTGAGTAG",
+                        "GTTGATAGTG"
+                    ]
+                },
+                "UDP0010": {
+                    "barcode": [
+                        "AGTCAGACGA",
+                        "ACCAGCGACA"
+                    ]
+                },
+                "UDP0011": {
+                    "barcode": [
+                        "CCGTATGTTC",
+                        "CATACACTGT"
+                    ]
+                },
+                "UDP0012": {
+                    "barcode": [
+                        "GAGTCATAGG",
+                        "GTGTGGCGCT"
+                    ]
+                },
+                "UDP0013": {
+                    "barcode": [
+                        "CTTGCCATTA",
+                        "ATCACGAAGG"
+                    ]
+                },
+                "UDP0014": {
+                    "barcode": [
+                        "GAAGCGGCAC",
+                        "CGGCTCTACT"
+                    ]
+                },
+                "UDP0015": {
+                    "barcode": [
+                        "TCCATTGCCG",
+                        "GAATGCACGA"
+                    ]
+                },
+                "UDP0016": {
+                    "barcode": [
+                        "CGGTTACGGC",
+                        "AAGACTATAG"
+                    ]
+                },
+                "UDP0017": {
+                    "barcode": [
+                        "GAGAATGGTT",
+                        "TCGGCAGCAA"
+                    ]
+                },
+                "UDP0018": {
+                    "barcode": [
+                        "AGAGGCAACC",
+                        "CTAATGATGG"
+                    ]
+                },
+                "UDP0019": {
+                    "barcode": [
+                        "CCATCATTAG",
+                        "GGTTGCCTCT"
+                    ]
+                },
+                "UDP0020": {
+                    "barcode": [
+                        "GATAGGCCGA",
+                        "CGCACATGGC"
+                    ]
+                },
+                "UDP0021": {
+                    "barcode": [
+                        "ATGGTTGACT",
+                        "GGCCTGTCCT"
+                    ]
+                },
+                "UDP0022": {
+                    "barcode": [
+                        "TATTGCGCTC",
+                        "CTGTGTTAGG"
+                    ]
+                },
+                "UDP0023": {
+                    "barcode": [
+                        "ACGCCTTGTT",
+                        "TAAGGAACGT"
+                    ]
+                },
+                "UDP0024": {
+                    "barcode": [
+                        "TTCTACATAC",
+                        "CTAACTGTAA"
+                    ]
+                },
+                "UDP0025": {
+                    "barcode": [
+                        "AACCATAGAA",
+                        "GGCGAGATGG"
+                    ]
+                },
+                "UDP0026": {
+                    "barcode": [
+                        "GGTTGCGAGG",
+                        "AATAGAGCAA"
+                    ]
+                },
+                "UDP0027": {
+                    "barcode": [
+                        "TAAGCATCCA",
+                        "TCAATCCATT"
+                    ]
+                },
+                "UDP0028": {
+                    "barcode": [
+                        "ACCACGACAT",
+                        "TCGTATGCGG"
+                    ]
+                },
+                "UDP0029": {
+                    "barcode": [
+                        "GCCGCACTCT",
+                        "TCCGACCTCG"
+                    ]
+                },
+                "UDP0030": {
+                    "barcode": [
+                        "CCACCAGGCA",
+                        "CTTATGGAAT"
+                    ]
+                },
+                "UDP0031": {
+                    "barcode": [
+                        "GTGACACGCA",
+                        "GCTTACGGAC"
+                    ]
+                },
+                "UDP0032": {
+                    "barcode": [
+                        "ACAGTGTATG",
+                        "GAACATACGG"
+                    ]
+                },
+                "UDP0033": {
+                    "barcode": [
+                        "TGATTATACG",
+                        "GTCGATTACA"
+                    ]
+                },
+                "UDP0034": {
+                    "barcode": [
+                        "CAGCCGCGTA",
+                        "ACTAGCCGTG"
+                    ]
+                },
+                "UDP0035": {
+                    "barcode": [
+                        "GGTAACTCGC",
+                        "AAGTTGGTGA"
+                    ]
+                },
+                "UDP0036": {
+                    "barcode": [
+                        "ACCGGCCGTA",
+                        "TGGCAATATT"
+                    ]
+                },
+                "UDP0037": {
+                    "barcode": [
+                        "TGTAATCGAC",
+                        "GATCACCGCG"
+                    ]
+                },
+                "UDP0038": {
+                    "barcode": [
+                        "GTGCAGACAG",
+                        "TACCATCCGT"
+                    ]
+                },
+                "UDP0039": {
+                    "barcode": [
+                        "CAATCGGCTG",
+                        "GCTGTAGGAA"
+                    ]
+                },
+                "UDP0040": {
+                    "barcode": [
+                        "TATGTAGTCA",
+                        "CGCACTAATG"
+                    ]
+                },
+                "UDP0041": {
+                    "barcode": [
+                        "ACTCGGCAAT",
+                        "GACAACTGAA"
+                    ]
+                },
+                "UDP0042": {
+                    "barcode": [
+                        "GTCTAATGGC",
+                        "AGTGGTCAGG"
+                    ]
+                },
+                "UDP0043": {
+                    "barcode": [
+                        "CCATCTCGCC",
+                        "TTCTATGGTT"
+                    ]
+                },
+                "UDP0044": {
+                    "barcode": [
+                        "CTGCGAGCCA",
+                        "AATCCGGCCA"
+                    ]
+                },
+                "UDP0045": {
+                    "barcode": [
+                        "CGTTATTCTA",
+                        "CCATAAGGTT"
+                    ]
+                },
+                "UDP0046": {
+                    "barcode": [
+                        "AGATCCATTA",
+                        "ATCTCTACCA"
+                    ]
+                },
+                "UDP0047": {
+                    "barcode": [
+                        "GTCCTGGATA",
+                        "CGGTGGCGAA"
+                    ]
+                },
+                "UDP0048": {
+                    "barcode": [
+                        "CAGTGGCACT",
+                        "TAACAATAGG"
+                    ]
+                },
+                "UDP0049": {
+                    "barcode": [
+                        "AGTGTTGCAC",
+                        "CTGGTACACG"
+                    ]
+                },
+                "UDP0050": {
+                    "barcode": [
+                        "GACACCATGT",
+                        "TCAACGTGTA"
+                    ]
+                },
+                "UDP0051": {
+                    "barcode": [
+                        "CCTGTCTGTC",
+                        "ACTGTTGTGA"
+                    ]
+                },
+                "UDP0052": {
+                    "barcode": [
+                        "TGATGTAAGA",
+                        "GTGCGTCCTT"
+                    ]
+                },
+                "UDP0053": {
+                    "barcode": [
+                        "GGAATTGTAA",
+                        "AGCACATCCT"
+                    ]
+                },
+                "UDP0054": {
+                    "barcode": [
+                        "GCATAAGCTT",
+                        "TTCCGTCGCA"
+                    ]
+                },
+                "UDP0055": {
+                    "barcode": [
+                        "CTGAGGAATA",
+                        "CTTAACCACT"
+                    ]
+                },
+                "UDP0056": {
+                    "barcode": [
+                        "AACGCACGAG",
+                        "GCCTCGGATA"
+                    ]
+                },
+                "UDP0057": {
+                    "barcode": [
+                        "TCTATCCTAA",
+                        "CGTCGACTGG"
+                    ]
+                },
+                "UDP0058": {
+                    "barcode": [
+                        "CTCGCTTCGG",
+                        "TACTAGTCAA"
+                    ]
+                },
+                "UDP0059": {
+                    "barcode": [
+                        "CTGTTGGTCC",
+                        "ATAGACCGTT"
+                    ]
+                },
+                "UDP0060": {
+                    "barcode": [
+                        "TTACCTGGAA",
+                        "ACAGTTCCAG"
+                    ]
+                },
+                "UDP0061": {
+                    "barcode": [
+                        "TGGCTAATCA",
+                        "AGGCATGTAG"
+                    ]
+                },
+                "UDP0062": {
+                    "barcode": [
+                        "AACACTGTTA",
+                        "GCAAGTCTCA"
+                    ]
+                },
+                "UDP0063": {
+                    "barcode": [
+                        "ATTGCGCGGT",
+                        "TTGGCTCCGC"
+                    ]
+                },
+                "UDP0064": {
+                    "barcode": [
+                        "TGGCGCGAAC",
+                        "AACTGATACT"
+                    ]
+                },
+                "UDP0065": {
+                    "barcode": [
+                        "TAATGTGTCT",
+                        "GTAAGGCATA"
+                    ]
+                },
+                "UDP0066": {
+                    "barcode": [
+                        "ATACCAACGC",
+                        "AATTGCTGCG"
+                    ]
+                },
+                "UDP0067": {
+                    "barcode": [
+                        "AGGATGTGCT",
+                        "TTACAATTCC"
+                    ]
+                },
+                "UDP0068": {
+                    "barcode": [
+                        "CACGGAACAA",
+                        "AACCTAGCAC"
+                    ]
+                },
+                "UDP0069": {
+                    "barcode": [
+                        "TGGAGTACTT",
+                        "TCTGTGTGGA"
+                    ]
+                },
+                "UDP0070": {
+                    "barcode": [
+                        "GTATTGACGT",
+                        "GGAATTCCAA"
+                    ]
+                },
+                "UDP0071": {
+                    "barcode": [
+                        "CTTGTACACC",
+                        "AAGCGCGCTT"
+                    ]
+                },
+                "UDP0072": {
+                    "barcode": [
+                        "ACACAGGTGG",
+                        "TGAGCGTTGT"
+                    ]
+                },
+                "UDP0073": {
+                    "barcode": [
+                        "CCTGCGGAAC",
+                        "ATCATAGGCT"
+                    ]
+                },
+                "UDP0074": {
+                    "barcode": [
+                        "TTCATAAGGT",
+                        "TGTTAGAAGG"
+                    ]
+                },
+                "UDP0075": {
+                    "barcode": [
+                        "CTCTGCAGCG",
+                        "GATGGATGTA"
+                    ]
+                },
+                "UDP0076": {
+                    "barcode": [
+                        "CTGACTCTAC",
+                        "ACGGCCGTCA"
+                    ]
+                },
+                "UDP0077": {
+                    "barcode": [
+                        "TCTGGTATCC",
+                        "CGTTGCTTAC"
+                    ]
+                },
+                "UDP0078": {
+                    "barcode": [
+                        "CATTAGTGCG",
+                        "TGACTACATA"
+                    ]
+                },
+                "UDP0079": {
+                    "barcode": [
+                        "ACGGTCAGGA",
+                        "CGGCCTCGTT"
+                    ]
+                },
+                "UDP0080": {
+                    "barcode": [
+                        "GGCAAGCCAG",
+                        "CAAGCATCCG"
+                    ]
+                },
+                "UDP0081": {
+                    "barcode": [
+                        "TGTCGCTGGT",
+                        "TCGTCTGACT"
+                    ]
+                },
+                "UDP0082": {
+                    "barcode": [
+                        "ACCGTTACAA",
+                        "CTCATAGCGA"
+                    ]
+                },
+                "UDP0083": {
+                    "barcode": [
+                        "TATGCCTTAC",
+                        "AGACACATTA"
+                    ]
+                },
+                "UDP0084": {
+                    "barcode": [
+                        "ACAAGTGGAC",
+                        "GCGCGATGTT"
+                    ]
+                },
+                "UDP0085": {
+                    "barcode": [
+                        "TGGTACCTAA",
+                        "CATGAGTACT"
+                    ]
+                },
+                "UDP0086": {
+                    "barcode": [
+                        "TTGGAATTCC",
+                        "ACGTCAATAC"
+                    ]
+                },
+                "UDP0087": {
+                    "barcode": [
+                        "CCTCTACATG",
+                        "GATACCTCCT"
+                    ]
+                },
+                "UDP0088": {
+                    "barcode": [
+                        "GGAGCGTGTA",
+                        "ATCCGTAAGT"
+                    ]
+                },
+                "UDP0089": {
+                    "barcode": [
+                        "GTCCGTAAGC",
+                        "CGTGTATCTT"
+                    ]
+                },
+                "UDP0090": {
+                    "barcode": [
+                        "ACTTCAAGCG",
+                        "GAACCATGAA"
+                    ]
+                },
+                "UDP0091": {
+                    "barcode": [
+                        "TCAGAAGGCG",
+                        "GGCCATCATA"
+                    ]
+                },
+                "UDP0092": {
+                    "barcode": [
+                        "GCGTTGGTAT",
+                        "ACATACTTCC"
+                    ]
+                },
+                "UDP0093": {
+                    "barcode": [
+                        "ACATATCCAG",
+                        "TATGTGCAAT"
+                    ]
+                },
+                "UDP0094": {
+                    "barcode": [
+                        "TCATAGATTG",
+                        "GATTAAGGTG"
+                    ]
+                },
+                "UDP0095": {
+                    "barcode": [
+                        "GTATTCCACC",
+                        "ATGTAGACAA"
+                    ]
+                },
+                "UDP0096": {
+                    "barcode": [
+                        "CCTCCGTCCA",
+                        "CACATCGGTG"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina Nextera DNA UD Plate A workflow B": {
+            "codec": {
+                "UDP0001": {
+                    "barcode": [
+                        "GAACTGAGCG",
+                        "CGCTCCACGA"
+                    ]
+                },
+                "UDP0002": {
+                    "barcode": [
+                        "AGGTCAGATA",
+                        "TATCTTGTAG"
+                    ]
+                },
+                "UDP0003": {
+                    "barcode": [
+                        "CGTCTCATAT",
+                        "AGCTACTATA"
+                    ]
+                },
+                "UDP0004": {
+                    "barcode": [
+                        "ATTCCATAAG",
+                        "CCACCAGGCA"
+                    ]
+                },
+                "UDP0005": {
+                    "barcode": [
+                        "GACGAGATTA",
+                        "AGGATAATGT"
+                    ]
+                },
+                "UDP0006": {
+                    "barcode": [
+                        "AACATCGCGC",
+                        "ACAAGTGGAC"
+                    ]
+                },
+                "UDP0007": {
+                    "barcode": [
+                        "CTAGTGCTCT",
+                        "TACTGTTCCA"
+                    ]
+                },
+                "UDP0008": {
+                    "barcode": [
+                        "GATCAAGGCA",
+                        "ATTAACAAGG"
+                    ]
+                },
+                "UDP0009": {
+                    "barcode": [
+                        "GACTGAGTAG",
+                        "CACTATCAAC"
+                    ]
+                },
+                "UDP0010": {
+                    "barcode": [
+                        "AGTCAGACGA",
+                        "TGTCGCTGGT"
+                    ]
+                },
+                "UDP0011": {
+                    "barcode": [
+                        "CCGTATGTTC",
+                        "ACAGTGTATG"
+                    ]
+                },
+                "UDP0012": {
+                    "barcode": [
+                        "GAGTCATAGG",
+                        "AGCGCCACAC"
+                    ]
+                },
+                "UDP0013": {
+                    "barcode": [
+                        "CTTGCCATTA",
+                        "CCTTCGTGAT"
+                    ]
+                },
+                "UDP0014": {
+                    "barcode": [
+                        "GAAGCGGCAC",
+                        "AGTAGAGCCG"
+                    ]
+                },
+                "UDP0015": {
+                    "barcode": [
+                        "TCCATTGCCG",
+                        "TCGTGCATTC"
+                    ]
+                },
+                "UDP0016": {
+                    "barcode": [
+                        "CGGTTACGGC",
+                        "CTATAGTCTT"
+                    ]
+                },
+                "UDP0017": {
+                    "barcode": [
+                        "GAGAATGGTT",
+                        "TTGCTGCCGA"
+                    ]
+                },
+                "UDP0018": {
+                    "barcode": [
+                        "AGAGGCAACC",
+                        "CCATCATTAG"
+                    ]
+                },
+                "UDP0019": {
+                    "barcode": [
+                        "CCATCATTAG",
+                        "AGAGGCAACC"
+                    ]
+                },
+                "UDP0020": {
+                    "barcode": [
+                        "GATAGGCCGA",
+                        "GCCATGTGCG"
+                    ]
+                },
+                "UDP0021": {
+                    "barcode": [
+                        "ATGGTTGACT",
+                        "AGGACAGGCC"
+                    ]
+                },
+                "UDP0022": {
+                    "barcode": [
+                        "TATTGCGCTC",
+                        "CCTAACACAG"
+                    ]
+                },
+                "UDP0023": {
+                    "barcode": [
+                        "ACGCCTTGTT",
+                        "ACGTTCCTTA"
+                    ]
+                },
+                "UDP0024": {
+                    "barcode": [
+                        "TTCTACATAC",
+                        "TTACAGTTAG"
+                    ]
+                },
+                "UDP0025": {
+                    "barcode": [
+                        "AACCATAGAA",
+                        "CCATCTCGCC"
+                    ]
+                },
+                "UDP0026": {
+                    "barcode": [
+                        "GGTTGCGAGG",
+                        "TTGCTCTATT"
+                    ]
+                },
+                "UDP0027": {
+                    "barcode": [
+                        "TAAGCATCCA",
+                        "AATGGATTGA"
+                    ]
+                },
+                "UDP0028": {
+                    "barcode": [
+                        "ACCACGACAT",
+                        "CCGCATACGA"
+                    ]
+                },
+                "UDP0029": {
+                    "barcode": [
+                        "GCCGCACTCT",
+                        "CGAGGTCGGA"
+                    ]
+                },
+                "UDP0030": {
+                    "barcode": [
+                        "CCACCAGGCA",
+                        "ATTCCATAAG"
+                    ]
+                },
+                "UDP0031": {
+                    "barcode": [
+                        "GTGACACGCA",
+                        "GTCCGTAAGC"
+                    ]
+                },
+                "UDP0032": {
+                    "barcode": [
+                        "ACAGTGTATG",
+                        "CCGTATGTTC"
+                    ]
+                },
+                "UDP0033": {
+                    "barcode": [
+                        "TGATTATACG",
+                        "TGTAATCGAC"
+                    ]
+                },
+                "UDP0034": {
+                    "barcode": [
+                        "CAGCCGCGTA",
+                        "CACGGCTAGT"
+                    ]
+                },
+                "UDP0035": {
+                    "barcode": [
+                        "GGTAACTCGC",
+                        "TCACCAACTT"
+                    ]
+                },
+                "UDP0036": {
+                    "barcode": [
+                        "ACCGGCCGTA",
+                        "AATATTGCCA"
+                    ]
+                },
+                "UDP0037": {
+                    "barcode": [
+                        "TGTAATCGAC",
+                        "CGCGGTGATC"
+                    ]
+                },
+                "UDP0038": {
+                    "barcode": [
+                        "GTGCAGACAG",
+                        "ACGGATGGTA"
+                    ]
+                },
+                "UDP0039": {
+                    "barcode": [
+                        "CAATCGGCTG",
+                        "TTCCTACAGC"
+                    ]
+                },
+                "UDP0040": {
+                    "barcode": [
+                        "TATGTAGTCA",
+                        "CATTAGTGCG"
+                    ]
+                },
+                "UDP0041": {
+                    "barcode": [
+                        "ACTCGGCAAT",
+                        "TTCAGTTGTC"
+                    ]
+                },
+                "UDP0042": {
+                    "barcode": [
+                        "GTCTAATGGC",
+                        "CCTGACCACT"
+                    ]
+                },
+                "UDP0043": {
+                    "barcode": [
+                        "CCATCTCGCC",
+                        "AACCATAGAA"
+                    ]
+                },
+                "UDP0044": {
+                    "barcode": [
+                        "CTGCGAGCCA",
+                        "TGGCCGGATT"
+                    ]
+                },
+                "UDP0045": {
+                    "barcode": [
+                        "CGTTATTCTA",
+                        "AACCTTATGG"
+                    ]
+                },
+                "UDP0046": {
+                    "barcode": [
+                        "AGATCCATTA",
+                        "TGGTAGAGAT"
+                    ]
+                },
+                "UDP0047": {
+                    "barcode": [
+                        "GTCCTGGATA",
+                        "TTCGCCACCG"
+                    ]
+                },
+                "UDP0048": {
+                    "barcode": [
+                        "CAGTGGCACT",
+                        "CCTATTGTTA"
+                    ]
+                },
+                "UDP0049": {
+                    "barcode": [
+                        "AGTGTTGCAC",
+                        "CGTGTACCAG"
+                    ]
+                },
+                "UDP0050": {
+                    "barcode": [
+                        "GACACCATGT",
+                        "TACACGTTGA"
+                    ]
+                },
+                "UDP0051": {
+                    "barcode": [
+                        "CCTGTCTGTC",
+                        "TCACAACAGT"
+                    ]
+                },
+                "UDP0052": {
+                    "barcode": [
+                        "TGATGTAAGA",
+                        "AAGGACGCAC"
+                    ]
+                },
+                "UDP0053": {
+                    "barcode": [
+                        "GGAATTGTAA",
+                        "AGGATGTGCT"
+                    ]
+                },
+                "UDP0054": {
+                    "barcode": [
+                        "GCATAAGCTT",
+                        "TGCGACGGAA"
+                    ]
+                },
+                "UDP0055": {
+                    "barcode": [
+                        "CTGAGGAATA",
+                        "AGTGGTTAAG"
+                    ]
+                },
+                "UDP0056": {
+                    "barcode": [
+                        "AACGCACGAG",
+                        "TATCCGAGGC"
+                    ]
+                },
+                "UDP0057": {
+                    "barcode": [
+                        "TCTATCCTAA",
+                        "CCAGTCGACG"
+                    ]
+                },
+                "UDP0058": {
+                    "barcode": [
+                        "CTCGCTTCGG",
+                        "TTGACTAGTA"
+                    ]
+                },
+                "UDP0059": {
+                    "barcode": [
+                        "CTGTTGGTCC",
+                        "AACGGTCTAT"
+                    ]
+                },
+                "UDP0060": {
+                    "barcode": [
+                        "TTACCTGGAA",
+                        "CTGGAACTGT"
+                    ]
+                },
+                "UDP0061": {
+                    "barcode": [
+                        "TGGCTAATCA",
+                        "CTACATGCCT"
+                    ]
+                },
+                "UDP0062": {
+                    "barcode": [
+                        "AACACTGTTA",
+                        "TGAGACTTGC"
+                    ]
+                },
+                "UDP0063": {
+                    "barcode": [
+                        "ATTGCGCGGT",
+                        "GCGGAGCCAA"
+                    ]
+                },
+                "UDP0064": {
+                    "barcode": [
+                        "TGGCGCGAAC",
+                        "AGTATCAGTT"
+                    ]
+                },
+                "UDP0065": {
+                    "barcode": [
+                        "TAATGTGTCT",
+                        "TATGCCTTAC"
+                    ]
+                },
+                "UDP0066": {
+                    "barcode": [
+                        "ATACCAACGC",
+                        "CGCAGCAATT"
+                    ]
+                },
+                "UDP0067": {
+                    "barcode": [
+                        "AGGATGTGCT",
+                        "GGAATTGTAA"
+                    ]
+                },
+                "UDP0068": {
+                    "barcode": [
+                        "CACGGAACAA",
+                        "GTGCTAGGTT"
+                    ]
+                },
+                "UDP0069": {
+                    "barcode": [
+                        "TGGAGTACTT",
+                        "TCCACACAGA"
+                    ]
+                },
+                "UDP0070": {
+                    "barcode": [
+                        "GTATTGACGT",
+                        "TTGGAATTCC"
+                    ]
+                },
+                "UDP0071": {
+                    "barcode": [
+                        "CTTGTACACC",
+                        "AAGCGCGCTT"
+                    ]
+                },
+                "UDP0072": {
+                    "barcode": [
+                        "ACACAGGTGG",
+                        "ACAACGCTCA"
+                    ]
+                },
+                "UDP0073": {
+                    "barcode": [
+                        "CCTGCGGAAC",
+                        "AGCCTATGAT"
+                    ]
+                },
+                "UDP0074": {
+                    "barcode": [
+                        "TTCATAAGGT",
+                        "CCTTCTAACA"
+                    ]
+                },
+                "UDP0075": {
+                    "barcode": [
+                        "CTCTGCAGCG",
+                        "TACATCCATC"
+                    ]
+                },
+                "UDP0076": {
+                    "barcode": [
+                        "CTGACTCTAC",
+                        "TGACGGCCGT"
+                    ]
+                },
+                "UDP0077": {
+                    "barcode": [
+                        "TCTGGTATCC",
+                        "GTAAGCAACG"
+                    ]
+                },
+                "UDP0078": {
+                    "barcode": [
+                        "CATTAGTGCG",
+                        "TATGTAGTCA"
+                    ]
+                },
+                "UDP0079": {
+                    "barcode": [
+                        "ACGGTCAGGA",
+                        "AACGAGGCCG"
+                    ]
+                },
+                "UDP0080": {
+                    "barcode": [
+                        "GGCAAGCCAG",
+                        "CGGATGCTTG"
+                    ]
+                },
+                "UDP0081": {
+                    "barcode": [
+                        "TGTCGCTGGT",
+                        "AGTCAGACGA"
+                    ]
+                },
+                "UDP0082": {
+                    "barcode": [
+                        "ACCGTTACAA",
+                        "TCGCTATGAG"
+                    ]
+                },
+                "UDP0083": {
+                    "barcode": [
+                        "TATGCCTTAC",
+                        "TAATGTGTCT"
+                    ]
+                },
+                "UDP0084": {
+                    "barcode": [
+                        "ACAAGTGGAC",
+                        "AACATCGCGC"
+                    ]
+                },
+                "UDP0085": {
+                    "barcode": [
+                        "TGGTACCTAA",
+                        "AGTACTCATG"
+                    ]
+                },
+                "UDP0086": {
+                    "barcode": [
+                        "TTGGAATTCC",
+                        "GTATTGACGT"
+                    ]
+                },
+                "UDP0087": {
+                    "barcode": [
+                        "CCTCTACATG",
+                        "AGGAGGTATC"
+                    ]
+                },
+                "UDP0088": {
+                    "barcode": [
+                        "GGAGCGTGTA",
+                        "ACTTACGGAT"
+                    ]
+                },
+                "UDP0089": {
+                    "barcode": [
+                        "GTCCGTAAGC",
+                        "AAGATACACG"
+                    ]
+                },
+                "UDP0090": {
+                    "barcode": [
+                        "ACTTCAAGCG",
+                        "TTCATGGTTC"
+                    ]
+                },
+                "UDP0091": {
+                    "barcode": [
+                        "TCAGAAGGCG",
+                        "TATGATGGCC"
+                    ]
+                },
+                "UDP0092": {
+                    "barcode": [
+                        "GCGTTGGTAT",
+                        "GGAAGTATGT"
+                    ]
+                },
+                "UDP0093": {
+                    "barcode": [
+                        "ACATATCCAG",
+                        "ATTGCACATA"
+                    ]
+                },
+                "UDP0094": {
+                    "barcode": [
+                        "TCATAGATTG",
+                        "CACCTTAATC"
+                    ]
+                },
+                "UDP0095": {
+                    "barcode": [
+                        "GTATTCCACC",
+                        "TTGTCTACAT"
+                    ]
+                },
+                "UDP0096": {
+                    "barcode": [
+                        "CCTCCGTCCA",
+                        "CACCGATGTG"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina Nextera DNA UD Plate B workflow A": {
+            "codec": {
+                "UDP0097": {
+                    "barcode": [
+                        "TGCCGGTCAG",
+                        "CCTGATACAA"
+                    ]
+                },
+                "UDP0098": {
+                    "barcode": [
+                        "CACTCAATTC",
+                        "TTAAGTTGTG"
+                    ]
+                },
+                "UDP0099": {
+                    "barcode": [
+                        "TCTCACACGC",
+                        "CGGACAGTGA"
+                    ]
+                },
+                "UDP0100": {
+                    "barcode": [
+                        "TCAATGGAGA",
+                        "GCACTACAAC"
+                    ]
+                },
+                "UDP0101": {
+                    "barcode": [
+                        "ATATGCATGT",
+                        "TGGTGCCTGG"
+                    ]
+                },
+                "UDP0102": {
+                    "barcode": [
+                        "ATGGCGCCTG",
+                        "TCCACGGCCT"
+                    ]
+                },
+                "UDP0103": {
+                    "barcode": [
+                        "TCCGTTATGT",
+                        "TTGTAGTGTA"
+                    ]
+                },
+                "UDP0104": {
+                    "barcode": [
+                        "GGTCTATTAA",
+                        "CCACGACACG"
+                    ]
+                },
+                "UDP0105": {
+                    "barcode": [
+                        "CAGCAATCGT",
+                        "TGTGATGTAT"
+                    ]
+                },
+                "UDP0106": {
+                    "barcode": [
+                        "TTCTGTAGAA",
+                        "GAGCGCAATA"
+                    ]
+                },
+                "UDP0107": {
+                    "barcode": [
+                        "GAACGCAATA",
+                        "ATCTTACTGT"
+                    ]
+                },
+                "UDP0108": {
+                    "barcode": [
+                        "AGTACTCATG",
+                        "ATGTCGTGGT"
+                    ]
+                },
+                "UDP0109": {
+                    "barcode": [
+                        "GGTAGAATTA",
+                        "GTAGCCATCA"
+                    ]
+                },
+                "UDP0110": {
+                    "barcode": [
+                        "TAATTAGCGT",
+                        "TGGTTAAGAA"
+                    ]
+                },
+                "UDP0111": {
+                    "barcode": [
+                        "ATTAACAAGG",
+                        "TGTTGTTCGT"
+                    ]
+                },
+                "UDP0112": {
+                    "barcode": [
+                        "TGATGGCTAC",
+                        "CCAACAACAT"
+                    ]
+                },
+                "UDP0113": {
+                    "barcode": [
+                        "GAATTACAAG",
+                        "ACCGGCTCAG"
+                    ]
+                },
+                "UDP0114": {
+                    "barcode": [
+                        "TAGAATTGGA",
+                        "GTTAATCTGA"
+                    ]
+                },
+                "UDP0115": {
+                    "barcode": [
+                        "AGGCAGCTCT",
+                        "CGGCTAACGT"
+                    ]
+                },
+                "UDP0116": {
+                    "barcode": [
+                        "ATCGGCGAAG",
+                        "TCCAAGAATT"
+                    ]
+                },
+                "UDP0117": {
+                    "barcode": [
+                        "CCGTGACCGA",
+                        "CCGAACGTTG"
+                    ]
+                },
+                "UDP0118": {
+                    "barcode": [
+                        "ATACTTGTTC",
+                        "TAACCGCCGA"
+                    ]
+                },
+                "UDP0119": {
+                    "barcode": [
+                        "TCCGCCAATT",
+                        "CTCCGTGCTG"
+                    ]
+                },
+                "UDP0120": {
+                    "barcode": [
+                        "AGGACAGGCC",
+                        "CATTCCAGCT"
+                    ]
+                },
+                "UDP0121": {
+                    "barcode": [
+                        "AGAGAACCTA",
+                        "GGTTATGCTA"
+                    ]
+                },
+                "UDP0122": {
+                    "barcode": [
+                        "GATATTGTGT",
+                        "ACCACACGGT"
+                    ]
+                },
+                "UDP0123": {
+                    "barcode": [
+                        "CGTACAGGAA",
+                        "TAGGTTCTCT"
+                    ]
+                },
+                "UDP0124": {
+                    "barcode": [
+                        "CTGCGTTACC",
+                        "TATGGCTCGA"
+                    ]
+                },
+                "UDP0125": {
+                    "barcode": [
+                        "AGGCCGTGGA",
+                        "CTCGTGCGTT"
+                    ]
+                },
+                "UDP0126": {
+                    "barcode": [
+                        "AGGAGGTATC",
+                        "CCAGTTGGCA"
+                    ]
+                },
+                "UDP0127": {
+                    "barcode": [
+                        "GCTGACGTTG",
+                        "TGTTCGCATT"
+                    ]
+                },
+                "UDP0128": {
+                    "barcode": [
+                        "CTAATAACCG",
+                        "AACCGCATCG"
+                    ]
+                },
+                "UDP0129": {
+                    "barcode": [
+                        "TCTAGGCGCG",
+                        "CGAAGGTTAA"
+                    ]
+                },
+                "UDP0130": {
+                    "barcode": [
+                        "ATAGCCAAGA",
+                        "AGTGCCACTG"
+                    ]
+                },
+                "UDP0131": {
+                    "barcode": [
+                        "TTCGGTGTGA",
+                        "GAACAAGTAT"
+                    ]
+                },
+                "UDP0132": {
+                    "barcode": [
+                        "ATGTAACGTT",
+                        "ACGATTGCTG"
+                    ]
+                },
+                "UDP0133": {
+                    "barcode": [
+                        "AACGAGGCCG",
+                        "ATACCTGGAT"
+                    ]
+                },
+                "UDP0134": {
+                    "barcode": [
+                        "TGGTGTTATG",
+                        "TCCAATTCTA"
+                    ]
+                },
+                "UDP0135": {
+                    "barcode": [
+                        "TGGCCTCTGT",
+                        "TGAGACAGCG"
+                    ]
+                },
+                "UDP0136": {
+                    "barcode": [
+                        "CCAGGCACCA",
+                        "ACGCTAATTA"
+                    ]
+                },
+                "UDP0137": {
+                    "barcode": [
+                        "CCGGTTCCTA",
+                        "TATATTCGAG"
+                    ]
+                },
+                "UDP0138": {
+                    "barcode": [
+                        "GGCCAATATT",
+                        "CGGTCCGATA"
+                    ]
+                },
+                "UDP0139": {
+                    "barcode": [
+                        "GAATACCTAT",
+                        "ACAATAGAGT"
+                    ]
+                },
+                "UDP0140": {
+                    "barcode": [
+                        "TACGTGAAGG",
+                        "CGGTTATTAG"
+                    ]
+                },
+                "UDP0141": {
+                    "barcode": [
+                        "CTTATTGGCC",
+                        "GATAACAAGT"
+                    ]
+                },
+                "UDP0142": {
+                    "barcode": [
+                        "ACAACTACTG",
+                        "AGTTATCACA"
+                    ]
+                },
+                "UDP0143": {
+                    "barcode": [
+                        "GTTGGATGAA",
+                        "TTCCAGGTAA"
+                    ]
+                },
+                "UDP0144": {
+                    "barcode": [
+                        "AATCCAATTG",
+                        "CATGTAGAGG"
+                    ]
+                },
+                "UDP0145": {
+                    "barcode": [
+                        "TATGATGGCC",
+                        "GATTGTCATA"
+                    ]
+                },
+                "UDP0146": {
+                    "barcode": [
+                        "CGCAGCAATT",
+                        "ATTCCGCTAT"
+                    ]
+                },
+                "UDP0147": {
+                    "barcode": [
+                        "ACGTTCCTTA",
+                        "GACCGCTGTG"
+                    ]
+                },
+                "UDP0148": {
+                    "barcode": [
+                        "CCGCGTATAG",
+                        "TAGGAACCGG"
+                    ]
+                },
+                "UDP0149": {
+                    "barcode": [
+                        "GATTCTGAAT",
+                        "AGCGGTGGAC"
+                    ]
+                },
+                "UDP0150": {
+                    "barcode": [
+                        "TAGAGAATAC",
+                        "TATAGATTCG"
+                    ]
+                },
+                "UDP0151": {
+                    "barcode": [
+                        "TTGTATCAGG",
+                        "ACAGAGGCCA"
+                    ]
+                },
+                "UDP0152": {
+                    "barcode": [
+                        "CACAGCGGTC",
+                        "ATTCCTATTG"
+                    ]
+                },
+                "UDP0153": {
+                    "barcode": [
+                        "CCACGCTGAA",
+                        "TATTCCTCAG"
+                    ]
+                },
+                "UDP0154": {
+                    "barcode": [
+                        "GTTCGGAGTT",
+                        "CGCCTTCTGA"
+                    ]
+                },
+                "UDP0155": {
+                    "barcode": [
+                        "ATAGCGGAAT",
+                        "GCGCAGAGTA"
+                    ]
+                },
+                "UDP0156": {
+                    "barcode": [
+                        "GCAATATTCA",
+                        "GGCGCCAATT"
+                    ]
+                },
+                "UDP0157": {
+                    "barcode": [
+                        "CTAGATTGCG",
+                        "AGATATGGCG"
+                    ]
+                },
+                "UDP0158": {
+                    "barcode": [
+                        "CGATGCGGTT",
+                        "CCTGCTTGGT"
+                    ]
+                },
+                "UDP0159": {
+                    "barcode": [
+                        "TCCGGACTAG",
+                        "GACGAACAAT"
+                    ]
+                },
+                "UDP0160": {
+                    "barcode": [
+                        "GTGACGGAGC",
+                        "TGGCGGTCCA"
+                    ]
+                },
+                "UDP0161": {
+                    "barcode": [
+                        "AATTCCATCT",
+                        "CTTCAGTTAC"
+                    ]
+                },
+                "UDP0162": {
+                    "barcode": [
+                        "TTAACGGTGT",
+                        "TCCTGACCGT"
+                    ]
+                },
+                "UDP0163": {
+                    "barcode": [
+                        "ACTTGTTATC",
+                        "CGCGCCTAGA"
+                    ]
+                },
+                "UDP0164": {
+                    "barcode": [
+                        "CGTGTACCAG",
+                        "AGGATAAGTT"
+                    ]
+                },
+                "UDP0165": {
+                    "barcode": [
+                        "TTAACCTTCG",
+                        "AGGCCAGACA"
+                    ]
+                },
+                "UDP0166": {
+                    "barcode": [
+                        "CATATGCGAT",
+                        "CCTTGAACGG"
+                    ]
+                },
+                "UDP0167": {
+                    "barcode": [
+                        "AGCCTATGAT",
+                        "CACCACCTAC"
+                    ]
+                },
+                "UDP0168": {
+                    "barcode": [
+                        "TATGACAATC",
+                        "TTGCTTGTAT"
+                    ]
+                },
+                "UDP0169": {
+                    "barcode": [
+                        "ATGTTGTTGG",
+                        "CAATCTATGA"
+                    ]
+                },
+                "UDP0170": {
+                    "barcode": [
+                        "GCACCACCAA",
+                        "TGGTACTGAT"
+                    ]
+                },
+                "UDP0171": {
+                    "barcode": [
+                        "AGGCGTTCGC",
+                        "TTCATCCAAC"
+                    ]
+                },
+                "UDP0172": {
+                    "barcode": [
+                        "CCTCCGGTTG",
+                        "CATAACACCA"
+                    ]
+                },
+                "UDP0173": {
+                    "barcode": [
+                        "GTCCACCGCT",
+                        "TCCTATTAGC"
+                    ]
+                },
+                "UDP0174": {
+                    "barcode": [
+                        "ATTGTTCGTC",
+                        "TCTCTAGATT"
+                    ]
+                },
+                "UDP0175": {
+                    "barcode": [
+                        "GGACCAGTGG",
+                        "CGCGAGCCTA"
+                    ]
+                },
+                "UDP0176": {
+                    "barcode": [
+                        "CCTTCTAACA",
+                        "GATAAGCTCT"
+                    ]
+                },
+                "UDP0177": {
+                    "barcode": [
+                        "CTCGAATATA",
+                        "GAGATGTCGA"
+                    ]
+                },
+                "UDP0178": {
+                    "barcode": [
+                        "GATCGTCGCG",
+                        "CTGGATATGT"
+                    ]
+                },
+                "UDP0179": {
+                    "barcode": [
+                        "TATCCGAGGC",
+                        "GGCCAATAAG"
+                    ]
+                },
+                "UDP0180": {
+                    "barcode": [
+                        "CGCTGTCTCA",
+                        "ATTACTCACC"
+                    ]
+                },
+                "UDP0181": {
+                    "barcode": [
+                        "AATGCGAACA",
+                        "AATTGGCGGA"
+                    ]
+                },
+                "UDP0182": {
+                    "barcode": [
+                        "AATTCTTGGA",
+                        "TTGTCAACTT"
+                    ]
+                },
+                "UDP0183": {
+                    "barcode": [
+                        "TTCCTACAGC",
+                        "GGCGAATTCT"
+                    ]
+                },
+                "UDP0184": {
+                    "barcode": [
+                        "ATCCAGGTAT",
+                        "CAACGTCAGC"
+                    ]
+                },
+                "UDP0185": {
+                    "barcode": [
+                        "ACGGTCCAAC",
+                        "TCTTACATCA"
+                    ]
+                },
+                "UDP0186": {
+                    "barcode": [
+                        "GTAACTTGGT",
+                        "CGCCATACCT"
+                    ]
+                },
+                "UDP0187": {
+                    "barcode": [
+                        "AGCGCCACAC",
+                        "CTAATGTCTT"
+                    ]
+                },
+                "UDP0188": {
+                    "barcode": [
+                        "TGCTACTGCC",
+                        "CAACCGGAGG"
+                    ]
+                },
+                "UDP0189": {
+                    "barcode": [
+                        "CAACACCGCA",
+                        "GGCAGTAGCA"
+                    ]
+                },
+                "UDP0190": {
+                    "barcode": [
+                        "CACCTTAATC",
+                        "TTAGGATAGA"
+                    ]
+                },
+                "UDP0191": {
+                    "barcode": [
+                        "TTGAATGTTG",
+                        "CGCAATCTAG"
+                    ]
+                },
+                "UDP0192": {
+                    "barcode": [
+                        "CCGGTAACAC",
+                        "GAGTTGTACT"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina Nextera DNA UD Plate B workflow B": {
+            "codec": {
+                "UDP0097": {
+                    "barcode": [
+                        "TGCCGGTCAG",
+                        "TTGTATCAGG"
+                    ]
+                },
+                "UDP0098": {
+                    "barcode": [
+                        "CACTCAATTC",
+                        "CACAACTTAA"
+                    ]
+                },
+                "UDP0099": {
+                    "barcode": [
+                        "TCTCACACGC",
+                        "TCACTGTCCG"
+                    ]
+                },
+                "UDP0100": {
+                    "barcode": [
+                        "TCAATGGAGA",
+                        "GTTGTAGTGC"
+                    ]
+                },
+                "UDP0101": {
+                    "barcode": [
+                        "ATATGCATGT",
+                        "CCAGGCACCA"
+                    ]
+                },
+                "UDP0102": {
+                    "barcode": [
+                        "ATGGCGCCTG",
+                        "AGGCCGTGGA"
+                    ]
+                },
+                "UDP0103": {
+                    "barcode": [
+                        "TCCGTTATGT",
+                        "TACACTACAA"
+                    ]
+                },
+                "UDP0104": {
+                    "barcode": [
+                        "GGTCTATTAA",
+                        "CGTGTCGTGG"
+                    ]
+                },
+                "UDP0105": {
+                    "barcode": [
+                        "CAGCAATCGT",
+                        "ATACATCACA"
+                    ]
+                },
+                "UDP0106": {
+                    "barcode": [
+                        "TTCTGTAGAA",
+                        "TATTGCGCTC"
+                    ]
+                },
+                "UDP0107": {
+                    "barcode": [
+                        "GAACGCAATA",
+                        "ACAGTAAGAT"
+                    ]
+                },
+                "UDP0108": {
+                    "barcode": [
+                        "AGTACTCATG",
+                        "ACCACGACAT"
+                    ]
+                },
+                "UDP0109": {
+                    "barcode": [
+                        "GGTAGAATTA",
+                        "TGATGGCTAC"
+                    ]
+                },
+                "UDP0110": {
+                    "barcode": [
+                        "TAATTAGCGT",
+                        "TTCTTAACCA"
+                    ]
+                },
+                "UDP0111": {
+                    "barcode": [
+                        "ATTAACAAGG",
+                        "ACGAACAACA"
+                    ]
+                },
+                "UDP0112": {
+                    "barcode": [
+                        "TGATGGCTAC",
+                        "ATGTTGTTGG"
+                    ]
+                },
+                "UDP0113": {
+                    "barcode": [
+                        "GAATTACAAG",
+                        "CTGAGCCGGT"
+                    ]
+                },
+                "UDP0114": {
+                    "barcode": [
+                        "TAGAATTGGA",
+                        "TCAGATTAAC"
+                    ]
+                },
+                "UDP0115": {
+                    "barcode": [
+                        "AGGCAGCTCT",
+                        "ACGTTAGCCG"
+                    ]
+                },
+                "UDP0116": {
+                    "barcode": [
+                        "ATCGGCGAAG",
+                        "AATTCTTGGA"
+                    ]
+                },
+                "UDP0117": {
+                    "barcode": [
+                        "CCGTGACCGA",
+                        "CAACGTTCGG"
+                    ]
+                },
+                "UDP0118": {
+                    "barcode": [
+                        "ATACTTGTTC",
+                        "TCGGCGGTTA"
+                    ]
+                },
+                "UDP0119": {
+                    "barcode": [
+                        "TCCGCCAATT",
+                        "CAGCACGGAG"
+                    ]
+                },
+                "UDP0120": {
+                    "barcode": [
+                        "AGGACAGGCC",
+                        "AGCTGGAATG"
+                    ]
+                },
+                "UDP0121": {
+                    "barcode": [
+                        "AGAGAACCTA",
+                        "TAGCATAACC"
+                    ]
+                },
+                "UDP0122": {
+                    "barcode": [
+                        "GATATTGTGT",
+                        "ACCGTGTGGT"
+                    ]
+                },
+                "UDP0123": {
+                    "barcode": [
+                        "CGTACAGGAA",
+                        "AGAGAACCTA"
+                    ]
+                },
+                "UDP0124": {
+                    "barcode": [
+                        "CTGCGTTACC",
+                        "TCGAGCCATA"
+                    ]
+                },
+                "UDP0125": {
+                    "barcode": [
+                        "AGGCCGTGGA",
+                        "AACGCACGAG"
+                    ]
+                },
+                "UDP0126": {
+                    "barcode": [
+                        "AGGAGGTATC",
+                        "TGCCAACTGG"
+                    ]
+                },
+                "UDP0127": {
+                    "barcode": [
+                        "GCTGACGTTG",
+                        "AATGCGAACA"
+                    ]
+                },
+                "UDP0128": {
+                    "barcode": [
+                        "CTAATAACCG",
+                        "CGATGCGGTT"
+                    ]
+                },
+                "UDP0129": {
+                    "barcode": [
+                        "TCTAGGCGCG",
+                        "TTAACCTTCG"
+                    ]
+                },
+                "UDP0130": {
+                    "barcode": [
+                        "ATAGCCAAGA",
+                        "CAGTGGCACT"
+                    ]
+                },
+                "UDP0131": {
+                    "barcode": [
+                        "TTCGGTGTGA",
+                        "ATACTTGTTC"
+                    ]
+                },
+                "UDP0132": {
+                    "barcode": [
+                        "ATGTAACGTT",
+                        "CAGCAATCGT"
+                    ]
+                },
+                "UDP0133": {
+                    "barcode": [
+                        "AACGAGGCCG",
+                        "ATCCAGGTAT"
+                    ]
+                },
+                "UDP0134": {
+                    "barcode": [
+                        "TGGTGTTATG",
+                        "TAGAATTGGA"
+                    ]
+                },
+                "UDP0135": {
+                    "barcode": [
+                        "TGGCCTCTGT",
+                        "CGCTGTCTCA"
+                    ]
+                },
+                "UDP0136": {
+                    "barcode": [
+                        "CCAGGCACCA",
+                        "TAATTAGCGT"
+                    ]
+                },
+                "UDP0137": {
+                    "barcode": [
+                        "CCGGTTCCTA",
+                        "CTCGAATATA"
+                    ]
+                },
+                "UDP0138": {
+                    "barcode": [
+                        "GGCCAATATT",
+                        "TATCGGACCG"
+                    ]
+                },
+                "UDP0139": {
+                    "barcode": [
+                        "GAATACCTAT",
+                        "ACTCTATTGT"
+                    ]
+                },
+                "UDP0140": {
+                    "barcode": [
+                        "TACGTGAAGG",
+                        "CTAATAACCG"
+                    ]
+                },
+                "UDP0141": {
+                    "barcode": [
+                        "CTTATTGGCC",
+                        "ACTTGTTATC"
+                    ]
+                },
+                "UDP0142": {
+                    "barcode": [
+                        "ACAACTACTG",
+                        "TGTGATAACT"
+                    ]
+                },
+                "UDP0143": {
+                    "barcode": [
+                        "GTTGGATGAA",
+                        "TTACCTGGAA"
+                    ]
+                },
+                "UDP0144": {
+                    "barcode": [
+                        "AATCCAATTG",
+                        "CCTCTACATG"
+                    ]
+                },
+                "UDP0145": {
+                    "barcode": [
+                        "TATGATGGCC",
+                        "TATGACAATC"
+                    ]
+                },
+                "UDP0146": {
+                    "barcode": [
+                        "CGCAGCAATT",
+                        "ATAGCGGAAT"
+                    ]
+                },
+                "UDP0147": {
+                    "barcode": [
+                        "ACGTTCCTTA",
+                        "CACAGCGGTC"
+                    ]
+                },
+                "UDP0148": {
+                    "barcode": [
+                        "CCGCGTATAG",
+                        "CCGGTTCCTA"
+                    ]
+                },
+                "UDP0149": {
+                    "barcode": [
+                        "GATTCTGAAT",
+                        "GTCCACCGCT"
+                    ]
+                },
+                "UDP0150": {
+                    "barcode": [
+                        "TAGAGAATAC",
+                        "CGAATCTATA"
+                    ]
+                },
+                "UDP0151": {
+                    "barcode": [
+                        "TTGTATCAGG",
+                        "TGGCCTCTGT"
+                    ]
+                },
+                "UDP0152": {
+                    "barcode": [
+                        "CACAGCGGTC",
+                        "CAATAGGAAT"
+                    ]
+                },
+                "UDP0153": {
+                    "barcode": [
+                        "CCACGCTGAA",
+                        "CTGAGGAATA"
+                    ]
+                },
+                "UDP0154": {
+                    "barcode": [
+                        "GTTCGGAGTT",
+                        "TCAGAAGGCG"
+                    ]
+                },
+                "UDP0155": {
+                    "barcode": [
+                        "ATAGCGGAAT",
+                        "TACTCTGCGC"
+                    ]
+                },
+                "UDP0156": {
+                    "barcode": [
+                        "GCAATATTCA",
+                        "AATTGGCGCC"
+                    ]
+                },
+                "UDP0157": {
+                    "barcode": [
+                        "CTAGATTGCG",
+                        "CGCCATATCT"
+                    ]
+                },
+                "UDP0158": {
+                    "barcode": [
+                        "CGATGCGGTT",
+                        "ACCAAGCAGG"
+                    ]
+                },
+                "UDP0159": {
+                    "barcode": [
+                        "TCCGGACTAG",
+                        "ATTGTTCGTC"
+                    ]
+                },
+                "UDP0160": {
+                    "barcode": [
+                        "GTGACGGAGC",
+                        "TGGACCGCCA"
+                    ]
+                },
+                "UDP0161": {
+                    "barcode": [
+                        "AATTCCATCT",
+                        "GTAACTGAAG"
+                    ]
+                },
+                "UDP0162": {
+                    "barcode": [
+                        "TTAACGGTGT",
+                        "ACGGTCAGGA"
+                    ]
+                },
+                "UDP0163": {
+                    "barcode": [
+                        "ACTTGTTATC",
+                        "TCTAGGCGCG"
+                    ]
+                },
+                "UDP0164": {
+                    "barcode": [
+                        "CGTGTACCAG",
+                        "AACTTATCCT"
+                    ]
+                },
+                "UDP0165": {
+                    "barcode": [
+                        "TTAACCTTCG",
+                        "TGTCTGGCCT"
+                    ]
+                },
+                "UDP0166": {
+                    "barcode": [
+                        "CATATGCGAT",
+                        "CCGTTCAAGG"
+                    ]
+                },
+                "UDP0167": {
+                    "barcode": [
+                        "AGCCTATGAT",
+                        "GTAGGTGGTG"
+                    ]
+                },
+                "UDP0168": {
+                    "barcode": [
+                        "TATGACAATC",
+                        "ATACAAGCAA"
+                    ]
+                },
+                "UDP0169": {
+                    "barcode": [
+                        "ATGTTGTTGG",
+                        "TCATAGATTG"
+                    ]
+                },
+                "UDP0170": {
+                    "barcode": [
+                        "GCACCACCAA",
+                        "ATCAGTACCA"
+                    ]
+                },
+                "UDP0171": {
+                    "barcode": [
+                        "AGGCGTTCGC",
+                        "GTTGGATGAA"
+                    ]
+                },
+                "UDP0172": {
+                    "barcode": [
+                        "CCTCCGGTTG",
+                        "TGGTGTTATG"
+                    ]
+                },
+                "UDP0173": {
+                    "barcode": [
+                        "GTCCACCGCT",
+                        "GCTAATAGGA"
+                    ]
+                },
+                "UDP0174": {
+                    "barcode": [
+                        "ATTGTTCGTC",
+                        "AATCTAGAGA"
+                    ]
+                },
+                "UDP0175": {
+                    "barcode": [
+                        "GGACCAGTGG",
+                        "TAGGCTCGCG"
+                    ]
+                },
+                "UDP0176": {
+                    "barcode": [
+                        "CCTTCTAACA",
+                        "AGAGCTTATC"
+                    ]
+                },
+                "UDP0177": {
+                    "barcode": [
+                        "CTCGAATATA",
+                        "TCGACATCTC"
+                    ]
+                },
+                "UDP0178": {
+                    "barcode": [
+                        "GATCGTCGCG",
+                        "ACATATCCAG"
+                    ]
+                },
+                "UDP0179": {
+                    "barcode": [
+                        "TATCCGAGGC",
+                        "CTTATTGGCC"
+                    ]
+                },
+                "UDP0180": {
+                    "barcode": [
+                        "CGCTGTCTCA",
+                        "GGTGAGTAAT"
+                    ]
+                },
+                "UDP0181": {
+                    "barcode": [
+                        "AATGCGAACA",
+                        "TCCGCCAATT"
+                    ]
+                },
+                "UDP0182": {
+                    "barcode": [
+                        "AATTCTTGGA",
+                        "AAGTTGACAA"
+                    ]
+                },
+                "UDP0183": {
+                    "barcode": [
+                        "TTCCTACAGC",
+                        "AGAATTCGCC"
+                    ]
+                },
+                "UDP0184": {
+                    "barcode": [
+                        "ATCCAGGTAT",
+                        "GCTGACGTTG"
+                    ]
+                },
+                "UDP0185": {
+                    "barcode": [
+                        "ACGGTCCAAC",
+                        "TGATGTAAGA"
+                    ]
+                },
+                "UDP0186": {
+                    "barcode": [
+                        "GTAACTTGGT",
+                        "AGGTATGGCG"
+                    ]
+                },
+                "UDP0187": {
+                    "barcode": [
+                        "AGCGCCACAC",
+                        "AAGACATTAG"
+                    ]
+                },
+                "UDP0188": {
+                    "barcode": [
+                        "TGCTACTGCC",
+                        "CCTCCGGTTG"
+                    ]
+                },
+                "UDP0189": {
+                    "barcode": [
+                        "CAACACCGCA",
+                        "TGCTACTGCC"
+                    ]
+                },
+                "UDP0190": {
+                    "barcode": [
+                        "CACCTTAATC",
+                        "TCTATCCTAA"
+                    ]
+                },
+                "UDP0191": {
+                    "barcode": [
+                        "TTGAATGTTG",
+                        "CTAGATTGCG"
+                    ]
+                },
+                "UDP0192": {
+                    "barcode": [
+                        "CCGGTAACAC",
+                        "AGTACAACTC"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina Nextera DNA UD Plate C workflow A": {
+            "codec": {
+                "UDP0193": {
+                    "barcode": [
+                        "TCTCATGATA",
+                        "AACACGTGGA"
+                    ]
+                },
+                "UDP0194": {
+                    "barcode": [
+                        "CGAGGCCAAG",
+                        "GTGTTACCGG"
+                    ]
+                },
+                "UDP0195": {
+                    "barcode": [
+                        "TTCACGAGAC",
+                        "AGATTGTTAC"
+                    ]
+                },
+                "UDP0196": {
+                    "barcode": [
+                        "GCGTGGATGG",
+                        "TTGACCAATG"
+                    ]
+                },
+                "UDP0197": {
+                    "barcode": [
+                        "TCCTGGTTGT",
+                        "CTGACCGGCA"
+                    ]
+                },
+                "UDP0198": {
+                    "barcode": [
+                        "TAATTCTGCT",
+                        "TCTCATCAAT"
+                    ]
+                },
+                "UDP0199": {
+                    "barcode": [
+                        "CGCACGACTG",
+                        "GGACCAACAG"
+                    ]
+                },
+                "UDP0200": {
+                    "barcode": [
+                        "GAGGTTAGAC",
+                        "AATGTATTGC"
+                    ]
+                },
+                "UDP0201": {
+                    "barcode": [
+                        "AACCGAGTTC",
+                        "GATCTCTGGA"
+                    ]
+                },
+                "UDP0202": {
+                    "barcode": [
+                        "TGTGATAACT",
+                        "CAGGCGCCAT"
+                    ]
+                },
+                "UDP0203": {
+                    "barcode": [
+                        "AGTATGCTAC",
+                        "TTAATAGACC"
+                    ]
+                },
+                "UDP0204": {
+                    "barcode": [
+                        "GTAACTGAAG",
+                        "GGAGTCGCGA"
+                    ]
+                },
+                "UDP0205": {
+                    "barcode": [
+                        "TCCTCGGACT",
+                        "AACGCCAGAG"
+                    ]
+                },
+                "UDP0206": {
+                    "barcode": [
+                        "CTGGAACTGT",
+                        "CGTAATTAAC"
+                    ]
+                },
+                "UDP0207": {
+                    "barcode": [
+                        "GAATATGCGG",
+                        "ACGAGACTGA"
+                    ]
+                },
+                "UDP0208": {
+                    "barcode": [
+                        "GATCGGATAA",
+                        "GTATCGGCCG"
+                    ]
+                },
+                "UDP0209": {
+                    "barcode": [
+                        "GCTAGACTAT",
+                        "AATACGACAT"
+                    ]
+                },
+                "UDP0210": {
+                    "barcode": [
+                        "AGCTACTATA",
+                        "GTTATATGGC"
+                    ]
+                },
+                "UDP0211": {
+                    "barcode": [
+                        "CCACCGGAGT",
+                        "GCCTGCCATG"
+                    ]
+                },
+                "UDP0212": {
+                    "barcode": [
+                        "CTTACCGCAC",
+                        "TAAGACCTAT"
+                    ]
+                },
+                "UDP0213": {
+                    "barcode": [
+                        "TTAGGATATC",
+                        "TATACCATGG"
+                    ]
+                },
+                "UDP0214": {
+                    "barcode": [
+                        "TTATACGCGA",
+                        "GCCGTCTGTT"
+                    ]
+                },
+                "UDP0215": {
+                    "barcode": [
+                        "CGCTTAGAAT",
+                        "CAGAGTGATA"
+                    ]
+                },
+                "UDP0216": {
+                    "barcode": [
+                        "CCGAAGCGCT",
+                        "TGCTAACTAT"
+                    ]
+                },
+                "UDP0217": {
+                    "barcode": [
+                        "CACTATCAAC",
+                        "TCAGTTAATG"
+                    ]
+                },
+                "UDP0218": {
+                    "barcode": [
+                        "TTGCTCTATT",
+                        "GTGACCTTGA"
+                    ]
+                },
+                "UDP0219": {
+                    "barcode": [
+                        "TTACAGTTAG",
+                        "ACATGCATAT"
+                    ]
+                },
+                "UDP0220": {
+                    "barcode": [
+                        "CTAAGTACGC",
+                        "AACATACCTA"
+                    ]
+                },
+                "UDP0221": {
+                    "barcode": [
+                        "TAGTTCGGTA",
+                        "CCATGTGTAG"
+                    ]
+                },
+                "UDP0222": {
+                    "barcode": [
+                        "CTATTACTAC",
+                        "GAGTCTCTCC"
+                    ]
+                },
+                "UDP0223": {
+                    "barcode": [
+                        "TAGCATAACC",
+                        "GCTATGCGCA"
+                    ]
+                },
+                "UDP0224": {
+                    "barcode": [
+                        "ACTCTATTGT",
+                        "ATCGCATATG"
+                    ]
+                },
+                "UDP0225": {
+                    "barcode": [
+                        "TAGTGGAAGC",
+                        "AGTACCTATA"
+                    ]
+                },
+                "UDP0226": {
+                    "barcode": [
+                        "CGCCATATCT",
+                        "GACCGGAGAT"
+                    ]
+                },
+                "UDP0227": {
+                    "barcode": [
+                        "GCTTCATATT",
+                        "CGTTCAGCCT"
+                    ]
+                },
+                "UDP0228": {
+                    "barcode": [
+                        "ACTAGCGCTA",
+                        "TTACTTCCTC"
+                    ]
+                },
+                "UDP0229": {
+                    "barcode": [
+                        "GCTCTTAACT",
+                        "CACGTCCACC"
+                    ]
+                },
+                "UDP0230": {
+                    "barcode": [
+                        "GTGGTATCTG",
+                        "GCTACTATCT"
+                    ]
+                },
+                "UDP0231": {
+                    "barcode": [
+                        "TGACGGCCGT",
+                        "AGTCAACCAT"
+                    ]
+                },
+                "UDP0232": {
+                    "barcode": [
+                        "CAGTAATTAC",
+                        "CGAGGCGGTA"
+                    ]
+                },
+                "UDP0233": {
+                    "barcode": [
+                        "TACAAGACTT",
+                        "CAGGTGTTCA"
+                    ]
+                },
+                "UDP0234": {
+                    "barcode": [
+                        "CTGTGGTGAC",
+                        "GACAGACAGG"
+                    ]
+                },
+                "UDP0235": {
+                    "barcode": [
+                        "CTCCACTAAT",
+                        "TGTACTTGTT"
+                    ]
+                },
+                "UDP0236": {
+                    "barcode": [
+                        "ATAGTTAGCA",
+                        "CTCTAAGTAG"
+                    ]
+                },
+                "UDP0237": {
+                    "barcode": [
+                        "ATAGGTCTTA",
+                        "GTCACCACAG"
+                    ]
+                },
+                "UDP0238": {
+                    "barcode": [
+                        "TTCTTAACCA",
+                        "TCTACATACC"
+                    ]
+                },
+                "UDP0239": {
+                    "barcode": [
+                        "AAGGAAGAGT",
+                        "CACGTTAGGC"
+                    ]
+                },
+                "UDP0240": {
+                    "barcode": [
+                        "GGAAGGAGAC",
+                        "TGGTGAGTCT"
+                    ]
+                },
+                "UDP0241": {
+                    "barcode": [
+                        "TGAACGCGGA",
+                        "CTTCGAAGGA"
+                    ]
+                },
+                "UDP0242": {
+                    "barcode": [
+                        "CCTGCAACCT",
+                        "GTAGAGTCAG"
+                    ]
+                },
+                "UDP0243": {
+                    "barcode": [
+                        "TTCATGGTTC",
+                        "GACATTGTCA"
+                    ]
+                },
+                "UDP0244": {
+                    "barcode": [
+                        "ATCCTCTCAA",
+                        "TCCGCAAGGC"
+                    ]
+                },
+                "UDP0245": {
+                    "barcode": [
+                        "CACTAGACCA",
+                        "ACTGCCTTAT"
+                    ]
+                },
+                "UDP0246": {
+                    "barcode": [
+                        "ATTATCCACT",
+                        "TACGCACGTA"
+                    ]
+                },
+                "UDP0247": {
+                    "barcode": [
+                        "ATGGCGTGCC",
+                        "CGCTTGAAGT"
+                    ]
+                },
+                "UDP0248": {
+                    "barcode": [
+                        "TCCAGAGATC",
+                        "CTGCACTTCA"
+                    ]
+                },
+                "UDP0249": {
+                    "barcode": [
+                        "ATGTCCAGCA",
+                        "CAGCGGACAA"
+                    ]
+                },
+                "UDP0250": {
+                    "barcode": [
+                        "CAACGTTCGG",
+                        "GGATCCGCAT"
+                    ]
+                },
+                "UDP0251": {
+                    "barcode": [
+                        "GCGTATTAAT",
+                        "TGCGGTGTTG"
+                    ]
+                },
+                "UDP0252": {
+                    "barcode": [
+                        "GTTGTGACTA",
+                        "ACATAACGGA"
+                    ]
+                },
+                "UDP0253": {
+                    "barcode": [
+                        "TCTCAATACC",
+                        "GACGTTCGCG"
+                    ]
+                },
+                "UDP0254": {
+                    "barcode": [
+                        "AAGCATCTTG",
+                        "CATTCAACAA"
+                    ]
+                },
+                "UDP0255": {
+                    "barcode": [
+                        "TCAGTCTCGT",
+                        "CACGGATTAT"
+                    ]
+                },
+                "UDP0256": {
+                    "barcode": [
+                        "TGCAAGATAA",
+                        "TTGAGGACGG"
+                    ]
+                },
+                "UDP0257": {
+                    "barcode": [
+                        "GTAACAATCT",
+                        "CTCTGTATAC"
+                    ]
+                },
+                "UDP0258": {
+                    "barcode": [
+                        "CAGCGGTAGA",
+                        "GCAACAGGTG"
+                    ]
+                },
+                "UDP0259": {
+                    "barcode": [
+                        "TCATACCGTT",
+                        "GGTAACGCAG"
+                    ]
+                },
+                "UDP0260": {
+                    "barcode": [
+                        "GGCGCCATTG",
+                        "ACCGCGCAAT"
+                    ]
+                },
+                "UDP0261": {
+                    "barcode": [
+                        "AGCGAATTAG",
+                        "AGCCGGAACA"
+                    ]
+                },
+                "UDP0262": {
+                    "barcode": [
+                        "TTAGACCATG",
+                        "TCCTAGGAAG"
+                    ]
+                },
+                "UDP0263": {
+                    "barcode": [
+                        "CACACAGTAT",
+                        "TTGAGCCTAA"
+                    ]
+                },
+                "UDP0264": {
+                    "barcode": [
+                        "TCTTGTCGGC",
+                        "CCACCTGTGT"
+                    ]
+                },
+                "UDP0265": {
+                    "barcode": [
+                        "TACCGCCTCG",
+                        "CCTCGCAACC"
+                    ]
+                },
+                "UDP0266": {
+                    "barcode": [
+                        "CTGTTATATC",
+                        "GTATAGCTGT"
+                    ]
+                },
+                "UDP0267": {
+                    "barcode": [
+                        "TAACCGGCGA",
+                        "GCTACATTAG"
+                    ]
+                },
+                "UDP0268": {
+                    "barcode": [
+                        "AAGAGAGTCT",
+                        "TACGAATCTT"
+                    ]
+                },
+                "UDP0269": {
+                    "barcode": [
+                        "GTAGGCGAGC",
+                        "TAGGAGCGCA"
+                    ]
+                },
+                "UDP0270": {
+                    "barcode": [
+                        "AACTTATCCT",
+                        "GTACTGGCGT"
+                    ]
+                },
+                "UDP0271": {
+                    "barcode": [
+                        "ATTATGTCTC",
+                        "AGTTAAGAGC"
+                    ]
+                },
+                "UDP0272": {
+                    "barcode": [
+                        "TATAACAGCT",
+                        "TCGCGTATAA"
+                    ]
+                },
+                "UDP0273": {
+                    "barcode": [
+                        "CCAATGATAC",
+                        "GAGTGTGCCG"
+                    ]
+                },
+                "UDP0274": {
+                    "barcode": [
+                        "GAGGCCTATT",
+                        "CTAGTCCGGA"
+                    ]
+                },
+                "UDP0275": {
+                    "barcode": [
+                        "AGCTAAGCGG",
+                        "ATTAATACGC"
+                    ]
+                },
+                "UDP0276": {
+                    "barcode": [
+                        "CTTCCTAGGA",
+                        "CCTAGAGTAT"
+                    ]
+                },
+                "UDP0277": {
+                    "barcode": [
+                        "CGATCTGTGA",
+                        "TAGGAAGACT"
+                    ]
+                },
+                "UDP0278": {
+                    "barcode": [
+                        "GTGGACAAGT",
+                        "CCGTGGCCTT"
+                    ]
+                },
+                "UDP0279": {
+                    "barcode": [
+                        "AACAAGTACA",
+                        "GGATATATCC"
+                    ]
+                },
+                "UDP0280": {
+                    "barcode": [
+                        "AGATTAAGTG",
+                        "CACCTCTTGG"
+                    ]
+                },
+                "UDP0281": {
+                    "barcode": [
+                        "TATCACTCTG",
+                        "AACGTTACAT"
+                    ]
+                },
+                "UDP0282": {
+                    "barcode": [
+                        "AGAATTCGCC",
+                        "CGGCAAGCTC"
+                    ]
+                },
+                "UDP0283": {
+                    "barcode": [
+                        "CCTGACCACT",
+                        "TCTTGGCTAT"
+                    ]
+                },
+                "UDP0284": {
+                    "barcode": [
+                        "AGCTGGAATG",
+                        "ACGGAATGCG"
+                    ]
+                },
+                "UDP0285": {
+                    "barcode": [
+                        "TGATAACGAG",
+                        "GTTCCGCAGG"
+                    ]
+                },
+                "UDP0286": {
+                    "barcode": [
+                        "CATAGTAAGG",
+                        "ACCAAGTTAC"
+                    ]
+                },
+                "UDP0287": {
+                    "barcode": [
+                        "ATTGGCTTCT",
+                        "TGGCTCGCAG"
+                    ]
+                },
+                "UDP0288": {
+                    "barcode": [
+                        "GTACCGATTA",
+                        "AACTAACGTT"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina Nextera DNA UD Plate C workflow B": {
+            "codec": {
+                "UDP0193": {
+                    "barcode": [
+                        "TCTCATGATA",
+                        "TCCACGTGTT"
+                    ]
+                },
+                "UDP0194": {
+                    "barcode": [
+                        "CGAGGCCAAG",
+                        "CCGGTAACAC"
+                    ]
+                },
+                "UDP0195": {
+                    "barcode": [
+                        "TTCACGAGAC",
+                        "GTAACAATCT"
+                    ]
+                },
+                "UDP0196": {
+                    "barcode": [
+                        "GCGTGGATGG",
+                        "CATTGGTCAA"
+                    ]
+                },
+                "UDP0197": {
+                    "barcode": [
+                        "TCCTGGTTGT",
+                        "TGCCGGTCAG"
+                    ]
+                },
+                "UDP0198": {
+                    "barcode": [
+                        "TAATTCTGCT",
+                        "ATTGATGAGA"
+                    ]
+                },
+                "UDP0199": {
+                    "barcode": [
+                        "CGCACGACTG",
+                        "CTGTTGGTCC"
+                    ]
+                },
+                "UDP0200": {
+                    "barcode": [
+                        "GAGGTTAGAC",
+                        "GCAATACATT"
+                    ]
+                },
+                "UDP0201": {
+                    "barcode": [
+                        "AACCGAGTTC",
+                        "TCCAGAGATC"
+                    ]
+                },
+                "UDP0202": {
+                    "barcode": [
+                        "TGTGATAACT",
+                        "ATGGCGCCTG"
+                    ]
+                },
+                "UDP0203": {
+                    "barcode": [
+                        "AGTATGCTAC",
+                        "GGTCTATTAA"
+                    ]
+                },
+                "UDP0204": {
+                    "barcode": [
+                        "GTAACTGAAG",
+                        "TCGCGACTCC"
+                    ]
+                },
+                "UDP0205": {
+                    "barcode": [
+                        "TCCTCGGACT",
+                        "CTCTGGCGTT"
+                    ]
+                },
+                "UDP0206": {
+                    "barcode": [
+                        "CTGGAACTGT",
+                        "GTTAATTACG"
+                    ]
+                },
+                "UDP0207": {
+                    "barcode": [
+                        "GAATATGCGG",
+                        "TCAGTCTCGT"
+                    ]
+                },
+                "UDP0208": {
+                    "barcode": [
+                        "GATCGGATAA",
+                        "CGGCCGATAC"
+                    ]
+                },
+                "UDP0209": {
+                    "barcode": [
+                        "GCTAGACTAT",
+                        "ATGTCGTATT"
+                    ]
+                },
+                "UDP0210": {
+                    "barcode": [
+                        "AGCTACTATA",
+                        "GCCATATAAC"
+                    ]
+                },
+                "UDP0211": {
+                    "barcode": [
+                        "CCACCGGAGT",
+                        "CATGGCAGGC"
+                    ]
+                },
+                "UDP0212": {
+                    "barcode": [
+                        "CTTACCGCAC",
+                        "ATAGGTCTTA"
+                    ]
+                },
+                "UDP0213": {
+                    "barcode": [
+                        "TTAGGATATC",
+                        "CCATGGTATA"
+                    ]
+                },
+                "UDP0214": {
+                    "barcode": [
+                        "TTATACGCGA",
+                        "AACAGACGGC"
+                    ]
+                },
+                "UDP0215": {
+                    "barcode": [
+                        "CGCTTAGAAT",
+                        "TATCACTCTG"
+                    ]
+                },
+                "UDP0216": {
+                    "barcode": [
+                        "CCGAAGCGCT",
+                        "ATAGTTAGCA"
+                    ]
+                },
+                "UDP0217": {
+                    "barcode": [
+                        "CACTATCAAC",
+                        "CATTAACTGA"
+                    ]
+                },
+                "UDP0218": {
+                    "barcode": [
+                        "TTGCTCTATT",
+                        "TCAAGGTCAC"
+                    ]
+                },
+                "UDP0219": {
+                    "barcode": [
+                        "TTACAGTTAG",
+                        "ATATGCATGT"
+                    ]
+                },
+                "UDP0220": {
+                    "barcode": [
+                        "CTAAGTACGC",
+                        "TAGGTATGTT"
+                    ]
+                },
+                "UDP0221": {
+                    "barcode": [
+                        "TAGTTCGGTA",
+                        "CTACACATGG"
+                    ]
+                },
+                "UDP0222": {
+                    "barcode": [
+                        "CTATTACTAC",
+                        "GGAGAGACTC"
+                    ]
+                },
+                "UDP0223": {
+                    "barcode": [
+                        "TAGCATAACC",
+                        "TGCGCATAGC"
+                    ]
+                },
+                "UDP0224": {
+                    "barcode": [
+                        "ACTCTATTGT",
+                        "CATATGCGAT"
+                    ]
+                },
+                "UDP0225": {
+                    "barcode": [
+                        "TAGTGGAAGC",
+                        "TATAGGTACT"
+                    ]
+                },
+                "UDP0226": {
+                    "barcode": [
+                        "CGCCATATCT",
+                        "ATCTCCGGTC"
+                    ]
+                },
+                "UDP0227": {
+                    "barcode": [
+                        "GCTTCATATT",
+                        "AGGCTGAACG"
+                    ]
+                },
+                "UDP0228": {
+                    "barcode": [
+                        "ACTAGCGCTA",
+                        "GAGGAAGTAA"
+                    ]
+                },
+                "UDP0229": {
+                    "barcode": [
+                        "GCTCTTAACT",
+                        "GGTGGACGTG"
+                    ]
+                },
+                "UDP0230": {
+                    "barcode": [
+                        "GTGGTATCTG",
+                        "AGATAGTAGC"
+                    ]
+                },
+                "UDP0231": {
+                    "barcode": [
+                        "TGACGGCCGT",
+                        "ATGGTTGACT"
+                    ]
+                },
+                "UDP0232": {
+                    "barcode": [
+                        "CAGTAATTAC",
+                        "TACCGCCTCG"
+                    ]
+                },
+                "UDP0233": {
+                    "barcode": [
+                        "TACAAGACTT",
+                        "TGAACACCTG"
+                    ]
+                },
+                "UDP0234": {
+                    "barcode": [
+                        "CTGTGGTGAC",
+                        "CCTGTCTGTC"
+                    ]
+                },
+                "UDP0235": {
+                    "barcode": [
+                        "CTCCACTAAT",
+                        "AACAAGTACA"
+                    ]
+                },
+                "UDP0236": {
+                    "barcode": [
+                        "ATAGTTAGCA",
+                        "CTACTTAGAG"
+                    ]
+                },
+                "UDP0237": {
+                    "barcode": [
+                        "ATAGGTCTTA",
+                        "CTGTGGTGAC"
+                    ]
+                },
+                "UDP0238": {
+                    "barcode": [
+                        "TTCTTAACCA",
+                        "GGTATGTAGA"
+                    ]
+                },
+                "UDP0239": {
+                    "barcode": [
+                        "AAGGAAGAGT",
+                        "GCCTAACGTG"
+                    ]
+                },
+                "UDP0240": {
+                    "barcode": [
+                        "GGAAGGAGAC",
+                        "AGACTCACCA"
+                    ]
+                },
+                "UDP0241": {
+                    "barcode": [
+                        "TGAACGCGGA",
+                        "TCCTTCGAAG"
+                    ]
+                },
+                "UDP0242": {
+                    "barcode": [
+                        "CCTGCAACCT",
+                        "CTGACTCTAC"
+                    ]
+                },
+                "UDP0243": {
+                    "barcode": [
+                        "TTCATGGTTC",
+                        "TGACAATGTC"
+                    ]
+                },
+                "UDP0244": {
+                    "barcode": [
+                        "ATCCTCTCAA",
+                        "GCCTTGCGGA"
+                    ]
+                },
+                "UDP0245": {
+                    "barcode": [
+                        "CACTAGACCA",
+                        "ATAAGGCAGT"
+                    ]
+                },
+                "UDP0246": {
+                    "barcode": [
+                        "ATTATCCACT",
+                        "TACGTGCGTA"
+                    ]
+                },
+                "UDP0247": {
+                    "barcode": [
+                        "ATGGCGTGCC",
+                        "ACTTCAAGCG"
+                    ]
+                },
+                "UDP0248": {
+                    "barcode": [
+                        "TCCAGAGATC",
+                        "TGAAGTGCAG"
+                    ]
+                },
+                "UDP0249": {
+                    "barcode": [
+                        "ATGTCCAGCA",
+                        "TTGTCCGCTG"
+                    ]
+                },
+                "UDP0250": {
+                    "barcode": [
+                        "CAACGTTCGG",
+                        "ATGCGGATCC"
+                    ]
+                },
+                "UDP0251": {
+                    "barcode": [
+                        "GCGTATTAAT",
+                        "CAACACCGCA"
+                    ]
+                },
+                "UDP0252": {
+                    "barcode": [
+                        "GTTGTGACTA",
+                        "TCCGTTATGT"
+                    ]
+                },
+                "UDP0253": {
+                    "barcode": [
+                        "TCTCAATACC",
+                        "CGCGAACGTC"
+                    ]
+                },
+                "UDP0254": {
+                    "barcode": [
+                        "AAGCATCTTG",
+                        "TTGTTGAATG"
+                    ]
+                },
+                "UDP0255": {
+                    "barcode": [
+                        "TCAGTCTCGT",
+                        "ATAATCCGTG"
+                    ]
+                },
+                "UDP0256": {
+                    "barcode": [
+                        "TGCAAGATAA",
+                        "CCGTCCTCAA"
+                    ]
+                },
+                "UDP0257": {
+                    "barcode": [
+                        "GTAACAATCT",
+                        "GTATACAGAG"
+                    ]
+                },
+                "UDP0258": {
+                    "barcode": [
+                        "CAGCGGTAGA",
+                        "CACCTGTTGC"
+                    ]
+                },
+                "UDP0259": {
+                    "barcode": [
+                        "TCATACCGTT",
+                        "CTGCGTTACC"
+                    ]
+                },
+                "UDP0260": {
+                    "barcode": [
+                        "GGCGCCATTG",
+                        "ATTGCGCGGT"
+                    ]
+                },
+                "UDP0261": {
+                    "barcode": [
+                        "AGCGAATTAG",
+                        "TGTTCCGGCT"
+                    ]
+                },
+                "UDP0262": {
+                    "barcode": [
+                        "TTAGACCATG",
+                        "CTTCCTAGGA"
+                    ]
+                },
+                "UDP0263": {
+                    "barcode": [
+                        "CACACAGTAT",
+                        "TTAGGCTCAA"
+                    ]
+                },
+                "UDP0264": {
+                    "barcode": [
+                        "TCTTGTCGGC",
+                        "ACACAGGTGG"
+                    ]
+                },
+                "UDP0265": {
+                    "barcode": [
+                        "TACCGCCTCG",
+                        "GGTTGCGAGG"
+                    ]
+                },
+                "UDP0266": {
+                    "barcode": [
+                        "CTGTTATATC",
+                        "ACAGCTATAC"
+                    ]
+                },
+                "UDP0267": {
+                    "barcode": [
+                        "TAACCGGCGA",
+                        "CTAATGTAGC"
+                    ]
+                },
+                "UDP0268": {
+                    "barcode": [
+                        "AAGAGAGTCT",
+                        "AAGATTCGTA"
+                    ]
+                },
+                "UDP0269": {
+                    "barcode": [
+                        "GTAGGCGAGC",
+                        "TGCGCTCCTA"
+                    ]
+                },
+                "UDP0270": {
+                    "barcode": [
+                        "AACTTATCCT",
+                        "ACGCCAGTAC"
+                    ]
+                },
+                "UDP0271": {
+                    "barcode": [
+                        "ATTATGTCTC",
+                        "GCTCTTAACT"
+                    ]
+                },
+                "UDP0272": {
+                    "barcode": [
+                        "TATAACAGCT",
+                        "TTATACGCGA"
+                    ]
+                },
+                "UDP0273": {
+                    "barcode": [
+                        "CCAATGATAC",
+                        "CGGCACACTC"
+                    ]
+                },
+                "UDP0274": {
+                    "barcode": [
+                        "GAGGCCTATT",
+                        "TCCGGACTAG"
+                    ]
+                },
+                "UDP0275": {
+                    "barcode": [
+                        "AGCTAAGCGG",
+                        "GCGTATTAAT"
+                    ]
+                },
+                "UDP0276": {
+                    "barcode": [
+                        "CTTCCTAGGA",
+                        "ATACTCTAGG"
+                    ]
+                },
+                "UDP0277": {
+                    "barcode": [
+                        "CGATCTGTGA",
+                        "AGTCTTCCTA"
+                    ]
+                },
+                "UDP0278": {
+                    "barcode": [
+                        "GTGGACAAGT",
+                        "AAGGCCACGG"
+                    ]
+                },
+                "UDP0279": {
+                    "barcode": [
+                        "AACAAGTACA",
+                        "GGATATATCC"
+                    ]
+                },
+                "UDP0280": {
+                    "barcode": [
+                        "AGATTAAGTG",
+                        "CCAAGAGGTG"
+                    ]
+                },
+                "UDP0281": {
+                    "barcode": [
+                        "TATCACTCTG",
+                        "ATGTAACGTT"
+                    ]
+                },
+                "UDP0282": {
+                    "barcode": [
+                        "AGAATTCGCC",
+                        "GAGCTTGCCG"
+                    ]
+                },
+                "UDP0283": {
+                    "barcode": [
+                        "CCTGACCACT",
+                        "ATAGCCAAGA"
+                    ]
+                },
+                "UDP0284": {
+                    "barcode": [
+                        "AGCTGGAATG",
+                        "CGCATTCCGT"
+                    ]
+                },
+                "UDP0285": {
+                    "barcode": [
+                        "TGATAACGAG",
+                        "CCTGCGGAAC"
+                    ]
+                },
+                "UDP0286": {
+                    "barcode": [
+                        "CATAGTAAGG",
+                        "GTAACTTGGT"
+                    ]
+                },
+                "UDP0287": {
+                    "barcode": [
+                        "ATTGGCTTCT",
+                        "CTGCGAGCCA"
+                    ]
+                },
+                "UDP0288": {
+                    "barcode": [
+                        "GTACCGATTA",
+                        "AACGTTAGTT"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina Nextera DNA UD Plate D workflow A": {
+            "codec": {
+                "UDP0289": {
+                    "barcode": [
+                        "GAACAATTCC",
+                        "TAGAGTTGGA"
+                    ]
+                },
+                "UDP0290": {
+                    "barcode": [
+                        "TGTGGTCCGG",
+                        "AGAGCACTAG"
+                    ]
+                },
+                "UDP0291": {
+                    "barcode": [
+                        "CTTCTAAGTC",
+                        "ACTCTACAGG"
+                    ]
+                },
+                "UDP0292": {
+                    "barcode": [
+                        "AATATTGCCA",
+                        "CGGTGACACC"
+                    ]
+                },
+                "UDP0293": {
+                    "barcode": [
+                        "TCGTGCATTC",
+                        "GCGTTGGTAT"
+                    ]
+                },
+                "UDP0294": {
+                    "barcode": [
+                        "AAGATACACG",
+                        "TGTGCTAACA"
+                    ]
+                },
+                "UDP0295": {
+                    "barcode": [
+                        "TGCAATGAAT",
+                        "CCAGAAGTAA"
+                    ]
+                },
+                "UDP0296": {
+                    "barcode": [
+                        "CTATGAAGGA",
+                        "CTTATACCTG"
+                    ]
+                },
+                "UDP0297": {
+                    "barcode": [
+                        "GAAGACTAGA",
+                        "ACTAGAACTT"
+                    ]
+                },
+                "UDP0298": {
+                    "barcode": [
+                        "AGGAGTCGAG",
+                        "TTAGGCTTAC"
+                    ]
+                },
+                "UDP0299": {
+                    "barcode": [
+                        "TTCACTCACT",
+                        "TATCATGAGA"
+                    ]
+                },
+                "UDP0300": {
+                    "barcode": [
+                        "GGTCCGCTTC",
+                        "CTCACACAAG"
+                    ]
+                },
+                "UDP0301": {
+                    "barcode": [
+                        "CAACGAGAGC",
+                        "GAATTGAGTG"
+                    ]
+                },
+                "UDP0302": {
+                    "barcode": [
+                        "ATTGAGGTCC",
+                        "CGGATTATAT"
+                    ]
+                },
+                "UDP0303": {
+                    "barcode": [
+                        "GGAGAGACTC",
+                        "TTGAAGCAGA"
+                    ]
+                },
+                "UDP0304": {
+                    "barcode": [
+                        "CCGCTCCGTT",
+                        "TACGGCGAAG"
+                    ]
+                },
+                "UDP0305": {
+                    "barcode": [
+                        "ATACATCACA",
+                        "TCTCCATTGA"
+                    ]
+                },
+                "UDP0306": {
+                    "barcode": [
+                        "TAGGTATGTT",
+                        "CGAGACCAAG"
+                    ]
+                },
+                "UDP0307": {
+                    "barcode": [
+                        "CACCTAGCAC",
+                        "TGCTGGACAT"
+                    ]
+                },
+                "UDP0308": {
+                    "barcode": [
+                        "TTCAAGTATG",
+                        "GATGGTATCG"
+                    ]
+                },
+                "UDP0309": {
+                    "barcode": [
+                        "TTAAGACAAG",
+                        "GGCTTAATTG"
+                    ]
+                },
+                "UDP0310": {
+                    "barcode": [
+                        "CACCTCTCTT",
+                        "CTCGACTCCT"
+                    ]
+                },
+                "UDP0311": {
+                    "barcode": [
+                        "TTCTCGTGCA",
+                        "ATACACAGAG"
+                    ]
+                },
+                "UDP0312": {
+                    "barcode": [
+                        "GCTAGGAAGT",
+                        "TCTCGGACGA"
+                    ]
+                },
+                "UDP0313": {
+                    "barcode": [
+                        "TTAATAGCAC",
+                        "ACCACGTCTG"
+                    ]
+                },
+                "UDP0314": {
+                    "barcode": [
+                        "CATTCACGCT",
+                        "GTTGTACTCA"
+                    ]
+                },
+                "UDP0315": {
+                    "barcode": [
+                        "GGCACTAAGG",
+                        "TCAGGTCAAC"
+                    ]
+                },
+                "UDP0316": {
+                    "barcode": [
+                        "ATTCGGTACA",
+                        "AGTCCGAGGA"
+                    ]
+                },
+                "UDP0317": {
+                    "barcode": [
+                        "ACTAATCTCC",
+                        "CACTTAATCT"
+                    ]
+                },
+                "UDP0318": {
+                    "barcode": [
+                        "TGTGTTAGTA",
+                        "TACTCTGTTA"
+                    ]
+                },
+                "UDP0319": {
+                    "barcode": [
+                        "CAACGACCTA",
+                        "GCGACTCGAT"
+                    ]
+                },
+                "UDP0320": {
+                    "barcode": [
+                        "CGGTCGGCAT",
+                        "CTAGGCAAGG"
+                    ]
+                },
+                "UDP0321": {
+                    "barcode": [
+                        "TCGACGCTAG",
+                        "CCTCTTCGAA"
+                    ]
+                },
+                "UDP0322": {
+                    "barcode": [
+                        "CTCGTAGGCA",
+                        "TCATCCTCTT"
+                    ]
+                },
+                "UDP0323": {
+                    "barcode": [
+                        "AAGTTCTAGT",
+                        "GGTAAGATAA"
+                    ]
+                },
+                "UDP0324": {
+                    "barcode": [
+                        "CCAAGAGGTG",
+                        "AACGAGCCAG"
+                    ]
+                },
+                "UDP0325": {
+                    "barcode": [
+                        "ATATCTGCTT",
+                        "TAGACAATCT"
+                    ]
+                },
+                "UDP0326": {
+                    "barcode": [
+                        "TGGATCTGGC",
+                        "CAATGCTGAA"
+                    ]
+                },
+                "UDP0327": {
+                    "barcode": [
+                        "TTGAATCCAA",
+                        "GTCACGGTGT"
+                    ]
+                },
+                "UDP0328": {
+                    "barcode": [
+                        "CACGGCTAGT",
+                        "GGTGTACAAG"
+                    ]
+                },
+                "UDP0329": {
+                    "barcode": [
+                        "GAGCTTGCCG",
+                        "AGGTTGCAGG"
+                    ]
+                },
+                "UDP0330": {
+                    "barcode": [
+                        "AGCTAGCTTC",
+                        "TAATACGGAG"
+                    ]
+                },
+                "UDP0331": {
+                    "barcode": [
+                        "CAATCCTTGT",
+                        "CGAAGACGCA"
+                    ]
+                },
+                "UDP0332": {
+                    "barcode": [
+                        "CACCTGTTGC",
+                        "ATTGACACAT"
+                    ]
+                },
+                "UDP0333": {
+                    "barcode": [
+                        "CGTCACCTTG",
+                        "CAGCCGATTG"
+                    ]
+                },
+                "UDP0334": {
+                    "barcode": [
+                        "AATGACTGGT",
+                        "TCTCACGCGT"
+                    ]
+                },
+                "UDP0335": {
+                    "barcode": [
+                        "ATGATTCCGG",
+                        "CTCTGACGTG"
+                    ]
+                },
+                "UDP0336": {
+                    "barcode": [
+                        "TTAGGCTCAA",
+                        "TCGAATGGAA"
+                    ]
+                },
+                "UDP0337": {
+                    "barcode": [
+                        "TGTAAGGTGG",
+                        "AAGGCCTTGG"
+                    ]
+                },
+                "UDP0338": {
+                    "barcode": [
+                        "CAACTGCAAC",
+                        "TGAACGCAAC"
+                    ]
+                },
+                "UDP0339": {
+                    "barcode": [
+                        "ACATGAGTGA",
+                        "CCGCTTAGCT"
+                    ]
+                },
+                "UDP0340": {
+                    "barcode": [
+                        "GCAACCAGTC",
+                        "CACCGAGGAA"
+                    ]
+                },
+                "UDP0341": {
+                    "barcode": [
+                        "GAGCGACGAT",
+                        "CGTATAATCA"
+                    ]
+                },
+                "UDP0342": {
+                    "barcode": [
+                        "CGAACGCACC",
+                        "ATGACAGAAC"
+                    ]
+                },
+                "UDP0343": {
+                    "barcode": [
+                        "TCTTACGCCG",
+                        "ATTCATTGCA"
+                    ]
+                },
+                "UDP0344": {
+                    "barcode": [
+                        "AGCTGATGTC",
+                        "TCATGTCCTG"
+                    ]
+                },
+                "UDP0345": {
+                    "barcode": [
+                        "CTGAATTAGT",
+                        "AATTCGATCG"
+                    ]
+                },
+                "UDP0346": {
+                    "barcode": [
+                        "TAAGGAGGAA",
+                        "TTCCGACATT"
+                    ]
+                },
+                "UDP0347": {
+                    "barcode": [
+                        "AGCTTACACA",
+                        "TGGCACGACC"
+                    ]
+                },
+                "UDP0348": {
+                    "barcode": [
+                        "AACCAGCCAC",
+                        "GCCACAGCAC"
+                    ]
+                },
+                "UDP0349": {
+                    "barcode": [
+                        "CTTAAGTCGA",
+                        "CAGTAGTTGT"
+                    ]
+                },
+                "UDP0350": {
+                    "barcode": [
+                        "GCCTAACGTG",
+                        "AGCTCTCAAG"
+                    ]
+                },
+                "UDP0351": {
+                    "barcode": [
+                        "ACTTACTTCA",
+                        "TCTGGAATTA"
+                    ]
+                },
+                "UDP0352": {
+                    "barcode": [
+                        "CGCATTCCGT",
+                        "ATTAGTGGAG"
+                    ]
+                },
+                "UDP0353": {
+                    "barcode": [
+                        "GATATCACAC",
+                        "GACTATATGT"
+                    ]
+                },
+                "UDP0354": {
+                    "barcode": [
+                        "AGCGCTGTGT",
+                        "CGTTCGGAAC"
+                    ]
+                },
+                "UDP0355": {
+                    "barcode": [
+                        "TCACCGCGCT",
+                        "TCGATACTAG"
+                    ]
+                },
+                "UDP0356": {
+                    "barcode": [
+                        "GATAGCCTTG",
+                        "TACCACAATG"
+                    ]
+                },
+                "UDP0357": {
+                    "barcode": [
+                        "CCTGGACGCA",
+                        "TGGTATACCA"
+                    ]
+                },
+                "UDP0358": {
+                    "barcode": [
+                        "TTACGCACCT",
+                        "GCTCTCGTTG"
+                    ]
+                },
+                "UDP0359": {
+                    "barcode": [
+                        "TCGTTGCTGC",
+                        "GTCTCGTGAA"
+                    ]
+                },
+                "UDP0360": {
+                    "barcode": [
+                        "CGACAAGGAT",
+                        "AAGGCCACCT"
+                    ]
+                },
+                "UDP0361": {
+                    "barcode": [
+                        "GTGTACCTTC",
+                        "CTGTGAGCTA"
+                    ]
+                },
+                "UDP0362": {
+                    "barcode": [
+                        "ACCTGGCCAA",
+                        "TCACAGATCG"
+                    ]
+                },
+                "UDP0363": {
+                    "barcode": [
+                        "TGTCTGGCCT",
+                        "AGAAGCCAAT"
+                    ]
+                },
+                "UDP0364": {
+                    "barcode": [
+                        "AGTTAATGCT",
+                        "ACTGCAGCCG"
+                    ]
+                },
+                "UDP0365": {
+                    "barcode": [
+                        "GGTGAGTAAT",
+                        "AACATCTAGT"
+                    ]
+                },
+                "UDP0366": {
+                    "barcode": [
+                        "TACTCTGCGC",
+                        "CCTTACTATG"
+                    ]
+                },
+                "UDP0367": {
+                    "barcode": [
+                        "AGGTATGGCG",
+                        "GTGGCGAGAC"
+                    ]
+                },
+                "UDP0368": {
+                    "barcode": [
+                        "TCCAGCCTGC",
+                        "GCCAGATCCA"
+                    ]
+                },
+                "UDP0369": {
+                    "barcode": [
+                        "GCCATATAAC",
+                        "ACACAATATC"
+                    ]
+                },
+                "UDP0370": {
+                    "barcode": [
+                        "AGTGCGAGTG",
+                        "TGGAGGTAAT"
+                    ]
+                },
+                "UDP0371": {
+                    "barcode": [
+                        "CTGAGCCGGT",
+                        "CCTTCACGTA"
+                    ]
+                },
+                "UDP0372": {
+                    "barcode": [
+                        "AACGGTCTAT",
+                        "CTATACGCGG"
+                    ]
+                },
+                "UDP0373": {
+                    "barcode": [
+                        "GTTGCGTTCA",
+                        "GTTGCAGTTG"
+                    ]
+                },
+                "UDP0374": {
+                    "barcode": [
+                        "CTTCAACCAC",
+                        "TTATGCGCCT"
+                    ]
+                },
+                "UDP0375": {
+                    "barcode": [
+                        "TCTATTCAGT",
+                        "TCTCAGTACA"
+                    ]
+                },
+                "UDP0376": {
+                    "barcode": [
+                        "CAAGACGTCC",
+                        "AGTATACGGA"
+                    ]
+                },
+                "UDP0377": {
+                    "barcode": [
+                        "TGAGTACAAC",
+                        "ACGCTTGGAC"
+                    ]
+                },
+                "UDP0378": {
+                    "barcode": [
+                        "CCGCGGTTCT",
+                        "GGAGTAGATT"
+                    ]
+                },
+                "UDP0379": {
+                    "barcode": [
+                        "ATTGATACTG",
+                        "TACACGCTCC"
+                    ]
+                },
+                "UDP0380": {
+                    "barcode": [
+                        "GGATTATGGA",
+                        "TCCGATAGAG"
+                    ]
+                },
+                "UDP0381": {
+                    "barcode": [
+                        "TGGTTCTCAT",
+                        "CTCAAGGCCG"
+                    ]
+                },
+                "UDP0382": {
+                    "barcode": [
+                        "TCAACCACGA",
+                        "CAAGTTCATA"
+                    ]
+                },
+                "UDP0383": {
+                    "barcode": [
+                        "TATGAACTTG",
+                        "AATCCTTAGG"
+                    ]
+                },
+                "UDP0384": {
+                    "barcode": [
+                        "AGTGGTTAAG",
+                        "GGTGGAATAC"
+                    ]
+                }
+            }
+        },
+        "IDT for Illumina Nextera DNA UD Plate D workflow B": {
+            "codec": {
+                "UDP0289": {
+                    "barcode": [
+                        "GAACAATTCC",
+                        "TCCAACTCTA"
+                    ]
+                },
+                "UDP0290": {
+                    "barcode": [
+                        "TGTGGTCCGG",
+                        "CTAGTGCTCT"
+                    ]
+                },
+                "UDP0291": {
+                    "barcode": [
+                        "CTTCTAAGTC",
+                        "CCTGTAGAGT"
+                    ]
+                },
+                "UDP0292": {
+                    "barcode": [
+                        "AATATTGCCA",
+                        "GGTGTCACCG"
+                    ]
+                },
+                "UDP0293": {
+                    "barcode": [
+                        "TCGTGCATTC",
+                        "ATACCAACGC"
+                    ]
+                },
+                "UDP0294": {
+                    "barcode": [
+                        "AAGATACACG",
+                        "TGTTAGCACA"
+                    ]
+                },
+                "UDP0295": {
+                    "barcode": [
+                        "TGCAATGAAT",
+                        "TTACTTCTGG"
+                    ]
+                },
+                "UDP0296": {
+                    "barcode": [
+                        "CTATGAAGGA",
+                        "CAGGTATAAG"
+                    ]
+                },
+                "UDP0297": {
+                    "barcode": [
+                        "GAAGACTAGA",
+                        "AAGTTCTAGT"
+                    ]
+                },
+                "UDP0298": {
+                    "barcode": [
+                        "AGGAGTCGAG",
+                        "GTAAGCCTAA"
+                    ]
+                },
+                "UDP0299": {
+                    "barcode": [
+                        "TTCACTCACT",
+                        "TCTCATGATA"
+                    ]
+                },
+                "UDP0300": {
+                    "barcode": [
+                        "GGTCCGCTTC",
+                        "CTTGTGTGAG"
+                    ]
+                },
+                "UDP0301": {
+                    "barcode": [
+                        "CAACGAGAGC",
+                        "CACTCAATTC"
+                    ]
+                },
+                "UDP0302": {
+                    "barcode": [
+                        "ATTGAGGTCC",
+                        "ATATAATCCG"
+                    ]
+                },
+                "UDP0303": {
+                    "barcode": [
+                        "GGAGAGACTC",
+                        "TCTGCTTCAA"
+                    ]
+                },
+                "UDP0304": {
+                    "barcode": [
+                        "CCGCTCCGTT",
+                        "CTTCGCCGTA"
+                    ]
+                },
+                "UDP0305": {
+                    "barcode": [
+                        "ATACATCACA",
+                        "TCAATGGAGA"
+                    ]
+                },
+                "UDP0306": {
+                    "barcode": [
+                        "TAGGTATGTT",
+                        "CTTGGTCTCG"
+                    ]
+                },
+                "UDP0307": {
+                    "barcode": [
+                        "CACCTAGCAC",
+                        "ATGTCCAGCA"
+                    ]
+                },
+                "UDP0308": {
+                    "barcode": [
+                        "TTCAAGTATG",
+                        "CGATACCATC"
+                    ]
+                },
+                "UDP0309": {
+                    "barcode": [
+                        "TTAAGACAAG",
+                        "CAATTAAGCC"
+                    ]
+                },
+                "UDP0310": {
+                    "barcode": [
+                        "CACCTCTCTT",
+                        "AGGAGTCGAG"
+                    ]
+                },
+                "UDP0311": {
+                    "barcode": [
+                        "TTCTCGTGCA",
+                        "CTCTGTGTAT"
+                    ]
+                },
+                "UDP0312": {
+                    "barcode": [
+                        "GCTAGGAAGT",
+                        "TCGTCCGAGA"
+                    ]
+                },
+                "UDP0313": {
+                    "barcode": [
+                        "TTAATAGCAC",
+                        "CAGACGTGGT"
+                    ]
+                },
+                "UDP0314": {
+                    "barcode": [
+                        "CATTCACGCT",
+                        "TGAGTACAAC"
+                    ]
+                },
+                "UDP0315": {
+                    "barcode": [
+                        "GGCACTAAGG",
+                        "GTTGACCTGA"
+                    ]
+                },
+                "UDP0316": {
+                    "barcode": [
+                        "ATTCGGTACA",
+                        "TCCTCGGACT"
+                    ]
+                },
+                "UDP0317": {
+                    "barcode": [
+                        "ACTAATCTCC",
+                        "AGATTAAGTG"
+                    ]
+                },
+                "UDP0318": {
+                    "barcode": [
+                        "TGTGTTAGTA",
+                        "TAACAGAGTA"
+                    ]
+                },
+                "UDP0319": {
+                    "barcode": [
+                        "CAACGACCTA",
+                        "ATCGAGTCGC"
+                    ]
+                },
+                "UDP0320": {
+                    "barcode": [
+                        "CGGTCGGCAT",
+                        "CCTTGCCTAG"
+                    ]
+                },
+                "UDP0321": {
+                    "barcode": [
+                        "TCGACGCTAG",
+                        "TTCGAAGAGG"
+                    ]
+                },
+                "UDP0322": {
+                    "barcode": [
+                        "CTCGTAGGCA",
+                        "AAGAGGATGA"
+                    ]
+                },
+                "UDP0323": {
+                    "barcode": [
+                        "AAGTTCTAGT",
+                        "TTATCTTACC"
+                    ]
+                },
+                "UDP0324": {
+                    "barcode": [
+                        "CCAAGAGGTG",
+                        "CTGGCTCGTT"
+                    ]
+                },
+                "UDP0325": {
+                    "barcode": [
+                        "ATATCTGCTT",
+                        "AGATTGTCTA"
+                    ]
+                },
+                "UDP0326": {
+                    "barcode": [
+                        "TGGATCTGGC",
+                        "TTCAGCATTG"
+                    ]
+                },
+                "UDP0327": {
+                    "barcode": [
+                        "TTGAATCCAA",
+                        "ACACCGTGAC"
+                    ]
+                },
+                "UDP0328": {
+                    "barcode": [
+                        "CACGGCTAGT",
+                        "CTTGTACACC"
+                    ]
+                },
+                "UDP0329": {
+                    "barcode": [
+                        "GAGCTTGCCG",
+                        "CCTGCAACCT"
+                    ]
+                },
+                "UDP0330": {
+                    "barcode": [
+                        "AGCTAGCTTC",
+                        "CTCCGTATTA"
+                    ]
+                },
+                "UDP0331": {
+                    "barcode": [
+                        "CAATCCTTGT",
+                        "TGCGTCTTCG"
+                    ]
+                },
+                "UDP0332": {
+                    "barcode": [
+                        "CACCTGTTGC",
+                        "ATGTGTCAAT"
+                    ]
+                },
+                "UDP0333": {
+                    "barcode": [
+                        "CGTCACCTTG",
+                        "CAATCGGCTG"
+                    ]
+                },
+                "UDP0334": {
+                    "barcode": [
+                        "AATGACTGGT",
+                        "ACGCGTGAGA"
+                    ]
+                },
+                "UDP0335": {
+                    "barcode": [
+                        "ATGATTCCGG",
+                        "CACGTCAGAG"
+                    ]
+                },
+                "UDP0336": {
+                    "barcode": [
+                        "TTAGGCTCAA",
+                        "TTCCATTCGA"
+                    ]
+                },
+                "UDP0337": {
+                    "barcode": [
+                        "TGTAAGGTGG",
+                        "CCAAGGCCTT"
+                    ]
+                },
+                "UDP0338": {
+                    "barcode": [
+                        "CAACTGCAAC",
+                        "GTTGCGTTCA"
+                    ]
+                },
+                "UDP0339": {
+                    "barcode": [
+                        "ACATGAGTGA",
+                        "AGCTAAGCGG"
+                    ]
+                },
+                "UDP0340": {
+                    "barcode": [
+                        "GCAACCAGTC",
+                        "TTCCTCGGTG"
+                    ]
+                },
+                "UDP0341": {
+                    "barcode": [
+                        "GAGCGACGAT",
+                        "TGATTATACG"
+                    ]
+                },
+                "UDP0342": {
+                    "barcode": [
+                        "CGAACGCACC",
+                        "GTTCTGTCAT"
+                    ]
+                },
+                "UDP0343": {
+                    "barcode": [
+                        "TCTTACGCCG",
+                        "TGCAATGAAT"
+                    ]
+                },
+                "UDP0344": {
+                    "barcode": [
+                        "AGCTGATGTC",
+                        "CAGGACATGA"
+                    ]
+                },
+                "UDP0345": {
+                    "barcode": [
+                        "CTGAATTAGT",
+                        "CGATCGAATT"
+                    ]
+                },
+                "UDP0346": {
+                    "barcode": [
+                        "TAAGGAGGAA",
+                        "AATGTCGGAA"
+                    ]
+                },
+                "UDP0347": {
+                    "barcode": [
+                        "AGCTTACACA",
+                        "GGTCGTGCCA"
+                    ]
+                },
+                "UDP0348": {
+                    "barcode": [
+                        "AACCAGCCAC",
+                        "GTGCTGTGGC"
+                    ]
+                },
+                "UDP0349": {
+                    "barcode": [
+                        "CTTAAGTCGA",
+                        "ACAACTACTG"
+                    ]
+                },
+                "UDP0350": {
+                    "barcode": [
+                        "GCCTAACGTG",
+                        "CTTGAGAGCT"
+                    ]
+                },
+                "UDP0351": {
+                    "barcode": [
+                        "ACTTACTTCA",
+                        "TAATTCCAGA"
+                    ]
+                },
+                "UDP0352": {
+                    "barcode": [
+                        "CGCATTCCGT",
+                        "CTCCACTAAT"
+                    ]
+                },
+                "UDP0353": {
+                    "barcode": [
+                        "GATATCACAC",
+                        "ACATATAGTC"
+                    ]
+                },
+                "UDP0354": {
+                    "barcode": [
+                        "AGCGCTGTGT",
+                        "GTTCCGAACG"
+                    ]
+                },
+                "UDP0355": {
+                    "barcode": [
+                        "TCACCGCGCT",
+                        "CTAGTATCGA"
+                    ]
+                },
+                "UDP0356": {
+                    "barcode": [
+                        "GATAGCCTTG",
+                        "CATTGTGGTA"
+                    ]
+                },
+                "UDP0357": {
+                    "barcode": [
+                        "CCTGGACGCA",
+                        "TGGTATACCA"
+                    ]
+                },
+                "UDP0358": {
+                    "barcode": [
+                        "TTACGCACCT",
+                        "CAACGAGAGC"
+                    ]
+                },
+                "UDP0359": {
+                    "barcode": [
+                        "TCGTTGCTGC",
+                        "TTCACGAGAC"
+                    ]
+                },
+                "UDP0360": {
+                    "barcode": [
+                        "CGACAAGGAT",
+                        "AGGTGGCCTT"
+                    ]
+                },
+                "UDP0361": {
+                    "barcode": [
+                        "GTGTACCTTC",
+                        "TAGCTCACAG"
+                    ]
+                },
+                "UDP0362": {
+                    "barcode": [
+                        "ACCTGGCCAA",
+                        "CGATCTGTGA"
+                    ]
+                },
+                "UDP0363": {
+                    "barcode": [
+                        "TGTCTGGCCT",
+                        "ATTGGCTTCT"
+                    ]
+                },
+                "UDP0364": {
+                    "barcode": [
+                        "AGTTAATGCT",
+                        "CGGCTGCAGT"
+                    ]
+                },
+                "UDP0365": {
+                    "barcode": [
+                        "GGTGAGTAAT",
+                        "ACTAGATGTT"
+                    ]
+                },
+                "UDP0366": {
+                    "barcode": [
+                        "TACTCTGCGC",
+                        "CATAGTAAGG"
+                    ]
+                },
+                "UDP0367": {
+                    "barcode": [
+                        "AGGTATGGCG",
+                        "GTCTCGCCAC"
+                    ]
+                },
+                "UDP0368": {
+                    "barcode": [
+                        "TCCAGCCTGC",
+                        "TGGATCTGGC"
+                    ]
+                },
+                "UDP0369": {
+                    "barcode": [
+                        "GCCATATAAC",
+                        "GATATTGTGT"
+                    ]
+                },
+                "UDP0370": {
+                    "barcode": [
+                        "AGTGCGAGTG",
+                        "ATTACCTCCA"
+                    ]
+                },
+                "UDP0371": {
+                    "barcode": [
+                        "CTGAGCCGGT",
+                        "TACGTGAAGG"
+                    ]
+                },
+                "UDP0372": {
+                    "barcode": [
+                        "AACGGTCTAT",
+                        "CCGCGTATAG"
+                    ]
+                },
+                "UDP0373": {
+                    "barcode": [
+                        "GTTGCGTTCA",
+                        "CAACTGCAAC"
+                    ]
+                },
+                "UDP0374": {
+                    "barcode": [
+                        "CTTCAACCAC",
+                        "AGGCGCATAA"
+                    ]
+                },
+                "UDP0375": {
+                    "barcode": [
+                        "TCTATTCAGT",
+                        "TGTACTGAGA"
+                    ]
+                },
+                "UDP0376": {
+                    "barcode": [
+                        "CAAGACGTCC",
+                        "TCCGTATACT"
+                    ]
+                },
+                "UDP0377": {
+                    "barcode": [
+                        "TGAGTACAAC",
+                        "GTCCAAGCGT"
+                    ]
+                },
+                "UDP0378": {
+                    "barcode": [
+                        "CCGCGGTTCT",
+                        "AATCTACTCC"
+                    ]
+                },
+                "UDP0379": {
+                    "barcode": [
+                        "ATTGATACTG",
+                        "GGAGCGTGTA"
+                    ]
+                },
+                "UDP0380": {
+                    "barcode": [
+                        "GGATTATGGA",
+                        "CTCTATCGGA"
+                    ]
+                },
+                "UDP0381": {
+                    "barcode": [
+                        "TGGTTCTCAT",
+                        "CGGCCTTGAG"
+                    ]
+                },
+                "UDP0382": {
+                    "barcode": [
+                        "TCAACCACGA",
+                        "TATGAACTTG"
+                    ]
+                },
+                "UDP0383": {
+                    "barcode": [
+                        "TATGAACTTG",
+                        "CCTAAGGATT"
+                    ]
+                },
+                "UDP0384": {
+                    "barcode": [
+                        "AGTGGTTAAG",
+                        "GTATTCCACC"
+                    ]
+                }
+            }
+        }
+    },
+    "description": [
+        "Segment 0 is the i7 index and segement 1 is the i5index.",
+        "For NovaSeq, MiSeq, HiSeq 2000, HiSeq 2500 i5 is as specified.",
+        "For iSeq, MiniSeq, NextSeq, HiSeq 3000,HiSeq 4000 i5 should be reverse complemented."
+    ]
+}

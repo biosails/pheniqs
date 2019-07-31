@@ -1,0 +1,1239 @@
+{
+    "CN": "CGSB AD",
+    "PL": "ILLUMINA",
+    "PM": "HiSeq",
+    "application name": "pheniqs",
+    "base input url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX",
+    "base output url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX",
+    "buffer capacity": 2048,
+    "decoding threads": 1,
+    "default output compression": "unknown",
+    "default output compression level": "5",
+    "default output format": "sam",
+    "feed": {
+        "input feed": [
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 1,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 2,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz"
+            }
+        ],
+        "input feed by segment": [
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 1,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 2,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz"
+            }
+        ],
+        "output feed": [
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 20,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 19,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 18,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 17,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 16,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 15,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 14,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 13,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 12,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 11,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 9,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 6,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 8,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 7,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 10,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 4,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 5,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 3,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 2,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 1,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5"
+            },
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5"
+            }
+        ]
+    },
+    "filter incoming qc fail": true,
+    "float precision": 15,
+    "flowcell id": "CBJLFACXX",
+    "flowcell lane number": 1,
+    "full command": "pheniqs mux --config CBJLFACXX_l01_column_split.json --compile",
+    "htslib threads": 8,
+    "input": [
+        "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz",
+        "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz",
+        "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz"
+    ],
+    "input phred offset": 33,
+    "input segment cardinality": 3,
+    "leading segment index": 0,
+    "multiplex": {
+        "CN": "CGSB AD",
+        "PL": "ILLUMINA",
+        "PM": "HiSeq",
+        "algorithm": "pamld",
+        "barcode cardinality": 21,
+        "barcode length": [
+            8
+        ],
+        "base output url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX",
+        "codec": {
+            "@AAGAGGCA": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:AAGAGGCA",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:AAGAGGCA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 7,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 7,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 1,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AAGAGGCA.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@ACTCGCTA": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:ACTCGCTA",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:ACTCGCTA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "ACTCGCTA"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 13,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 13,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 2,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTCGCTA.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@ACTGAGCG": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:ACTGAGCG",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:ACTGAGCG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "ACTGAGCG"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 15,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 15,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 3,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ACTGAGCG.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@AGGCAGAA": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:AGGCAGAA",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:AGGCAGAA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 17,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 17,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 4,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_AGGCAGAA.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@ATCTCAGG": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:ATCTCAGG",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:ATCTCAGG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "ATCTCAGG"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 11,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 11,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 5,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATCTCAGG.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@ATGCGCAG": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:ATGCGCAG",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:ATGCGCAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "ATGCGCAG"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 12,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 12,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 6,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_ATGCGCAG.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@CGAGGCTG": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:CGAGGCTG",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:CGAGGCTG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 10,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 10,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 7,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGAGGCTG.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@CGGAGCCT": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:CGGAGCCT",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:CGGAGCCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 9,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 9,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 8,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGGAGCCT.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@CGTACTAG": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:CGTACTAG",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:CGTACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 8,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 8,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 9,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CGTACTAG.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@CTCTCTAC": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:CTCTCTAC",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:CTCTCTAC",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 19,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 19,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 10,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_CTCTCTAC.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@GCGTAGTA": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:GCGTAGTA",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:GCGTAGTA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCGTAGTA"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 5,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 5,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 11,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCGTAGTA.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@GCTCATGA": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:GCTCATGA",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:GCTCATGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 18,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 18,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 12,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GCTCATGA.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@GGACTCCT": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:GGACTCCT",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:GGACTCCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 16,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 16,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 13,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGACTCCT.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@GGAGCTAC": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:GGAGCTAC",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:GGAGCTAC",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGAGCTAC"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 4,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 4,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 14,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GGAGCTAC.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@GTAGAGGA": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:GTAGAGGA",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:GTAGAGGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 3,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 3,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 15,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_GTAGAGGA.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@TAAGGCGA": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:TAAGGCGA",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:TAAGGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 14,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 14,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 16,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAAGGCGA.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@TACGCTGC": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:TACGCTGC",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:TACGCTGC",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TACGCTGC"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 2,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 2,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 17,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TACGCTGC.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@TAGCGCTC": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:TAGCGCTC",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:TAGCGCTC",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 6,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 6,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 18,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGCGCTC.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@TAGGCATG": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:TAGGCATG",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:TAGGCATG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 1,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 1,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 19,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TAGGCATG.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            },
+            "@TCCTGAGC": {
+                "CN": "CGSB AD",
+                "ID": "CBJLFACXX:1:TCCTGAGC",
+                "PL": "ILLUMINA",
+                "PM": "HiSeq",
+                "PU": "CBJLFACXX:1:TCCTGAGC",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TCCTGAGC"
+                ],
+                "concentration": 0.0475,
+                "feed": {
+                    "output feed by segment": [
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 0,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5"
+                        },
+                        {
+                            "capacity": 4096,
+                            "direction": "out",
+                            "index": 0,
+                            "phred offset": 33,
+                            "platform": "ILLUMINA",
+                            "resolution": 2,
+                            "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5"
+                        }
+                    ]
+                },
+                "flowcell id": "CBJLFACXX",
+                "flowcell lane number": 1,
+                "index": 20,
+                "output": [
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5",
+                    "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_TCCTGAGC.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 1
+            }
+        },
+        "confidence threshold": 0.95,
+        "distance tolerance": [
+            1
+        ],
+        "flowcell id": "CBJLFACXX",
+        "flowcell lane number": 1,
+        "index": 0,
+        "noise": 0.05,
+        "nucleotide cardinality": 8,
+        "output": [
+            "/dev/stdout"
+        ],
+        "quality masking threshold": 0,
+        "segment cardinality": 1,
+        "shannon bound": [
+            1
+        ],
+        "transform": {
+            "segment pattern": [
+                "0"
+            ],
+            "token": [
+                "1::8"
+            ]
+        },
+        "undetermined": {
+            "CN": "CGSB AD",
+            "ID": "CBJLFACXX:1:undetermined",
+            "PL": "ILLUMINA",
+            "PM": "HiSeq",
+            "PU": "CBJLFACXX:1:undetermined",
+            "TC": 2,
+            "algorithm": "pamld",
+            "barcode": [
+                "========"
+            ],
+            "concentration": 0.05,
+            "feed": {
+                "output feed by segment": [
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 20,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5"
+                    },
+                    {
+                        "capacity": 4096,
+                        "direction": "out",
+                        "index": 20,
+                        "phred offset": 33,
+                        "platform": "ILLUMINA",
+                        "resolution": 2,
+                        "url": "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5"
+                    }
+                ]
+            },
+            "flowcell id": "CBJLFACXX",
+            "flowcell lane number": 1,
+            "index": 0,
+            "output": [
+                "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5",
+                "/Users/lg/code/biosails/pheniqs/example/CBJLFACXX/CBJLFACXX_undetermined.bam?format=bam&level=5"
+            ],
+            "segment cardinality": 1
+        }
+    },
+    "output": [
+        "/dev/stdout"
+    ],
+    "output phred offset": 33,
+    "output segment cardinality": 2,
+    "platform": "ILLUMINA",
+    "report url": "/dev/stderr",
+    "template": {
+        "transform": {
+            "segment pattern": [
+                "0",
+                "1"
+            ],
+            "token": [
+                "0::6",
+                "2::"
+            ]
+        }
+    },
+    "threads": 8
+}
