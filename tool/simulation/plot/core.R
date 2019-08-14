@@ -20,6 +20,7 @@
 # install.packages("ggplot2")
 # install.packages("gridExtra")
 # install.packages("extrafont")
+# install.packages("lubridate")
 
 library(extrafont)
 library(Cairo)
@@ -77,6 +78,13 @@ legend_title_text = element_text (
 )
 vertical_axis_text = element_text (
   angle = 90,
+  size = rel(0.375),
+  colour = text_color,
+  family = font_family
+)
+diagonal_axis_text = element_text (
+  angle = 30,
+  hjust = 1,
   size = rel(0.375),
   colour = text_color,
   family = font_family
@@ -232,6 +240,72 @@ experiment_id_name = c (
   "3c4383a7-3ce4-4ecd-8518-c9c7cb681e01" = "0.191628",
   "6d9944ec-a347-4b09-8ebc-0e0b2e54875a" = "0.231434"
 )
+
+
+configuration_order = c (
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8"
+)
+configuration_name = c (
+  "1" = "pheniqs fastq SI to null",
+  "2" = "pheniqs fastq SI to II bam",
+  "3" = "pheniqs fastq SI to SI fastq ",
+  "4" = "pheniqs fastq SI to SS fastq",
+  "5" = "pheniqs fastq SI to II cram",
+  "6" = "deml fastq SI to SS fastq",
+  "7" = "bcl2fastq bcl to SI fastq",
+  "8" = "bcl2fastq bcl to SS fastq"
+)
+configuration_color = c (
+  "1" = alpha("#5F9A10", 1),
+  "2" = alpha("#5F9A10", 1),
+  "3" = alpha("#5F9A10", 1),
+  "4" = alpha("#5F9A10", 1),
+  "5" = alpha("#5F9A10", 1),
+  "6" = alpha("#C00606", 1),
+  "7" = alpha("#3852BB", 1),
+  "8" = alpha("#3852BB", 1)
+)
+configuration_fill_scale = scale_fill_manual (
+  name = "Configuration",
+  breaks = configuration_order,
+  labels = configuration_name,
+  values = configuration_color
+)
+
+duration_scale = scale_y_continuous (
+    breaks = c (
+      0,
+      # 1800,
+      3600,
+      2 * 3600,
+      3 * 3600,
+      4 * 3600,
+      8 * 3600,
+      12 * 3600,
+      16 * 3600,
+      18 * 3600
+    ),
+    labels = c (
+      "00:00:00",
+      # "00:30:00",
+      "01:00:00",
+      "02:00:00",
+      "03:00:00",
+      "04:00:00",
+      "08:00:00",
+      "12:00:00",
+      "16:00:00",
+      "18:00:00"
+    )
+)
+
 accurecy_variable_labeller = labeller (
   ssid = experiment_id_name,
   tool = tool_name,
