@@ -24,6 +24,7 @@ time pheniqs mux --config H7LT2DSXX_l04_adjusted.json
 # pheniqs mux --config H7LT2DSXX_l03_adjusted.json  202190.24s user 33469.03s system 1184% cpu 5:31:29.01 total
 # pheniqs mux --config H7LT2DSXX_l04_adjusted.json  200925.97s user 33061.22s system 1183% cpu 5:29:35.39 total
 
+# Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz
 # total reads = 11578868372
 # SS = Split Segment
 # IS = Interleaved Segment
@@ -52,9 +53,82 @@ time pheniqs mux --config H7LT2DSXX_l04_adjusted.json
 # 7     bcl2fastq   bcl           fastq SS/IL 00:46:56    5869MB
 # 8     bcl2fastq   bcl           fastq SS/SL 01:02:40    22005MB
 
-
+# deml 48h 266GB
 # benchmark on prince
+# 435G	fastq_split/
 
+# /home/lg1883/.bin/pheniqs mux --config /scratch/lg1883/H7LT2DSXX/H7LT2DSXX_l01_fastq_split.json --base-input /scratch/lg1883/H7LT2DSXX/one --base-output /scratch/lg1883/H7LT2DSXX/fastq_split --buffer 256
+#     User time (seconds): 245041.06
+#     System time (seconds): 41281.90
+#     Percent of CPU this job got: 2267%
+#     Elapsed (wall clock) time (h:mm:ss or m:ss): 3:30:25
+#     Average shared text size (kbytes): 0
+#     Average unshared data size (kbytes): 0
+#     Average stack size (kbytes): 0
+#     Average total size (kbytes): 0
+#     Maximum resident set size (kbytes): 1013360
+#     Average resident set size (kbytes): 0
+#     Major (requiring I/O) page faults: 1
+#     Minor (reclaiming a frame) page faults: 1065774279
+#     Voluntary context switches: 2226487477
+#     Involuntary context switches: 144435930
+#     Swaps: 0
+#     File system inputs: 1008647360
+#     File system outputs: 911891208
+#     Socket messages sent: 0
+#     Socket messages received: 0
+#     Signals delivered: 0
+#     Page size (bytes): 4096
+#     Exit status: 0
+
+# /home/lg1883/.bin/pheniqs mux --config /scratch/lg1883/H7LT2DSXX/H7LT2DSXX_l01_fastq_split.json --base-input /scratch/lg1883/H7LT2DSXX/one --base-output /scratch/lg1883/H7LT2DSXX/fastq_split --buffer 128
+#     User time (seconds): 246116.75
+#     System time (seconds): 47301.26
+#     Percent of CPU this job got: 2094%
+#     Elapsed (wall clock) time (h:mm:ss or m:ss): 3:53:25
+#     Average shared text size (kbytes): 0
+#     Average unshared data size (kbytes): 0
+#     Average stack size (kbytes): 0
+#     Average total size (kbytes): 0
+#     Maximum resident set size (kbytes): 1006780
+#     Average resident set size (kbytes): 0
+#     Major (requiring I/O) page faults: 1
+#     Minor (reclaiming a frame) page faults: 1118602037
+#     Voluntary context switches: 2886784008
+#     Involuntary context switches: 117875071
+#     Swaps: 0
+#     File system inputs: 1008647360
+#     File system outputs: 911835360
+#     Socket messages sent: 0
+#     Socket messages received: 0
+#     Signals delivered: 0
+#     Page size (bytes): 4096
+#     Exit status: 0
+#
+# /home/lg1883/.bin/pheniqs mux --config /scratch/lg1883/H7LT2DSXX/H7LT2DSXX_l01_bam_mdd.json --base-input /scratch/lg1883/H7LT2DSXX/one --base-output /scratch/lg1883/H7LT2DSXX/bam
+#     User time (seconds): 161533.91
+#     System time (seconds): 102752.42
+#     Percent of CPU this job got: 2146%
+#     Elapsed (wall clock) time (h:mm:ss or m:ss): 3:25:12
+#     Average shared text size (kbytes): 0
+#     Average unshared data size (kbytes): 0
+#     Average stack size (kbytes): 0
+#     Average total size (kbytes): 0
+#     Maximum resident set size (kbytes): 52460
+#     Average resident set size (kbytes): 0
+#     Major (requiring I/O) page faults: 1
+#     Minor (reclaiming a frame) page faults: 1040867161
+#     Voluntary context switches: 3095443078
+#     Involuntary context switches: 54725160
+#     Swaps: 0
+#     File system inputs: 1008647328
+#     File system outputs: 955174416
+#     Socket messages sent: 0
+#     Socket messages received: 0
+#     Signals delivered: 0
+#     Page size (bytes): 4096
+#     Exit status: 0
+#
 # /home/lg1883/.bin/pheniqs mux --config /scratch/lg1883/H7LT2DSXX/H7LT2DSXX_l01_estimate.json --base-input /scratch/lg1883/H7LT2DSXX/one --base-output /scratch/lg1883/H7LT2DSXX/estimate
 #     User time (seconds): 48489.46
 #     System time (seconds): 84033.73
@@ -127,30 +201,6 @@ time pheniqs mux --config H7LT2DSXX_l04_adjusted.json
 # 	Page size (bytes): 4096
 # 	Exit status: 0
 
-# Command being timed: "/home/lg1883/.bin/pheniqs mux --config /scratch/lg1883/H7LT2DSXX/H7LT2DSXX_l01_fastq_split.json --base-input /scratch/lg1883/H7LT2DSXX/one --base-output /scratch/lg1883/H7LT2DSXX/fastq_split --buffer 256"
-#     User time (seconds): 245041.06
-#     System time (seconds): 41281.90
-#     Percent of CPU this job got: 2267%
-#     Elapsed (wall clock) time (h:mm:ss or m:ss): 3:30:25
-#     Average shared text size (kbytes): 0
-#     Average unshared data size (kbytes): 0
-#     Average stack size (kbytes): 0
-#     Average total size (kbytes): 0
-#     Maximum resident set size (kbytes): 1013360
-#     Average resident set size (kbytes): 0
-#     Major (requiring I/O) page faults: 1
-#     Minor (reclaiming a frame) page faults: 1065774279
-#     Voluntary context switches: 2226487477
-#     Involuntary context switches: 144435930
-#     Swaps: 0
-#     File system inputs: 1008647360
-#     File system outputs: 911891208
-#     Socket messages sent: 0
-#     Socket messages received: 0
-#     Signals delivered: 0
-#     Page size (bytes): 4096
-#     Exit status: 0
-
 # /home/lg1883/.bin/pheniqs mux --config /scratch/lg1883/H7LT2DSXX/H7LT2DSXX_l01_cram.json --base-input /scratch/lg1883/H7LT2DSXX/one --base-output /scratch/lg1883/H7LT2DSXX/cram
 # 	User time (seconds): 147206.18
 # 	System time (seconds): 114556.62
@@ -175,29 +225,30 @@ time pheniqs mux --config H7LT2DSXX_l04_adjusted.json
 # 	Page size (bytes): 4096
 # 	Exit status: 0
 
-# /home/lg1883/.bin/deML --index /home/lg1883/H7LT2DSXX/H7LT2DSXX_deml_l01_index.txt --outfile /home/lg1883/H7LT2DSXX/deml/H7LT2DSXX_l01 -f /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_R1_001.fastq.gz -r /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_R2_001.fastq.gz -if1 /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_I1_001.fastq.gz -if2 /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_I2_001.fastq.gz
-#     User time (seconds): 63553.39
-#     System time (seconds): 440.39
-#     Percent of CPU this job got: 99%
-#     Elapsed (wall clock) time (h:mm:ss or m:ss): 17:47:12
-#     Average shared text size (kbytes): 0
-#     Average unshared data size (kbytes): 0
-#     Average stack size (kbytes): 0
-#     Average total size (kbytes): 0
-#     Maximum resident set size (kbytes): 217808
-#     Average resident set size (kbytes): 0
-#     Major (requiring I/O) page faults: 3
-#     Minor (reclaiming a frame) page faults: 5360211
-#     Voluntary context switches: 12343
-#     Involuntary context switches: 52211
-#     Swaps: 0
-#     File system inputs: 1030202808
-#     File system outputs: 99669832
-#     Socket messages sent: 0
-#     Socket messages received: 0
-#     Signals delivered: 0
-#     Page size (bytes): 4096
-#     Exit status: 0
+# 439G	deml
+# /home/lg1883/.bin/deML --outfile /home/lg1883/H7LT2DSXX/deml_long/H7LT2DSXX_l01 --index /home/lg1883/H7LT2DSXX/H7LT2DSXX_deml_l01_index.txt -f /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_R1_001.fastq.gz -r /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_R2_001.fastq.gz -if1 /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_I1_001.fastq.gz -if2 /home/lg1883/H7LT2DSXX/one/H7LT2DSXX_S1_L001_I2_001.fastq.gz
+#   User time (seconds): 285909.41
+#   System time (seconds): 1471.94
+#   Percent of CPU this job got: 99%
+#   Elapsed (wall clock) time (h:mm:ss or m:ss): 79:51:49
+#   Average shared text size (kbytes): 0
+#   Average unshared data size (kbytes): 0
+#   Average stack size (kbytes): 0
+#   Average total size (kbytes): 0
+#   Maximum resident set size (kbytes): 217724
+#   Average resident set size (kbytes): 0
+#   Major (requiring I/O) page faults: 4
+#   Minor (reclaiming a frame) page faults: 215635128
+#   Voluntary context switches: 15517
+#   Involuntary context switches: 182302
+#   Swaps: 0
+#   File system inputs: 1008648552
+#   File system outputs: 918598096
+#   Socket messages sent: 0
+#   Socket messages received: 0
+#   Signals delivered: 0
+#   Page size (bytes): 4096
+#   Exit status: 0
 
 # bcl2fastq -l DEBUG --tiles s_1_ --runfolder-dir /scratch/lg1883/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX --sample-sheet /scratch/lg1883/H7LT2DSXX/H7LT2DSXX_basecall_sample_sheet.csv --create-fastq-for-index-reads --adapter-stringency 0 --minimum-trimmed-read-length 0 --mask-short-adapter-reads 0 --output-dir /scratch/lg1883/H7LT2DSXX --fastq-compression-level 3
 #     User time (seconds): 76895.92

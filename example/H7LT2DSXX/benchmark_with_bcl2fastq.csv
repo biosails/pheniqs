@@ -6,3 +6,5 @@ index,tool,input format,Input segment layout,output format,output segment layout
 5, pheniqs,fastq,split,fastq,split,split,03:30:25,990
 6, pheniqs,fastq,split,cram,interleave,interleave,04:07:47,402
 7, pheniqs,fastq,split,bam,interleave,interleave,3:25:12,52
+8, bcl2fastq,bcl,,fastq,split,interleave,00:46:56,5869
+9, bcl2fastq,Bcl,,fastq,split,split,01:02:40,22005
