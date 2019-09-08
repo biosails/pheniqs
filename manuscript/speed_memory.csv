@@ -1,0 +1,10 @@
+index,tool,name,duration,memory
+1,deml,fastq SI to SS fastq,79:51:49,218
+2,pheniqs,fastq SI to null,01:25:55,19
+3,pheniqs,fastq SI to II bam,03:10:07,51
+4,pheniqs,fastq SI to SI fastq,03:20:46,68
+5,pheniqs,fastq SI to SS fastq,03:30:25,990
+6,pheniqs,fastq SI to II cram,04:07:47,402
+7,pheniqs,mdd fastq SI to II bam,3:25:12,52
+8,bcl2fastq,basecall only,00:46:56,5869
+9,bcl2fastq,basecall SS,01:02:40,22005

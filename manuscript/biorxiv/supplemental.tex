@@ -1,0 +1,100 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{tabu}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage[margin=20mm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{textcomp}
+\usepackage{subcaption}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage{authblk}
+\usepackage{sectsty}
+\usepackage[backend=biber, style=authoryear, citestyle=authoryear-comp,natbib]{biblatex}
+\geometry{letterpaper}
+\geometry{portrait}
+
+\addbibresource{reference.bib}
+
+\sectionfont{\fontsize{12}{10}\selectfont}
+\subsectionfont{\fontsize{10}{10}\selectfont}
+
+\begin{document}
+
+\section{Pheniqs supplementary methods}
+
+Barcode-based classification involves extracting a subsequence $r$ from an observed read, along with the base call quality scores associated with the individual nucleobases in $r$, and decoding the original sequence $s$. Let $r \in \{A,C,G,T,N\}^n$ be an observed sequence of length $n$ extracted from the read and $\mathcal{B} = \{b \mid b \in \{A,C,G,T\}^n\}$ a given set of distinct barcodes identifying the individual classes. A decoder is denoted as a decision function $\phi(r):\{A,C,G,T,N\}^n \mapsto \mathcal{B} \cup \varepsilon$ where $\varepsilon$ denotes a decoding failure for a foreign sequence, i.e., $s \notin \mathcal{B}$.
+
+A maximum likelihood decoder identifies the barcode $\hat{b} \in \mathcal{B}$ which maximizes the posterior probability that $\hat{b}$ was sequenced given that $r$ was observed, assuming it is not a foreign sequence.
+%
+\begin{equation}
+\hat{b} = \operatorname*{arg\,max}_{b \in \mathcal{B}} P(b|r)
+\end{equation}
+%
+Applying Bayes' rule we can compute $P(b|r)$ using
+%
+\begin{equation}
+P(b|r) = \frac{P(r|b)P(b)}{P(r)}
+\end{equation}
+%
+$P(r)$ is given by the law of total probability
+%
+\begin{equation}
+P(r|b) = P(r|b \notin \mathcal{B})P_{\varepsilon} + \sum_{b' \in \mathcal{B}} P(r|b')P(b')
+\end{equation}
+%
+where $P_\varepsilon$ is the prior probability of encountering foreign sequences and we get \textbf{Equation 2} from the paper
+\begin{equation}
+P(b|r) = \frac{P(r|b)P(b)}{P(r|b \notin \mathcal{B})P_{\varepsilon} + \sum_{b' \in \mathcal{B}} P(r|b')P(b')}
+\end{equation}
+%
+$P(b)$, the expected fraction of reads identified by $b$, can be either estimated from the data or provided by the user, and assuming foreign sequences produce random observations $P(r|b \notin \mathcal{B}) = 1/4^n$
+
+The \emph{Phred-adjusted maximum likelihood decoder} assumes errors on base calls are unrelated and computes $P(r|b)$ for each $b \in \mathcal{B}$ from the base calling quality scores by taking the product over the bases \citep{EA884454-5858-46F9-85F9-77FA53B1AC66}
+%
+\begin{equation}
+P(r|b) = \prod_{i=0}^n P(r_{i}|b_{i})
+\end{equation}
+%
+If nucleotide substitutions are assumed to occur at a uniform distribution, independent of base, $P(r_{i}|b_{i})$ can be defined to be
+%
+\begin{equation}
+P(r_{i}|b_{i}) = \begin{cases} 1 - p_{i} & \quad {r_{i} = b_{i}}\\ p_{i} & \quad {r_{i} \ne b_{i}, r_{i} \ne N}\\ \cfrac{1}{4} & \quad {r_{i} \ne b_{i}, {r_{i} = N}}\\ \end{cases}
+\end{equation}
+%
+where $p_{i}$ is the base calling error probability for base call $r_{i}$ decoded from the Phred value $q_{i}$ by $p_{i} = 10^{\frac{-q_{i}}{10}}$ for each position $i$ in $r$.
+
+Phred is a log-scaled encoding and loses accuracy as the values become smaller, so the $\hat{b}$ recovered in \textbf{Equation 1} can be misleading when $P(r|\hat{b})$ is extremely small. To control for such cases,
+reads with $P(r|\hat{b}) < 1/4^n$ are considered decoding failures without further consideration since the initial evidence supporting their classification is inferior to that provided by a random sequence.
+
+In addition, the decoder may declare a failure if $P(\hat{b}|r) \leq C$ where $C$ is a user provided confidence threshold for the minimum acceptable probability of a correct decoding. The probability of a decoding error is
+%
+\begin{equation}
+P_{\text{decoding\_error}}(\hat{b}, r) = 1 - P(\hat{b}|r)
+\end{equation}
+%
+ Therefore, directly estimating $P(\hat{b}|r)$ allows Pheniqs to report a classification confidence for every read, while the governing threshold $C$ is an intuitive parameter that allows researchers to choose between assignment confidence and yield depending on the application.
+
+
+By contrast, existing implementations \citep{Renaud:2015hma} assume that $P_{\varepsilon}$ is infinitesimally small and that samples are uniformly pooled, thereby suggesting that
+%
+\begin{equation}
+P(b) = \frac{1 - P_{\varepsilon}}{|\mathcal{B}|} %\mathrel{\mathop{=}\limits_{P_{\varepsilon} \to 0}}
+\approx \frac{1}{|\mathcal{B}|}
+\end{equation}
+%
+Under such conditions $P(b|r) \propto P(r|b)$ and \textbf{Equation 1} can be simplified to
+%
+\begin{equation}
+\hat{b} = \operatorname*{arg\,max}_{b \in \mathcal{B}} P(r|b)
+\end{equation}
+%
+While such assumptions simplify maximum likelihood estimation of $\hat{b}$, they are often grossly imprecise. Barcode instances rarely adhere to a uniform distribution and $P_{\varepsilon}$ represents a significant portion of the sequenced DNA in many published experiments that rely on cellular and molecular barcodes. Furthermore, implementations that refrain from computing $P(\hat{b}|r)$ are unable to report the actual classification error probability, compute a composite error probability of decoding all the tags classifying the read, or rely on a simple confidence threshold as an intuitive tuning parameter.
+
+\section*{References}
+\printbibliography[heading=none]
+
+\end{document}
