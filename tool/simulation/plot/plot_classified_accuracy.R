@@ -23,7 +23,7 @@
 source("core.R")
 
 diagram_width = diagram_width * 2
-diagram_height =  diagram_height * 4
+diagram_height =  diagram_height * 2
 
 accurecy_variable_labeller = labeller (
   tool = tool_name,
@@ -35,18 +35,20 @@ plot_measure <- function(data) {
     selected <- data
     selected <- selected[which(selected$requested != 0),]
     selected <- selected[which(selected$rate < maximum_error_rate),]
+    if(exclude_mdd) {
     selected <- selected[which(selected$tool != 'mdd'),]
+    }
     # selected <- selected[which(selected$tool != 'deml'),]
     # selected <- selected[which(selected$tool != 'pamld_ap'),]
     # selected <- selected[which(selected$tool != 'pamld'),]
     # selected <- selected[which(selected$tool != 'pamld_u'),]
     # selected <- selected[which(selected$variable != 'TP_FP'),]
-    selected <- selected[which(selected$variable != 'TP_FN'),]
+    # selected <- selected[which(selected$variable != 'TP_FN'),]
     # selected <- selected[which(selected$variable != 'FN'),]
     # selected <- selected[which(selected$variable != 'FP'),]
     # selected <- selected[which(selected$variable != 'TP'),]
-    # selected <- selected[which(selected$variable != 'MR'),]
-    # selected <- selected[which(selected$variable != 'FDR'),]
+    selected <- selected[which(selected$variable != 'MR'),]
+    selected <- selected[which(selected$variable != 'FDR'),]
     selected <- selected[which(selected$variable != 'recall'),]
     selected <- selected[which(selected$variable != 'precision'),]
 

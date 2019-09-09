@@ -34,14 +34,14 @@ plot_diagram <- function(data) {
     geom_col(
       data = selected,
       aes(x = ssid, y = error, fill = index),
-      alpha = 0.75,
+      alpha = 1,
       size = 0.25
     )
     return(benchmark_plot)
 }
 
 data = read.table(data_filename, header=T, sep=",")
-data$error = as.numeric(data$error)
+# data$error = as.numeric(data$error)
 data$ssid = factor(data$ssid, labels = experiment_id_name, levels = experiment_id_order)
 plot <- plot_diagram(data)
 plot <- plot +

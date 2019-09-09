@@ -38,17 +38,18 @@ plot_diagram <- function(data) {
     geom_col(
       data = selected,
       position = position_dodge(),
-      aes(x = quality, y = density),
-      fill = alpha("#5C5151", 0.875),
+      aes(x = quality, y = density, fill = quality),
+      # fill = alpha("#5C5151", 0.875),
       alpha = 0.5,
       size = 0.25
     ) +
+    phred_quality_fill_scale +
     scale_y_log10()
     return(benchmark_plot)
 }
 
 data = read.table(data_filename, header=T, sep=",")
-data$quality = as.numeric(data$quality)
+data$quality = factor(data$quality)
 data$density = as.numeric(data$density)
 data$ssid = factor(data$ssid, labels = experiment_id_name, levels = experiment_id_order)
 plot <- plot_diagram(data)

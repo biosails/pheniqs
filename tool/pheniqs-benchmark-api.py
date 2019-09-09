@@ -98,7 +98,7 @@ class Benchmark(Job):
         def persist_pickle(checksum):
             prepare_path(self.instruction['pickeled database path'], self.log)
             with io.open(self.instruction['pickeled database path'], 'wb') as file:
-                self.log.info('persisting pickeled database %s', self.instruction['pickeled database path'])
+                self.log.debug('persisting pickeled database %s', self.instruction['pickeled database path'])
                 pickled = {
                     'db': self.db,
                     'db sha1': checksum,
@@ -110,7 +110,7 @@ class Benchmark(Job):
         if checksum != self.ontology['db sha1']:
             prepare_path(self.instruction['database path'], self.log)
             with io.open(self.instruction['database path'], 'wb') as file:
-                self.log.info('persisting database %s', self.instruction['database path'])
+                self.log.debug('persisting database %s', self.instruction['database path'])
                 file.write(content)
             self.ontology['db sha1'] = checksum
             persist_pickle(checksum)

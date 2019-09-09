@@ -89,6 +89,7 @@ class Summarize(Job):
     def compose_barcode_binning_model(self):
         def assemble_classifier_binning_map(classifier_model, classifier_binning_model):
             if 'codec' in classifier_model:
+                classifier_binning_model['barcode by index'] = {}
                 classifier_binning_model['barcode bin by index'] = []
                 for bin_index, bin_limit in enumerate(classifier_binning_model['interval']):
                     classifier_binning_model['barcode bin by index'].append({
@@ -117,6 +118,7 @@ class Summarize(Job):
                         if record['density'] < bin_model['limit']:
                             record['bin index'] = bin_model['index']
                             bin_model['barcode'].append(record)
+                            classifier_binning_model['barcode by index'][int(record['index'])] = record
                             break
 
         barcode_model = self.barcode_simulation['barcode']['model']
@@ -124,10 +126,17 @@ class Summarize(Job):
         interval = [
             0.001,
             0.003,
-            0.01,
-            0.03,
-            1.0,
+            # 0.009102707596903,
+            0.1,
+            1.0
         ]
+        # interval = [
+        #     0.001,
+        #     0.003,
+        #     0.01,
+        #     0.03,
+        #     1.0,
+        # ]
         for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
             if classifier_type in barcode_model:
                 classifier_model = barcode_model[classifier_type]
@@ -189,6 +198,11 @@ class Summarize(Job):
             }
             self.initialize_accurecy_record(classifier_report['classified'])
 
+            classifier_report['classifiable'] = {
+                'count': 0,
+            }
+            self.initialize_accurecy_record(classifier_report['classifiable'])
+
             classifier_report['unclassified'] = {
                 'count': None,
                 'index': None,
@@ -225,19 +239,24 @@ class Summarize(Job):
 
                         # Real read was correctly classified and passing filter.
                         barcode_report['TP'] += accumulate['real']['pass']['TP']
+                        classifier_report['classifiable']['TP'] += accumulate['real']['pass']['TP']
 
                         # Real read was correctly classified but erroneously filtered.
                         barcode_report['FN'] += accumulate['real']['fail']['TP']
+                        classifier_report['classifiable']['FN'] += accumulate['real']['fail']['TP']
                         unclassified_report['FP'] += accumulate['real']['fail']['TP']
 
                         # Cross contamination erroneously passing filter.
                         barcode_report['FP'] += accumulate['real']['pass']['FP']
+                        classifier_report['classifiable']['FP'] += accumulate['real']['pass']['FP']
 
                         # Cross contamination filtered.
                         unclassified_report['FP'] += accumulate['real']['fail']['FP']
+                        classifier_report['classifiable']['FP'] += accumulate['real']['fail']['FP']
 
                         # Noise erroneously decoded as real and erroneously passing filter
                         barcode_report['FP'] += accumulate['noise']['pass']['FP']
+                        classifier_report['classifiable']['count'] -= accumulate['noise']['pass']['FP']
 
                         # Noise erroneously decoded as real and filtered
                         # already accounted for with ['noise']['fail']['FN'] on the noise bin
@@ -245,15 +264,19 @@ class Summarize(Job):
 
                         # Cross contamination erroneously passing filter
                         barcode_report['FN'] += accumulate['real']['pass']['FN']
+                        classifier_report['classifiable']['FN'] += accumulate['real']['pass']['FN']
 
                         # Cross contamination filtered.
                         barcode_report['FN'] += accumulate['real']['fail']['FN']
+                        classifier_report['classifiable']['FN'] += accumulate['real']['fail']['FN']
 
                         # Real erroneously decoded as noise. Only in MDD marked as pass.
                         barcode_report['FN'] += accumulate['noise']['pass']['FN']
+                        classifier_report['classifiable']['FN'] += accumulate['noise']['pass']['FN']
 
                         # Real erroneously decoded as noise and filtered.
                         barcode_report['FN'] += accumulate['noise']['fail']['FN']
+                        classifier_report['classifiable']['FN'] += accumulate['noise']['fail']['FN']
 
                         classifier_report['classified']['count'] += barcode_report['count']
                         classifier_report['classified']['TP'] += barcode_report['TP']
@@ -298,6 +321,7 @@ class Summarize(Job):
 
                     # Real erroneously decoded as noise. Only in MDD marked as pass.
                     barcode_report['FP'] += accumulate['noise']['pass']['FP']
+                    # classifier_report['classifiable']['FP'] += accumulate['noise']['pass']['FP']
 
                     # Real erroneously decoded as noise and filtered.
                     barcode_report['FP'] += accumulate['noise']['fail']['FP']
@@ -325,6 +349,7 @@ class Summarize(Job):
                     )
 
             self.finalize_accurecy_record(classifier_report['classified'])
+            self.finalize_accurecy_record(classifier_report['classifiable'])
             self.finalize_accurecy_record(classifier_report['summary'])
             self.log.debug (
                 '%s %s %-9s Balance    %-9s %-9s %s',
@@ -462,6 +487,9 @@ class Summarize(Job):
         elif self.instruction['preset'] == 'barcode_prior':
             self.summarize_barcode_prior_estimation_R()
 
+        elif self.instruction['preset'] == 'binned_barcode_prior':
+            self.summarize_binned_barcode_prior_estimation()
+
         elif self.instruction['preset'] == 'noise_summary_R':
             self.summarize_noise_accuracy_benchmark_R()
 
@@ -473,6 +501,15 @@ class Summarize(Job):
 
         elif self.instruction['preset'] == 'classified_summary':
             self.summarize_classified_accuracy_benchmark()
+
+
+        elif self.instruction['preset'] == 'classifiable_summary_R':
+            self.summarize_classifiable_accuracy_benchmark_R()
+
+        elif self.instruction['preset'] == 'classifiable_summary':
+            self.summarize_classifiable_accuracy_benchmark()
+
+
 
         elif self.instruction['preset'] == 'binned_decoder_summary_R':
             self.summarize_binned_decoder_accuracy_benchmark_R()
@@ -693,7 +730,8 @@ class Summarize(Job):
 
                         if 'estimate' in classifier_model:
                             offset = classifier_model['simulated noise'] - classifier_model['estimate']['estimated noise']
-                            error = classifier_model['unclassified']['count'] * abs(offset)
+                            error = offset # * substitution_model['count']
+
                             row = [
                                 ssid,
                                 simulated_rate,
@@ -709,9 +747,7 @@ class Summarize(Job):
                             for barcode_model in classifier_model['codec'].values():
                                 if 'estimate' in barcode_model:
                                     offset = barcode_model['simulated concentration'] - barcode_model['estimate']['estimated concentration']
-                                    # error = barcode_model['simulated concentration'] * abs(offset)
-                                    # error = abs(offset)
-                                    error = barcode_model['count'] * offset
+                                    error = offset # * substitution_model['count']
                                     row = [
                                         ssid,
                                         simulated_rate,
@@ -722,6 +758,69 @@ class Summarize(Job):
                                         error,
                                     ]
                                     table.append(row)
+
+        table.sort(key=lambda i: i[3])
+        table.sort(key=lambda i: i[2])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_binned_barcode_prior_estimation(self):
+        header = [
+            'ssid',
+            'rate',
+            'classifier',
+            'bin',
+            'simulated',
+            'estimated',
+            'error',
+        ]
+        table = []
+        for ssid, substitution_analysis in self.barcode_simulation['substitution'].items():
+            if 'model' in substitution_analysis:
+                substitution_model = substitution_analysis['model']
+                # substitution_model['count']
+                for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
+                    if classifier_type in substitution_model:
+                        classifier_model = substitution_model[classifier_type]
+                        simulated_rate = classifier_model['simulated substitution rate']
+                        binned = {}
+
+                        if 'codec' in classifier_model:
+                            for barcode_model in classifier_model['codec'].values():
+                                if str(barcode_model['index']) in self.barcode_binning_model[classifier_type]['barcode by index']:
+                                    if 'estimate' in barcode_model:
+                                        barcode_bin_model = self.barcode_binning_model[classifier_type]['barcode by index'][str(barcode_model['index'])]
+                                        if barcode_bin_model['bin index'] not in binned:
+                                            binned[barcode_bin_model['bin index']] = 0
+                                        error = barcode_model['simulated concentration'] - barcode_model['estimate']['estimated concentration']
+                                        binned[barcode_bin_model['bin index']] += error
+
+                        for bin_index in sorted(binned.keys()):
+                            row = [
+                                ssid,
+                                simulated_rate,
+                                classifier_type,
+                                bin_index,
+                                classifier_model['simulated noise'],
+                                classifier_model['estimate']['estimated noise'],
+                                binned[bin_index],
+                            ]
+                            table.append(row)
+
+                        if 'estimate' in classifier_model:
+                            error = classifier_model['simulated noise'] - classifier_model['estimate']['estimated noise']
+                            row = [
+                                ssid,
+                                simulated_rate,
+                                classifier_type,
+                                len(binned),
+                                classifier_model['simulated noise'],
+                                classifier_model['estimate']['estimated noise'],
+                                error,
+                            ]
+                            table.append(row)
 
         table.sort(key=lambda i: i[3])
         table.sort(key=lambda i: i[2])
@@ -818,6 +917,7 @@ class Summarize(Job):
         print(','.join(header))
         print('\n'.join([','.join([str(field) for field in row]) for row in table]))
 
+
     def summarize_classified_accuracy_benchmark_R(self):
         header = [
             'ssid',
@@ -905,6 +1005,95 @@ class Summarize(Job):
 
         print(','.join(header))
         print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_classifiable_accuracy_benchmark_R(self):
+        header = [
+            'ssid',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'variable',
+            'value',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    for variable in [ 'FDR', 'MR', 'TP', 'FN', 'FP', 'TP_FP', 'TP_FN', 'precision', 'recall', 'fscore' ]:
+                        row = [
+                            ssid,
+                            classifier_report['simulated rate'],
+                            classifier_report['expected rate'],
+                            classifier_report['requested rate'],
+                            tool_id,
+                            classifier_type,
+                            variable,
+                            classifier_report['classifiable'][variable],
+                        ]
+                        table.append(row)
+
+        table.sort(key=lambda i: i[6])
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
+    def summarize_classifiable_accuracy_benchmark(self):
+        header = [
+            'ssid',
+            'rate',
+            'expected',
+            'requested',
+            'tool',
+            'classifier',
+            'TP',
+            'FP',
+            'FN',
+            'TP_FN',
+            'TP_FP',
+            'FDR',
+            'MR',
+            'precision',
+            'recall',
+            'fscore',
+        ]
+        table = []
+
+        for ssid, substitution_report in self.barcode_simulation_summary.items():
+            for tool_id, tool_report in substitution_report['tool'].items():
+                for classifier_type, classifier_report in tool_report['classifier'].items():
+                    row = [
+                        ssid,
+                        classifier_report['simulated rate'],
+                        classifier_report['expected rate'],
+                        classifier_report['requested rate'],
+                        tool_id,
+                        classifier_type,
+                        classifier_report['classifiable']['TP'],
+                        classifier_report['classifiable']['FP'],
+                        classifier_report['classifiable']['FN'],
+                        classifier_report['classifiable']['TP_FN'],
+                        classifier_report['classifiable']['TP_FP'],
+                        classifier_report['classifiable']['FDR'],
+                        classifier_report['classifiable']['MR'],
+                        classifier_report['classifiable']['precision'],
+                        classifier_report['classifiable']['recall'],
+                        classifier_report['classifiable']['fscore'],
+                    ]
+                    table.append(row)
+
+        table.sort(key=lambda i: i[5])
+        table.sort(key=lambda i: i[4])
+        table.sort(key=lambda i: i[1])
+
+        print(','.join(header))
+        print('\n'.join([','.join([str(field) for field in row]) for row in table]))
+
 
     def summarize_binned_decoder_accuracy_benchmark_R(self):
         header = [
