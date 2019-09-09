@@ -4,7 +4,7 @@ echo "Building conda package on linux"
 
 set -x -e
 
-if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_BUILD_STAGE_NAME" == "Deploy" ]; then
+if [ "$TRAVIS_BRANCH" == "master" ]; then
 	echo "Building and uploading pheniqs for linux conda package"
 	docker run \
 		--user 'root' \

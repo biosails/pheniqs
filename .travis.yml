@@ -171,10 +171,11 @@ jobs:
   - os: linux
     stage: test
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
-  - os: osx
-    stage: deploy
-    osx_image: xcode8.3
-    script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
-  - os: linux
-    stage: deploy
-    script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
+# Commenting these out for now and just deploying all builds on the master branch
+#  - os: osx
+#    stage: deploy
+#    osx_image: xcode8.3
+#    script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
+#  - os: linux
+#    stage: deploy
+#    script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
