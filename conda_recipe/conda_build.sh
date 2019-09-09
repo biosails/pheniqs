@@ -23,7 +23,7 @@ fi
 
 
 UPLOAD_ARGS=""
-if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_BUILD_STAGE_NAME" == "Deploy" ]; then
+if [ "$TRAVIS_BRANCH" == "master" ]; then
 	echo "Uploading package after successful build"
 	UPLOAD_ARGS="--token $ANACONDA_API_TOKEN"
 	conda config --set anaconda_upload yes

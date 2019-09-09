@@ -1,8 +1,6 @@
 sudo: required
-
 services:
-  - docker
-
+- docker
 language: cpp
 env:
   global:
@@ -10,34 +8,22 @@ env:
   - LC_ALL="en_US.UTF-8"
   - LANG="en_US.UTF-8"
   - secure: cfTUcfNqe+ihPlzdzvQ9o1/MakuL5Q2GUmLtzVxfOVNPS/OQBqYQLQ+ENxCvRnYfyoXq/jKVztSqtGeL5UEmrD29UTdCp9ihZ7ZUwHmjXjHHTeHtbFcRKCpjgGDukFPflGY9CGodTTHriRoy3L9ODJXIDv9cfHecSz1LJr0gSik/uDTPrwpGpDLkQoJrqvmZ/gCh/8kFxuLxITu3mD9i+MIN0KjGdv6tsgHsdx60ijmjS7gjc87shS2KujxGo+3+zPIaXjRFarmYYgn2sdEAQko8akd5Kkqfp32bWy/R7oz+yV0NLiKE4a4+PvBC7nEO/M6BAlhGzRU1iMJZ3U0qmO2d+pxpc8+c6yM9XxDCFOVYKMAdgV2COff9+rUm/J9rhPRbciLIOue0RmXrMJvLHYKUH2wnvfeQYssV4doLtXqgDXmwO+tf4f2BrtW8dZcWFVD1S4WPknvvJT/5+Q7yDnn8lvHpqJ0UAy9kMKBCqt68vd+NpCs9cL0bdUZ4kFltk++Pon8BcY+CGEErSD36G19hr0QKBiHcNqraCUURggHdeaIwok4eHSldvz+91WUlyF00CYjCYrCwYHqVPO2ORjMWn3h8BFzp61la3sk/XCTuhecFua7srzFrCTN58zihpp/Exfm97m/UouF5HOif+KL+hSGOWKyYgfL9w6O2kWs=
-
+  matrix:
+    secure: YxnJfyr2pyPqNSWPrsbWSnO9cvlw9rmt5NDoT/WafwfKJy+NSE1GEWXZy9b5dJcfajCcDeGlfZMTX19wnrL8jdX1pW8UO5sDdB2YOFLOBYX7vZLT2Gw//5mTEj46RqDWvb83ydwgg0hhXBJXs7ozzE7yNsqAjBJx6vp8QEGCVhiLJLmmMijkIq5AdxA6OJP/7oQwk3Wd8oOy7VXRd5FBIhvyFrNjd+S47Y/7wAZ+LaYa/4f3zmfDpKeEr1AOcZfTknL6T8YHaYa0dHArOa4tLJp13aH1g3KxTXDEsc4Hmn/RfkW2oi9YffbAF+03UGMhr1qBSoHqNRIM8OrW11JRke+fG3I32i81gxJBEYLs2EAqaJ8wPFMeivX5uqOMROnykSh0DrspvTltEYYbnwJ9wUNtz6Cflk9sUbPfq1Xxprm/Y/96igMp3Ahxw8WcwvhEvGMOONlOuX2W2VgfoUtW0/B+ih8mJ7g0t4j04V7y5tUryUyRY2NI1llAgx2uiOutWeRS+AMjOqvnq3oGgri/bQTAsCK7+IaUkuQCSW0E/EpcaLRxaCDbiU1UeJYbmvvUoL8NO1Y+LFnuJLr9P1d42Cf0JnTjo6hMnRg7CqHMnrbQFsh7NyZF3oe/xgLZCiz3Sdx4j4oSU+v6q0Jz1qyS4mkqqMZAC1ZyYXWVfqYCJQk=
 before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update > /dev/null 2>&1; brew upgrade
   python > /dev/null 2>&1; fi
 - eval "${MATRIX_EVAL}"
-
 install: true
-
-## All osx_image tags should be 8.3
-
 stages:
-  - test
-  - name: deploy
-    if: branch = master
-
-####################################################################################
-# NOTE - Conda Recipe
-# Each of the ./pheniqs commands is also used as a test in the conda build
-# If these change please reflect changes in conda_recipe/latest/build.sh
-####################################################################################
+- test
+- name: deploy
+  if: branch = master
 script:
 - "./tool/ppkg.py -v error build test/build.json"
 - make all PREFIX=${HOME}/.pheniqs/travis/install 2> >(./test/filter_warning.py)
 - "./pheniqs --version"
-# - "./pheniqs --help"
-# - "./pheniqs mux --help"
-- "make test"
-
+- make test
 jobs:
   fast_finish: true
   allow_failures:
@@ -45,9 +31,6 @@ jobs:
     - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7 && CC=gcc-7 &&
       CXX=g++-7"
   include:
-    ############################################################################
-    # Begin test stage
-    ############################################################################
   - os: linux
     stage: test
     addons:
@@ -160,7 +143,8 @@ jobs:
     stage: test
     osx_image: xcode8.3
     env:
-    - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9 && CXX=g++-4.9"
+    - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9
+      && CXX=g++-4.9"
   - os: osx
     stage: test
     osx_image: xcode8.3
@@ -170,12 +154,16 @@ jobs:
     stage: test
     osx_image: xcode8.3
     env:
-    - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@6; brew link --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
+    - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools
+      (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@6; brew link
+      --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
   - os: osx
     stage: test
     osx_image: xcode8.3
     env:
-    - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@7; brew link --overwrite gcc@7; CC=gcc-7 && CXX=g++-7"
+    - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools
+      (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@7; brew link
+      --overwrite gcc@7; CC=gcc-7 && CXX=g++-7"
   - os: osx
     stage: test
     osx_image: xcode8.3
@@ -183,27 +171,11 @@ jobs:
   - os: linux
     stage: test
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
-  #- os: linux
-  #  stage: test
-  #  script: bash $TRAVIS_BUILD_DIR/docker_build/gcc_build.sh
-  #  env:
-  #  - MATRIX_EVAL="DOCKER_IMAGE=gcc:4.9 CC=gcc-4.9 && CXX=g++-4.9"
-  #- os: linux
-  #  stage: test
-  #  script: bash $TRAVIS_BUILD_DIR/docker_build/clang_build.sh
-    ############################################################################
-    # End test stage
-    ############################################################################
-    ############################################################################
-    # Begin deploy stage
-    ############################################################################
-  - os: osx
-    stage: deploy
-    osx_image: xcode8.3
-    script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
-  - os: linux
-    stage: deploy
-    script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
-    ############################################################################
-    # End deploy stage
-    ############################################################################
+# Commenting these out for now and just deploying all builds on the master branch
+#  - os: osx
+#    stage: deploy
+#    osx_image: xcode8.3
+#    script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
+#  - os: linux
+#    stage: deploy
+#    script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
