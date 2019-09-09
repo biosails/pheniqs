@@ -36,7 +36,9 @@ plot_diagram <- function(data) {
     selected <- data
     selected <- selected[which(selected$requested != 0),]
     selected <- selected[which(selected$rate < maximum_error_rate),]
-    # selected <- selected[which(selected$tool != 'mdd'),]
+    if(exclude_mdd) {
+    selected <- selected[which(selected$tool != 'mdd'),]
+    }
     # selected <- selected[which(selected$tool != 'deml'),]
     # selected <- selected[which(selected$tool != 'pamld_ap'),]
     # selected <- selected[which(selected$tool != 'pamld'),]

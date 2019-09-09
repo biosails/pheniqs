@@ -24,14 +24,17 @@ REMOTE_SIMULATION_HOME=albireo:/Volumes/canal/A5KVK_3
 REMOTE_HOME=Sites/secret/2d1412bc-9643-44de-889e-346a427370a4/A5KVK_V3
 
 MANUSCRIPT_HOME=$PHENIQS_HOME/manuscript
-PLOTTING_CODE_DIRECTORY=$MANUSCRIPT_HOME/plotting
+PLOTTING_CODE_DIRECTORY=$MANUSCRIPT_HOME/plot_script
 MANUSCRIPT_CSV_DIRECTORY=$MANUSCRIPT_HOME/csv
 MANUSCRIPT_PLOT_DIRECTORY=$MANUSCRIPT_HOME/plot
 MANUSCRIPT_BIORXIV_DIRECTORY=$MANUSCRIPT_HOME/biorxiv
+MANUSCRIPT_BMC_DIRECTORY=$MANUSCRIPT_HOME/bmc
 SIMULATION_HOME=$MANUSCRIPT_HOME
 
 BARCODE_SIMULATION_ID=2ea833ea-d9c5-4994-a4f3-d4f786e7e19a
 SIMULATION_SESSION_ID=2ea833ea
+
+MANUSCRIPT_NAME="pheniqs"
 
 make_simulation_csv() {
   PRESET=$1
@@ -130,6 +133,22 @@ prepare() {
         fi
     fi
 
+    if [ -f $MANUSCRIPT_HOME/${MANUSCRIPT_NAME}_biorxiv.pdf ]; then
+        if [ ! $clean_biorxiv_set = 0 ]; then
+            echo "Removing biorxiv manuscript"
+            rm $MANUSCRIPT_HOME/${MANUSCRIPT_NAME}_biorxiv.pdf
+            make_biorxiv_set=1
+        fi
+    fi
+
+    if [ -f $MANUSCRIPT_HOME/${MANUSCRIPT_NAME}_bmc.pdf ]; then
+        if [ ! $clean_bmc_set = 0 ]; then
+            echo "Removing bmc manuscript"
+            rm $MANUSCRIPT_HOME/${MANUSCRIPT_NAME}_bmc.pdf
+            make_bmc_set=1
+        fi
+    fi
+
     # varifying directories
     if [ ! -d $SIMULATION_HOME ]; then
         echo "Preparing simulation home directory"
@@ -146,6 +165,10 @@ prepare() {
     if [ ! -d $MANUSCRIPT_BIORXIV_DIRECTORY ]; then
         echo "Preparing biorxiv directory"
         mkdir -p $MANUSCRIPT_BIORXIV_DIRECTORY
+    fi
+    if [ ! -d $MANUSCRIPT_BMC_DIRECTORY ]; then
+        echo "Preparing bmc directory"
+        mkdir -p $MANUSCRIPT_BMC_DIRECTORY
     fi
 
     # expand archive
@@ -171,6 +194,7 @@ make_csv() {
     make_simulation_csv quality_distribution quality_distribution
     make_simulation_csv barcode_distribution barcode_distribution
     make_simulation_csv binned_barcode_prior binned_barcode_prior
+    make_csv_set=0
 };
 
 make_plot() {
@@ -200,71 +224,87 @@ make_plot() {
     make_r_plot barcode_distribution        barcode_distribution                13
     make_r_plot quality_distribution        quality_distribution_by_rate_0550   14
     make_r_plot ../speed_memory             speed_memory                        15
+    make_plot_set=0
 };
 
 make_biorxiv() {
-    PDF_NAME="pheniqs.pdf";
-    (   cd "$MANUSCRIPT_BIORXIV_DIRECTORY";
-        [[ -f pheniqs.aux ]] && rm pheniqs.aux;
-        [[ -f pheniqs.log ]] && rm pheniqs.log;
-        [[ -f pheniqs.bbl ]] && rm pheniqs.bbl;
-        [[ -f pheniqs.blg ]] && rm pheniqs.blg;
-        [[ -f pheniqs.bcf ]] && rm pheniqs.bcf;
-        [[ -f pheniqs.run.xml ]] && rm pheniqs.run.xml;
-        [[ -f pheniqs.pdf ]] && rm pheniqs.pdf;
+    if [ ! -f $MANUSCRIPT_HOME/${MANUSCRIPT_NAME}_biorxiv.pdf ]; then
+        make_plot
+        [ -f $MANUSCRIPT_BIORXIV_DIRECTORY/$MANUSCRIPT_NAME.pdf ] && rm $MANUSCRIPT_BIORXIV_DIRECTORY/$MANUSCRIPT_NAME.pdf
 
-        pdflatex pheniqs > /dev/null && \
-        biber pheniqs > /dev/null && \
-        pdflatex pheniqs > /dev/null && \
-        pdflatex pheniqs > /dev/null;
+        (   cd "$MANUSCRIPT_BIORXIV_DIRECTORY";
+            [[ -f $MANUSCRIPT_NAME.aux ]] && rm $MANUSCRIPT_NAME.aux;
+            [[ -f $MANUSCRIPT_NAME.log ]] && rm $MANUSCRIPT_NAME.log;
+            [[ -f $MANUSCRIPT_NAME.bbl ]] && rm $MANUSCRIPT_NAME.bbl;
+            [[ -f $MANUSCRIPT_NAME.blg ]] && rm $MANUSCRIPT_NAME.blg;
+            [[ -f $MANUSCRIPT_NAME.bcf ]] && rm $MANUSCRIPT_NAME.bcf;
+            [[ -f $MANUSCRIPT_NAME.run.xml ]] && rm $MANUSCRIPT_NAME.run.xml;
+            [[ -f $MANUSCRIPT_NAME.pdf ]] && rm $MANUSCRIPT_NAME.pdf;
 
-        [[ -f pheniqs.aux ]] && rm pheniqs.aux;
-        [[ -f pheniqs.log ]] && rm pheniqs.log;
-        [[ -f pheniqs.bbl ]] && rm pheniqs.bbl;
-        [[ -f pheniqs.blg ]] && rm pheniqs.blg;
-        [[ -f pheniqs.bcf ]] && rm pheniqs.bcf;
-        [[ -f pheniqs.run.xml ]] && rm pheniqs.run.xml;
-    )
+            pdflatex $MANUSCRIPT_NAME > /dev/null && \
+            biber $MANUSCRIPT_NAME > /dev/null && \
+            pdflatex $MANUSCRIPT_NAME > /dev/null && \
+            pdflatex $MANUSCRIPT_NAME > /dev/null;
+
+            [[ -f $MANUSCRIPT_NAME.aux ]] && rm $MANUSCRIPT_NAME.aux;
+            [[ -f $MANUSCRIPT_NAME.log ]] && rm $MANUSCRIPT_NAME.log;
+            [[ -f $MANUSCRIPT_NAME.bbl ]] && rm $MANUSCRIPT_NAME.bbl;
+            [[ -f $MANUSCRIPT_NAME.blg ]] && rm $MANUSCRIPT_NAME.blg;
+            [[ -f $MANUSCRIPT_NAME.bcf ]] && rm $MANUSCRIPT_NAME.bcf;
+            [[ -f $MANUSCRIPT_NAME.run.xml ]] && rm $MANUSCRIPT_NAME.run.xml;
+        )
+        cp $MANUSCRIPT_BIORXIV_DIRECTORY/$MANUSCRIPT_NAME.pdf $MANUSCRIPT_HOME/${MANUSCRIPT_NAME}_biorxiv.pdf
+        make_biorxiv_set=0
+    fi
 }
 
 make_bmc() {
 
+    make_bmc_set=0
 }
 
 usage() {
-    echo '-p --plot           compile plot'
-    echo '-c --csv            compile csv'
-    echo '-x --biorxiv        compile biorxiv manuscript'
-    echo '-b --bmc            compile bmc manuscript'
-    echo '-C --clean-csv      clean csv directory'
-    echo '-P --clean-plot     clean plot directory'
-    echo '-e --clean          clean plot directory'
+    echo '-p --plot             build plot directory'
+    echo '-P --clean-plot       rebuild plot directory'
+    echo '-c --csv              build csv directory'
+    echo '-C --clean-csv        rebuild csv directory'
+    echo '-x --biorxiv          build biorxiv manuscript'
+    echo '-X --rebuild-biorxiv  rebuild biorxiv manuscript'
+    echo '-b --bmc              build bmc manuscript'
+    echo '-B --rebuild-bmc      rebuild bmc manuscript'
+    echo '-e --clean            remove all generated files'
     # echo '-f --fetch      fetch remote simulation'
     # echo '-p --push       push remote simulation'
     echo '-h --help           print this help'
 }
 
 make_plot_set=0
-make_csv_set=0
-make_biorxiv_set=0
-make_bmc_set=0
-clean_csv_set=0
 clean_plot_set=0
+make_csv_set=0
+clean_csv_set=0
+make_biorxiv_set=0
+clean_biorxiv_set=0
+make_bmc_set=0
+clean_bmc_set=0
 clean_all_set=0
 
 while [ "$1" != "" ]; do
     case $1 in
         -p | --plot )           make_plot_set=1
                                 ;;
+        -P | --rebuild-plot )   clean_plot_set=1
+                                ;;
         -c | --csv )            make_csv_set=1
+                                ;;
+        -C | --rebuild-csv )    clean_csv_set=1
                                 ;;
         -x | --biorxiv )        make_biorxiv_set=1
                                 ;;
-        -b | --bmc )            make_bmc_set=1
+        -X | --rebuild-biorxiv ) clean_biorxiv_set=1
                                 ;;
-        -C | --clean-csv )      clean_csv_set=1
+        -c | --bmc )            make_bmc_set=1
                                 ;;
-        -P | --clean-plot )     clean_plot_set=1
+        -C | --rebuild-bmc )    clean_bmc_set=1
                                 ;;
         -e | --clean )          clean_all_set=1
                                 ;;

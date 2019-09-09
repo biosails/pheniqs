@@ -42,7 +42,6 @@
 
 \section*{Abstract}
 %
-%
 \textbf{Background:} Systems biology increasingly relies on deep sequencing with combinatorial index tags called barcodes to associate individual biological sequences with their respective sample, individual cell, and/or molecule. Accurate data interpretation critically depends on discerning the correct origin of each sequence of interest, and hence on the final classification confidence. This, in turn, is cumulatively impacted by the decoding confidence of the various barcodes. Preserving a classification quality score is especially desirable when the decision to assign or discard a read depends on factors only available downstream. These may include the observed distribution of expected barcodes within a mixture of bulk sequencing samples, or the number of individual cells that can be reliably detected in single-cell sequencing experiments. Despite these advantages, computation and reporting of decoding confidence scores have not been widely adopted. To improve overall performance at this critical stage of sequence analysis, we have developed a flexible and robustly engineered software package, Pheniqs, that supports arbitrarily complex barcoding schemes and enables standardized reporting of decoded index sequences with classification confidence scores.\\
 %
 \textbf{Results:} Pheniqs implements both a standard minimum distance decoder and a probabilistic decoder that classifies sequence reads based on the full posterior probability of observed barcode indexes. Pheniqs consults basecalling quality scores and prior distributions to compute the posterior decoding error probability of individual barcodes and reports the resulting barcode sequences and confidence scores in SAM auxiliary tags. Performance evaluation using synthetic data indicates that Pheniqs achieves greater accuracy than minimum distance or simple maximum likelihood estimation decoding by correctly computing the full posterior classification probability.\\
@@ -63,9 +62,9 @@ Several existing tools for demultiplexing barcode sets are currently available. 
 \section*{Implementation}
 % This should include a description of the overall architecture of the software implementation, along with details of any critical issues and how they were addressed.
 
-Pheniqs is distributed as a compiled binary with a command line interface that accepts a JSON encoded configuration file. Using a familiar syntax that mimics python array slicing Pheniqs can decode multiple barcodes located anywhere in the sequencing read. It uses tokens extracted from read segments by addressing either the 5’ end, 3’ end or both and optionally reverse complemented to construct the output template segments, as well as sample, cellular and molecular barcodes (Figure~\ref{fig:01}). This generic approach allows for arbitrary manipulation that accommodates any potential barcoding scheme and experimental design and often obviates the need for pre and post processing.
+Pheniqs is distributed as a compiled binary with a command line interface that accepts a JSON encoded configuration file. Using a familiar syntax that mimics python array slicing Pheniqs can decode multiple barcodes located anywhere in the sequencing read. It uses tokens extracted from read segments by addressing either the 5’ end, 3’ end or both and optionally reverse complemented to construct the output template segments, as well as sample, cellular and molecular barcodes (Figure~\ref{fig:16}). This generic approach allows for arbitrary manipulation that accommodates any potential barcoding scheme and experimental design and often obviates the need for pre and post processing.
 
-By directly interfacing with the low level HTSlib C API Pheniqs can read, write, and manipulate either uncompressed or gzip compressed FASTQ files as well as the SAM file format or any of its binary compressed variants BAM and CRAM. Unlike FASTQ, the SAM format can encode sequencing data in a single, smaller file that supports richer metadata annotations. When integrated into a pipeline, Pheniqs can take advantage of POSIX standard streams to avoid the speed and storage bottlenecks associated with reading and writing temporary files.
+By directly interfacing with the low level HTSlib C API Pheniqs can read, write, and manipulate either uncompressed or gzip compressed FASTQ files as well as the SAM file format or any of its binary compressed variants BAM and CRAM. Unlike FASTQ, the SAM format can encode sequencing data in a single, smaller file that supports richer metadata annotations. To maximize multithreading capacity Pheniqs implements mutual exclusive locking on double IO buffers. Rotating the two buffers allows threads computing the posterior probabilities to work without waiting for threads writing output. When integrated into a pipeline, Pheniqs can take advantage of POSIX standard streams to avoid the speed and storage bottlenecks associated with reading and writing temporary files.
 
 Pheniqs reports the decoded sample, cellular and molecular barcodes as well as their corresponding quality scores and the posterior decoding error probability in SAM auxiliary tags. It supports declaring standard SAM read groups to be associated with the sample barcodes and can optionally perform an exhaustive quality assessment during processing that is included in the final report.
 
@@ -114,17 +113,11 @@ Under such conditions $P(b|r) \propto P(r|b)$ and \textbf{Equation 1} can be sim
 %
 While such assumptions simplify maximum likelihood estimation of $\hat{b}$, they are often grossly imprecise. A relatively low yield in (e.g. single-cell) experiments that rely on several layers of combinatorial indexing often results in an extremely uneven barcode distribution, with $P_{\varepsilon}$ representing a significant portion of the sequenced DNA. Furthermore, implementations that refrain from computing $P(\hat{b}|r)$ can not report the posterior classification probability.
 
-\section*{Results}
-% This should include the findings of the study including, if appropriate, results of statistical analysis which must be included either in the text or as tables and figures. This section may be combined with the Discussion section for Software articles.
-% The user interface should be described and a discussion of the intended uses of the software, and the benefits that are envisioned, should be included, together with data on how its performance and functionality compare with, and improve, on functionally similar existing software. A case study of the use of the software may be presented. The planned future development of new features, if any, should be mentioned.
-
-\subsection*{Accuracy analysis with synthetic data}
-Since indel errors occur at a much lower rate than substitutions \citep{doi:10.1038/s41598-018-29325-6}, we used a simple model to simulate barcoded sequence reads that introduces an error on a nucleobase according to the quality score and substitution frequencies made available with LRSim\citep{doi:10.1016/j.csbj.2017.10.002}. We first paired each read from the run published with deML with a perfect barcode sequence sampled from the estimated prior distribution. To simulate foreign sequences we sampled from a random offset on the \emph{PhiX174} genome. We then generated multiple files with position-independent substitution errors simulated on the barcode bases with quality scores calibrated to increasing error rates.
-
-Each library was evaluated as a binary classifier, so a correct assignment was counted as a true positive ($TP$) while an incorrect assignment was counted as a false negative ($FN$) for the correct library and as a false positive ($FP$) for the incorrectly assigned library. We then summed up the values from all libraries and computed the \emph{precision} ($\frac{TP}{FP + TP}$), \emph{recall} ($\frac{TP}{FN + TP}$) and \emph{F-score} (harmonic average of the precision and recall). Reads that were marked by either Pheniqs or deML as failing quality control were considered to be unclassified for this analysis.
-
 \subsection*{Prior estimation}
-To study the effect of accounting for priors on precision and recall, we estimated the noise prior $P_{\varepsilon}$ and the individual library priors $P(b)$ for each $b \in \mathcal{B}$ from the high confidence reads. Let $S_{\varepsilon}$ be the number of reads filtered by the \emph{noise filter}, $S_{b}$ the number of reads classified to $b$ with confidence higher than $C$ and $S_\mathcal{B} = \sum_{b \in \mathcal{B}} S_{b}$. An estimator for the noise prior is
+
+A \emph{high confidence estimator} uses statistics from a prelimenatry PAMLD decoding run to estimate the noise prior $P_{\varepsilon}$ and the individual barcode priors $P(b)$ for each $b \in \mathcal{B}$. It assumes that \emph{low confidence} reads, i.e. reads that passed the \emph{noise filter} but failed the \emph{confidence filter}, and \emph{high confidence} reads, i.e. reads that passed both filters, come from the same distribution. The priors are estimated only from the \emph{high confidence} reads.
+
+Let $S_{\varepsilon}$ be the number of reads filtered by the \emph{noise filter}, $S_{b}$ the number of reads classified to $b$ with confidence higher than $C$ and $S_\mathcal{B} = \sum_{b \in \mathcal{B}} S_{b}$. An estimator for the noise prior is
 
 %
 \begin{equation}
@@ -140,22 +133,46 @@ and for an individual barcode is
 \end{equation}
 %
 
-$\hat{P_{\varepsilon}}$ and $\hat{P(b)}$ assume that low confidence reads, i.e. reads that passed the  \emph{noise filter} but failed the \emph{confidence filter}, come from the same distribution. When compared to the true known prior (Figure~\ref{fig:04}) for the simulated data, the error in estimation was negligible for rates lower than 1 per 1000, the expected error rate on most Illumina platforms. Although the error in estimating $\hat{P(b)}$ remained low, the error in estimating $\hat{P_{\varepsilon}}$ grew higher with the error rate due to the difficulty in distinguishing noise from low confidence. This suggests that platforms with high error rates would benefit from prior estimation that accounts for this.
+\section*{Results}
+% This should include the findings of the study including, if appropriate, results of statistical analysis which must be included either in the text or as tables and figures. This section may be combined with the Discussion section for Software articles.
+% The user interface should be described and a discussion of the intended uses of the software, and the benefits that are envisioned, should be included, together with data on how its performance and functionality compare with, and improve, on functionally similar existing software. A case study of the use of the software may be presented. The planned future development of new features, if any, should be mentioned.
 
-As expected PAMLD performs best with the true prior but only marginally worse with the estimated prior; it performs least well with a uniform prior, as is used by deML. In all 3 cases Pheniqs outperforms deML in both precision and recall (Figure~\ref{fig:05}).
+\subsection*{Accuracy analysis on synthetic data}
+
+
+We used the run published with deML to simulate barcoded sequence reads. Since indel errors occur at a much lower rate than substitutions \citep{doi:10.1038/s41598-018-29325-6} we only simulated substitution errors. On a \emph{first} step we simulated barcoded sequence reads by replacing the barcode nucleotides on each read with a perfect barcode sequence sampled from a prior distribution. To simulate foreign sequences we replaced a barcode with a sequence from a random offset on the \emph{PhiX174} genome. On a \emph{second} step we simulated substitution errors by introducing an error on a nucleobase according to the base call quality score and substitution frequencies made available with LRSim\citep{doi:10.1016/j.csbj.2017.10.002}. To simulate variable overall error rate we recalibrated the quality scores on a file produced in the \emph{first} step before simulating substitution errors in the \emph{second} step. See Figure~\ref{fig:14} for quality score distributions.
+
+Each barcode and the undetermined class was evaluated as a binary classifier, so a correct assignment was counted as a true positive ($TP$) while an incorrect assignment was counted as a false negative ($FN$) for the correct class and as a false positive ($FP$) for the incorrectly assigned class. We then summed up the values from all classes and computed the \emph{precision} ($\frac{TP}{FP + TP}$), \emph{recall} ($\frac{TP}{FN + TP}$) and \emph{F-score} (harmonic average of the precision and recall). Reads that were marked as failing quality control were considered to be unclassified for this analysis. For each simulated file we classified the reads with the following consifurations: Pheniqs with MDD default settings(MDD), Pheniqs with PAMLD default settings(PAMLD uniform), Pheniqs with the true priors(PAMLD true), Pheniqs with \emph{high confidence estimated} priors(PAMLD estimated), and deML with default settings(deML). To computed the \emph{high confidence estimated} we used a priliminary run with the default configuration, i.e. a uniform barcode distribution and 0.05 noise.
+
+Figure~\ref{fig:01} shows the F-score mesured for different overall error rates on the barcode cycles. MDD is clearly inferior to the probabilistic decders. Figure~\ref{fig:02} shows results only for the probabilistic decders. PAMLD is more accurate than both MDD and deML, in either configurations. As expected, the true prior performs the best but the \emph{high confidence} estimated prior is almost as good.
+
+Figure~\ref{fig:12} shows the accumulated error in \emph{high confidence} prior estimation with barcodes binned by the true frequency. See figure~\ref{fig:13} for the true barcode frequency distribution and binning. The error in estimation is bellow 0.1\% for rates lower than 1 per 1000, the expected error rate on most Illumina platforms.  $\hat{P_{\varepsilon}}$ is consistantly over estimated by this method, which is the main drive of the under estimation of the individual barcodes. As the overall error rate increases, basecall quality on the barcode cycles can be poor enough that any substitution will cause the read to fail the \emph{noise filter}. This suggests that platforms with high error rates would benefit from prior estimation that accounts for this. This suggests the decoder using the estimated prior should underperform the true prior when error rates are high.
+
+An often interesting presepective for a reasearcher is looking at results for \emph{classified} reads only - true barcoded or noise reads that were classified to a barcode. Figure~\ref{fig:05} shows FDR, MR and F-score for \emph{classified} reads only. Filtering noise helps Pheniqs outperform deML in any configuration. Figure~\ref{fig:06} shows the lower end of the FDR plot from Figure~\ref{fig:05} and includes MDD. In the range relevent to most Illumina runs, PAMLD has lower FDR than even MDD. In Figure~\ref{fig:07} results for \emph{classified} reads binned into 4 classes by their relative prior show the effect of the priors. Knowledge about the priors significantly reduce FDR but also marginally increase MR for reads in very rare classes (lower than 0.001). This is because a prior lower than the uniform penalises a class so reads are less likely to be classified to it. Reads with a prior similar to the uniform (0.001 to 0.03) show the same improvement in FDR but PAMLD already has better MR than deML. The default configuration favours this class so it has lower MR at the cost of higher FDR. Reads from slighty overrepresented classes show improved FDR when compared to default but slightly elevated MR when comapred to deML. The last bin includes only the control, which is the most overrepresented at 32\% of the run. where the priored PAMLD show the oposite trend of elevated FDR with improved MR. Figure~\ref{fig:08} shows that the behaviou is similar on the lower end relevent to most Illumina runs.
+
+To evaluate noise filtering we look at \emph{classifiable} reads only - true barcoded reads, correctly classfied or not, and \emph{unclassfied} reads - reads classified as noise or failing quality control. Figure~\ref{fig:03} shows FDR, MR and F-score for \emph{classifiable} reads only, removing all true noise reads from the analysis. The default PAMLD is missclassifying more true reads than deML, although the priored configuration is still the most accurate. We can see this is partially due to the noise filter in figure~\ref{fig:09} that shows FDR, MR and F-score for \emph{unclassfied} reads only. PAMLD decoders classify more true barcoded reads as noise than deML when overall error is low. This is a side effect of noise filtering: If evidence supporting the class with the highest posterior is inferior to that provided by a random sequence the noise filter will reject the read even if the posterior is high. It is arguable that such reads have very weak evidence for classification. Zooming on the error rate range relevent for the Illumina platform, Figure~\ref{fig:10} shows that PAMLD filters noise better than even MDD, while Figure~\ref{fig:11} shows that priored PAMLD handles noise better than both the default and deML in both FDR and MR.
+
+\subsection*{Runtime Speed and Memory evaluation}
+
+To evaluate speed and memory usage we used a single lane from an Illumina NovaSeq, one the highest throughput instruments available today. 151 cycles were sequenced on each of the two template segments and 8 cycles on each of the i7 and i5 index segments. The lane conatined 94 multiplexed libraries with barcodes on the standard i7 and i5 segments. Bechmarks were executed on an Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz with 14 cores and 28 threads.
+
+Basecalling the lane with bcl2fastq yielded 11,578,868,372 dual indexed paired that passed quality filtering and took 47 minutes. bcl2fastq produces reads with segments split over four gzip compressed FASTQ files that were used as input. The choice of output has impact on performance so Pheniqs was benchmarked producing a variety of output layouts in several file formats. Figure~\ref{fig:15} shows speed and memory results. Pheniqs performs fastest when producing interleaved BAM output in 3:10 hours. Spliting output to multiple FASTQ files was slightly slower with CRAM being the slowest taking a little over 4 hours. CRAM uses several compression algorithms that are more agressive than gzip and produces smaller files, so the slight slowdown is expected. deML could only produce FASTQ output with FASTQ input so we could not test bam output. Lacking support for multithreading deML took almost 80 hours to decode the lane, at least 20 times longer than pheniqs. The pheniqs speed improvement is almost linear in the number of cores, even though it computes the full posterior probability. Pheniqs uses very little memory when writing to a single file, depending on the size of the IO buffers. When writing to multiple files each file is allocated a sperate IO buffer and memory consumption increases lineraly.
 
 \section*{Conclusion}
-%
-%
 % This should state clearly the main conclusions and provide an explanation of the importance and relevance of the case, data, opinion, database or software reported.
+Decoding barcodes using full posterior probabilities is more accurate than available methods. Pheniqs offers an implementation faster and more scalable than existing tools. Pheniqs can be extended with new error models and relies on intuitive confidence thresholds for fine-tuning decoding accuracy. Individual decoding confidence scores can be combined into a combinatorial decoding confidence.
+
 \section*{Availability and requirements}
-\textbf{Project name:} Pheniqs
-\textbf{Project home page:} \url{http://biosails.github.io/pheniqs}
-\textbf{Operating systems:} Linux, MacOS.
-\textbf{Programming language:} C++11, Python 3.
-\textbf{Other requirements:} gcc 4.8 or newer, clang x.x or newer.
-\textbf{License:} AGPL-3.0.
-\textbf{Restrictions to use by non-academics:} licence needed
+
+\begin{itemize}
+  \item \textbf{Project name:} Pheniqs
+  \item \textbf{Project home page:} \url{http://biosails.github.io/pheniqs}
+  \item \textbf{Operating systems:} Linux, MacOS.
+  \item \textbf{Programming language:} C++11, Python 3.
+  \item \textbf{Other requirements:} clang, gcc 4.8 or newer.
+  \item \textbf{License:} AGPL-3.0.
+  \item \textbf{Restrictions to use by non-academics:} licence needed
+\end{itemize}
 
 \section*{Acknowledgments}
 
@@ -168,83 +185,41 @@ This work was supported by a grant from the New York University Abu Dhabi (NYUAD
 \section*{References}
 \printbibliography[heading=none]
 
-% \section*{Figures}
-
-%
-% \begin{figure}[htbp]
-% \centering
-% \includegraphics[keepaspectratio,scale=1]{Illumina_tokenization}
-% \caption{\footnotesize{Example of tokenization syntax for a paired end input read with a sample barcode composed of two 10 nucleotide long segments and a 12 nucleotide long molecular barcode. } }
-% \label{fig:01}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \includegraphics[keepaspectratio,scale=1]{pipeline_overview}
-% \caption{\footnotesize{Pheniqs pipeline architecture allowing to easily implement new decoding algorithms. } }
-% \label{fig:02}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \includegraphics[keepaspectratio,scale=1]{pamld}
-% \caption{\footnotesize{PAMLD decoding. } }
-% \label{fig:03}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \includegraphics[keepaspectratio,scale=1]{5_prior_estimation_error_0550_binned}
-% \caption{\footnotesize{ Prior estimation error. Total number of reads misclassified by the prior estimate for individual libraries (shades of blue) or the noise class (gray) are shown as a function of overall error rates. A higher proportion of reads are assigned to the noise class as the error rate increases. } }
-% \label{fig:04}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \includegraphics[keepaspectratio,scale=1]{1.1_overall_0550_mdd}
-% \caption{\footnotesize{Comparing F-score of statistical decoders to minimum distance. } }
-% \label{fig:05}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \includegraphics[keepaspectratio,scale=1]{1.2_overall_0550}
-% \caption{\footnotesize{F-score reported for deML and Pheniqs using PAMLD with 3 different priors: true, estimated and uniform. } }
-% \label{fig:15}
-% \end{figure}
+\section*{Figures}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[keepaspectratio,scale=1]{../plot/1_overall_0550_mdd}
-\caption{ \footnotesize{ \textbf{Decoding F score.} } }
+\caption{ \footnotesize{ \textbf{Decoding F-score.} Minium distance decoding is clearly inferior to the probabilistic decders. } }
 \label{fig:01}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[keepaspectratio,scale=1]{../plot/2_overall_0550}
-\caption{\footnotesize{\textbf{Probabilistic decoding F score.} } }
+\caption{\footnotesize{\textbf{Probabilistic decoding F-score.} PAMLD is more accurate than both MDD and deML. The true prior performs the best but the \emph{high confidence} estimated prior is almost as good. } }
 \label{fig:02}
 \end{figure}
 
 \begin{figure*}[htbp]
 \centering
 \includegraphics[keepaspectratio,scale=1]{../plot/3_classifiable_accuracy_0550}
-\caption{\footnotesize{\textbf{Accuracy for classifiable reads only.} } }
+\caption{\footnotesize{\textbf{Accuracy for classifiable reads only.} \emph{classifiable} reads are all true barcoded reads, correctly classfied or not.
+} }
 \label{fig:03}
 \end{figure*}
 
-\begin{figure*}[htbp]
-\centering
-\includegraphics[keepaspectratio,scale=1]{../plot/4_classifiable_accuracy_0060}
-\caption{\footnotesize{\textbf{Accuracy for classifiable reads only closeup.} } }
-\label{fig:04}
-\end{figure*}
+% \begin{figure*}[htbp]
+% \centering
+% \includegraphics[keepaspectratio,scale=1]{../plot/4_classifiable_accuracy_0060}
+% \caption{\footnotesize{\textbf{Accuracy for classifiable reads only closeup.} } }
+% \label{fig:04}
+% \end{figure*}
 
 \begin{figure*}[htbp]
 \centering
 \includegraphics[keepaspectratio,scale=1]{../plot/5_classified_accuracy_0550}
-\caption{\footnotesize{\textbf{Accuracy for classified reads only.} } }
+\caption{\footnotesize{\textbf{Accuracy for classified reads only.} \emph{classified} reads are all true barcoded and noise reads that were classified to a barcode. } }
 \label{fig:05}
 \end{figure*}
 
@@ -316,6 +291,27 @@ This work was supported by a grant from the New York University Abu Dhabi (NYUAD
 \includegraphics[keepaspectratio,scale=1]{../plot/15_speed_memory}
 \caption{\footnotesize{\textbf{Speed and memory benchmarks. } } }
 \label{fig:15}
+\end{figure}
+
+\begin{figure*}[htbp]
+\centering
+\includegraphics[keepaspectratio,scale=1]{Illumina_tokenization}
+\caption{\footnotesize{\textbf{Tokenizing a standard illumina read} Example of tokenization syntax for a paired end input read with a sample barcode composed of two 10 nucleotide long segments and a 12 nucleotide long molecular barcode. } }
+\label{fig:16}
+\end{figure*}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[keepaspectratio,scale=1]{pipeline_overview}
+\caption{\footnotesize{\textbf{Pheniqs pipeline architecture} The class hirarchy allows to implement a new decoding algorithm by implementing a few methods in a derived class. } }
+\label{fig:17}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[keepaspectratio,scale=1]{pamld}
+\caption{\footnotesize{\textbf{PAMLD decoding} Reads that fail the \emph{noise filter} are classified as noise without further consideration. Reads that fail the \emph{confidence filter} are classified but marked as \emph{qc fail} so the confidence threashold can be reconsidered at a later stage.} }
+\label{fig:18}
 \end{figure}
 
 \end{document}

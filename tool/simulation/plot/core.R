@@ -20,7 +20,6 @@
 # install.packages("ggplot2")
 # install.packages("gridExtra")
 # install.packages("extrafont")
-# install.packages("lubridate")
 
 library(extrafont)
 library(Cairo)
@@ -33,11 +32,14 @@ diagram_filename = NULL
 maximum_error_rate = 0.5
 diagram_width = 86
 diagram_height =  72
+exclude_mdd = FALSE
 
 args = commandArgs(trailingOnly = TRUE)
 if(length(args) > 0) { data_filename = args[1] }
 if(length(args) > 1) { diagram_filename = args[2] }
 if(length(args) > 2) { maximum_error_rate = as.numeric(args[3]) }
+if(length(args) > 3) { exclude_mdd = TRUE }
+
 
 diagram_units = "mm"
 font_family = "Monaco"
@@ -78,13 +80,6 @@ legend_title_text = element_text (
 )
 vertical_axis_text = element_text (
   angle = 90,
-  size = rel(0.375),
-  colour = text_color,
-  family = font_family
-)
-diagonal_axis_text = element_text (
-  angle = 30,
-  hjust = 1,
   size = rel(0.375),
   colour = text_color,
   family = font_family
@@ -163,26 +158,19 @@ bin_order = c (
   "4"
 )
 bin_color = c (
-  "0" = alpha("#5F9A10", 1),
-  "1" = alpha("#A080C7", 1),
-  "2" = alpha("#3852BB", 1),
-  "3" = alpha("#C00606", 1),
-  "4" = alpha("#5C5151", 1)
+    "0" = alpha("#d4440b", 1),
+    "1" = alpha("#67a616", 1),
+    "2" = alpha("#396fd4", 1),
+    "3" = alpha("#2a55a3", 1),
+    "4" = alpha("#5C5151", 1)
 )
 bin_name = c (
   "0" = "% < 0.001",
-  "1" = "0.001 < % < 0.003",
-  "2" = "0.003 < % < 0.01",
-  "3" = "0.01 < % < 0.03",
-  "4" = "0.03 < %"
+  "1" = "0.001 < % < 0.03",
+  "2" = "0.03 < % < 0.1",
+  "3" = "0.1 < %",
+  "4" = "Noise"
 )
-# bin_name = c (
-#   "0" = "% < 0.001 / 23",
-#   "1" = "0.001 < % < 0.003 / 44",
-#   "2" = "0.003 < % < 0.01 / 5",
-#   "3" = "0.01 < % < 0.03 / 27",
-#   "4" = "0.03 < % / 1"
-# )
 bin_fill_scale = scale_fill_manual (
   name = "Bin",
   breaks = bin_order,
@@ -240,77 +228,6 @@ experiment_id_name = c (
   "3c4383a7-3ce4-4ecd-8518-c9c7cb681e01" = "0.191628",
   "6d9944ec-a347-4b09-8ebc-0e0b2e54875a" = "0.231434"
 )
-
-
-configuration_order = c (
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9"
-)
-configuration_name = c (
-  "1" = "deml fastq SI to SS fastq",
-  "2" = "pheniqs fastq SI to null",
-  "3" = "pheniqs fastq SI to II bam",
-  "4" = "pheniqs fastq SI to SI fastq ",
-  "5" = "pheniqs fastq SI to SS fastq",
-  "6" = "pheniqs fastq SI to II cram",
-  "7" = "pheniqs mdd fastq SI to II bam",
-  "8" = "bcl2fastq bcl to SI fastq",
-  "9" = "bcl2fastq bcl to SS fastq"
-)
-configuration_color = c (
-  "1" = alpha("#C00606", 1),
-  "2" = alpha("#5F9A10", 1),
-  "3" = alpha("#5F9A10", 1),
-  "4" = alpha("#5F9A10", 1),
-  "5" = alpha("#5F9A10", 1),
-  "6" = alpha("#5F9A10", 1),
-  "7" = alpha("#5F9A10", 1),
-  "8" = alpha("#3852BB", 1),
-  "9" = alpha("#3852BB", 1)
-)
-configuration_fill_scale = scale_fill_manual (
-  name = "Configuration",
-  breaks = configuration_order,
-  labels = configuration_name,
-  values = configuration_color
-)
-
-duration_scale = scale_y_continuous (
-    breaks = c (
-      0,
-      # 1800,
-      # 3600,
-      2 * 3600,
-      4 * 3600,
-      8 * 3600,
-      16 * 3600,
-      32 * 3600,
-      64 * 3600,
-      287509,
-      84 * 3600
-    ),
-    labels = c (
-      "00:00:00",
-      # "00:30:00",
-      # "01:00:00",
-      "02:00:00",
-      "04:00:00",
-      "08:00:00",
-      "16:00:00",
-      "32:00:00",
-      "64:00:00",
-      "79:51:49",
-      "80:00:00"
-    )
-)
-
 accurecy_variable_labeller = labeller (
   ssid = experiment_id_name,
   tool = tool_name,
@@ -321,7 +238,7 @@ rate_scale = scale_x_continuous (
         0.00010285707764030215,
         # 0.0005081994200929769,
         # 0.0010005303459722477,
-        # 0.0010168814073261993, # not simulated
+        0.0010168814073261993, # not simulated
         # 0.0015038010220697069,
         0.0026127871615326784,
         0.005027553131321483,
@@ -346,7 +263,7 @@ rate_scale = scale_x_continuous (
         0.000103,
         # 0.0005082,
         # 0.001001,
-        # 0.001017
+        0.001017,
         # 0.001504,
         0.002613,
         0.005028,
@@ -389,6 +306,173 @@ pheniqs_plot_theme = theme (
   legend.key.height = unit(0.375, "char"),
   legend.key = element_rect(fill = NA),
   legend.margin = margin(0,0,0,0, "char")
+)
+
+phred_quality_order = c (
+    "0" = "0",
+    "1" = "1",
+    "2" = "2",
+    "3" = "3",
+    "4" = "4",
+    "5" = "5",
+    "6" = "6",
+    "7" = "7",
+    "8" = "8",
+    "9" = "9",
+    "10" = "10",
+    "11" = "11",
+    "12" = "12",
+    "13" = "13",
+    "14" = "14",
+    "15" = "15",
+    "16" = "16",
+    "17" = "17",
+    "18" = "18",
+    "19" = "19",
+    "20" = "20",
+    "21" = "21",
+    "22" = "22",
+    "23" = "23",
+    "24" = "24",
+    "25" = "25",
+    "26" = "26",
+    "27" = "27",
+    "28" = "28",
+    "29" = "29",
+    "30" = "30",
+    "31" = "31",
+    "32" = "32",
+    "33" = "33",
+    "34" = "34",
+    "35" = "35",
+    "36" = "36",
+    "37" = "37",
+    "38" = "38",
+    "39" = "39",
+    "40" = "40",
+    "41" = "41",
+    "42" = "42",
+    "43" = "43",
+    "44" = "44",
+    "45" = "45",
+    "46" = "46",
+    "47" = "47",
+    "48" = "48",
+    "49" = "49",
+    "50" = "50"
+)
+phred_quality_color = c (
+    "0" = alpha("#222222", 1),
+    "1" = alpha("#C00606", 1),
+    "2" = alpha("#C00606", 1),
+    "3" = alpha("#C00606", 1),
+    "4" = alpha("#C00606", 1),
+    "5" = alpha("#C00606", 1),
+    "6" = alpha("#C00606", 1),
+    "7" = alpha("#C00606", 1),
+    "8" = alpha("#C00606", 1),
+    "9" = alpha("#C00606", 1),
+    "10" = alpha("#C00606", 1),
+    "11" = alpha("#d4440b", 1),
+    "12" = alpha("#d4440b", 1),
+    "13" = alpha("#d4440b", 1),
+    "14" = alpha("#d4440b", 1),
+    "15" = alpha("#d4440b", 1),
+    "16" = alpha("#d4440b", 1),
+    "17" = alpha("#d4440b", 1),
+    "18" = alpha("#d4440b", 1),
+    "19" = alpha("#d4440b", 1),
+    "20" = alpha("#d4440b", 1),
+    "21" = alpha("#3852BB", 1),
+    "22" = alpha("#3852BB", 1),
+    "23" = alpha("#3852BB", 1),
+    "24" = alpha("#3852BB", 1),
+    "25" = alpha("#3852BB", 1),
+    "26" = alpha("#3852BB", 1),
+    "27" = alpha("#3852BB", 1),
+    "28" = alpha("#3852BB", 1),
+    "29" = alpha("#3852BB", 1),
+    "30" = alpha("#3852BB", 1),
+    "31" = alpha("#6ab806", 1),
+    "32" = alpha("#6ab806", 1),
+    "33" = alpha("#6ab806", 1),
+    "34" = alpha("#6ab806", 1),
+    "35" = alpha("#6ab806", 1),
+    "36" = alpha("#6ab806", 1),
+    "37" = alpha("#6ab806", 1),
+    "38" = alpha("#6ab806", 1),
+    "39" = alpha("#6ab806", 1),
+    "40" = alpha("#6ab806", 1),
+    "41" = alpha("#88f200", 1),
+    "42" = alpha("#88f200", 1),
+    "43" = alpha("#88f200", 1),
+    "44" = alpha("#88f200", 1),
+    "45" = alpha("#88f200", 1),
+    "46" = alpha("#88f200", 1),
+    "47" = alpha("#88f200", 1),
+    "48" = alpha("#88f200", 1),
+    "49" = alpha("#88f200", 1),
+    "50" = alpha("#88f200", 1)
+)
+phred_quality_name = c (
+    "0" = "0",
+    "1" = "1",
+    "2" = "2",
+    "3" = "3",
+    "4" = "4",
+    "5" = "5",
+    "6" = "6",
+    "7" = "7",
+    "8" = "8",
+    "9" = "9",
+    "10" = "10",
+    "11" = "11",
+    "12" = "12",
+    "13" = "13",
+    "14" = "14",
+    "15" = "15",
+    "16" = "16",
+    "17" = "17",
+    "18" = "18",
+    "19" = "19",
+    "20" = "20",
+    "21" = "21",
+    "22" = "22",
+    "23" = "23",
+    "24" = "24",
+    "25" = "25",
+    "26" = "26",
+    "27" = "27",
+    "28" = "28",
+    "29" = "29",
+    "30" = "30",
+    "31" = "31",
+    "32" = "32",
+    "33" = "33",
+    "34" = "34",
+    "35" = "35",
+    "36" = "36",
+    "37" = "37",
+    "38" = "38",
+    "39" = "39",
+    "40" = "40",
+    "41" = "41",
+    "42" = "42",
+    "43" = "43",
+    "44" = "44",
+    "45" = "45",
+    "46" = "46",
+    "47" = "47",
+    "48" = "48",
+    "49" = "49",
+    "50" = "50"
+)
+phred_quality_fill_scale = scale_fill_manual (
+  name = "Quality",
+  breaks = phred_quality_order,
+  labels = phred_quality_name,
+  values = phred_quality_color,
+  aesthetics = "fill"
 )
 
 draw_diagram <- function(plot, diagram_filename, diagram_width, diagram_height) {

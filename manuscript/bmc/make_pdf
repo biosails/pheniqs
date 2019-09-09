@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+source function.sh
+
+clean_pdflatex
+make_pdflatex
+clean_pdflatex

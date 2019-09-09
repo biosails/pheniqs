@@ -22,8 +22,8 @@
 
 source("core.R")
 
-diagram_width = diagram_width * 5
-diagram_height =  diagram_height * 5
+diagram_width = diagram_width * 3
+diagram_height =  diagram_height * 4
 
 accurecy_variable_labeller = labeller (
   tool = tool_name,
@@ -36,7 +36,9 @@ plot_measure <- function(data) {
     selected <- data
     selected <- selected[which(selected$requested != 0),]
     selected <- selected[which(selected$rate < maximum_error_rate),]
+    if(exclude_mdd) {
     selected <- selected[which(selected$tool != 'mdd'),]
+    }
     # selected <- selected[which(selected$tool != 'deml'),]
     # selected <- selected[which(selected$tool != 'pamld_ap'),]
     # selected <- selected[which(selected$tool != 'pamld'),]
@@ -49,14 +51,14 @@ plot_measure <- function(data) {
     # selected <- selected[which(selected$variable == 'fscore'),]
 
     selected <- selected[which(selected$variable != 'TP_FN'),]
-    # selected <- selected[which(selected$variable != 'TP_FP'),]
-    # selected <- selected[which(selected$variable != 'FN'),]
-    # selected <- selected[which(selected$variable != 'FP'),]
-    # selected <- selected[which(selected$variable != 'TP'),]
+    selected <- selected[which(selected$variable != 'TP_FP'),]
+    selected <- selected[which(selected$variable != 'FN'),]
+    selected <- selected[which(selected$variable != 'FP'),]
+    selected <- selected[which(selected$variable != 'TP'),]
     selected <- selected[which(selected$variable != 'precision'),]
     selected <- selected[which(selected$variable != 'recall'),]
-    selected <- selected[which(selected$variable != 'MR'),]
-    selected <- selected[which(selected$variable != 'FDR'),]
+    # selected <- selected[which(selected$variable != 'MR'),]
+    # selected <- selected[which(selected$variable != 'FDR'),]
     # selected <- selected[which(selected$variable != 'fscore'),]
 
     benchmark_plot <- ggplot(selected) +
@@ -71,7 +73,7 @@ plot_measure <- function(data) {
       labeller = accurecy_variable_labeller,
       scales = "free",
       strip.position = "left",
-      ncol = 5
+      ncol = 3
     ) +
     geom_line (
         data = selected,
