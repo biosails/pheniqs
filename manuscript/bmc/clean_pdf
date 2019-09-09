@@ -1,5 +1,0 @@
-#!/bin/zsh
-
-source function.sh
-
-clean_pdflatex
