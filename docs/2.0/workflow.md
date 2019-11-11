@@ -63,11 +63,15 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 
 Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **read 1** and **read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
 
-![read anatomy](/pheniqs/assets/img/diagram1.png)
+<center>
+![read anatomy](/pheniqs/assets/img/diagram1.png){ width=60% }
+</center>
 
 The read segments for this standard design thus comprise two technical sequences (referred by Illumina as I1, I2) and two biological sequences (referred by Illumina as R1, R2):
 
-![read anatomy](/pheniqs/assets/img/diagram2.png)
+<center>
+![read anatomy](/pheniqs/assets/img/diagram2.png){ width=60% }
+</center>
 
 # Sequence Classification
 
@@ -75,7 +79,10 @@ The combination of the barcodes contained in the **I1** and **I2** index positio
 
 To identify which biological sequences belong to which library, the sequences belonging each one need to be separated from each other. This process of deconvolving libraries is called demultiplexing and is done by classifying each of the sequences using the barcode indexes:
 
-![read anatomy](/pheniqs/assets/img/diagram5.png)
+<center>
+![read anatomy](/pheniqs/assets/img/diagram5.png){ width=60% }
+</center>
+
 >**Note** The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand
 {: .example}
 
@@ -83,7 +90,9 @@ To identify which biological sequences belong to which library, the sequences be
 
 Pheniqs uses [tokens](manual.html#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
-![read anatomy](/pheniqs/assets/img/diagram7.png)
+<center>
+![read anatomy](/pheniqs/assets/img/diagram7.png){ width=60% }
+</center>
 
 For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Because Illumina sequencing is calibrated in relation to the previously sequenced base, those segments are sometimes sequenced one nucleotide longer than necessary to ensure good quality on the last nucleotide. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
 
@@ -94,6 +103,7 @@ For this design, the barcode tokens begin at position 0 in I1 and I2 and extend 
 Pheniqs can manipulate [SAM, BAM and CRAM](glossary.html#htslib) files as well as uncompressed and gzip compressed [FASTQ](glossary.html#fastq). Configuration and reports are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration.
 
 All of these can be specified with standard templates and may be overridden by additional directives within the configuration file.
+
 After sequence classification, the various tokenized sequences extracted are written along with their respective confidence scores to specific [auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf) within the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format, as outlined below.
 
 | Name                                      | Description                                                    | Example                       |
