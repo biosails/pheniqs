@@ -65,7 +65,9 @@ Illumina sequencing platforms typically produce four different sequence elements
 
 ![read anatomy](/pheniqs/assets/img/diagram1.png)
 
-<img src="/pheniqs/assets/img/diagram1.png" data-canonical-src="/pheniqs/assets/img/diagram1.png" width="500" />
+<img src="/pheniqs/assets/img/diagram1.png" data-canonical-src="/pheniqs/assets/img/diagram1.png" width="650" />
+
+<img src="/pheniqs/assets/img/diagram1.png" data-canonical-src="/pheniqs/assets/img/diagram1.png" width="60%" />
 
 The read segments for this standard design thus comprise two technical sequences (referred by Illumina as I1, I2) and two biological sequences (referred by Illumina as R1, R2):
 
