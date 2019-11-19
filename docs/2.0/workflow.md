@@ -45,7 +45,7 @@ Pheniqs can be configured to handle any arbitrary configuration of biological an
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
 
-![experimental designs](/pheniqs/assets/img/diagram8_150px.png)
+![experimental designs](/pheniqs/assets/img/diagram8.png)
 
 <a name="illumina_python_api" />
 [Prior estimated Illumina with the python API](illumina_python_api.html)
@@ -65,7 +65,7 @@ Illumina sequencing platforms typically produce four different sequence elements
 
 ![read anatomy](/pheniqs/assets/img/diagram1.png)
 
-<img src="/pheniqs/assets/img/diagram1.png" width="500" />
+<img src="/pheniqs/assets/img/diagram1.png" data-canonical-src="/pheniqs/assets/img/diagram1.png" width="500" />
 
 The read segments for this standard design thus comprise two technical sequences (referred by Illumina as I1, I2) and two biological sequences (referred by Illumina as R1, R2):
 
