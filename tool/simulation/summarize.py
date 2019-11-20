@@ -793,9 +793,17 @@ class Summarize(Job):
                                     if 'estimate' in barcode_model:
                                         barcode_bin_model = self.barcode_binning_model[classifier_type]['barcode by index'][str(barcode_model['index'])]
                                         if barcode_bin_model['bin index'] not in binned:
-                                            binned[barcode_bin_model['bin index']] = 0
-                                        error = barcode_model['simulated concentration'] - barcode_model['estimate']['estimated concentration']
-                                        binned[barcode_bin_model['bin index']] += error
+                                            binned[barcode_bin_model['bin index']] = {
+                                                "simulated": 0,
+                                                "estimated": 0,
+                                                "error": 0
+                                            }
+                                        bin = binned[barcode_bin_model['bin index']]
+                                        bin["simulated"] += barcode_model['simulated concentration']
+                                        bin["estimated"] += barcode_model['estimate']['estimated concentration']
+                                        bin["error"] += barcode_model['simulated concentration'] - barcode_model['estimate']['estimated concentration']
+                                        # error = barcode_model['simulated concentration'] - barcode_model['estimate']['estimated concentration']
+                                        # binned[barcode_bin_model['bin index']] += error
 
                         for bin_index in sorted(binned.keys()):
                             row = [
@@ -803,9 +811,9 @@ class Summarize(Job):
                                 simulated_rate,
                                 classifier_type,
                                 bin_index,
-                                classifier_model['simulated noise'],
-                                classifier_model['estimate']['estimated noise'],
-                                binned[bin_index],
+                                binned[bin_index]["simulated"],
+                                binned[bin_index]["estimated"],
+                                binned[bin_index]["error"],
                             ]
                             table.append(row)
 
