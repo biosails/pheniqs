@@ -36,6 +36,7 @@
     <div class="clear" />
 </section>
 
+
 # Barcode Tokens and Transform Patterns
 {:.page-title}
 
@@ -48,11 +49,13 @@ The conceptual framework of sequence classification and demultiplexing employed 
 
 Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
+
 ## Experimental designs
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
 
 ![experimental designs](/pheniqs/assets/img/diagram8.png)
+
 
 ## Read anatomy
 
@@ -64,6 +67,7 @@ The read segments for this standard design thus comprise two technical sequences
 
 ![read anatomy](/pheniqs/assets/img/diagram2.png)
 
+
 ## Sequence Classification
 
 The combination of the barcodes contained in the **I1** and **I2** index positions specifies the sample library. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
@@ -74,6 +78,7 @@ To identify which biological sequences belong to which library, the sequences be
 >**Note** The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand
 {: .example}
 
+
 ## Tokenization
 
 Pheniqs uses [tokens](manual.html#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
@@ -83,6 +88,7 @@ Pheniqs uses [tokens](manual.html#tokenization) to reference and extract informa
 For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Because Illumina sequencing is calibrated in relation to the previously sequenced base, those segments are sometimes sequenced one nucleotide longer than necessary to ensure good quality on the last nucleotide. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
 
 For this design, the barcode tokens begin at position 0 in I1 and I2 and extend for 10 bases. The tokens for biological sequences begin at position 0 of Read 1 and Read 2 and extend for the full span of those read segments.
+
 
 ## Transform Patterns
 
@@ -103,13 +109,12 @@ Barcode _**tokens**_ define the type and location of the sequences of interest i
 
 The _**transform patterns**_ define how each sequence component to be extracted is to be handled. Each token comprises three colon separated components, ``segment:start:end``. Per Python array slicing syntax, the *start* coordinate (offset) is inclusive and the *end* coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
 
-_**Output**_: Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail):
+_**Output**_: Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail). While Pheniqs can also produce FASTQ output, SAM is preferred since it preserves all associated metadata for each read group.
 
 <img src="/pheniqs/assets/img/sam_output.png" width="400" />
 
 The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
 
-While FASTQ can also be produced by Pheniqs, SAM is preferred since it preserves all associated metadata for each read group.
 
 ## Input / Output
 
