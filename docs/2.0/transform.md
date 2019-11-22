@@ -33,25 +33,29 @@
     <div class="clear" />
 </section>
 
-# Overview
+# Tokens and Transform Patterns
 {:.page-title}
 
 * placeholder
 {:toc}
 
-Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs. The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below. Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](workflow.html) of the documentation.
+Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
+
+The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below.
+
+Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
 # Experimental designs
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
 
-![experimental designs](/pheniqs/assets/img/diagram8_150px.png)
+![experimental designs](/pheniqs/assets/img/diagram8.png)
 
 # Read anatomy
 
 Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **read 1** and **read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
 
-![read anatomy](/pheniqs/assets/img/diagram1_150px.png)
+![read anatomy](/pheniqs/assets/img/diagram1.png)
 
 The read segments for this standard design thus comprise two technical sequences (referred by Illumina as I1, I2) and two biological sequences (referred by Illumina as R1, R2):
 
@@ -81,7 +85,7 @@ For this design, the barcode tokens begin at position 0 in I1 and I2 and extend 
 
 The following example illustrates tokenization syntax and output for a 150nt dual-indexed paired-end sequencing run with sample, cellular, and molecular barcodes. This example contains a \textit{sample} barcode composed of two 10nt elements (i5 and i7), a 12nt inline \textit{cellular} barcode (Cell), and a 12nt inline \textit{molecular} barcode (UMI). The biological sequences of interest (\textit{template}) are located in Read 1 (31nt just downstream of the Cell and UMI) and all of Read 2 (here, 75nt).
 
-![transform patterns](/pheniqs/assets/img/transform_patterns.png)
+<img src="/pheniqs/assets/img/transform_patterns.png" width=100% />
 
 Input files containing read \textit{segments} emitted by the sequencer are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
 
