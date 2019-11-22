@@ -90,13 +90,18 @@ This example illustrates tokenization syntax and output for a 150nt dual-indexed
 + A 12nt inline **molecular** barcode (UMI)
 + An **Insert** containing the biological sequence of interest (**template**), which is sequenced from both ends. The template sequences are located in Read 1 (31nt just downstream of the Cell and UMI) and all of Read 2 (here, 75nt).
 
-<img src="/pheniqs/assets/img/transform_patterns.png" width="1000" />
+![transform patterns](/pheniqs/assets/img/transforms.png)
 
 Input files containing read _**segments**_ emitted by the sequencer are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
 
 Barcode _**tokens**_ are defined for each type of barcode included in the experimental design and may appear at any position and orientation in any read segment. Each token comprises three colon separated components, ``segment:start:end``. Per Python array slicing syntax, the *start* coordinate (offset) is inclusive and the *end* coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
 
-Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) (see next section for more detail). The _**confidence score**_ for each token is one minus its estimated error; for the sample barcode, it is the product of the confidence scores for each component and is one minus the error probability shown.
+Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail):
+
+<img src="/pheniqs/assets/img/transforms.png" width="650" />
+
+
+The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
 
 ## Input / Output
 
