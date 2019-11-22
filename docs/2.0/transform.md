@@ -45,13 +45,13 @@ The conceptual framework of sequence classification and demultiplexing employed 
 
 Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
-# Experimental designs
+## Experimental designs
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
 
 ![experimental designs](/pheniqs/assets/img/diagram8.png)
 
-# Read anatomy
+## Read anatomy
 
 Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **read 1** and **read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
 
@@ -61,7 +61,7 @@ The read segments for this standard design thus comprise two technical sequences
 
 ![read anatomy](/pheniqs/assets/img/diagram2.png)
 
-# Sequence Classification
+## Sequence Classification
 
 The combination of the barcodes contained in the **I1** and **I2** index positions specifies the sample library. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
 
@@ -71,7 +71,7 @@ To identify which biological sequences belong to which library, the sequences be
 >**Note** The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand
 {: .example}
 
-# Tokenization
+## Tokenization
 
 Pheniqs uses [tokens](manual.html#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
@@ -81,7 +81,7 @@ For a standard paired-end, dual indexed Illumina run, the sample barcodes usuall
 
 For this design, the barcode tokens begin at position 0 in I1 and I2 and extend for 10 bases. The tokens for biological sequences begin at position 0 of Read 1 and Read 2 and extend for the full span of those read segments.
 
-# Transform Patterns
+## Transform Patterns
 
 The following example illustrates tokenization syntax and output for a 150nt dual-indexed paired-end sequencing run with sample, cellular, and molecular barcodes. This example contains a \textit{sample} barcode composed of two 10nt elements (i5 and i7), a 12nt inline \textit{cellular} barcode (Cell), and a 12nt inline \textit{molecular} barcode (UMI). The biological sequences of interest (\textit{template}) are located in Read 1 (31nt just downstream of the Cell and UMI) and all of Read 2 (here, 75nt).
 
@@ -93,7 +93,7 @@ Barcode \textit{tokens} are defined for each type of barcode included in the exp
 
 Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated SAM field codes (https://samtools.github.io/hts-specs/SAMtags.pdf). The confidence score for each token is one minus its estimated error; for the sample barcode, it is the product of the confidence scores for each component and is one minus the error probability shown.
 
-# Input / Output
+## Input / Output
 
 Pheniqs can manipulate [SAM, BAM and CRAM](glossary.html#htslib) files as well as uncompressed and gzip compressed [FASTQ](glossary.html#fastq). Configuration and reports are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration.
 
