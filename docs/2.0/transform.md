@@ -108,14 +108,14 @@ The _**transform patterns**_ define how each sequence component to be extracted 
 
 ## Output
 
-After sequence classification, the various tokenized sequences extracted are written along with their respective confidence scores to specific [auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf) within the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format. While Pheniqs can also produce FASTQ output, SAM is preferred since it preserves all associated metadata for each read group, as shown below:
+After sequence classification, the tokenized sequences that have been extracted are written along with their associated metadata, including sequence quality and confidence scores, to specific [auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf) within the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format. (While Pheniqs can also produce FASTQ output, SAM is preferred since it preserves all associated metadata for each read group.)
 
 <img src="/pheniqs/assets/img/sam_output.png" width="400" />
 
->Sample output for the above experimental design. Template read segments are emitted along with observed and most likely inferred barcode sequences, quality scores, and error probabilities. The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
+>Sample output for the 150nt paired-end dual-indexed experimental design shown above. Template read segments are emitted along with observed and most likely inferred barcode sequences, quality scores, and error probabilities. The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
 {: .example}
 
-The SAM tags used by Pheniqs are summarized below: 
+The SAM tags populated by Pheniqs are summarized below:
 
 | Name                                      | Description                                                    | Example                       |
 | :---------------------------------------- | :------------------------------------------------------------- | :---------------------------- |
