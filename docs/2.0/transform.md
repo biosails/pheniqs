@@ -43,18 +43,16 @@
 * placeholder
 {:toc}
 
-Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
-
-The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below.
-
-Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
+The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below. Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
 
 
-## Experimental designs
+## Experimental Design
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
 
 ![experimental designs](/pheniqs/assets/img/diagram8.png)
+
+More complicated designs for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
 
 ## Read anatomy
