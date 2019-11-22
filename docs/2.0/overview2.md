@@ -56,11 +56,13 @@ The essential components of a Pheniqs workflow are illustrated below:
 
 Pheniqs is designed to take sequence files and configuration directives as input. All standard formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input.
 
+Pheniqs can manipulate [SAM, BAM and CRAM](glossary.html#htslib) files as well as uncompressed and gzip compressed [FASTQ](glossary.html#fastq).
+
 ## Configuration
 
 Pheniqs needs to know a variety of things before it can proceed with a decoding run. These include file paths and names of input / output files, barcode sets, transform directives for extracting tokens, and a variety of metadata, such as expected sample proportions of different libraries that have been multiplexed.
 
-A summary of all configuration directives is provided in the [Configuration](configuration.html) page.
+Configuration files are are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration with automated pipelines. A summary of all configuration directives is provided in the [Configuration](configuration.html) page.
 
 ## Tokenization
 
@@ -74,4 +76,10 @@ Examples of how to configure tokenization transform patterns for a handful of pu
 
 ## Output
 
+... see Tokenization page ...
+
+All of these can be specified with standard templates and may be overridden by additional directives within the configuration file.
+
 ## Run Report
+
+... Reports are [JSON](https://en.wikipedia.org/wiki/JSON) encoded, which makes them easy to parse and use for producing tabular data and visualizations.

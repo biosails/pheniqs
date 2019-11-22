@@ -100,28 +100,22 @@ This example illustrates tokenization syntax and output for a 150nt dual-indexed
 
 ![transform patterns](/pheniqs/assets/img/transforms.png)
 
-_**Input files**_ contain sequence data to be analyzed. For Illumina data, these will usually be in fastq format and there will be one file for each read _**segment**_ that comes off the sequencing machine.
-
+>_**Input files**_ contain sequence data to be analyzed. For Illumina data, these will usually be in fastq format and there will be one file for each read _**segment**_ that comes off the sequencing machine.
 The read _**segments**_ are catalogued for future reference and are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
-
 Barcode _**tokens**_ define the type and location of the sequences of interest in each read segment. Barcodes may appear at any position and orientation in any read segment. Each type of barcode included in the experimental design is designated as a separate entity.
-
 The _**transform patterns**_ define how each sequence component to be extracted is to be handled. Each token comprises three colon separated components, ``segment:start:end``. Per Python array slicing syntax, the *start* coordinate (offset) is inclusive and the *end* coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
+{: .example}
 
-_**Output**_: Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail). While Pheniqs can also produce FASTQ output, SAM is preferred since it preserves all associated metadata for each read group.
+## Output
+
+After sequence classification, the various tokenized sequences extracted are written along with their respective confidence scores to specific [auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf) within the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format. While Pheniqs can also produce FASTQ output, SAM is preferred since it preserves all associated metadata for each read group, as shown below:
 
 <img src="/pheniqs/assets/img/sam_output.png" width="400" />
 
-The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
+>Sample output for the above experimental design. Template read segments are emitted along with observed and most likely inferred barcode sequences, quality scores, and error probabilities. The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
+{: .example}
 
-
-## Input / Output
-
-Pheniqs can manipulate [SAM, BAM and CRAM](glossary.html#htslib) files as well as uncompressed and gzip compressed [FASTQ](glossary.html#fastq). Configuration and reports are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration.
-
-All of these can be specified with standard templates and may be overridden by additional directives within the configuration file.
-
-After sequence classification, the various tokenized sequences extracted are written along with their respective confidence scores to specific [auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf) within the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format, as outlined below.
+The SAM tags used by Pheniqs are summarized below: 
 
 | Name                                      | Description                                                    | Example                       |
 | :---------------------------------------- | :------------------------------------------------------------- | :---------------------------- |
