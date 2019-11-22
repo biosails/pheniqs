@@ -23,8 +23,7 @@
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/pheniqs/2.0/transform.html">Tokens</a></li>
+        <li><a class="active"   href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
@@ -34,45 +33,54 @@
     <div class="clear" />
 </section>
 
-# Barcode Tokens and Transform Patterns
+# Overview
 {:.page-title}
 
 * placeholder
 {:toc}
 
-Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
+Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs. The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below. Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](workflow.html) of the documentation.
 
-The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below.
-
-Examples of how to configure Pheniqs for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
-
-## Experimental designs
+# Experimental designs
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
 
-![experimental designs](/pheniqs/assets/img/diagram8.png)
+![read anatomy](/pheniqs/assets/img/diagram8.png)
+<a name="illumina_python_api" />
+[Prior estimated Illumina with the python API](illumina_python_api.html)
+: This vignette will walk you through demultiplexing a dual indexed paired end NovaSeq 6000 run with the Pheniqs python API. It will show you how to generate configuration files from the Illumina run folder, estimate the sample barcode priors and demultiplex the run. It loosely applies to almost every standard sample multiplex Illumina run.
 
-## Read anatomy
+<a name="standard_illumina" />
+[Standard Illumina sample demultiplexing](illumina.html)
+: This vignette will walk you through writing configuration files for demultiplexing a standard Illumina high throughput sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding).
+
+<a name="fluidigm" />
+[Fluidigm with a sample and a cellular tag](fluidigm.html)
+: This vignette will walk you through a single index fluidigm sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding).
+
+# Read anatomy
 
 Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **read 1** and **read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
 
 ![read anatomy](/pheniqs/assets/img/diagram1.png)
+<!-- <img src="/pheniqs/assets/img/diagram1.png" width="75%" class="figure_medium" /> -->
 
 The read segments for this standard design thus comprise two technical sequences (referred by Illumina as I1, I2) and two biological sequences (referred by Illumina as R1, R2):
 
-![read anatomy](/pheniqs/assets/img/diagram2.png)
+<img src="/pheniqs/assets/img/diagram2.png" width="75%" class="figure_medium" />
 
-## Sequence Classification
+# Sequence Classification
 
 The combination of the barcodes contained in the **I1** and **I2** index positions specifies the sample library. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
 
 To identify which biological sequences belong to which library, the sequences belonging each one need to be separated from each other. This process of deconvolving libraries is called demultiplexing and is done by classifying each of the sequences using the barcode indexes:
 
 ![read anatomy](/pheniqs/assets/img/diagram5.png)
+
 >**Note** The i5 adaptor sequences specified in sample sheets will be reverse complemented for platforms that read the I2 index on the bottom strand. The i7 sequences in sample sheets are always reverse complemented relative to the original adaptor sequences since they are read from the top strand
 {: .example}
 
-## Tokenization
+# Tokenization
 
 Pheniqs uses [tokens](manual.html#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary.html#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
@@ -82,29 +90,7 @@ For a standard paired-end, dual indexed Illumina run, the sample barcodes usuall
 
 For this design, the barcode tokens begin at position 0 in I1 and I2 and extend for 10 bases. The tokens for biological sequences begin at position 0 of Read 1 and Read 2 and extend for the full span of those read segments.
 
-## Transform Patterns
-
-This example illustrates tokenization syntax and output for a 150nt dual-indexed paired-end sequencing run with sample, cellular, and molecular barcodes. This example contains the following features:
-
-+ A **sample** barcode composed of two 10nt elements (i5 and i7)
-+ A 12nt inline **cellular** barcode (Cell)
-+ A 12nt inline **molecular** barcode (UMI)
-+ An **Insert** containing the biological sequence of interest (**template**), which is sequenced from both ends. The template sequences are located in Read 1 (31nt just downstream of the Cell and UMI) and all of Read 2 (here, 75nt).
-
-![transform patterns](/pheniqs/assets/img/transforms.png)
-
-Input files containing read _**segments**_ emitted by the sequencer are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
-
-Barcode _**tokens**_ are defined for each type of barcode included in the experimental design and may appear at any position and orientation in any read segment. Each token comprises three colon separated components, ``segment:start:end``. Per Python array slicing syntax, the *start* coordinate (offset) is inclusive and the *end* coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
-
-Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail):
-
-<img src="/pheniqs/assets/img/sam_output.png" width="400" />
-
-
-The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
-
-## Input / Output
+# Input / Output
 
 Pheniqs can manipulate [SAM, BAM and CRAM](glossary.html#htslib) files as well as uncompressed and gzip compressed [FASTQ](glossary.html#fastq). Configuration and reports are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration.
 
