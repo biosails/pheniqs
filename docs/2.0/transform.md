@@ -85,7 +85,7 @@ For this design, the barcode tokens begin at position 0 in I1 and I2 and extend 
 
 The following example illustrates tokenization syntax and output for a 150nt dual-indexed paired-end sequencing run with sample, cellular, and molecular barcodes. This example contains a \textit{sample} barcode composed of two 10nt elements (i5 and i7), a 12nt inline \textit{cellular} barcode (Cell), and a 12nt inline \textit{molecular} barcode (UMI). The biological sequences of interest (\textit{template}) are located in Read 1 (31nt just downstream of the Cell and UMI) and all of Read 2 (here, 75nt).
 
-<img src="/pheniqs/assets/img/transform_patterns.png" width=100% />
+<img src="/pheniqs/assets/img/transform_patterns.png" width=750 />
 
 Input files containing read \textit{segments} emitted by the sequencer are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
 
