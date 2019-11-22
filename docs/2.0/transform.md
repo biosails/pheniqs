@@ -22,11 +22,13 @@
 <section id="navigation">
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
+        <li><a                  href="/pheniqs/2.0/overview.html">Overview</a></li>
+        <li><a                  href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
         <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/2.0/transform.html">Tokens</a></li>
-        <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
-        <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
+        <li><a                  href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
+        <li><a                  href="/pheniqs/2.0/install2.html">Install</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
         <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
@@ -93,16 +95,21 @@ This example illustrates tokenization syntax and output for a 150nt dual-indexed
 
 ![transform patterns](/pheniqs/assets/img/transforms.png)
 
-Input files containing read _**segments**_ emitted by the sequencer are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
+_**Input files**_ contain sequence data to be analyzed. For Illumina data, these will usually be in fastq format and there will be one file for each read _**segment**_ that comes off the sequencing machine.
 
-Barcode _**tokens**_ are defined for each type of barcode included in the experimental design and may appear at any position and orientation in any read segment. Each token comprises three colon separated components, ``segment:start:end``. Per Python array slicing syntax, the *start* coordinate (offset) is inclusive and the *end* coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
+The read _**segments**_ are catalogued for future reference and are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
 
-Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail):
+Barcode _**tokens**_ define the type and location of the sequences of interest in each read segment. Barcodes may appear at any position and orientation in any read segment. Each type of barcode included in the experimental design is designated as a separate entity.
+
+The _**transform patterns**_ define how each sequence component to be extracted is to be handled. Each token comprises three colon separated components, ``segment:start:end``. Per Python array slicing syntax, the *start* coordinate (offset) is inclusive and the *end* coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
+
+_**Output**_: Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail):
 
 <img src="/pheniqs/assets/img/sam_output.png" width="400" />
 
-
 The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
+
+While FASTQ can also be produced by Pheniqs, SAM is preferred since it preserves all associated metadata for each read group.
 
 ## Input / Output
 
