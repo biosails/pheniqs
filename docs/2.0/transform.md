@@ -98,7 +98,7 @@ Barcode _**tokens**_ are defined for each type of barcode included in the experi
 
 Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated [SAM field codes](https://samtools.github.io/hts-specs/SAMtags.pdf) as shown below (see next section for more detail):
 
-<img src="/pheniqs/assets/img/sam_output.png" width="650" />
+<img src="/pheniqs/assets/img/sam_output.png" width="500" />
 
 
 The _**confidence score**_ for each token is one minus its estimated error based on the full posterior probability of observation; for the compound sample barcode here, it is the product of the confidence scores for each component and is one minus the error probability shown.
