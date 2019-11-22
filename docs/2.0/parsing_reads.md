@@ -74,6 +74,18 @@ For a standard paired-end, dual indexed Illumina run, the sample barcodes usuall
 
 For this design, the barcode tokens begin at position 0 in I1 and I2 and extend for 10 bases. The tokens for biological sequences begin at position 0 of Read 1 and Read 2 and extend for the full span of those read segments.
 
+# Transform Patterns
+
+The following example illustrates tokenization syntax and output for a 150nt dual-indexed paired-end sequencing run with sample, cellular, and molecular barcodes. This example contains a \textit{sample} barcode composed of two 10nt elements (i5 and i7), a 12nt inline \textit{cellular} barcode (Cell), and a 12nt inline \textit{molecular} barcode (UMI). The biological sequences of interest (\textit{template}) are located in Read 1 (31nt just downstream of the Cell and UMI) and all of Read 2 (here, 75nt).
+
+![transform patterns](/pheniqs/assets/img/transform_patterns.png)
+
+Input files containing read \textit{segments} emitted by the sequencer are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
+
+Barcode \textit{tokens} are defined for each type of barcode included in the experimental design and may appear at any position and orientation in any read segment. Each token comprises three colon separated components, ``"segment:start:end"``. Per Python array slicing syntax, the \textit{start} coordinate (offset) is inclusive and the \textit{end} coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
+
+Template read segments, observed and most likely inferred barcode sequences, quality scores, and error probabilities are emitted to designated SAM field codes (https://samtools.github.io/hts-specs/SAMtags.pdf). The confidence score for each token is one minus its estimated error; for the sample barcode, it is the product of the confidence scores for each component and is one minus the error probability shown.
+
 # Input / Output
 
 Pheniqs can manipulate [SAM, BAM and CRAM](glossary.html#htslib) files as well as uncompressed and gzip compressed [FASTQ](glossary.html#fastq). Configuration and reports are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration.
