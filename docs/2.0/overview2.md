@@ -83,7 +83,7 @@ Pheniqs currently implements two types of decoders to infer barcode sequences to
 + A **Phred-adjusted maximum likelihood decoder (PAMLD)**, which consults sequence quality scores and prior sample distributions to compute the full posterior probability for observed barcodes. PAMLD implements two successive filters to determine decoding success or failure, a _noise_ filter and a _high confidence_ filter:
 
 <!-- ![PAMLD](/pheniqs/assets/img/pamld.png) -->
-<img src="/pheniqs/assets/img/pamld.png" style="img_small" />
+<img src="/pheniqs/assets/img/pamld.png" style="img-small" />
 
 Reads with a lower conditional probability than random sequences fail the noise filter and are classified as noise without further consideration. Reads with a posterior probability that does not meet the confidence threshold fail the confidence filter; these reads are classified, but they are marked as "qc fail" so the confidence threshold can be reconsidered at alater stage. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found [here]().
 
