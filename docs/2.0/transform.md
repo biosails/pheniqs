@@ -23,9 +23,7 @@
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/overview2.html">Overview</a></li>
-        <li><a                  href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a                  href="/pheniqs/2.0/transform.html">Tokens</a></li>
         <li><a                  href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
         <li><a                  href="/pheniqs/2.0/install2.html">Install</a></li>

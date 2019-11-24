@@ -38,25 +38,20 @@
 * placeholder
 {:toc}
 
-Different types of experiments use different barcoding schemes. This page will (hopefully) help you figure out how to configure Pheniqs for your particular application.
+Examples of how to configure Pheniqs for a handful of published experimental designs are provided below to help users get started with their own applications.
 
-Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experiments. _transform patterns_ define the number, location, and type of barcodes to be extracted, which will vary depending on the specific experimental design. Different types of sequences are extracted using _tokens_:
-
-![transform patterns](transform_patterns.png)
+Different types of experiments use different barcoding schemes. The number, location, and type of barcodes to be extracted, which will vary depending on the specific experimental design. Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experiments. Different types of sequences are extracted using _tokens_ and handled using _transform patterns_.
 
 See the [**Overview**](overview.html) page for more information on common types of experimental designs, read layouts, tokenization, and transform patterns.
 
 The [**Tokenization and Transform Patterns**](transform.html) page provides a high-level view of how transform patterns are constructed and the output they provide.
 
-Examples of how to configure Pheniqs for a handful of published experimental designs are provided here to help users get started with their own applications.
-
-# Background
-
 To configure Pheniqs for any particular workflow, it helps to have some idea about next-gen sequencing technology, adapters and barcode sets, Illumina's bcl2fastq softare, FASTQ and SAM file formats, and some general terminology. Please see the [**Background**](background.html) page for some tips on these if you are not familiar with these.
+
 
 # Vignettes
 
-Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
+Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Follow the links below for descriptions of barcoding schemes for different experimental scenarios:
 
 <a name="illumina_python_api" />
 ![read anatomy](/pheniqs/assets/img/diagram8.png)
