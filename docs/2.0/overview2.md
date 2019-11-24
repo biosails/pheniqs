@@ -41,40 +41,47 @@
 * placeholder
 {:toc}
 
-The essential components of a Pheniqs workflow are illustrated below:
+The framework of a Pheniqs run includes three main steps: validating run parameters, extracting sequence elements from input sequence reads, and decoding each element according to a set of rules provided in the configuration:
 
 ![overview](/pheniqs/assets/img/Pheniqs_overview_web.png)
 
-+ Input files: FASTQ or SAM-formatted files.
-+ Configuration file: Pheniqs can be run with default parameters, but in most cases a configuration file will be required.
-+ Tokenization: Each read segment is parsed to extract the sequences of interest as specified in the configuration.
-+ Decoding: For each barcode, Pheniqs may perform either probabilistic decoding (PAMLD, preferred) or simple minimum distance decoding (MDD).
-+ Output: Biological sequences, observed and inferred barcode sequences, quality scores, and decoding error probabilities are emitted as output. Sequence Alignment/Map (SAM) format is preferred, but FASTQ may also be emitted.
-+ Run Report: Summary statistics about the decoding run are also provided.
+The essential components of a Pheniqs workflow are:
++ **Input** files: FASTQ or SAM-formatted files.
++ **Configuration**: All runtime directives, including I/O, sequence elements of interest, barcode sets, metadata, and any prior information about sample distributions. Pheniqs can be run with default parameters, but in most cases a configuration file will be required.
++ **Tokenization**: Each read segment is parsed to extract each sequence element to be processed, as specified in the configuration.
++ **Decoding**: For each barcode, Pheniqs will perform either probabilistic decoding (PAMLD, preferred) or simple minimum distance decoding (MDD), as specified in the configuration.
++ **Output**: Biological sequences, observed and inferred barcode sequences, quality scores, and decoding error probabilities are emitted as output. Sequence Alignment/Map (SAM) format is preferred, but FASTQ may also be emitted.
++ **Run Report**: Summary statistics about the decoding run are computed and written in a machine-readable JSON format, which can be easily parsed for visual display.
 
 ## Input
 
-Pheniqs is designed to take sequence files and configuration directives as input. All standard formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input.
-
-Pheniqs can manipulate [SAM, BAM and CRAM](glossary.html#htslib) files as well as uncompressed and gzip compressed [FASTQ](glossary.html#fastq).
+Pheniqs is designed to take **sequence** files and **configuration** directives as input. All standard sequence file formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input. Pheniqs can manipulate both uncompressed and gzip compressed [FASTQ](glossary.html#fastq), as well as [SAM, BAM and CRAM](glossary.html#htslib) files.
 
 ## Configuration
 
-Pheniqs needs to know a variety of things before it can proceed with a decoding run. These include file paths and names of input / output files, barcode sets, transform directives for extracting tokens, and a variety of metadata, such as expected sample proportions of different libraries that have been multiplexed.
+Pheniqs needs to know a bunch of things in order to execute a decoding run. Required parameters include input / output file names and paths, barcode sets, transform directives for extracting tokens, and a variety of metadata, such as expected proportions of multiplexed sample libraries.
 
-Configuration files are are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration with automated pipelines. A summary of all configuration directives is provided in the [Configuration](configuration.html) page.
+If no user-provided configuration file is available, Pheniqs will run with defaults for all parameters, but in most cases a configuration file will be needed to specify all of the run-specific information. Configuration files are are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration with automated pipelines.
+
+A summary of all configuration directives is provided in the [Configuration](configuration.html) page.
 
 ## Tokenization
 
-Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
+Due to its flexible syntax for parsing read segments, Pheniqs can accommodate virtually any experimental design. Configuration directives will handle any combination of biological and technical sequences, such as barcoded multiplexed sample libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
 
-Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. An overview of how Pheniqs parses sequence reads is provided in the [Tokens](transform.html) page.
+An overview of how Pheniqs parses sequence reads is provided in the [Tokens](transform.html) page.
 
 Examples of how to configure tokenization transform patterns for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
 ## Decoding
 
+Pheniqs currently implements two types of decoders to infer barcode sequences to be used for sequence classification:
+
++ A standard **minimum distance decoder (MDD)** that uses Hamming (edit) distance and simple string matching to allow zero or more errors per barcode, and
++ A **Phred-adjusted maximum likelihood decoder (PAMLD)**, which consults sequence quality scores and prior sample distributions to compute the full posterior probability for observed barcodes. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found [here]().
+
 ## Output
+
 
 ... see Tokenization page ...
 

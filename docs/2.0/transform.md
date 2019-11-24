@@ -43,16 +43,17 @@
 * placeholder
 {:toc}
 
-The conceptual framework of sequence classification and demultiplexing employed by Pheniqs is summarized below. Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
+Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
 
+The conceptual framework that Pheniqs uses to extract different types of elements within sequence reads is summarized below.
 
 ## Experimental Design
 
-Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some common designs for the Illumina platform are illustrated here:
+Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some very common designs for Illumina platforms are illustrated here:
 
 ![experimental designs](/pheniqs/assets/img/diagram8.png)
 
-More complicated designs for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
+More complicated barcoding schemes for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
 
 ## Read anatomy
@@ -133,3 +134,7 @@ The SAM tags populated by Pheniqs are summarized below:
 | **[OX](glossary.html#ox_auxiliary_tag)**  | Raw uncorrected molecular barcode sequence.                    |                               |
 | **[BZ](glossary.html#bz_auxiliary_tag)**  | Phred quality of the molecular barcode sequence in the OX tag. |                               |
 | **[XM](glossary.html#xm_auxiliary_tag)**  | The probability that molecular barcode decoding is incorrect.  |                               |
+
+---
+
+## Key Concepts
