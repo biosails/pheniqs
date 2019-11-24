@@ -23,7 +23,7 @@
     <ul>
         <li><a                  href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/workflow.html">Overview</a></li>
+        <li><a class="active"   href="/pheniqs/2.0/overview2.html">Overview</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
         <li><a class="active"   href="/pheniqs/2.0/transform.html">Tokens</a></li>
         <li><a class="active"   href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
@@ -34,9 +34,6 @@
     </ul>
     <div class="clear" />
 </section>
-
-# Overview
-{:.page-title}
 
 * placeholder
 {:toc}
@@ -53,11 +50,11 @@ The essential components of a Pheniqs workflow are:
 + **Output**: Biological sequences, observed and inferred barcode sequences, quality scores, and decoding error probabilities are emitted as output. Sequence Alignment/Map (SAM) format is preferred, but FASTQ may also be emitted.
 + **Run Report**: Summary statistics about the decoding run are computed and written in a machine-readable JSON format, which can be easily parsed for visual display.
 
-## Input
+# Input
 
 Pheniqs is designed to take **sequence** files as input. All standard sequence file formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input. Pheniqs can manipulate both uncompressed and gzip compressed [FASTQ](glossary.html#fastq), as well as [SAM, BAM and CRAM](glossary.html#htslib) files.
 
-## Configuration
+# Configuration
 
 Pheniqs also needs **configuration** directives in order to execute a decoding run. Required parameters include input / output file names and paths, barcode sets, transform directives for extracting tokens, and a variety of metadata, such as expected proportions of multiplexed sample libraries.
 
@@ -67,7 +64,7 @@ At the beginning of a run, Pheniqs will **compile and validate** the configured 
 
 If **prior estimation** of barcode distributions are planned, a preliminary run will be executed and the configuration will be updated accordingly.
 
-## Tokenization
+# Tokenization
 
 Due to its flexible syntax for parsing read segments, Pheniqs can accommodate virtually any experimental design. Configuration directives will handle any combination of biological and technical sequences, such as barcoded multiplexed sample libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
 
@@ -75,26 +72,27 @@ An overview of how Pheniqs parses sequence reads is provided in the [Tokens](tra
 
 Examples of how to configure tokenization transform patterns for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
-## Decoding
+# Decoding
 
 Pheniqs currently implements two types of decoders to infer barcode sequences to be used for sequence classification:
 
 + A standard **minimum distance decoder (MDD)** that uses Hamming (edit) distance and simple string matching to allow zero or more errors per barcode, and
 + A **Phred-adjusted maximum likelihood decoder (PAMLD)**, which consults sequence quality scores and prior sample distributions to compute the full posterior probability for observed barcodes. PAMLD implements two successive filters to determine decoding success or failure, a _noise_ filter and a _high confidence_ filter:
 
-<!-- ![PAMLD](/pheniqs/assets/img/pamld.png) -->
-<img src="/pheniqs/assets/img/pamld.png" style="img-small" />
+![PAMLD](/pheniqs/assets/img/pamld.png)
+{: .img-small}
+<!-- <img src="/pheniqs/assets/img/pamld.png" style="img-small" /> -->
 
 Reads with a lower conditional probability than random sequences fail the noise filter and are classified as noise without further consideration. Reads with a posterior probability that does not meet the confidence threshold fail the confidence filter; these reads are classified, but they are marked as "qc fail" so the confidence threshold can be reconsidered at alater stage. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found [here]().
 
 Pheniqs is designed to accommodate the addition of alternative decoders, which can be added as derived classes of a generic decoder object.
 
-## Output
+# Output
 
 Biological sequence read segments are emitted along with observed and corrected barcode sequences and decoding error probability scores for each barcode. All of these may be specified with standard templates and may be overridden by additional directives within the configuration file.
 
 The error score is computed as one minus the confidence score; for compound barcodes, it is one minus the product of the individual confidence scores. An example of the output is provided on the [Tokenization](transform.html) page.
 
-## Run Report
+# Run Report
 
 Summary statistics for each run are also generated. Run reports are [JSON](https://en.wikipedia.org/wiki/JSON) encoded, which makes them easy to parse and use for producing tabular data and visualizations.
