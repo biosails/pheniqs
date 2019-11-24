@@ -43,7 +43,7 @@
 
 The framework of a Pheniqs run includes three main steps: validating run parameters, extracting sequence elements from input sequence reads, and decoding each element according to a set of rules provided in the configuration:
 
-![overview](/pheniqs/assets/img/Pheniqs_overview_web2.png)
+![overview](/pheniqs/assets/img/pheniqs_overview_web2.png)
 
 The essential components of a Pheniqs workflow are:
 + **Input**: FASTQ or SAM-formatted sequence files.
@@ -80,7 +80,13 @@ Examples of how to configure tokenization transform patterns for a handful of pu
 Pheniqs currently implements two types of decoders to infer barcode sequences to be used for sequence classification:
 
 + A standard **minimum distance decoder (MDD)** that uses Hamming (edit) distance and simple string matching to allow zero or more errors per barcode, and
-+ A **Phred-adjusted maximum likelihood decoder (PAMLD)**, which consults sequence quality scores and prior sample distributions to compute the full posterior probability for observed barcodes. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found [here]().
++ A **Phred-adjusted maximum likelihood decoder (PAMLD)**, which consults sequence quality scores and prior sample distributions to compute the full posterior probability for observed barcodes. PAMLD implements two successive filters to determine decoding success or failure, a _noise_ filter and a _high confidence_ filter:
+
+![PAMLD](pamld.png)
+
+Reads with a lower conditional probability than random sequences fail the noise filter and are classified as noise without further consideration. Reads with a posterior probability that does not meet the confidence threshold fail the confidence filter; these reads are classified, but they are marked as "qc fail" so the confidence threshold can be reconsidered at alater stage. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found [here]().
+
+Pheniqs is designed to accommodate the addition of alternative decoders, which can be added as derived classes of a generic decoder object.
 
 ## Output
 
