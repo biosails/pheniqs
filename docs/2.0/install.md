@@ -24,8 +24,8 @@
         <li><a class="active"   href="/pheniqs/2.0/">Home</a></li>
         <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
         <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
+        <li><a                  href="/pheniqs/2.0/build.html">Vignettes</a></li>
         <li><a class="active"   href="/pheniqs/2.0/install.html">Install</a></li>
-        <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
         <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
         <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
@@ -33,8 +33,10 @@
     <div class="clear" />
 </section>
 
-# Installing
+# Installation
 {:.page-title}
+
+Pheniqs is distributed as precompiled binaries, which may be installed with package managers as described below. To build it from scratch, please look <a href="/pheniqs/2.0/build.html">here</a>.
 
 ## Installing with homebrew on MacOS
 **coming soon**
