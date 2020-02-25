@@ -31,7 +31,6 @@
 #include "mdd.h"
 #include "pamld.h"
 #include "metric.h"
-
 #include "multiplex.h"
 
 class Transcode;
@@ -187,6 +186,7 @@ class TranscodePivot {
                     classifier->finalize();
                 }
             }
+            multiplexer.finalize();
         };
 
     protected:

@@ -175,6 +175,7 @@ Transcode& Transcode::operator+=(const TranscodePivot& pivot) {
             *(cellular_classifier_array[index]) += *(pivot.cellular_classifier_array[index]);
         }
     }
+    *multiplexer += pivot.multiplexer;
     return *this;
 };
 
@@ -1059,20 +1060,20 @@ void Transcode::compile_output() {
                     ++index;
                 }
 
-                /* add the output feed by segment element to each channel */
-                for(auto& element : channel_reference_list) {
-                    list< URL > feed_url_array;
-                    if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
-                        Value feed_by_segment(kArrayType);
-                        for(const auto& url : feed_url_array) {
-                            const Value& proxy(feed_ontology_by_url[url]);
-                            feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                        }
-                        element->RemoveMember("feed");
-                        element->AddMember("feed", Value(kObjectType).Move(), ontology.GetAllocator());
-                        (*element)["feed"].AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
-                    }
-                }
+                // /* add the output feed by segment element to each channel */
+                // for(auto& element : channel_reference_list) {
+                //     list< URL > feed_url_array;
+                //     if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+                //         Value feed_by_segment(kArrayType);
+                //         for(const auto& url : feed_url_array) {
+                //             const Value& proxy(feed_ontology_by_url[url]);
+                //             feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
+                //         }
+                //         element->RemoveMember("feed");
+                //         element->AddMember("feed", Value(kObjectType).Move(), ontology.GetAllocator());
+                //         (*element)["feed"].AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
+                //     }
+                // }
 
                 Value feed_array(kArrayType);
                 for(auto& record : feed_ontology_by_url) {
@@ -1586,11 +1587,16 @@ void Transcode::finalize() {
         report.AddMember("incoming", element.Move(), report.GetAllocator());
     }
 
-    /*  collect statistics from the accumulators on all pivot threads */
     for(auto& pivot : pivot_array) {
         *this += pivot;
     }
 
+    if(multiplexer != NULL) {
+        multiplexer->finalize();
+        multiplexer->encode(report, report);
+    }
+
+    /*  collect statistics from the accumulators on all pivot threads */
     if(!sample_classifier_array.empty()) {
         Value array(kArrayType);
         for(auto& classifier : sample_classifier_array) {
