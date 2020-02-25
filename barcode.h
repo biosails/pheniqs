@@ -44,7 +44,8 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingTag {
             return index == 0;
         };
         operator string() const {
-            /* NOTICE this is in BAM encoding not iupac and will not look as expected when printed */
+            /*  NOTICE this is in BAM encoding not iupac and will not look as expected when printed
+                Used by MDD for exact match */
             string key;
             for(const auto& segment : segment_array) {
                 for(int32_t i(0); i < segment.length; ++i) {

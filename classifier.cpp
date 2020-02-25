@@ -20,3 +20,24 @@
 */
 
 #include "classifier.h"
+
+vector< string > decode_tag_ID_by_index(const Value& ontology) {
+    vector< string > value;
+    if(ontology.IsObject()) {
+        Value::ConstMemberIterator undetermined_reference = ontology.FindMember("undetermined");
+        if(undetermined_reference != ontology.MemberEnd()) {
+            Value::ConstMemberIterator codec_reference = ontology.FindMember("codec");
+            if(codec_reference != ontology.MemberEnd()) {
+                value.reserve(codec_reference->value.MemberCount() + 1);
+                value.emplace_back(decode_value_by_key< string >("ID", undetermined_reference->value));
+                for(auto& record : codec_reference->value.GetObject()) {
+                    value.emplace_back(decode_value_by_key< string >("ID", record.value));
+                }
+            } else {
+                value.reserve(1);
+                value.emplace_back(decode_value_by_key< string >("ID", undetermined_reference->value));
+            }
+        } else { throw ConfigurationError("classifier must declare an undetermined element"); }
+    }
+    return value;
+};

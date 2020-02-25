@@ -246,17 +246,16 @@ class Auxiliary {
         void decode(const bam1_t* bam1);
         void encode(bam1_t* bam1) const;
 
-        inline void set_RG(const HeadRGAtom& rg) {
-            if(ks_not_empty(rg.ID)) ks_put_string(rg.ID, RG);
+        inline void set_RG(const string& rg) {
+            if(!rg.empty()) ks_put_string(rg, RG);
         };
-
-        inline void update_multiplex_barcode(const Barcode& barcode) {
+        inline void update_sample_barcode(const Barcode& barcode) {
             if(ks_not_empty(BC)) {
                 ks_put_character('-', BC);
             }
             barcode.encode_iupac_ambiguity(BC);
         };
-        inline void update_multiplex_barcode(const Observation& observation) {
+        inline void update_sample_barcode(const Observation& observation) {
             if(ks_not_empty(BC)) {
                 ks_put_character('-', BC);
                 ks_put_character(' ', QT);

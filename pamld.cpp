@@ -117,7 +117,8 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
 };
 
 PamlSampleDecoder::PamlSampleDecoder(const Value& ontology) try :
-    PamlDecoder< Barcode >(ontology) {
+    PamlDecoder< Barcode >(ontology),
+    rg_by_barcode_index(decode_tag_ID_by_index(ontology)) {
 
     } catch(Error& error) {
         error.push("PamlSampleDecoder");
@@ -125,9 +126,10 @@ PamlSampleDecoder::PamlSampleDecoder(const Value& ontology) try :
 };
 void PamlSampleDecoder::classify(const Read& input, Read& output) {
     PamlDecoder< Barcode >::classify(input, output);
-    output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->decoding_hamming_distance);
-    output.update_multiplex_decoding_confidence(this->decoding_confidence);
+    output.update_sample_barcode(this->observation);
+    output.update_sample_distance(this->decoding_hamming_distance);
+    output.update_sample_decoding_confidence(this->decoding_confidence);
+    output.set_RG(this->rg_by_barcode_index[this->decoded->index]);
 };
 
 PamlCellularDecoder::PamlCellularDecoder(const Value& ontology) try :

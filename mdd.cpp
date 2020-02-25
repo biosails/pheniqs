@@ -83,7 +83,8 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
 };
 
 MdSampleDecoder::MdSampleDecoder(const Value& ontology) try :
-    MdDecoder< Barcode >(ontology) {
+    MdDecoder< Barcode >(ontology),
+    rg_by_barcode_index(decode_tag_ID_by_index(ontology)) {
 
     } catch(Error& error) {
         error.push("MdSampleDecoder");
@@ -91,8 +92,9 @@ MdSampleDecoder::MdSampleDecoder(const Value& ontology) try :
 };
 void MdSampleDecoder::classify(const Read& input, Read& output) {
     MdDecoder< Barcode >::classify(input, output);
-    output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->decoding_hamming_distance);
+    output.update_sample_barcode(this->observation);
+    output.update_sample_distance(this->decoding_hamming_distance);
+    output.set_RG(this->rg_by_barcode_index[this->decoded->index]);
 };
 
 MdCellularDecoder::MdCellularDecoder(const Value& ontology) try :

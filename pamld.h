@@ -50,6 +50,7 @@ template < class T > class PamlDecoder : public ObservingDecoder< T > {
 
 class PamlSampleDecoder : public PamlDecoder< Barcode > {
     public:
+        vector< string > rg_by_barcode_index;
         PamlSampleDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };

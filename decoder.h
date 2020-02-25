@@ -25,7 +25,6 @@
 #include "include.h"
 #include "classifier.h"
 #include "transform.h"
-// #include "barcode.h"
 
 template < class T > class ObservingDecoder : public RoutingClassifier< T > {
     protected:

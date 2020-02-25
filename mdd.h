@@ -41,6 +41,7 @@ template < class T > class MdDecoder : public ObservingDecoder< T > {
 
 class MdSampleDecoder : public MdDecoder< Barcode > {
     public:
+        vector< string > rg_by_barcode_index;
         MdSampleDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };

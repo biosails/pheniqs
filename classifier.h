@@ -26,6 +26,8 @@
 #include "accumulator.h"
 #include "read.h"
 
+vector< string > decode_tag_ID_by_index(const Value& ontology);
+
 template < class T > class RoutingClassifier : public AccumulatingClassifier {
     public:
         T* decoded;
