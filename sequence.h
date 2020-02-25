@@ -395,7 +395,7 @@ class Observation : public SequenceArray< ObservedSequence > {
         };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
             for(size_t i(0); i < segment_array.size(); ++i) {
-                if(i) { ks_put_character('-', buffer); }
+                if(i) { ks_put_character(' ', buffer); }
                 segment_array[i].encode_phred_quality(buffer, phred_offset);
             }
         };
@@ -424,7 +424,8 @@ class Observation : public SequenceArray< ObservedSequence > {
             return sigma;
         };
         operator string() const {
-            /* NOTICE this is in BAM encoding not iupac and will not look as expected when printed */
+            /*  NOTICE this is in BAM encoding not iupac and will not look as expected when printed
+                Used by MDD for exact match */
             string key;
             for(const auto& segment : segment_array) {
                 for(int32_t i(0); i < segment.length; ++i) {
