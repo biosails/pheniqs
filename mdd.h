@@ -39,9 +39,9 @@ template < class T > class MdDecoder : public ObservingDecoder< T > {
         inline bool match(T& barcode);
 };
 
-class MdMultiplexDecoder : public MdDecoder< Channel > {
+class MdSampleDecoder : public MdDecoder< Barcode > {
     public:
-        MdMultiplexDecoder(const Value& ontology);
+        MdSampleDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 

@@ -57,7 +57,7 @@ PHENIQS_SOURCES = \
 	atom.cpp \
 	auxiliary.cpp \
 	barcode.cpp \
-	channel.cpp \
+	multiplex.cpp \
 	decoder.cpp \
 	classifier.cpp \
 	mdd.cpp \
@@ -83,7 +83,7 @@ PHENIQS_OBJECTS = \
 	atom.o \
 	auxiliary.o \
 	barcode.o \
-	channel.o \
+	multiplex.o \
 	decoder.o \
 	classifier.o \
 	mdd.o \
@@ -349,10 +349,10 @@ transform.o: \
 	read.o \
 	transform.h
 
-channel.o: \
+multiplex.o: \
 	feed.o \
 	accumulator.o \
-	channel.h
+	multiplex.h
 
 classifier.o: \
 	accumulator.o \
@@ -362,7 +362,7 @@ classifier.o: \
 decoder.o: \
 	classifier.o \
 	transform.o \
-	channel.o \
+	multiplex.o \
 	decoder.h
 
 mdd.o: \

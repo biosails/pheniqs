@@ -36,7 +36,8 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
             AccumulatingClassifier(decode_value_by_key< int32_t >("index", ontology)),
             decoded(NULL),
             unclassified(find_value_by_key("undetermined", ontology)),
-            tag_by_index(decode_value_by_key< vector< T > >("codec", ontology)) {
+            tag_by_index(decode_value_by_key< vector< T > >("codec", ontology)),
+            multiplexing_classifier(decode_value_by_key< bool >("multiplexing classifier", ontology)) {
 
             decoded = &unclassified;
 
@@ -44,10 +45,22 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
                 error.push("RoutingClassifier");
                 throw;
         };
+        RoutingClassifier(const RoutingClassifier< T >& other) :
+            AccumulatingClassifier(other),
+            decoded(NULL),
+            unclassified(other.unclassified),
+            tag_by_index(other.tag_by_index),
+            multiplexing_classifier(other.multiplexing_classifier) {
+
+            decoded = &unclassified;
+        };
         virtual inline void classify(const Read& input, Read& output) {
             ++(decoded->count);
             if(!output.qcfail()) {
                 ++(decoded->pf_count);
+            }
+            if(multiplexing_classifier) {
+                output.channel_index = decoded->index;
             }
         };
         inline void finalize() override {
@@ -89,39 +102,8 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
                 container.AddMember("classified", element_report_array.Move(), document.GetAllocator());
             }
         };
-};
-
-template < class T > class ReadGroupClassifier : public RoutingClassifier< T > {
-    public:
-        ReadGroupClassifier(const Value& ontology) try :
-            RoutingClassifier< T >(ontology) {
-
-            element_by_rg.reserve(this->tag_by_index.size());
-            for(auto& element : this->tag_by_index) {
-                element_by_rg.emplace(make_pair(string(element.rg.ID.s, element.rg.ID.l), &element));
-            }
-
-            } catch(Error& error) {
-                error.push("ReadGroupClassifier");
-                throw;
-        };
-        inline void classify(const Read& input, Read& output) override {
-            this->decoded = &this->unclassified;
-            if(ks_not_empty(input.RG())) {
-                rg_id_buffer.assign(input.RG().s, input.RG().l);
-                auto record = element_by_rg.find(rg_id_buffer);
-                if(record != element_by_rg.end()) {
-                    this->decoded = record->second;
-                }
-            }
-        };
-
     protected:
-        unordered_map< string, T* > element_by_rg;
-
-    private:
-        string rg_id_buffer;
-
+        const bool multiplexing_classifier;
 };
 
 #endif /* PHENIQS_CLASSIFY_H */

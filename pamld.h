@@ -48,9 +48,9 @@ template < class T > class PamlDecoder : public ObservingDecoder< T > {
         };
 };
 
-class PamlMultiplexDecoder : public PamlDecoder< Channel > {
+class PamlSampleDecoder : public PamlDecoder< Barcode > {
     public:
-        PamlMultiplexDecoder(const Value& ontology);
+        PamlSampleDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 

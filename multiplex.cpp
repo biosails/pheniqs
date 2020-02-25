@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "channel.h"
+#include "multiplex.h"
 
 /*  NucleotideAccumulator */
 
@@ -287,7 +287,7 @@ bool encode_value(const SegmentAccumulator& value, Value& container, Document& d
 /*  Channel */
 
 Channel::Channel(const Value& ontology) try :
-    Barcode(ontology),
+    index(decode_value_by_key< int32_t >("index", ontology)),
     rg(ontology),
     filter_outgoing_qc_fail(decode_value_by_key< bool >("filter outgoing qc fail", ontology)),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology)),
@@ -299,7 +299,7 @@ Channel::Channel(const Value& ontology) try :
         throw;
 };
 Channel::Channel(const Channel& other) :
-    Barcode(other),
+    index(other.index),
     rg(other.rg),
     filter_outgoing_qc_fail(other.filter_outgoing_qc_fail),
     enable_quality_control(other.enable_quality_control),
@@ -332,7 +332,6 @@ void Channel::populate(unordered_map< URL, Feed* >& feed_by_url) {
     output_feed_lock_order.shrink_to_fit();
 };
 void Channel::finalize(const AccumulatingClassifier& parent) {
-    AccumulatingTag::finalize(parent);
     if(enable_quality_control) {
         for(auto& segment_accumulator : segment_accumulator_by_index) {
             segment_accumulator.finalize();
@@ -340,7 +339,6 @@ void Channel::finalize(const AccumulatingClassifier& parent) {
     }
 };
 void Channel::encode(Value& container, Document& document) const {
-    Barcode::encode(container, document);
     if(container.IsObject()) {
         encode_value(rg, container, document);
         if(enable_quality_control) {
@@ -355,7 +353,6 @@ void Channel::encode(Value& container, Document& document) const {
     } else { throw ConfigurationError("element must be a dictionary"); }
 };
 Channel& Channel::operator+=(const Channel& rhs) {
-    Barcode::operator+=(rhs);
     if(enable_quality_control) {
         for(size_t index(0); index < segment_accumulator_by_index.size(); ++index) {
             segment_accumulator_by_index[index] += rhs.segment_accumulator_by_index[index];
@@ -365,12 +362,33 @@ Channel& Channel::operator+=(const Channel& rhs) {
 };
 template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Value& container) {
     vector< Channel > value;
-    Value::ConstMemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd()) {
-        value.reserve(reference->value.MemberCount());
-        for(auto& record : reference->value.GetObject()) {
-            value.emplace_back(record.value);
-        }
+    Value::ConstMemberIterator decoder_reference = container.FindMember(key);
+    if(decoder_reference != container.MemberEnd()) {
+        Value::ConstMemberIterator undetermined_reference = decoder_reference->value.FindMember("undetermined");
+        if(undetermined_reference != decoder_reference->value.MemberEnd()) {
+            Value::ConstMemberIterator codec_reference = decoder_reference->value.FindMember("codec");
+            if(codec_reference != decoder_reference->value.MemberEnd()) {
+                value.reserve(codec_reference->value.MemberCount() + 1);
+                value.emplace_back(undetermined_reference->value);
+                for(auto& record : codec_reference->value.GetObject()) {
+                    value.emplace_back(record.value);
+                }
+            } else {
+                value.reserve(1);
+                value.emplace_back(undetermined_reference->value);
+            }
+        } else { throw ConfigurationError("decoder must declare an undetermined element"); }
     }
     return value;
+};
+
+Multiplexer::Multiplexer(const Value& ontology) try :
+    channel_by_index(decode_value_by_key< vector< Channel > >("multiplex", ontology)) {
+
+    } catch(Error& error) {
+        error.push("Multiplexer");
+        throw;
+};
+Multiplexer::Multiplexer(const Multiplexer& other) :
+    channel_by_index(other.channel_by_index) {
 };

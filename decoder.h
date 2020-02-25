@@ -25,7 +25,7 @@
 #include "include.h"
 #include "classifier.h"
 #include "transform.h"
-#include "channel.h"
+// #include "barcode.h"
 
 template < class T > class ObservingDecoder : public RoutingClassifier< T > {
     protected:
@@ -49,6 +49,13 @@ template < class T > class ObservingDecoder : public RoutingClassifier< T > {
                 error.push("ObservingDecoder");
                 throw;
         };
+        ObservingDecoder(const ObservingDecoder< T >& other) :
+            RoutingClassifier< T >(other),
+            rule(other.rule),
+            nucleotide_cardinality(other.nucleotide_cardinality),
+            observation(other.observation.segment_cardinality()),
+            decoding_hamming_distance(0) {
+        };
         inline void classify(const Read& input, Read& output) override {
             if(this->decoded->is_classified() && decoding_hamming_distance) {
                 this->decoded->accumulated_distance += static_cast< uint64_t >(decoding_hamming_distance);
@@ -69,8 +76,22 @@ template < class T > class ObservingDecoder : public RoutingClassifier< T > {
 
 class NaiveMolecularDecoder : public ObservingDecoder< Barcode > {
     public:
-        NaiveMolecularDecoder(const Value& ontology);
-        inline void classify(const Read& input, Read& output) override;
+        NaiveMolecularDecoder(const Value& ontology) try :
+            ObservingDecoder< Barcode >(ontology) {
+
+            } catch(Error& error) {
+                error.push("NaiveMolecularDecoder");
+                throw;
+        };
+        NaiveMolecularDecoder(const NaiveMolecularDecoder& other) :
+            ObservingDecoder< Barcode >(other) {
+        };
+        inline void classify(const Read& input, Read& output) override {
+            this->observation.clear();
+            this->rule.apply(input, this->observation);
+            output.update_molecular_barcode(observation);
+            ObservingDecoder< Barcode >::classify(input, output);
+        };
 };
 
 #endif /* PHENIQS_DECODER_H */

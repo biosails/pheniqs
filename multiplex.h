@@ -25,6 +25,7 @@
 #include "include.h"
 #include "feed.h"
 
+class Multiplexer;
 class Channel;
 class SegmentAccumulator;
 class AveragePhreadAccumulator;
@@ -148,7 +149,9 @@ class SegmentAccumulator {
             url(other.url),
             capacity(other.capacity),
             shortest(other.shortest),
-            nucleic_acid_count_by_code(other.nucleic_acid_count_by_code) {
+            nucleic_acid_count_by_code(other.nucleic_acid_count_by_code),
+            average_phred(other.average_phred),
+            cycle_by_index(other.cycle_by_index) {
         };
         inline void increment(const Segment& segment) {
             if(segment.length > capacity) {
@@ -171,9 +174,11 @@ class SegmentAccumulator {
 bool encode_value(const SegmentAccumulator& value, Value& container, Document& document);
 template<> vector< SegmentAccumulator > decode_value_by_key(const Value::Ch* key, const Value& container);
 
-class Channel : public Barcode {
+class Channel {
     public:
         void operator=(Channel const &) = delete;
+
+        const int32_t index;
         const HeadRGAtom rg;
         const bool filter_outgoing_qc_fail;
         const bool enable_quality_control;
@@ -187,19 +192,19 @@ class Channel : public Barcode {
         inline void push(const Read& read) {
             if(output_feed_lock_order.size() > 0) {
                 if(!filter_outgoing_qc_fail || !read.qcfail()) {
-                    // acquire a push lock for all feeds in a fixed order
+                    /* acquire a push lock for all feeds in a fixed order */
                     vector< unique_lock< mutex > > feed_locks;
                     feed_locks.reserve(output_feed_lock_order.size());
                     for(const auto feed : output_feed_lock_order) {
                         feed_locks.push_back(feed->acquire_push_lock());
                     }
 
-                    // push the segments to the output feeds
+                    /* push the segments to the output feeds */
                     for(size_t i(0); i < output_feed_by_segment.size(); ++i) {
                         output_feed_by_segment[i]->push(read[i]);
                     }
 
-                    // release the locks on the feeds in reverse order
+                    /* release the locks on the feeds in reverse order */
                     for(auto feed_lock(feed_locks.rbegin()); feed_lock != feed_locks.rend(); ++feed_lock) {
                         feed_lock->unlock();
                     }
@@ -214,10 +219,26 @@ class Channel : public Barcode {
             }
         };
         void populate(unordered_map< URL, Feed* >& output_feed_by_url);
-        void finalize(const AccumulatingClassifier& parent) override;
-        void encode(Value& container, Document& document) const override;
+        void finalize(const AccumulatingClassifier& parent);
+        void encode(Value& container, Document& document) const;
         Channel& operator+=(const Channel& rhs);
 };
 template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Value& container);
+
+class Multiplexer {
+    public:
+        vector< Channel > channel_by_index;
+
+        Multiplexer(const Value& ontology);
+        Multiplexer(const Multiplexer& other);
+        inline void push(const Read& read) {
+            channel_by_index[read.channel_index].push(read);
+        };
+        void populate(unordered_map< URL, Feed* >& output_feed_by_url) {
+            for(auto& channel : channel_by_index) {
+                channel.populate(output_feed_by_url);
+            }
+        };
+};
 
 #endif /* PHENIQS_CHANNEL_H */

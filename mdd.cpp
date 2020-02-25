@@ -82,16 +82,15 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
     ObservingDecoder< T >::classify(input, output);
 };
 
-MdMultiplexDecoder::MdMultiplexDecoder(const Value& ontology) try :
-    MdDecoder< Channel >(ontology) {
+MdSampleDecoder::MdSampleDecoder(const Value& ontology) try :
+    MdDecoder< Barcode >(ontology) {
 
     } catch(Error& error) {
-        error.push("MdMultiplexDecoder");
+        error.push("MdSampleDecoder");
         throw;
 };
-void MdMultiplexDecoder::classify(const Read& input, Read& output) {
-    MdDecoder< Channel >::classify(input, output);
-    output.assign_RG(this->decoded->rg);
+void MdSampleDecoder::classify(const Read& input, Read& output) {
+    MdDecoder< Barcode >::classify(input, output);
     output.update_multiplex_barcode(this->observation);
     output.update_multiplex_distance(this->decoding_hamming_distance);
 };

@@ -11,7 +11,8 @@
                     "/dev/stdin"
                 ],
                 "multiplex": {
-                    "algorithm": "transparent"
+                    "algorithm": "transparent",
+                    "multiplexing classifier": true
                 },
                 "output": [
                     "/dev/stdout"
@@ -400,7 +401,6 @@
         "cellular:barcode": {
             "algorithm": null,
             "concentration": 1,
-            "enable quality control": null,
             "segment cardinality": null
         },
         "cellular:decoder": {
@@ -408,7 +408,6 @@
             "codec": null,
             "confidence threshold": 0.99,
             "distance tolerance": null,
-            "enable quality control": null,
             "noise": 0.01,
             "quality masking threshold": 0,
             "undetermined": null
@@ -416,7 +415,6 @@
         "molecular:barcode": {
             "algorithm": null,
             "concentration": 1,
-            "enable quality control": null,
             "segment cardinality": null
         },
         "molecular:decoder": {
@@ -424,12 +422,23 @@
             "codec": null,
             "confidence threshold": 0.99,
             "distance tolerance": null,
-            "enable quality control": null,
             "noise": 0.01,
             "quality masking threshold": 0,
             "undetermined": null
         },
         "multiplex:barcode": {
+            "enable quality control": null,
+            "filter outgoing qc fail": false,
+            "output": null
+        },
+        "multiplex:decoder": {
+            "noise": 0.01,
+            "base output url": null,
+            "enable quality control": null,
+            "filter outgoing qc fail": false,
+            "output": null
+        },
+        "sample:barcode": {
             "CN": null,
             "DT": null,
             "LB": null,
@@ -440,14 +449,11 @@
             "SM": null,
             "algorithm": null,
             "concentration": 1,
-            "enable quality control": null,
-            "filter outgoing qc fail": false,
             "flowcell id": null,
             "flowcell lane number": null,
-            "output": null,
             "segment cardinality": null
         },
-        "multiplex:decoder": {
+        "sample:decoder": {
             "CN": null,
             "DT": null,
             "LB": null,
@@ -457,16 +463,12 @@
             "PM": null,
             "SM": null,
             "algorithm": "pamld",
-            "base output url": null,
             "codec": null,
             "confidence threshold": 0.95,
             "distance tolerance": null,
-            "enable quality control": null,
-            "filter outgoing qc fail": false,
             "flowcell id": null,
             "flowcell lane number": null,
             "noise": 0.01,
-            "output": null,
             "quality masking threshold": 0,
             "segment cardinality": 0,
             "undetermined": null
@@ -1029,6 +1031,14 @@
                         "program": {
                             "$ref": "#/definitions/pg"
                         },
+                        "sample": {
+                            "items": {
+                                "$ref": "#/definitions/decoder"
+                            },
+                            "minItems": 1,
+                            "title": "Sample barcode decoder array",
+                            "type": "array"
+                        },
                         "threads": {
                             "$ref": "#/definitions/threads"
                         },
@@ -1046,6 +1056,13 @@
                         "in",
                         "out"
                     ],
+                    "type": "string"
+                },
+                "knit": {
+                    "Description": "Pattern made of token references to assemble a segment",
+                    "format": "regex",
+                    "pattern": "^(~)?[0-9]+(:(~)?[0-9]+)*$",
+                    "title": "Segment pattern",
                     "type": "string"
                 },
                 "leading_segment_index": {
@@ -1292,13 +1309,6 @@
                     "minimum": 0,
                     "title": "Segment cardinality",
                     "type": "integer"
-                },
-                "knit": {
-                    "Description": "Pattern made of token references to assemble a segment",
-                    "format": "regex",
-                    "pattern": "^(~)?[0-9]+(:(~)?[0-9]+)*$",
-                    "title": "Segment pattern",
-                    "type": "string"
                 },
                 "segment_token": {
                     "Description": "Token to extract from a segment",

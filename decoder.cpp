@@ -20,18 +20,3 @@
 */
 
 #include "decoder.h"
-
-/* Molecular */
-NaiveMolecularDecoder::NaiveMolecularDecoder(const Value& ontology) try :
-    ObservingDecoder< Barcode >(ontology) {
-
-    } catch(Error& error) {
-        error.push("NaiveMolecularDecoder");
-        throw;
-};
-void NaiveMolecularDecoder::classify(const Read& input, Read& output) {
-    this->observation.clear();
-    this->rule.apply(input, this->observation);
-    output.update_molecular_barcode(observation);
-    ObservingDecoder< Barcode >::classify(input, output);
-};

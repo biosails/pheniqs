@@ -32,8 +32,24 @@
 #include "pamld.h"
 #include "metric.h"
 
+#include "multiplex.h"
+
 class Transcode;
 class TranscodePivot;
+
+enum class MultiplexTagType : int8_t {
+    UNKNOWN    = -1,
+    SAMPLE   =  0,
+    CELLULAR  =  1,
+    MOLECULAR =  2,
+};
+string to_string(const MultiplexTagType& value);
+bool from_string(const char* value, MultiplexTagType& result);
+void to_kstring(const MultiplexTagType& value, kstring_t& result);
+bool from_string(const string& value, MultiplexTagType& result);
+ostream& operator<<(ostream& o, const MultiplexTagType& value);
+template<> bool decode_value_by_key< MultiplexTagType >(const Value::Ch* key, MultiplexTagType& value, const Value& container);
+template<> MultiplexTagType decode_value_by_key< MultiplexTagType >(const Value::Ch* key, const Value& container);
 
 class Transcode : public Job {
     friend class TranscodePivot;
@@ -75,7 +91,9 @@ class Transcode : public Job {
         list< Feed* > output_feed_by_index;
         vector< Feed* > input_feed_by_segment;
         unordered_map< URL, Feed* > output_feed_by_url;
-        RoutingClassifier< Channel >* sample_classifier;
+
+        Multiplexer* multiplexer;
+        vector< RoutingClassifier< Barcode >* > sample_classifier_array;
         vector< RoutingClassifier< Barcode >* > molecular_classifier_array;
         vector< RoutingClassifier< Barcode >* > cellular_classifier_array;
 
@@ -90,7 +108,6 @@ class Transcode : public Job {
         void apply_decoder_inheritance(Value& value);
         void compile_topic(const Value::Ch* key);
         void compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode);
-        void compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode);
         void compile_decoder_transformation(Value& value);
         void apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document);
         void compile_output();
@@ -112,6 +129,8 @@ class Transcode : public Job {
         void load_pivot();
 
         void load_multiplex_decoding();
+        void load_sample_decoding();
+        void load_sample_decoder(const Value& value);
         void load_molecular_decoding();
         void load_molecular_decoder(const Value& value);
         void load_cellular_decoding();
@@ -121,18 +140,19 @@ class Transcode : public Job {
         void print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const;
         void print_codec_instruction(const Value& value, const bool& plural, ostream& o) const;
         void print_channel_instruction(const string& key, const Value& value, ostream& o) const;
-        void print_feed_instruction(const Value::Ch* key, ostream& o) const;
         void print_input_instruction(ostream& o) const;
         void print_transform_instruction(ostream& o) const;
-        void print_multiplex_instruction(ostream& o) const;
+        void print_sample_instruction(ostream& o) const;
         void print_molecular_instruction(ostream& o) const;
         void print_cellular_instruction(ostream& o) const;
+        void print_feed_instruction(const Value::Ch* key, ostream& o) const;
 };
 
 class TranscodePivot {
     public:
         TranscodePivot(TranscodePivot const &) = delete;
         void operator=(TranscodePivot const &) = delete;
+
         const int32_t index;
         const Platform platform;
         const int32_t leading_segment_index;
@@ -140,7 +160,8 @@ class TranscodePivot {
         const int32_t output_segment_cardinality;
         Read input;
         Read output;
-        RoutingClassifier< Channel >* sample_classifier;
+        Multiplexer multiplexer;
+        vector< RoutingClassifier< Barcode >* > sample_classifier_array;
         vector< RoutingClassifier< Barcode >* > molecular_classifier_array;
         vector< RoutingClassifier< Barcode >* > cellular_classifier_array;
         TranscodePivot(Transcode& job, const int32_t& index);
@@ -151,8 +172,10 @@ class TranscodePivot {
             pivot_thread.join();
         };
         void finalize() {
-            if(sample_classifier != NULL) {
-                sample_classifier->finalize();
+            if(!sample_classifier_array.empty()) {
+                for(auto& classifier : sample_classifier_array) {
+                    classifier->finalize();
+                }
             }
             if(!molecular_classifier_array.empty()) {
                 for(auto& classifier : molecular_classifier_array) {
@@ -172,15 +195,21 @@ class TranscodePivot {
                 input.validate();
                 if(!filter_incoming_qc_fail || !input.qcfail()) {
                     template_rule.apply(input, output);
-                    sample_classifier->classify(input, output);
+
+                    /* decode sample, molecular and cellular barcodes */
+                    for(auto& classifier : sample_classifier_array) {
+                        classifier->classify(input, output);
+                    }
                     for(auto& classifier : molecular_classifier_array) {
                         classifier->classify(input, output);
                     }
                     for(auto& classifier : cellular_classifier_array) {
                         classifier->classify(input, output);
                     }
+
+                    /* complete output read assembly and push to output multiplexer */
                     output.flush();
-                    sample_classifier->decoded->push(output);
+                    multiplexer.push(output);
                 }
                 input.clear();
                 output.clear();
@@ -191,10 +220,11 @@ class TranscodePivot {
         Transcode& job;
         thread pivot_thread;
         const bool filter_incoming_qc_fail;
-        const bool enable_quality_control;
         const TemplateRule template_rule;
         void load_decoding();
         void load_multiplex_decoding();
+        void load_sample_decoding();
+        void load_sample_decoder(const Value& value);
         void load_molecular_decoding();
         void load_molecular_decoder(const Value& value);
         void load_cellular_decoding();

@@ -116,16 +116,15 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
     ObservingDecoder< T >::classify(input, output);
 };
 
-PamlMultiplexDecoder::PamlMultiplexDecoder(const Value& ontology) try :
-    PamlDecoder< Channel >(ontology) {
+PamlSampleDecoder::PamlSampleDecoder(const Value& ontology) try :
+    PamlDecoder< Barcode >(ontology) {
 
     } catch(Error& error) {
-        error.push("PamlMultiplexDecoder");
+        error.push("PamlSampleDecoder");
         throw;
 };
-void PamlMultiplexDecoder::classify(const Read& input, Read& output) {
-    PamlDecoder< Channel >::classify(input, output);
-    output.assign_RG(this->decoded->rg);
+void PamlSampleDecoder::classify(const Read& input, Read& output) {
+    PamlDecoder< Barcode >::classify(input, output);
     output.update_multiplex_barcode(this->observation);
     output.update_multiplex_distance(this->decoding_hamming_distance);
     output.update_multiplex_decoding_confidence(this->decoding_confidence);
