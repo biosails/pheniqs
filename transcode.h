@@ -36,19 +36,36 @@
 class Transcode;
 class TranscodePivot;
 
-enum class MultiplexTagType : int8_t {
-    UNKNOWN    = -1,
-    SAMPLE   =  0,
-    CELLULAR  =  1,
-    MOLECULAR =  2,
+class CompoundClassifier {
+    public:
+        CompoundClassifier(const Value& ontology);
+        vector< RoutingClassifier< Barcode >* > sample_classifier_array;
+        vector< RoutingClassifier< Barcode >* > molecular_classifier_array;
+        vector< RoutingClassifier< Barcode >* > cellular_classifier_array;
+        void finalize();
+        inline void classify(const Read& input, Read& output) {
+            for(auto& classifier : sample_classifier_array) {
+                classifier->classify(input, output);
+            }
+            for(auto& classifier : molecular_classifier_array) {
+                classifier->classify(input, output);
+            }
+            for(auto& classifier : cellular_classifier_array) {
+                classifier->classify(input, output);
+            }
+        };
+        CompoundClassifier& operator+=(const CompoundClassifier& pivot);
+        void encode(Value& container, Document& document) const;
+
+    private:
+        void load_multiplex_decoding(const Value& ontology);
+        void load_sample_decoding(const Value& ontology);
+        void load_sample_decoder(const Value& value);
+        void load_molecular_decoding(const Value& ontology);
+        void load_molecular_decoder(const Value& value);
+        void load_cellular_decoding(const Value& ontology);
+        void load_cellular_decoder(const Value& value);
 };
-string to_string(const MultiplexTagType& value);
-bool from_string(const char* value, MultiplexTagType& result);
-void to_kstring(const MultiplexTagType& value, kstring_t& result);
-bool from_string(const string& value, MultiplexTagType& result);
-ostream& operator<<(ostream& o, const MultiplexTagType& value);
-template<> bool decode_value_by_key< MultiplexTagType >(const Value::Ch* key, MultiplexTagType& value, const Value& container);
-template<> MultiplexTagType decode_value_by_key< MultiplexTagType >(const Value::Ch* key, const Value& container);
 
 class Transcode : public Job {
     friend class TranscodePivot;

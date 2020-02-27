@@ -52,4 +52,9 @@ class MdCellularDecoder : public MdDecoder< Barcode > {
         inline void classify(const Read& input, Read& output) override;
 };
 
+class MdMolecularDecoder : public MdDecoder< Barcode > {
+    public:
+        MdMolecularDecoder(const Value& ontology);
+        inline void classify(const Read& input, Read& output) override;
+};
 #endif /* PHENIQS_MDD_H */

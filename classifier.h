@@ -26,19 +26,33 @@
 #include "accumulator.h"
 #include "read.h"
 
+enum class ClassifierType : int8_t {
+    UNKNOWN     = -1,
+    SAMPLE      =  0,
+    CELLULAR    =  1,
+    MOLECULAR   =  2,
+};
+string to_string(const ClassifierType& value);
+bool from_string(const char* value, ClassifierType& result);
+void to_kstring(const ClassifierType& value, kstring_t& result);
+bool from_string(const string& value, ClassifierType& result);
+ostream& operator<<(ostream& o, const ClassifierType& value);
+template<> bool decode_value_by_key< ClassifierType >(const Value::Ch* key, ClassifierType& value, const Value& container);
+template<> ClassifierType decode_value_by_key< ClassifierType >(const Value::Ch* key, const Value& container);
+
 vector< string > decode_tag_ID_by_index(const Value& ontology);
 
 template < class T > class RoutingClassifier : public AccumulatingClassifier {
     public:
         T* decoded;
         T unclassified;
-        vector< T > tag_by_index;
+        vector< T > tag_array;
 
         RoutingClassifier(const Value& ontology) try :
             AccumulatingClassifier(decode_value_by_key< int32_t >("index", ontology)),
             decoded(NULL),
-            unclassified(find_value_by_key("undetermined", ontology)),
-            tag_by_index(decode_value_by_key< vector< T > >("codec", ontology)),
+            unclassified(ontology["undetermined"]),
+            tag_array(decode_value_by_key< vector< T > >("codec", ontology)),
             multiplexing_classifier(decode_value_by_key< bool >("multiplexing classifier", ontology)) {
 
             decoded = &unclassified;
@@ -51,7 +65,7 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
             AccumulatingClassifier(other),
             decoded(NULL),
             unclassified(other.unclassified),
-            tag_by_index(other.tag_by_index),
+            tag_array(other.tag_array),
             multiplexing_classifier(other.multiplexing_classifier) {
 
             decoded = &unclassified;
@@ -66,14 +80,14 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
             }
         };
         inline void finalize() override {
-            for(auto& element : tag_by_index) {
+            for(auto& element : tag_array) {
                 this->classified_count += element.count;
                 this->pf_classified_count += element.pf_count;
             }
             this->count = this->classified_count + unclassified.count;
             this->pf_count = this->pf_classified_count + unclassified.pf_count;
 
-            for(auto& element : tag_by_index) {
+            for(auto& element : tag_array) {
                 element.finalize(*this);
             }
             unclassified.finalize(*this);
@@ -82,8 +96,8 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
         RoutingClassifier< T >& operator+=(const RoutingClassifier< T >& rhs) {
             AccumulatingClassifier::operator+=(rhs);
             unclassified += rhs.unclassified;
-            for(size_t index(0); index < tag_by_index.size(); ++index) {
-                tag_by_index[index] += rhs.tag_by_index[index];
+            for(size_t index(0); index < tag_array.size(); ++index) {
+                tag_array[index] += rhs.tag_array[index];
             }
             return *this;
         };
@@ -94,9 +108,9 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
             unclassified.encode(unclassified_report, document);
             container.AddMember("unclassified", unclassified_report.Move(), document.GetAllocator());
 
-            if(!tag_by_index.empty()) {
+            if(!tag_array.empty()) {
                 Value element_report_array(kArrayType);
-                for(auto& element : tag_by_index) {
+                for(auto& element : tag_array) {
                     Value element_report(kObjectType);
                     element.encode(element_report, document);
                     element_report_array.PushBack(element_report.Move(), document.GetAllocator());

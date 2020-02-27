@@ -26,7 +26,7 @@ template < class T > MdDecoder< T >::MdDecoder(const Value& ontology) try :
     quality_masking_threshold(decode_value_by_key< uint8_t >("quality masking threshold", ontology)),
     distance_tolerance(decode_value_by_key< vector< int32_t > >("distance tolerance", ontology)) {
 
-    for(auto& element : this->tag_by_index) {
+    for(auto& element : this->tag_array) {
         element_by_sequence.emplace(make_pair(string(element), &element));
     }
 
@@ -47,7 +47,7 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
 
     } else {
         /* If no exact match was not found try error correction */
-        for(auto& barcode : this->tag_by_index) {
+        for(auto& barcode : this->tag_array) {
             int32_t distance(0);
             bool successful(true);
             if(this->quality_masking_threshold > 0) {
@@ -110,6 +110,24 @@ void MdCellularDecoder::classify(const Read& input, Read& output) {
     output.update_cellular_barcode(*this->decoded);
     if(this->decoded->is_classified()) {
         output.update_cellular_distance(this->decoding_hamming_distance);
+    } else {
+        output.set_cellular_distance(0);
+    }
+};
+
+MdMolecularDecoder::MdMolecularDecoder(const Value& ontology) try :
+    MdDecoder< Barcode >(ontology) {
+
+    } catch(Error& error) {
+        error.push("MdMolecularDecoder");
+        throw;
+};
+void MdMolecularDecoder::classify(const Read& input, Read& output) {
+    MdDecoder< Barcode >::classify(input, output);
+    output.update_raw_molecular_barcode(this->observation);
+    output.update_molecular_barcode(*this->decoded);
+    if(this->decoded->is_classified()) {
+        output.update_molecular_distance(this->decoding_hamming_distance);
     } else {
         output.set_cellular_distance(0);
     }

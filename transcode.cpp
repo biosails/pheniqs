@@ -26,61 +26,213 @@
 */
 #include "transcode.h"
 
-/* Multiplex tag type */
-string to_string(const MultiplexTagType& value) {
-    string result;
-    switch(value) {
-    case MultiplexTagType::SAMPLE:      result.assign("sample");    break;
-    case MultiplexTagType::CELLULAR:    result.assign("cellular");  break;
-    case MultiplexTagType::MOLECULAR:   result.assign("molecular"); break;
-        default:                        result.assign("unknown");   break;
-    }
-    return result;
-};
-bool from_string(const char* value, MultiplexTagType& result) {
-         if(value == NULL)                  result = MultiplexTagType::UNKNOWN;
-    else if(!strcmp(value, "sample"))       result = MultiplexTagType::SAMPLE;
-    else if(!strcmp(value, "cellular"))     result = MultiplexTagType::CELLULAR;
-    else if(!strcmp(value, "molecular"))    result = MultiplexTagType::MOLECULAR;
-    else                                    result = MultiplexTagType::UNKNOWN;
+/* CompoundClassifier */
+CompoundClassifier::CompoundClassifier(const Value& ontology) try {
+    load_multiplex_decoding(ontology);
+    load_sample_decoding(ontology);
+    load_molecular_decoding(ontology);
+    load_cellular_decoding(ontology);
 
-    return (result == MultiplexTagType::UNKNOWN ? false : true);
-};
-bool from_string(const string& value, MultiplexTagType& result) {
-    return from_string(value.c_str(), result);
-};
-void to_kstring(const MultiplexTagType& value, kstring_t& result) {
-    ks_clear(result);
-    string string_value(to_string(value));
-    ks_put_string(string_value.c_str(), string_value.size(), result);
-};
-ostream& operator<<(ostream& o, const MultiplexTagType& value) {
-    o << to_string(value);
-    return o;
-};
-void encode_key_value(const string& key, const MultiplexTagType& value, Value& container, Document& document) {
-    string string_value(to_string(value));
-    Value v(string_value.c_str(), string_value.length(), document.GetAllocator());
-    Value k(key.c_str(), key.size(), document.GetAllocator());
-    container.RemoveMember(key.c_str());
-    container.AddMember(k.Move(), v.Move(), document.GetAllocator());
-};
-template<> bool decode_value_by_key< MultiplexTagType >(const Value::Ch* key, MultiplexTagType& value, const Value& container) {
-    Value::ConstMemberIterator element = container.FindMember(key);
-    if(element != container.MemberEnd() && !element->value.IsNull()) {
-        if(element->value.IsString()) {
-            return from_string(element->value.GetString(), value);
-        } else { throw ConfigurationError(string(key) + " element must be a string"); }
-    }
-    return false;
-};
-template <> MultiplexTagType decode_value_by_key(const Value::Ch* key, const Value& container) {
-    MultiplexTagType value(MultiplexTagType::UNKNOWN);
-    decode_value_by_key(key, value, container);
-    return value;
+    } catch(Error& error) {
+        error.push("CompoundClassifier");
+        throw;
 };
 
-/* Transcode  job */
+void CompoundClassifier::load_multiplex_decoding(const Value& ontology) {
+    Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
+    if(reference != ontology.MemberEnd()) {
+        ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", reference->value));
+        switch(classifier_type) {
+            case ClassifierType::SAMPLE: {
+                load_sample_decoder(reference->value);
+                break;
+            };
+            case ClassifierType::CELLULAR: {
+                load_cellular_decoder(reference->value);
+                break;
+            };
+            case ClassifierType::MOLECULAR: {
+                load_molecular_decoder(reference->value);
+                break;
+            };
+            default:
+                break;
+        }
+    }
+};
+void CompoundClassifier::load_sample_decoding(const Value& ontology) {
+    Value::ConstMemberIterator reference = ontology.FindMember("sample");
+    if(reference != ontology.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            sample_classifier_array.reserve(1);
+            load_sample_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            sample_classifier_array.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_sample_decoder(element);
+            }
+        }
+    }
+    sample_classifier_array.shrink_to_fit();
+};
+void CompoundClassifier::load_sample_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::PAMLD: {
+            sample_classifier_array.emplace_back(new PamlSampleDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            sample_classifier_array.emplace_back(new MdSampleDecoder(value));
+            break;
+        };
+        case Algorithm::TRANSPARENT: {
+            sample_classifier_array.emplace_back(new RoutingClassifier< Barcode >(value));
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported sample decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
+void CompoundClassifier::load_molecular_decoding(const Value& ontology) {
+    Value::ConstMemberIterator reference = ontology.FindMember("molecular");
+    if(reference != ontology.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            molecular_classifier_array.reserve(1);
+            load_molecular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            molecular_classifier_array.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_molecular_decoder(element);
+            }
+        }
+    }
+    molecular_classifier_array.shrink_to_fit();
+};
+void CompoundClassifier::load_molecular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::PAMLD: {
+            molecular_classifier_array.emplace_back(new PamlMolecularDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            molecular_classifier_array.emplace_back(new MdMolecularDecoder(value));
+            break;
+        };
+        case Algorithm::NAIVE: {
+            molecular_classifier_array.emplace_back(new NaiveMolecularDecoder(value));
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported molecular decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
+void CompoundClassifier::load_cellular_decoding(const Value& ontology) {
+    Value::ConstMemberIterator reference = ontology.FindMember("cellular");
+    if(reference != ontology.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            cellular_classifier_array.reserve(1);
+            load_cellular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            cellular_classifier_array.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_cellular_decoder(element);
+            }
+        }
+    }
+    cellular_classifier_array.shrink_to_fit();
+};
+void CompoundClassifier::load_cellular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::PAMLD: {
+            cellular_classifier_array.emplace_back(new PamlCellularDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            cellular_classifier_array.emplace_back(new MdCellularDecoder(value));
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported cellular decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
+void CompoundClassifier::finalize() {
+    if(!sample_classifier_array.empty()) {
+        for(auto& classifier : sample_classifier_array) {
+            classifier->finalize();
+        }
+    }
+    if(!molecular_classifier_array.empty()) {
+        for(auto& classifier : molecular_classifier_array) {
+            classifier->finalize();
+        }
+    }
+    if(!cellular_classifier_array.empty()) {
+        for(auto& classifier : cellular_classifier_array) {
+            classifier->finalize();
+        }
+    }
+};
+CompoundClassifier& CompoundClassifier::operator+=(const CompoundClassifier& pivot) {
+    if(!sample_classifier_array.empty()) {
+        for(size_t index(0); index < sample_classifier_array.size(); ++index) {
+            *(sample_classifier_array[index]) += *(pivot.sample_classifier_array[index]);
+        }
+    }
+    if(!molecular_classifier_array.empty()) {
+        for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
+            *(molecular_classifier_array[index]) += *(pivot.molecular_classifier_array[index]);
+        }
+    }
+    if(!cellular_classifier_array.empty()) {
+        for(size_t index(0); index < cellular_classifier_array.size(); ++index) {
+            *(cellular_classifier_array[index]) += *(pivot.cellular_classifier_array[index]);
+        }
+    }
+    return *this;
+};
+void CompoundClassifier::encode(Value& container, Document& document) const {
+    if(!sample_classifier_array.empty()) {
+        Value array(kArrayType);
+        for(auto& classifier : sample_classifier_array) {
+            Value element(kObjectType);
+            classifier->encode(element, document);
+            array.PushBack(element.Move(), document.GetAllocator());
+        }
+        container.AddMember("sample", array.Move(), document.GetAllocator());
+    }
+
+    if(!molecular_classifier_array.empty()) {
+        Value array(kArrayType);
+        for(auto& classifier : molecular_classifier_array) {
+            Value element(kObjectType);
+            classifier->encode(element, document);
+            array.PushBack(element.Move(), document.GetAllocator());
+        }
+        container.AddMember("molecular", array.Move(), document.GetAllocator());
+    }
+
+    if(!cellular_classifier_array.empty()) {
+        Value array(kArrayType);
+        for(auto& classifier : cellular_classifier_array) {
+            Value element(kObjectType);
+            classifier->encode(element, document);
+            array.PushBack(element.Move(), document.GetAllocator());
+        }
+        container.AddMember("cellular", array.Move(), document.GetAllocator());
+    }
+};
+
+/* Transcode */
+
 static int32_t compute_inheritence_depth(const string& key, const unordered_map< string, Value* >& object_by_key, Document& document) {
     int32_t depth(0);
     auto record = object_by_key.find(key);
@@ -617,14 +769,14 @@ void Transcode::compile_topic(const Value::Ch* key) {
     Value::MemberIterator reference = ontology.FindMember(key);
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
-            MultiplexTagType multiplex_tag_type(MultiplexTagType::UNKNOWN);
+            ClassifierType classifier_type(ClassifierType::UNKNOWN);
             Value decoder_template(kObjectType);
             Value barcode_template(kObjectType);
 
             /*  if we are compling a multiplex decoder we need to project IO properties as well as the
                 properties relevent to this type of decoder */
             if(!strcmp(key, "multiplex")) {
-                decode_value_by_key< MultiplexTagType >("tag type", multiplex_tag_type, reference->value);
+                decode_value_by_key< ClassifierType >("classifier type", classifier_type, reference->value);
 
                 /* aseemble a default decoder */
                 const Value* decoder_projection(find_projection("multiplex:decoder"));
@@ -637,10 +789,10 @@ void Transcode::compile_topic(const Value::Ch* key) {
                 if(barcode_projection != NULL && !barcode_projection->IsNull()) {
                     barcode_template.CopyFrom(*barcode_projection, ontology.GetAllocator());
                 }
-            } else { from_string(key, multiplex_tag_type); }
+            } else { from_string(key, classifier_type); }
 
             /* aseemble a decoder template */
-            string decoder_projection_uri(to_string(multiplex_tag_type));
+            string decoder_projection_uri(to_string(classifier_type));
             decoder_projection_uri.append(":decoder");
             const Value* decoder_projection(find_projection(decoder_projection_uri));
             if(decoder_projection != NULL && !decoder_projection->IsNull()) {
@@ -652,7 +804,7 @@ void Transcode::compile_topic(const Value::Ch* key) {
             project_json_value(decoder_template, ontology, default_decoder, ontology);
 
             /* aseemble a barcode template */
-            string barcode_projection_uri(to_string(multiplex_tag_type));
+            string barcode_projection_uri(to_string(classifier_type));
             barcode_projection_uri.append(":barcode");
             const Value* barcode_projection(find_projection(barcode_projection_uri));
             if(barcode_projection != NULL && !barcode_projection->IsNull()) {
@@ -901,18 +1053,6 @@ void Transcode::compile_decoder_transformation(Value& value) {
     }
 };
 void Transcode::compile_output() {
-    /*  Detect which decoder controls output multiplexing
-        1. If one or more decoders declare output_multiplex_target, pick the last one that does.
-        2. If non declares output_multiplex_target, but one or more declare an output instruction, pick the last one that does.
-
-        default output compression
-        default output compression level
-        default output format
-        output multiplex target
-        split by segment
-        split by tag
-    */
-
     /* expand base output url path */
     standardize_url_value_by_key("base output url", ontology, ontology, IoDirection::OUT);
     URL base_output(decode_value_by_key< URL >("base output url", ontology));
@@ -1059,21 +1199,6 @@ void Transcode::compile_output() {
                     feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
                     ++index;
                 }
-
-                // /* add the output feed by segment element to each channel */
-                // for(auto& element : channel_reference_list) {
-                //     list< URL > feed_url_array;
-                //     if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
-                //         Value feed_by_segment(kArrayType);
-                //         for(const auto& url : feed_url_array) {
-                //             const Value& proxy(feed_ontology_by_url[url]);
-                //             feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                //         }
-                //         element->RemoveMember("feed");
-                //         element->AddMember("feed", Value(kObjectType).Move(), ontology.GetAllocator());
-                //         (*element)["feed"].AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
-                //     }
-                // }
 
                 Value feed_array(kArrayType);
                 for(auto& record : feed_ontology_by_url) {
@@ -1340,8 +1465,8 @@ void Transcode::load_output() {
     if(reference != ontology.MemberEnd()) {
         const Value& classifier(reference->value);
 
-        MultiplexTagType multiplex_tag_type(decode_value_by_key< MultiplexTagType >("tag type", classifier));
-        if(multiplex_tag_type == MultiplexTagType::SAMPLE) {
+        ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", classifier));
+        if(classifier_type == ClassifierType::SAMPLE) {
             /*  Register the read group elements on the feed proxy so it can be added to SAM header
                 if a URL is present in the channel output that means the channel writes output to that file
                 and the read group should be added to the header of that file.
@@ -1418,17 +1543,17 @@ void Transcode::load_multiplex_decoding() {
     Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
     if(reference != ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
-            MultiplexTagType multiplex_tag_type(decode_value_by_key< MultiplexTagType >("tag type", reference->value));
-            switch(multiplex_tag_type) {
-                case MultiplexTagType::SAMPLE: {
+            ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", reference->value));
+            switch(classifier_type) {
+                case ClassifierType::SAMPLE: {
                     load_sample_decoder(reference->value);
                     break;
                 };
-                case MultiplexTagType::CELLULAR: {
+                case ClassifierType::CELLULAR: {
                     load_cellular_decoder(reference->value);
                     break;
                 };
-                case MultiplexTagType::MOLECULAR: {
+                case ClassifierType::MOLECULAR: {
                     load_molecular_decoder(reference->value);
                     break;
                 };
@@ -1493,6 +1618,14 @@ void Transcode::load_molecular_decoding() {
 void Transcode::load_molecular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
+        case Algorithm::PAMLD: {
+            molecular_classifier_array.emplace_back(new PamlMolecularDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            molecular_classifier_array.emplace_back(new MdMolecularDecoder(value));
+            break;
+        };
         case Algorithm::NAIVE: {
             molecular_classifier_array.emplace_back(new NaiveMolecularDecoder(value));
             break;
@@ -1596,7 +1729,6 @@ void Transcode::finalize() {
         multiplexer->encode(report, report);
     }
 
-    /*  collect statistics from the accumulators on all pivot threads */
     if(!sample_classifier_array.empty()) {
         Value array(kArrayType);
         for(auto& classifier : sample_classifier_array) {
@@ -2022,17 +2154,17 @@ void TranscodePivot::load_multiplex_decoding() {
     Value::ConstMemberIterator reference = job.ontology.FindMember("multiplex");
     if(reference != job.ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
-            MultiplexTagType multiplex_tag_type(decode_value_by_key< MultiplexTagType >("tag type", reference->value));
-            switch(multiplex_tag_type) {
-                case MultiplexTagType::SAMPLE: {
+            ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", reference->value));
+            switch(classifier_type) {
+                case ClassifierType::SAMPLE: {
                     load_sample_decoder(reference->value);
                     break;
                 };
-                case MultiplexTagType::CELLULAR: {
+                case ClassifierType::CELLULAR: {
                     load_cellular_decoder(reference->value);
                     break;
                 };
-                case MultiplexTagType::MOLECULAR: {
+                case ClassifierType::MOLECULAR: {
                     load_molecular_decoder(reference->value);
                     break;
                 };
@@ -2062,18 +2194,15 @@ void TranscodePivot::load_sample_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch (algorithm) {
         case Algorithm::PAMLD: {
-            PamlSampleDecoder* paml_decoder(new PamlSampleDecoder(value));
-            sample_classifier_array.emplace_back(paml_decoder);
+            sample_classifier_array.emplace_back(new PamlSampleDecoder(value));
             break;
         };
         case Algorithm::MDD: {
-            MdSampleDecoder* md_decoder(new MdSampleDecoder(value));
-            sample_classifier_array.emplace_back(md_decoder);
+            sample_classifier_array.emplace_back(new MdSampleDecoder(value));
             break;
         };
         case Algorithm::TRANSPARENT: {
-            RoutingClassifier< Barcode >* transparent_decoder(new RoutingClassifier< Barcode >(value));
-            sample_classifier_array.emplace_back(transparent_decoder);
+            sample_classifier_array.emplace_back(new RoutingClassifier< Barcode >(value));
             break;
         };
         default:
@@ -2100,9 +2229,16 @@ void TranscodePivot::load_molecular_decoding() {
 void TranscodePivot::load_molecular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch (algorithm) {
+        case Algorithm::PAMLD: {
+            molecular_classifier_array.emplace_back(new PamlMolecularDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            molecular_classifier_array.emplace_back(new MdMolecularDecoder(value));
+            break;
+        };
         case Algorithm::NAIVE: {
-            NaiveMolecularDecoder* naive_decoder(new NaiveMolecularDecoder(value));
-            molecular_classifier_array.emplace_back(naive_decoder);
+            molecular_classifier_array.emplace_back(new NaiveMolecularDecoder(value));
             break;
         };
         default:
@@ -2129,13 +2265,11 @@ void TranscodePivot::load_cellular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch (algorithm) {
         case Algorithm::PAMLD: {
-            PamlCellularDecoder* paml_decoder(new PamlCellularDecoder(value));
-            cellular_classifier_array.emplace_back(paml_decoder);
+            cellular_classifier_array.emplace_back(new PamlCellularDecoder(value));
             break;
         };
         case Algorithm::MDD: {
-            MdCellularDecoder* md_decoder(new MdCellularDecoder(value));
-            cellular_classifier_array.emplace_back(md_decoder);
+            cellular_classifier_array.emplace_back(new MdCellularDecoder(value));
             break;
         };
         default:

@@ -25,31 +25,31 @@
 #include "include.h"
 #include "auxiliary.h"
 
-        /*
-            typedef struct {
-                int32_t     tid;            chromosome ID, defined by bam_hdr_t
-                int32_t     pos;            0-based leftmost coordinate
-                uint16_t    bin;            bin calculated by bam_reg2bin()
-                uint8_t     qual;           mapping quality
-                uint8_t     l_qname;        length of the query name
-                uint16_t    flag;           bitwise flag
-                uint8_t     unused1;
-                uint8_t     l_extranul;     length of extra NULs between qname & cigar (for alignment)
-                uint32_t    n_cigar;        number of CIGAR operations
-                int32_t     l_qseq;         length of the query sequence (read)
-                int32_t     mtid;           chromosome ID of next read in template, defined by bam_hdr_t
-                int32_t     mpos;           0-based leftmost coordinate of next read in template
-                int32_t     isize;
-            } bam1_core_t;
+/*
+    typedef struct {
+        int32_t     tid;            chromosome ID, defined by bam_hdr_t
+        int32_t     pos;            0-based leftmost coordinate
+        uint16_t    bin;            bin calculated by bam_reg2bin()
+        uint8_t     qual;           mapping quality
+        uint8_t     l_qname;        length of the query name
+        uint16_t    flag;           bitwise flag
+        uint8_t     unused1;
+        uint8_t     l_extranul;     length of extra NULs between qname & cigar (for alignment)
+        uint32_t    n_cigar;        number of CIGAR operations
+        int32_t     l_qseq;         length of the query sequence (read)
+        int32_t     mtid;           chromosome ID of next read in template, defined by bam_hdr_t
+        int32_t     mpos;           0-based leftmost coordinate of next read in template
+        int32_t     isize;
+    } bam1_core_t;
 
-            typedef struct {
-                bam1_core_t core;
-                int         l_data;
-                uint32_t    m_data;
-                uint8_t*    data;
-                uint64_t    id;
-            } bam1_t;
-        */
+    typedef struct {
+        bam1_core_t core;
+        int         l_data;
+        uint32_t    m_data;
+        uint8_t*    data;
+        uint64_t    id;
+    } bam1_t;
+*/
 
 class AveragePhreadAccumulator;
 class SegmentAccumulator;

@@ -11,6 +11,7 @@
                     "/dev/stdin"
                 ],
                 "multiplex": {
+                    "classifier type": "sample",
                     "algorithm": "transparent",
                     "multiplexing classifier": true
                 },
@@ -432,10 +433,10 @@
             "output": null
         },
         "multiplex:decoder": {
-            "noise": 0.01,
             "base output url": null,
             "enable quality control": null,
             "filter outgoing qc fail": false,
+            "noise": 0.01,
             "output": null
         },
         "sample:barcode": {
@@ -542,6 +543,16 @@
                     "title": "Feed buffer resolution",
                     "type": "integer"
                 },
+                "classifier_type": {
+                    "description": "The type of tag the classifier is decoding: sample, cellular or molecular. ",
+                    "enum": [
+                        "sample",
+                        "cellular",
+                        "molecular"
+                    ],
+                    "title": "Classifier type",
+                    "type": "string"
+                },
                 "compile_only": {
                     "description": "Compile instructions and emit as JSON without executing.",
                     "title": "Compile instruction",
@@ -611,6 +622,9 @@
                         },
                         "base output url": {
                             "$ref": "#/definitions/url"
+                        },
+                        "classifier type": {
+                            "$ref": "#/definitions/classifier_type"
                         },
                         "codec": {
                             "additionalProperties": {

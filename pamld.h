@@ -38,7 +38,7 @@ template < class T > class PamlDecoder : public ObservingDecoder< T > {
         PamlDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
         inline void finalize() override {
-            for(auto& element : this->tag_by_index) {
+            for(auto& element : this->tag_array) {
                 this->accumulated_classified_confidence += element.accumulated_confidence;
                 this->accumulated_pf_classified_confidence += element.accumulated_pf_confidence;
                 this->low_conditional_confidence_count += element.low_conditional_confidence_count;
@@ -58,6 +58,12 @@ class PamlSampleDecoder : public PamlDecoder< Barcode > {
 class PamlCellularDecoder : public PamlDecoder< Barcode > {
     public:
         PamlCellularDecoder(const Value& ontology);
+        inline void classify(const Read& input, Read& output) override;
+};
+
+class PamlMolecularDecoder : public PamlDecoder< Barcode > {
+    public:
+        PamlMolecularDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 

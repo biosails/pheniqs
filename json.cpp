@@ -549,7 +549,7 @@ void ValidationError::compile() {
             string invalid_schema_path(decode_value_by_key< string >("invalid schema path", violation));
 
             try {
-                const Value& schema(find_value_by_key("schema", violation));
+                const Value& schema(violation["schema"]);
 
                 string title;
                 if(decode_value_by_key< string >("title", title, schema)) {
@@ -567,8 +567,8 @@ void ValidationError::compile() {
                 }
 
                 string keyword(decode_value_by_key< string >("keyword", violation));
-                const Value& schema_keyword_value(find_value_by_key(keyword.c_str(), schema));
-                const Value& element_value(find_value_by_key("element", violation));
+                const Value& schema_keyword_value(schema[keyword.c_str()]);
+                const Value& element_value(violation["element"]);
 
                 message += "Error description: ";
 

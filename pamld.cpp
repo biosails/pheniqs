@@ -57,7 +57,7 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
     double conditional_probability(0);
     double adjusted_conditional_decoding_probability(0);
 
-    for(auto& barcode : this->tag_by_index) {
+    for(auto& barcode : this->tag_array) {
         /*  The conditional probability, P(r|b), is the probability of the observation r
             given b was expected.
             P(b), barcode.concentration, is the prior probability of observing b
@@ -149,5 +149,25 @@ void PamlCellularDecoder::classify(const Read& input, Read& output) {
     } else {
         output.set_cellular_decoding_confidence(0);
         output.set_cellular_distance(0);
+    }
+};
+
+PamlMolecularDecoder::PamlMolecularDecoder(const Value& ontology) try :
+    PamlDecoder< Barcode >(ontology) {
+
+    } catch(Error& error) {
+        error.push("PamlMolecularDecoder");
+        throw;
+};
+void PamlMolecularDecoder::classify(const Read& input, Read& output) {
+    PamlDecoder< Barcode >::classify(input, output);
+    output.update_raw_molecular_barcode(this->observation);
+    output.update_molecular_barcode(*this->decoded);
+    if(this->decoded->is_classified()) {
+        output.update_molecular_decoding_confidence(this->decoding_confidence);
+        output.update_molecular_distance(this->decoding_hamming_distance);
+    } else {
+        output.set_molecular_decoding_confidence(0);
+        output.set_molecular_distance(0);
     }
 };

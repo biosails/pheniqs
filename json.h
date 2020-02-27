@@ -63,15 +63,6 @@ void clean_json_object(Value& ontology, Document& document);
 void overlay_json_object(Document& ontology, const Value& overlay);
 bool remove_disabled_from_json_value(Value& ontology, Document& document);
 
-inline const Value& find_value_by_key(const Value::Ch* key, const Value& container) {
-    if(container.IsObject()) {
-        Value::ConstMemberIterator reference = container.FindMember(key);
-        if(reference != container.MemberEnd()) {
-            return reference->value;
-        } else { throw ConfigurationError(string(key) + " not found"); }
-    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
-};
-
 /* decoding JSON container into an object */
 template < typename T > bool decode_value(T& value, const Value& container);
 template < typename T > bool decode_value_by_key(const Value::Ch* key, T& value, const Value& container);
