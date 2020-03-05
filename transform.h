@@ -46,7 +46,7 @@ class Token {
             const int32_t& end,
             const bool& end_terminated);
         Token(const Token& other);
-        virtual ~Token() {};
+        virtual ~Token() = default;
         inline bool empty() const {
             return (end_terminated && start >= end) && ((start >= 0 && end >= 0) || (start < 0 && end < 0));
         };

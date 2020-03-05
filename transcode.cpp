@@ -634,7 +634,7 @@ void Transcode::compile_sensed_input() {
                 hts_feed->calibrate_resolution(resolution);
                 /*
                     const HtsHead& head = ((HtsFeed*)feed)->get_header();
-                    for(const auto& record : head.read_group_by_id) {}
+                    for(const auto& record : head.RG_by_id) {}
                 */
                 feed = hts_feed;
                 break;
@@ -1470,9 +1470,9 @@ void Transcode::load_output() {
 
     Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
     if(reference != ontology.MemberEnd()) {
-        const Value& classifier(reference->value);
+        const Value& multiplex_value(reference->value);
 
-        ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", classifier));
+        ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", multiplex_value));
         if(classifier_type == ClassifierType::SAMPLE) {
             /*  Register the read group elements on the feed proxy so it can be added to SAM header
                 if a URL is present in the channel output that means the channel writes output to that file
@@ -1483,16 +1483,16 @@ void Transcode::load_output() {
                 feed_proxy_by_url.emplace(make_pair(proxy.url, &proxy));
             };
 
-            reference = classifier.FindMember("undetermined");
-            if(reference != classifier.MemberEnd()) {
+            reference = multiplex_value.FindMember("undetermined");
+            if(reference != multiplex_value.MemberEnd()) {
                 HeadRGAtom rg(reference->value);
                 list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
                 for(auto& url : output) {
                     feed_proxy_by_url[url]->head.add_read_group(rg);
                 }
             }
-            reference = classifier.FindMember("codec");
-            if(reference != classifier.MemberEnd()) {
+            reference = multiplex_value.FindMember("codec");
+            if(reference != multiplex_value.MemberEnd()) {
                 for(auto& record : reference->value.GetObject()) {
                     HeadRGAtom rg(record.value);
                     list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
