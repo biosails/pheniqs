@@ -11,8 +11,8 @@
                     "/dev/stdin"
                 ],
                 "multiplex": {
-                    "classifier type": "sample",
                     "algorithm": "transparent",
+                    "classifier type": "sample",
                     "multiplexing classifier": true
                 },
                 "output": [
@@ -656,6 +656,9 @@
                         "quality masking threshold": {
                             "$ref": "#/definitions/quality_masking_threshold"
                         },
+                        "random barcode probability": {
+                            "$ref": "#/definitions/random_barcode_probability"
+                        },
                         "segment cardinality": {
                             "$ref": "#/definitions/segment_cardinality"
                         },
@@ -1175,6 +1178,18 @@
                     "minimum": 0,
                     "title": "Quality masking threshold",
                     "type": "integer"
+                },
+                "random_barcode_probability": {
+                    "description": "The probability of observing a particular sequence given it is not one of the expected barcodes. The lower bound on the value is one over 4 to the power of the nucleotide cardinality of the codec.",
+                    "examples": [
+                        1e-10
+                    ],
+                    "exclusiveMaximum": true,
+                    "exclusiveMinimum": true,
+                    "maximum": 0.25,
+                    "minimum": 0,
+                    "title": "Random barcode probability",
+                    "type": "number"
                 },
                 "rg": {
                     "properties": {

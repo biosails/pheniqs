@@ -198,7 +198,6 @@ void TranscodingDecoder::collect(const TranscodingDecoder& other) {
         }
     }
 };
-
 void TranscodingDecoder::finalize() {
     if(!sample_classifier_array.empty()) {
         for(auto& classifier : sample_classifier_array) {
@@ -843,6 +842,111 @@ void Transcode::compile_topic(const Value::Ch* key) {
         }
     }
 };
+void Transcode::compile_decoder_transformation(Value& value) {
+    if(value.HasMember("transform")) {
+        compile_transformation(value);
+
+        Rule rule(decode_value_by_key< Rule >("transform", value));
+        int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
+
+        /* validate all tokens refer to an existing input segment */
+        for(auto& token : rule.token_array) {
+            if(!(token.input_segment_index < input_segment_cardinality)) {
+                throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
+            }
+            if(token.empty()) {
+                throw ConfigurationError("token " + string(token) + " is empty");
+            }
+            if(!token.constant()) {
+                throw ConfigurationError("token " + string(token) + " is not fixed width");
+            }
+        }
+
+        /* annotate the decoder with cardinality information from the transfortmation */
+        int32_t nucleotide_cardinality(0);
+        vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
+        for(auto& transform : rule.transform_array) {
+            barcode_length[transform.output_segment_index] += transform.length();
+            nucleotide_cardinality += transform.length();
+        }
+        encode_key_value("segment cardinality", rule.output_segment_cardinality, value, ontology);
+        encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, ontology);
+        encode_key_value("barcode length", barcode_length, value, ontology);
+
+        double random_barcode_probability(0);
+        double random_barcode_probability_lower_bound(1.0 / double(pow(4, (nucleotide_cardinality))));
+        if(decode_value_by_key("random barcode probability", random_barcode_probability, value)) {
+            if(random_barcode_probability < random_barcode_probability_lower_bound) {
+                throw ConfigurationError("random barcode probability is smaller than lower bound");
+            }
+        } else {
+            encode_key_value("random barcode probability", random_barcode_probability_lower_bound, value, ontology);
+        }
+
+        /* verify nucleotide cardinality and uniqueness
+           and annotate each barcode element with the barcode segment cardinality */
+        Value::MemberIterator reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()) {
+            if(!reference->value.IsNull()) {
+                Value& undetermined(reference->value);
+
+                /* explicitly define a null barcode segment for the right dimension in the undetermined */
+                Value barcode(kArrayType);
+                for(size_t i(0); i < barcode_length.size(); ++i) {
+                    string sequence(barcode_length[i], '=');
+                    barcode.PushBack(Value(sequence.c_str(), sequence.size(), ontology.GetAllocator()).Move(), ontology.GetAllocator());
+                }
+                undetermined.RemoveMember("barcode");
+                undetermined.AddMember(Value("barcode", ontology.GetAllocator()).Move(), barcode.Move(), ontology.GetAllocator());
+                encode_key_value("segment cardinality", rule.output_segment_cardinality, undetermined, ontology);
+            }
+        }
+
+        size_t segment_index(0);
+        string barcode_segment;
+        string barcode_sequence;
+        set< string > unique_barcode_sequence;
+        reference = value.FindMember("codec");
+        if(reference != value.MemberEnd()) {
+            if(reference->value.IsObject()) {
+                Value& codec(reference->value);
+                for(auto& record : codec.GetObject()) {
+                    reference = record.value.FindMember("barcode");
+                    if(reference !=  record.value.MemberEnd()) {
+                        barcode_sequence.clear();
+                        segment_index = 0;
+                        for(const auto& element : reference->value.GetArray()) {
+                            barcode_segment.assign(element.GetString(), element.GetStringLength());
+                            if(static_cast< int32_t >(barcode_segment.size()) == barcode_length[segment_index]) {
+                                barcode_sequence.append(barcode_segment);
+                                ++segment_index;
+                            } else {
+                                string key(record.name.GetString(), record.name.GetStringLength());
+                                string message;
+                                message.append("expected ");
+                                message.append(to_string(barcode_length[segment_index]));
+                                message.append(" but found ");
+                                message.append(to_string(barcode_segment.size()));
+                                message.append(" nucleotides in segment ");
+                                message.append(to_string(segment_index));
+                                message.append(" of barcode ");
+                                message.append(key);
+                                throw ConfigurationError(message);
+                            }
+                        }
+                        if(!unique_barcode_sequence.count(barcode_sequence)) {
+                            unique_barcode_sequence.emplace(barcode_sequence);
+                        } else {
+                            throw ConfigurationError("duplicate barcode sequence " + barcode_sequence);
+                        }
+                    }
+                    encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, ontology);
+                }
+            }
+        }
+        unique_barcode_sequence.clear();
+    }
+};
 void Transcode::compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode) {
     if(value.IsObject()) {
         encode_key_value("index", index, value, ontology);
@@ -962,101 +1066,6 @@ bool Transcode::infer_PU(const Value::Ch* key, string& buffer, Value& container,
             return true;
         } else { return false; }
     } else { return true; }
-};
-void Transcode::compile_decoder_transformation(Value& value) {
-    if(value.HasMember("transform")) {
-        compile_transformation(value);
-
-        Rule rule(decode_value_by_key< Rule >("transform", value));
-        int32_t input_segment_cardinality(decode_value_by_key< int32_t >("input segment cardinality", ontology));
-
-        /* validate all tokens refer to an existing input segment */
-        for(auto& token : rule.token_array) {
-            if(!(token.input_segment_index < input_segment_cardinality)) {
-                throw ConfigurationError("invalid input feed reference " + to_string(token.input_segment_index) + " in token " + to_string(token.index));
-            }
-            if(token.empty()) {
-                throw ConfigurationError("token " + string(token) + " is empty");
-            }
-            if(!token.constant()) {
-                throw ConfigurationError("token " + string(token) + " is not fixed width");
-            }
-        }
-
-        /* annotate the decoder with cardinality information from the transfortmation */
-        int32_t nucleotide_cardinality(0);
-        vector< int32_t > barcode_length(rule.output_segment_cardinality, 0);
-        for(auto& transform : rule.transform_array) {
-            barcode_length[transform.output_segment_index] += transform.length();
-            nucleotide_cardinality += transform.length();
-        }
-        encode_key_value("segment cardinality", rule.output_segment_cardinality, value, ontology);
-        encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, ontology);
-        encode_key_value("barcode length", barcode_length, value, ontology);
-
-        /* verify nucleotide cardinality and uniqueness
-           and annotate each barcode element with the barcode segment cardinality */
-        Value::MemberIterator reference = value.FindMember("undetermined");
-        if(reference != value.MemberEnd()) {
-            if(!reference->value.IsNull()) {
-                Value& undetermined(reference->value);
-
-                /* explicitly define a null barcode segment for the right dimension in the undetermined */
-                Value barcode(kArrayType);
-                for(size_t i(0); i < barcode_length.size(); ++i) {
-                    string sequence(barcode_length[i], '=');
-                    barcode.PushBack(Value(sequence.c_str(), sequence.size(), ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                }
-                undetermined.RemoveMember("barcode");
-                undetermined.AddMember(Value("barcode", ontology.GetAllocator()).Move(), barcode.Move(), ontology.GetAllocator());
-                encode_key_value("segment cardinality", rule.output_segment_cardinality, undetermined, ontology);
-            }
-        }
-
-        size_t segment_index(0);
-        string barcode_segment;
-        string barcode_sequence;
-        set< string > unique_barcode_sequence;
-        reference = value.FindMember("codec");
-        if(reference != value.MemberEnd()) {
-            if(reference->value.IsObject()) {
-                Value& codec(reference->value);
-                for(auto& record : codec.GetObject()) {
-                    reference = record.value.FindMember("barcode");
-                    if(reference !=  record.value.MemberEnd()) {
-                        barcode_sequence.clear();
-                        segment_index = 0;
-                        for(const auto& element : reference->value.GetArray()) {
-                            barcode_segment.assign(element.GetString(), element.GetStringLength());
-                            if(static_cast< int32_t >(barcode_segment.size()) == barcode_length[segment_index]) {
-                                barcode_sequence.append(barcode_segment);
-                                ++segment_index;
-                            } else {
-                                string key(record.name.GetString(), record.name.GetStringLength());
-                                string message;
-                                message.append("expected ");
-                                message.append(to_string(barcode_length[segment_index]));
-                                message.append(" but found ");
-                                message.append(to_string(barcode_segment.size()));
-                                message.append(" nucleotides in segment ");
-                                message.append(to_string(segment_index));
-                                message.append(" of barcode ");
-                                message.append(key);
-                                throw ConfigurationError(message);
-                            }
-                        }
-                        if(!unique_barcode_sequence.count(barcode_sequence)) {
-                            unique_barcode_sequence.emplace(barcode_sequence);
-                        } else {
-                            throw ConfigurationError("duplicate barcode sequence " + barcode_sequence);
-                        }
-                    }
-                    encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, ontology);
-                }
-            }
-        }
-        unique_barcode_sequence.clear();
-    }
 };
 void Transcode::compile_output() {
     /* expand base output url path */

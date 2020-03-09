@@ -121,8 +121,8 @@ class Transcode : public Job {
         void apply_topic_inheritance(const Value::Ch* key);
         void apply_decoder_inheritance(Value& value);
         void compile_topic(const Value::Ch* key);
-        void compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode);
         void compile_decoder_transformation(Value& value);
+        void compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode);
         void apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document);
         void compile_output();
         void compile_template();

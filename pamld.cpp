@@ -25,7 +25,7 @@ template < class T > PamlDecoder< T >::PamlDecoder(const Value& ontology) try :
     ObservingDecoder< T >(ontology),
     noise(decode_value_by_key< double >("noise", ontology)),
     confidence_threshold(decode_value_by_key< double >("confidence threshold", ontology)),
-    random_barcode_probability(1.0 / double(pow(4, (this->nucleotide_cardinality)))),
+    random_barcode_probability(decode_value_by_key< double >("random barcode probability", ontology)),
     adjusted_noise_probability(noise * random_barcode_probability),
     conditional_decoding_probability(0),
     decoding_confidence(0) {
