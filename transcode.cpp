@@ -140,6 +140,10 @@ void TranscodingDecoder::load_molecular_decoder(const Value& value) {
             molecular_classifier_array.emplace_back(new MdMolecularDecoder(value));
             break;
         };
+        case Algorithm::TRANSPARENT: {
+            molecular_classifier_array.emplace_back(new Classifier< Barcode >(value));
+            break;
+        };
         case Algorithm::NAIVE: {
             molecular_classifier_array.emplace_back(new NaiveMolecularDecoder(value));
             break;
@@ -174,6 +178,10 @@ void TranscodingDecoder::load_cellular_decoder(const Value& value) {
         };
         case Algorithm::MDD: {
             cellular_classifier_array.emplace_back(new MdCellularDecoder(value));
+            break;
+        };
+        case Algorithm::TRANSPARENT: {
+            cellular_classifier_array.emplace_back(new Classifier< Barcode >(value));
             break;
         };
         default:

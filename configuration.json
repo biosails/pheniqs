@@ -411,6 +411,7 @@
             "distance tolerance": null,
             "noise": 0.01,
             "quality masking threshold": 0,
+            "segment cardinality": 0,
             "undetermined": null
         },
         "molecular:barcode": {
@@ -425,6 +426,7 @@
             "distance tolerance": null,
             "noise": 0.01,
             "quality masking threshold": 0,
+            "segment cardinality": 0,
             "undetermined": null
         },
         "multiplex:barcode": {
