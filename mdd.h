@@ -25,7 +25,7 @@
 #include "include.h"
 #include "decoder.h"
 
-template < class T > class MdDecoder : public ObservingDecoder< T > {
+template < class T > class MdDecoder : public Decoder< T > {
     protected:
         const uint8_t quality_masking_threshold;
         const vector< int32_t > distance_tolerance;

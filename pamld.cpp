@@ -22,7 +22,7 @@
 #include "pamld.h"
 
 template < class T > PamlDecoder< T >::PamlDecoder(const Value& ontology) try :
-    ObservingDecoder< T >(ontology),
+    Decoder< T >(ontology),
     noise(decode_value_by_key< double >("noise", ontology)),
     confidence_threshold(decode_value_by_key< double >("confidence threshold", ontology)),
     random_barcode_probability(decode_value_by_key< double >("random barcode probability", ontology)),
@@ -113,7 +113,7 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
         this->decoding_hamming_distance = 0;
         decoding_confidence = 0;
     }
-    ObservingDecoder< T >::classify(input, output);
+    Decoder< T >::classify(input, output);
 };
 
 PamlSampleDecoder::PamlSampleDecoder(const Value& ontology) try :

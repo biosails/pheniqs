@@ -26,7 +26,7 @@
 #include "classifier.h"
 #include "transform.h"
 
-template < class T > class ObservingDecoder : public Classifier< T > {
+template < class T > class Decoder : public Classifier< T > {
     protected:
         const Rule rule;
         const int32_t nucleotide_cardinality;
@@ -37,7 +37,7 @@ template < class T > class ObservingDecoder : public Classifier< T > {
         inline const int32_t segment_cardinality() const {
             return static_cast< int32_t >(observation.segment_cardinality());
         };
-        ObservingDecoder(const Value& ontology) try :
+        Decoder(const Value& ontology) try :
             Classifier< T >(ontology),
             rule(decode_value_by_key< Rule >("transform", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
@@ -45,10 +45,10 @@ template < class T > class ObservingDecoder : public Classifier< T > {
             decoding_hamming_distance(0) {
 
             } catch(Error& error) {
-                error.push("ObservingDecoder");
+                error.push("Decoder");
                 throw;
         };
-        ObservingDecoder(const ObservingDecoder< T >& other) :
+        Decoder(const Decoder< T >& other) :
             Classifier< T >(other),
             rule(other.rule),
             nucleotide_cardinality(other.nucleotide_cardinality),

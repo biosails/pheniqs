@@ -22,7 +22,7 @@
 #include "mdd.h"
 
 template < class T > MdDecoder< T >::MdDecoder(const Value& ontology) try :
-    ObservingDecoder< T >(ontology),
+    Decoder< T >(ontology),
     quality_masking_threshold(decode_value_by_key< uint8_t >("quality masking threshold", ontology)),
     distance_tolerance(decode_value_by_key< vector< int32_t > >("distance tolerance", ontology)) {
 
@@ -79,7 +79,7 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
             }
         }
     }
-    ObservingDecoder< T >::classify(input, output);
+    Decoder< T >::classify(input, output);
 };
 
 MdSampleDecoder::MdSampleDecoder(const Value& ontology) try :

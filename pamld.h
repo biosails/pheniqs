@@ -25,7 +25,7 @@
 #include "include.h"
 #include "decoder.h"
 
-template < class T > class PamlDecoder : public ObservingDecoder< T > {
+template < class T > class PamlDecoder : public Decoder< T > {
     protected:
         const double noise;
         const double confidence_threshold;
@@ -44,7 +44,7 @@ template < class T > class PamlDecoder : public ObservingDecoder< T > {
                 this->low_conditional_confidence_count += element.low_conditional_confidence_count;
                 this->low_confidence_count += element.low_confidence_count;
             }
-            ObservingDecoder< T >::finalize();
+            Decoder< T >::finalize();
         };
 };
 

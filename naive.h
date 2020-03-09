@@ -25,23 +25,23 @@
 #include "include.h"
 #include "decoder.h"
 
-class NaiveMolecularDecoder : public ObservingDecoder< Barcode > {
+class NaiveMolecularDecoder : public Decoder< Barcode > {
     public:
         NaiveMolecularDecoder(const Value& ontology) try :
-            ObservingDecoder< Barcode >(ontology) {
+            Decoder< Barcode >(ontology) {
 
             } catch(Error& error) {
                 error.push("NaiveMolecularDecoder");
                 throw;
         };
         NaiveMolecularDecoder(const NaiveMolecularDecoder& other) :
-            ObservingDecoder< Barcode >(other) {
+            Decoder< Barcode >(other) {
         };
         inline void classify(const Read& input, Read& output) override {
             this->observation.clear();
             this->rule.apply(input, this->observation);
             output.update_molecular_barcode(observation);
-            ObservingDecoder< Barcode >::classify(input, output);
+            Decoder< Barcode >::classify(input, output);
         };
 };
 
