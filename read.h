@@ -51,11 +51,6 @@
     } bam1_t;
 */
 
-class AveragePhreadAccumulator;
-class SegmentAccumulator;
-class Segment;
-class Read;
-
 class Segment : public ObservedSequence {
     friend ostream& operator<<(ostream& o, const Segment& segment);
 
@@ -169,77 +164,6 @@ class Segment : public ObservedSequence {
         };
 };
 ostream& operator<<(ostream& o, const Segment& segment);
-
-class AveragePhreadAccumulator {
-    public:
-        uint64_t count;
-        double min_value;
-        double max_value;
-        double sum_value;
-        double mean_value;
-        vector< uint64_t > distribution;
-        AveragePhreadAccumulator();
-        AveragePhreadAccumulator(const AveragePhreadAccumulator& other) :
-            count(other.count),
-            min_value(other.min_value),
-            max_value(other.max_value),
-            sum_value(other.sum_value),
-            mean_value(other.mean_value),
-            distribution(other.distribution) {
-        };
-        inline void increment(const Segment& segment) {
-            ++count;
-            double value(0);
-            for(int32_t i(0); i < segment.length; ++i) {
-                value += segment.quality[i];
-            }
-            value /= double(segment.length);
-            sum_value += value;
-            min_value = min(min_value, value);
-            max_value = max(max_value, value);
-            ++(distribution[static_cast< size_t >(value)]);
-        };
-        void finalize();
-        AveragePhreadAccumulator& operator=(const AveragePhreadAccumulator& rhs);
-        AveragePhreadAccumulator& operator+=(const AveragePhreadAccumulator& rhs);
-};
-
-class SegmentAccumulator {
-    public:
-        void operator=(SegmentAccumulator const &) = delete;
-        int32_t capacity;
-        int32_t shortest;
-        vector < uint64_t > nucleic_acid_count_by_code;
-        AveragePhreadAccumulator average_phred;
-        vector< CycleAccumulator > cycle_by_index;
-        SegmentAccumulator();
-        SegmentAccumulator(const SegmentAccumulator& other) :
-            // index(other.index),
-            capacity(other.capacity),
-            shortest(other.shortest),
-            nucleic_acid_count_by_code(other.nucleic_acid_count_by_code),
-            average_phred(other.average_phred),
-            cycle_by_index(other.cycle_by_index) {
-        };
-        inline void increment(const Segment& segment) {
-            if(segment.length > capacity) {
-                cycle_by_index.resize(segment.length);
-                capacity = segment.length;
-            }
-            if(segment.length < shortest) {
-                shortest = segment.length;
-            }
-            for(int32_t i(0); i < segment.length; ++i) {
-                ++(nucleic_acid_count_by_code[NO_NUCLEOTIDE]);
-                ++(nucleic_acid_count_by_code[segment.code[i]]);
-                cycle_by_index[i].increment(segment.code[i], segment.quality[i]);
-            }
-            average_phred.increment(segment);
-        };
-        void finalize();
-        SegmentAccumulator& operator+=(const SegmentAccumulator& rhs);
-};
-bool encode_value(const SegmentAccumulator& value, Value& container, Document& document);
 
 class Read : public SequenceArray< Segment > {
     friend ostream& operator<<(ostream& o, const Read& read);
@@ -446,23 +370,5 @@ class Read : public SequenceArray< Segment > {
         };
 };
 ostream& operator<<(ostream& o, const Read& read);
-
-class ReadAccumulator {
-    public:
-        void operator=(ReadAccumulator const &) = delete;
-        vector< SegmentAccumulator > segment_accumulator_by_index;
-        ReadAccumulator(const int32_t& cardinality);
-        ReadAccumulator(const ReadAccumulator& other) :
-            segment_accumulator_by_index(other.segment_accumulator_by_index) {
-        };
-        inline void increment(const Read& read) {
-            for(size_t i(0); i < segment_accumulator_by_index.size(); ++i) {
-                segment_accumulator_by_index[i].increment(read[i]);
-            }
-        };
-        void finalize();
-        ReadAccumulator& operator+=(const ReadAccumulator& rhs);
-};
-bool encode_value(const ReadAccumulator& value, Value& container, Document& document);
 
 #endif /* PHENIQS_READ_H */

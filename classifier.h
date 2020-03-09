@@ -40,23 +40,7 @@ ostream& operator<<(ostream& o, const ClassifierType& value);
 template<> bool decode_value_by_key< ClassifierType >(const Value::Ch* key, ClassifierType& value, const Value& container);
 template<> ClassifierType decode_value_by_key< ClassifierType >(const Value::Ch* key, const Value& container);
 
-template < class T > class Classifier : public AccumulatingClassifier {
-    public:
-        Classifier(const Value& ontology) try :
-            AccumulatingClassifier(decode_value_by_key< int32_t >("index", ontology)) {
-
-            } catch(Error& error) {
-                error.push("Classifier");
-                throw;
-        };
-        virtual ~Classifier() = default;
-        virtual void classify(const Read& input, Read& output) = 0;
-        virtual void finalize() = 0;
-        // virtual Classifier< T >& operator+=(const Classifier< T >& rhs) = 0;
-        virtual void encode(Value& container, Document& document) const = 0;
-};
-
-vector< string > decode_tag_ID_by_index(const Value& ontology);
+vector< string > decode_tag_id_by_index(const Value& ontology);
 
 template < class T > class RoutingClassifier : public AccumulatingClassifier {
     public:

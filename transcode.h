@@ -34,12 +34,12 @@
 #include "multiplex.h"
 
 class Transcode;
-class TranscodePivot;
+class TranscodingThread;
 
-class CompoundClassifier {
+class TranscodingDecoder {
     public:
-        CompoundClassifier(const Value& ontology);
-        ~CompoundClassifier();
+        TranscodingDecoder(const Value& ontology);
+        ~TranscodingDecoder();
         vector< RoutingClassifier< Barcode >* > sample_classifier_array;
         vector< RoutingClassifier< Barcode >* > molecular_classifier_array;
         vector< RoutingClassifier< Barcode >* > cellular_classifier_array;
@@ -55,7 +55,7 @@ class CompoundClassifier {
                 classifier->classify(input, output);
             }
         };
-        CompoundClassifier& operator+=(const CompoundClassifier& pivot);
+        TranscodingDecoder& operator+=(const TranscodingDecoder& transcoding_thread);
         void encode(Value& container, Document& document) const;
 
     private:
@@ -69,7 +69,7 @@ class CompoundClassifier {
 };
 
 class Transcode : public Job {
-    friend class TranscodePivot;
+    friend class TranscodingThread;
 
     public:
         Transcode(Transcode const &) = delete;
@@ -97,19 +97,18 @@ class Transcode : public Job {
         void stop() override;
         void finalize() override;
         void apply_interactive_ontology(Document& document) const override;
-        Transcode& operator+=(const TranscodePivot& pivot);
+        Transcode& operator+=(const TranscodingThread& transcoding_thread);
 
     private:
         bool end_of_input;
         int32_t decoded_nucleotide_cardinality;
         htsThreadPool thread_pool;
-        list< TranscodePivot > pivot_array;
         list< Feed* > input_feed_by_index;
         list< Feed* > output_feed_by_index;
         vector< Feed* > input_feed_by_segment;
-        unordered_map< URL, Feed* > output_feed_by_url;
         Multiplexer* multiplexer;
-        CompoundClassifier* classifier;
+        TranscodingDecoder* transcoding_decoder;
+        list< TranscodingThread > transcoding_thread_by_index;
 
         void compile_PG();
         void compile_explicit_input();
@@ -140,7 +139,6 @@ class Transcode : public Job {
         void load_decoding();
         void load_input();
         void load_output();
-        void load_pivot();
 
         void print_global_instruction(ostream& o) const;
         void print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const;
@@ -154,10 +152,10 @@ class Transcode : public Job {
         void print_feed_instruction(const Value::Ch* key, ostream& o) const;
 };
 
-class TranscodePivot {
+class TranscodingThread {
     public:
-        TranscodePivot(TranscodePivot const &) = delete;
-        void operator=(TranscodePivot const &) = delete;
+        TranscodingThread(TranscodingThread const &) = delete;
+        void operator=(TranscodingThread const &) = delete;
 
         const int32_t index;
         const Platform platform;
@@ -167,16 +165,16 @@ class TranscodePivot {
         Read input;
         Read output;
         Multiplexer multiplexer;
-        CompoundClassifier classifier;
-        TranscodePivot(Transcode& job, const int32_t& index);
+        TranscodingDecoder transcoding_decoder;
+        TranscodingThread(Transcode& job, const int32_t& index);
         void start() {
-            pivot_thread = thread(&TranscodePivot::run, this);
+            thread_instance = thread(&TranscodingThread::run, this);
         };
         void join() {
-            pivot_thread.join();
+            thread_instance.join();
         };
         void finalize() {
-            classifier.finalize();
+            transcoding_decoder.finalize();
             multiplexer.finalize();
         };
 
@@ -186,7 +184,7 @@ class TranscodePivot {
                 input.validate();
                 if(!filter_incoming_qc_fail || !input.qcfail()) {
                     template_rule.apply(input, output);
-                    classifier.classify(input, output);
+                    transcoding_decoder.classify(input, output);
                     output.flush();
                     multiplexer.push(output);
                 }
@@ -197,7 +195,7 @@ class TranscodePivot {
 
     private:
         Transcode& job;
-        thread pivot_thread;
+        thread thread_instance;
         const bool filter_incoming_qc_fail;
         const TemplateRule template_rule;
 };

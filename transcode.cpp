@@ -26,19 +26,19 @@
 */
 #include "transcode.h"
 
-/* CompoundClassifier */
+/* TranscodingDecoder */
 
-CompoundClassifier::CompoundClassifier(const Value& ontology) try {
+TranscodingDecoder::TranscodingDecoder(const Value& ontology) try {
     load_multiplex_decoding(ontology);
     load_sample_decoding(ontology);
     load_molecular_decoding(ontology);
     load_cellular_decoding(ontology);
 
     } catch(Error& error) {
-        error.push("CompoundClassifier");
+        error.push("TranscodingDecoder");
         throw;
 };
-CompoundClassifier::~CompoundClassifier() {
+TranscodingDecoder::~TranscodingDecoder() {
     if(!sample_classifier_array.empty()) {
         for(auto& classifier : sample_classifier_array) {
             delete classifier;
@@ -55,7 +55,7 @@ CompoundClassifier::~CompoundClassifier() {
         }
     }
 };
-void CompoundClassifier::load_multiplex_decoding(const Value& ontology) {
+void TranscodingDecoder::load_multiplex_decoding(const Value& ontology) {
     Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
     if(reference != ontology.MemberEnd()) {
         ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", reference->value));
@@ -77,7 +77,7 @@ void CompoundClassifier::load_multiplex_decoding(const Value& ontology) {
         }
     }
 };
-void CompoundClassifier::load_sample_decoding(const Value& ontology) {
+void TranscodingDecoder::load_sample_decoding(const Value& ontology) {
     Value::ConstMemberIterator reference = ontology.FindMember("sample");
     if(reference != ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
@@ -93,7 +93,7 @@ void CompoundClassifier::load_sample_decoding(const Value& ontology) {
     }
     sample_classifier_array.shrink_to_fit();
 };
-void CompoundClassifier::load_sample_decoder(const Value& value) {
+void TranscodingDecoder::load_sample_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
         case Algorithm::PAMLD: {
@@ -113,7 +113,7 @@ void CompoundClassifier::load_sample_decoder(const Value& value) {
             break;
     }
 };
-void CompoundClassifier::load_molecular_decoding(const Value& ontology) {
+void TranscodingDecoder::load_molecular_decoding(const Value& ontology) {
     Value::ConstMemberIterator reference = ontology.FindMember("molecular");
     if(reference != ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
@@ -129,7 +129,7 @@ void CompoundClassifier::load_molecular_decoding(const Value& ontology) {
     }
     molecular_classifier_array.shrink_to_fit();
 };
-void CompoundClassifier::load_molecular_decoder(const Value& value) {
+void TranscodingDecoder::load_molecular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
         case Algorithm::PAMLD: {
@@ -149,7 +149,7 @@ void CompoundClassifier::load_molecular_decoder(const Value& value) {
             break;
     }
 };
-void CompoundClassifier::load_cellular_decoding(const Value& ontology) {
+void TranscodingDecoder::load_cellular_decoding(const Value& ontology) {
     Value::ConstMemberIterator reference = ontology.FindMember("cellular");
     if(reference != ontology.MemberEnd()) {
         if(reference->value.IsObject()) {
@@ -165,7 +165,7 @@ void CompoundClassifier::load_cellular_decoding(const Value& ontology) {
     }
     cellular_classifier_array.shrink_to_fit();
 };
-void CompoundClassifier::load_cellular_decoder(const Value& value) {
+void TranscodingDecoder::load_cellular_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
         case Algorithm::PAMLD: {
@@ -181,7 +181,7 @@ void CompoundClassifier::load_cellular_decoder(const Value& value) {
             break;
     }
 };
-void CompoundClassifier::finalize() {
+void TranscodingDecoder::finalize() {
     if(!sample_classifier_array.empty()) {
         for(auto& classifier : sample_classifier_array) {
             classifier->finalize();
@@ -198,25 +198,25 @@ void CompoundClassifier::finalize() {
         }
     }
 };
-CompoundClassifier& CompoundClassifier::operator+=(const CompoundClassifier& pivot) {
+TranscodingDecoder& TranscodingDecoder::operator+=(const TranscodingDecoder& lhs) {
     if(!sample_classifier_array.empty()) {
         for(size_t index(0); index < sample_classifier_array.size(); ++index) {
-            *(sample_classifier_array[index]) += *(pivot.sample_classifier_array[index]);
+            *(sample_classifier_array[index]) += *(lhs.sample_classifier_array[index]);
         }
     }
     if(!molecular_classifier_array.empty()) {
         for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
-            *(molecular_classifier_array[index]) += *(pivot.molecular_classifier_array[index]);
+            *(molecular_classifier_array[index]) += *(lhs.molecular_classifier_array[index]);
         }
     }
     if(!cellular_classifier_array.empty()) {
         for(size_t index(0); index < cellular_classifier_array.size(); ++index) {
-            *(cellular_classifier_array[index]) += *(pivot.cellular_classifier_array[index]);
+            *(cellular_classifier_array[index]) += *(lhs.cellular_classifier_array[index]);
         }
     }
     return *this;
 };
-void CompoundClassifier::encode(Value& container, Document& document) const {
+void TranscodingDecoder::encode(Value& container, Document& document) const {
     if(!sample_classifier_array.empty()) {
         Value array(kArrayType);
         for(auto& classifier : sample_classifier_array) {
@@ -279,7 +279,7 @@ Transcode::Transcode(Document& operation) try :
     decoded_nucleotide_cardinality(0),
     thread_pool({NULL, 0}),
     multiplexer(NULL),
-    classifier(NULL) {
+    transcoding_decoder(NULL) {
 
     } catch(Error& error) {
         error.push("Transcode");
@@ -300,7 +300,7 @@ Transcode::~Transcode() {
     output_feed_by_index.clear();
 
     delete multiplexer;
-    delete classifier;
+    delete transcoding_decoder;
 };
 bool Transcode::pull(Read& read) {
     vector< unique_lock< mutex > > feed_locks;
@@ -311,7 +311,7 @@ bool Transcode::pull(Read& read) {
         feed_locks.push_back(feed->acquire_pull_lock());
     }
 
-    /* pull into pivot input segments from input feeds */
+    /* pull into input read from input feeds */
     for(size_t i(0); i < read.segment_cardinality(); ++i) {
         if(!input_feed_by_segment[i]->pull(read[i])) {
             end_of_input = true;
@@ -332,9 +332,9 @@ bool Transcode::pull(Read& read) {
     }
     return !end_of_input;
 };
-Transcode& Transcode::operator+=(const TranscodePivot& pivot) {
-    *classifier += pivot.classifier;
-    *multiplexer += pivot.multiplexer;
+Transcode& Transcode::operator+=(const TranscodingThread& transcoding_thread) {
+    *transcoding_decoder += transcoding_thread.transcoding_decoder;
+    *multiplexer += transcoding_thread.multiplexer;
     return *this;
 };
 
@@ -1367,7 +1367,6 @@ void Transcode::load() {
     load_input();
     load_output();
     load_decoding();
-    load_pivot();
 };
 void Transcode::validate_url_accessibility() {
     URL url;
@@ -1509,8 +1508,10 @@ void Transcode::load_output() {
         proxy.open();
     };
 
-    /*  Load feed_by_url, a local map of output feeds by url, from the proxy.
-        Populate output_feed_by_index used to enumerate threaded access to the output feeds */
+    /*  Load a feed for each output URL from the proxy in output_feed_by_index.
+        output_feed_by_url is a local map of output feeds by url for populating the multiplexer.
+    */
+    unordered_map< URL, Feed* > output_feed_by_url;
     output_feed_by_url.reserve(feed_proxy_array.size());
     for(auto& proxy : feed_proxy_array) {
             Feed* feed(NULL);
@@ -1541,12 +1542,10 @@ void Transcode::load_output() {
     multiplexer->populate(output_feed_by_url);
 };
 void Transcode::load_decoding() {
-    classifier = new CompoundClassifier(ontology);
-};
-void Transcode::load_pivot() {
+    transcoding_decoder = new TranscodingDecoder(ontology);
     int32_t decoding_threads(decode_value_by_key< int32_t >("decoding threads", ontology));
     for(int32_t index(0); index < decoding_threads; ++index) {
-        pivot_array.emplace_back(*this, index);
+        transcoding_thread_by_index.emplace_back(*this, index);
     }
 };
 void Transcode::start() {
@@ -1562,11 +1561,11 @@ void Transcode::start() {
     for(auto feed : output_feed_by_index) {
         feed->start();
     }
-    for(auto& pivot : pivot_array) {
-        pivot.start();
+    for(auto& transcoding_thread : transcoding_thread_by_index) {
+        transcoding_thread.start();
     }
-    for(auto& pivot : pivot_array) {
-        pivot.join();
+    for(auto& transcoding_thread : transcoding_thread_by_index) {
+        transcoding_thread.join();
     }
 };
 void Transcode::stop() {
@@ -1596,15 +1595,15 @@ void Transcode::finalize() {
         report.AddMember("incoming", element.Move(), report.GetAllocator());
     }
 
-    for(auto& pivot : pivot_array) {
-        *this += pivot;
+    for(auto& transcoding_thread : transcoding_thread_by_index) {
+        *this += transcoding_thread;
     }
 
     if(multiplexer != NULL) {
         multiplexer->finalize();
         multiplexer->encode(report, report);
     }
-    classifier->encode(report, report);
+    transcoding_decoder->encode(report, report);
 
     clean_json_value(report, report);
     sort_json_value(report, report);
@@ -1967,7 +1966,7 @@ void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {
 
 /* Transcode Pivot */
 
-TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
+TranscodingThread::TranscodingThread(Transcode& job, const int32_t& index) try :
     index(index),
     platform(decode_value_by_key< Platform >("platform", job.ontology)),
     leading_segment_index(decode_value_by_key< int32_t >("leading segment index", job.ontology)),
@@ -1976,7 +1975,7 @@ TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
     input(input_segment_cardinality, platform, leading_segment_index),
     output(output_segment_cardinality, platform, leading_segment_index),
     multiplexer(*job.multiplexer),
-    classifier(job.ontology),
+    transcoding_decoder(job.ontology),
     job(job),
     filter_incoming_qc_fail(decode_value_by_key< bool >("filter incoming qc fail", job.ontology)),
     template_rule(decode_value_by_key< Rule >("transform", job.ontology["template"])) {
@@ -1985,6 +1984,6 @@ TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
     output.clear();
 
     } catch(Error& error) {
-        error.push("TranscodePivot");
+        error.push("TranscodingThread");
         throw;
 };

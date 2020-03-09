@@ -76,7 +76,7 @@ template <> ClassifierType decode_value_by_key(const Value::Ch* key, const Value
     return value;
 };
 
-vector< string > decode_tag_ID_by_index(const Value& ontology) {
+vector< string > decode_tag_id_by_index(const Value& ontology) {
     vector< string > value;
     if(ontology.IsObject()) {
         Value::ConstMemberIterator undetermined_reference = ontology.FindMember("undetermined");

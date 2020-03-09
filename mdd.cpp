@@ -84,7 +84,7 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
 
 MdSampleDecoder::MdSampleDecoder(const Value& ontology) try :
     MdDecoder< Barcode >(ontology),
-    rg_by_barcode_index(decode_tag_ID_by_index(ontology)) {
+    rg_by_barcode_index(decode_tag_id_by_index(ontology)) {
 
     } catch(Error& error) {
         error.push("MdSampleDecoder");

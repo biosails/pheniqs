@@ -118,7 +118,7 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
 
 PamlSampleDecoder::PamlSampleDecoder(const Value& ontology) try :
     PamlDecoder< Barcode >(ontology),
-    rg_by_barcode_index(decode_tag_ID_by_index(ontology)) {
+    rg_by_barcode_index(decode_tag_id_by_index(ontology)) {
 
     } catch(Error& error) {
         error.push("PamlSampleDecoder");

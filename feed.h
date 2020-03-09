@@ -304,12 +304,12 @@ template < class T > class BufferedFeed : public Feed {
             delete buffer;
         };
         void join() override {
-            feed_thread.join();
+            thread_instance.join();
         };
         void start() override {
             if(!started) {
                 started = true;
-                feed_thread = thread(&BufferedFeed::run, this);
+                thread_instance = thread(&BufferedFeed::run, this);
             }
         };
         void stop() override {
@@ -428,7 +428,7 @@ template < class T > class BufferedFeed : public Feed {
 
     private:
         bool started;
-        thread feed_thread;
+        thread thread_instance;
         mutex buffer_mutex;
         mutex queue_mutex;
         condition_variable queue_not_empty;
