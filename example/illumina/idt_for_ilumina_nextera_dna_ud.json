@@ -4642,7 +4642,7 @@
         }
     },
     "description": [
-        "Segment 0 is the i7 index and segement 1 is the i5index.",
+        "Segment 0 is the i7 index and segement 1 is the i5 index.",
         "For NovaSeq, MiSeq, HiSeq 2000, HiSeq 2500 i5 is as specified.",
         "For iSeq, MiniSeq, NextSeq, HiSeq 3000,HiSeq 4000 i5 should be reverse complemented."
     ]

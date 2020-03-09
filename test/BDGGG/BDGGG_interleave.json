@@ -8,7 +8,7 @@
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "decoder": {
-        "BDGGG_multiplex": {
+        "BDGGG_sample": {
             "codec": {
                 "@AGGCAGAA": {
                     "barcode": [

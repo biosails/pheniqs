@@ -12,9 +12,9 @@
             }
         }
     ],
-    "multiplex": {
+    "sample": {
         "algorithm": "pamld",
-        "base": "BDGGG_multiplex",
+        "base": "BDGGG_sample",
         "codec": {
             "@AGGCAGAA": {
                 "LB": "trinidad 5",
