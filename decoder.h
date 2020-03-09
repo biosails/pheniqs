@@ -26,7 +26,7 @@
 #include "classifier.h"
 #include "transform.h"
 
-template < class T > class ObservingDecoder : public RoutingClassifier< T > {
+template < class T > class ObservingDecoder : public Classifier< T > {
     protected:
         const Rule rule;
         const int32_t nucleotide_cardinality;
@@ -38,7 +38,7 @@ template < class T > class ObservingDecoder : public RoutingClassifier< T > {
             return static_cast< int32_t >(observation.segment_cardinality());
         };
         ObservingDecoder(const Value& ontology) try :
-            RoutingClassifier< T >(ontology),
+            Classifier< T >(ontology),
             rule(decode_value_by_key< Rule >("transform", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
@@ -49,7 +49,7 @@ template < class T > class ObservingDecoder : public RoutingClassifier< T > {
                 throw;
         };
         ObservingDecoder(const ObservingDecoder< T >& other) :
-            RoutingClassifier< T >(other),
+            Classifier< T >(other),
             rule(other.rule),
             nucleotide_cardinality(other.nucleotide_cardinality),
             observation(other.observation.segment_cardinality()),
@@ -62,34 +62,14 @@ template < class T > class ObservingDecoder : public RoutingClassifier< T > {
                     this->decoded->accumulated_pf_distance += static_cast< uint64_t >(decoding_hamming_distance);
                 }
             }
-            RoutingClassifier< T >::classify(input, output);
+            Classifier< T >::classify(input, output);
         };
         inline void finalize() override {
             for(auto& element : this->tag_array) {
                 this->accumulated_classified_distance += element.accumulated_distance;
                 this->accumulated_pf_classified_distance += element.accumulated_pf_distance;
             }
-            RoutingClassifier< T >::finalize();
-        };
-};
-
-class NaiveMolecularDecoder : public ObservingDecoder< Barcode > {
-    public:
-        NaiveMolecularDecoder(const Value& ontology) try :
-            ObservingDecoder< Barcode >(ontology) {
-
-            } catch(Error& error) {
-                error.push("NaiveMolecularDecoder");
-                throw;
-        };
-        NaiveMolecularDecoder(const NaiveMolecularDecoder& other) :
-            ObservingDecoder< Barcode >(other) {
-        };
-        inline void classify(const Read& input, Read& output) override {
-            this->observation.clear();
-            this->rule.apply(input, this->observation);
-            output.update_molecular_barcode(observation);
-            ObservingDecoder< Barcode >::classify(input, output);
+            Classifier< T >::finalize();
         };
 };
 

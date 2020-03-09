@@ -24,9 +24,9 @@
 
 #include "include.h"
 #include "sequence.h"
-#include "accumulator.h"
+#include "selector.h"
 
-class Barcode : public SequenceArray< Sequence >, public AccumulatingTag {
+class Barcode : public SequenceArray< Sequence >, public AccumulatingOption {
     friend ostream& operator<<(ostream& o, const Barcode& barcode);
     friend bool encode_key_value(const string& key, const Barcode& value, Value& node, Document& document);
 
@@ -157,7 +157,6 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingTag {
             quality = sigma_q;
         };
         void encode(Value& container, Document& document) const override;
-        Barcode& operator+=(const Barcode& rhs);
 };
 
 ostream& operator<<(ostream& o, const Barcode& barcode);

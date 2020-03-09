@@ -25,7 +25,9 @@ INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
 ZSH_PREFIX      = $(PREFIX)/share/zsh
 
-CPPFLAGS        += -Wall -Wsign-compare
+CC              = clang
+CXX             = clang++
+CPPFLAGS        += -Wall -Wsign-compare -Wdeprecated
 CXXFLAGS        += -std=c++11 -O3
 # LDFLAGS       +=
 LIBS            += -lhts -lz -lbz2 -llzma
@@ -53,13 +55,14 @@ endif
 PLATFORM := $(shell uname -s)
 
 PHENIQS_SOURCES = \
-	accumulator.cpp \
+	selector.cpp \
 	atom.cpp \
 	auxiliary.cpp \
 	barcode.cpp \
 	multiplex.cpp \
 	decoder.cpp \
 	classifier.cpp \
+	naive.cpp \
 	mdd.cpp \
 	pamld.cpp \
 	pipeline.cpp \
@@ -79,13 +82,14 @@ PHENIQS_SOURCES = \
 	url.cpp
 
 PHENIQS_OBJECTS = \
-	accumulator.o \
+	selector.o \
 	atom.o \
 	auxiliary.o \
 	barcode.o \
 	multiplex.o \
 	decoder.o \
 	classifier.o \
+	naive.o \
 	mdd.o \
 	pamld.o \
 	pipeline.o \
@@ -306,7 +310,7 @@ sequence.o: \
 
 barcode.o: \
 	sequence.o \
-	accumulator.o \
+	selector.o \
 	barcode.h
 
 auxiliary.o: \
@@ -318,9 +322,9 @@ read.o: \
 	auxiliary.o \
 	read.h
 
-accumulator.o: \
+selector.o: \
 	json.o \
-	accumulator.h
+	selector.h
 
 phred.o: \
 	iupac.h \
@@ -351,11 +355,11 @@ transform.o: \
 
 multiplex.o: \
 	feed.o \
-	accumulator.o \
+	selector.o \
 	multiplex.h
 
 classifier.o: \
-	accumulator.o \
+	selector.o \
 	read.o \
 	classifier.h
 
@@ -364,6 +368,10 @@ decoder.o: \
 	transform.o \
 	multiplex.o \
 	decoder.h
+
+naive.o: \
+	decoder.o \
+	naive.h
 
 mdd.o: \
 	decoder.o \
@@ -379,10 +387,11 @@ job.o: \
 	job.h
 
 transcode.o: \
-	accumulator.o \
+	selector.o \
 	fastq.o \
 	hts.o \
 	decoder.o \
+	naive.o \
 	mdd.o \
 	pamld.o \
 	metric.h \

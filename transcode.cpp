@@ -105,7 +105,7 @@ void TranscodingDecoder::load_sample_decoder(const Value& value) {
             break;
         };
         case Algorithm::TRANSPARENT: {
-            sample_classifier_array.emplace_back(new RoutingClassifier< Barcode >(value));
+            sample_classifier_array.emplace_back(new Classifier< Barcode >(value));
             break;
         };
         default:
@@ -181,6 +181,24 @@ void TranscodingDecoder::load_cellular_decoder(const Value& value) {
             break;
     }
 };
+void TranscodingDecoder::collect(const TranscodingDecoder& other) {
+    if(!sample_classifier_array.empty()) {
+        for(size_t index(0); index < sample_classifier_array.size(); ++index) {
+            sample_classifier_array[index]->collect(*other.sample_classifier_array[index]);
+        }
+    }
+    if(!molecular_classifier_array.empty()) {
+        for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
+            molecular_classifier_array[index]->collect(*other.molecular_classifier_array[index]);
+        }
+    }
+    if(!cellular_classifier_array.empty()) {
+        for(size_t index(0); index < cellular_classifier_array.size(); ++index) {
+            cellular_classifier_array[index]->collect(*other.cellular_classifier_array[index]);
+        }
+    }
+};
+
 void TranscodingDecoder::finalize() {
     if(!sample_classifier_array.empty()) {
         for(auto& classifier : sample_classifier_array) {
@@ -197,24 +215,6 @@ void TranscodingDecoder::finalize() {
             classifier->finalize();
         }
     }
-};
-TranscodingDecoder& TranscodingDecoder::operator+=(const TranscodingDecoder& lhs) {
-    if(!sample_classifier_array.empty()) {
-        for(size_t index(0); index < sample_classifier_array.size(); ++index) {
-            *(sample_classifier_array[index]) += *(lhs.sample_classifier_array[index]);
-        }
-    }
-    if(!molecular_classifier_array.empty()) {
-        for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
-            *(molecular_classifier_array[index]) += *(lhs.molecular_classifier_array[index]);
-        }
-    }
-    if(!cellular_classifier_array.empty()) {
-        for(size_t index(0); index < cellular_classifier_array.size(); ++index) {
-            *(cellular_classifier_array[index]) += *(lhs.cellular_classifier_array[index]);
-        }
-    }
-    return *this;
 };
 void TranscodingDecoder::encode(Value& container, Document& document) const {
     if(!sample_classifier_array.empty()) {
@@ -332,10 +332,9 @@ bool Transcode::pull(Read& read) {
     }
     return !end_of_input;
 };
-Transcode& Transcode::operator+=(const TranscodingThread& transcoding_thread) {
-    *transcoding_decoder += transcoding_thread.transcoding_decoder;
-    *multiplexer += transcoding_thread.multiplexer;
-    return *this;
+void Transcode::collect(const TranscodingThread& transcoding_thread) {
+    transcoding_decoder->collect(transcoding_thread.transcoding_decoder);
+    multiplexer->collect(transcoding_thread.multiplexer);
 };
 
 /* assemble */
@@ -1596,7 +1595,7 @@ void Transcode::finalize() {
     }
 
     for(auto& transcoding_thread : transcoding_thread_by_index) {
-        *this += transcoding_thread;
+        collect(transcoding_thread);
     }
 
     if(multiplexer != NULL) {

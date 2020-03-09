@@ -26,79 +26,10 @@
 #include "json.h"
 #include "phred.h"
 
-class AccumulatingTag;
-class AccumulatingClassifier;
-class NucleotideAccumulator;
-class CycleAccumulator;
+class AccumulatingOption;
+class AccumulatingSelector;
 
-class NucleotideAccumulator {
-    public:
-        uint64_t count;
-        uint8_t min_quality;
-        uint8_t max_quality;
-        uint64_t sum_quality;
-        double mean_quality;
-        uint8_t Q1;
-        uint8_t Q3;
-        uint8_t IQR;
-        uint8_t LW;
-        uint8_t RW;
-        uint8_t median_quality;
-        vector< uint64_t > distribution;
-        NucleotideAccumulator();
-        NucleotideAccumulator(const NucleotideAccumulator& other) :
-            count(other.count),
-            min_quality(other.min_quality),
-            max_quality(other.max_quality),
-            sum_quality(other.sum_quality),
-            mean_quality(other.mean_quality),
-            Q1(other.Q1),
-            Q3(other.Q3),
-            IQR(other.IQR),
-            LW(other.LW),
-            RW(other.RW),
-            median_quality(other.median_quality),
-            distribution(other.distribution) {
-        };
-        inline void increment(const uint8_t phred) {
-            ++(distribution[phred]);
-        };
-        inline uint64_t quantile(const double portion) {
-            uint64_t position(portion * count);
-            uint8_t phred(0);
-            while (position > 0) {
-                if(distribution[phred] >= position) {
-                    break;
-                }
-                position -= distribution[phred];
-                ++phred;
-                while (distribution[phred] == 0) {
-                    ++phred;
-                }
-            }
-            return phred;
-        };
-        void finalize();
-        NucleotideAccumulator& operator=(const NucleotideAccumulator& rhs);
-        NucleotideAccumulator& operator+=(const NucleotideAccumulator& rhs);
-};
-
-class CycleAccumulator {
-    public:
-        vector< NucleotideAccumulator > nucleotide_by_code;
-        CycleAccumulator();
-        CycleAccumulator(const CycleAccumulator& other) :
-            nucleotide_by_code(other.nucleotide_by_code) {
-        };
-        inline void increment(const uint8_t nucleotide, const uint8_t phred) {
-            nucleotide_by_code[nucleotide].increment(phred);
-        };
-        void finalize();
-        CycleAccumulator& operator=(const CycleAccumulator& rhs);
-        CycleAccumulator& operator+=(const CycleAccumulator& rhs);
-};
-
-class AccumulatingTag {
+class AccumulatingOption {
     public:
         uint64_t count;
         uint64_t pf_count;
@@ -119,15 +50,15 @@ class AccumulatingTag {
         double pooled_classified_fraction;      /*  count / decoder.classified_count */
         double pf_pooled_classified_fraction;   /*  pf_count / decoder.pf_classified_count */
 
-        AccumulatingTag();
-        AccumulatingTag(const AccumulatingTag& other);
-        virtual ~AccumulatingTag() = default;
-        virtual void finalize(const AccumulatingClassifier& parent);
+        AccumulatingOption();
+        AccumulatingOption(const AccumulatingOption& other);
+        virtual ~AccumulatingOption() = default;
+        void collect(const AccumulatingOption& other);
+        virtual void finalize(const AccumulatingSelector& parent);
         virtual void encode(Value& container, Document& document) const;
-        AccumulatingTag& operator+=(const AccumulatingTag& rhs);
 };
 
-class AccumulatingClassifier {
+class AccumulatingSelector {
     public:
         const int32_t index;
         uint64_t count;
@@ -150,12 +81,12 @@ class AccumulatingClassifier {
         double average_pf_classified_distance;      /*  accumulated_pf_classified_distance / pf_classified_count */
         double average_pf_classified_confidence;    /*  accumulated_pf_classified_confidence / pf_classified_count */
 
-        AccumulatingClassifier(const int32_t index);
-        AccumulatingClassifier(const AccumulatingClassifier& other);
-        virtual ~AccumulatingClassifier() = default;
+        AccumulatingSelector(const int32_t index);
+        AccumulatingSelector(const AccumulatingSelector& other);
+        virtual ~AccumulatingSelector() = default;
+        void collect(const AccumulatingSelector& other);
         virtual void finalize();
         virtual void encode(Value& container, Document& document) const;
-        AccumulatingClassifier& operator+=(const AccumulatingClassifier& rhs);
 };
 
 #endif /* PHENIQS_ACCUMULATE_H */

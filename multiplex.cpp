@@ -58,6 +58,103 @@ AveragePhreadAccumulator& AveragePhreadAccumulator::operator+=(const AveragePhre
     return *this;
 };
 
+/*  NucleotideAccumulator */
+
+NucleotideAccumulator::NucleotideAccumulator() :
+    count(0),
+    min_quality(0),
+    max_quality(0),
+    sum_quality(0),
+    mean_quality(0),
+    Q1(0),
+    Q3(0),
+    IQR(0),
+    LW(0),
+    RW(0),
+    median_quality(0),
+    distribution(EFFECTIVE_PHRED_RANGE, 0) {
+};
+void NucleotideAccumulator::finalize() {
+    for(auto& q : distribution) {
+        count += q;
+    }
+    if(count > 0) {
+        for(size_t q(0); q < distribution.size(); ++q) {
+            const uint64_t value(distribution[q]);
+            sum_quality += (value * q);
+            if(value != 0) {
+                max_quality = q;
+                if(min_quality == 0) {
+                    min_quality = q;
+                }
+            }
+        }
+        mean_quality = double(sum_quality) / double(count);
+        median_quality = quantile(0.5);
+        Q1 = quantile(0.25);
+        Q3 = quantile(0.75);
+        IQR = Q3 - Q1;
+
+        double W(Q1 - IQR * 1.5);
+        LW = (W < min_quality) ? min_quality : W;
+
+        W = Q3 + IQR * 1.5;
+        RW = (W > max_quality) ? max_quality : W;
+    }
+};
+NucleotideAccumulator& NucleotideAccumulator::operator=(const NucleotideAccumulator& rhs) {
+    if(this != &rhs) {
+        count = rhs.count;
+        min_quality = rhs.min_quality;
+        max_quality = rhs.max_quality;
+        sum_quality = rhs.sum_quality;
+        mean_quality = rhs.mean_quality;
+        Q1 = rhs.Q1;
+        Q3 = rhs.Q3;
+        IQR = rhs.IQR;
+        LW = rhs.LW;
+        RW = rhs.RW;
+        median_quality = rhs.median_quality;
+        distribution = rhs.distribution;
+    }
+    return *this;
+};
+NucleotideAccumulator& NucleotideAccumulator::operator+=(const NucleotideAccumulator& rhs) {
+    for(size_t q(0); q < distribution.size(); ++q) {
+        distribution[q] += rhs.distribution[q];
+    }
+    return *this;
+};
+
+/*  CycleAccumulator */
+
+CycleAccumulator::CycleAccumulator() :
+    nucleotide_by_code(IUPAC_CODE_SIZE) {
+};
+void CycleAccumulator::finalize() {
+    /* accumulate all nucleotide variations in the NO_NUCLEOTIDE accumulative distribution */
+    for(uint8_t i(1); i < nucleotide_by_code.size(); ++i) {
+        for(uint8_t p(0); p < EFFECTIVE_PHRED_RANGE; ++p) {
+            nucleotide_by_code[NO_NUCLEOTIDE].distribution[p] += nucleotide_by_code[i].distribution[p];
+        }
+    }
+    for(auto& distribution : nucleotide_by_code) {
+        distribution.finalize();
+    }
+};
+CycleAccumulator& CycleAccumulator::operator=(const CycleAccumulator& rhs) {
+    if(this != &rhs) {
+        nucleotide_by_code = rhs.nucleotide_by_code;
+    }
+    return *this;
+};
+CycleAccumulator& CycleAccumulator::operator+=(const CycleAccumulator& rhs) {
+    for(size_t i(0); i < nucleotide_by_code.size(); ++i) {
+        nucleotide_by_code[i] += rhs.nucleotide_by_code[i];
+    }
+    return *this;
+};
+
 /*  SegmentAccumulator */
 
 SegmentAccumulator::SegmentAccumulator() try :
@@ -163,7 +260,7 @@ bool encode_value(const SegmentAccumulator& value, Value& container, Document& d
         average_phred_report.AddMember("average phred score distribution", segment_accumulator, allocator);
         container.AddMember("average phred score report", average_phred_report, allocator);
         return true;
-    } else { throw ConfigurationError("feed accumulator element must be a dictionary"); }
+    } else { throw ConfigurationError("feed element must be a dictionary"); }
 };
 
 /*  ReadAccumulator */
@@ -194,7 +291,7 @@ bool encode_value(const ReadAccumulator& value, Value& container, Document& docu
             container.PushBack(segment_report.Move(), document.GetAllocator());
         }
         return true;
-    } else { throw InternalError("Read accumulator container must be an array"); }
+    } else { throw InternalError("Read container must be an array"); }
 };
 
 /*  Channel */
@@ -308,13 +405,12 @@ Multiplexer::Multiplexer(const Multiplexer& other) :
     enable_quality_control(other.enable_quality_control),
     channel_by_index(other.channel_by_index) {
 };
-Multiplexer& Multiplexer::operator+=(const Multiplexer& rhs) {
+void Multiplexer::collect(const Multiplexer& other) {
     if(enable_quality_control) {
         for(size_t index(0); index < channel_by_index.size(); ++index) {
-            channel_by_index[index] += rhs.channel_by_index[index];
+            channel_by_index[index] += other.channel_by_index[index];
         }
     }
-    return *this;
 };
 void Multiplexer::finalize() {
     if(enable_quality_control) {

@@ -23,7 +23,7 @@
 #define PHENIQS_CLASSIFY_H
 
 #include "include.h"
-#include "accumulator.h"
+#include "selector.h"
 #include "read.h"
 
 enum class ClassifierType : int8_t {
@@ -42,14 +42,16 @@ template<> ClassifierType decode_value_by_key< ClassifierType >(const Value::Ch*
 
 vector< string > decode_tag_id_by_index(const Value& ontology);
 
-template < class T > class RoutingClassifier : public AccumulatingClassifier {
-    public:
+template < class T > class Classifier : public AccumulatingSelector {
+    protected:
         T* decoded;
         T unclassified;
         vector< T > tag_array;
+        const bool multiplexing_classifier;
 
-        RoutingClassifier(const Value& ontology) try :
-            AccumulatingClassifier(decode_value_by_key< int32_t >("index", ontology)),
+    public:
+        Classifier(const Value& ontology) try :
+            AccumulatingSelector(decode_value_by_key< int32_t >("index", ontology)),
             decoded(NULL),
             unclassified(ontology["undetermined"]),
             tag_array(decode_value_by_key< vector< T > >("codec", ontology)),
@@ -58,11 +60,11 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
             decoded = &unclassified;
 
             } catch(Error& error) {
-                error.push("RoutingClassifier");
+                error.push("Classifier");
                 throw;
         };
-        RoutingClassifier(const RoutingClassifier< T >& other) :
-            AccumulatingClassifier(other),
+        Classifier(const Classifier< T >& other) :
+            AccumulatingSelector(other),
             decoded(NULL),
             unclassified(other.unclassified),
             tag_array(other.tag_array),
@@ -79,6 +81,13 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
                 output.channel_index = decoded->index;
             }
         };
+        virtual inline void collect(const Classifier& other) {
+            AccumulatingSelector::collect(other);
+            unclassified.collect(other.unclassified);
+            for(size_t index(0); index < tag_array.size(); ++index) {
+                tag_array[index].collect(other.tag_array[index]);
+            }
+        };
         inline void finalize() override {
             for(auto& element : tag_array) {
                 this->classified_count += element.count;
@@ -91,18 +100,10 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
                 element.finalize(*this);
             }
             unclassified.finalize(*this);
-            AccumulatingClassifier::finalize();
-        };
-        RoutingClassifier< T >& operator+=(const RoutingClassifier< T >& rhs) {
-            AccumulatingClassifier::operator+=(rhs);
-            unclassified += rhs.unclassified;
-            for(size_t index(0); index < tag_array.size(); ++index) {
-                tag_array[index] += rhs.tag_array[index];
-            }
-            return *this;
+            AccumulatingSelector::finalize();
         };
         void encode(Value& container, Document& document) const override {
-            AccumulatingClassifier::encode(container, document);
+            AccumulatingSelector::encode(container, document);
 
             Value unclassified_report(kObjectType);
             unclassified.encode(unclassified_report, document);
@@ -118,8 +119,6 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
                 container.AddMember("classified", element_report_array.Move(), document.GetAllocator());
             }
         };
-    protected:
-        const bool multiplexing_classifier;
 };
 
 #endif /* PHENIQS_CLASSIFY_H */

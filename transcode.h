@@ -24,10 +24,11 @@
 
 #include "include.h"
 #include "job.h"
-#include "accumulator.h"
+#include "selector.h"
 #include "fastq.h"
 #include "hts.h"
 #include "decoder.h"
+#include "naive.h"
 #include "mdd.h"
 #include "pamld.h"
 #include "metric.h"
@@ -40,10 +41,9 @@ class TranscodingDecoder {
     public:
         TranscodingDecoder(const Value& ontology);
         ~TranscodingDecoder();
-        vector< RoutingClassifier< Barcode >* > sample_classifier_array;
-        vector< RoutingClassifier< Barcode >* > molecular_classifier_array;
-        vector< RoutingClassifier< Barcode >* > cellular_classifier_array;
-        void finalize();
+        vector< Classifier< Barcode >* > sample_classifier_array;
+        vector< Classifier< Barcode >* > molecular_classifier_array;
+        vector< Classifier< Barcode >* > cellular_classifier_array;
         inline void classify(const Read& input, Read& output) {
             for(auto& classifier : sample_classifier_array) {
                 classifier->classify(input, output);
@@ -55,7 +55,8 @@ class TranscodingDecoder {
                 classifier->classify(input, output);
             }
         };
-        TranscodingDecoder& operator+=(const TranscodingDecoder& transcoding_thread);
+        void collect(const TranscodingDecoder& other);
+        void finalize();
         void encode(Value& container, Document& document) const;
 
     private:
@@ -95,9 +96,9 @@ class Transcode : public Job {
         void load() override;
         void start() override;
         void stop() override;
+        void collect(const TranscodingThread& transcoding_thread);
         void finalize() override;
         void apply_interactive_ontology(Document& document) const override;
-        Transcode& operator+=(const TranscodingThread& transcoding_thread);
 
     private:
         bool end_of_input;
