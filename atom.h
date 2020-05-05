@@ -362,7 +362,7 @@ enum class Algorithm : uint8_t {
     MDD,
     PAMLD,
     NAIVE,
-    TRANSPARENT,
+    PASSTHROUGH,
     BENCHMARK,
 };
 string to_string(const Algorithm& value);

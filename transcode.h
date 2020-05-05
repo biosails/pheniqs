@@ -147,6 +147,7 @@ class Transcode : public Job {
         void print_channel_instruction(const string& key, const Value& value, ostream& o) const;
         void print_input_instruction(ostream& o) const;
         void print_transform_instruction(ostream& o) const;
+        void print_multiplex_instruction(ostream& o) const;
         void print_sample_instruction(ostream& o) const;
         void print_molecular_instruction(ostream& o) const;
         void print_cellular_instruction(ostream& o) const;
@@ -174,10 +175,7 @@ class TranscodingThread {
         void join() {
             thread_instance.join();
         };
-        void finalize() {
-            transcoding_decoder.finalize();
-            multiplexer.finalize();
-        };
+        void finalize();
 
     protected:
         void run() {

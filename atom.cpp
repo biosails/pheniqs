@@ -334,7 +334,7 @@ string to_string(const Algorithm& value) {
         case Algorithm::MDD:          result.assign("mdd");         break;
         case Algorithm::PAMLD:        result.assign("pamld");       break;
         case Algorithm::NAIVE:        result.assign("naive");       break;
-        case Algorithm::TRANSPARENT:  result.assign("transparent"); break;
+        case Algorithm::PASSTHROUGH:  result.assign("passthrough"); break;
         case Algorithm::BENCHMARK:    result.assign("benchmark");   break;
         default:                                                    break;
     }
@@ -345,7 +345,7 @@ bool from_string(const char* value, Algorithm& result) {
     else if(!strcmp(value, "mdd"))          result = Algorithm::MDD;
     else if(!strcmp(value, "pamld"))        result = Algorithm::PAMLD;
     else if(!strcmp(value, "naive"))        result = Algorithm::NAIVE;
-    else if(!strcmp(value, "transparent"))  result = Algorithm::TRANSPARENT;
+    else if(!strcmp(value, "passthrough"))  result = Algorithm::PASSTHROUGH;
     else if(!strcmp(value, "benchmark"))    result = Algorithm::BENCHMARK;
     else                                    result = Algorithm::UNKNOWN;
 

@@ -229,13 +229,13 @@ clean.version:
 
 # Regenerate interface configuration.h from configuration.json
 configuration.h: configuration.json
-	$(and !$(shell ./tool/serialize_configuration.py > configuration.h), \
+	$(and !$(shell ./tool/pheniqs-configuration-api.py header configuration.json > configuration.h), \
     $(info generating configuration.h) \
   )
 
 # Regenerate zsh completion from configuration.json
 _pheniqs: configuration.json
-	$(and !$(shell ./tool/shell.py zsh configuration.json > _pheniqs), \
+	$(and !$(shell ./tool/pheniqs-configuration-api.py zsh configuration.json > _pheniqs), \
     $(info zsh completion _pheniqs generated) \
   )
 
@@ -256,7 +256,7 @@ clean.object:
 	-@rm -f $(PHENIQS_OBJECTS)
 
 .PHONY: clean
-clean: clean.generated clean.object clean.bin
+clean: clean.generated clean.object clean.bin clean.test
 	-@rm -f $(PHENIQS_EXECUTABLE)
 
 .PHONY: install
@@ -278,9 +278,28 @@ uninstall.zsh_completion:
 uninstall: uninstall.zsh_completion
 	-@rm -f $(BIN_PREFIX)/pheniqs
 
-.PHONY: test
-test: all
+.PHONY: test.api.configuration
+test.api.configuration: all
+	./test/api/configuration/run.sh
+
+.PHONY: clean.test.api.configuration
+clean.test.api.configuration:
+	-@rm -rf test/api/configuration/result
+
+.PHONY: test.pheniqs.BDGGG
+test.pheniqs.BDGGG: all
 	./test/BDGGG/run.sh
+
+.PHONY: clean.test.pheniqs.BDGGG
+clean.test.pheniqs.BDGGG:
+	-@rm -rf test/BDGGG/result
+
+.PHONY: test
+test: test.api.configuration test.pheniqs.BDGGG
+
+.PHONY: clean.test
+clean.test: clean.test.api.configuration clean.test.pheniqs.BDGGG
+	-@rm -rf test/api/configuration/result
 
 # Dependencies
 

@@ -12,7 +12,7 @@
             }
         }
     ],
-    "sample": {
+    "multiplex": {
         "algorithm": "pamld",
         "base": "BDGGG_sample",
         "codec": {

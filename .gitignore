@@ -14,3 +14,4 @@
 **/*.h.gch
 install.sh
 /test/*/result
+/test/*/*/result

@@ -76,9 +76,9 @@ Output transform
         Append token 1 of input segment 1 to output segment 1
         Append token 2 of input segment 2 to output segment 2
 
-Mutliplex decoding
+Multiplex decoding
 
-    Decoding algorithm                          transparent
+    Decoding algorithm                          passthrough
 
     Barcode undetermined
         ID : BDGGG:undetermined

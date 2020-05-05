@@ -107,6 +107,7 @@
             "noise": 0.01,
             "nucleotide cardinality": 8,
             "quality masking threshold": 0,
+            "random barcode probability": 0.000015258789062,
             "segment cardinality": 1,
             "transform": {
                 "knit": [
@@ -142,6 +143,7 @@
             8
         ],
         "base output url": "test/BDGGG",
+        "classifier type": "sample",
         "codec": {
             "@AGGCAGAA": {
                 "CN": "CGSB",
@@ -159,28 +161,6 @@
                     "AGGCAGAA"
                 ],
                 "concentration": 0.183498128559804,
-                "feed": {
-                    "output feed by segment": [
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        },
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        }
-                    ]
-                },
                 "flowcell id": "BDGGG",
                 "index": 1,
                 "output": [
@@ -205,28 +185,6 @@
                     "CGTACTAG"
                 ],
                 "concentration": 0.199524165988608,
-                "feed": {
-                    "output feed by segment": [
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        },
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        }
-                    ]
-                },
                 "flowcell id": "BDGGG",
                 "index": 2,
                 "output": [
@@ -251,28 +209,6 @@
                     "GGACTCCT"
                 ],
                 "concentration": 0.211944344995931,
-                "feed": {
-                    "output feed by segment": [
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        },
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        }
-                    ]
-                },
                 "flowcell id": "BDGGG",
                 "index": 3,
                 "output": [
@@ -297,28 +233,6 @@
                     "TAAGGCGA"
                 ],
                 "concentration": 0.222761920260374,
-                "feed": {
-                    "output feed by segment": [
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        },
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        }
-                    ]
-                },
                 "flowcell id": "BDGGG",
                 "index": 4,
                 "output": [
@@ -343,28 +257,6 @@
                     "TCCTGAGC"
                 ],
                 "concentration": 0.16707144019528,
-                "feed": {
-                    "output feed by segment": [
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        },
-                        {
-                            "capacity": 4096,
-                            "direction": "out",
-                            "index": 0,
-                            "phred offset": 33,
-                            "platform": "ILLUMINA",
-                            "resolution": 2,
-                            "url": "/dev/stdout?format=sam&compression=none"
-                        }
-                    ]
-                },
                 "flowcell id": "BDGGG",
                 "index": 5,
                 "output": [
@@ -380,12 +272,14 @@
         ],
         "flowcell id": "BDGGG",
         "index": 0,
+        "multiplexing classifier": true,
         "noise": 0.0152,
         "nucleotide cardinality": 8,
         "output": [
             "/dev/stdout"
         ],
         "quality masking threshold": 0,
+        "random barcode probability": 0.000015258789062,
         "segment cardinality": 1,
         "shannon bound": [
             2
@@ -416,28 +310,6 @@
                 "========"
             ],
             "concentration": 0.0152,
-            "feed": {
-                "output feed by segment": [
-                    {
-                        "capacity": 4096,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 2,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    },
-                    {
-                        "capacity": 4096,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 2,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    }
-                ]
-            },
             "flowcell id": "BDGGG",
             "index": 0,
             "output": [

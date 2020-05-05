@@ -307,7 +307,6 @@ class Package(object):
             self.node['configured'] = False
             self.node['built'] = False
             self.node['installed'] = False
-            # self.pipeline.save_cache()
 
     def clean(self):
         self.node['configured'] = False
@@ -350,7 +349,6 @@ class Package(object):
                     self.node['unpacked'] = True
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
-                    # self.pipeline.save_cache()
                 else:
                     print(code)
                     print(output.decode('utf8'))
@@ -518,7 +516,6 @@ class Make(Package):
                 code = process.returncode
                 if code == 0:
                     self.node['built'] = True
-                    # self.pipeline.save_cache()
                     self.stdout.write(output.decode('utf8'))
                     self.stderr.write(error.decode('utf8'))
                 else:

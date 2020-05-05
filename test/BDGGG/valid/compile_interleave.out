@@ -103,11 +103,13 @@
         "PL": "ILLUMINA",
         "PM": "miseq",
         "SM": "trinidad",
-        "algorithm": "transparent",
+        "algorithm": "passthrough",
         "base output url": "test/BDGGG",
+        "classifier type": "sample",
         "confidence threshold": 0.95,
         "flowcell id": "BDGGG",
         "index": 0,
+        "multiplexing classifier": true,
         "noise": 0.01,
         "output": [
             "/dev/stdout"
@@ -124,39 +126,8 @@
             "PU": "BDGGG:undetermined",
             "SM": "trinidad",
             "TC": 3,
-            "algorithm": "transparent",
+            "algorithm": "passthrough",
             "concentration": 0.01,
-            "feed": {
-                "output feed by segment": [
-                    {
-                        "capacity": 6144,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 3,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    },
-                    {
-                        "capacity": 6144,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 3,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    },
-                    {
-                        "capacity": 6144,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 3,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    }
-                ]
-            },
             "flowcell id": "BDGGG",
             "index": 0,
             "output": [

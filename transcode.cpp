@@ -104,7 +104,7 @@ void TranscodingDecoder::load_sample_decoder(const Value& value) {
             sample_classifier_array.emplace_back(new MdSampleDecoder(value));
             break;
         };
-        case Algorithm::TRANSPARENT: {
+        case Algorithm::PASSTHROUGH: {
             sample_classifier_array.emplace_back(new Classifier< Barcode >(value));
             break;
         };
@@ -140,7 +140,7 @@ void TranscodingDecoder::load_molecular_decoder(const Value& value) {
             molecular_classifier_array.emplace_back(new MdMolecularDecoder(value));
             break;
         };
-        case Algorithm::TRANSPARENT: {
+        case Algorithm::PASSTHROUGH: {
             molecular_classifier_array.emplace_back(new Classifier< Barcode >(value));
             break;
         };
@@ -180,7 +180,7 @@ void TranscodingDecoder::load_cellular_decoder(const Value& value) {
             cellular_classifier_array.emplace_back(new MdCellularDecoder(value));
             break;
         };
-        case Algorithm::TRANSPARENT: {
+        case Algorithm::PASSTHROUGH: {
             cellular_classifier_array.emplace_back(new Classifier< Barcode >(value));
             break;
         };
@@ -1602,6 +1602,12 @@ void Transcode::stop() {
 };
 void Transcode::finalize() {
     Job::finalize();
+
+    /* collect statistics from all threads */
+    for(auto& transcoding_thread : transcoding_thread_by_index) {
+        collect(transcoding_thread);
+    }
+
     if(count > 0) {
         pf_fraction = double(pf_count) / double(count);
         Value element(kObjectType);
@@ -1611,15 +1617,15 @@ void Transcode::finalize() {
         report.AddMember("incoming", element.Move(), report.GetAllocator());
     }
 
-    for(auto& transcoding_thread : transcoding_thread_by_index) {
-        collect(transcoding_thread);
-    }
-
     if(multiplexer != NULL) {
         multiplexer->finalize();
         multiplexer->encode(report, report);
     }
-    transcoding_decoder->encode(report, report);
+
+    if(transcoding_decoder != NULL) {
+        transcoding_decoder->finalize();
+        transcoding_decoder->encode(report, report);
+    }
 
     clean_json_value(report, report);
     sort_json_value(report, report);
@@ -1651,6 +1657,7 @@ void Transcode::describe() const {
     print_global_instruction(o);
     print_input_instruction(o);
     print_transform_instruction(o);
+    print_multiplex_instruction(o);
     print_sample_instruction(o);
     print_molecular_instruction(o);
     print_cellular_instruction(o);
@@ -1920,6 +1927,9 @@ void Transcode::print_channel_instruction(const string& key, const Value& value,
         o << endl;
     }
 };
+void Transcode::print_multiplex_instruction(ostream& o) const {
+    print_codec_group_instruction("multiplex", "Multiplex decoding", o);
+};
 void Transcode::print_sample_instruction(ostream& o) const {
     print_codec_group_instruction("sample", "Sample decoding", o);
 };
@@ -2002,4 +2012,9 @@ TranscodingThread::TranscodingThread(Transcode& job, const int32_t& index) try :
     } catch(Error& error) {
         error.push("TranscodingThread");
         throw;
+};
+
+void TranscodingThread::finalize() {
+    transcoding_decoder.finalize();
+    multiplexer.finalize();
 };

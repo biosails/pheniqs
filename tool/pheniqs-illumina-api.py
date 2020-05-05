@@ -72,7 +72,6 @@ class IlluminaApi(Job):
                 else: break
         return value
 
-
     def load(self):
         self.load_illumina()
         self.location['core instruction'] = '{}_core.json'.format(self.illumina['flowcell id'])

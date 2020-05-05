@@ -11,7 +11,7 @@
                     "/dev/stdin"
                 ],
                 "multiplex": {
-                    "algorithm": "transparent",
+                    "algorithm": "passthrough",
                     "classifier type": "sample",
                     "multiplexing classifier": true
                 },
@@ -763,12 +763,12 @@
                     "type": "object"
                 },
                 "decoding_algorithm": {
-                    "description": "The decoding algorithm used by the decoder. MDD is the miniumum distance decoder, PAMLD is the Phred-Adjusted Maximum Likelihood decoder. The Naive decoder will populate SAM auxiliary tags without attempting error correction and the transparent simply route all read to the default output.",
+                    "description": "The decoding algorithm used by the decoder. MDD is the miniumum distance decoder, PAMLD is the Phred-Adjusted Maximum Likelihood decoder. The Naive decoder will populate SAM auxiliary tags without attempting error correction and the passthrough simply route all read to the default output.",
                     "enum": [
                         "mdd",
                         "pamld",
                         "naive",
-                        "transparent"
+                        "passthrough"
                     ],
                     "title": "Decoding algorithm",
                     "type": "string"

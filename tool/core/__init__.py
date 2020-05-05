@@ -41,24 +41,6 @@ log_levels = {
 def to_json(ontology):
     return json.dumps(ontology, sort_keys=True, ensure_ascii=False, indent=4)
 
-# def merge(this, other):
-#     result = other
-#     if this is not None:
-#         result = this
-#         if other is not None:
-#             if isinstance(this, dict):
-#                 if isinstance(other, dict):
-#                     for k,v in other.items():
-#                         if k in result:
-#                             result[k] = merge(result[k], v)
-#                         else:
-#                             result[k] = v
-#                 else:
-#                     raise ValueError('incompatible structure')
-#             else:
-#                 result = other
-#     return result
-#
 def merge(this, other):
     if this is None:
         return deepcopy(other)
@@ -185,35 +167,11 @@ def inode_type(path):
     else:
         return 'directory'
 
-def decode_phred(phred):
-    return ord(phred) - 33
-
-def encode_phred(quality):
-    return chr(quality + 33)
-
-def f_score(precision, recall):
-    if(precision + recall) > 0:
-        return 2.0 * (precision * recall) / (precision + recall)
-    else:
-        return 0
-
 from core.command_line import CommandLineParser
 from core.job import Job
-from core.job import ShellCommand
 
 def termination_handler(signal, frame):
     sys.exit(0)
 
 signal.signal(signal.SIGTERM, termination_handler)
 signal.signal(signal.SIGINT, termination_handler)
-
-# def serialize_to_json(node):
-#     def handler(o):
-#         if isinstance(o, numpy.ndarray):
-#             return ''.join(o)
-#
-#         elif isinstance(o, Decimal):
-#             return '{:10.17f}'.format(o)
-#
-#         return None
-#     return json.dumps(node, sort_keys=True, ensure_ascii=False, indent=4, default=handler)
