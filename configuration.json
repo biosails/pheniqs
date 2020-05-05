@@ -1081,7 +1081,7 @@
                     "Description": "Pattern made of token references to assemble a segment",
                     "format": "regex",
                     "pattern": "^(~)?[0-9]+(:(~)?[0-9]+)*$",
-                    "title": "Segment pattern",
+                    "title": "Knit",
                     "type": "string"
                 },
                 "leading_segment_index": {
