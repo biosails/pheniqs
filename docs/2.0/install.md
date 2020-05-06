@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: "Install"
 permalink: /2.0/install/
 ---
