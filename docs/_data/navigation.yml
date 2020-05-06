@@ -6,7 +6,7 @@ links:
   id: background
 
 - title: Cli
-  url: cli.html
+  url: /cli/
   id: cli
 
 - title: Configuration
