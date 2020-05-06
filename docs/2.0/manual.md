@@ -21,17 +21,23 @@
 
 <section id="navigation">
     <ul>
-        <li><a                  href="/pheniqs/2.0/">Home</a></li>
-        <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
-        <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
-        <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/background.html">Background</a></li>
+        <li><a href="/pheniqs/2.0/cli.html">Cli</a></li>
+        <li><a href="/pheniqs/2.0/configuration.html">Configuration</a></li>
+        <li><a href="/pheniqs/2.0/glossary.html">Glossary</a></li>
+        <li><a href="/pheniqs/2.0/">Home</a></li>
+        <li><a href="/pheniqs/2.0/install.html">Install</a></li>
+        <li><a href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/overview.html">Overview</a></li>
+        <li><a href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
+        <li><a href="/pheniqs/2.0/tokenization.html">Tokenization</a></li>
+        <li><a href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
+        <li><a href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
+
 
 # Pheniqs Documentation
 {:.page-title}
@@ -43,7 +49,7 @@
 For most non trivial scenarios Pheniqs requires a [JSON](https://en.wikipedia.org/wiki/JSON) encoded instruction file. Some parameters you can interactively override with [command line](cli.html) arguments and almost all instruction directives have a default value. The instruction file contains a number of separate sections specifying directives for declaring input and output layout, read segment manipulation, barcode decoding and run parameters. Since barcode decoding often relies on verbose configuration semantics, Pheniqs supports a sophisticated instruction inheritance mechanism and can also import additional instruction files when compiling your job. While you may certainly ignore this added complexity at first, separating different aspects of your experimental design into reusable instruction files can significantly simplify day to day use.
 
 # Format support and performance
-Pheniqs can arbitrarily manipulate reads stored in either the advanced [HTS](glossary.html#htslib) containers SAM, BAM and CRAM or the [FASTQ](glossary.html#fastq) format with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Some features are only supported with HTS containers, since FASTQ records have no standardized method of associating metadata with read segments. Pheniqs is written in highly optimized multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11) and interfaces directly with the low level [HTSlib](glossary.html#htslib) API. It can be installed from many popular package managers or compiled from source into a single portable executable binary using the provided `ppkg.py` python script.
+Pheniqs can arbitrarily manipulate reads stored in either the advanced [HTS](glossary.html#htslib) containers SAM, BAM and CRAM or the [FASTQ](glossary.html#fastq) format with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Some features are only supported with HTS containers, since FASTQ records have no standardized method of associating metadata with read segments. Pheniqs is written in highly optimized multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11) and interfaces directly with the low level [HTSlib](glossary.html#htslib) API. It can be installed from many popular package managers or compiled from source into a single portable executable binary using the provided `pheniqs-build-api.py` python script.
 
 Pheniqs execution speed will normally scale linearly with the number of cores available for computation. However since the gzip compression algorithm does not scale well in multi threaded environments, reading or writing from gzip compressed FASTQ files will often be I/O bound. You can use Pheniqs to easily repack data stored in FASTQ files into an efficient, interleaved, CRAM or BAM container. CRAM and BAM offers significant improvements in both performance and storage requirements as well as support for associating extensible metadata with read segments.
 

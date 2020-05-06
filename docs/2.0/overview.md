@@ -21,19 +21,23 @@
 
 <section id="navigation">
     <ul>
-        <li><a                  href="/pheniqs/2.0/">Home</a></li>
-        <li><a                  href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/overview2.html">Overview</a></li>
-        <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/transform.html">Tokens</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
-        <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
-        <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
-        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/background.html">Background</a></li>
+        <li><a href="/pheniqs/2.0/cli.html">Cli</a></li>
+        <li><a href="/pheniqs/2.0/configuration.html">Configuration</a></li>
+        <li><a href="/pheniqs/2.0/glossary.html">Glossary</a></li>
+        <li><a href="/pheniqs/2.0/">Home</a></li>
+        <li><a href="/pheniqs/2.0/install.html">Install</a></li>
+        <li><a href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/overview.html">Overview</a></li>
+        <li><a href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
+        <li><a href="/pheniqs/2.0/tokenization.html">Tokenization</a></li>
+        <li><a href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
+        <li><a href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
+
 
 * placeholder
 {:toc}
@@ -68,7 +72,7 @@ If **prior estimation** of barcode distributions are planned, a preliminary run 
 
 Due to its flexible syntax for parsing read segments, Pheniqs can accommodate virtually any experimental design. Configuration directives will handle any combination of biological and technical sequences, such as barcoded multiplexed sample libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
 
-An overview of how Pheniqs parses sequence reads is provided in the [Tokens](transform.html) page.
+An overview of how Pheniqs parses sequence reads is provided in the [Tokens](tokenization.html) page.
 
 Examples of how to configure tokenization transform patterns for a handful of published experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
@@ -91,7 +95,7 @@ Pheniqs is designed to accommodate the addition of alternative decoders, which c
 
 Biological sequence read segments are emitted along with observed and corrected barcode sequences and decoding error probability scores for each barcode. All of these may be specified with standard templates and may be overridden by additional directives within the configuration file.
 
-The error score is computed as one minus the confidence score; for compound barcodes, it is one minus the product of the individual confidence scores. An example of the output is provided on the [Tokenization](transform.html) page.
+The error score is computed as one minus the confidence score; for compound barcodes, it is one minus the product of the individual confidence scores. An example of the output is provided on the [Tokenization](tokenization.html) page.
 
 # Run Report
 

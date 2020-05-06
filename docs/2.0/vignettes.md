@@ -21,16 +21,23 @@
 
 <section id="navigation">
     <ul>
-        <li><a                  href="/pheniqs/2.0/">Home</a></li>
-        <li><a class="active"   href="/pheniqs/2.0/overview.html">Overview</a></li>
-        <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a                  href="/pheniqs/2.0/install.html">Install</a></li>
-        <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
-        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/background.html">Background</a></li>
+        <li><a href="/pheniqs/2.0/cli.html">Cli</a></li>
+        <li><a href="/pheniqs/2.0/configuration.html">Configuration</a></li>
+        <li><a href="/pheniqs/2.0/glossary.html">Glossary</a></li>
+        <li><a href="/pheniqs/2.0/">Home</a></li>
+        <li><a href="/pheniqs/2.0/install.html">Install</a></li>
+        <li><a href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/overview.html">Overview</a></li>
+        <li><a href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
+        <li><a href="/pheniqs/2.0/tokenization.html">Tokenization</a></li>
+        <li><a href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
+        <li><a href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
+
 
 # Vignettes
 {:.page-title}
@@ -44,7 +51,7 @@ Different types of experiments use different barcoding schemes. The number, loca
 
 See the [**Overview**](overview.html) page for more information on common types of experimental designs, read layouts, tokenization, and transform patterns.
 
-The [**Tokenization and Transform Patterns**](transform.html) page provides a high-level view of how transform patterns are constructed and the output they provide.
+The [**Tokenization and Transform Patterns**](tokenization.html) page provides a high-level view of how transform patterns are constructed and the output they provide.
 
 To configure Pheniqs for any particular workflow, it helps to have some idea about next-gen sequencing technology, adapters and barcode sets, Illumina's bcl2fastq softare, FASTQ and SAM file formats, and some general terminology. Please see the [**Background**](background.html) page for some tips on these if you are not familiar with these.
 

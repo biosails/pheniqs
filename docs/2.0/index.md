@@ -21,17 +21,23 @@
 
 <section id="navigation">
     <ul>
-        <li><a class="active"   href="/pheniqs/2.0/">Home</a></li>
-        <li><a                  href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-        <li><a                  href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a                  href="/pheniqs/2.0/install2.html">Install</a></li>
-        <li><a                  href="/pheniqs/2.0/build.html">Build</a></li>
-        <li><a                  href="/pheniqs/2.0/cli.html">CLI</a></li>
-        <li><a                  href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/background.html">Background</a></li>
+        <li><a href="/pheniqs/2.0/cli.html">Cli</a></li>
+        <li><a href="/pheniqs/2.0/configuration.html">Configuration</a></li>
+        <li><a href="/pheniqs/2.0/glossary.html">Glossary</a></li>
+        <li><a href="/pheniqs/2.0/">Home</a></li>
+        <li><a href="/pheniqs/2.0/install.html">Install</a></li>
+        <li><a href="/pheniqs/2.0/manual.html">Manual</a></li>
+        <li><a href="/pheniqs/2.0/overview.html">Overview</a></li>
+        <li><a href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
+        <li><a href="/pheniqs/2.0/tokenization.html">Tokenization</a></li>
+        <li><a href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
+        <li><a href="/pheniqs/2.0/workflow.html">Workflow</a></li>
         <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
     </ul>
     <div class="clear" />
 </section>
+
 
 # Pheniqs
 {:.page-title}
@@ -54,7 +60,7 @@ Barcode decoding error probabilities are encoded in tags reserved for local use 
 
 **Command line friendly:** Written in multi threaded C++ Pheniqs can be deployed as a single, statically linked, compiled binary executable. Pheniqs follows the [POSIX command line syntax](https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html) and supports [zsh completion](https://en.wikipedia.org/wiki/Command-line_completion) for a more interactive command line experience.
 
-**Easy to deploy:** Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson.org) and [zlib](https://zlib.net). HTSLib further depends on [bzip2](http://www.bzip.org), [LZMA](https://tukaani.org/xz) and optionally [libdeflate](https://github.com/ebiggers/libdeflate) for improved gzip compressed FASTQ manipulation. Pheniqs is regularly tested by [Travis](https://travis-ci.org/biosails/pheniqs) on Ubuntu and MacOS using most modern compilers. `ppkg.py`, part of the Pheniqs python API, can build a portable, [statically linked](https://en.wikipedia.org/wiki/Static_library), pheniqs executable on most POSIX environments without elevated permissions by executing one simple command.
+**Easy to deploy:** Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson.org) and [zlib](https://zlib.net). HTSLib further depends on [bzip2](http://www.bzip.org), [LZMA](https://tukaani.org/xz) and optionally [libdeflate](https://github.com/ebiggers/libdeflate) for improved gzip compressed FASTQ manipulation. Pheniqs is regularly tested by [Travis](https://travis-ci.org/biosails/pheniqs) on Ubuntu and MacOS using most modern compilers. `pheniqs-build-api.py`, part of the Pheniqs python API, can build a portable, [statically linked](https://en.wikipedia.org/wiki/Static_library), pheniqs executable on most POSIX environments without elevated permissions by executing one simple command.
 
 **Pipeline friendly:** [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration files and reports that can be streamed through [standard POSIX streams](https://en.wikipedia.org/wiki/Standard_streams) enable streamlined pipeline and [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer) service integration.
 
