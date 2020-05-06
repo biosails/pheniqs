@@ -1,6 +1,8 @@
+---
 layout: page
 title: "Install"
 permalink: /install/
+---
 
 <section id="navigation">
     <ul>
