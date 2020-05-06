@@ -1,43 +1,9 @@
-<!--
-    Pheniqs : PHilology ENcoder wIth Quality Statistics
-    Copyright (C) 2018  Lior Galanti
-    NYU Center for Genetics and System Biology
-
-    Author: Lior Galanti <lior.galanti@nyu.edu>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
-
-<section id="navigation">
-    <ul>
-        <li><a href="/pheniqs/2.0/background.html">Background</a></li>
-        <li><a href="/pheniqs/2.0/cli.html">Cli</a></li>
-        <li><a href="/pheniqs/2.0/configuration.html">Configuration</a></li>
-        <li><a href="/pheniqs/2.0/glossary.html">Glossary</a></li>
-        <li><a href="/pheniqs/2.0/">Home</a></li>
-        <li><a href="/pheniqs/2.0/install.html">Install</a></li>
-        <li><a href="/pheniqs/2.0/manual.html">Manual</a></li>
-        <li><a href="/pheniqs/2.0/overview.html">Overview</a></li>
-        <li><a href="/pheniqs/2.0/quickstart.html">Quickstart</a></li>
-        <li><a href="/pheniqs/2.0/tokenization.html">Tokenization</a></li>
-        <li><a href="/pheniqs/2.0/vignettes.html">Vignettes</a></li>
-        <li><a href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-        <li><a class="github"   href="http://github.com/biosails/pheniqs">View on GitHub</a></li>
-    </ul>
-    <div class="clear" />
-</section>
-
+---
+layout: default
+title: "Workflow"
+permalink: /workflow/
+id: workflow
+---
 
 # Overview
 {:.page-title}
