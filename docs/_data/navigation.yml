@@ -3,9 +3,11 @@ links:
 
 - title: Background
   url: background.html
+  id: background
 
 - title: Cli
   url: cli.html
+  id: cli
 
 - title: Configuration
   url: configuration.html

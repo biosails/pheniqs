@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Command Line Interface"
+permalink: /cli/
+id: cli
+---
+
 <!--
     Pheniqs : PHilology ENcoder wIth Quality Statistics
     Copyright (C) 2018  Lior Galanti
@@ -22,11 +29,12 @@
 <section id="navigation">
     <ul>
     {% for item in site.data.navigation.links %}
-        <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+        <li><a href="{{ item.url }}" {% if page.id == item.id %}class="active"{% endif %} >{{ item.title }}</a></li>
     {% endfor %}
     </ul>
     <div class="clear" />
 </section>
+
 
 
 # The Pheniqs Command Line

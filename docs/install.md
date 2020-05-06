@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Install"
-permalink: /2.0/install/
+permalink: /install/
 ---
 
 <section id="navigation">
