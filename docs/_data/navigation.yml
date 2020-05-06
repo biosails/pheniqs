@@ -11,33 +11,44 @@ links:
 
 - title: Configuration
   url: configuration.html
+  id: configuration
 
 - title: Glossary
   url: glossary.html
+  id: glossary
 
 - title: Home
-  url: Home.html
+  url: index.html
+  id: home
 
 - title: Install
   url: install.html
+  id: install
 
 - title: Manual
   url: manual.html
+  id: manual
 
 - title: Overview
   url: overview.html
+  id: overview
 
 - title: Quickstart
   url: quickstart.html
+  id: quickstart
 
 - title: Tokenization
   url: tokenization.html
+  id: tokenization
 
 - title: Vignettes
   url: vignettes.html
+  id: vignettes
 
 - title: Workflow
   url: workflow.html
+  id: workflow
 
 - title: View on GitHub
   url: http://github.com/biosails/pheniqs
+  id: github

@@ -26,17 +26,6 @@ id: cli
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<section id="navigation">
-    <ul>
-    {% for item in site.data.navigation.links %}
-        <li><a href="{{ item.url }}" {% if page.id == item.id %}class="active"{% endif %} >{{ item.title }}</a></li>
-    {% endfor %}
-    </ul>
-    <div class="clear" />
-</section>
-
-
-
 # The Pheniqs Command Line
 {:.page-title}
 
