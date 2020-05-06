@@ -1,0 +1,41 @@
+navigation_title: Navigation
+links:
+
+- title: Background
+  url: background.html
+
+- title: Cli
+  url: cli.html
+
+- title: Configuration
+  url: configuration.html
+
+- title: Glossary
+  url: glossary.html
+
+- title: Home
+  url: Home.html
+
+- title: Install
+  url: install.html
+
+- title: Manual
+  url: manual.html
+
+- title: Overview
+  url: overview.html
+
+- title: Quickstart
+  url: quickstart.html
+
+- title: Tokenization
+  url: tokenization.html
+
+- title: Vignettes
+  url: vignettes.html
+
+- title: Workflow
+  url: workflow.html
+
+- title: View on GitHub
+  url: http://github.com/biosails/pheniqs
