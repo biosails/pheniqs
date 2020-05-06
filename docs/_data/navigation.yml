@@ -2,7 +2,7 @@ navigation_title: Navigation
 links:
 
 - title: Background
-  url: background.html
+  url: /background/
   id: background
 
 - title: Cli
@@ -10,43 +10,43 @@ links:
   id: cli
 
 - title: Configuration
-  url: configuration.html
+  url: /configuration/
   id: configuration
 
 - title: Glossary
-  url: glossary.html
+  url: /glossary/
   id: glossary
 
 - title: Home
-  url: index.html
+  url: /
   id: home
 
 - title: Install
-  url: install.html
+  url: /install/
   id: install
 
 - title: Manual
-  url: manual.html
+  url: /manual/
   id: manual
 
 - title: Overview
-  url: overview.html
+  url: /overview/
   id: overview
 
 - title: Quickstart
-  url: quickstart.html
+  url: /quickstart/
   id: quickstart
 
 - title: Tokenization
-  url: tokenization.html
+  url: /tokenization/
   id: tokenization
 
 - title: Vignettes
-  url: vignettes.html
+  url: /vignettes/
   id: vignettes
 
 - title: Workflow
-  url: workflow.html
+  url: /workflow/
   id: workflow
 
 - title: View on GitHub
