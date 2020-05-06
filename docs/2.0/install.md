@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Install"
-permalink: /install/
+permalink: /2.0/install/
 ---
 
 <section id="navigation">
