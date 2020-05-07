@@ -5,7 +5,6 @@ permalink: /cli/
 id: cli
 ---
 
-# Command line parameters
 Command line parameters, if specified, override their corresponding values provided in the configuration file.
 
 # zsh completion
@@ -26,12 +25,9 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
     Action :
       mux    Multiplex and Demultiplex annotated DNA sequence reads
 
-    This program comes with ABSOLUTELY NO WARRANTY. This is free software,
-    and you are welcome to redistribute it under certain conditions.
-
 # `mux` sub command help
 
-    pheniqs version 2.0.6-144
+    pheniqs version 2.0.6
     Multiplex and Demultiplex annotated DNA sequence reads
 
     Usage : pheniqs mux [-h] [-i PATH]* [-o PATH]* [-c PATH] [-R PATH] [-I URL]
@@ -78,9 +74,6 @@ If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) you may wish to install 
       -C/--compile emits a compiled configuration file ready for execution with implicit attributes resolved.
       -i/--input and -o/--output can be repeated to provide multiple paths,
       i.e. `pheniqs mux -i in_segment_1.fastq -i in_segment_2.fastq -o out_segment_1.fastq -o out_segment_2.fastq`
-
-    This program comes with ABSOLUTELY NO WARRANTY. This is free software,
-    and you are welcome to redistribute it under certain conditions.
 
 # Pheniqs tools
 In the tool folder you will find several python scripts to assist with Pheniqs deployment and interfacing with existing tools.
