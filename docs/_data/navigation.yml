@@ -10,11 +10,11 @@ links:
   id: cli
 
 - title: Configuration
-  url: /configuration/
+  url: /pheniqs/configuration/
   id: configuration
 
 - title: Glossary
-  url: /glossary/
+  url: /pheniqs/glossary/
   id: glossary
 
 - title: Home
@@ -22,31 +22,31 @@ links:
   id: home
 
 - title: Install
-  url: /install/
+  url: /pheniqs/install/
   id: install
 
 - title: Manual
-  url: /manual/
+  url: /pheniqs/manual/
   id: manual
 
 - title: Overview
-  url: /overview/
+  url: /pheniqs/overview/
   id: overview
 
 - title: Quickstart
-  url: /quickstart/
+  url: /pheniqs/quickstart/
   id: quickstart
 
 - title: Tokenization
-  url: /tokenization/
+  url: /pheniqs/tokenization/
   id: tokenization
 
 - title: Vignettes
-  url: /vignettes/
+  url: /pheniqs/vignettes/
   id: vignettes
 
 - title: Workflow
-  url: /workflow/
+  url: /pheniqs/workflow/
   id: workflow
 
 - title: View on GitHub
