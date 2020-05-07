@@ -16,6 +16,11 @@ links:
   id: install
   enabled: True
 
+- title: Cli
+  url: /pheniqs/cli/
+  id: cli
+  enabled: True
+
 - title: Configuration
   url: /pheniqs/configuration/
   id: configuration
@@ -24,11 +29,6 @@ links:
 - title: Background
   url: /pheniqs/background/
   id: background
-  enabled: True
-
-- title: Cli
-  url: /pheniqs/cli/
-  id: cli
   enabled: True
 
 - title: Glossary
