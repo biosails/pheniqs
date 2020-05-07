@@ -2,11 +2,11 @@ navigation_title: Navigation
 links:
 
 - title: Background
-  url: /background/
+  url: /pheniqs/background/
   id: background
 
 - title: Cli
-  url: /cli/
+  url: /pheniqs/cli/
   id: cli
 
 - title: Configuration
