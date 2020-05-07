@@ -19,7 +19,7 @@ links:
 - title: Configuration
   url: /pheniqs/configuration/
   id: configuration
-  enabled: True
+  enabled: False
 
 - title: Background
   url: /pheniqs/background/
