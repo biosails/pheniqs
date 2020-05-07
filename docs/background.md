@@ -8,15 +8,9 @@ id: background
 * placeholder
 {:toc}
 
-Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experiments. \textit{Transform patterns} define the number, location, and type of barcodes to be extracted, which will vary depending on the specific experimental design. Different types of sequences are extracted using \emph{tokens}:
+Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experiments. **transform** directives define rules for barcode extraction, which vary depending on the specific experimental design. Different types of sequences are extracted using **token** directives. See the [**Overview**](/pheniqs/overview/) page for more information on common experimental designs, read anatomy, tokenization, and transform patterns. The [**Tokenization**](/pheniqs/tokenization) page provides a high-level view of how transform patterns are constructed and the output they provide. Examples of how to configure Pheniqs for a handful of published experimental designs are provided in the [vignettes](/pheniqs/vignettes/) page to help users get started with their own applications.
 
 ![transform patterns](/pheniqs/assets/img/transform_patterns.png)
-
-See the [**Overview**](/pheniqs/overview/) page for more information on common experimental designs, read anatomy, tokenization, and transform patterns. The [**Tokenization**](/pheniqs/tokenization) page provides a high-level view of how transform patterns are constructed and the output they provide.
-
-Examples of how to configure Pheniqs for a handful of published experimental designs are provided here to help users get started with their own applications.
-
-# Background
 
 To configure Pheniqs for any particular workflow, it helps to have some idea about next-gen sequencing technology, Illumina's bcl2fastq softare, common file formats, and some general terminology.
 
@@ -91,25 +85,25 @@ Some analysis tools will fail if the read groups are not specified in the BAM fi
 
 Additional information about libraries and samples are also specified by specific SAM tags. The basic set of tags associate with read groups are as follows:
 
-#### ID = Read group identifier
+#### @RG:ID - Read group identifier
 This tag identifies which read group each read belongs to, so each read group's ID must be unique. It is referenced both in the read group definition line in the file header (starting with @RG) and in the RG:Z tag for each read record. In Illumina data, read group IDs are composed using the flowcell + lane name and number, making them a globally unique identifier across all sequencing data in the world.
 
 Note that some tools have the ability to modify IDs when merging SAM files in order to avoid collisions. ID is the lowest denominator that differentiates factors contributing to technical batch effects: therefore, a read group is effectively treated as a separate run of the instrument in data processing steps such as base quality score recalibration, since they are assumed to share the same error model.
 
-#### PU = Platform Unit
+#### @RG:PU - Platform Unit
 The PU holds three types of information, the {FLOWCELL_BARCODE}.{LANE}.{SAMPLE_BARCODE}. The {FLOWCELL_BARCODE} refers to the unique identifier for a particular flow cell. The {LANE} indicates the lane of the flow cell and the {SAMPLE_BARCODE} is a sample/library-specific identifier.
 
 Note that this field can only be added after demultiplexing.
 
-#### SM = Sample
+#### @RG:SM - Sample
 The name of the sample sequenced in this read group.
 In the case of multiplexing, in which multiple samples are run together in one lane, the SM tag defines the individual sample names.
 Otherwise there will be one SM tag per lane.
 
-#### PL = Platform/technology used to produce the read
+#### @RG:PL Platform/technology used to produce the read
 This constitutes the only way to know what sequencing technology was used to generate the sequencing data. Valid values: ILLUMINA, SOLID, LS454, HELICOS and PACBIO.
 
-#### LB = DNA preparation library identifier
+#### @RG:LB DNA preparation library identifier
 All samples derived from the same library prep should share the same LB tag. The LB field helps determine which read groups might contain molecular duplicates, in case the same DNA library was sequenced on multiple lanes.
 The above document illustrates a vignette for a case where samples from three individuals were used to prepare two different libraries that were each run across two lanes of an Illumina HiSeq, generating 3 x 2 x 2 = 12 read groups that are written to 12 BAM files (one read group / lane / BAM file). There is a hierarchical relationship between read groups (unique for each lane) to libraries (sequenced on two lanes) and samples (across four lanes, two lanes for each library). Each read group is assigned a unique ID and carries additional metadata.
 
