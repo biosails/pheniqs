@@ -19,7 +19,7 @@ links:
 - title: Configuration
   url: /pheniqs/configuration/
   id: configuration
-  enabled: False
+  enabled: True
 
 - title: Background
   url: /pheniqs/background/
@@ -34,7 +34,7 @@ links:
 - title: Glossary
   url: /pheniqs/glossary/
   id: glossary
-  enabled: True
+  enabled: False
 
 - title: Overview
   url: /pheniqs/overview/
