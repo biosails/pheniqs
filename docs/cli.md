@@ -5,9 +5,6 @@ permalink: /cli/
 id: cli
 ---
 
-# The Pheniqs Command Line
-{:.page-title}
-
 # Command line parameters
 Command line parameters, if specified, override their corresponding values provided in the configuration file.
 

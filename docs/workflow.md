@@ -5,9 +5,6 @@ permalink: /workflow/
 id: workflow
 ---
 
-# Overview
-{:.page-title}
-
 * placeholder
 {:toc}
 

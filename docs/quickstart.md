@@ -5,9 +5,6 @@ permalink: /quickstart/
 id: quickstart
 ---
 
-# Quick Tutorial
-{:.page-title}
-
 * placeholder
 {:toc }
 

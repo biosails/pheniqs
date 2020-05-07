@@ -1,12 +1,9 @@
 ---
 layout: default
-title: "Install"
+title: "Build and Install"
 permalink: /install/
 id: install
 ---
-
-# Installation
-{:.page-title}
 
 * placeholder
 {:toc}

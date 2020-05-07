@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Tokenization"
+title: "Tokens and Transforms"
 permalink: /tokenization/
 id: tokenization
 ---

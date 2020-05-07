@@ -5,9 +5,6 @@ permalink: /vignettes/
 id: vignettes
 ---
 
-# Vignettes
-{:.page-title}
-
 * placeholder
 {:toc}
 

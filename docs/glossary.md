@@ -5,9 +5,6 @@ permalink: /glossary/
 id: glossary
 ---
 
-# Glossary
-{:.page-title}
-
 <a name="zero_based_coordinate" />
 1 based coordinate system
 : A coordinate system where the first base of a sequence is one. In this coordinate system both start and end coordinates are inclusive. The total length of a token is given by `end - start + 1`.

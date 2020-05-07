@@ -36,11 +36,6 @@ links:
   id: glossary
   enabled: True
 
-- title: Manual
-  url: /pheniqs/manual/
-  id: manual
-  enabled: True
-
 - title: Overview
   url: /pheniqs/overview/
   id: overview

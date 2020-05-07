@@ -5,9 +5,6 @@ permalink: /background/
 id: background
 ---
 
-# Vignettes
-{:.page-title}
-
 * placeholder
 {:toc}
 
