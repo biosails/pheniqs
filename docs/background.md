@@ -10,7 +10,7 @@ id: background
 
 Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experiments. \textit{Transform patterns} define the number, location, and type of barcodes to be extracted, which will vary depending on the specific experimental design. Different types of sequences are extracted using \emph{tokens}:
 
-![transform patterns](transform_patterns.png)
+![transform patterns](/pheniqs/assets/img/transform_patterns.png)
 
 See the [**Overview**](overview.html) page for more information on common experimental designs, read anatomy, tokenization, and transform patterns. The [**Tokenization**](tokenization.html) page provides a high-level view of how transform patterns are constructed and the output they provide.
 
