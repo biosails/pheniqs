@@ -12,7 +12,7 @@ Pheniqs can be configured to handle any arbitrary configuration of biological an
 
 ![transform patterns](/pheniqs/assets/img/transform_patterns.png)
 
-See the [**Overview**](overview.html) page for more information on common experimental designs, read anatomy, tokenization, and transform patterns. The [**Tokenization**](tokenization.html) page provides a high-level view of how transform patterns are constructed and the output they provide.
+See the [**Overview**](/pheniqs/overview/) page for more information on common experimental designs, read anatomy, tokenization, and transform patterns. The [**Tokenization**](/pheniqs/tokenization) page provides a high-level view of how transform patterns are constructed and the output they provide.
 
 Examples of how to configure Pheniqs for a handful of published experimental designs are provided here to help users get started with their own applications.
 
