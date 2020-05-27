@@ -47,7 +47,9 @@ STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/lib
 # PHENIQS_LIBDEFLATE_VERSION
 # PHENIQS_RAPIDJSON_VERSION
 # PHENIQS_HTSLIB_VERSION
-PHENIQS_VERSION := $(shell [ -d .git ] && git describe --abbrev=40 --tags 2> /dev/null)
+ifndef PHENIQS_VERSION
+    PHENIQS_VERSION := $(shell [ -d .git ] && git describe --abbrev=40 --tags 2> /dev/null)
+endif
 ifndef PHENIQS_VERSION
     PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
 endif
