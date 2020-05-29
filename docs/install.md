@@ -57,30 +57,32 @@ Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson
 ## *Building with `pheniqs-build-api.py`*
 Pheniqs comes bundled with a Python3 helper tool called `pheniqs-build-api.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/pheniqs-build-api.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with `pheniqs-build-api.py` does not require elevated permissions and is ideal for building an executable on cluster environments.
 
+
+
 >```shell
-% ./tool/pheniqs-build-api.py build build/trunk_static.json
+% ./pheniqs-build-api.py build
 INFO:Package:unpacking zlib 1.2.11
 INFO:Package:configuring make environment zlib 1.2.11
 INFO:Package:building with make zlib 1.2.11
 INFO:Package:installing with make zlib 1.2.11
-INFO:Package:unpacking bz2 1.0.6
-INFO:Package:building with make bz2 1.0.6
-INFO:Package:installing with make bz2 1.0.6
-INFO:Package:unpacking xz 5.2.4
-INFO:Package:configuring make environment xz 5.2.4
-INFO:Package:building with make xz 5.2.4
-INFO:Package:installing with make xz 5.2.4
-INFO:Package:unpacking libdeflate 1.0
-INFO:Package:building with make libdeflate 1.0
-INFO:Package:unpacking htslib 1.9
-INFO:Package:configuring make environment htslib 1.9
-INFO:Package:building with make htslib 1.9
-INFO:Package:installing with make htslib 1.9
+INFO:Package:unpacking bz2 1.0.8
+INFO:Package:building with make bz2 1.0.8
+INFO:Package:installing with make bz2 1.0.8
+INFO:Package:unpacking xz 5.2.5
+INFO:Package:configuring make environment xz 5.2.5
+INFO:Package:building with make xz 5.2.5
+INFO:Package:installing with make xz 5.2.5
+INFO:Package:unpacking libdeflate 1.6
+INFO:Package:building with make libdeflate 1.6
+INFO:Package:unpacking htslib 1.10.2
+INFO:Package:configuring make environment htslib 1.10.2
+INFO:Package:building with make htslib 1.10.2
+INFO:Package:installing with make htslib 1.10.2
 INFO:Package:unpacking rapidjson 1.1.0
-INFO:Package:downloaded archive saved pheniqs 2.0-trunk None
-INFO:Package:unpacking pheniqs 2.0-trunk
-INFO:Package:building with make pheniqs 2.0-trunk
-INFO:Package:installing with make pheniqs 2.0-trunk
+INFO:Package:downloaded archive saved pheniqs git-HEAD None
+INFO:Package:unpacking pheniqs git-HEAD
+INFO:Package:building with make pheniqs git-HEAD
+INFO:Package:installing with make pheniqs git-HEAD
 ```
 
 When `pheniqs-build-api.py` is done you may inspect your binary, statically linked builds made with `pheniqs-build-api.py` will also report the versions of all built in libraries.
