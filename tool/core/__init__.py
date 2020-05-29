@@ -105,7 +105,7 @@ def remove_directory(directory, log):
         )
         output, error = process.communicate()
         code = process.returncode
-        if code is not 0:
+        if code != 0:
             print(output, error, code)
             raise CommandFailedError('failed to remove directory {}'.format(directory))
 
