@@ -86,23 +86,23 @@ INFO:Package:installing with make pheniqs 2.0-trunk
 When `pheniqs-build-api.py` is done you may inspect your binary, statically linked builds made with `pheniqs-build-api.py` will also report the versions of all built in libraries.
 
 >```shell
-% ./bin/trunk_static/install/bin/pheniqs --version
-pheniqs version 2.0.4
+% ./bin/static-HEAD/install/bin/pheniqs --version
+pheniqs version 2.0.6
 zlib 1.2.11
-bzlib 1.0.6
-xzlib 5.2.4
-libdeflate 1.0
+bzlib 1.0.8
+xzlib 5.2.5
+libdeflate 1.6
 rapidjson 1.1.0
-htslib 1.9
+htslib 1.10.2
 ```
 
 You can check that your binary indeed does not link against any of the dependencies dynamically with `otool` on MacOs:
 
 >```shell
-% otool -L ./bin/trunk_static/install/bin/pheniqs
-./bin/trunk_static/install/bin/pheniqs:
-	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 400.9.4)
-	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1252.200.5)
+% otool -L ./bin/static-HEAD/install/bin/pheniqs
+./bin/static-HEAD/install/bin/pheniqs:
+	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 800.7.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1281.0.0)
 ```
 
 Or `ldd` on Ubuntu:
@@ -133,6 +133,19 @@ libhts-dev \
 liblzma-dev \
 libdeflate-dev \
 libbz2-dev
+```
+
+### *Dependecies on MacOS*
+All Pheniqs build dependencies are available on [homebrew](https://brew.sh) and can be installed with:
+
+>```shell
+brew install \
+zlib \
+bzip2 \
+rapidjson \
+xz \
+htslib \
+libdeflate
 ```
 
 If you want to build Pheniqs against a specific root you may provide a `PREFIX` parameter, but notice that you need to specify it on each make invocation, for instance `make PREFIX=/usr/local && make install PREFIX=/usr/local`. Pheniqs is regularly tested on several versions of both [Clang](https://clang.llvm.org) and [GCC](https://gcc.gnu.org), you can tell `make` which compiler to use by setting the `CXX` parameter. See [travis](https://travis-ci.org/biosails/pheniqs) for a comprehensive list and test results.
