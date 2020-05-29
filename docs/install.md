@@ -125,7 +125,7 @@ Or `ldd` on Ubuntu:
 Pheniqs does not use automake and so does not have a configure stage. The provided Makefile will build pheniqs against existing dependencies, if they are already present. Simply execute `make && make install`. You can execute `make help` for some general instructions.
 
 ### *Dependecies on Ubuntu*
-All Pheniqs build dependencies are available on [Ubuntu 19.04 Disco Dingo](http://releases.ubuntu.com/19.04) and can be installed with:
+All Pheniqs build dependencies are available on [Ubuntu 20.04 Focal Fossa](http://releases.ubuntu.com/20.04) and can be installed with:
 
 >```shell
 apt-get install -y \
