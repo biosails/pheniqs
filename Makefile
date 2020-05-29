@@ -25,8 +25,8 @@ INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
 ZSH_PREFIX      = $(PREFIX)/share/zsh
 
-CC              = clang
-CXX             = clang++
+# CC              = clang
+# CXX             = clang++
 CPPFLAGS        += -Wall -Wsign-compare -Wdeprecated
 CXXFLAGS        += -std=c++11 -O3
 # LDFLAGS       +=
