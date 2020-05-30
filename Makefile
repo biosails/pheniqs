@@ -30,8 +30,8 @@ ZSH_PREFIX      = $(PREFIX)/share/zsh
 CPPFLAGS        += -Wall -Wsign-compare -Wdeprecated
 CXXFLAGS        += -std=c++11 -O3
 # LDFLAGS       +=
-LIBS            += -lhts -lz -lbz2 -llzma
-STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
+LIBS            += -lhts -lz -lbz2 -llzma -ldeflate
+STATIC_LIBS     += -l:libhts.a -l:libz.a -l:libbz2.a -l:liblzma.a -l:libdeflate.a
 
 # PHENIQS_VERSION, written into version.h and reported when executing `pheniqs --version`,
 # is taken from the git describe if present. Otherwise it falls back to $(MAJOR_REVISON).$(MINOR_REVISON).
@@ -118,16 +118,6 @@ ifdef PREFIX
 endif
 
 with-static = 0
-with-libdeflate = 0
-ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.a)','')
-    with-libdeflate = 1
-endif
-
-ifeq ($(with-libdeflate), 1)
-    LIBS += -ldeflate
-    STATIC_LIBS += $(LIB_PREFIX)/libdeflate.a
-endif
-
 ifeq ($(with-static), 1)
     LIBS = $(STATIC_LIBS)
 endif
@@ -190,7 +180,6 @@ config:
 	$(if $(CXXFLAGS),                    $(info CXXFLAGS                    :  $(CXXFLAGS)))
 	$(if $(LDFLAGS),                     $(info LDFLAGS                     :  $(LDFLAGS)))
 	$(if $(LIBS),                        $(info LIBS                        :  $(LIBS)))
-	$(if $(with-libdeflate),             $(info with-libdeflate             :  $(with-libdeflate)))
 	$(if $(with-static),                 $(info with-static                 :  $(with-static)))
 	$(if $(PHENIQS_ZLIB_VERSION),        $(info PHENIQS_ZLIB_VERSION        :  $(PHENIQS_ZLIB_VERSION)))
 	$(if $(PHENIQS_BZIP2_VERSION),       $(info PHENIQS_BZIP2_VERSION       :  $(PHENIQS_BZIP2_VERSION)))
