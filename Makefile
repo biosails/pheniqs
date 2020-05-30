@@ -31,7 +31,7 @@ CPPFLAGS        += -Wall -Wsign-compare -Wdeprecated
 CXXFLAGS        += -std=c++11 -O3
 # LDFLAGS       +=
 LIBS            += -lhts -lz -lbz2 -llzma -ldeflate
-STATIC_LIBS     += -l:libhts.a -l:libz.a -l:libbz2.a -l:liblzma.a -l:libdeflate.a
+STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a $(LIB_PREFIX)/libdeflate.a
 
 # PHENIQS_VERSION, written into version.h and reported when executing `pheniqs --version`,
 # is taken from the git describe if present. Otherwise it falls back to $(MAJOR_REVISON).$(MINOR_REVISON).
@@ -150,8 +150,8 @@ help:
 	\trapidjson  : http://rapidjson.org\n\
 	\n\
 	libdeflate is a heavily optimized implementation of the DEFLATE algorithm.\n\
-	Although pheniqs does not directly link to libdeflate, htslib can be optionaly linked to it when built,\n\
-	which can significantly speed up reading and writing gzip compressed fastq files.\n\
+	Although pheniqs does not directly link to libdeflate, htslib links to it when built,\n\
+	which significantly speed up reading and writing gzip compressed fastq files.\n\
 	\n\
 	To build pheniqs with a specific PREFIX, set the PREFIX variable when executing make.\n\
 	Notice that you will need to specify it each time you execute make, not just when building.\n\
@@ -161,7 +161,7 @@ help:
 	For instance: `make CXX=/usr/local/bin/g++-7`.\n\
 	\n\
 	To build a statically linked binary set the `with-static` variable to 1.\n\
-	This requires libhts.so, libz.so, libbz2.so, liblzma.so and optionally libdeflate.so \n\
+	This requires libhts.so, libz.so, libbz2.so, liblzma.so and libdeflate.so \n\
 	(libhts.a, libz.a, libbz2.a, liblzma.a and libdeflate.a on MacOS) to be available in LIB_PREFIX.\n\
 	For instance: `make with-static=1`.\n\n'
 
