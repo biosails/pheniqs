@@ -120,13 +120,7 @@ endif
 with-static = 0
 with-libdeflate = 0
 ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.a)','')
-    ifeq ($(PLATFORM), Darwin)
-        with-libdeflate = 1
-    else ifeq ($(PLATFORM), Linux)
-        ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.so)','')
-            with-libdeflate = 1
-        endif
-    endif
+    with-libdeflate = 1
 endif
 
 ifeq ($(with-libdeflate), 1)
