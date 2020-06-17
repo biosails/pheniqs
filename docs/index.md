@@ -15,7 +15,7 @@ Pheniqs runs on all modern POSIX systems, provides an easy to learn command line
 
 For more advanced users and sequencing core managers we provide detailed build instructions and a built in package manager that allows to easily build portable, statically linked, Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
 
-## installing Pheniqs
+## Installing Pheniqs
 
 You can build the latest Pheniqs binary with this one line. Just paste it into a Linux or macOS terminal.
 
@@ -23,17 +23,8 @@ You can build the latest Pheniqs binary with this one line. Just paste it into a
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/biosails/pheniqs-build-api/master/install_pheniqs.sh)"
 ```
 
-You can also install pheniqs using the conda package manager on Linux
+You can also install pheniqs using the conda package manager on Linux (for installing anaconda see the [conda install page](..))
 
 >```shell
-wget https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh
-bash Anaconda3-5.0.1-Linux-x86_64.sh
-conda install -c bioconda -c conda-forge pheniqs
-```
-
-Or MacOS
->```shell
-wget https://repo.continuum.io/archive/Anaconda3-5.0.1-MacOSX-x86_64.sh
-bash Anaconda3-5.0.1-MacOSX-x86_64.sh
 conda install -c bioconda -c conda-forge pheniqs
 ```
