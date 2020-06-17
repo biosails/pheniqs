@@ -20,7 +20,7 @@ For more advanced users and sequencing core managers we provide detailed build i
 You can build the latest Pheniqs binary with this one line. Just paste it into a Linux or macOS terminal.
 
 >```shell
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/biosails/pheniqs-build-api/master/install_pheniqs.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/biosails/pheniqs-build-api/master/install_pheniqs.sh)"
 ```
 
 You can also install pheniqs using the conda package manager on Linux
