@@ -15,7 +15,7 @@ Pheniqs can be configured to handle any arbitrary configuration of biological an
 
 The conceptual framework that Pheniqs uses to extract different types of elements within sequence reads is summarized below.
 
-## Experimental Design
+# Experimental Design
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some very common designs for Illumina platforms are illustrated here:
 
@@ -24,7 +24,7 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 More complicated barcoding schemes for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
 
 
-## Read anatomy
+# Read anatomy
 
 Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **read 1** and **read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
 
