@@ -143,7 +143,14 @@ id: glossary
 <a name="qc_fail" />QC Fail Flag
 : Some reads are marked as failing quality control. This is [signaled](https://en.wikipedia.org/wiki/FASTQ_format#Illumina_sequence_identifiers) on the comment portion of the read identifier in [FASTQ](glossary.html#fastq) files or the **512** flag on a SAM record flag. Reads that pass quality control are called **PF** for **pass-filter** (SAM flag **ON**), while those that fail are often referred to as **QC fail** reads (SAM flag **OFF**).
 
+<a name="relative_path" />Relative path
+: A relative path is one that **does not** begin with `/`. Relative paths must be resolved against a base directory path. By default Pheniqs resolves those against work directory where Pheniqs was executed unless `base input url` or `base output url` was specified in which case input and output paths are resolved against those base directories.
 
+<a name="absolute_path" />Absolute path
+: An absolute path is one that begin with `/`. Absolute paths ignore `base input url` or `base output url`.
+
+<a name="standard_stream" />Standard stream
+: POSIX systems use standard streams, stdin, stdout and stderr to transfer data between applications without writing it to a file on a hard drive. This allows to pipe the output from one utility into the input of the next in the pipeline without the need for additional storage. Avoiding writing to the disk can also significantly accelerate some pipelines since drives are often orders of magnitude slower than computer memory. 
 <!--
 <a name="" />
 TERM
