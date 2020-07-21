@@ -16,9 +16,9 @@ Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossar
 
 # Declaring Input
 
-In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify the `base input url` and `base output url` directives to make the configuration file more portable.
+In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. [Relative](glossary.html#relative_path) input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify `base input url` to explicitly provide a base directory and make the configuration file more portable. ([Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base input url`.
 
-Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed illumina MiSeq run.
+Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed Illumina MiSeq run.
 
 The first four lines of each of the files are
 
@@ -57,10 +57,11 @@ We declare those files as input with an input directive
     ]
 }
 ```
->**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files.
+>**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the working directory which defaults to where you execute Pheniqs. If `base input url` was specified they are resolved relative to that directory path.
 {: .example}
 
-**Example 1.1** is already a complete and valid Pheniqs configuration! Since no manipulation instructions are specified reads are simply interleaved to the output. Since output is not explicitly declared it defaults to the SAM format and written to standard output.
+**Example 1.1** is already a complete and valid Pheniqs configuration! Since no manipulation instructions are specified reads are simply interleaved to the output. Since output is not explicitly declared it defaults to the SAM format and written to standard output. This type of simple configuration can be specified without a configuration file and is a quick way of packaging reads in a different format. For instance, in this example, to pack 3 segments stored in 3 FASTQ files into one interleaved compressed BAM or CRAM file. BAM and CRAM files are faster to read and often consume much less space on the disk. Interleaved files are easier to archive and can be produced or consumed by Pheniqs with [standard streams](glossary.html#standard_stream). 
+
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
