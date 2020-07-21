@@ -16,7 +16,7 @@ Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossar
 
 # Declaring Input
 
-In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. [Relative](glossary.html#relative_path) input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify `base input url` to explicitly provide a base directory and make the configuration file more portable. ([Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base input url`.
+In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. [Relative](glossary.html#relative_path) input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify `base input url` to explicitly provide a base directory and make the configuration file more portable.
 
 Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed Illumina MiSeq run.
 
@@ -57,7 +57,7 @@ We declare those files as input with an input directive
     ]
 }
 ```
->**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the working directory which defaults to where you execute Pheniqs. If `base input url` was specified they are resolved relative to that directory path.
+>**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the working directory which defaults to where you execute Pheniqs. If `base input url` was specified they are resolved relative to that directory path. [Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base input url`.
 {: .example}
 
 **Example 1.1** is already a complete and valid Pheniqs configuration! Since no manipulation instructions are specified reads are simply interleaved to the output. Since output is not explicitly declared it defaults to the SAM format and written to standard output.
