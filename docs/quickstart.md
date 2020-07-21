@@ -8,19 +8,25 @@ id: quickstart
 * placeholder
 {:toc }
 
-The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing a number of separate sections specifying directives for input and output layout, parsing read segments and run parameters. In the [workflow page](workflow.html) you will find some annotated examples of complete configuration files. If you are new to JSON, a [validator](cli.html#json-validation) can be instrumental for troubleshooting syntax errors. Some parameters are also exposed as command line arguments that override their corresponding configuration file values. A brief description of the command line parameters Pheniqs accepts is always available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli.html#zsh-completion) will give you a more interactive command line experience.
+The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, parsing read segments and run parameters. If you are new to JSON, a [validator](cli.html#json-validation) can be instrumental for troubleshooting syntax errors. Some parameters can also be specified as command line arguments that override their corresponding configuration file values. A brief description of the command line parameters Pheniqs accepts is always available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli.html#zsh-completion) will give you a more interactive command line experience.
 
 # Supported File Format
-Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq) with segments either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many.
+
+Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq). It can even operate on different read segments in different formats at the same time or interact with segments that are either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Using the intuitive addressing syntax you can classify reads by standard Illumina sample barcodes, multiple combinatorial cellular barcodes and molecular index tags in arbitrary locations along the read, all without pre or post processing the data.
 
 # Read Layout Manipulation
-Read manipulation is achieved with the `transform` directive by means of [tokenization](manual.html#tokenization) with the embedded `token` directive and [construction](manual.html#segment-assembly) with the `knit` directive. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). In the construction step a [knit](manual.html#transform-pattern) references the tokens to construct a new segment. The optional `knit` directive is only necessary when composing output segments from multiple, non continuous, tokens or if a token needs to be reverse complemented. If the `knit` directive is omitted from `transform`, each token is assumed to declare a single segment.
 
-A `transform` can construct [output](glossary.html#output_segment) read segments, when declared in the root of the job instruction, or a segmented sequence that will be used by a barcode decoder.
+Read manipulation is achieved with the `transform` directive by means of [tokenization](manual.html#tokenization) with the `token` directive and [construction](manual.html#segment-assembly) with the `knit` directive.
 
+In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). If the segments of the barcode you are extracting can be found as one continuous sequence in a read segment you only need to specify a list of tokens and Pheniqs will assume that each token represents a segment.
+
+If, however, you are trying to construct the barcode segments from multiple, non continuous, tokens or need to reverse complement the sequence to match against your expected barcodes you have one more step. The optional [knit](manual.html#transform-pattern) directive references the tokens to construct a new segment. If the `knit` directive is omitted from `transform`, each token is assumed to declare a single segment.
+
+The same `transform` directive can be used to construct [output](glossary.html#output_segment) read segments, when declared in the `template` section, or a segmented sequence that will be used by a barcode decoder when declared inside the decoder.
 
 # Declaring Input
-A very simple configuration can include nothing more than an `input` directive. In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will assemble an input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute pheniqs. You may optionally specify the `base input url` and `base output url` directives.
+
+In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify the `base input url` and `base output url` directives to make the configuration file more portable.
 
 Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed illumina MiSeq run.
 
