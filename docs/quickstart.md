@@ -14,16 +14,6 @@ The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wik
 
 Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossary.html#htslib) or [FASTQ](glossary.html#fastq). It can even operate on different read segments in different formats at the same time or interact with segments that are either [interleaved](glossary.html#interleaved_file_layout) into a single file or [split](glossary.html#split_file_layout) over many. Using the intuitive addressing syntax you can classify reads by standard Illumina sample barcodes, multiple combinatorial cellular barcodes and molecular index tags in arbitrary locations along the read, all without pre or post processing the data.
 
-# Read Layout Manipulation
-
-Read manipulation is achieved with the `transform` directive by means of [tokenization](manual.html#tokenization) with the `token` directive and [construction](manual.html#segment-assembly) with the `knit` directive.
-
-In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). If the segments of the barcode you are extracting can be found as one continuous sequence in a read segment you only need to specify a list of tokens and Pheniqs will assume that each token represents a segment.
-
-If, however, you are trying to construct the barcode segments from multiple, non continuous, tokens or need to reverse complement the sequence to match against your expected barcodes you have one more step. The optional [knit](manual.html#transform-pattern) directive references the tokens to construct a new segment. If the `knit` directive is omitted from `transform`, each token is assumed to declare a single segment.
-
-The same `transform` directive can be used to construct [output](glossary.html#output_segment) read segments, when declared in the `template` section, or a segmented sequence that will be used by a barcode decoder when declared inside the decoder.
-
 # Declaring Input
 
 In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. Relative input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify the `base input url` and `base output url` directives to make the configuration file more portable.
@@ -97,6 +87,17 @@ This simple example is very useful for interleaving raw split read segments into
 ```
 >**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
 {: .example}
+
+# Read Layout Manipulation
+
+The same `transform` directive is used to manipulate the input read and construct [output](glossary.html#output_segment) read segments, when declared in the `template` section, or a segmented sequence that is used by a barcode decoder when declared inside the decoder.
+
+The `transform` directive operates on the input read in two steps: [tokenization](manual.html#tokenization) with the `token` directive and [construction](manual.html#segment-assembly) with the `knit` directive.
+
+In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). If the segments you are extracting can be found as one continuous sequence in a read segment you only need to specify a list of tokens and Pheniqs will assume that each token represents a segment.
+
+If, however, you are trying to extract segments from multiple, non continuous, tokens or need to reverse complement the sequence to match against your expected barcodes you have one more step. The optional [knit](manual.html#transform-pattern) directive references the tokens to construct a new segment from multiple tokens. If the `knit` directive is omitted from `transform`, each token is assumed to declare a single segment.
+
 
 # Output Manipulation
 The `transform` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `transform` directive to construct an output read from only the first and third segments of the input.
