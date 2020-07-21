@@ -98,6 +98,8 @@ pheniqs mux --input BDGGG_s01.fastq.gz --input BDGGG_s02.fastq.gz --input BDGGG_
 >**Example 1.3.1** Interleaving three read segments verbatim into a single CRAM file without a configuration file.
 {: .example}
 
+You may optionally specify `base output url` to explicitly provide a base directory and make the configuration file more portable. ([Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base output url`.
+
 # Read Layout Manipulation
 
 The same `transform` directive is used to manipulate the input read and construct [output](glossary.html#output_segment) read segments, when declared in the `template` section, or a segmented sequence that is used by a barcode decoder when declared inside the decoder.
