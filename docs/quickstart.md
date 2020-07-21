@@ -93,7 +93,11 @@ This simple example is very useful for interleaving raw split read segments into
 The same can be achieved without a configuration file by specifying the same instruction on the command lines
 
 >```shell
-pheniqs mux --input BDGGG_s01.fastq.gz --input BDGGG_s02.fastq.gz --input BDGGG_s03.fastq.gz --output 000000000-BDGGG_raw.cram
+pheniqs mux \
+--input BDGGG_s01.fastq.gz \
+--input BDGGG_s02.fastq.gz \
+--input BDGGG_s03.fastq.gz \
+--output 000000000-BDGGG_raw.cram
 ```
 >**Example 1.3.1** Interleaving three read segments verbatim into a single CRAM file without a configuration file.
 {: .example}
