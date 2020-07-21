@@ -60,7 +60,7 @@ We declare those files as input with an input directive
 >**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the working directory which defaults to where you execute Pheniqs. If `base input url` was specified they are resolved relative to that directory path.
 {: .example}
 
-**Example 1.1** is already a complete and valid Pheniqs configuration! Since no manipulation instructions are specified reads are simply interleaved to the output. Since output is not explicitly declared it defaults to the SAM format and written to standard output. This type of simple configuration can be specified without a configuration file and is a quick way of packaging reads in a different format. For instance, in this example, to pack 3 segments stored in 3 FASTQ files into one interleaved compressed BAM or CRAM file. BAM and CRAM files are faster to read and often consume much less space on the disk. Interleaved files are easier to archive and can be produced or consumed by Pheniqs with [standard streams](glossary.html#standard_stream). 
+**Example 1.1** is already a complete and valid Pheniqs configuration! Since no manipulation instructions are specified reads are simply interleaved to the output. Since output is not explicitly declared it defaults to the SAM format and written to standard output.
 
 
 >```
@@ -74,7 +74,8 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 {: .example}
 
 # Declaring Output
-This simple example is very useful for interleaving raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads in a CRAM container also makes archiving your raw data simple. To write the interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
+
+This simple example is very useful for interleaving raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads in a CRAM container also makes archiving your raw data simple. Interleaved files are easier to archive and can be produced or consumed by Pheniqs with [standard streams](glossary.html#standard_stream). To write the interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
 
 >```json
 {
@@ -87,6 +88,14 @@ This simple example is very useful for interleaving raw split read segments into
 }
 ```
 >**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
+{: .example}
+
+The same can be achieved without a configuration file by specifying the same instruction on the command lines
+
+>```shell
+pheniqs mux --input BDGGG_s01.fastq.gz --input BDGGG_s02.fastq.gz --input BDGGG_s03.fastq.gz --output 000000000-BDGGG_raw.cram
+```
+>**Example 1.3.1** Interleaving three read segments verbatim into a single CRAM file without a configuration file.
 {: .example}
 
 # Read Layout Manipulation
