@@ -75,7 +75,7 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 
 # Declaring Output
 
-This simple example is very useful for interleaving raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads in a CRAM container also makes archiving your raw data simple. Interleaved files are easier to archive and can be produced or consumed by Pheniqs with [standard streams](glossary.html#standard_stream). To write the interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
+This simple example is very useful for interleaving raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads in a CRAM container also makes archiving your raw data simple. Interleaved files can be produced or consumed by Pheniqs with [standard streams](glossary.html#standard_stream). To write the interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
 
 >```json
 {
