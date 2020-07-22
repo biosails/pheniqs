@@ -57,7 +57,7 @@ We declare those files as input with an input directive
     ]
 }
 ```
->**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the working directory which defaults to where you execute Pheniqs. If `base input url` was specified they are resolved relative to that directory path. [Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base input url`.
+>**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the current working directory. If you specify `base input url` paths are resolved relative to that directory path. [Absolute file paths](glossary.html#absolute_path) ignore `base input url`.
 {: .example}
 
 **Example 1.1** is already a complete and valid Pheniqs configuration! Since no manipulation instructions are specified reads are simply interleaved to the output. Since output is not explicitly declared it defaults to the SAM format and written to standard output.
