@@ -20,7 +20,7 @@ In this example we consider three files that contain synchronized segments from 
 
 Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed Illumina MiSeq run. The first four lines of each of the files are
 
-*000000000-BDGGG_S1_L001_R1_001.fastq.gz*, the first read segment (or *Read 1 in Illumina terminology*):
+*000000000-BDGGG_S1_L001_R1_001.fastq.gz*, the first read segment (or *Read 1* in Illumina terminology):
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 1:N:0:
 CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
@@ -28,7 +28,7 @@ CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
 CCCCCGGGFGGGAFDFGFGGFGFGFGGGGGGGDEFDFFGGFEFGCFEFGEG
 ```
 
-*000000000-BDGGG_S1_L001_I1_001.fastq.gz*, the second read segment (or *Index 1 in Illumina terminology*):
+*000000000-BDGGG_S1_L001_I1_001.fastq.gz*, the second read segment (or *Index 1* in Illumina terminology):
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 2:N:0:
 GGACTCCT
@@ -36,7 +36,7 @@ GGACTCCT
 B@CCCFC<
 ```
 
-*000000000-BDGGG_S1_L001_R2_001.fastq.gz*, the third read segment (or *Read 2 in Illumina terminology*):
+*000000000-BDGGG_S1_L001_R2_001.fastq.gz*, the third read segment (or *Read 2* in Illumina terminology):
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 3:N:0:
 GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA
