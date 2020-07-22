@@ -58,7 +58,7 @@ To declare those files as input you add an `input` directive, which is a JSON ar
 >**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the current working directory. If you specify `base input url` paths are resolved relative to that directory path. [Absolute file paths](glossary.html#absolute_path) ignore `base input url`.
 {: .example}
 
-**Example 1.1** is already a complete and valid Pheniqs configuration! Since we have not yet specified any output or manipulation instructions, reads are simply interleaved to the default [stdout](glossary.html#standard_stream) in SAM format.
+**Example 1.1** is already a complete and valid Pheniqs configuration file! Since we have not yet specified any output or manipulation instructions, reads are simply interleaved to the default [stdout](glossary.html#standard_stream) in SAM format. If you execute it you will get the following output on stdout:
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
