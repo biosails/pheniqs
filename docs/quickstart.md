@@ -72,9 +72,13 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 
 Notice that the order of the paths in the array is not just telling Pheniqs where to find the files but actually defines the enumerated segments of the input read. When reading the [split](glossary.html#split_file_layout) read layout in this example that just means Pheniqs will read one segment from each input file. But if the same 3 segment input reads were [interleaved](glossary.html#interleaved_file_layout) into one file, you would list the same file path 3 times to tell Pheniqs that every 3 records in that file form a single, 3 segment, sequence read.
 
+This simple example can already be used to interleave raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads into a CRAM container also makes archiving raw data simple. Another huge advantage of interleaved files is that they may be produced or consumed by Pheniqs through [standard streams](glossary.html#standard_stream).
+
 # Declaring Output
 
-This simple example is very useful for interleaving raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads in a CRAM container also makes archiving your raw data simple. Interleaved files can be produced or consumed by Pheniqs with [standard streams](glossary.html#standard_stream). To write the interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
+Since most of the time you do not want your output on stdout you will want to provide an output file path or, when writing split output, multiple paths.
+
+To write interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
 
 >```json
 {
@@ -89,7 +93,9 @@ This simple example is very useful for interleaving raw split read segments into
 >**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
 {: .example}
 
-The same can be achieved without a configuration file by specifying the same instruction on the command lines
+You may optionally specify `base output url` to explicitly provide a base directory and make the configuration file more portable. ([Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base output url`.
+
+Before we move on to read manipulation here is the same interleaving configuration achieved without a configuration file by specifying the same instruction on the command lines
 
 >```shell
 pheniqs mux \
@@ -98,10 +104,8 @@ pheniqs mux \
 --input BDGGG_s03.fastq.gz \
 --output 000000000-BDGGG_raw.cram
 ```
->**Example 1.3.1** Interleaving three read segments verbatim into a single CRAM file without a configuration file.
+>**Example 1.3.1** Interleaving three read segments verbatim into a single CRAM file without a configuration file. Notice that `--input` is specified 3 times and the order the arguments are provided on the command line enumerates the input segments.
 {: .example}
-
-You may optionally specify `base output url` to explicitly provide a base directory and make the configuration file more portable. ([Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base output url`.
 
 # Read Layout Manipulation
 
