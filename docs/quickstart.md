@@ -18,11 +18,9 @@ Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossar
 
 In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. [Relative](glossary.html#relative_path) input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify `base input url` to explicitly provide a base directory and make the configuration file more portable.
 
-Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed Illumina MiSeq run.
+Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed Illumina MiSeq run. The first four lines of each of the files are
 
-The first four lines of each of the files are
-
-**000000000-BDGGG_S1_L001_R1_001.fastq.gz**
+*000000000-BDGGG_S1_L001_R1_001.fastq.gz*, the first read segment (or *Read 1 in Illumina terminology*):
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 1:N:0:
 CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
@@ -30,7 +28,7 @@ CTAAGAAATAGACCTAGCAGCTAAAAGAGGGTATCCTGAGCCTGTCTCTTA
 CCCCCGGGFGGGAFDFGFGGFGFGFGGGGGGGDEFDFFGGFEFGCFEFGEG
 ```
 
-**000000000-BDGGG_S1_L001_I1_001.fastq.gz**
+*000000000-BDGGG_S1_L001_I1_001.fastq.gz*, the second read segment (or *Index 1 in Illumina terminology*):
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 2:N:0:
 GGACTCCT
@@ -38,7 +36,7 @@ GGACTCCT
 B@CCCFC<
 ```
 
-**000000000-BDGGG_S1_L001_R2_001.fastq.gz**
+*000000000-BDGGG_S1_L001_R2_001.fastq.gz*, the third read segment (or *Read 2 in Illumina terminology*):
 ```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 3:N:0:
 GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA
@@ -46,7 +44,7 @@ GCTCAGGATACCCTCTTTTAGCTGCTAGGTCTATTTCTTAGCTGTCTCTTA
 CCCCCGGGGGGGGGGGGGGGGGGGF<FGGGGGGGGGGGGFGFGGGGGGGGG
 ```
 
-We declare those files as input with an input directive
+To declare those files as input you add an `input` directive, which is a JSON array of file paths. The order of the paths in the array enumerates the input read segments so Pheniqs will expect to read one segment from each file you list. You may provide the input segments in any order you wish as long as you adhere to that order throughout the configuration file.
 
 >```json
 {
@@ -60,8 +58,7 @@ We declare those files as input with an input directive
 >**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the current working directory. If you specify `base input url` paths are resolved relative to that directory path. [Absolute file paths](glossary.html#absolute_path) ignore `base input url`.
 {: .example}
 
-**Example 1.1** is already a complete and valid Pheniqs configuration! Since no manipulation instructions are specified reads are simply interleaved to the output. Since output is not explicitly declared it defaults to the SAM format and written to standard output.
-
+**Example 1.1** is already a complete and valid Pheniqs configuration! Since we have not yet specified any output or manipulation instructions, reads are simply interleaved to the default [stdout](glossary.html#standard_stream) in SAM format.
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
@@ -72,6 +69,8 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 ```
 >**Example 1.2** Output header and first 3 records (one complete read) from [interleaving](glossary.html#interleaved_file_layout) the three read segments verbatim into a single SAM formatted stream written to standard output using the configuration file in **Example 1.1**.
 {: .example}
+
+Notice that the order of the paths in the array is not just telling Pheniqs where to find the files but actually defines the enumerated segments of the input read. When reading the [split](glossary.html#split_file_layout) read layout in this example that just means Pheniqs will read one segment from each input file. But if the same 3 segment input reads were [interleaved](glossary.html#interleaved_file_layout) into one file, you would list the same file path 3 times to tell Pheniqs that every 3 records in that file form a single, 3 segment, sequence read.
 
 # Declaring Output
 
