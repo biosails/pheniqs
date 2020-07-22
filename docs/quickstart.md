@@ -58,6 +58,8 @@ To declare those files as input you add an `input` directive, which is a JSON ar
 >**Example 1.1** Declaring an input read that is [split](glossary.html#split_file_layout) over three gzip compressed FASTQ files. Since the file paths do not start with `/` they are considered [relative](glossary.html#relative_path) and resolved against the current working directory. If you specify `base input url` paths are resolved relative to that directory path. [Absolute file paths](glossary.html#absolute_path) ignore `base input url`.
 {: .example}
 
+Notice that the order of the paths in the array is not just telling Pheniqs where to find the files but actually defines the enumerated segments of the input read. When reading the [split](glossary.html#split_file_layout) read layout in this example that just means Pheniqs will read one segment from each input file. But if the same 3 segment input reads were [interleaved](glossary.html#interleaved_file_layout) into one file, you would list the same file path 3 times to tell Pheniqs that every 3 records in that file form a single sequence read with 3 segments.
+
 **Example 1.1** is already a complete and valid Pheniqs configuration file! Since we have not yet specified any output or manipulation instructions, reads are simply interleaved to the default [stdout](glossary.html#standard_stream) in SAM format. If you execute it you will get the following output on stdout:
 
 >```
@@ -70,15 +72,12 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 >**Example 1.2** Output header and first 3 records (one complete read) from [interleaving](glossary.html#interleaved_file_layout) the three read segments verbatim into a single SAM formatted stream written to standard output using the configuration file in **Example 1.1**.
 {: .example}
 
-Notice that the order of the paths in the array is not just telling Pheniqs where to find the files but actually defines the enumerated segments of the input read. When reading the [split](glossary.html#split_file_layout) read layout in this example that just means Pheniqs will read one segment from each input file. But if the same 3 segment input reads were [interleaved](glossary.html#interleaved_file_layout) into one file, you would list the same file path 3 times to tell Pheniqs that every 3 records in that file form a single, 3 segment, sequence read.
+Next we will show you how to use this simple example to interleave raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads into a CRAM container also makes archiving raw data simple. Another huge advantage of interleaved files is that they may be produced or consumed by Pheniqs through [standard streams](glossary.html#standard_stream).
 
-This simple example can already be used to interleave raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary.html#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads into a CRAM container also makes archiving raw data simple. Another huge advantage of interleaved files is that they may be produced or consumed by Pheniqs through [standard streams](glossary.html#standard_stream).
 
 # Declaring Output
 
-Since most of the time you do not want your output on stdout you will want to provide an output file path or, when writing split output, multiple paths.
-
-To write interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**.
+Since most of the time you do not want your output on stdout you will want to provide an output file path. To write interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**. Like `input`, the `output` directive is a JSON array of file paths. You may optionally specify multiple paths in the output array to write a split output.
 
 >```json
 {
