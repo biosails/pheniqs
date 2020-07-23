@@ -106,7 +106,7 @@ pheniqs mux \
 >**Example 1.3.1** Interleaving three read segments verbatim into a single CRAM file without a configuration file. Notice that `--input` is specified 3 times and the order the arguments are provided on the command line enumerates the input segments.
 {: .example}
 
-# Read Layout Manipulation
+# Read transformation
 
 Pheniqs provides a generic method to derive a new set of sequence segments from the input read. That set can form the desired output or it can be a technical artifact used to classify the biological sequence. Either way, the syntax is the same. When declared inside the `template` section, the `transform` directive constructs the [output](glossary.html#output_segment) read segments. When declared inside a barcode decoder, it constructs the set of sequences that will be assessed against the list of expected barcode sequences.
 
@@ -117,7 +117,8 @@ If the segments you are extracting can be found as one continuous sequence in a 
 If, however, you are trying to extract segments from multiple, non continuous, tokens or need to reverse complement the sequence to match against your expected barcodes you have one more step. The optional [knit](manual.html#transform-pattern) directive references the tokens to construct a new segment from multiple tokens. If the `knit` array is omitted from `transform`, each token is assumed to declare a single segment.
 
 # Output Manipulation
-The `transform` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `transform` directive to construct an output read from only the first and third segments of the input.
+
+The `transform` directive in the `template` section is used to manipulate the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `transform` directive to construct an output read from only the first and third segments of the input.
 
 >```json
 {
@@ -131,10 +132,10 @@ The `transform` directive can be used to manipulate the structure of the output 
     }
 }
 ```
->**Example 1.4** Adding a transform directive composing the output read from only the untouched first and third input segments. Input segments in pheniqs are indexed and referenced using a [zero based coordinate system](glossary.html#zero_based_coordinate) so the first segment is 0.
+>**Example 1.4** Adding a transform directive composing the output read from only the untouched first and third input segments. Input segments in Pheniqs are indexed and referenced using a [zero based coordinate system](glossary.html#zero_based_coordinate) so the first segment is 0 and the third is 2. Since we want to output the entire first and last segments the start and end coordinates in the pattern are left out to accept their default values.
 {: .example}
 
-The [token patterns](manual.html#tokenization) declared in the `token` array of the `transform` directive are made of 3 colon separated integers. The first is the [zero based](glossary.html#zero_based_coordinate) [input segment index](glossary.html#input_segment). The second is an inclusive [zero based](glossary.html#zero_based_coordinate) **start** coordinate to the beginning of the token and it defaults to **0** if omitted. The third is an exclusive [zero based](glossary.html#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. The two colons are always mandatory. Pheniqs token pattern can address segments from either the 5' (left) or 3' (right) end. Since they mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax they are fairly easy to test.
+The [token patterns](manual.html#tokenization) declared in the `token` array of the `transform` directive are made of 3 colon separated integers. The first is the [zero based](glossary.html#zero_based_coordinate) [input segment index](glossary.html#input_segment). The second is an inclusive [zero based](glossary.html#zero_based_coordinate) **start** coordinate to the beginning of the token and it defaults to **0** if omitted. The third is an exclusive [zero based](glossary.html#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. The two colons are always mandatory. Pheniqs token pattern can address segments from either the 5' (left) or 3' (right) end. To address the 3' end you use negative coordinates. Since they mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax they are fairly easy to test.
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
