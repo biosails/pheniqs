@@ -92,7 +92,7 @@ Since most of the time you do not want your output on stdout you will want to pr
 >**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
 {: .example}
 
-You may optionally specify `base output url` to explicitly provide a base directory and make the configuration file more portable. ([Absolute file paths](glossary.html#absolute_path) that start with `/` ignore `base output url`.
+You may optionally specify `base output url` to explicitly provide a base directory and make the configuration file more portable. [Absolute file paths](glossary.html#absolute_path) ignore `base output url`.
 
 Before we move on to read manipulation here is the same interleaving configuration achieved without a configuration file by specifying the same instruction on the command lines
 
@@ -108,14 +108,13 @@ pheniqs mux \
 
 # Read Layout Manipulation
 
-The same `transform` directive is used to manipulate the input read and construct [output](glossary.html#output_segment) read segments, when declared in the `template` section, or a segmented sequence that is used by a barcode decoder when declared inside the decoder.
+Pheniqs provides a generic method to derive a new set of sequence segments from the input read. That set can form the desired output or it can be a technical artifact used to classify the biological sequence. Either way, the syntax is the same. When declared inside the `template` section, the `transform` directive constructs the [output](glossary.html#output_segment) read segments. When declared inside a barcode decoder, it constructs the set of sequences that will be assessed against the list of expected barcode sequences.
 
-The `transform` directive operates on the input read in two steps: [tokenization](manual.html#tokenization) with the `token` directive and [construction](manual.html#segment-assembly) with the `knit` directive.
+Transforms operate on the input read in two steps: First the `token` element, a JSON array of [tokenization](manual.html#tokenization) patterns, that each extract a continuous sequence (or a token) from an [input segment](glossary.html#input_segment) and second the `knit` element that [constructs](manual.html#segment-assembly) new segments from the previously defined tokens.
 
-In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary.html#input_segment). If the segments you are extracting can be found as one continuous sequence in a read segment you only need to specify a list of tokens and Pheniqs will assume that each token represents a segment.
+If the segments you are extracting can be found as one continuous sequence in a read segment you only need to specify the `token` array and Pheniqs will assume that each token represents a segment.
 
-If, however, you are trying to extract segments from multiple, non continuous, tokens or need to reverse complement the sequence to match against your expected barcodes you have one more step. The optional [knit](manual.html#transform-pattern) directive references the tokens to construct a new segment from multiple tokens. If the `knit` directive is omitted from `transform`, each token is assumed to declare a single segment.
-
+If, however, you are trying to extract segments from multiple, non continuous, tokens or need to reverse complement the sequence to match against your expected barcodes you have one more step. The optional [knit](manual.html#transform-pattern) directive references the tokens to construct a new segment from multiple tokens. If the `knit` array is omitted from `transform`, each token is assumed to declare a single segment.
 
 # Output Manipulation
 The `transform` directive can be used to manipulate the structure of the output read. If omitted all segments of the input are written verbatim to the output, as seen in **Example 1.1** and **Example 1.3**. Since the second segment contains only a technical sequence, and we do not want to write it to the output, we add a `transform` directive to construct an output read from only the first and third segments of the input.
