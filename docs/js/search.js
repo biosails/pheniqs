@@ -8,7 +8,7 @@
       for (var i = 0; i < results.length; i++) {  // Iterate over the results
         var item = store[results[i].ref];
         appendString += '<li><a href="/pheniqs' + item.url + '"><h3>' + item.title + '</h3></a>';
-        appendString += '<p>' + item.content.substring(0, 50) + '...</p></li>';
+        appendString += '<p>' + item.content.substring(0, 150) + '...</p></li>';
       }
 
       searchResults.innerHTML = appendString;
@@ -41,6 +41,7 @@
       this.ref('id');
       this.field('title', { boost: 10 });
       this.field('content');
+
     });
 
     for (var key in window.store) { // Add the data to lunr
