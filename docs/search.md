@@ -25,5 +25,5 @@ id: search
     {% endfor %}
   };
 </script>
-<script src="/js/lunr.min.js"></script>
-<script src="/js/search.js"></script>
+<script src="/pheniqs/js/lunr.min.js"></script>
+<script src="/pheniqs/js/search.js"></script>
