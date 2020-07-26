@@ -1,0 +1,7 @@
+---
+---
+[
+    {% for post in site.pages %}
+      {% include pages.json %}{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+]
