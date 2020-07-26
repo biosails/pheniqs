@@ -2,5 +2,5 @@
     "id": "{{ forloop.index }}",
     "url": "{{ page.url }}",
     "title": "{{ page.title }}",
-    "excerpt": " {{ page.excerpt | strip_html | strip_newlines | remove:'"' }}"
+    "excerpt": " {{ page.excerpt }}"
 }
