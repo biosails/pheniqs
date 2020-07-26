@@ -28,9 +28,3 @@ You can also install pheniqs using the conda package manager on Linux (for insta
 >```shell
 conda install -c bioconda -c conda-forge pheniqs
 ```
-
-<form action="/search.html" method="get">
-    <label for="search_box">Search</label>
-    <input type="text" id="search_box" name="query">
-    <input type="submit" value="search">
-</form>
