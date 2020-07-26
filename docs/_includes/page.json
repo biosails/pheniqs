@@ -2,5 +2,6 @@
     "id": "{{ forloop.index }}",
     "url": "{{ page.url }}",
     "title": "{{ page.title }}",
-    "excerpt": "{{ page.excerpt }}"
+    "excerpt": "{{ page.excerpt }}",
+    "content": {{ page.content | strip_html | strip_newlines | jsonify }},
 }
