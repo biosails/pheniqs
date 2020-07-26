@@ -1,7 +1,10 @@
 ---
+no_page_index: true
 ---
 [
     {% for page in site.pages %}
-      {% include page.json %}{% unless forloop.last %},{% endunless %}
+        {% unless page.no_page_index %}
+            {% include page.json %}{% unless forloop.last %},{% endunless %}
+        {% endunless %}
     {% endfor %}
 ]
