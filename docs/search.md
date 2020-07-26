@@ -16,10 +16,11 @@ id: search
 <script>
   window.store = {
     {% for page in site.pages %}
-        "{{ page.url | slugify }}": {
-          "url": "{{ page.url | xml_escape }}",
-          "title": "{{ page.title | xml_escape }}",
-          "content": {{ page.content | strip_html | strip_newlines | | remove:'"' | jsonify }}
+        {
+            "id": "{{ page.url | slugify }}",
+            "url": "{{ page.url | xml_escape }}",
+            "title": "{{ page.title | xml_escape }}",
+            "content": {{ page.content | strip_html | strip_newlines | | remove:'"' | jsonify }}
         }
       {% unless forloop.last %},{% endunless %}
     {% endfor %}
