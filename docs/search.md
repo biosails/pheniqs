@@ -14,7 +14,7 @@ id: search
 <ul id="search-results"></ul>
 
 <script>
-  window.store = [
+  window.store = {
     {% for page in site.pages %}
         "{{ page.url | slugify }}" : {
             "id": "{{ page.url | slugify }}",
@@ -24,7 +24,7 @@ id: search
         }
       {% unless forloop.last %},{% endunless %}
     {% endfor %}
-  ];
+  };
 </script>
 <script src="/pheniqs/js/lunr.min.js"></script>
 <script src="/pheniqs/js/search.js"></script>
