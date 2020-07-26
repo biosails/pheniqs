@@ -37,7 +37,7 @@
 
     var documents = []
     for (var key in window.store) { // Add the data to lunr
-      documents.add({
+      documents.push({
         'id': key,
         'title': window.store[key].title,
         'content': window.store[key].content
