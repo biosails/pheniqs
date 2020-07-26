@@ -16,7 +16,7 @@ id: search
 <script>
   window.store = [
     {% for page in site.pages %}
-        {
+        "{{ page.url | slugify }}" : {
             "id": "{{ page.url | slugify }}",
             "url": "{{ page.url | xml_escape }}",
             "title": "{{ page.title | xml_escape }}",

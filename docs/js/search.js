@@ -42,9 +42,12 @@
       this.field('text')
       this.field('content')
 
-      window.store.forEach(function (doc) {
-        this.add(doc)
-      }, this)
+      for (var key in window.store) { // Add the data to lunr
+        this.add({
+            'id': key,
+            'title': window.store[key].title,
+            'content': window.store[key].content
+        })
     })
 
     var results = idx.search(searchTerm); // Get lunr to perform a search
