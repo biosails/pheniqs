@@ -36,7 +36,7 @@
 # Single index Fluidigm
 {:.page-title}
 
-This tutorial will walk you through demultiplexing a fluidigm sequencing run with the [PAMLD decoder](glossary.html#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing a row cellular barcode in the first 6 cycles of the forward read segment and a column cellular barcode on the first 8 cycles of the i7 index segment.
+This tutorial will walk you through demultiplexing a fluidigm sequencing run with the [PAMLD decoder](/pheniqs/glossary#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing a row cellular barcode in the first 6 cycles of the forward read segment and a column cellular barcode on the first 8 cycles of the i7 index segment.
 
 ## Input Read Layout
 

@@ -22,7 +22,7 @@ The essential components of a Pheniqs workflow are:
 
 # Input
 
-Pheniqs is designed to take **sequence** files as input. All standard sequence file formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input. Pheniqs can manipulate both uncompressed and gzip compressed [FASTQ](glossary.html#fastq), as well as [SAM, BAM and CRAM](glossary.html#htslib) files.
+Pheniqs is designed to take **sequence** files as input. All standard sequence file formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input. Pheniqs can manipulate both uncompressed and gzip compressed [FASTQ](/pheniqs/glossary#fastq), as well as [SAM, BAM and CRAM](/pheniqs/glossary#htslib) files.
 
 # Configuration
 
