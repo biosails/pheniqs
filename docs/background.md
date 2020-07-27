@@ -12,7 +12,7 @@ id: background
 
 The framework of a Pheniqs run includes three main steps: validating run parameters, extracting sequence elements from input sequence reads, and decoding each element according to a set of rules provided in the configuration:
 
-![overview](assets/img/pheniqs_overview_web2.png){: .new-diagram}
+![overview](assets/img/pheniqs_overview_web2.png){: .diagram}
 
 The essential components of a Pheniqs workflow are:
 + **Input**: FASTQ or SAM-formatted sequence files.
