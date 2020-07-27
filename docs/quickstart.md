@@ -60,7 +60,7 @@ To declare those files as input you add an `input` directive, which is a JSON ar
 
 Notice that the order of the paths in the array is not just telling Pheniqs where to find the files but actually defines the enumerated segments of the input read. When reading the [split](glossary#split_file_layout) read layout in this example that just means Pheniqs will read one segment from each input file. But if the same 3 segment input reads were [interleaved](glossary#interleaved_file_layout) into one file, you would list the same file path 3 times to tell Pheniqs that every 3 consecutive records in that file form a single sequence read with 3 segments.
 
-**Example 1.1** is already a complete and valid Pheniqs configuration file! Since we have not yet specified any output or manipulation instructions, reads are simply interleaved to the default [stdout](glossary#standard_stream) in SAM format. If you execute it you will get the following output on stdout:
+**Example 1.1** is already a complete and valid Pheniqs configuration file! Since we have not yet specified any output or manipulation instructions, reads are simply interleaved to the default [stdout](glossary#standard_stream) in SAM format. Executing it will yield the following output on stdout:
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
@@ -72,12 +72,12 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 >**Example 1.2** Output header and first 3 records (one complete read) from [interleaving](glossary#interleaved_file_layout) the three read segments verbatim into a single SAM formatted stream written to standard output using the configuration file in **Example 1.1**.
 {: .example}
 
-Next we will show you how to use this simple example to interleave raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented in [HTSlib](glossary#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads into a CRAM container also makes archiving raw data simple. Another huge advantage of interleaved files is that they may be produced or consumed by Pheniqs through [standard streams](glossary#standard_stream).
+In the follwing example you will see how to use this simple example to interleave the raw split read segments into a single CRAM file. CRAM files are the latest indexed and compressed binary encoding of SAM implemented by [HTSlib](glossary#htslib) and often provide more efficient compression than the ubiquitous gzip compressed FASTQ format while being much faster to interact with. Packaging your reads into a CRAM container also makes archiving raw data simple. Another huge advantage of interleaved files is that they may be produced or consumed by Pheniqs through [standard streams](glossary#standard_stream).
 
 
 # Declaring Output
 
-Since most of the time you do not want your output on stdout you will want to provide an output file path. To write interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**. Like `input`, the `output` directive is a JSON array of file paths. You may optionally specify multiple paths in the output array to write a split output.
+Since in most cases you do not want your output delivered to stdout, you will want to provide an output file path. To write interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**. Like `input`, the `output` directive is a JSON array of file paths. To interleave all output segments into the same file, specify only that one path in the `output` array. Alternatively, to split the output to multiple files, specify the same number as there are segments in the output read.
 
 >```json
 {
@@ -108,13 +108,11 @@ pheniqs mux \
 
 # Read transformation
 
-Pheniqs provides a generic method to derive a new set of sequence segments from the input read. That set can form the desired output or it can be a technical artifact used to classify the biological sequence. Either way, the syntax is the same. When declared inside the `template` section, the `transform` directive constructs the [output](glossary#output_segment) read segments. When declared inside a barcode decoder, it constructs the set of sequences that will be assessed against the list of expected barcode sequences.
+Pheniqs provides a generic method to derive new sets of sequence segments from the input read. A set can form the desired output or it can be a technical artifact used to classify the biological sequence. Either way, the syntax is the same. When declared inside the `template` section, the `transform` directive constructs the [output read segments](glossary#output_segment). When declared inside a barcode decoder, it constructs the set of sequences that will be assessed against the list of expected barcode sequences.
 
-Transforms operate on the input read in two steps: First the `token` element, a JSON array of [tokenization](configuration#tokenization) patterns, that each extract a continuous sequence (or a token) from an [input segment](glossary#input_segment) and second the `knit` element that [constructs](configuration#segment-assembly) new segments from the previously defined tokens.
+Transforms operate on the input read in two steps: First the `token` element, a JSON array of [tokenization](configuration#tokenization) patterns, that each extract a continuous sequence (or a token) from an [input segment](glossary#input_segment), and second the `knit` element that [constructs](configuration#segment-assembly) new segments from the previously defined tokens.
 
-If the segments you are extracting can be found as one continuous sequence in a read segment you only need to specify the `token` array and Pheniqs will assume that each token represents a segment.
-
-If, however, you are trying to extract segments from multiple, non continuous, tokens or need to reverse complement the sequence to match against your expected barcodes you have one more step. The optional [knit](configuration#transform-pattern) directive references the tokens to construct a new segment from multiple tokens. If the `knit` array is omitted from `transform`, each token is assumed to declare a single segment.
+If the segments you are extracting can be found as one continuous sequence in a read segment you only need to specify the `token` array and Pheniqs will assume that each token represents a segment. If, however, you are trying to construct a segment from multiple non continuous tokens or need to reverse complement the sequence you have one more step. The optional [knit](configuration#transform-pattern) directive references the tokens to construct a new segment from multiple tokens. If the `knit` array is omitted from `transform`, each token is assumed to declare a single segment.
 
 # Output Manipulation
 
@@ -135,7 +133,7 @@ The `transform` directive in the `template` section is used to manipulate the ou
 >**Example 1.4** Adding a transform directive composing the output read from only the untouched first and third input segments. Input segments in Pheniqs are indexed and referenced using a [zero based coordinate system](glossary#zero_based_coordinate) so the first segment is 0 and the third is 2. Since we want to output the entire first and last segments the start and end coordinates in the pattern are left out to accept their default values.
 {: .example}
 
-The [token patterns](configuration#tokenization) declared in the `token` array of the `transform` directive are made of 3 colon separated integers. The first is the [zero based](glossary#zero_based_coordinate) [input segment index](glossary#input_segment). The second is an inclusive [zero based](glossary#zero_based_coordinate) **start** coordinate to the beginning of the token and it defaults to **0** if omitted. The third is an exclusive [zero based](glossary#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. The two colons are always mandatory. Pheniqs token pattern can address segments from either the 5' (left) or 3' (right) end. To address the 3' end you use negative coordinates. Since they mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax they are fairly easy to test.
+A [token patterns](configuration#tokenization) declared in the `token` array of the `transform` directive is made of 3 colon separated integers. The first is the [zero based](glossary#zero_based_coordinate) [input segment index](glossary#input_segment), as enumerated by the `input` array. The second is an inclusive [zero based](glossary#zero_based_coordinate) **start** coordinate to the beginning of the token and it defaults to **0** if omitted. The third is an exclusive [zero based](glossary#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. The two colons are always mandatory. Pheniqs token pattern can address segments from either the 5' (left) or 3' (right) end. To address the 3' end you use negative coordinates. Since token pattern coordinates mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax they are fairly easy to test.
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
@@ -148,7 +146,7 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 
 # Classifying by barcodes
 
-The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them into read groups we need to examine the first 8 nucleotides of the second segment. Decoding the barcode can be as trivial as comparing two strings if we were absolutely confident no errors occurred during sequencing. However in a real world scenario each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. The `multiplex` directive is used to declare a decoder that will classify the reads by examining the segments constructed by the embedded `transform` and comparing them to the sequence segments declared in the `codec` element.
+The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them by this sample barcode into read groups we need to examine the first 8 nucleotides of the second segment. If we were absolutely confident no errors occurred during sequencing decoding the barcode could be as trivial as comparing two strings. In a real world scenario however each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. The `multiplex` directive is used to declare a decoder that will classify the reads by examining the segments constructed by the embedded `transform` and comparing them to the sequence segments declared in the `codec` element.
 
 >```json
 {
@@ -226,8 +224,9 @@ M02455:162:000000000-BDGGG:1:1101:10000:12232   141     *       0       0       
 >**Example 1.8** Output header and first 4 records (two complete reads) from demultiplexing using the configuration file in **Example 1.7**. Notice how tags declared globally were added to all read groups. The [RG](glossary#rg_auxiliary_tag) and [PU](glossary#pu_auxiliary_tag) read group identifiers default to the convention set by [GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472) if you provide the flowcell related directives. The [XB](glossary#xb_auxiliary_tag) tag reports the probability the read was incorrectly classified.
 {: .example}
 
-# Providing a Prior
-If the 5 libraries were pooled in non uniform concentrations we will expect the portion of reads classified to each read group to match those proportions. A prior on the barcode prevalence distribution can be provided for each possible code declared in the `codec` directive using the `concentration` parameter. For convenience the priors do not have to be specified as normalized probabilities. Pheniqs will normalize them when compiling the instructions to sum up to 1.0 minus the value of the `noise` parameter.
+# Providing library Priors
+
+The [PAML decoder](glossary#phred_adjusted_maximum_likelihood_decoding) computes the posterior probability that the decision it made was correct for each classified read. That probability depends on a set of priors. If the 5 libraries were pooled in non uniform concentrations we will expect the portion of reads classified to each read group to match those proportions. A prior on the barcode prevalence distribution can be provided for each possible code declared in the `codec` directive using the `concentration` parameter. For convenience the priors do not have to be specified as normalized probabilities. Pheniqs will normalize them when compiling the instructions to sum up to 1.0 minus the value of the `noise` parameter.
 
 >```json
 {
@@ -246,13 +245,15 @@ If the 5 libraries were pooled in non uniform concentrations we will expect the 
     }
 }
 ```
->**Example 1.6** Adding a prior to one of the code words when declaring a `multiplex` decoder directive. Since the priors are automatically normalized and default to 1, this declaration effectively states that we expect twice as many reads to be classified to @AGGCAGAA than the other 4 read groups.
+>**Example 1.9** Adding a prior to one of the code words when declaring a `multiplex` decoder directive. Since the priors are automatically normalized and default to 1, this declaration effectively states that we expect twice as many reads to be classified to @AGGCAGAA than the other 4 read groups.
 {: .example}
 
 # Minimum Distance Decoding
-Pheniqs can also be instructed to decode the barcodes using the traditional [minimum distance decoder](glossary#minimum_distance_decoding), that only consults the edit distance between the expected and observed sequence, by setting the multiplex decoder `algorithm` directive to `mdd`. The MDD decoder however ignores the error probabilities provided by the sequencing instrument and does not compute or report the classification error probability. It is provided for legacy purposes but PAMLD will yield superior results in almost every real world scenario.
 
-# More Efficient Demultiplexing
+Pheniqs can also be instructed to decode the barcodes using the traditional [minimum distance decoder](glossary#minimum_distance_decoding), that only consults the edit distance between the expected and observed sequence, by setting the multiplex decoder `algorithm` directive to `mdd`. The MDD decoder however ignores the presence of noise and the error probabilities provided by the sequencing instrument and does not compute or report the classification error probability. It is provided for legacy purposes but PAMLD will yield superior results in almost every real world scenario.
+
+# Speeding things up
+
 As we mentioned before reading input from CRAM input can be vastly superior to reading from gzip compressed FASTQ files. If your first step was to package the 3 split FASTQ files into a CRAM file, as shown in **Example 1.3**, you can use that file as input.
 
 >```json
@@ -288,7 +289,7 @@ As we mentioned before reading input from CRAM input can be vastly superior to r
     "flowcell lane number": 1
 }
 ```
->**Example 1.9** modifying **Example 1.7** to take the CRAM file created in **Example 1.3** as input. When declaring interleaved input you specify the file path as many times as the interleaving resolution. The interleaving resolution is the number of consecutive fragments of the same read that have been interleaved into the file. In this example we expect every read to have 3 consecutive segments.
+>**Example 1.10** modifying **Example 1.7** to take the CRAM file created in **Example 1.3** as input. When declaring interleaved input you specify the file path as many times as the interleaving resolution. The interleaving resolution is the number of consecutive segments of the same read that have been interleaved into the file. In this example we expect every read to have 3 consecutive segments.
 {: .example}
 
-The output from **Example 1.9** will be identical to the output from **Example 1.7** shown in **Example 1.8** but unlike **Example 1.7** the decoding speed will scale linearly with the number of computational cores available until the system's I/O throughput becomes saturated.
+The output from **Example 1.10** will be identical to the output from **Example 1.7** shown in **Example 1.8** but unlike **Example 1.7** the decoding speed will scale linearly with the number of computational cores available until the system's I/O throughput becomes saturated.
