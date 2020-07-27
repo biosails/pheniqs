@@ -22,13 +22,13 @@ The essential components of a Pheniqs workflow are:
 
 # Input
 
-Pheniqs is designed to take **sequence** files as input. All standard sequence file formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input. Pheniqs can manipulate both uncompressed and gzip compressed [FASTQ](/pheniqs/glossary#fastq), as well as [SAM, BAM and CRAM](/pheniqs/glossary#htslib) files.
+Pheniqs is designed to take **sequence** files as input. All standard sequence file formats are accepted. Most commonly, three or four FASTQ files, as emitted by Illumina sequencers, will be used as input. Pheniqs can manipulate both uncompressed and gzip compressed [FASTQ](glossary#fastq), as well as [SAM, BAM and CRAM](glossary#htslib) files.
 
 # Configuration
 
 Pheniqs also needs **configuration** directives in order to execute a decoding run. Required parameters include input / output file names and paths, barcode sets, transform directives for extracting tokens, and a variety of metadata, such as expected proportions of multiplexed sample libraries.
 
-If no user-provided configuration file is available, Pheniqs will run with defaults for all parameters, but in most cases a configuration file will be needed to specify all of the run-specific information. Configuration files are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration with automated pipelines. A summary of all configuration directives is provided in the [Configuration](configuration.html) page.
+If no user-provided configuration file is available, Pheniqs will run with defaults for all parameters, but in most cases a configuration file will be needed to specify all of the run-specific information. Configuration files are [JSON](https://en.wikipedia.org/wiki/JSON) encoded for easy integration with automated pipelines. A summary of all configuration directives is provided in the [Configuration](configuration) page.
 
 At the beginning of a run, Pheniqs will **compile and validate** the configured parameters and will abort with explicit error messages upon any validation failure.
 

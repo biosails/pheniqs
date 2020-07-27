@@ -48,7 +48,7 @@ To identify which biological sequences belong to which library, the sequences be
 
 ## Tokenization
 
-Pheniqs uses [tokens](manual.html#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](/pheniqs/glossary#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
+Pheniqs uses [tokens](configuration#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
 ![read anatomy](/pheniqs/assets/img/diagram7.png)
 
@@ -88,20 +88,20 @@ The SAM tags populated by Pheniqs are summarized below:
 
 | Name                                      | Description                                                    | Example                       |
 | :---------------------------------------- | :------------------------------------------------------------- | :---------------------------- |
-| **[RG](/pheniqs/glossary#rg_auxiliary_tag)**  | Read group identifier matching an RG filed in the header.      | H7LT2DSXX:1:GAACTGAGCGTCGTGGAGCG  |
-| **[BC](/pheniqs/glossary#bc_auxiliary_tag)**  | Raw uncorrected sample barcode sequence.                       | GAACTGAGCG-TCGTGGAGCG             |
-| **[QT](/pheniqs/glossary#qt_auxiliary_tag)**  | Phred quality of the sample barcode sequence in the BC tag.    | ,FF::F:F:F-,,FF::FF:F             |
-| **[XB](/pheniqs/glossary#xb_auxiliary_tag)**  | The probability that sample barcode decoding is incorrect.     | 2.27479e-06                   |
-| **[CB](/pheniqs/glossary#cb_auxiliary_tag)**  | Cellular identifier.                                           | ACTGCATA                      |
-| **[CR](/pheniqs/glossary#cr_auxiliary_tag)**  | Raw uncorrected cellular barcode sequence.                     | ACTGCATT                      |
-| **[CY](/pheniqs/glossary#cr_auxiliary_tag)**  | Phred quality of the cellular barcode sequence in the CR tag.  | ,,FF::FF                      |
-| **[XC](/pheniqs/glossary#xc_auxiliary_tag)**  | The probability that Cellular barcode decoding is incorrect.   | 2.27479e-06                   |
-| **[MI](/pheniqs/glossary#mi_auxiliary_tag)**  | Molecular Identifier.                                          |                               |
-| **[RX](/pheniqs/glossary#rx_auxiliary_tag)**  | Molecular barcode sequence, either corrected or uncorrected.   |                               |
-| **[QX](/pheniqs/glossary#qx_auxiliary_tag)**  | Phred quality of the molecular barcode sequence in the RX tag. |                               |
-| **[OX](/pheniqs/glossary#ox_auxiliary_tag)**  | Raw uncorrected molecular barcode sequence.                    |                               |
-| **[BZ](/pheniqs/glossary#bz_auxiliary_tag)**  | Phred quality of the molecular barcode sequence in the OX tag. |                               |
-| **[XM](/pheniqs/glossary#xm_auxiliary_tag)**  | The probability that molecular barcode decoding is incorrect.  |                               |
+| **[RG](glossary#rg_auxiliary_tag)**  | Read group identifier matching an RG filed in the header.      | H7LT2DSXX:1:GAACTGAGCGTCGTGGAGCG  |
+| **[BC](glossary#bc_auxiliary_tag)**  | Raw uncorrected sample barcode sequence.                       | GAACTGAGCG-TCGTGGAGCG             |
+| **[QT](glossary#qt_auxiliary_tag)**  | Phred quality of the sample barcode sequence in the BC tag.    | ,FF::F:F:F-,,FF::FF:F             |
+| **[XB](glossary#xb_auxiliary_tag)**  | The probability that sample barcode decoding is incorrect.     | 2.27479e-06                   |
+| **[CB](glossary#cb_auxiliary_tag)**  | Cellular identifier.                                           | ACTGCATA                      |
+| **[CR](glossary#cr_auxiliary_tag)**  | Raw uncorrected cellular barcode sequence.                     | ACTGCATT                      |
+| **[CY](glossary#cr_auxiliary_tag)**  | Phred quality of the cellular barcode sequence in the CR tag.  | ,,FF::FF                      |
+| **[XC](glossary#xc_auxiliary_tag)**  | The probability that Cellular barcode decoding is incorrect.   | 2.27479e-06                   |
+| **[MI](glossary#mi_auxiliary_tag)**  | Molecular Identifier.                                          |                               |
+| **[RX](glossary#rx_auxiliary_tag)**  | Molecular barcode sequence, either corrected or uncorrected.   |                               |
+| **[QX](glossary#qx_auxiliary_tag)**  | Phred quality of the molecular barcode sequence in the RX tag. |                               |
+| **[OX](glossary#ox_auxiliary_tag)**  | Raw uncorrected molecular barcode sequence.                    |                               |
+| **[BZ](glossary#bz_auxiliary_tag)**  | Phred quality of the molecular barcode sequence in the OX tag. |                               |
+| **[XM](glossary#xm_auxiliary_tag)**  | The probability that molecular barcode decoding is incorrect.  |                               |
 
 ---
 

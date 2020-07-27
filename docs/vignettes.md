@@ -30,11 +30,11 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 
 <a name="standard_illumina" />
 [Standard Illumina sample demultiplexing](vignettes/illumina.html)
-: This vignette will walk you through writing configuration files for demultiplexing a standard Illumina high throughput sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](/pheniqs/glossary#phred_adjusted_maximum_likelihood_decoding).
+: This vignette will walk you through writing configuration files for demultiplexing a standard Illumina high throughput sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
 
 <a name="fluidigm" />
 [Fluidigm with a sample and a cellular tag](vignettes/fluidigm.html)
-: This vignette will walk you through a single index fluidigm sequencing run with the [PAMLD decoder](/pheniqs/glossary#phred_adjusted_maximum_likelihood_decoding).
+: This vignette will walk you through a single index fluidigm sequencing run with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
 
 <a name="droplet" />
 [Droplet Sequencing](vignettes/droplet.html)

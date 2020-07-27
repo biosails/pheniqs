@@ -36,7 +36,7 @@
 # Single index Fluidigm
 {:.page-title}
 
-This tutorial will walk you through demultiplexing a fluidigm sequencing run with the [PAMLD decoder](/pheniqs/glossary#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing a row cellular barcode in the first 6 cycles of the forward read segment and a column cellular barcode on the first 8 cycles of the i7 index segment.
+This tutorial will walk you through demultiplexing a fluidigm sequencing run with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing a row cellular barcode in the first 6 cycles of the forward read segment and a column cellular barcode on the first 8 cycles of the i7 index segment.
 
 ## Input Read Layout
 
@@ -232,7 +232,7 @@ Better estimation of the prior distribution improves accuracy. The `pheniqs-prio
 >**Column Prior estimation configuration** refrains from reading the biological sequences and produces no output which significantly speeds things up.
 {: .example}
 
-Executing [CBJLFACXX_l01_column_estimate.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate.json) will yield the [CBJLFACXX_l01_column_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json) report. Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that you can use to estimate the priors.
+Executing [CBJLFACXX_l01_column_estimate.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate.json) will yield the [CBJLFACXX_l01_column_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_estimate_report.json) report. Like every [Pheniqs report](configuration#quality-control-and-statistics), it contains decoding statistics that you can use to estimate the priors.
 
 >```shell
 pheniqs mux --config CBJLFACXX_l01_column_estimate.json
@@ -249,7 +249,7 @@ pheniqs-prior-api.py \
 >**column barcode decoding with an estimated prior** [CBJLFACXX_l01_column_adjusted.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_adjusted.json) is similar to [CBJLFACXX_l01_column_split.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split.json) with the addition of the estimated priors.
 {: .example}
 
-This will produce [CBJLFACXX_l01_sample_estimated.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_sample_estimated.json), a new configuration file with the adjusted priors. The method for estimating the prior is [described in the manual](manual.html#prior-estimation) and makes some assumptions about the preparation protocol. You can also devise your own methods of estimating the priors and plug them into the configurtion.
+This will produce [CBJLFACXX_l01_sample_estimated.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_sample_estimated.json), a new configuration file with the adjusted priors. The method for estimating the prior is [described in the manual](configuration#prior-estimation) and makes some assumptions about the preparation protocol. You can also devise your own methods of estimating the priors and plug them into the configurtion.
 
 You can now proceed to demultiplex the column cellular barcode with the adjusted configuration and produce a separate bam file with reads from each column.
 

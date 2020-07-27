@@ -36,9 +36,9 @@
 # Standard Illumina sample decoding with the python API
 {:.page-title}
 
-This tutorial will walk you through prior estimation and demultiplexing of a standard Illumia sequencing run using `pheniqs-illumina-api.py`, `pheniqs-prior-api.py` and `pheniqs-io-api.py`. In this example we use the python API to generate configuration files for [PAMLD](/pheniqs/glossary#phred_adjusted_maximum_likelihood_decoding) from metadata found in an output [Illumina run folder for flowcell H7LT2DSXX]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). For an overview of manually write such configuration files for a similar scenario see the [Standard Illumina sample decoding](illumina.html). This example also demonstrates using the `import` directive to cascade configuration files.
+This tutorial will walk you through prior estimation and demultiplexing of a standard Illumia sequencing run using `pheniqs-illumina-api.py`, `pheniqs-prior-api.py` and `pheniqs-io-api.py`. In this example we use the python API to generate configuration files for [PAMLD](glossary#phred_adjusted_maximum_likelihood_decoding) from metadata found in an output [Illumina run folder for flowcell H7LT2DSXX]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). For an overview of manually write such configuration files for a similar scenario see the [Standard Illumina sample decoding](illumina.html). This example also demonstrates using the `import` directive to cascade configuration files.
 
-Sample barcode sequence and quality scores will be written to the [BC](/pheniqs/glossary#bc_auxiliary_tag) and [QT](/pheniqs/glossary#qt_auxiliary_tag) auxiliary tags. The decoding error probability will be stored in the [XB](/pheniqs/glossary#xb_auxiliary_tag) tag.
+Sample barcode sequence and quality scores will be written to the [BC](glossary#bc_auxiliary_tag) and [QT](glossary#qt_auxiliary_tag) auxiliary tags. The decoding error probability will be stored in the [XB](glossary#xb_auxiliary_tag) tag.
 
 ![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
 
@@ -115,8 +115,8 @@ pheniqs-illumina-api.py core \
     "flowcell id": "H7LT2DSXX"
 }
 ```
->**core configuration** already declares [PL](/pheniqs/glossary#pl_auxiliary_tag),
-[PM](/pheniqs/glossary#pm_auxiliary_tag), and `flowcell id`. Those were extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) but you can modify them.
+>**core configuration** already declares [PL](glossary#pl_auxiliary_tag),
+[PM](glossary#pm_auxiliary_tag), and `flowcell id`. Those were extracted from [RunInfo.xml]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/RunInfo.xml) but you can modify them.
 {: .example}
 
 ## `decoder` configuration element
@@ -142,7 +142,7 @@ pheniqs-illumina-api.py core \
     }
 }
 ```
->**H7LT2DSXX_l01_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](/pheniqs/glossary#lb_auxiliary_tag) tag extracted from [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv).
+>**H7LT2DSXX_l01_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary#lb_auxiliary_tag) tag extracted from [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv).
 {: .example}
 
 In the importing file, you can use the `base` property in a decoder to use those as a starting point in the `multiplex`, `cellular`, and `molecular`. Any directive you specify in your instantiation will override values provided by the referenced base. You will see an example of how it is used in the next section.
@@ -245,7 +245,7 @@ Since it is not necessary to read the biological segments when estimating the pr
 {: .example}
 
 Executing this configuration will yield the
-[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json) report. Like every [Pheniqs report](manual.html#quality-control-and-statistics), it contains decoding statistics that we can use to estimate the priors.
+[H7LT2DSXX_l01_estimate_report.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate_report.json) report. Like every [Pheniqs report](configuration#quality-control-and-statistics), it contains decoding statistics that we can use to estimate the priors.
 
 >```shell
 pheniqs mux --config H7LT2DSXX_l01_estimate.json

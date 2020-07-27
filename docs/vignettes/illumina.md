@@ -38,7 +38,7 @@
 
 This tutorial demonstrates how to manually prepare configuration files for decoding sample barcodes for a standard Illumina sequencing run. Pheniqs includes a Python API that helps users create configuration files automatically. For a tutorial that uses the Python API to generate the configuration files for this example, see the [Standard Illumina sample decoding with the python API](illumina_python_api.html).
 
-In this example the run has paired-end dual-index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments: 2 biological sequences (cDNA, genomic DNA, etc.) read from both ends of the insert fragment, and 2 technical sequences containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](/pheniqs/glossary#bc_auxiliary_tag) and [QT](/pheniqs/glossary#qt_auxiliary_tag) tags, and the decoding error probabilities are written to the [XB](/pheniqs/glossary#xb_auxiliary_tag) tag.
+In this example the run has paired-end dual-index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments: 2 biological sequences (cDNA, genomic DNA, etc.) read from both ends of the insert fragment, and 2 technical sequences containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary#bc_auxiliary_tag) and [QT](glossary#qt_auxiliary_tag) tags, and the decoding error probabilities are written to the [XB](glossary#xb_auxiliary_tag) tag.
 
 ## Input Read Layout
 
@@ -300,7 +300,7 @@ By default Pheniqs will output uncompressed SAM to standard output. This allows 
 pheniqs mux --config CBJLFACXX_l01_sample.json|less
 ```
 
-You can see Pheniqs will declare the annotated read groups and populate the [BC](/pheniqs/glossary#bc_auxiliary_tag), [QT](/pheniqs/glossary#qt_auxiliary_tag) and [XB](/pheniqs/glossary#xb_auxiliary_tag) tags.
+You can see Pheniqs will declare the annotated read groups and populate the [BC](glossary#bc_auxiliary_tag), [QT](glossary#qt_auxiliary_tag) and [XB](glossary#xb_auxiliary_tag) tags.
 
     @HD     VN:1.0  SO:unknown      GO:query
     @RG     ID:CBJLFACXX:1:undetermined CN:CGSB PL:ILLUMINA PM:HiSeq  PU:CBJLFACXX:1:undetermined
