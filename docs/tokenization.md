@@ -21,7 +21,7 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 
 ![experimental designs](/pheniqs/assets/img/diagram8.png)
 
-More complicated barcoding schemes for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs may be found in the [vignettes section](vignettes.html) of the documentation.
+More complicated barcoding schemes for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs may be found in the [workflow section](workflow) of the documentation.
 
 
 # Read anatomy

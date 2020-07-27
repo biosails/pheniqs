@@ -11,6 +11,26 @@ links:
   id: quickstart
   enabled: True
 
+- title: Background
+  url: /pheniqs/background
+  id: background
+  enabled: True
+
+- title: Configuration
+  url: /pheniqs/configuration
+  id: configuration
+  enabled: True
+
+- title: Tokenization
+  url: /pheniqs/tokenization
+  id: tokenization
+  enabled: True
+
+- title: Workflow
+  url: /pheniqs/workflow
+  id: workflow
+  enabled: True
+
 - title: Install
   url: /pheniqs/install
   id: install
@@ -21,40 +41,10 @@ links:
   id: cli
   enabled: True
 
-- title: Configuration
-  url: /pheniqs/configuration
-  id: configuration
-  enabled: True
-
-- title: Background
-  url: /pheniqs/background
-  id: background
-  enabled: True
-
 - title: Glossary
   url: /pheniqs/glossary
   id: glossary
   enabled: False
-
-- title: Overview
-  url: /pheniqs/overview
-  id: overview
-  enabled: True
-
-- title: Tokenization
-  url: /pheniqs/tokenization
-  id: tokenization
-  enabled: True
-
-- title: Vignettes
-  url: /pheniqs/vignettes
-  id: vignettes
-  enabled: True
-
-- title: Workflow
-  url: /pheniqs/workflow
-  id: workflow
-  enabled: True
 
 - title: View on GitHub
   url: http://github.com/biosails/pheniqs
