@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Command Line Interface"
-permalink: /cli/
+permalink: /cli
 id: cli
 ---
 

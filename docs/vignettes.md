@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Vignettes"
-permalink: /vignettes/
+permalink: /vignettes
 id: vignettes
 ---
 

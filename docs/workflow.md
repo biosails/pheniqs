@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Workflow"
-permalink: /workflow/
+permalink: /workflow
 id: workflow
 ---
 

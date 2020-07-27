@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Configuration documentation"
-permalink: /configuration/
+permalink: /configuration
 id: configuration
 ---
 

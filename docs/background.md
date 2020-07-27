@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Background"
-permalink: /background/
+permalink: /background
 id: background
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Build and Install"
-permalink: /install/
+permalink: /install
 id: install
 ---
 

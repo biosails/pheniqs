@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Tokens and Transforms"
-permalink: /tokenization/
+permalink: /tokenization
 id: tokenization
 ---
 

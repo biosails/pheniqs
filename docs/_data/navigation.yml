@@ -2,57 +2,57 @@ navigation_title: Navigation
 links:
 
 - title: Home
-  url: /pheniqs/
+  url: /pheniqs
   id: home
   enabled: True
 
 - title: Quickstart
-  url: /pheniqs/quickstart/
+  url: /pheniqs/quickstart
   id: quickstart
   enabled: True
 
 - title: Install
-  url: /pheniqs/install/
+  url: /pheniqs/install
   id: install
   enabled: True
 
 - title: Cli
-  url: /pheniqs/cli/
+  url: /pheniqs/cli
   id: cli
   enabled: True
 
 - title: Configuration
-  url: /pheniqs/configuration/
+  url: /pheniqs/configuration
   id: configuration
   enabled: True
 
 - title: Background
-  url: /pheniqs/background/
+  url: /pheniqs/background
   id: background
   enabled: True
 
 - title: Glossary
-  url: /pheniqs/glossary/
+  url: /pheniqs/glossary
   id: glossary
   enabled: False
 
 - title: Overview
-  url: /pheniqs/overview/
+  url: /pheniqs/overview
   id: overview
   enabled: True
 
 - title: Tokenization
-  url: /pheniqs/tokenization/
+  url: /pheniqs/tokenization
   id: tokenization
   enabled: True
 
 - title: Vignettes
-  url: /pheniqs/vignettes/
+  url: /pheniqs/vignettes
   id: vignettes
   enabled: True
 
 - title: Workflow
-  url: /pheniqs/workflow/
+  url: /pheniqs/workflow
   id: workflow
   enabled: True
 
