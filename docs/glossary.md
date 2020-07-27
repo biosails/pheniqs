@@ -151,6 +151,7 @@ id: glossary
 
 <a name="standard_stream" />Standard stream
 : POSIX systems use standard streams, stdin, stdout and stderr to transfer data between applications without writing it to a file on a hard drive. This allows to pipe the output from one utility into the input of the next in the pipeline without the need for additional storage. Avoiding writing to the disk can also significantly accelerate some pipelines since drives are often orders of magnitude slower than computer memory.
+
 <!--
 <a name="" />
 TERM
