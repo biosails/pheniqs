@@ -18,7 +18,7 @@ Pheniqs can arbitrarily manipulate reads from either [SAM, BAM and CRAM](glossar
 
 In this example we consider three files that contain synchronized segments from an Illumina MiSeq instrument. Pheniqs will construct the input [read](glossary.html#read) by reading one [segment](glossary.html#segment) from each input file. [Relative](glossary.html#relative_path) input and output file paths are resolved against the working directory which defaults to where you execute Pheniqs. You may optionally specify `base input url` to explicitly provide a base directory and make the configuration file more portable.
 
-Assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed Illumina MiSeq run. The first four lines of each of the files are
+For example we assume 3 FASTQ files created by executing bcl2fastq to simply get all 3 raw segments of a single indexed Illumina MiSeq run. The first four lines of each of the files are
 
 *000000000-BDGGG_S1_L001_R1_001.fastq.gz*, the first read segment (or *Read 1* in Illumina terminology):
 ```
