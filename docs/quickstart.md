@@ -8,7 +8,7 @@ id: quickstart
 * placeholder
 {:toc }
 
-The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, parsing read segments and run parameters. If you are new to JSON, a [validator](/pheniqs/cli#json-validation) can be instrumental for troubleshooting syntax errors. Some parameters can also be specified as command line arguments that override their corresponding configuration file values. A brief description of the command line parameters Pheniqs accepts is always available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](/pheniqs/cli#zsh-completion) will give you a more interactive command line experience.
+The Pheniqs command line interface accepts a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, parsing read segments and run parameters. If you are new to JSON, a [validator](cli#json-validation) can be instrumental for troubleshooting syntax errors. Some parameters can also be specified as command line arguments that override their corresponding configuration file values. A brief description of the command line parameters Pheniqs accepts is always available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli#zsh-completion) will give you a more interactive command line experience.
 
 # Supported File Format
 
