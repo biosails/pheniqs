@@ -19,22 +19,49 @@ Pheniqs is a flexible generic barcode classifier for high-throughput next-gen se
 - Directly writes barcodes to standard or custom BAM fields
 - Eliminates need for pre- or post-processing of barcode tags
 
-Pheniqs is a generic high throughput barcode classifier that caters to a wide variety of experimental designs. An intuitive addressing syntax allows researchers to easily classify reads by standard Illumina sample barcodes, multiple combinatorial cellular barcodes and molecular index tags in arbitrary locations along the read, all without pre or post processing their data. Pheniqs classifies reads using a noise and quality aware probabilistic classifier that is more accurate than widespread edit distance methods. Furthermore, by reporting the error probability for each classification in standard SAM auxiliary tags, Pheniqs enables more robust and reproducible downstream analysis. To handle the rapid increase in sequencing throughput, a fine tuned multithreaded C++ implementation, that directly interfaces with the low level HTSLib C API, offers performance that scales linearly with the number of available processing cores.
+### Noise and quality aware probabilistic classifier
+- Increases accuracy over standard edit distance methods
+- Reports classification error probabilities in standard SAM auxiliary tags
+- Modular design allows addition of new classifiers
 
-Pheniqs runs on all modern POSIX systems, provides an easy to learn command line interface with autocomplete and an extensible reusable configuration syntax. On this website, you will find everything you need to get started with Pheniqs: Installation and configuration, classifying reads, pre and post processing sequence reads for other bioinformatics tools, vignettes that will walk you through processing popular experimental designs, and information about how to leverage standardized SAM auxiliary tags to improve the reproducibility of your published data.
+### Robust engineering
+- Multithreaded C++ implementation optimized for speed
+- POSIX standard stream integration
+- Directly interfaces with low level HTSLib C API
+- Performance scales linearly with the number of available processing cores
 
-For more advanced users and sequencing core managers we provide detailed build instructions and a built in package manager that allows to easily build portable, statically linked, Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
+### Easy to install or build
+- Built-in package manager can build dependencies and binaries from scratch
+- Stable releases available from Bioconda
+- Available in a Docker container
+- Portable compiled binaries available
+- Easily installed on clusters or cloud without elevated permissions
+
+### Easy to use
+- Simple command line syntax with autocomplete
+- Reusable configuration templates
+- Preconfigured barcode library sets
+- Reads and writes multiple file formats: FASTQ, SAM/BAM/CRAM
+- Fast standalone file format interconversion
+- Helper scripts assist in configuration file bootstraping
+- Facilitates more robust and reproducible downstream analysis
+
+On this website, you will find everything you need to get started with Pheniqs: Installation and configuration, classifying reads, vignettes that will walk you through processing popular experimental designs, and information about how to leverage standardized SAM auxiliary tags to improve the reproducibility of your published data.
+
+Pheniqs runs on all modern POSIX systems and provides an easy to learn command line interface with autocomplete and an extensible reusable configuration syntax. Pheniqs is an ideal utility to pre- and post-process sequence reads for other bioinformatics tools, and it may also be used simply to rapidly and efficiently interconvert a variety of standard sequence file formats without invoking any of its barcode processing features.
+
+For more advanced users and sequencing core managers, we provide detailed build instructions and a built-in package manager to easily build portable, statically linked, Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
 
 ## Installing Pheniqs
+
+You can install pheniqs using the [conda](..) package manager on Linux
+
+>```shell
+conda install -c bioconda -c conda-forge pheniqs
+```
 
 You can build the latest Pheniqs binary with this one line. Just paste it into a Linux or macOS terminal.
 
 >```shell
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/biosails/pheniqs-build-api/master/install_pheniqs.sh)"
-```
-
-You can also install pheniqs using the conda package manager on Linux (for installing anaconda see the [conda install page](..))
-
->```shell
-conda install -c bioconda -c conda-forge pheniqs
 ```
