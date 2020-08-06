@@ -9,6 +9,16 @@ Fast and accurate sequence manipulation
 
 ![transform patterns](/pheniqs/assets/img/transform_patterns.png)
 
+Pheniqs is a flexible generic barcode classifier for high-throughput next-gen sequencing that caters to a wide variety of experimental designs and has been designed for efficient data processing. Features include:
+
+### Powerful and intuitive syntax
+- Addresses index tags in arbitrary locations along reads
+- Easily handles any number of combinatorial barcode tags
+- Classifies standard barcode types: Sample, Cellular, and Molecular Index
+- Easily accommodates custom barcode types
+- Directly writes barcodes to standard or custom BAM fields
+- Eliminates need for pre- or post-processing of barcode tags
+
 Pheniqs is a generic high throughput barcode classifier that caters to a wide variety of experimental designs. An intuitive addressing syntax allows researchers to easily classify reads by standard Illumina sample barcodes, multiple combinatorial cellular barcodes and molecular index tags in arbitrary locations along the read, all without pre or post processing their data. Pheniqs classifies reads using a noise and quality aware probabilistic classifier that is more accurate than widespread edit distance methods. Furthermore, by reporting the error probability for each classification in standard SAM auxiliary tags, Pheniqs enables more robust and reproducible downstream analysis. To handle the rapid increase in sequencing throughput, a fine tuned multithreaded C++ implementation, that directly interfaces with the low level HTSLib C API, offers performance that scales linearly with the number of available processing cores.
 
 Pheniqs runs on all modern POSIX systems, provides an easy to learn command line interface with autocomplete and an extensible reusable configuration syntax. On this website, you will find everything you need to get started with Pheniqs: Installation and configuration, classifying reads, pre and post processing sequence reads for other bioinformatics tools, vignettes that will walk you through processing popular experimental designs, and information about how to leverage standardized SAM auxiliary tags to improve the reproducibility of your published data.
