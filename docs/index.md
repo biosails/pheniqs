@@ -50,11 +50,11 @@ On this website, you will find everything you need to get started with Pheniqs: 
 
 Pheniqs runs on all modern POSIX systems and provides an easy to learn command line interface with autocomplete and an extensible reusable configuration syntax. Pheniqs is an ideal utility to pre- and post-process sequence reads for other bioinformatics tools, and it may also be used simply to rapidly and efficiently interconvert a variety of standard sequence file formats without invoking any of its barcode processing features.
 
-For more advanced users and sequencing core managers, we provide detailed build instructions and a built-in package manager to easily build portable, statically linked, Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
+For more advanced users and sequencing core managers, we provide detailed build instructions and a built-in package manager to easily build portable, [statically linked](glossary#static_linking), Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
 
 ## Installing Pheniqs
 
-You can install pheniqs using the [conda](..) package manager on Linux
+You can install pheniqs using the [conda](install) package manager on Linux
 
 >```shell
 conda install -c bioconda -c conda-forge pheniqs
