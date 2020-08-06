@@ -152,6 +152,9 @@ id: glossary
 <a name="standard_stream" />Standard stream
 : POSIX systems use standard streams, stdin, stdout and stderr to transfer data between applications without writing it to a file on a hard drive. This allows to pipe the output from one utility into the input of the next in the pipeline without the need for additional storage. Avoiding writing to the disk can also significantly accelerate some pipelines since drives are often orders of magnitude slower than computer memory.
 
+<a name="static_linking" />Static linking
+: A [statically linked](https://en.wikipedia.org/wiki/Static_library) build copies all or most of the library dependencies into the binary executable, producing a standalone executable that can be moved around the system and to compatible systems. This method, although yielding a larger executable, resolves conflicts with different version of the dependencies that might already be present on the system. Building a portable binary from scratch using the built-in package manager makes any Pheniqs revision easily available on cluster environments where the user rarely has elevated permissions required to perform a standard build.
+
 <!--
 <a name="" />
 TERM
