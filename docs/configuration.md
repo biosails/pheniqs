@@ -80,7 +80,7 @@ The `input` directive defaults to expecting interleaved input from standard inpu
 {: .example}
 
 ## Automatic `input` sensing
-If the `-s/--sense-input` command line flag is specified, Pheniqs will automatically detect the format of the input you provide it by examining the first few bytes. Once the input format is established, Pheniqs decodes the first few segment records from the feed to detect the feed's resolution, or the number of consecutive segments in the feed that have the same read identifier. Pheniqs will assume that to assemble a read it will have to read that many segments from each input feed.
+If the `-s/--sense-input` command line flag is specified, Pheniqs will automatically detect the format of the input you provide it by examining the first few bytes. Once the input format is established, Pheniqs decodes the first few segment records from the feed to detect the feed's [resolution](glossary#feed_resolution): the number of consecutive segments in the feed that have the same read identifier. Pheniqs will assume that to assemble a read it will have to read that many segments from each input feed.
 
 >```
 @M02455:162:000000000-BDGGG:1:1101:10000:10630 1:N:0:
@@ -112,10 +112,11 @@ CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 {: .example}
 
 # The `transform` directive
-Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the embedded `token` directive and [segment assembly](#segment_assembly) with the `knit` directive. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary#input_segment). In the segment assembly step one or more [segment patterns](configuration#transform-pattern) reference tokens to assemble a new segment. The optional `knit` directive is only necessary when assembling segments from multiple, non contiguous, tokens or if a token needs to be reverse complemented. If the `knit` directive is omitted from a `transform` directive, each token implicitly declares a single segment.
+
+Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the `token` array and [segment assembly](#segment_assembly) with the optional `knit` array. The same `transform` syntax is used in the `template` directive to specify how the output read is constructed, and in each decoder to construct the segmented sequence that is used to match against the dictionary of possible valid barcodes. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary#input_segment). In the segment assembly step one or more [segment patterns](configuration#transform-pattern) reference tokens to assemble a new segment. The optional `knit` directive is only necessary when assembling segments from multiple, non contiguous, tokens or if a token needs to be reverse complemented. If the `knit` directive is omitted from a `transform` directive, each token implicitly declares a single segment.
 
 ## Tokenization
-A token pattern is made of 3 colon separated integers. The first is the mandatory [zero based](glossary#zero_based_coordinate) [input segment index](glossary#input_segment) enumerated by `input`. The second is an inclusive [zero based](glossary#zero_based_coordinate) **start** coordinate to the beginning of the token and defaults to **0** if omitted. The third is an exclusive [zero based](glossary#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. **start** coordinate and **end** coordinate can take positive or negative values to access the segment from either the 5' (left) or 3' (right) end and mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax. The two colons are always mandatory.
+A token pattern is made of 3 colon separated integers. The first is the **mandatory** [zero based](glossary#zero_based_coordinate) [input segment index](glossary#input_segment) enumerated by `input`. The second is an inclusive [zero based](glossary#zero_based_coordinate) **start** coordinate to the beginning of the token and defaults to **0** if omitted. The third is an exclusive [zero based](glossary#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. **start** coordinate and **end** coordinate can take positive or negative values to access the segment from either the 5' (left) or 3' (right) end and mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax. The two colons are always mandatory.
 
 >```json
 {
@@ -155,12 +156,12 @@ A token pattern is made of 3 colon separated integers. The first is the mandator
 >**Example 2.7** Some examples of tokenizing a hypothetical segment with index 0 and 9 cycles.
 {: .example}
 
-## Segment assembly
-A `knit` is made of one or more token references separated by the **:** concatenation operator. A token reference is the [zero based](glossary#zero_based_coordinate) index of the token pattern in the adjacent `token` directive. Appending the left hand side reverse complementarity **~** operator will concatenate the reverse complemented sequence of the token. Each token reference is evaluated before concatenation so **~** evaluation precedes **:** evaluation.
+## Optional segment assembly with `knit`
+Each element in the `knit` array is made of one or more token references separated by the **:** concatenation operator. A token reference is the [zero based](glossary#zero_based_coordinate) index of the token pattern in the adjacent `token` array. Appending the left hand side reverse complementarity **~** operator will instead concatenate the reverse complemented sequence of the token. Each token reference is evaluated before concatenation so **~** evaluation precedes **:** evaluation.
 
 >| Pattern | Description                                                                                        |
 >| ------- | :------------------------------------------------------------------------------------------------- |
->| `0`     | The simplest possible transform will assemble a segment from just token 0.                         |
+>| `0`     | The simplest possible pattern will assemble a segment from just token 0.                         |
 >| `~0`    | Assemble a segment from the reverse complemented token 0.                                          |
 >| `0:1`   | Assemble a segment by concatenating token 0 and token 1                                            |
 >| `~0:1`  | Assemble a segment by concatenating the reverse complement of token 0 and token 1.                 |
@@ -170,8 +171,9 @@ A `knit` is made of one or more token references separated by the **:** concaten
 
 Notice that a negative token **start** coordinate is equivalent to the corresponding positive token **end** coordinate on the reverse complemented strand and vice verse. More formally the token `0:-x:-y` is equivalent to `0:y:x` if applied to the reverse complement of the segment. For instance to concatenate to the first output segment the first 6 bases of the reverse complemented strand of the first input segment you would define token `0:-6:` and then reference it in the transform pattern for output segment 0 as `~0`.
 
-## Contextual `transform` directives
-A `transform` directive declared in the root of the instruction assembles the [output read](glossary#output_segment) and implicitly defines the `output segment cardinality`. When declared inside a [barcode decoder](#barcode-decoding) directive a `transform` constructs the segmented sequence that is matched against the possible barcode values.
+## Contextual `transform`
+
+A `transform` declared in the `template` directive of the instruction assembles the [output read](glossary#output_segment) and implicitly defines the `output segment cardinality`: the number of segments in the output read. When declared inside a [barcode decoder](#barcode-decoding) directive a `transform` constructs the segmented sequence that is matched against the possible barcode values.
 
 >```json
 {
@@ -199,16 +201,18 @@ A `transform` directive declared in the root of the instruction assembles the [o
     ]
 }
 ```
->**Example 2.9** Consider that the input we declared in **Example 2.2**, is a dual indexed paired end read with two 8 cycle multiplex barcode segments on the second and third input segments and two molecular barcode segments, one on the first 6 cycles of the first segment and another, reverse complemented, on the last 6 cycles of the last segment. We extract both molecular barcode segments and remove them from the output segments.
+>**Example 2.9** For a more involved example let us consider that the input we declared in **Example 2.2**, is a dual indexed paired end read with two 8 cycle multiplex barcode segments on the second and third input segments and two molecular barcode segments, one on the first 6 cycles of the first segment and another, reverse complemented, on the last 6 cycles of the last segment. We extract both molecular barcode segments and remove them from the output segments.
 {: .example}
 
 ## The `output` directive
-The instruction `output` directive is an ordered list of output file paths. If the output directive contains the same number of file paths as the `output segment cardinality` each segment will be written to the corresponding enumerated output file. If only one file path is declared all segments will be interleaved into that file. Declaring a number of files paths different than **1** or `output segment cardinality` is ambiguous and will result in a validation error. Read segments are guaranteed to be written contiguously and in-order. The order of the reads in the output is **not** guaranteed to be consistent with their order in the input or to be stable between successive executions when the `thread` directive is bigger than **1**. If omitted, the `output` directive defaults to interleaved SAM written to standard output.
+
+The `output` directive is an ordered array of output file paths. If the output directive contains the same number of file paths as the `output segment cardinality` each segment will be written to the corresponding enumerated output file. If only one file path is declared all segments will be interleaved into that file. Declaring a number of files paths different than **1** or `output segment cardinality` is ambiguous and will result in a validation error. Read segments are guaranteed to be written contiguously and in-order. The order of the reads in the output is **not** guaranteed to be consistent with their order in the input or to be stable between successive executions when the `thread` directive is bigger than **1**. If omitted, the `output` directive defaults to interleaved SAM written to standard output. The same `output` directive can be spicified inside individual barcode decleartion inside the `multiplex` directive to allow splitting reads into different files by the barcode they were classified to. `output` directives deeper in the JSON tree take precedence over the one declared in the root, so consider the `output` in the instruction root to be the default unless otherwise specified.
 
 # Barcode decoding
+
 Pheniqs can populate the related standardized SAM auxiliary tags for multiplex, molecular and cellular barcodes, adhering to the [recommendations outlined in the SAM specification](https://samtools.github.io/hts-specs/SAMtags.pdf). We distinguish between [closed class decoding algorithms](glossary#closed_class_decoding), when a discrete list of classes (in our case nucleotide sequences) is known in advance and so a prior distribution is available, and [open class decoders](glossary#open_class_decoding), when the discrete list of classes is unknown and so the prior distribution is hidden. The embedded `codec` directive specifies the allowed classes for closed class decoders as a JSON dictionary. The keys of the dictionary must be unique strings within the dictionary and play a role in the inheritance model but you may otherwise choose them as you see fit. One simple methodology is to use the concatenated barcode sequence prefixed by an **@** sign (to remind you Pheniqs does not actually interpret it as a nucleotide sequence), but you may choose more meaningful names to make your instruction files more readable.
 
-Pheniqs offers a choice of two closed class decoding strategies: the widespread [minimum distance decoder](glossary#minimum_distance_decoding) (**MDD**) and a more refined probabilistic [Phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) (**PAMLD**). Unlike MDD, PAMLD consults base calling quality scores and the prior barcode distribution and will outperform MDD in almost every real world scenario. Since PAMLD computes the full Bayesian decoding probability to pick the maximum likelihood, the probability of an incorrect barcode assignment is made available in SAM auxiliary tags reserved for local use, for downstream analysis consideration.
+Pheniqs offers a choice of two closed class decoding strategies: the widespread [minimum distance decoder](glossary#minimum_distance_decoding) (**MDD**) and a more refined probabilistic [Phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) (**PAMLD**). Unlike MDD, PAMLD consults base calling quality scores and the prior barcode distribution and will outperform MDD in almost every real world scenario. Since PAMLD computes the full Bayesian posterior decoding probability to pick the maximum likelihood, the probability of an incorrect barcode assignment is made available in SAM auxiliary tags reserved for local use, for downstream analysis consideration.
 
 Pheniqs currently does not support degenerate [IUPAC](https://en.wikipedia.org/wiki/Nucleic_acid_notation) bases in closed class barcode declarations, but the probabilistic model underlaying PAMLD can be extended to support them if a demand arises.
 
