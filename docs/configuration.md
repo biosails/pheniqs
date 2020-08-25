@@ -24,7 +24,7 @@ Pheniqs aims to fill the gap between advanced HTS containers and analysis tools 
 
 # The `input` directive
 
-The `input` directive is an ordered array of file paths. Pheniqs assembles an input [read](glossary#read) by reading one [segment](glossary#segment) from each input file.
+The `input` directive is an ordered array of file paths. Pheniqs assembles an input [read](glossary#read) by reading one [segment](glossary#segment) from each input file. The number of file paths in the input array determines how many segments an input read has.
 
 >```json
 {
@@ -34,7 +34,8 @@ The `input` directive is an ordered array of file paths. Pheniqs assembles an in
         "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
         "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
-}```
+}
+```
 >**Example 2.1** Declaring an input read that is [split](glossary#split_file_layout) over four gzip compressed FASTQ files.
 {: .example}
 
