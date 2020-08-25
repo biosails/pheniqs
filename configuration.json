@@ -407,7 +407,7 @@
         "cellular:decoder": {
             "algorithm": "pamld",
             "codec": null,
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "distance tolerance": null,
             "noise": 0.01,
             "quality masking threshold": 0,
@@ -422,7 +422,7 @@
         "molecular:decoder": {
             "algorithm": "naive",
             "codec": null,
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "distance tolerance": null,
             "noise": 0.01,
             "quality masking threshold": 0,
