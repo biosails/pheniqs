@@ -188,9 +188,11 @@ A `transform` declared in the `template` directive of the instruction assembles 
             "token": [ "0:6:", "3::-6" ]
         }
     },
-    "multiplex": {
-        "transform": { "token": [ "1::8", "2::8" ] }
-    },
+    "sample": [
+        {
+            "transform": { "token": [ "1::8", "2::8" ] }
+        }
+    ],
     "molecular": [
         {
             "transform": {
@@ -210,7 +212,7 @@ The `output` directive is an ordered array of output file paths. If the output d
 
 # Barcode decoding
 
-Pheniqs can populate the related standardized SAM auxiliary tags for multiplex, molecular and cellular barcodes, adhering to the [recommendations outlined in the SAM specification](https://samtools.github.io/hts-specs/SAMtags.pdf). We distinguish between [closed class decoding algorithms](glossary#closed_class_decoding), when a discrete list of classes (in our case nucleotide sequences) is known in advance and so a prior distribution is available, and [open class decoders](glossary#open_class_decoding), when the discrete list of classes is unknown and so the prior distribution is hidden. The embedded `codec` directive specifies the allowed classes for closed class decoders as a JSON dictionary. The keys of the dictionary must be unique strings within the dictionary and play a role in the inheritance model but you may otherwise choose them as you see fit. One simple methodology is to use the concatenated barcode sequence prefixed by an **@** sign (to remind you Pheniqs does not actually interpret it as a nucleotide sequence), but you may choose more meaningful names to make your instruction files more readable.
+Pheniqs can populate the related standardized SAM auxiliary tags for sample, molecular and cellular barcodes, adhering to the [recommendations outlined in the SAM specification](https://samtools.github.io/hts-specs/SAMtags.pdf). We distinguish between [closed class decoding algorithms](glossary#closed_class_decoding), when a discrete list of classes (in our case nucleotide sequences) is known in advance and so a prior distribution is available, and [open class decoders](glossary#open_class_decoding), when the discrete list of classes is unknown and so the prior distribution is hidden. The embedded `codec` directive specifies the allowed classes for closed class decoders as a JSON dictionary. The keys of the dictionary must be unique strings within the dictionary and play a role in the inheritance model but you may otherwise choose them as you see fit. One simple methodology is to use the concatenated barcode sequence prefixed by an **@** sign (to remind you Pheniqs does not actually interpret it as a nucleotide sequence), but you may choose more meaningful names to make your instruction files more readable.
 
 Pheniqs offers a choice of two closed class decoding strategies: the widespread [minimum distance decoder](glossary#minimum_distance_decoding) (**MDD**) and a more refined probabilistic [Phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) (**PAMLD**). Unlike MDD, PAMLD consults base calling quality scores and the prior barcode distribution and will outperform MDD in almost every real world scenario. Since PAMLD computes the full Bayesian posterior decoding probability to pick the maximum likelihood, the probability of an incorrect barcode assignment is made available in SAM auxiliary tags reserved for local use, for downstream analysis consideration.
 
@@ -221,24 +223,28 @@ Since error handling is much trickier in open class decoding, Pheniqs currently 
 When declaring a decoder directive you specify the decoding strategy by setting the `algorithm` attribute.
 
 ## Handling decoding failure
-Reads that had one of their multiplex, cellular or molecular barcodes fail decoding will be [marked by Pheniqs](#pass-filter--qc-fail-reads) as [QC Failed](glossary#qc_fail). The `undetermined` directive can be used to inform a decoder how to handle reads that fail decoding. If omitted the implicit `undetermined` directive inherits global or decoder attributes in the same way that specific barcode classes do. When populating corrected nucleotide and quality sequences in SAM auxiliary tags, a placeholder sequence of **=** character of the correct layout is used to denote a decoding failure.
+
+Reads that had one of their sample, cellular or molecular barcodes fail decoding will be [marked by Pheniqs](#pass-filter--qc-fail-reads) as [QC Failed](glossary#qc_fail). The `undetermined` decoder tag can be used to inform a decoder how to handle reads that fail decoding. If omitted the implicit `undetermined` directive inherits global or decoder attributes in the same way that specific barcode classes do. When populating corrected nucleotide and quality sequences in SAM auxiliary tags, a placeholder sequence of **=** character of the correct layout is used to denote a decoding failure.
 
 ## Phred-adjusted maximum likelihood decoding
-Pheniqs implements a probabilistic closed class [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) that directly estimates the decoding likelihood from the base calling error probabilities provided by the sequencing platform. When output is SAM encoded Pheniqs will write the decoding error probability to the [XB](glossary#dq_auxiliary_tag) auxiliary tag for a multiplex barcode,  the [XM](glossary#xm_auxiliary_tag) tag for a molecular barcode and the [XC](glossary#xc_auxiliary_tag) tag for a cellular barcode. In the case of a decoding failure no error probability is reported.
 
-The dominant parameter to set when decoding with PAMLD is the `confidence threshold`, which is a lower bound on the decoding probability for the decoder to declare a successful classification. The value of `confidence threshold` defaults to **0.99** but in practice depends on the application and controls the tradeoff between false positives and false negatives. Since the decoding error probability is written to the a SAM auxiliary tag you may choose to set `confidence threshold` to a relatively lax value and leave the decision to exclude certain reads for downstream analysis.
+Pheniqs implements a probabilistic closed class [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) that directly estimates the decoding likelihood from the base calling error probabilities provided by the sequencing platform. When output is SAM encoded Pheniqs will write the decoding error probability to the [XB](glossary#dq_auxiliary_tag) auxiliary tag for a sample barcode,  the [XM](glossary#xm_auxiliary_tag) tag for a molecular barcode and the [XC](glossary#xc_auxiliary_tag) tag for a cellular barcode. In the case of a decoding failure no error probability is reported.
 
-PAMLD also consults user provided prior barcode instance and decoding failure frequencies. Barcode frequencies are specified in the class `concentration` attribute while the expected decoding failure frequency is specified in the decoder `noise` attribute. For the Illumina platform the most common value for `noise` will be the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the pooled solution, which is usually **1%** and corresponds to a value of **0.01**. Assays with low base diversity sometimes use a higher concentration to compensate for low base diversity and some applications can go as high as **50%**. If you know a priori that some amount of sequences present in the pool represent contamination or multiplexed libraries you are not declaring in the configuration, their concentration should be factored into this parameter. The priors you specify can significantly affect decoding precision and Pheniqs provides a python script that can estimate the priors from the report emitted by a preliminary run.
+The dominant parameter to set when decoding with PAMLD is the `confidence threshold`, which is a lower bound on the decoding probability for the decoder to declare a successful classification. The value of `confidence threshold` defaults to **0.95** but in practice depends on the application and controls the tradeoff between false positives and false negatives. Since the decoding error probability is written to the a SAM auxiliary tag you may choose to set `confidence threshold` to a relatively lax value and leave the decision to exclude certain reads for downstream analysis.
+
+PAMLD also consults user provided prior barcode instance and decoding failure frequencies. Barcode frequencies are specified in the class `concentration` attribute while the expected decoding failure frequency is specified in the decoder `noise` attribute. For the Illumina platform the most common value for `noise` will be at least the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the pooled solution, which is usually **1%** and corresponds to a `noise` value of **0.01**. Assays with low base diversity sometimes use a higher concentration to compensate and some applications can go as high as **50%**. If you know a priori that some amount of sequences present in the pool represent contamination or multiplexed libraries you are not declaring in the configuration, their concentration should be factored into this parameter. The priors you specify can significantly affect decoding precision. Pheniqs provides a python script to help you estimate the priors from the report emitted by a preliminary run.
 
 The `concentration` attribute defaults to **1** if omitted. The values for all barcode instances in a decoder are normalized so that their sum equals **1.0** - `noise`. Notice that unlike `concentration` the `noise` attribute is specified as a probability value between **0** and **1**, and it rarely make sense to set it to **0**. If the `concentration` attribute is omitted from all classes the result is an implicit uniformly distributed prior.
 
 ## Minimum distance decoding
-Pheniqs also implements the more traditional discrete [minimum distance decoder](glossary#minimum_distance_decoding) that consults the edit distance between the expected and observed sequence. MDD consults the `distance tolerance` attribute, which is a list of upper bounds on the edit distance between each segment of the expected and observed barcode to still be considered a match. Setting this property to a value higher than the [Shannon bound](glossary#shannon_bound), which also serves as the default value for `distance tolerance`, can lead to ambiguous classification and will result in a validation error.
+
+Pheniqs also implements the more traditional discrete [minimum distance decoder](glossary#minimum_distance_decoding) that consults the edit distance between the expected and observed sequence. MDD consults the `distance tolerance` tag, which is an array of upper bounds on the edit distance between each segment of the expected and observed barcode to still be considered a match. Setting this property to a value higher than the [Shannon bound](glossary#shannon_bound), which also serves as the default value for `distance tolerance`, can lead to ambiguous classification and will result in a validation error.
 
 Since MDD effectively ignores the Phred encoded quality scores, it may be consulting extremely unreliable base calls. To mitigate that effect you may set the `quality masking threshold` attribute, which is a lower bound on the permissible base calling quality. Observed bases with quality lower than this threshold will be considered as **N** by the minimum distance decoder. `quality masking threshold` defaults to **0** which effectively disables quality masking.
 
-## The `multiplex` directive
-A single closed class decoder can be declared in the `multiplex` directive. When decoding multiplex barcodes Pheniqs will write the nucleotide barcode sequence to the [BC](glossary#bc_auxiliary_tag) SAM auxiliary tag, the corresponding Phred encoded quality sequence to the [QT](glossary#qt_auxiliary_tag) tag and, when decoding with PAMLD, the decoding error probability to the [XB](glossary#xb_auxiliary_tag) tag. Pheniqs classifies the read to a read group by populating the [RG](glossary#rg_auxiliary_tag) SAM auxiliary tag, which is a reference to the **ID** attribute of a read group declared in the SAM header.
+## The `sample` directive
+
+The `sample` directive is an array of sample decoders. When decoding sample barcodes Pheniqs will write the nucleotide barcode sequence to the [BC](glossary#bc_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [QT](glossary#qt_auxiliary_tag) tag. When decoding with PAMLD, the decoding error probability to the [XB](glossary#xb_auxiliary_tag) tag. Sample barcodes classify the read to a read group by populating the [RG](glossary#rg_auxiliary_tag) SAM auxiliary tag, which is a reference to the **ID** attribute of a read group declared in the SAM header.
 
 >```json
 {
@@ -248,22 +254,26 @@ A single closed class decoder can be declared in the `multiplex` directive. When
         "HK5NHBGXX_l01.cram",
         "HK5NHBGXX_l01.cram"
     ],
-    "multiplex": {
-        "transform": { "token": [ "1::8", "2::8" ] },
-        "codec": {
-            "@AAGAGGCAAGAGGATA": { "barcode": [ "AAGAGGCA", "AGAGGATA" ] },
-            "@AGGCAGAAAGAGGATA": { "barcode": [ "AGGCAGAA", "AGAGGATA" ] },
-            "@CAGAGAGGAGAGGATA": { "barcode": [ "CAGAGAGG", "AGAGGATA" ] },
-            "@CGTACTAGTCTTACGC": { "barcode": [ "CGTACTAG", "TCTTACGC" ] }
+    "sample": [
+        {
+            "transform": { "token": [ "1::8", "2::8" ] },
+            "codec": {
+                "@AAGAGGCAAGAGGATA": { "barcode": [ "AAGAGGCA", "AGAGGATA" ] },
+                "@AGGCAGAAAGAGGATA": { "barcode": [ "AGGCAGAA", "AGAGGATA" ] },
+                "@CAGAGAGGAGAGGATA": { "barcode": [ "CAGAGAGG", "AGAGGATA" ] },
+                "@CGTACTAGTCTTACGC": { "barcode": [ "CGTACTAG", "TCTTACGC" ] }
+            }
         }
-    }
+    ]
 }
 ```
->**Example 2.10** Expanding **Example 2.9** we declare 4 classes for the multiplex decoder which will be be matched against the segmented sequence extracted by the `transform`.
-NOTE: The keys of the `codec` dictionary directive have no special meaning and you may choose them as you see fit, as long as they are unique within the `codec` dictionary. As a default we define them as the concatenation of all barcodes for each respective class.
+>**Example 2.10** Expanding **Example 2.9** we declare 4 classes for a sample decoder which will be be matched against the segmented sequence extracted by the `transform`.
+NOTE: The keys of the `codec` dictionary directive have no special meaning and you may choose them as you see fit, as long as they are unique within the `codec` dictionary. As a matter of convention we use the concatenation of all barcode segments for each respective class.
 {: .example}
 
-Since each class decoded by the multiplex decoder corresponds to a read group you may define read group related attributes in each class entry in the `codec` dictionary. Read group attributes that apply to all read groups may be declared upstream in either the multiplex decoder directive or the root of the instruction document.
+## Read groups
+
+Since each class decoded by a sample decoder corresponds to a read group you may define read group related attributes in each class entry in the `codec` dictionary. Read group attributes that apply to all read groups may be declared upstream in either the sample decoder or the root of the instruction document.
 
 >```json
 {
@@ -275,55 +285,59 @@ Since each class decoded by the multiplex decoder corresponds to a read group yo
         "HK5NHBGXX_l01.cram",
         "HK5NHBGXX_l01.cram"
     ],
-    "multiplex": {
-        "CN": "NYU CGSB",
-        "DT": "2016-07-15T07:00:00+00:00",
-        "PI": "500",
-        "PL": "ILLUMINA",
-        "PM": "HiSeq 2500",
-        "transform": { "token": [ "1::8", "2::8" ] },
-        "codec": {
-            "@AAGAGGCAAGAGGATA": {
-                "barcode": [ "AAGAGGCA", "AGAGGATA" ],
-                "SM": "c57bl6 mouse 1",
-                "LB": "pre b fetal liver technical replicant 1"
-            },
-            "@AGGCAGAAAGAGGATA": {
-                "barcode": [ "AGGCAGAA", "AGAGGATA" ],
-                "SM": "c57bl6 mouse 1",
-                "LB": "pre b fetal liver technical replicant 2"
-            },
-            "@CAGAGAGGAGAGGATA": {
-                "barcode": [ "CAGAGAGG", "AGAGGATA" ],
-                "SM": "c57bl6 mouse 1",
-                "LB": "pre b fetal liver technical replicant 3"
-            },
-            "@CGTACTAGTCTTACGC": {
-                "barcode": [ "CGTACTAG", "TCTTACGC" ],
-                "SM": "c57bl6 mouse 2",
-                "LB": "follicular spleen technical replicant 1",
-                "PI": "300"
+    "sample": [
+        {
+            "CN": "NYU CGSB",
+            "DT": "2016-07-15T07:00:00+00:00",
+            "PI": "500",
+            "PL": "ILLUMINA",
+            "PM": "HiSeq 2500",
+            "transform": { "token": [ "1::8", "2::8" ] },
+            "codec": {
+                "@AAGAGGCAAGAGGATA": {
+                    "barcode": [ "AAGAGGCA", "AGAGGATA" ],
+                    "SM": "c57bl6 mouse 1",
+                    "LB": "pre b fetal liver technical replicant 1"
+                },
+                "@AGGCAGAAAGAGGATA": {
+                    "barcode": [ "AGGCAGAA", "AGAGGATA" ],
+                    "SM": "c57bl6 mouse 1",
+                    "LB": "pre b fetal liver technical replicant 2"
+                },
+                "@CAGAGAGGAGAGGATA": {
+                    "barcode": [ "CAGAGAGG", "AGAGGATA" ],
+                    "SM": "c57bl6 mouse 1",
+                    "LB": "pre b fetal liver technical replicant 3"
+                },
+                "@CGTACTAGTCTTACGC": {
+                    "barcode": [ "CGTACTAG", "TCTTACGC" ],
+                    "SM": "c57bl6 mouse 2",
+                    "LB": "follicular spleen technical replicant 1",
+                    "PI": "300"
+                }
             }
         }
-    }
+    ]
 }
 ```
->**Example 2.11** Further expanding **Example 2.10** with attributes related the read group SAM header tags. Attributes declared in the decoder directive will apply to all barcode entries in the `codec` dictionary unless explicitly overridden in the entry. For instance all except **@CGTACTAGTCTTACGC**, that locally overrides **PI** to be **300**, will have their **PI** tag set to **500**.
+>**Example 2.11** Further expanding **Example 2.10** with attributes related the read group SAM header tags. Attributes declared in the decoder will apply to all barcode entries in the `codec` dictionary unless explicitly overridden in the entry. For instance all except **@CGTACTAGTCTTACGC**, that locally overrides **PI** to be **300**, will have their **PI** tag set to **500**.
 {: .example}
+
+The [SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf) outlines some attributes associated with a read group.
 
 | Name                                      | Description                                                                   | Type   |
 | :---------------------------------------- | :---------------------------------------------------------------------------- | :----- |
 | **ID**                                    | Read group identifier                                                         | string |
-| **[LB](glossary#lb_auxiliary_tag)**  | Library name                                                                  | string |
-| **[SM](glossary#sm_auxiliary_tag)**  | Sample name                                                                   | string |
-| **[PU](glossary#pu_auxiliary_tag)**  | Platform unit unique identifier                                               | string |
+| **[LB](glossary#lb_auxiliary_tag)**       | Library name                                                                  | string |
+| **[SM](glossary#sm_auxiliary_tag)**       | Sample name                                                                   | string |
+| **[PU](glossary#pu_auxiliary_tag)**       | Platform unit unique identifier                                               | string |
 | **CN**                                    | Name of sequencing center producing the read                                  | string |
 | **DS**                                    | Description                                                                   | string |
 | **DT**                                    | [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date the run was produced   | string |
 | **FO**                                    | Flow order                                                                    | string |
 | **KS**                                    | Key sequence                                                                  | string |
 | **PI**                                    | Predicted median insert size                                                  | string |
-| **[PL](glossary#pl_auxiliary_tag)**  | Platform or technology used to produce the reads                              | string |
+| **[PL](glossary#pl_auxiliary_tag)**       | Platform or technology used to produce the reads                              | string |
 | **PM**                                    | Platform model                                                                | string |
 | **PG**                                    | Programs used for processing the read group                                   | string |
 
@@ -331,10 +345,8 @@ Since each class decoded by the multiplex decoder corresponds to a read group yo
 * **PU**, following the [convention established by GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472), defaults to `flowcell id`:`flowcell lane number`: `barcode`. If `flowcell id` or `flowcell lane number` are not specified they are omitted along with their trailing `:`. If explicitly declared **PU** must be unique within the `codec` dictionary.
 * **PL**, as defined in the SAM specification, is one of *CAPILLARY*, *LS454*, *ILLUMINA*, *SOLID*, *HELICOS*, *IONTORRENT*, *ONT*, *PACBIO*.
 
-## Contextual `output` directives
-The `output` attribute can be declared in the root of the instruction, in the `multiplex` decoder directive or in each of the individual `multiplex` decoder class directives. As always, attributes declared lower in the hierarchy override attributes declared upstream. When interleaving reads from multiple read groups into the same output it is sufficient, and less verbose, to declare the output attribute upstream. When splitting reads from different read groups to different output files you declare the `output` attribute individually for the read group. You may also mix-and-match the two styles. A corresponding [@RG header tag](glossary#rg_header_tag) will be added to the header of an output file if at least one segment of reads tagged with that read group are written to it.
-
 ## The `molecular` directive
+
 The `molecular` directive can be used to declare either a single decoder or an array containing multiple decoders. When decoding molecular barcodes Pheniqs will write the nucleotide barcode sequence to the [RX](glossary#rx_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [OX](glossary#ox_auxiliary_tag) tag. A molecular identifier is written to the [MI](glossary#mi_auxiliary_tag) tag.
 
 If error correction is applied to the barcode the raw, uncorrected, nucleotide, and quality sequences are written to the [QX](glossary#qx_auxiliary_tag) and [BZ](glossary#bz_auxiliary_tag) tags and the decoding error probability to the [XM](glossary#xm_auxiliary_tag) tag.
@@ -342,7 +354,12 @@ If error correction is applied to the barcode the raw, uncorrected, nucleotide, 
 ## The `cellular` directive
 The `cellular` directive can be used to declare either a single decoder or an array containing multiple decoders. When decoding cellular barcodes Pheniqs will write the raw, uncorrected, nucleotide barcode sequence to the [CR](glossary#cr_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [CY](glossary#cy_auxiliary_tag) tag, while The decoded cellular barcode is written to the [CB](glossary#cb_auxiliary_tag) tag. The decoding error probability is written to the [XC](glossary#cr_auxiliary_tag) tag.
 
+## The `multiplex` directive
+
+Pheniqs allows you to use one closed class decoder to split output reads into seperate files by the barcode they were classsified to. To do that you declare that one decoder in the `multiplex` tag instead of in the corresponding `sample`, `cellular` or `molecular` directive. The `output` attribute can be declared in the `multiplex` decoder or in each of the individual `multiplex` decoder classes in `codec`. the `classifier type` tag in `multiplex` signals to Pheniqs if this is a sample, cellular or molecular decoder and defaults to `sample`.
+
 # URL handling
+
 Setting global URL prefixes make your instruction file more portable. If specified, the `base input url` and `base output url` are used as a prefix to **relative** URLs defined in the `input` and `output` directives, respectively. A URL is considered relative if it **does not** begin with a **/** character. Environment variables in URLs will be resolved by Pheniqs when it compiles your instruction file. `base input url` and `base output url` default to the `working directory` which is the directory where Pheniqs was executed, so if the a corresponding `base` is not specified, **relative** URLs are resolved against the `working directory`.
 
 >```json
@@ -387,16 +404,18 @@ Setting global URL prefixes make your instruction file more portable. If specifi
 {: .example}
 
 ## Query Parameters
+
 Pheniqs will try to guess output format and compression from the output URL file extensions. You can however specify those explicitly using [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Parameters explicitly specified in the query will override guessed parameters.
 
-| Name | Description | Type |
-| :--- | :---------- | :--- |
-| **format** | file format | `sam`, `bam`, `cram` or `fastq` |
-| **compression** | compression algorithm for `fastq` and `bam` formats | `gz`, `bgzf`, `none`|
-| **level** | compression level for `fastq`, `bam` and `cram` formats| `0`-`9` |
+| Name              | Description                                               | Type                              |
+| :-----------------| :-------------------------------------------------------- | :-------------------------------- |
+| **format**        | file format                                               | `sam`, `bam`, `cram` or `fastq`   |
+| **compression**   | compression algorithm for `fastq` and `bam` formats       | `gz`, `bgzf`, `none`              |
+| **level**         | compression level for `fastq`, `bam` and `cram` formats   | `0`-`9`                           |
 
 
 ## Standard streams
+
 If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write SAM to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. When writing to **/dev/stdout** you might want to explicitly provide a format with the `format`, `compression` and `level` [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Alternatively you can specify defaults with `-F/--format`, `-Z/--compression` and `-L/--level` command line arguments. You may even specify **/dev/null** as a URL in an `output` directive to discard the output.
 
 >```json
@@ -410,6 +429,7 @@ If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**.
 {: .example}
 
 # Phred offset
+
 The `input phred offset` and `output phred offset` are applicable only to [FASTQ](glossary#fastq) files and specify the Phred scale decoding and encoding [offset](https://en.wikipedia.org/wiki/FASTQ_format#Encoding), respectively. The default value for both is **33**, knowns as the [Sanger format](glossary#sanger_format). The binary [HTSlib](glossary#htslib) formats BAM and CRAM encode the quality value numerically and so require no further manipulation. The [sequence alignment map format specification](https://samtools.github.io/hts-specs/SAMv1.pdf) states that text encoded SAM records always use the Sanger format.
 
 >```json
@@ -422,6 +442,7 @@ The `input phred offset` and `output phred offset` are applicable only to [FASTQ
 {: .example}
 
 # Leading Segment
+
 Pheniqs constructs new segments for the output read and must generate corresponding identifiers and replicate metadata from the input. Since segments can potentially disagree on metadata, one input segment is elected as the leader and used as a template when constructing the output segments. The leading segment property is a reference to an [input segment index](glossary#input_segment) and defaults to **0** if omitted.
 
 >```json
@@ -431,53 +452,58 @@ Pheniqs constructs new segments for the output read and must generate correspond
 {: .example}
 
 # Pass filter / QC fail reads
+
 Some input reads are marked as [failing quality control](glossary#qc_fail). For instance, Illumina sequencers perform an internal [quality filtering procedure](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-x-percent-pf-technical-note-770-2014-043.pdf) called chastity filter, and only reads that pass this vendor quality control filter are marked as **pass-filter**. Pheniqs marks reads that have failed barcode decoding as **QC fail**. Setting the `filter incoming qc fail` configuration attribute to **true**, or specifying the `-N/--no-input-npf` command line argument, will instruct Pheniqs to disregard incoming reads marked as not passing filter. This allows to filter reads that have been marked as **QC fail** by a previous processing tool. Setting the `filter outgoing qc fail` attribute to **true**, or specifying the `-n/--no-output-npf` command line argument, will instruct Pheniqs not to include reads marked as not passing filter in the output. That will filter incoming **QC fail** (if they have not already been filtered with `filter incoming qc fail`) as well as reads that have been marked by Pheniqs as **QC fail** during barcode decoding.
 
 # Configuration validation
+
 The `-V/--validate` command line flag makes Pheniqs evaluate the supplied instruction and emit a human readable description of the instruction without actually executing it. It is sometimes useful to inspect this description before executing to make sure all implicit parameters are allocated the desired values. To also print out the barcode distance metric for each closed class decoder you may additionally set the `-D/--distance` command line flag. The top half of the matrix, above the diagonal, is the pairwise Hamming distance, while the bottom half is the maximum number of correctable errors the pair can tolerate, known as the [Shannon bound](https://en.wikipedia.org/wiki/Shannon%E2%80%93Hartley_theorem).
 
 # Quality Control and Statistics
+
 Pheniqs emits a statistical report. If you specify the `-q/--quality` command line flag the report will also include a comprehensive quality control report.
 
 ## Decoder statistics
-For every `multiplex`, `molecular` and `cellular` decoder the following statistics is reported, if applicable. Counters have a slightly different meaning depending on the value of the `filter incoming qc fail` flag. if `filter incoming qc fail` was **true** incoming reads are dropped immediately and are never seen by the decoder and so counters will only be affected by reads that were marked as **QC fail** by Pheniqs due to barcode decoding failure. If `filter incoming qc fail` was **false** the decoder will attempt to classify all reads and so counters will also count reads that were already marked as **QC fail** in the input. **pf** counters will always only apply to reads that were either marked **QC fail** by Pheniqs nor were already marked **QC fail** in the input.
 
-  | JSON field                           | Description                                                                         |
-	| :----------------------------------- | :---------------------------------------------------------------------------------- |
-	| **count**                            | count for all reads processed by the pipeline, both classified and unclassified.    |
-	| **classified count**                 | count of all reads classified to some barcode.                                      |
-	| **classified fraction**              | **classified count** / **count**                                                    |
-	| **average classified distance**      | average hamming distance when decoding classified reads.                            |
-	| **average classified confidence**    | average confidence when decoding classified reads.                                  |
-	| **pf count**                         | count of output reads processed by the pipeline that *passed quality control*.      |
-	| **pf fraction**                      | **pf count** / **count**                                                            |
-	| **pf classified count**              | count of all output reads classified to some barcode that *passed quality control*. |
-	| **pf classified fraction**           | **pf classified count** / **pf count**                                              |
-	| **classified pf fraction**           | **pf classified count** / **classified count**                                      |
-	| **average pf classified distance**   | average hamming distance of output classified reads that *passed quality control*.  |
-	| **average pf classified confidence** | average confidence of classified output reads that *passed vendor quality control*. |
-	| **low conditional confidence count** | count of reads that failed to classify due to low conditional confidence.           |
-	| **low confidence count**             | count of reads that failed to classify due to low confidence.                       |
+For every `sample`, `molecular` and `cellular` decoder the following statistics is reported, if applicable. Counters have a slightly different meaning depending on the value of the `filter incoming qc fail` flag. if `filter incoming qc fail` was **true** incoming reads are dropped immediately and are never seen by the decoder and so counters will only be affected by reads that were marked as **QC fail** by Pheniqs due to barcode decoding failure. If `filter incoming qc fail` was **false** the decoder will attempt to classify all reads and so counters will also count reads that were already marked as **QC fail** in the input. **pf** counters will always only apply to reads that were either marked **QC fail** by Pheniqs nor were already marked **QC fail** in the input.
+
+| JSON field                           | Description                                                                         |
+| :----------------------------------- | :---------------------------------------------------------------------------------- |
+| **count**                            | count for all reads processed by the pipeline, both classified and unclassified.    |
+| **classified count**                 | count of all reads classified to some barcode.                                      |
+| **classified fraction**              | **classified count** / **count**                                                    |
+| **average classified distance**      | average hamming distance when decoding classified reads.                            |
+| **average classified confidence**    | average confidence when decoding classified reads.                                  |
+| **pf count**                         | count of output reads processed by the pipeline that *passed quality control*.      |
+| **pf fraction**                      | **pf count** / **count**                                                            |
+| **pf classified count**              | count of all output reads classified to some barcode that *passed quality control*. |
+| **pf classified fraction**           | **pf classified count** / **pf count**                                              |
+| **classified pf fraction**           | **pf classified count** / **classified count**                                      |
+| **average pf classified distance**   | average hamming distance of output classified reads that *passed quality control*.  |
+| **average pf classified confidence** | average confidence of classified output reads that *passed vendor quality control*. |
+| **low conditional confidence count** | count of reads that failed to classify due to low conditional confidence.           |
+| **low confidence count**             | count of reads that failed to classify due to low confidence.                       |
 
 ## Barcode statistics
+
 In every decoder statistics the `unclassified` element reports statistics about reads that failed to be classified, while each element in the `classified` array reports statistics for one of the barcodes.
 The `decoder::` prefix in the table refers to the attribute in the parent decoder statistics.
 
-  | JSON field                           | Description                                                                                           |
-	| :----------------------------------- | :---------------------------------------------------------------------------------------------------- |
-	| **count**                            | count of reads classified to the barcode.                                                             |
-	| **average distance**                 | average hamming distance between observed and decoded barcode.                                        |
-	| **average confidence**               | average confidence of decoding a barcode.                                                             |
-	| **pooled fraction**                  | **count** / **decoder::count**                                                                        |
-	| **pooled classified fraction**       | **count** / **decoder::classified count**                                                             |
-	| **pf count**                         | count of reads classified to the barcode that *passed quality control*.                               |
-	| **pf fraction**                      | **pf count** / **count**                                                                              |
-	| **average pf distance**              | average hamming distance between observed and decoded barcode in reads that *passed quality control*. |
-	| **average pf confidence**            | average confidence of decoding a barcode in reads that *passed quality control*.                      |
-	| **pf pooled fraction**               | **pf count** / **decoder::pf count**                                                                  |
-	| **pf pooled classified fraction**    | **pf count** / **decoder::pf classified count**                                                       |
-	| **low conditional confidence count** | count of reads that failed to classify due to low conditional confidence.                             |
-	| **low confidence count**             | count of reads that failed to classify due to low confidence.                                         |
+| JSON field                           | Description                                                                                           |
+| :----------------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **count**                            | count of reads classified to the barcode.                                                             |
+| **average distance**                 | average hamming distance between observed and decoded barcode.                                        |
+| **average confidence**               | average confidence of decoding a barcode.                                                             |
+| **pooled fraction**                  | **count** / **decoder::count**                                                                        |
+| **pooled classified fraction**       | **count** / **decoder::classified count**                                                             |
+| **pf count**                         | count of reads classified to the barcode that *passed quality control*.                               |
+| **pf fraction**                      | **pf count** / **count**                                                                              |
+| **average pf distance**              | average hamming distance between observed and decoded barcode in reads that *passed quality control*. |
+| **average pf confidence**            | average confidence of decoding a barcode in reads that *passed quality control*.                      |
+| **pf pooled fraction**               | **pf count** / **decoder::pf count**                                                                  |
+| **pf pooled classified fraction**    | **pf count** / **decoder::pf classified count**                                                       |
+| **low conditional confidence count** | count of reads that failed to classify due to low conditional confidence.                             |
+| **low confidence count**             | count of reads that failed to classify due to low confidence.                                         |
 
 ## Prior estimation
 The **PAMLD** decoder **low conditional confidence count** counts reads where the conditional probability of the maximum likelihood decoded barcode is lower than the probability of a observing a random sequence. Those reads are much more likely to be noise than anything else. This makes the ratio of **low conditional confidence count** to **count** a good initial candidate for the decoder noise prior, the decoder `noise` directive. When overall quality of the run is low this can under estimate the noise prior since a lower signal to noise ratio makes it more difficult to tell random sequences from errors. We adjust for this by counting as noise a fraction of the reads counted by **low confidence count**, which counts reads that passed the previous filter but have been marked **QC fail** because the posterior probability of correctly decoding the barcode was lower than **confidence threshold**. We estimate the **signal to noise ratio** as **1** - **average classified confidence**. So an adjusted estimate of the noise prior is **low conditional confidence count** + **signal to noise ratio** * **low confidence count** divided by **count**. Once we establish an estimate of the noise prior, estimating the prior of each barcode is straight forward since we can rely on the high quality reads. For each barcode we estimate the `concentration` as **pf pooled classified fraction** multiplied by the probability of it not being noise, which is **1** - `noise`. The `pheniqs-prior-api.py` script can adjust your configuration file with those priors from a configuration file. The initial priors can be either left blank, suggesting a uniform prior, or your best guess.
