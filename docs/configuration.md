@@ -10,9 +10,9 @@ id: configuration
 
 # Configuration parameters
 
-Parameters for trivial scenarios, such as format conversion or interleaving, can be provided on the [command line](/pheniqs/cli) alone. However, since barcode repertoire are too verbose to provide on a command line, for most scenarios Pheniqs requires a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, read segment manipulation, barcode decoding and run parameters. Parameters specified as command line arguments always override their configuration file counterparts, allowing to easily experiment with tweaked execution. Almost all parameters have a default value. A brief description of the parameters available on the command line is available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli#zsh-completion) will give you a more interactive command line experience.
+When executing trivial scenarios, such as format conversion or interleaving, it is sufficient to provide parameters on the [command line](/pheniqs/cli). Scenarios involving barcode decoding, however, are too verbose to provide on a command line and require a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, read segment manipulation, barcode decoding and other run parameters. Parameters specified as command line arguments always override their configuration file counterparts. Almost all parameters have a default value. A brief description of the parameters available on the command line is available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli#zsh-completion) will give you a more interactive command line experience.
 
-Pheniqs configuration files support a sophisticated instruction inheritance mechanism and can also import additional configuration files. While you may certainly ignore this added complexity at first, separating different aspects of your experimental design into reusable instruction files can significantly simplify day to day use. Standard Illumina codecs are also available as generic configuration files you can import and inherit from.
+A Pheniqs configuration file can import instructions from additional configuration files and supports a sophisticated inheritance mechanism. While you may certainly ignore this added complexity at first, separating different aspects of your experimental design into reusable instruction files can significantly simplify day to day use. Standard Illumina codecs are also available as generic configuration files you can import and inherit from.
 
 # Format support and performance considerations
 
@@ -24,7 +24,7 @@ Pheniqs aims to fill the gap between advanced HTS containers and analysis tools 
 
 # The `input` directive
 
-The instruction `input` directive is an ordered list of file paths. Pheniqs assembles an input [read](glossary#read) by reading one [segment](glossary#segment) from each input file.
+The `input` directive is an ordered array of file paths. Pheniqs assembles an input [read](glossary#read) by reading one [segment](glossary#segment) from each input file.
 
 >```json
 {
@@ -34,8 +34,7 @@ The instruction `input` directive is an ordered list of file paths. Pheniqs asse
         "HK5NHBGXX_S1_L001_I2_001.fastq.gz",
         "HK5NHBGXX_S1_L001_R2_001.fastq.gz",
     ]
-}
-```
+}```
 >**Example 2.1** Declaring an input read that is [split](glossary#split_file_layout) over four gzip compressed FASTQ files.
 {: .example}
 
