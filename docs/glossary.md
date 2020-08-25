@@ -155,6 +155,9 @@ id: glossary
 <a name="static_linking" />Static linking
 : A [statically linked](https://en.wikipedia.org/wiki/Static_library) build copies all or most of the library dependencies into the binary executable, producing a standalone executable that can be moved around the system and to compatible systems. This method, although yielding a larger executable, resolves conflicts with different version of the dependencies that might already be present on the system. Building a portable binary from scratch using the built-in package manager makes any Pheniqs revision easily available on cluster environments where the user rarely has elevated permissions required to perform a standard build.
 
+<a name="feed_resolution" />Feed resolution
+: The number of consecutive read segments in the feed that have the same read identifier. In most interleaved files all segments of a read are adjacent and in the same segment order.
+
 <!--
 <a name="" />
 TERM
