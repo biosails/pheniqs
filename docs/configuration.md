@@ -188,11 +188,9 @@ A `transform` declared in the `template` directive of the instruction assembles 
             "token": [ "0:6:", "3::-6" ]
         }
     },
-    "sample": [
-        {
-            "transform": { "token": [ "1::8", "2::8" ] }
-        }
-    ],
+    "sample": {
+        "transform": { "token": [ "1::8", "2::8" ] }
+    },
     "molecular": [
         {
             "transform": {
@@ -244,7 +242,7 @@ Since MDD effectively ignores the Phred encoded quality scores, it may be consul
 
 ## The `sample` directive
 
-The `sample` directive is an array of sample decoders. When decoding sample barcodes Pheniqs will write the nucleotide barcode sequence to the [BC](glossary#bc_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [QT](glossary#qt_auxiliary_tag) tag. When decoding with PAMLD, the decoding error probability to the [XB](glossary#xb_auxiliary_tag) tag. Sample barcodes classify the read to a read group by populating the [RG](glossary#rg_auxiliary_tag) SAM auxiliary tag, which is a reference to the **ID** attribute of a read group declared in the SAM header.
+The `sample` directive is one sample decoder. When decoding the sample barcode Pheniqs will write the nucleotide barcode sequence to the [BC](glossary#bc_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [QT](glossary#qt_auxiliary_tag) tag. When decoding with PAMLD, the decoding error probability to the [XB](glossary#xb_auxiliary_tag) tag. Sample barcodes classify the read to a read group by populating the [RG](glossary#rg_auxiliary_tag) SAM auxiliary tag, which is a reference to the **ID** attribute of a read group declared in the SAM header.
 
 >```json
 {
@@ -254,17 +252,16 @@ The `sample` directive is an array of sample decoders. When decoding sample barc
         "HK5NHBGXX_l01.cram",
         "HK5NHBGXX_l01.cram"
     ],
-    "sample": [
-        {
-            "transform": { "token": [ "1::8", "2::8" ] },
-            "codec": {
-                "@AAGAGGCAAGAGGATA": { "barcode": [ "AAGAGGCA", "AGAGGATA" ] },
-                "@AGGCAGAAAGAGGATA": { "barcode": [ "AGGCAGAA", "AGAGGATA" ] },
-                "@CAGAGAGGAGAGGATA": { "barcode": [ "CAGAGAGG", "AGAGGATA" ] },
-                "@CGTACTAGTCTTACGC": { "barcode": [ "CGTACTAG", "TCTTACGC" ] }
-            }
+    "sample": {
+        "transform": { "token": [ "1::8", "2::8" ] },
+        "codec": {
+            "@AAGAGGCAAGAGGATA": { "barcode": [ "AAGAGGCA", "AGAGGATA" ] },
+            "@AGGCAGAAAGAGGATA": { "barcode": [ "AGGCAGAA", "AGAGGATA" ] },
+            "@CAGAGAGGAGAGGATA": { "barcode": [ "CAGAGAGG", "AGAGGATA" ] },
+            "@CGTACTAGTCTTACGC": { "barcode": [ "CGTACTAG", "TCTTACGC" ] }
         }
-    ]
+    }
+
 }
 ```
 >**Example 2.10** Expanding **Example 2.9** we declare 4 classes for a sample decoder which will be be matched against the segmented sequence extracted by the `transform`.
@@ -273,7 +270,7 @@ NOTE: The keys of the `codec` dictionary directive have no special meaning and y
 
 ## Read groups
 
-Since each class decoded by a sample decoder corresponds to a read group you may define read group related attributes in each class entry in the `codec` dictionary. Read group attributes that apply to all read groups may be declared upstream in either the sample decoder or the root of the instruction document.
+The class decoded by the sample decoder corresponds to a read group. You may define read group related attributes in each class entry in the `codec` dictionary. Read group attributes that apply to all read groups may be declared upstream in either the sample decoder or the root of the instruction document.
 
 >```json
 {
@@ -285,39 +282,37 @@ Since each class decoded by a sample decoder corresponds to a read group you may
         "HK5NHBGXX_l01.cram",
         "HK5NHBGXX_l01.cram"
     ],
-    "sample": [
-        {
-            "CN": "NYU CGSB",
-            "DT": "2016-07-15T07:00:00+00:00",
-            "PI": "500",
-            "PL": "ILLUMINA",
-            "PM": "HiSeq 2500",
-            "transform": { "token": [ "1::8", "2::8" ] },
-            "codec": {
-                "@AAGAGGCAAGAGGATA": {
-                    "barcode": [ "AAGAGGCA", "AGAGGATA" ],
-                    "SM": "c57bl6 mouse 1",
-                    "LB": "pre b fetal liver technical replicant 1"
-                },
-                "@AGGCAGAAAGAGGATA": {
-                    "barcode": [ "AGGCAGAA", "AGAGGATA" ],
-                    "SM": "c57bl6 mouse 1",
-                    "LB": "pre b fetal liver technical replicant 2"
-                },
-                "@CAGAGAGGAGAGGATA": {
-                    "barcode": [ "CAGAGAGG", "AGAGGATA" ],
-                    "SM": "c57bl6 mouse 1",
-                    "LB": "pre b fetal liver technical replicant 3"
-                },
-                "@CGTACTAGTCTTACGC": {
-                    "barcode": [ "CGTACTAG", "TCTTACGC" ],
-                    "SM": "c57bl6 mouse 2",
-                    "LB": "follicular spleen technical replicant 1",
-                    "PI": "300"
-                }
+    "sample": {
+        "CN": "NYU CGSB",
+        "DT": "2016-07-15T07:00:00+00:00",
+        "PI": "500",
+        "PL": "ILLUMINA",
+        "PM": "HiSeq 2500",
+        "transform": { "token": [ "1::8", "2::8" ] },
+        "codec": {
+            "@AAGAGGCAAGAGGATA": {
+                "barcode": [ "AAGAGGCA", "AGAGGATA" ],
+                "SM": "c57bl6 mouse 1",
+                "LB": "pre b fetal liver technical replicant 1"
+            },
+            "@AGGCAGAAAGAGGATA": {
+                "barcode": [ "AGGCAGAA", "AGAGGATA" ],
+                "SM": "c57bl6 mouse 1",
+                "LB": "pre b fetal liver technical replicant 2"
+            },
+            "@CAGAGAGGAGAGGATA": {
+                "barcode": [ "CAGAGAGG", "AGAGGATA" ],
+                "SM": "c57bl6 mouse 1",
+                "LB": "pre b fetal liver technical replicant 3"
+            },
+            "@CGTACTAGTCTTACGC": {
+                "barcode": [ "CGTACTAG", "TCTTACGC" ],
+                "SM": "c57bl6 mouse 2",
+                "LB": "follicular spleen technical replicant 1",
+                "PI": "300"
             }
         }
-    ]
+    }
 }
 ```
 >**Example 2.11** Further expanding **Example 2.10** with attributes related the read group SAM header tags. Attributes declared in the decoder will apply to all barcode entries in the `codec` dictionary unless explicitly overridden in the entry. For instance all except **@CGTACTAGTCTTACGC**, that locally overrides **PI** to be **300**, will have their **PI** tag set to **500**.
@@ -356,7 +351,7 @@ The `cellular` directive can be used to declare either a single decoder or an ar
 
 ## The `multiplex` directive
 
-Pheniqs allows you to use one closed class decoder to split output reads into seperate files by the barcode they were classsified to. To do that you declare that one decoder in the `multiplex` tag instead of in the corresponding `sample`, `cellular` or `molecular` directive. The `output` attribute can be declared in the `multiplex` decoder or in each of the individual `multiplex` decoder classes in `codec`. the `classifier type` tag in `multiplex` signals to Pheniqs if this is a sample, cellular or molecular decoder and defaults to `sample`.
+You may split output reads into separate files by the barcode decoded with one closes class decoder. To do that you declare that decoder in the `multiplex` tag instead of in the corresponding `sample`, `cellular` or `molecular` directive. The `output` attribute can be declared in the `multiplex` decoder or in each of the individual `multiplex` decoder classes in `codec`. the `classifier type` tag in `multiplex` signals to Pheniqs if this is a `sample`, `cellular` or `molecular` decoder and defaults to `sample`.
 
 # URL handling
 
@@ -580,7 +575,7 @@ The **PAMLD** decoder **low conditional confidence count** counts reads where th
 
 >```json
 {
-    "multiplex": {
+    "sample": {
         "classified count": 0,
         "classified fraction": 0.0,
         "classified pf fraction": 0.0,
