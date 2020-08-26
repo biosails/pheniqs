@@ -21,7 +21,7 @@
 # 
 # This file is auto generated from configuration.json
 # 
-# Generated on 2020-05-05T17:02:23.201199
+# Generated on 2020-08-26T12:17:01.952597
 
 _pheniqs_list_aliases() {
     local -a aliases

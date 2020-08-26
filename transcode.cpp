@@ -224,14 +224,20 @@ void TranscodingDecoder::finalize() {
     }
 };
 void TranscodingDecoder::encode(Value& container, Document& document) const {
+    // if(!sample_classifier_array.empty()) {
+    //     Value array(kArrayType);
+    //     for(auto& classifier : sample_classifier_array) {
+    //         Value element(kObjectType);
+    //         classifier->encode(element, document);
+    //         array.PushBack(element.Move(), document.GetAllocator());
+    //     }
+    //     container.AddMember("sample", array.Move(), document.GetAllocator());
+    // }
+
     if(!sample_classifier_array.empty()) {
-        Value array(kArrayType);
-        for(auto& classifier : sample_classifier_array) {
-            Value element(kObjectType);
-            classifier->encode(element, document);
-            array.PushBack(element.Move(), document.GetAllocator());
-        }
-        container.AddMember("sample", array.Move(), document.GetAllocator());
+        Value element(kObjectType);
+        sample_classifier_array[0]->encode(element, document);
+        container.AddMember("sample", element.Move(), document.GetAllocator());
     }
 
     if(!molecular_classifier_array.empty()) {

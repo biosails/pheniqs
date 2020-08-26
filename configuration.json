@@ -1051,12 +1051,8 @@
                             "$ref": "#/definitions/pg"
                         },
                         "sample": {
-                            "items": {
-                                "$ref": "#/definitions/decoder"
-                            },
-                            "minItems": 1,
-                            "title": "Sample barcode decoder array",
-                            "type": "array"
+                            "$ref": "#/definitions/decoder",
+                            "title": "Sample barcode decoder"
                         },
                         "threads": {
                             "$ref": "#/definitions/threads"

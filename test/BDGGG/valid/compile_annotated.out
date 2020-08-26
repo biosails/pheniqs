@@ -102,7 +102,7 @@
             "barcode length": [
                 8
             ],
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "index": 0,
             "noise": 0.01,
             "nucleotide cardinality": 8,
