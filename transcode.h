@@ -41,12 +41,12 @@ class TranscodingDecoder {
     public:
         TranscodingDecoder(const Value& ontology);
         ~TranscodingDecoder();
-        vector< Classifier< Barcode >* > sample_classifier_array;
+        Classifier< Barcode >* sample_classifier;
         vector< Classifier< Barcode >* > molecular_classifier_array;
         vector< Classifier< Barcode >* > cellular_classifier_array;
         inline void classify(const Read& input, Read& output) {
-            for(auto& classifier : sample_classifier_array) {
-                classifier->classify(input, output);
+            if(sample_classifier != NULL) {
+                sample_classifier->classify(input, output);
             }
             for(auto& classifier : molecular_classifier_array) {
                 classifier->classify(input, output);

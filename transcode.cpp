@@ -28,7 +28,9 @@
 
 /* TranscodingDecoder */
 
-TranscodingDecoder::TranscodingDecoder(const Value& ontology) try {
+TranscodingDecoder::TranscodingDecoder(const Value& ontology) try :
+    sample_classifier(NULL) {
+
     load_multiplex_decoding(ontology);
     load_sample_decoding(ontology);
     load_molecular_decoding(ontology);
@@ -39,10 +41,8 @@ TranscodingDecoder::TranscodingDecoder(const Value& ontology) try {
         throw;
 };
 TranscodingDecoder::~TranscodingDecoder() {
-    if(!sample_classifier_array.empty()) {
-        for(auto& classifier : sample_classifier_array) {
-            delete classifier;
-        }
+    if(sample_classifier != NULL) {
+        delete sample_classifier;
     }
     if(!molecular_classifier_array.empty()) {
         for(auto& classifier : molecular_classifier_array) {
@@ -80,32 +80,22 @@ void TranscodingDecoder::load_multiplex_decoding(const Value& ontology) {
 void TranscodingDecoder::load_sample_decoding(const Value& ontology) {
     Value::ConstMemberIterator reference = ontology.FindMember("sample");
     if(reference != ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            sample_classifier_array.reserve(1);
-            load_sample_decoder(reference->value);
-
-        } else if(reference->value.IsArray()) {
-            sample_classifier_array.reserve(reference->value.Size());
-            for(const auto& element : reference->value.GetArray()) {
-                load_sample_decoder(element);
-            }
-        }
+        load_sample_decoder(reference->value);
     }
-    sample_classifier_array.shrink_to_fit();
 };
 void TranscodingDecoder::load_sample_decoder(const Value& value) {
     Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
     switch(algorithm) {
         case Algorithm::PAMLD: {
-            sample_classifier_array.emplace_back(new PamlSampleDecoder(value));
+            sample_classifier = new PamlSampleDecoder(value);
             break;
         };
         case Algorithm::MDD: {
-            sample_classifier_array.emplace_back(new MdSampleDecoder(value));
+            sample_classifier = new MdSampleDecoder(value);
             break;
         };
         case Algorithm::PASSTHROUGH: {
-            sample_classifier_array.emplace_back(new Classifier< Barcode >(value));
+            sample_classifier = new Classifier< Barcode >(value);
             break;
         };
         default:
@@ -190,10 +180,8 @@ void TranscodingDecoder::load_cellular_decoder(const Value& value) {
     }
 };
 void TranscodingDecoder::collect(const TranscodingDecoder& other) {
-    if(!sample_classifier_array.empty()) {
-        for(size_t index(0); index < sample_classifier_array.size(); ++index) {
-            sample_classifier_array[index]->collect(*other.sample_classifier_array[index]);
-        }
+    if(sample_classifier != NULL) {
+        sample_classifier->collect(*other.sample_classifier);
     }
     if(!molecular_classifier_array.empty()) {
         for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
@@ -207,10 +195,8 @@ void TranscodingDecoder::collect(const TranscodingDecoder& other) {
     }
 };
 void TranscodingDecoder::finalize() {
-    if(!sample_classifier_array.empty()) {
-        for(auto& classifier : sample_classifier_array) {
-            classifier->finalize();
-        }
+    if(sample_classifier != NULL) {
+        sample_classifier->finalize();
     }
     if(!molecular_classifier_array.empty()) {
         for(auto& classifier : molecular_classifier_array) {
@@ -224,19 +210,9 @@ void TranscodingDecoder::finalize() {
     }
 };
 void TranscodingDecoder::encode(Value& container, Document& document) const {
-    // if(!sample_classifier_array.empty()) {
-    //     Value array(kArrayType);
-    //     for(auto& classifier : sample_classifier_array) {
-    //         Value element(kObjectType);
-    //         classifier->encode(element, document);
-    //         array.PushBack(element.Move(), document.GetAllocator());
-    //     }
-    //     container.AddMember("sample", array.Move(), document.GetAllocator());
-    // }
-
-    if(!sample_classifier_array.empty()) {
+    if(sample_classifier != NULL) {
         Value element(kObjectType);
-        sample_classifier_array[0]->encode(element, document);
+        sample_classifier->encode(element, document);
         container.AddMember("sample", element.Move(), document.GetAllocator());
     }
 
@@ -1493,32 +1469,57 @@ void Transcode::load_output() {
     if(reference != ontology.MemberEnd()) {
         const Value& multiplex_value(reference->value);
 
+        const bool sample_classifier_exists(ontology.FindMember("sample") != ontology.MemberEnd());
         ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", multiplex_value));
-        if(classifier_type == ClassifierType::SAMPLE) {
-            /*  Register the read group elements on the feed proxy so it can be added to SAM header
-                if a URL is present in the channel output that means the channel writes output to that file
-                and the read group should be added to the header of that file.
-            */
-            map< URL, FeedProxy* > feed_proxy_by_url;
-            for(auto& proxy : feed_proxy_array) {
-                feed_proxy_by_url.emplace(make_pair(proxy.url, &proxy));
-            };
+        if(sample_classifier_exists) {
+            reference = ontology.FindMember("sample");
+            if(reference != ontology.MemberEnd()) {
+                const Value& sample_value(reference->value);
 
-            reference = multiplex_value.FindMember("undetermined");
-            if(reference != multiplex_value.MemberEnd()) {
-                HeadRGAtom rg(reference->value);
-                list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
-                for(auto& url : output) {
-                    feed_proxy_by_url[url]->head.add_read_group(rg);
+                reference = sample_value.FindMember("undetermined");
+                if(reference != sample_value.MemberEnd()) {
+                    HeadRGAtom rg(reference->value);
+                    for(auto& proxy : feed_proxy_array) {
+                        proxy.head.add_read_group(rg);
+                    }
+                }
+                reference = sample_value.FindMember("codec");
+                if(reference != sample_value.MemberEnd()) {
+                    for(auto& record : reference->value.GetObject()) {
+                        HeadRGAtom rg(record.value);
+                        for(auto& proxy : feed_proxy_array) {
+                            proxy.head.add_read_group(rg);
+                        }
+                    }
                 }
             }
-            reference = multiplex_value.FindMember("codec");
-            if(reference != multiplex_value.MemberEnd()) {
-                for(auto& record : reference->value.GetObject()) {
-                    HeadRGAtom rg(record.value);
-                    list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
+        } else {
+            if(classifier_type == ClassifierType::SAMPLE) {
+                /*  Register the read group elements on the feed proxy so it can be added to SAM header
+                    if a URL is present in the channel output that means the channel writes output to that file
+                    and the read group should be added to the header of that file.
+                */
+                map< URL, FeedProxy* > feed_proxy_by_url;
+                for(auto& proxy : feed_proxy_array) {
+                    feed_proxy_by_url.emplace(make_pair(proxy.url, &proxy));
+                };
+
+                reference = multiplex_value.FindMember("undetermined");
+                if(reference != multiplex_value.MemberEnd()) {
+                    HeadRGAtom rg(reference->value);
+                    list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
                     for(auto& url : output) {
                         feed_proxy_by_url[url]->head.add_read_group(rg);
+                    }
+                }
+                reference = multiplex_value.FindMember("codec");
+                if(reference != multiplex_value.MemberEnd()) {
+                    for(auto& record : reference->value.GetObject()) {
+                        HeadRGAtom rg(record.value);
+                        list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
+                        for(auto& url : output) {
+                            feed_proxy_by_url[url]->head.add_read_group(rg);
+                        }
                     }
                 }
             }
