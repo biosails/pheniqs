@@ -60,7 +60,6 @@ class TranscodingDecoder {
         void encode(Value& container, Document& document) const;
 
     private:
-        void load_multiplex_decoding(const Value& ontology);
         void load_sample_decoding(const Value& ontology);
         void load_sample_decoder(const Value& value);
         void load_molecular_decoding(const Value& ontology);
@@ -123,6 +122,8 @@ class Transcode : public Job {
         void compile_topic(const Value::Ch* key);
         void compile_decoder_transformation(Value& value);
         void compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode);
+        Value& find_multiplexing_decoder();
+        void compile_multiplexing_decoder();
         void apply_repository_inheritence(const Value::Ch* key, Value& container, Document& document);
         void compile_output();
         void compile_template();

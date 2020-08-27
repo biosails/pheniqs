@@ -96,7 +96,14 @@
     "input phred offset": 33,
     "input segment cardinality": 3,
     "leading segment index": 0,
-    "multiplex": {
+    "output": [
+        "/dev/stdout"
+    ],
+    "output phred offset": 33,
+    "output segment cardinality": 3,
+    "platform": "ILLUMINA",
+    "report url": "/dev/stderr",
+    "sample": {
         "CN": "CGSB",
         "DT": "2018-02-25T07:00:00+00:00",
         "PI": "300",
@@ -105,7 +112,6 @@
         "SM": "trinidad",
         "algorithm": "passthrough",
         "base output url": "test/BDGGG",
-        "classifier type": "sample",
         "confidence threshold": 0.95,
         "flowcell id": "BDGGG",
         "index": 0,
@@ -138,13 +144,6 @@
             "segment cardinality": 0
         }
     },
-    "output": [
-        "/dev/stdout"
-    ],
-    "output phred offset": 33,
-    "output segment cardinality": 3,
-    "platform": "ILLUMINA",
-    "report url": "/dev/stderr",
     "template": {
         "transform": {
             "knit": [

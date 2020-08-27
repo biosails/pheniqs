@@ -70,7 +70,7 @@ Output transform
         Append token 0 of input segment 0 to output segment 0
         Append token 1 of input segment 2 to output segment 1
 
-Multiplex decoding
+Sample decoding
 
     Decoding algorithm                          pamld
     Shannon bound                               2

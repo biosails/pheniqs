@@ -505,7 +505,7 @@ The **PAMLD** decoder **low conditional confidence count** counts reads where th
 
 >```json
 {
-    "multiplex": {
+    "sample": {
         "average classified confidence": 0.9999766864884027,
         "average classified distance": 0.01468791896320572,
         "average pf classified confidence": 0.999980549273765,

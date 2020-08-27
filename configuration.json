@@ -10,15 +10,13 @@
                 "input": [
                     "/dev/stdin"
                 ],
-                "multiplex": {
-                    "algorithm": "passthrough",
-                    "classifier type": "sample",
-                    "multiplexing classifier": true
-                },
                 "output": [
                     "/dev/stdout"
                 ],
-                "report url": "/dev/stderr"
+                "report url": "/dev/stderr",
+                "sample": {
+                    "algorithm": "passthrough"
+                }
             },
             "description": "Multiplex and Demultiplex annotated DNA sequence reads",
             "epilog": [
@@ -438,7 +436,6 @@
             "base output url": null,
             "enable quality control": null,
             "filter outgoing qc fail": false,
-            "noise": 0.01,
             "output": null
         },
         "sample:barcode": {
@@ -1030,10 +1027,6 @@
                             "minItems": 1,
                             "title": "Molecular barcode decoder array",
                             "type": "array"
-                        },
-                        "multiplex": {
-                            "$ref": "#/definitions/decoder",
-                            "title": "Multiplex barcode decoder"
                         },
                         "output": {
                             "$ref": "#/definitions/url_array"

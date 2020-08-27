@@ -146,11 +146,11 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 
 # Classifying by barcodes
 
-The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them by this sample barcode into read groups we need to examine the first 8 nucleotides of the second segment. If we were absolutely confident no errors occurred during sequencing decoding the barcode could be as trivial as comparing two strings. In a real world scenario however each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. The `multiplex` directive is used to declare a decoder that will classify the reads by examining the segments constructed by the embedded `transform` and comparing them to the sequence segments declared in the `codec` element.
+The reads in our files were sequenced from DNA from 5 individually prepared libraries that were tagged with an 8bp technical sequence before they were pooled together for sequencing. To classify them by this sample barcode into read groups we need to examine the first 8 nucleotides of the second segment. If we were absolutely confident no errors occurred during sequencing decoding the barcode could be as trivial as comparing two strings. In a real world scenario however each nucleotide reported by a sequencing instrument is accompanied by an estimate of the probability the base was incorrectly called. We refer to such an uncertain sequence as an **observed sequence**. The `sample` directive is used to declare a decoder that will classify the reads by examining the segments constructed by the embedded `transform` and comparing them to the sequence segments declared in the `codec` element.
 
 >```json
 {
-    "multiplex": {
+    "sample": {
         "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
@@ -165,10 +165,10 @@ The reads in our files were sequenced from DNA from 5 individually prepared libr
     }
 }
 ```
->**Example 1.6** A `multiplex` decoder directive declaration using the [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding). The `transform` directive is used to extract observed segments from the raw read while the `codec` directive names the possible barcode sequences we expect to find.
+>**Example 1.6** A `sample` decoder directive declaration using the [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding). The `transform` directive is used to extract observed segments from the raw read while the `codec` directive names the possible barcode sequences we expect to find.
 {: .example}
 
-In this example we declare a `multiplex` directive that uses the [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) algorithm. This algorithm will choose a barcode using a maximum likelihood estimate and reject any classification with a decoding confidence lower than the `confidence threshold` parameter. The `noise` parameter is the prior probability that an observed sequence has not originated from any of the provided barcodes. The value of `noise` is often set to the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the solution for reads sequenced on the Illumina platform but can be higher if you expect other types of noise to be present. In the `codec` directive we provide a discrete set of possible decoding results. All `barcode` segment arrays must match the layout declared in the embedded `transform` directive, in this example one 8bp segment. The keys of the `codec` directive can be any unique string. In this example we used the unique barcode nucleotide sequence prefixed with an @ character to remind us this is simply a unique identifier.
+In this example we declare a `sample` directive that uses the [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) algorithm. This algorithm will choose a barcode using a maximum likelihood estimate and reject any classification with a decoding confidence lower than the `confidence threshold` parameter. The `noise` parameter is the prior probability that an observed sequence has not originated from any of the provided barcodes. The value of `noise` is often set to the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the solution for reads sequenced on the Illumina platform but can be higher if you expect other types of noise to be present. In the `codec` directive we provide a discrete set of possible decoding results. All `barcode` segment arrays must match the layout declared in the embedded `transform` directive, in this example one 8bp segment. The keys of the `codec` directive can be any unique string. In this example we used the unique barcode nucleotide sequence prefixed with an @ character to remind us this is simply a unique identifier.
 
 >```json
 {
@@ -180,7 +180,7 @@ In this example we declare a `multiplex` directive that uses the [phred-adjusted
     "template": {
         "transform": { "token": [ "0::", "2::" ] }    
     },
-    "multiplex": {
+    "sample": {
         "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },
@@ -230,7 +230,7 @@ The [PAML decoder](glossary#phred_adjusted_maximum_likelihood_decoding) computes
 
 >```json
 {
-    "multiplex": {
+    "sample": {
         "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ], "concentration": 2 },
@@ -245,12 +245,12 @@ The [PAML decoder](glossary#phred_adjusted_maximum_likelihood_decoding) computes
     }
 }
 ```
->**Example 1.9** Adding a prior to one of the code words when declaring a `multiplex` decoder directive. Since the priors are automatically normalized and default to 1, this declaration effectively states that we expect twice as many reads to be classified to @AGGCAGAA than the other 4 read groups.
+>**Example 1.9** Adding a prior to one of the code words when declaring a `sample` decoder directive. Since the priors are automatically normalized and default to 1, this declaration effectively states that we expect twice as many reads to be classified to @AGGCAGAA than the other 4 read groups.
 {: .example}
 
 # Minimum Distance Decoding
 
-Pheniqs can also be instructed to decode the barcodes using the traditional [minimum distance decoder](glossary#minimum_distance_decoding), that only consults the edit distance between the expected and observed sequence, by setting the multiplex decoder `algorithm` directive to `mdd`. The MDD decoder however ignores the presence of noise and the error probabilities provided by the sequencing instrument and does not compute or report the classification error probability. It is provided for legacy purposes but PAMLD will yield superior results in almost every real world scenario.
+Pheniqs can also be instructed to decode the barcodes using the traditional [minimum distance decoder](glossary#minimum_distance_decoding), that only consults the edit distance between the expected and observed sequence, by setting the sample decoder `algorithm` directive to `mdd`. The MDD decoder however ignores the presence of noise and the error probabilities provided by the sequencing instrument and does not compute or report the classification error probability. It is provided for legacy purposes but PAMLD will yield superior results in almost every real world scenario.
 
 # Speeding things up
 
@@ -266,7 +266,7 @@ As we mentioned before reading input from CRAM input can be vastly superior to r
     "template": {
         "transform": { "token": [ "0::", "2::" ] }
     },
-    "multiplex": {
+    "sample": {
         "transform": { "token": [ "1::8" ] },
         "codec": {
             "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ] },

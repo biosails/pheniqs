@@ -367,25 +367,22 @@ Channel& Channel::operator+=(const Channel& rhs) {
     read_accumulator += rhs.read_accumulator;
     return *this;
 };
-template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Value& container) {
+template<> vector< Channel > decode_value< vector< Channel > >(const Value& container) {
     vector< Channel > value;
-    Value::ConstMemberIterator decoder_reference = container.FindMember(key);
-    if(decoder_reference != container.MemberEnd()) {
-        Value::ConstMemberIterator undetermined_reference = decoder_reference->value.FindMember("undetermined");
-        if(undetermined_reference != decoder_reference->value.MemberEnd()) {
-            Value::ConstMemberIterator codec_reference = decoder_reference->value.FindMember("codec");
-            if(codec_reference != decoder_reference->value.MemberEnd()) {
-                value.reserve(codec_reference->value.MemberCount() + 1);
-                value.emplace_back(undetermined_reference->value);
-                for(auto& record : codec_reference->value.GetObject()) {
-                    value.emplace_back(record.value);
-                }
-            } else {
-                value.reserve(1);
-                value.emplace_back(undetermined_reference->value);
+    Value::ConstMemberIterator undetermined_reference = container.FindMember("undetermined");
+    if(undetermined_reference != container.MemberEnd()) {
+        Value::ConstMemberIterator codec_reference = container.FindMember("codec");
+        if(codec_reference != container.MemberEnd()) {
+            value.reserve(codec_reference->value.MemberCount() + 1);
+            value.emplace_back(undetermined_reference->value);
+            for(auto& record : codec_reference->value.GetObject()) {
+                value.emplace_back(record.value);
             }
-        } else { throw ConfigurationError("decoder must declare an undetermined element"); }
-    }
+        } else {
+            value.reserve(1);
+            value.emplace_back(undetermined_reference->value);
+        }
+    } else { throw ConfigurationError("decoder must declare an undetermined element"); }
     return value;
 };
 
@@ -394,7 +391,7 @@ template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Val
 Multiplexer::Multiplexer(const Value& ontology) try :
     filter_outgoing_qc_fail(decode_value_by_key< bool >("filter outgoing qc fail", ontology)),
     enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology)),
-    channel_by_index(decode_value_by_key< vector< Channel > >("multiplex", ontology)) {
+    channel_by_index(decode_value< vector< Channel > >(ontology)) {
 
     } catch(Error& error) {
         error.push("Multiplexer");

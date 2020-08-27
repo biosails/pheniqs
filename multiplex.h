@@ -225,7 +225,7 @@ class Channel {
         void encode(Value& container, Document& document) const;
         Channel& operator+=(const Channel& rhs);
 };
-template<> vector< Channel > decode_value_by_key(const Value::Ch* key, const Value& container);
+template<> vector< Channel > decode_value< vector< Channel > >(const Value& container);
 
 class Multiplexer {
     public:
