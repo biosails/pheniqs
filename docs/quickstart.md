@@ -108,7 +108,7 @@ pheniqs mux \
 
 # Read transformation
 
-Pheniqs provides a generic method to derive new sets of sequence segments from the input read. A set can form the desired output or it can be a technical artifact used to classify the biological sequence. Either way, the syntax is the same. When declared inside the `template` section, the `transform` directive constructs the [output read segments](glossary#output_segment). When declared inside a barcode decoder, it constructs the set of sequences that will be assessed against the list of expected barcode sequences.
+Pheniqs provides a generic method to derive new sets of sequence segments from the input read. A set can form the desired output or it can be a technical artifact used to classify the biological sequence. Either way, the syntax is the same. When declared inside the `template` section, the `transform` directive constructs the [output read segments](glossary#output_segment). When declared inside a barcode decoder, it constructs a segmented sequence that is assessed against the list of expected barcodes.
 
 Transforms operate on the input read in two steps: First the `token` element, a JSON array of [tokenization](configuration#tokenization) patterns, that each extract a continuous sequence (or a token) from an [input segment](glossary#input_segment), and second the `knit` element that [constructs](configuration#segment-assembly) new segments from the previously defined tokens.
 
