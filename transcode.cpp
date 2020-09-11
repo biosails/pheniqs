@@ -1060,7 +1060,7 @@ Value& Transcode::find_multiplexing_decoder() {
     }
 
     if(candidate.empty()) {
-        /* otherwise search for a decoder that mentions output */
+        /* if no decoder was explicitly marked as the multiplexer search for a decoder that mentions output */
         reference = ontology.FindMember("sample");
         if(reference != ontology.MemberEnd()) {
             Value& sample_value(reference->value);
@@ -1121,7 +1121,7 @@ Value& Transcode::find_multiplexing_decoder() {
         }
 
         if(candidate.empty()) {
-            /* otherwise use the sample */
+            /* if no decoder mentions output use the sample */
             reference = ontology.FindMember("sample");
             if(reference != ontology.MemberEnd()) {
                 encode_key_value("multiplexing classifier", true, reference->value, ontology);
