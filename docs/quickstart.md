@@ -182,11 +182,11 @@ In this example we declare a `sample` directive that uses the [phred-adjusted ma
     "sample": {
         "transform": { "token": [ "1::8" ] },
         "codec": {
-            "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ], "LB":"trinidad_1" },
-            "@CGTACTAG": { "barcode": [ "CGTACTAG" ], "LB":"trinidad_2" },
-            "@GGACTCCT": { "barcode": [ "GGACTCCT" ], "LB":"trinidad_3" },
-            "@TAAGGCGA": { "barcode": [ "TAAGGCGA" ], "LB":"trinidad_4" },
-            "@TCCTGAGC": { "barcode": [ "TCCTGAGC" ], "LB":"trinidad_5" }
+            "@AGGCAGAA": { "barcode": [ "AGGCAGAA" ], "LB":"trinidad 5" },
+            "@CGTACTAG": { "barcode": [ "CGTACTAG" ], "LB":"trinidad 4" },
+            "@GGACTCCT": { "barcode": [ "GGACTCCT" ], "LB":"trinidad 9" },
+            "@TAAGGCGA": { "barcode": [ "TAAGGCGA" ], "LB":"trinidad 1" },
+            "@TCCTGAGC": { "barcode": [ "TCCTGAGC" ], "LB":"trinidad 8" }
         }
         "algorithm": "pamld",
         "noise": 0.02,
