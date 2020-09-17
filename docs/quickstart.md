@@ -77,7 +77,8 @@ In the follwing example you will see how to use this simple example to interleav
 
 # Declaring Output
 
-Since in most cases you do not want your output delivered to stdout, you will want to provide an output file path. To write interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**. Like `input`, the `output` directive is a JSON array of file paths. To interleave all output segments into the same file, specify only that one path in the `output` array. Alternatively, to split the output to multiple files, specify the same number as there are segments in the output read.
+Since in most cases you do not want output to be delivered to stdout, you will need to provide an output file path. To write interleaved output to a compressed CRAM file simply add an `output` directive to **Example 1.1**. Like `input`, the `output` directive is a JSON array of file paths. To interleave all output segments into the same file, specify only that one path in the `output` array. Alternatively, to split the output to multiple files, specify the same number as there are segments in the output read. You may optionally specify `base output url` to resolve relative paths and make the configuration file more portable. [Absolute file paths](glossary#absolute_path) ignore `base output url`.
+
 
 >```json
 {
@@ -89,10 +90,8 @@ Since in most cases you do not want your output delivered to stdout, you will wa
     "output": [ "000000000-BDGGG_raw.cram" ]
 }
 ```
->**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
+>**Example 1.3** Interleaving three read segments verbatim into a single CRAM file. CRAM and BAM files are often much faster to read and write, especially in highly parallelized environments, and also support a rich metadata vocabulary.
 {: .example}
-
-You may optionally specify `base output url` to explicitly provide a base directory and make the configuration file more portable. [Absolute file paths](glossary#absolute_path) ignore `base output url`.
 
 Before we move on to read manipulation here is the same interleaving configuration achieved without a configuration file by specifying the same instruction on the command lines
 
@@ -168,7 +167,7 @@ The reads in our files were sequenced from DNA from 5 individually prepared libr
 >**Example 1.6** A `sample` decoder directive declaration using the [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding). The `transform` directive is used to extract observed segments from the raw read while the `codec` directive names the possible barcode sequences we expect to find.
 {: .example}
 
-In this example we declare a `sample` directive that uses the [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) algorithm. This algorithm will choose a barcode using a maximum likelihood estimate and reject any classification with a decoding confidence lower than the `confidence threshold` parameter. The `noise` parameter is the prior probability that an observed sequence has not originated from any of the provided barcodes. The value of `noise` is often set to the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the solution for reads sequenced on the Illumina platform but can be higher if you expect other types of noise to be present. In the `codec` directive we provide a discrete set of possible decoding results. All `barcode` segment arrays must match the layout declared in the embedded `transform` directive, in this example one 8bp segment. The keys of the `codec` directive can be any unique string. In this example we used the unique barcode nucleotide sequence prefixed with an @ character to remind us this is simply a unique identifier.
+In this example we declare a `sample` directive that uses the [phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) algorithm. This algorithm will choose a barcode using a maximum likelihood estimate and reject any classification with a decoding confidence lower than the `confidence threshold` parameter. The `noise` parameter is the prior probability that an observed sequence has not originated from any of the provided barcodes. The value of `noise` is often set to the amount of [PhiX Control Library](http://support.illumina.com/content/dam/illumina-marketing/documents/products/technotes/hiseq-phix-control-v3-technical-note.pdf) spiked into the solution for reads sequenced on the Illumina platform but can be higher if you expect other types of noise to be present. In the `codec` directive we provide a discrete set of possible decoding results. All `barcode` segment arrays must match the layout declared in the embedded `transform` directive, in this example one 8bp segment. The keys of the `codec` dictionary can be any unique string.
 
 >```json
 {
