@@ -17,7 +17,7 @@ id: glossary
 : A DNA/RNA sequence part of which is sequenced on a sequencing machine or assembled from raw sequences.
 
 <a name="technical_sequence" />Technical sequence
-: A synthetic nucleotide sequence often ligated to a [template sequence](#template_sequence) for the purpose of classification, quantification or some other quality control need. Some common examples of a technical sequence are a sequencing adapter, [multiplex barcode](#multiplex_barcode) or a [molecular barcode](#molecular_barcode).
+: A synthetic nucleotide sequence often ligated to a [template sequence](#template_sequence) for the purpose of classification, quantification or some other quality control need. Some common examples of a technical sequence are a sequencing adapter, [sample barcode](#sample_barcode) or a [molecular barcode](#molecular_barcode).
 
 <a name="read" />Sequence Read
 : A raw sequence that comes off a sequencing machine. A read may consist of multiple ordered [segments](#segment).
@@ -31,8 +31,8 @@ id: glossary
 <a name="output_segment" />Output segment
 : An enumerated [segment](#segment) of the output [read](#read). Output segment indexes are [zero based](#zero_based_coordinate).
 
-<a name="multiplex_barcode" />Multiplex barcode
-: A [technical sequence](#technical_sequence) used to classify a [read](#read) into read groups. A multiplex barcode can have multiple [segments](#segment) and a match to all segments is required by the decoder to declare a successful classification. The sequence and quality of the concatenated multiplex barcode are written in SAM records to the standardized [BC](#bc_auxiliary_tag) and [QT](#qt_auxiliary_tag) auxiliary tags. When decoding with [Phred-adjusted maximum likelihood](#phred_adjusted_maximum_likelihood_decoding) Pheniqs also writes the decoding error probability to the [XB](#dq_auxiliary_tag) tag. Multiplex barcode segment indexes are [zero based](#zero_based_coordinate).
+<a name="sample_barcode" />Multiplex barcode
+: A [technical sequence](#technical_sequence) used to classify a [read](#read) into read groups. A sample barcode can have multiple [segments](#segment) and a match to all segments is required by the decoder to declare a successful classification. The sequence and quality of the concatenated sample barcode are written in SAM records to the standardized [BC](#bc_auxiliary_tag) and [QT](#qt_auxiliary_tag) auxiliary tags. When decoding with [Phred-adjusted maximum likelihood](#phred_adjusted_maximum_likelihood_decoding) Pheniqs also writes the decoding error probability to the [XB](#dq_auxiliary_tag) tag. Multiplex barcode segment indexes are [zero based](#zero_based_coordinate).
 
 <a name="molecular_barcode" />Molecular barcode
 : Also known as a UMI (Unique Molecular Identifier) is a [technical sequence](#technical_sequence) used to identify unique DNA fragments. Duplicate read elimination is often used to assist in quantification and to improve read confidence. The sequence and quality of the molecular barcode are written in SAM records to the community proposed [RX](#rx_auxiliary_tag) and [QX](#qx_auxiliary_tag) auxiliary tags.
@@ -59,13 +59,13 @@ id: glossary
 : Read group identifier. The value must be consistent with the ID property of an [@RG](#rg_header_tag) header tag.
 
 <a name="bc_auxiliary_tag" />BC auxiliary tag
-: Raw uncorrected multiplex barcode sequence with any quality scores stored in the [QT](#qt_auxiliary_tag) tag. The BC tag should match the QT tag in length. In the case of multiple multiplex barcode segments, all segments are concatenated with a hyphen (‘-’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
+: Raw uncorrected sample barcode sequence with any quality scores stored in the [QT](#qt_auxiliary_tag) tag. The BC tag should match the QT tag in length. In the case of multiple sample barcode segments, all segments are concatenated with a hyphen (‘-’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
 
 <a name="qt_auxiliary_tag" />QT auxiliary tag
-: [Phred](#sanger_format) quality of the sample barcode sequence in the [BC](#bc_auxiliary_tag) tag. Phred score is + 33 encoded. In the case of multiple multiplex barcode segments, all segments are concatenated with a space (‘ ’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
+: [Phred](#sanger_format) quality of the sample barcode sequence in the [BC](#bc_auxiliary_tag) tag. Phred score is + 33 encoded. In the case of multiple sample barcode segments, all segments are concatenated with a space (‘ ’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf).
 
 <a name="xb_auxiliary_tag" />XB auxiliary tag
-: The probability that the decoding of the multiplexing barcode stored in [BC](#bc_auxiliary_tag) tag was incorrect.
+: The probability that the decoding of the sample barcode stored in [BC](#bc_auxiliary_tag) tag was incorrect.
 
 <a name="rx_auxiliary_tag" />RX auxiliary tag
 : Sequence bases from the [unique molecular identifier](#molecular_barcode) with any quality scores stored in the [QX](#qx_auxiliary_tag) tag. The RX tag should match the QX tag in length. These could be either corrected or uncorrected. Unlike [MI](#mi_auxiliary_tag) tag, the value may be non-unique in the file. In the case of multiple molecular barcode segments, all segments are concatenated with a hyphen (‘-’) separator, following the sequence alignment map format specification [recommendation](https://samtools.github.io/hts-specs/SAMv1.pdf). If the bases represent corrected bases, the original sequence can be stored in [OX](#ox_auxiliary_tag) tag.
