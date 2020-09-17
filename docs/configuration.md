@@ -8,8 +8,6 @@ id: configuration
 * placeholder
 {:toc}
 
-# Configuration parameters
-
 When executing trivial scenarios, such as format conversion or interleaving, it is sufficient to provide parameters on the [command line](/pheniqs/cli). Scenarios involving barcode decoding, however, are too verbose to provide on a command line and require a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, read segment manipulation, barcode decoding and other run parameters. Parameters specified as command line arguments always override their configuration file counterparts. Almost all parameters have a default value. A brief description of the parameters available on the command line is available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli#zsh-completion) will give you a more interactive command line experience.
 
 A Pheniqs configuration file can import instructions from additional configuration files and supports a sophisticated inheritance mechanism. While you may certainly ignore this added complexity at first, separating different aspects of your experimental design into reusable instruction files can significantly simplify day to day use. Standard Illumina codecs are also available as generic configuration files you can import and inherit from.
