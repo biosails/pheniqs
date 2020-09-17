@@ -958,6 +958,19 @@ void Transcode::compile_decoder(Value& value, int32_t& index, const Value& defau
                         total_concentration += concentration;
                     } else { throw ConfigurationError("barcode concentration must be a positive number");  }
                     ++barcode_index;
+
+                    /* encode the BC attribute */
+                    list< string > barcode_segment;
+                    if(decode_value_by_key< list< string > >("barcode", barcode_segment, record.value)) {
+                        string barcode_string;
+                        for(auto& segment : barcode_segment) {
+                            if(!barcode_string.empty()) {
+                                barcode_string.append("-");
+                            }
+                            barcode_string.append(segment);
+                        }
+                        encode_key_value("BC", barcode_string, record.value, ontology);
+                    }
                 }
 
                 int32_t nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", value));
