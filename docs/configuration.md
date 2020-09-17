@@ -263,7 +263,6 @@ The `sample` directive accommodates one sample decoder. When decoding the sample
             "@CGTACTAGTCTTACGC": { "barcode": [ "CGTACTAG", "TCTTACGC" ] }
         }
     }
-
 }
 ```
 >**Example 2.10** Expanding **Example 2.9** we declare 4 classes for a sample decoder which will be be matched against the segmented sequence extracted by the `transform`.
