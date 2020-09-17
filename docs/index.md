@@ -5,8 +5,6 @@ permalink: /
 id: home
 ---
 
-Fast and accurate sequence manipulation
-
 ![transform patterns](/pheniqs/assets/img/transform_patterns.png)
 
 Pheniqs is a flexible generic barcode classifier for high-throughput next-gen sequencing that caters to a wide variety of experimental designs and has been designed for efficient data processing. Features include:
