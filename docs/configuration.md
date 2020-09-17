@@ -139,6 +139,8 @@ A token pattern is made of 3 colon separated integers. The first is the **mandat
 >**Example 2.7** This `transform` directive is semantically identical to the one provided in **Example 2.6** but explicitly declares the `knit` directive and token **start** coordinate.
 {: .example}
 
+Since token patterns follow the python array slicing syntax you can test your patterns by using a toy example of an array in a python shell. The follwing are examples of tokenizing 9 nucleotides. The Bitmap column shows you exactly which cycles are effectively selected by the pattern.
+
 >| **Cycle**      | `012345678` |
 >| **Nucleotide** | `GGACTCCTA` |
 >
