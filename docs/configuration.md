@@ -271,7 +271,7 @@ NOTE: The keys of the `codec` dictionary directive have no special meaning and y
 
 ## Read groups
 
-The class decoded by the sample decoder corresponds to a read group. You may define read group related attributes in each class entry in the `codec` dictionary. Read group attributes that apply to all read groups may be declared upstream in either the sample decoder or the root of the instruction document.
+Sample barcodes are traditionally mapped to the SAM concept of Read groups. In addition to the correct sequence identifying the read group, the SAM [RG](glossary#rg_auxiliary_tag) header tag can contain additional [metadata fields](https://samtools.github.io/hts-specs/SAMv1.pdf) that you can either specify for an individual read group or globally for inclusion in all read groups.
 
 >```json
 {
@@ -321,42 +321,41 @@ The class decoded by the sample decoder corresponds to a read group. You may def
 
 The [SAM specification](https://samtools.github.io/hts-specs/SAMv1.pdf) outlines some attributes associated with a read group.
 
-| Name                                      | Description                                                                   | Type   |
-| :---------------------------------------- | :---------------------------------------------------------------------------- | :----- |
-| **ID**                                    | Read group identifier                                                         | string |
-| **[LB](glossary#lb_auxiliary_tag)**       | Library name                                                                  | string |
-| **[SM](glossary#sm_auxiliary_tag)**       | Sample name                                                                   | string |
-| **[PU](glossary#pu_auxiliary_tag)**       | Platform unit unique identifier                                               | string |
-| **CN**                                    | Name of sequencing center producing the read                                  | string |
-| **DS**                                    | Description                                                                   | string |
-| **DT**                                    | [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date the run was produced   | string |
-| **FO**                                    | Flow order                                                                    | string |
-| **KS**                                    | Key sequence                                                                  | string |
-| **PI**                                    | Predicted median insert size                                                  | string |
-| **[PL](glossary#pl_auxiliary_tag)**       | Platform or technology used to produce the reads                              | string |
-| **PM**                                    | Platform model                                                                | string |
-| **PG**                                    | Programs used for processing the read group                                   | string |
+| Name                                | Description                                                                   | Type   |
+| :---------------------------------- | :---------------------------------------------------------------------------- | :----- |
+| **[ID](glossary#rg_id_header_tag)** | Read group identifier                                                         | string |
+| **[BC](glossary#rg_bc_header_tag)** | Correct barcode sequence                                                      | string |
+| **[LB](glossary#rg_lb_header_tag)** | Library name                                                                  | string |
+| **[SM](glossary#rg_sm_header_tag)** | Sample name                                                                   | string |
+| **[PU](glossary#rg_pu_header_tag)** | Platform unit unique identifier                                               | string |
+| **[CN](glossary#rg_cn_header_tag)** | Name of sequencing center producing the read                                  | string |
+| **[DS](glossary#rg_ds_header_tag)** | Description                                                                   | string |
+| **[DT](glossary#rg_dt_header_tag)** | [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date the run was produced   | string |
+| **[FO](glossary#rg_fo_header_tag)** | Flow order                                                                    | string |
+| **[KS](glossary#rg_ks_header_tag)** | Key sequence                                                                  | string |
+| **[PI](glossary#rg_pi_header_tag)** | Predicted median insert size                                                  | string |
+| **[PL](glossary#rg_pl_header_tag)** | Platform or technology used to produce the reads                              | string |
+| **[PM](glossary#rg_pm_header_tag)** | Platform model                                                                | string |
+| **[PG](glossary#rg_pg_header_tag)** | Programs used for processing the read group                                   | string |
 
 * **ID** defaults to the value of **PU** if not explicitly specified. If explicitly declared it must be unique within the `codec` dictionary.
 * **PU**, following the [convention established by GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472), defaults to `flowcell id`:`flowcell lane number`: `barcode`. If `flowcell id` or `flowcell lane number` are not specified they are omitted along with their trailing `:`. If explicitly declared **PU** must be unique within the `codec` dictionary.
 * **PL**, as defined in the SAM specification, is one of *CAPILLARY*, *LS454*, *ILLUMINA*, *SOLID*, *HELICOS*, *IONTORRENT*, *ONT*, *PACBIO*.
+* **BC** is computed from the declared barcode seuqnce according to SAM conventions.
 
 ## The `molecular` directive
 
-The `molecular` directive can be used to declare either a single decoder or an array containing multiple decoders. When decoding molecular barcodes Pheniqs will write the nucleotide barcode sequence to the [RX](glossary#rx_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [OX](glossary#ox_auxiliary_tag) tag. A molecular identifier is written to the [MI](glossary#mi_auxiliary_tag) tag.
+The `molecular` directive can be used to declare an array containing multiple decoders. When decoding molecular barcodes Pheniqs will write the nucleotide barcode sequence to the [RX](glossary#rx_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [OX](glossary#ox_auxiliary_tag) tag. A molecular identifier is written to the [MI](glossary#mi_auxiliary_tag) tag.
 
 If error correction is applied to the barcode the raw, uncorrected, nucleotide, and quality sequences are written to the [QX](glossary#qx_auxiliary_tag) and [BZ](glossary#bz_auxiliary_tag) tags and the decoding error probability to the [XM](glossary#xm_auxiliary_tag) tag.
 
 ## The `cellular` directive
-The `cellular` directive can be used to declare either a single decoder or an array containing multiple decoders. When decoding cellular barcodes Pheniqs will write the raw, uncorrected, nucleotide barcode sequence to the [CR](glossary#cr_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [CY](glossary#cy_auxiliary_tag) tag, while The decoded cellular barcode is written to the [CB](glossary#cb_auxiliary_tag) tag. The decoding error probability is written to the [XC](glossary#cr_auxiliary_tag) tag.
 
-## The `multiplex` directive
-
-You may split output reads into separate files by the barcode decoded with one closes class decoder. To do that you declare that decoder in the `multiplex` tag instead of in the corresponding `sample`, `cellular` or `molecular` directive. The `output` attribute can be declared in the `multiplex` decoder or in each of the individual `multiplex` decoder classes in `codec`. the `classifier type` tag in `multiplex` signals to Pheniqs if this is a `sample`, `cellular` or `molecular` decoder and defaults to `sample`.
+The `cellular` directive can be used to declare an array containing multiple decoders. When decoding cellular barcodes Pheniqs will write the raw, uncorrected, nucleotide barcode sequence to the [CR](glossary#cr_auxiliary_tag) SAM auxiliary tag and the corresponding Phred encoded quality sequence to the [CY](glossary#cy_auxiliary_tag) tag, while The decoded cellular barcode is written to the [CB](glossary#cb_auxiliary_tag) tag. The decoding error probability is written to the [XC](glossary#cr_auxiliary_tag) tag.
 
 # URL handling
 
-Setting global URL prefixes make your instruction file more portable. If specified, the `base input url` and `base output url` are used as a prefix to **relative** URLs defined in the `input` and `output` directives, respectively. A URL is considered relative if it **does not** begin with a **/** character. Environment variables in URLs will be resolved by Pheniqs when it compiles your instruction file. `base input url` and `base output url` default to the `working directory` which is the directory where Pheniqs was executed, so if the a corresponding `base` is not specified, **relative** URLs are resolved against the `working directory`.
+Setting global URL prefixes can make your instruction file more portable. If specified, the `base input url` and `base output url` are used as a prefix to **relative** URLs defined in the `input` and `output` directives, respectively. A URL is considered relative if it **does not** begin with a **/** character. Environment variables in URLs will be resolved by Pheniqs when your instruction file is compiled. `base input url` and `base output url` default to the `working directory` which is the directory where Pheniqs was executed, so if the a corresponding base directory is not specified, **relative** URLs are resolved against the `working directory`.
 
 >```json
 {
