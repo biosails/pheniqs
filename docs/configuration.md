@@ -8,7 +8,7 @@ id: configuration
 * placeholder
 {:toc}
 
-When executing trivial scenarios, such as format conversion or interleaving, it is sufficient to provide parameters on the [command line](/pheniqs/cli). Scenarios involving barcode decoding, however, are too verbose to provide on a command line and require a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, read segment manipulation, barcode decoding and other run parameters. Parameters specified as command line arguments always override their configuration file counterparts. Almost all parameters have a default value. A brief description of the parameters available on the command line is available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli#zsh-completion) will give you a more interactive command line experience.
+When executing trivial scenarios, such as format conversion or interleaving, it is sufficient to provide parameters on the [command line](/pheniqs/cli). However, scenarios involving barcode decoding are too verbose to provide on a command line and require a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, read segment manipulation, barcode decoding and other run parameters. Parameters specified as command line arguments always override their configuration file counterparts. Almost all parameters have a default value. A brief description of the parameters available on the command line is available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli#zsh-completion) will give you a more interactive command line experience.
 
 A Pheniqs configuration file can import instructions from additional configuration files and supports a sophisticated inheritance mechanism. While you may certainly ignore this added complexity at first, separating different aspects of your experimental design into reusable instruction files can significantly simplify day to day use. Standard Illumina codecs are also available as generic configuration files you can import and inherit from.
 
@@ -37,7 +37,7 @@ The `input` directive is an ordered array of file paths. Pheniqs assembles an in
 >**Example 2.1** Declaring an input read that is [split](glossary#split_file_layout) over four gzip compressed FASTQ files.
 {: .example}
 
-[Interleaved](glossary#interleaved_file_layout) files contain multiple consecutive segments of the same read. You can ask Pheniqs to [automatically detect the interleaving pattern](#automatic-input-sensing) or explicitly assemble an input read from interleaved files simply repeat the path to reference the same file multiple times, once for each [segment](glossary#segment).
+[Interleaved](glossary#interleaved_file_layout) files contain multiple consecutive segments of the same read. You can ask Pheniqs to [automatically detect the interleaving pattern](#automatic-input-sensing) or explicitly assemble an input read from interleaved files by simply repeating the path to reference the same file multiple times, once for each [segment](glossary#segment).
 
 >```json
 {
@@ -74,7 +74,7 @@ The `input` directive defaults to expecting interleaved input from standard inpu
     "input": [ "/dev/stdin" ]
 }
 ```
->**Example 2.4** Pheniqs implicitly expects input on standard input if not instructed otherwise. The format will be automatically detected.
+>**Example 2.4** **This is the default input directive**. If not instructed otherwise, Pheniqs implicitly expects input from standard input. The format will be automatically detected.
 {: .example}
 
 ## Automatic `input` sensing
