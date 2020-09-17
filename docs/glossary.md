@@ -121,6 +121,42 @@ id: glossary
 <a name="rg_header_tag" />@RG header tag
 :   Defines a read group in a SAM header.
 
+<a name="rg_id_header_tag" />@RG:ID header tag
+:   Read group identifier. Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section.
+
+<a name="rg_bc_header_tag" />@RG:BC header tag
+:   Barcode sequence identifying the sample or library. This value is the expected barcode bases as read by the sequencing machine in the absence of errors.
+
+<a name="rg_cn_header_tag" />@RG:CN header tag
+:   Name of sequencing center producing the read.
+
+<a name="rg_ds_header_tag" />@RG:DS header tag
+:   Description. UTF-8 encoding may be used.
+
+<a name="rg_dt_header_tag" />@RG:DT header tag
+:   Date the run was produced (ISO8601 date or date/time).
+
+<a name="rg_lb_header_tag" />@RG:LB header tag
+:   Library associated with the read group.
+
+<a name="rg_pg_header_tag" />@RG:PG header tag
+:   Programs used for processing the read group.
+
+<a name="rg_pi_header_tag" />@RG:PI header tag
+:   Predicted median insert size.
+
+<a name="rg_pl_header_tag" />@RG:PL header tag
+:   Platform/technology used to produce the reads. Valid values: *CAPILLARY*, *DNBSEQ* (MGI/BGI), *HELICOS*, *ILLUMINA*, *IONTORRENT*, *LS454*, *ONT* (Oxford Nanopore), *PACBIO* (Pacific Biotechnology), and *SOLID*. Pheniqs uses this tag to interpret metadata from the read ID in FASTQ formatted reads.
+
+<a name="rg_pm_header_tag" />@RG:PM header tag
+:   Platform model. Free-form text providing further details of the platform/technology used.
+
+<a name="rg_pu_header_tag" />@RG:PU header tag
+:   Platform unit unique identifier.
+
+<a name="rg_sm_header_tag" />@RG:SM header tag
+:   Platform unit unique identifier.
+
 <a name="pg_header_tag" />@PG header tag
 : Defines a program in a SAM header.
 
