@@ -74,7 +74,7 @@ The `input` directive defaults to expecting interleaved input from standard inpu
     "input": [ "/dev/stdin" ]
 }
 ```
->**Example 2.4** **This is the default input directive**. If not instructed otherwise, Pheniqs implicitly expects input from standard input. The format will be automatically detected.
+>**Example 2.4** This is the default input directive. If not instructed otherwise, Pheniqs implicitly expects input from standard input. The format will be automatically detected.
 {: .example}
 
 ## Automatic `input` sensing
@@ -106,7 +106,7 @@ GTCCTATCCTACTCGGCTTCTCCCCATTTTTCAGACATTTTCCTATCAGTC
 +
 CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 ```
->**Example 2.5** This interleaved FASTQ file has a resolution value of **3**.
+>**Example 2.5** This FASTQ file interleaves three segments for each read and so has a resolution value of **3**.
 {: .example}
 
 # The `transform` directive
