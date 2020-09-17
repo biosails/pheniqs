@@ -411,7 +411,7 @@ Pheniqs will try to guess output format and compression from the output URL file
 
 ## Standard streams
 
-If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write SAM to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. When writing to **/dev/stdout** you might want to explicitly provide a format with the `format`, `compression` and `level` [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Alternatively you can specify defaults with `-F/--format`, `-Z/--compression` and `-L/--level` command line arguments. You may even specify **/dev/null** as a URL in an `output` directive to discard the output.
+If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write SAM to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. When writing to **/dev/stdout** you might want to explicitly provide a format with the `format`, `compression` and `level` [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Alternatively you can specify defaults with `-F/--format`, `-Z/--compression` and `-L/--level` command line arguments, but those will apply to all otherwise unspecified files. You may even specify **/dev/null** as a URL in an `output` directive to discard the output.
 
 >```json
 {
