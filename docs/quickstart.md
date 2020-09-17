@@ -205,7 +205,7 @@ In this example we declare a `sample` directive that uses the [phred-adjusted ma
 >**Example 1.7** A complete instruction for demultiplexing with one 8bp barcode segment present on the second input segment to an [interleaved](glossary#interleaved_file_layout) SAM stream. The [CN](glossary#rg_cn_header_tag), [DT](glossary#rg_dt_header_tag), [PI](glossary#rg_pi_header_tag), [PL](glossary#rg_pl_header_tag), [PM](glossary#rg_pm_header_tag) and [SM](glossary#rg_sm_header_tag) tags are declared globally and will be added to all read groups, while the [LB](glossary#rg_lb_header_tag) is declared individually for each read group.
 {: .example}
 
-Sample barcodes are traditionally mapped to the SAM concept of Read Groups. The SAM [RG](glossary#rg_auxiliary_tag) header tag can contain additional metadata fields named with a capitalized 2 letter code that can be either specified for an individual read group or globally for inclusion in all read groups.
+Sample barcodes are traditionally mapped to the SAM concept of Read groups. In addition to the correct sequence identifying the read group, the SAM [RG](glossary#rg_auxiliary_tag) header tag can contain additional [metadata fields](https://samtools.github.io/hts-specs/SAMv1.pdf) that you can either specify for an individual read group or globally for inclusion in all read groups.
 
 >```
 @HD     VN:1.0  SO:unknown      GO:query
