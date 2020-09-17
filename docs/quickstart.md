@@ -202,7 +202,7 @@ In this example we declare a `sample` directive that uses the [phred-adjusted ma
     "flowcell lane number": 1
 }
 ```
->**Example 1.7** A complete instruction for demultiplexing with one 8bp barcode segment present on the second input segment to an [interleaved](glossary#interleaved_file_layout) SAM stream. The [CN](glossary#cn_auxiliary_tag), [DT](glossary#dt_auxiliary_tag), [PI](glossary#pi_auxiliary_tag), [PL](glossary#pl_auxiliary_tag), [PM](glossary#pm_auxiliary_tag) and [SM](glossary#sm_auxiliary_tag) tags are declared globally and will be added to all read groups, while the [LB](glossary#lb_auxiliary_tag) is declared individually for each read group.
+>**Example 1.7** A complete instruction for demultiplexing with one 8bp barcode segment present on the second input segment to an [interleaved](glossary#interleaved_file_layout) SAM stream. The [CN](glossary#rg_cn_header_tag), [DT](glossary#rg_dt_header_tag), [PI](glossary#rg_pi_header_tag), [PL](glossary#rg_pl_header_tag), [PM](glossary#rg_pm_header_tag) and [SM](glossary#rg_sm_header_tag) tags are declared globally and will be added to all read groups, while the [LB](glossary#rg_lb_header_tag) is declared individually for each read group.
 {: .example}
 
 Sample barcodes are traditionally mapped to the SAM concept of Read Groups. The SAM [RG](glossary#rg_auxiliary_tag) header tag can contain additional metadata fields named with a capitalized 2 letter code that can be either specified for an individual read group or globally for inclusion in all read groups.
