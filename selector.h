@@ -49,6 +49,7 @@ class AccumulatingOption {
         double pf_pooled_fraction;              /*  pf_count / decoder.pf_count */
         double pooled_classified_fraction;      /*  count / decoder.classified_count */
         double pf_pooled_classified_fraction;   /*  pf_count / decoder.pf_classified_count */
+        double estimated_concentration_prior;
 
         AccumulatingOption();
         AccumulatingOption(const AccumulatingOption& other);
@@ -80,6 +81,7 @@ class AccumulatingSelector {
         double classified_pf_fraction;              /*  pf_classified_count / classified_count */
         double average_pf_classified_distance;      /*  accumulated_pf_classified_distance / pf_classified_count */
         double average_pf_classified_confidence;    /*  accumulated_pf_classified_confidence / pf_classified_count */
+        double estimated_noise_prior;
 
         AccumulatingSelector(const int32_t index);
         AccumulatingSelector(const AccumulatingSelector& other);

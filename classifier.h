@@ -89,6 +89,7 @@ template < class T > class Classifier : public AccumulatingSelector {
             }
         };
         inline void finalize() override {
+            /* collect the counts from the tags to get the total */
             for(auto& element : tag_array) {
                 this->classified_count += element.count;
                 this->pf_classified_count += element.pf_count;
@@ -96,10 +97,26 @@ template < class T > class Classifier : public AccumulatingSelector {
             this->count = this->classified_count + unclassified.count;
             this->pf_count = this->pf_classified_count + unclassified.pf_count;
 
+            /*  compute noise prior estimate
+                first get the portion of reads that failed the noise filter from high confidence classified. */
+            double estimated_noise_count(this->low_conditional_confidence_count);
+            double confident_noise_ratio(estimated_noise_count / (estimated_noise_count + this->pf_classified_count));
+
+            /* than assume that the same ratio applies to low confidnce reads */
+            if(this->low_confidence_count > 0) {
+                estimated_noise_count += double(this->low_confidence_count) * confident_noise_ratio;
+            }
+            this->estimated_noise_prior = estimated_noise_count / double(this->count);
+
+            /* finalize the tags */
+            double estimated_not_noise_prior(1.0 - this->estimated_noise_prior);
             for(auto& element : tag_array) {
                 element.finalize(*this);
+                element.estimated_concentration_prior = estimated_not_noise_prior * element.pf_pooled_classified_fraction;
             }
             unclassified.finalize(*this);
+
+            /* finalize the selector */
             AccumulatingSelector::finalize();
         };
         void encode(Value& container, Document& document) const override {

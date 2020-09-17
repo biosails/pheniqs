@@ -41,7 +41,8 @@ AccumulatingOption::AccumulatingOption() :
     pooled_fraction(0),
     pf_pooled_fraction(0),
     pooled_classified_fraction(0),
-    pf_pooled_classified_fraction(0) {
+    pf_pooled_classified_fraction(0),
+    estimated_concentration_prior(0) {
 };
 AccumulatingOption::AccumulatingOption(const AccumulatingOption& other) :
     count(other.count),
@@ -51,7 +52,18 @@ AccumulatingOption::AccumulatingOption(const AccumulatingOption& other) :
     low_conditional_confidence_count(other.low_conditional_confidence_count),
     low_confidence_count(other.low_confidence_count),
     accumulated_pf_distance(other.accumulated_pf_distance),
-    accumulated_pf_confidence(other.accumulated_pf_confidence) {
+    accumulated_pf_confidence(other.accumulated_pf_confidence),
+
+    pf_fraction(0),
+    average_distance(0),
+    average_confidence(0),
+    average_pf_distance(0),
+    average_pf_confidence(0),
+    pooled_fraction(0),
+    pf_pooled_fraction(0),
+    pooled_classified_fraction(0),
+    pf_pooled_classified_fraction(0),
+    estimated_concentration_prior(0) {
 };
 void AccumulatingOption::collect(const AccumulatingOption& other) {
     count += other.count;
@@ -117,6 +129,9 @@ void AccumulatingOption::encode(Value& container, Document& document) const {
     if(pf_pooled_classified_fraction > 0) {
         encode_key_value("pf pooled classified fraction", pf_pooled_classified_fraction, container, document);
     }
+    if(estimated_concentration_prior > 0) {
+        encode_key_value("estimated concentration prior", estimated_concentration_prior, container, document);
+    }
 };
 
 /*  AccumulatingSelector  */
@@ -141,7 +156,8 @@ AccumulatingSelector::AccumulatingSelector(const int32_t index) :
     pf_classified_fraction(0),
     classified_pf_fraction(0),
     average_pf_classified_distance(0),
-    average_pf_classified_confidence(0) {
+    average_pf_classified_confidence(0),
+    estimated_noise_prior(0) {
 };
 AccumulatingSelector::AccumulatingSelector(const AccumulatingSelector& other) :
     index(other.index),
@@ -154,7 +170,17 @@ AccumulatingSelector::AccumulatingSelector(const AccumulatingSelector& other) :
     low_confidence_count(other.low_confidence_count),
     pf_classified_count(other.pf_classified_count),
     accumulated_pf_classified_distance(other.accumulated_pf_classified_distance),
-    accumulated_pf_classified_confidence(other.accumulated_pf_classified_confidence) {
+    accumulated_pf_classified_confidence(other.accumulated_pf_classified_confidence),
+
+    pf_fraction(0),
+    classified_fraction(0),
+    average_classified_distance(0),
+    average_classified_confidence(0),
+    pf_classified_fraction(0),
+    classified_pf_fraction(0),
+    average_pf_classified_distance(0),
+    average_pf_classified_confidence(0),
+    estimated_noise_prior(0) {
 };
 void AccumulatingSelector::collect(const AccumulatingSelector& other) {
     count += other.count;
@@ -214,5 +240,8 @@ void AccumulatingSelector::encode(Value& container, Document& document) const {
     }
     if(average_pf_classified_confidence > 0) {
         encode_key_value("average pf classified confidence", average_pf_classified_confidence, container, document);
+    }
+    if(estimated_noise_prior > 0) {
+        encode_key_value("estimated noise prior", estimated_noise_prior, container, document);
     }
 };
