@@ -400,7 +400,7 @@ Setting global URL prefixes can make your instruction file more portable. If spe
 
 ## Query Parameters
 
-Pheniqs will try to guess output format and compression from the output URL file extensions. You can however specify those explicitly using [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Parameters explicitly specified in the query will override guessed parameters.
+Pheniqs will try to guess output format and compression from the output URL file extensions. You can however specify those explicitly using [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Parameters explicitly specified in the query will override guessed parameters. In some cases a query parameter is the only way to specify those values because the file name is uninformative, for instance when writing to standrd output.
 
 | Name              | Description                                               | Type                              |
 | :-----------------| :-------------------------------------------------------- | :-------------------------------- |
