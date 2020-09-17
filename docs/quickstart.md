@@ -220,12 +220,12 @@ M02455:162:000000000-BDGGG:1:1101:10000:10630   141     *       0       0       
 M02455:162:000000000-BDGGG:1:1101:10000:12232   77      *       0       0       *       *       0       0       GTATAGGGGTCACATATAGTTGGTGTGCTTTGTGAACTGCGATCTTGACGG     CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG     RG:Z:000000000-BDGGG:1:GGACTCCT   BC:Z:GGACTCCT   QT:Z:CCCCCGGG   XB:f:1.56086e-06
 M02455:162:000000000-BDGGG:1:1101:10000:12232   141     *       0       0       *       *       0       0       GTCCTATCCTACTCGGCTTCTCCCCATTTTTCAGACATTTTCCTATCAGTC     CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG     RG:Z:000000000-BDGGG:1:GGACTCCT   BC:Z:GGACTCCT   QT:Z:CCCCCGGG   XB:f:1.56086e-06
 ```
->**Example 1.8** Output header and first 4 records (two complete reads) from demultiplexing using the configuration file in **Example 1.7**. Notice how tags declared globally were added to all read groups. The [RG](glossary#rg_auxiliary_tag) and [PU](glossary#pu_auxiliary_tag) read group identifiers default to the convention set by [GATK](https://software.broadinstitute.org/gatk/guide/article?id=6472) if you provide the flowcell related directives. The [XB](glossary#xb_auxiliary_tag) tag reports the probability the read was incorrectly classified.
+>**Example 1.8** Output header and first 4 records (two complete reads) from demultiplexing using the configuration file in **Example 1.7**. Notice how tags declared globally were added to all read groups. The [RG](glossary#rg_auxiliary_tag) and [PU](glossary#pu_auxiliary_tag) read group identifiers default to the convention set by [GATK](https://software.broadinstitute.org/gatk) if you provide the flowcell related directives. The [XB](glossary#xb_auxiliary_tag) tag reports the probability the read was incorrectly classified.
 {: .example}
 
-# Providing library Priors
+# Providing Barcode Priors
 
-The [PAML decoder](glossary#phred_adjusted_maximum_likelihood_decoding) computes the posterior probability that the decision it made was correct for each classified read. That probability depends on a set of priors. If the 5 libraries were pooled in non uniform concentrations we will expect the portion of reads classified to each read group to match those proportions. A prior on the barcode prevalence distribution can be provided for each possible code declared in the `codec` directive using the `concentration` parameter. For convenience the priors do not have to be specified as normalized probabilities. Pheniqs will normalize them when compiling the instructions to sum up to 1.0 minus the value of the `noise` parameter.
+The [PAML decoder](glossary#phred_adjusted_maximum_likelihood_decoding) computes the posterior probability that the decision it made was correct for each classified read, that probability depends on a set of priors. If the 5 libraries were pooled in non uniform concentrations we will expect the portion of reads classified to each read group to match those proportions. A prior on the barcode prevalence distribution can be provided for each possible code declared in the `codec` directive using the `concentration` parameter. For convenience the priors do not have to be specified as normalized probabilities. Pheniqs will normalize them when compiling the instructions to sum up to 1.0 minus the value of the `noise` parameter.
 
 >```json
 {
@@ -253,7 +253,7 @@ Pheniqs can also be instructed to decode the barcodes using the traditional [min
 
 # Speeding things up
 
-As we mentioned before reading input from CRAM input can be vastly superior to reading from gzip compressed FASTQ files. If your first step was to package the 3 split FASTQ files into a CRAM file, as shown in **Example 1.3**, you can use that file as input.
+As we mentioned before reading input from CRAM or BAM input can be faster than reading from gzip compressed FASTQ files. If your first step was to package the 3 split FASTQ files into a CRAM file, as shown in **Example 1.3**, you can use that file as input.
 
 >```json
 {
