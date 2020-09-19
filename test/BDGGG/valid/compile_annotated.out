@@ -152,6 +152,7 @@
         "base output url": "test/BDGGG",
         "codec": {
             "@AGGCAGAA": {
+                "BC": "AGGCAGAA",
                 "CN": "CGSB",
                 "DT": "2018-02-25T07:00:00+00:00",
                 "ID": "BDGGG:AGGCAGAA",
@@ -176,6 +177,7 @@
                 "segment cardinality": 1
             },
             "@CGTACTAG": {
+                "BC": "CGTACTAG",
                 "CN": "CGSB",
                 "DT": "2018-02-25T07:00:00+00:00",
                 "ID": "BDGGG:CGTACTAG",
@@ -200,6 +202,7 @@
                 "segment cardinality": 1
             },
             "@GGACTCCT": {
+                "BC": "GGACTCCT",
                 "CN": "CGSB",
                 "DT": "2018-02-25T07:00:00+00:00",
                 "ID": "BDGGG:GGACTCCT",
@@ -224,6 +227,7 @@
                 "segment cardinality": 1
             },
             "@TAAGGCGA": {
+                "BC": "TAAGGCGA",
                 "CN": "CGSB",
                 "DT": "2018-02-25T07:00:00+00:00",
                 "ID": "BDGGG:TAAGGCGA",
@@ -248,6 +252,7 @@
                 "segment cardinality": 1
             },
             "@TCCTGAGC": {
+                "BC": "TCCTGAGC",
                 "CN": "CGSB",
                 "DT": "2018-02-25T07:00:00+00:00",
                 "ID": "BDGGG:TCCTGAGC",
