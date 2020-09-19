@@ -19,23 +19,42 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PHENIQS_TEST_HOME="test/api/illumina"
-
-source "test/function.sh"
-
-[ -d $PHENIQS_TEST_HOME/valid ] && rm -rf $PHENIQS_TEST_HOME/valid;
-mkdir $PHENIQS_TEST_HOME/valid
+[ -d test/api/illumina/valid ] && rm -rf test/api/illumina/valid;
+mkdir test/api/illumina/valid
 
 make_valid_illumina_basecall_test() {
-    PHENIQS_TEST_NAME="illumina_basecall"
-    PHENIQS_TEST_COMMAND="$PHENIQS_API_HOME/pheniqs-illumina-api.py basecall $PHENIQS_TEST_HOME/181014_A00534_0024_AH7LT2DSXX"
-    PHENIQS_VALID_STDOUT="$PHENIQS_TEST_HOME/valid/$PHENIQS_TEST_NAME.out"
-    PHENIQS_VALID_STDERR="$PHENIQS_TEST_HOME/valid/$PHENIQS_TEST_NAME.err"
+  ( cd test/api/illumina/valid;
+      ../../../../tool/pheniqs-illumina-api.py basecall ../181014_A00534_0024_AH7LT2DSXX;
+  )
+};
 
-    $PHENIQS_TEST_COMMAND > $PHENIQS_VALID_STDOUT 2> $PHENIQS_VALID_STDERR
-    mv "$PHENIQS_TEST_HOME/181014_A00534_0024_AH7LT2DSXX/H7LT2DSXX_basecall_sample_sheet.csv" "$PHENIQS_TEST_HOME/valid/H7LT2DSXX_basecall_sample_sheet.csv"
-    mv "$PHENIQS_TEST_HOME/181014_A00534_0024_AH7LT2DSXX/H7LT2DSXX_basecall.sh" "$PHENIQS_TEST_HOME/valid/H7LT2DSXX_basecall.sh"
-}
+make_valid_illumina_core_test() {
+  ( cd test/api/illumina/valid;
+      ../../../../tool/pheniqs-illumina-api.py core ../181014_A00534_0024_AH7LT2DSXX;
+  )
+};
+
+make_valid_illumina_sample_test() {
+  ( cd test/api/illumina/valid;
+      ../../../../tool/pheniqs-illumina-api.py sample ../181014_A00534_0024_AH7LT2DSXX;
+  )
+};
+
+make_valid_illumina_estimate_test() {
+  ( cd test/api/illumina/valid;
+      ../../../../tool/pheniqs-illumina-api.py estimate ../181014_A00534_0024_AH7LT2DSXX;
+  )
+};
+
+make_valid_illumina_interleave_test() {
+  ( cd test/api/illumina/valid;
+      ../../../../tool/pheniqs-illumina-api.py interleave ../181014_A00534_0024_AH7LT2DSXX;
+  )
+};
 
 make_valid_illumina_basecall_test
+make_valid_illumina_core_test
+make_valid_illumina_sample_test
+make_valid_illumina_estimate_test
+make_valid_illumina_interleave_test
 exit 0

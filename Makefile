@@ -271,6 +271,14 @@ test.api.configuration: all
 clean.test.api.configuration:
 	-@rm -rf test/api/configuration/result
 
+.PHONY: test.api.illumina
+test.api.illumina: all
+	./test/api/illumina/run.sh
+
+.PHONY: clean.test.api.illumina
+clean.test.api.illumina:
+	-@rm -rf test/api/illumina/result
+
 .PHONY: test.pheniqs.BDGGG
 test.pheniqs.BDGGG: all
 	./test/BDGGG/run.sh
@@ -280,10 +288,10 @@ clean.test.pheniqs.BDGGG:
 	-@rm -rf test/BDGGG/result
 
 .PHONY: test
-test: test.api.configuration test.pheniqs.BDGGG
+test: test.api.configuration test.api.illumina test.pheniqs.BDGGG
 
 .PHONY: clean.test
-clean.test: clean.test.api.configuration clean.test.pheniqs.BDGGG
+clean.test: clean.test.api.configuration clean.test.api.illumina clean.test.pheniqs.BDGGG
 	-@rm -rf test/api/configuration/result
 
 # Dependencies

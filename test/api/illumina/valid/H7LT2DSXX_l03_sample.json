@@ -1,0 +1,21 @@
+{
+    "import": [
+        "H7LT2DSXX_core.json"
+    ],
+    "input": [
+        "H7LT2DSXX_S1_L003_R1_001.fastq.gz",
+        "H7LT2DSXX_S1_L003_I1_001.fastq.gz",
+        "H7LT2DSXX_S1_L003_I2_001.fastq.gz",
+        "H7LT2DSXX_S1_L003_R2_001.fastq.gz"
+    ],
+    "output": [
+        "H7LT2DSXX_l03.bam"
+    ],
+    "report url": "H7LT2DSXX_l03_sample_report.json",
+    "sample": {
+        "algorithm": "pamld",
+        "base": "H7LT2DSXX_l03_sample",
+        "confidence threshold": 0.95,
+        "noise": 0.05
+    }
+}
