@@ -160,8 +160,8 @@
                                 "noise"
                             ],
                             "instruction": {
-                                "help": "Multiplex job file for each lane",
-                                "name": "multiplex"
+                                "help": "Sample barcode decoding job for each lane",
+                                "name": "sample"
                             }
                         },
                         {
