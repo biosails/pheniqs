@@ -1080,13 +1080,18 @@ Value& Transcode::find_multiplexing_decoder() {
             if(sample_value.FindMember("output") != sample_value.MemberEnd()) {
                 candidate.push_back(&sample_value);
             } else {
-                reference = sample_value.FindMember("codec");
-                if(reference != sample_value.MemberEnd()) {
-                    Value& codec(reference->value);
-                    for(auto& record : codec.GetObject()) {
-                        if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
-                            candidate.push_back(&sample_value);
-                            break;
+                reference = sample_value.FindMember("undetermined");
+                if(reference != sample_value.MemberEnd() && reference->value.FindMember("output") !=  reference->value.MemberEnd()) {
+                    candidate.push_back(&sample_value);
+                } else {
+                    reference = sample_value.FindMember("codec");
+                    if(reference != sample_value.MemberEnd()) {
+                        Value& codec(reference->value);
+                        for(auto& record : codec.GetObject()) {
+                            if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
+                                candidate.push_back(&sample_value);
+                                break;
+                            }
                         }
                     }
                 }
@@ -1099,13 +1104,18 @@ Value& Transcode::find_multiplexing_decoder() {
                 if(element.FindMember("output") != element.MemberEnd()) {
                     candidate.push_back(&element);
                 } else {
-                    reference = element.FindMember("codec");
-                    if(reference != element.MemberEnd()) {
-                        Value& codec(reference->value);
-                        for(auto& record : codec.GetObject()) {
-                            if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
-                                candidate.push_back(&element);
-                                break;
+                    reference = element.FindMember("undetermined");
+                    if(reference != element.MemberEnd() && reference->value.FindMember("output") !=  reference->value.MemberEnd()) {
+                        candidate.push_back(&element);
+                    } else {
+                        reference = element.FindMember("codec");
+                        if(reference != element.MemberEnd()) {
+                            Value& codec(reference->value);
+                            for(auto& record : codec.GetObject()) {
+                                if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
+                                    candidate.push_back(&element);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1119,13 +1129,18 @@ Value& Transcode::find_multiplexing_decoder() {
                 if(element.FindMember("output") != element.MemberEnd()) {
                     candidate.push_back(&element);
                 } else {
-                    reference = element.FindMember("codec");
-                    if(reference != element.MemberEnd()) {
-                        Value& codec(reference->value);
-                        for(auto& record : codec.GetObject()) {
-                            if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
-                                candidate.push_back(&element);
-                                break;
+                    reference = element.FindMember("undetermined");
+                    if(reference != element.MemberEnd() && reference->value.FindMember("output") !=  reference->value.MemberEnd()) {
+                        candidate.push_back(&element);
+                    } else {
+                        reference = element.FindMember("codec");
+                        if(reference != element.MemberEnd()) {
+                            Value& codec(reference->value);
+                            for(auto& record : codec.GetObject()) {
+                                if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
+                                    candidate.push_back(&element);
+                                    break;
+                                }
                             }
                         }
                     }
