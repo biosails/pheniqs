@@ -68,7 +68,7 @@ class ConfigurationApi(Job):
         elif self.action == 'header':
             self.execute_header_job()
 
-    # zsh configurtion
+    # zsh configuration
     def execute_zsh_job(self):
         if os.path.exists(self.instruction['path']):
             self.log.debug('loading %s', self.instruction['path'])
@@ -219,7 +219,7 @@ class ConfigurationApi(Job):
         buffer.append('};')
         buffer.append('')
 
-    # configurtion header file
+    # configuration header file
     def execute_header_job(self):
         if os.path.exists(self.instruction['path']):
             self.log.debug('loading %s', self.instruction['path'])

@@ -57,7 +57,7 @@ class PheniqsIoApi(Job):
                 with io.open(self.location['original'], 'rb') as file:
                     self.ontology['original'] = json.loads(file.read().decode('utf8'))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
         return self.ontology['original']
 
     @property
@@ -101,7 +101,7 @@ class PheniqsIoApi(Job):
                         print(error.decode('utf8'))
                     raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
         return self.ontology['static']
 
     @property
@@ -145,7 +145,7 @@ class PheniqsIoApi(Job):
                         print(error.decode('utf8'))
                     raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
         return self.ontology['compiled']
 
     @property

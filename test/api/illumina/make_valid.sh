@@ -24,31 +24,31 @@ mkdir test/api/illumina/valid
 
 make_valid_illumina_basecall_test() {
   ( cd test/api/illumina/valid;
-      ../../../../tool/pheniqs-illumina-api.py basecall ../181014_A00534_0024_AH7LT2DSXX;
+    ../../../../tool/pheniqs-illumina-api.py basecall ../181014_A00534_0024_AH7LT2DSXX;
   )
 };
 
 make_valid_illumina_core_test() {
   ( cd test/api/illumina/valid;
-      ../../../../tool/pheniqs-illumina-api.py core ../181014_A00534_0024_AH7LT2DSXX;
+    ../../../../tool/pheniqs-illumina-api.py core ../181014_A00534_0024_AH7LT2DSXX;
   )
 };
 
 make_valid_illumina_sample_test() {
   ( cd test/api/illumina/valid;
-      ../../../../tool/pheniqs-illumina-api.py sample ../181014_A00534_0024_AH7LT2DSXX;
+    ../../../../tool/pheniqs-illumina-api.py sample ../181014_A00534_0024_AH7LT2DSXX;
   )
 };
 
 make_valid_illumina_estimate_test() {
   ( cd test/api/illumina/valid;
-      ../../../../tool/pheniqs-illumina-api.py estimate ../181014_A00534_0024_AH7LT2DSXX;
+    ../../../../tool/pheniqs-illumina-api.py estimate ../181014_A00534_0024_AH7LT2DSXX;
   )
 };
 
 make_valid_illumina_interleave_test() {
   ( cd test/api/illumina/valid;
-      ../../../../tool/pheniqs-illumina-api.py interleave ../181014_A00534_0024_AH7LT2DSXX;
+    ../../../../tool/pheniqs-illumina-api.py interleave ../181014_A00534_0024_AH7LT2DSXX;
   )
 };
 

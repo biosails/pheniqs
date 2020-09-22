@@ -522,7 +522,7 @@
                 ],
                 "instruction": {
                     "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology",
-                    "epilog": "Adjust priors in a pheniqs configuration file using a statistics report from a prelimanry pheniqs run. If a report is not provided pheniqs will be executed to produce the prior and than apply it to the provided configurtion. If you choose not to provide a prior, the parameters forwarded to pheniqs allow you adjust relevent IO parameters to make the configurtion more portable."
+                    "epilog": "Adjust priors in a pheniqs configuration file using a statistics report from a prelimanry pheniqs run. If a report is not provided pheniqs will be executed to produce the prior and than apply it to the provided configuration. If you choose not to provide a prior, the parameters forwarded to pheniqs allow you adjust relevent IO parameters to make the configuration more portable."
                 },
                 "prototype": {
                     "configuration": {

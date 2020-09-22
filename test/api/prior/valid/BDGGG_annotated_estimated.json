@@ -1,0 +1,86 @@
+{
+    "CN": "CGSB",
+    "DT": "2018-02-25T07:00:00+00:00",
+    "PI": "300",
+    "PL": "ILLUMINA",
+    "PM": "miseq",
+    "SM": "trinidad",
+    "base input url": "test/BDGGG",
+    "base output url": "test/BDGGG",
+    "flowcell id": "BDGGG",
+    "input": [
+        "BDGGG_s01.fastq.gz",
+        "BDGGG_s02.fastq.gz",
+        "BDGGG_s03.fastq.gz"
+    ],
+    "molecular": [
+        {
+            "algorithm": "naive",
+            "index": 0,
+            "transform": {
+                "token": [
+                    "0:8:16"
+                ]
+            }
+        }
+    ],
+    "sample": {
+        "algorithm": "pamld",
+        "codec": {
+            "@AGGCAGAA": {
+                "LB": "trinidad 5",
+                "barcode": [
+                    "AGGCAGAA"
+                ],
+                "concentration": 0.18624077478235
+            },
+            "@CGTACTAG": {
+                "LB": "trinidad 4",
+                "barcode": [
+                    "CGTACTAG"
+                ],
+                "concentration": 0.19860188815286
+            },
+            "@GGACTCCT": {
+                "LB": "trinidad 9",
+                "barcode": [
+                    "GGACTCCT"
+                ],
+                "concentration": 0.211787075748071
+            },
+            "@TAAGGCGA": {
+                "LB": "trinidad 1",
+                "barcode": [
+                    "TAAGGCGA"
+                ],
+                "concentration": 0.220027817995078
+            },
+            "@TCCTGAGC": {
+                "LB": "trinidad 8",
+                "barcode": [
+                    "TCCTGAGC"
+                ],
+                "concentration": 0.168111141838936
+            }
+        },
+        "confidence threshold": 0.99,
+        "noise": 0.015231301482701,
+        "transform": {
+            "knit": [
+                "0"
+            ],
+            "token": [
+                "1::8"
+            ]
+        }
+    },
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "2::"
+            ]
+        }
+    },
+    "threads": 1
+}
