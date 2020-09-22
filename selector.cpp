@@ -130,7 +130,7 @@ void AccumulatingOption::encode(Value& container, Document& document) const {
         encode_key_value("pf pooled classified fraction", pf_pooled_classified_fraction, container, document);
     }
     if(estimated_concentration_prior > 0) {
-        encode_key_value("estimated concentration prior", estimated_concentration_prior, container, document);
+        encode_key_value("estimated concentration", estimated_concentration_prior, container, document);
     }
 };
 
@@ -242,6 +242,6 @@ void AccumulatingSelector::encode(Value& container, Document& document) const {
         encode_key_value("average pf classified confidence", average_pf_classified_confidence, container, document);
     }
     if(estimated_noise_prior > 0) {
-        encode_key_value("estimated noise prior", estimated_noise_prior, container, document);
+        encode_key_value("estimated noise", estimated_noise_prior, container, document);
     }
 };
