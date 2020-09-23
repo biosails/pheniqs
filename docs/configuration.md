@@ -70,14 +70,13 @@ You can even mix-and-match the two layout styles
 The `input` directive defaults to expecting interleaved input from standard input. While input format is automatically detected interleaving layout is not unless you specify the `-s/--sense-input` command line flag.
 
 >```json
-{
-    "input": [ "/dev/stdin" ]
-}
+{ "input": [ "/dev/stdin" ] }
 ```
 >**Example 2.4** This is the default input directive. If not instructed otherwise, Pheniqs implicitly expects input from standard input. The format will be automatically detected.
 {: .example}
 
 ## Automatic `input` sensing
+
 If the `-s/--sense-input` command line flag is specified, Pheniqs will automatically detect the format of the input you provide it by examining the first few bytes. Once the input format is established, Pheniqs decodes the first few segment records from the feed to detect the feed's [resolution](glossary#feed_resolution): the number of consecutive segments in the feed that have the same read identifier. Pheniqs will assume that to assemble a read it will have to read that many segments from each input feed.
 
 >```
@@ -111,9 +110,10 @@ CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 
 # The `transform` directive
 
-Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the `token` array and [segment assembly](#segment_assembly) with the optional `knit` array. The same `transform` syntax is used in the `template` directive to specify how the output read is constructed, and in each decoder to construct the segmented sequence that is used to match against the dictionary of possible valid barcodes. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary#input_segment). In the segment assembly step one or more [segment patterns](configuration#transform-pattern) reference tokens to assemble a new segment. The optional `knit` directive is only necessary when assembling segments from multiple, non contiguous, tokens or if a token needs to be reverse complemented. If the `knit` directive is omitted from a `transform` directive, each token implicitly declares a single segment.
+Read manipulation is achieved with the `transform` directive by means of [tokenization](#tokenization) with the `token` array and [segment assembly](#complex-segments-with-knit) with the optional `knit` array. The same `transform` syntax is used in the `template` directive to specify how the output read is constructed, and in each decoder to construct the segmented sequence that is used to match against the dictionary of possible valid barcodes. In the tokenization step Pheniqs consults a token pattern to extract a token from an [input segment](glossary#input_segment). In the segment assembly step one or more segment patterns reference tokens to assemble a new segment. The optional `knit` directive is only necessary when assembling segments from multiple, non contiguous, tokens or if a token needs to be reverse complemented. If the `knit` directive is omitted from a `transform` directive, each token implicitly declares a single segment.
 
 ## Tokenization
+
 A token pattern is made of 3 colon separated integers. The first is the **mandatory** [zero based](glossary#zero_based_coordinate) [input segment index](glossary#input_segment) enumerated by `input`. The second is an inclusive [zero based](glossary#zero_based_coordinate) **start** coordinate to the beginning of the token and defaults to **0** if omitted. The third is an exclusive [zero based](glossary#zero_based_coordinate) **end** coordinate to the end of the token. If the **end** coordinate is omitted the token spans to the end of the segment. **start** coordinate and **end** coordinate can take positive or negative values to access the segment from either the 5' (left) or 3' (right) end and mimic the [python array slicing](https://en.wikipedia.org/wiki/Array_slicing#1991:_Python) syntax. The two colons are always mandatory.
 
 >```json
@@ -156,7 +156,8 @@ Since token patterns follow the python array slicing syntax you can test your pa
 >**Example 2.7** Some examples of tokenizing a hypothetical segment with index 0 and 9 cycles.
 {: .example}
 
-## Optional segment assembly with `knit`
+## Complex segments with `knit`
+
 Each element in the `knit` array is made of one or more token references separated by the **:** concatenation operator. A token reference is the [zero based](glossary#zero_based_coordinate) index of the token pattern in the adjacent `token` array. Appending the left hand side reverse complementarity **~** operator will instead concatenate the reverse complemented sequence of the token. **NOTE** Each token reference is evaluated before concatenation so **~** evaluation precedes **:** evaluation.
 
 >| Pattern | Description                                                                                        |
@@ -218,7 +219,7 @@ Pheniqs offers a choice of two closed class decoding strategies: the widespread 
 
 Pheniqs currently does not support degenerate [IUPAC](https://en.wikipedia.org/wiki/Nucleic_acid_notation) bases in closed class barcode declarations, but the probabilistic model underlaying PAMLD can be extended to support them if a demand arises.
 
-Since error handling is much trickier in open class decoding, Pheniqs currently only supports a [naive](glossary#naive_decoding) decoder that will simply populate the relevant raw, uncorrected, SAM auxiliary tags without attempting error correction. In the case of decoding open class molecular barcodes, all reads associated with a unique molecular identifier are expected to be tagging the same DNA molecule. For that reason, most published error correction strategies involve examining the corresponding biological sequence and aligning it to a consensus sequence of a group of reads that have already been associated with that barcode. A specialized open class error correcting molecular barcode decoder is planned for a future release.
+Since error handling is much trickier in open class decoding, Pheniqs currently only supports a naive decoder that will simply populate the relevant raw, uncorrected, SAM auxiliary tags without attempting error correction. In the case of decoding open class molecular barcodes, all reads associated with a unique molecular identifier are expected to be tagging the same DNA molecule. For that reason, most published error correction strategies involve examining the corresponding biological sequence and aligning it to a consensus sequence of a group of reads that have already been associated with that barcode. A specialized open class error correcting molecular barcode decoder is planned for a future release.
 
 When declaring a decoder directive you specify the decoding strategy by setting the `algorithm` attribute.
 
@@ -414,11 +415,7 @@ Pheniqs will try to guess output format and compression from the output URL file
 If the `input` directive is omitted Pheniqs will expect input on **/dev/stdin**. If the `output` directive is omitted Pheniqs will write SAM to **/dev/stdout**. Regardless of file extensions, Pheniqs will detect input format by inspecting the first few bytes of your input and will attempt to guess the input resolution and layout. When writing to **/dev/stdout** you might want to explicitly provide a format with the `format`, `compression` and `level` [URL query parameter](https://en.wikipedia.org/wiki/Query_string). Alternatively you can specify defaults with `-F/--format`, `-Z/--compression` and `-L/--level` command line arguments, but those will apply to all otherwise unspecified files. You may even specify **/dev/null** as a URL in an `output` directive to discard the output.
 
 >```json
-{
-    "output": [
-      "/dev/stdout?format=cram"
-    ]
-}
+{ "output": [ "/dev/stdout?format=cram" ] }
 ```
 >**Example 2.15** Declaring interleaved CRAM output to standard output using the **format** URL query parameter.
 {: .example}
@@ -574,7 +571,7 @@ Once an estimate of the noise ratio is established, estimating the prior of each
     }
 }
 ```
->**Example 2.18** Partial example of a multiplex decoder statistics report
+>**Example 2.18** Partial example of a sample decoder statistics report
 {: .example}
 
 ## Quality Control
