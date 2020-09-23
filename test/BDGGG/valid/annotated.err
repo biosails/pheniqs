@@ -26,20 +26,20 @@
         }
     ],
     "sample": {
-        "average classified confidence": 0.997941486574279,
+        "average classified confidence": 0.997941827740009,
         "average classified distance": 0.028838342810722,
-        "average pf classified confidence": 0.999973586034902,
+        "average pf classified confidence": 0.999973925687207,
         "average pf classified distance": 0.013389121338912,
         "classified": [
             {
-                "average confidence": 0.995616541164559,
+                "average confidence": 0.995615984159891,
                 "average distance": 0.026143790849673,
-                "average pf confidence": 0.999973512925138,
+                "average pf confidence": 0.999972948985846,
                 "average pf distance": 0.011061946902654,
                 "barcode": [
                     "AGGCAGAA"
                 ],
-                "concentration": 0.183498128559804,
+                "concentration": 0.177299999999999,
                 "count": 459,
                 "estimated concentration": 0.18624077478235,
                 "index": 1,
@@ -53,14 +53,14 @@
                 "pooled fraction": 0.1836
             },
             {
-                "average confidence": 0.999970628686681,
+                "average confidence": 0.999970640382009,
                 "average distance": 0.026104417670682,
-                "average pf confidence": 0.999977014156961,
+                "average pf confidence": 0.99997702588278,
                 "average pf distance": 0.010373443983402,
                 "barcode": [
                     "CGTACTAG"
                 ],
-                "concentration": 0.199524165988608,
+                "concentration": 0.197,
                 "count": 498,
                 "estimated concentration": 0.19860188815286,
                 "index": 2,
@@ -73,14 +73,14 @@
                 "pooled fraction": 0.1992
             },
             {
-                "average confidence": 0.999973758634981,
+                "average confidence": 0.999974668248729,
                 "average distance": 0.028355387523629,
-                "average pf confidence": 0.999973721972205,
+                "average pf confidence": 0.999974632752807,
                 "average pf distance": 0.01556420233463,
                 "barcode": [
                     "GGACTCCT"
                 ],
-                "concentration": 0.211944344995931,
+                "concentration": 0.2167,
                 "count": 529,
                 "estimated concentration": 0.211787075748071,
                 "index": 3,
@@ -93,14 +93,14 @@
                 "pooled fraction": 0.2116
             },
             {
-                "average confidence": 0.998176712319857,
+                "average confidence": 0.998177502335656,
                 "average distance": 0.025134649910233,
-                "average pf confidence": 0.999972545569492,
+                "average pf confidence": 0.999973341948486,
                 "average pf distance": 0.009363295880149,
                 "barcode": [
                     "TAAGGCGA"
                 ],
-                "concentration": 0.222761920260374,
+                "concentration": 0.22655,
                 "count": 557,
                 "estimated concentration": 0.220027817995078,
                 "index": 4,
@@ -114,14 +114,14 @@
                 "pooled fraction": 0.2228
             },
             {
-                "average confidence": 0.995198156050859,
+                "average confidence": 0.995198558357358,
                 "average distance": 0.040572792362768,
-                "average pf confidence": 0.999970807671021,
+                "average pf confidence": 0.999971218480117,
                 "average pf distance": 0.022058823529411,
                 "barcode": [
                     "TCCTGAGC"
                 ],
-                "concentration": 0.16707144019528,
+                "concentration": 0.16745,
                 "count": 419,
                 "estimated concentration": 0.168111141838936,
                 "index": 5,

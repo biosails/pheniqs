@@ -167,7 +167,7 @@
                 "barcode": [
                     "AGGCAGAA"
                 ],
-                "concentration": 0.183498128559804,
+                "concentration": 0.177299999999999,
                 "flowcell id": "BDGGG",
                 "index": 1,
                 "output": [
@@ -192,7 +192,7 @@
                 "barcode": [
                     "CGTACTAG"
                 ],
-                "concentration": 0.199524165988608,
+                "concentration": 0.197,
                 "flowcell id": "BDGGG",
                 "index": 2,
                 "output": [
@@ -217,7 +217,7 @@
                 "barcode": [
                     "GGACTCCT"
                 ],
-                "concentration": 0.211944344995931,
+                "concentration": 0.2167,
                 "flowcell id": "BDGGG",
                 "index": 3,
                 "output": [
@@ -242,7 +242,7 @@
                 "barcode": [
                     "TAAGGCGA"
                 ],
-                "concentration": 0.222761920260374,
+                "concentration": 0.22655,
                 "flowcell id": "BDGGG",
                 "index": 4,
                 "output": [
@@ -267,7 +267,7 @@
                 "barcode": [
                     "TCCTGAGC"
                 ],
-                "concentration": 0.16707144019528,
+                "concentration": 0.16745,
                 "flowcell id": "BDGGG",
                 "index": 5,
                 "output": [
@@ -284,7 +284,7 @@
         "flowcell id": "BDGGG",
         "index": 0,
         "multiplexing classifier": true,
-        "noise": 0.0152,
+        "noise": 0.015,
         "nucleotide cardinality": 8,
         "output": [
             "/dev/stdout"
@@ -317,7 +317,7 @@
             "barcode": [
                 "========"
             ],
-            "concentration": 0.0152,
+            "concentration": 0.015,
             "flowcell id": "BDGGG",
             "index": 0,
             "output": [
