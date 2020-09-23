@@ -174,7 +174,7 @@ is a configuration for demuliplexing the first lane. It declares a `multiplex` d
         "H7LT2DSXX_S1_L001_I2_001.fastq.gz",
         "H7LT2DSXX_S1_L001_R2_001.fastq.gz"
     ],
-    "multiplex": {
+    "sample": {
         "algorithm": "pamld",
         "base": "H7LT2DSXX_l01_multiplex",
         "confidence threshold": 0.95,

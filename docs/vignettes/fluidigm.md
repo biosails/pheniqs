@@ -218,7 +218,7 @@ pheniqs-prior-api.py \
 >**column barcode decoding with an estimated prior** [CBJLFACXX_l01_column_adjusted.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_adjusted.json) is similar to [CBJLFACXX_l01_column_split.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column_split.json) with the addition of the estimated priors.
 {: .example}
 
-This will produce [CBJLFACXX_l01_sample_estimated.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_sample_estimated.json), a new configuration file with the adjusted priors. The method for estimating the prior is [described in the manual](configuration#prior-estimation) and makes some assumptions about the preparation protocol. You can also devise your own methods of estimating the priors and plug them into the configurtion.
+This will produce [CBJLFACXX_l01_sample_estimated.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_sample_estimated.json), a new configuration file with the adjusted priors. The method for estimating the prior is [described in the manual](configuration#prior-estimation) and makes some assumptions about the preparation protocol. You can also devise your own methods of estimating the priors and plug them into the configuration.
 
 You can now proceed to demultiplex the column cellular barcode with the adjusted configuration and produce a separate bam file with reads from each column.
 
