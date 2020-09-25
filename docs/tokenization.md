@@ -5,39 +5,37 @@ permalink: /tokenization
 id: tokenization
 ---
 
-# Barcode Tokens and Transform Patterns
+# Read segment transformation in Pheniqs
 {:.page-title}
 
 * placeholder
 {:toc}
 
-Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experimental designs.
-
-The conceptual framework that Pheniqs uses to extract different types of elements within sequence reads is summarized below.
+At the heart of Pheniqs is a transformation framework that relies on a familiar syntax that mimics Python array slicing and can arbitrarily manipulate and decode multiple barcodes anywhere in a sequence read. It extracts tokens from multiple read segments  by addressing either the 5’ end, 3’ end, or both (and optionally reverse complement) to construct the output template segments and the sample, cellular and molecular barcodes. This generic approach can accommodates any potential barcoding scheme and obviates the need for pre and post processing for most experimental designs.
 
 # Experimental Design
 
-Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Some very common designs for Illumina platforms are illustrated here:
+Some very common designs for Illumina platforms are illustrated in the following diagram.
 
-![experimental designs](/pheniqs/assets/img/diagram8.png)
+![experimental designs](/pheniqs/assets/img/diagram8.png){: .diagram}
 
-More complicated barcoding schemes for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs may be found in the [workflow section](workflow) of the documentation.
+More complicated barcoding schemes for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs, may be found in the [workflow section](workflow) of the documentation. Template configuration files with common barcode sets are also available in the [template section](template)
 
+# Standard Illumina Read anatomy
 
-# Read anatomy
-
-Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **i5** and **i7** barcodes, and two Insert sequences, referred by Illumina as **read 1** and **read 2**. Collectively, these are referred to as read segments. For example, consider a [standard paired-end, dual index library design](illumina.html):
+Illumina sequencing platforms typically produce four different sequence elements: two Index sequences, referred by Illumina as the **I5** and **I7** barcodes, and two Insert sequences, referred by Illumina as **Read 1** and **Read 2**. Collectively, these are referred to by the [sequence alignment map format specification](https://samtools.github.io/hts-specs/SAMv1.pdf) as read **segments**. For example, consider a standard paired-end, dual index library design:
 
 ![read anatomy](/pheniqs/assets/img/diagram1.png)
 
-The read segments for this standard design thus comprise two technical sequences (referred by Illumina as I1, I2) and two biological sequences (referred by Illumina as R1, R2):
+The read segments for this standard design thus comprise two technical sequences (referred by Illumina file naming terminology as **I1**, **I2**) and two biological sequences (referred by Illumina file naming terminology as **R1**, **R2**):
 
 ![read anatomy](/pheniqs/assets/img/diagram2.png)
 
+The four segments are then provided in the order: **R1**, **I1**, **I2**, **R2**. Together those for segments constitute a single read and all have the same identifier, whether in FASTQ format or SAM.
 
-## Sequence Classification
+## Read Classification
 
-The combination of the barcodes contained in the **I1** and **I2** index positions specifies the sample library. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
+The combination of the barcodes contained in the **I1** and **I2** index segments identifies the library. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
 
 To identify which biological sequences belong to which library, the sequences belonging each one need to be separated from each other. This process of deconvolving libraries is called demultiplexing and is done by classifying each of the sequences using the barcode indexes:
 
