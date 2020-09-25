@@ -1,12 +1,24 @@
 ---
 layout: default
-title: "Configuration documentation"
+title: "Documentation"
 permalink: /configuration
 id: configuration
 ---
 
 * placeholder
 {:toc}
+
+![overview](assets/img/pheniqs_overview_web2.png){: .diagram}
+>**Pheniqs pipeline overview** {: .example}
+
++ **Input**: FASTQ or SAM formatted sequence files.
++ **Configuration**: All runtime directives, including I/O, coordinate patterns identifying the location of sequence elements of interest, barcode sets, metadata, and any prior information about sample distributions. Trivial scenarios, such as format conversion or interleaving, can run with command line parameters only, but in most cases a configuration file will be required. Before execution begins the configuration file is compiled and validated. In the event of a validation failure  the run is aborted and an informative error message is displayed.
++ **Tokenization**: Input read segments are parsed to extract sequence element of interest. Output read segments are assembled as well as the sequence segmentsa that will be compared to the expected barcode instances.
++ **Decoding**: Each barcode declared in the configation is decoded and potentially error corrected. Pheniqs performs either probabilistic decoding (PAMLD, preferred) or a simple minimum distance decoding (MDD). SAM metadata tags are populated with decoding results.
++ **Output**: Biological sequences, observed and inferred barcode sequences, quality scores, and decoding error probabilities are emitted as output. Sequence Alignment/Map (SAM) format is preferred, but FASTQ may also be emitted.
++ **Run Report**: Summary statistics about the decoding run are computed and written in a machine-readable JSON format, which can be easily parsed for visual display.
+
+# Configuration syntax
 
 When executing trivial scenarios, such as format conversion or interleaving, it is sufficient to provide parameters on the [command line](/pheniqs/cli). However, scenarios involving barcode decoding are too verbose to provide on a command line and require a [JSON](https://en.wikipedia.org/wiki/JSON) encoded configuration file containing directives for input and output layout, read segment manipulation, barcode decoding and other run parameters. Parameters specified as command line arguments always override their configuration file counterparts. Almost all parameters have a default value. A brief description of the parameters available on the command line is available with the `-h/--help` flags. If you use [zsh](https://en.wikipedia.org/wiki/Z_shell) the [bundled command line completion](cli#zsh-completion) will give you a more interactive command line experience.
 
@@ -216,6 +228,10 @@ Only one decoder can control output splitting by setting `multiplexing classifie
 Pheniqs can populate the related standardized SAM auxiliary tags for sample, molecular and cellular barcodes, adhering to the [recommendations outlined in the SAM specification](https://samtools.github.io/hts-specs/SAMtags.pdf). We distinguish between closed class decoding algorithms, when a discrete list of classes (in our case nucleotide sequences) is known in advance and so a prior distribution is available, and open class decoders, when the discrete list of classes is unknown and so the prior distribution is hidden. The decoder `codec` directive specifies the allowed classes for closed class decoders as a JSON dictionary. The keys of the dictionary must be unique strings within the dictionary and play a role in the inheritance model but you may otherwise choose them as you see fit. One simple methodology is to use the concatenated barcode sequence prefixed by an **@** sign (to remind you Pheniqs does not actually interpret it as a nucleotide sequence), but you may choose more meaningful names to make your instruction files more readable.
 
 Pheniqs offers a choice of two closed class decoding strategies: the widespread [minimum distance decoder](glossary#minimum_distance_decoding) (**MDD**) and a more refined probabilistic [Phred-adjusted maximum likelihood decoder](glossary#phred_adjusted_maximum_likelihood_decoding) (**PAMLD**). Unlike MDD, PAMLD consults base calling quality scores and the prior barcode distribution and will outperform MDD in almost every real world scenario. Since PAMLD computes the full Bayesian posterior decoding probability to pick the maximum likelihood, the probability of an incorrect barcode assignment is made available in SAM auxiliary tags reserved for local use, for downstream analysis consideration.
+
+![PAMLD](/pheniqs/assets/img/pamld.png){: .diagram}
+>**Decoding a read with Pheniqs**  Reads with a lower conditional probability than random sequences fail the noise filter and are classified as noise without further consideration. Reads with a posterior probability that does not meet the confidence threshold fail the confidence filter; these reads are classified, but they are marked as "qc fail" so the confidence threshold can be reconsidered at alater stage. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found in the [paper](link_to_paper). Pheniqs is designed to accommodate the addition of alternative decoders, which can be added as derived classes of a generic decoder object.
+{: .example}
 
 Pheniqs currently does not support degenerate [IUPAC](https://en.wikipedia.org/wiki/Nucleic_acid_notation) bases in closed class barcode declarations, but the probabilistic model underlaying PAMLD can be extended to support them if a demand arises.
 
