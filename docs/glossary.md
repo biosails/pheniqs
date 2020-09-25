@@ -31,7 +31,7 @@ id: glossary
 <a name="output_segment" />Output segment
 : An enumerated [segment](#segment) of the output [read](#read). Output segment indexes are [zero based](#zero_based_coordinate).
 
-<a name="sample_barcode" />Multiplex barcode
+<a name="sample_barcode" />Sample barcode
 : A [technical sequence](#technical_sequence) used to classify a [read](#read) into read groups. A sample barcode can have multiple [segments](#segment) and a match to all segments is required by the decoder to declare a successful classification. The sequence and quality of the concatenated sample barcode are written in SAM records to the standardized [BC](#bc_auxiliary_tag) and [QT](#qt_auxiliary_tag) auxiliary tags. When decoding with [Phred-adjusted maximum likelihood](#phred_adjusted_maximum_likelihood_decoding) Pheniqs also writes the decoding error probability to the [XB](#dq_auxiliary_tag) tag. Multiplex barcode segment indexes are [zero based](#zero_based_coordinate).
 
 <a name="molecular_barcode" />Molecular barcode
@@ -47,7 +47,7 @@ id: glossary
 : Read [segments](#segment) from multiple [read groups](#read_group) are written to the same file. A file contains multiple segments from each read. Read segments are consecutive and in order which implies the GO property of the [@HD header tag](#hd_header_tag) is set to `query`. This layout can be more efficient for SAM based formats. Although writing combined output to [FASTQ](#fastq) is supported, the lack of standardized meta data encoding in FASTQ makes this impractical in real world scenarios.
 
 <a name="read_group" />Read Group
-: For detailed semantics of the various read group fields you should consult the [sequence alignment map format specification](https://samtools.github.io/hts-specs/SAMv1.pdf).
+: A set of reads that were generated from a single run of a sequencing instrument. Read groups are identified in the SAM/BAM/CRAM file by a number of tags that are defined in the official SAM specification. In the simple case where a single library preparation derived from a single biological sample was run on a single lane of a flowcell, all the reads from that lane run belong to the same read group. When multiplexing is involved, then each subset of reads originating from a separate library run on the same lane will constitute a separate read group. For detailed semantics of the various read group fields you should consult the [sequence alignment map format specification](https://samtools.github.io/hts-specs/SAMv1.pdf).
 
 <a name="fi_auxiliary_tag" />FI auxiliary tag
 : The [one based](#one_based_coordinate) index of a [segment](#segment) in the [read](#read).
