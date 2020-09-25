@@ -8,8 +8,9 @@ id: configuration
 * placeholder
 {:toc}
 
+# Pipeline overview
+
 ![overview](assets/img/pheniqs_overview_web2.png){: .diagram}
->**Pheniqs pipeline overview** {: .example}
 
 + **Input**: FASTQ or SAM formatted sequence files.
 + **Configuration**: All runtime directives, including I/O, coordinate patterns identifying the location of sequence elements of interest, barcode sets, metadata, and any prior information about sample distributions. Trivial scenarios, such as format conversion or interleaving, can run with command line parameters only, but in most cases a configuration file will be required. Before execution begins the configuration file is compiled and validated. In the event of a validation failure  the run is aborted and an informative error message is displayed.
