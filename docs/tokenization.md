@@ -83,7 +83,7 @@ The SAM tags populated by Pheniqs are summarized below:
 
 | Name                                      | Description                                                    | Example                       |
 | :---------------------------------------- | :------------------------------------------------------------- | :---------------------------- |
-| **[RG](glossary#rg_auxiliary_tag)**  | Read group identifier matching an RG filed in the header.      | H7LT2DSXX:1:GAACTGAGCGTCGTGGAGCG  |
+| **[RG](glossary#rg_auxiliary_tag)**  | Read group identifier matching an RG:ID field in the header.      | H7LT2DSXX:1:GAACTGAGCGTCGTGGAGCG  |
 | **[BC](glossary#bc_auxiliary_tag)**  | Raw uncorrected sample barcode sequence.                       | GAACTGAGCG-TCGTGGAGCG             |
 | **[QT](glossary#qt_auxiliary_tag)**  | Phred quality of the sample barcode sequence in the BC tag.    | ,FF::F:F:F-,,FF::FF:F             |
 | **[XB](glossary#xb_auxiliary_tag)**  | The probability that sample barcode decoding is incorrect.     | 2.27479e-06                   |
@@ -97,7 +97,3 @@ The SAM tags populated by Pheniqs are summarized below:
 | **[OX](glossary#ox_auxiliary_tag)**  | Raw uncorrected molecular barcode sequence.                    |                               |
 | **[BZ](glossary#bz_auxiliary_tag)**  | Phred quality of the molecular barcode sequence in the OX tag. |                               |
 | **[XM](glossary#xm_auxiliary_tag)**  | The probability that molecular barcode decoding is incorrect.  |                               |
-
----
-
-## Key Concepts
