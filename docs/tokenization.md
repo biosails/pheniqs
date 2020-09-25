@@ -11,7 +11,7 @@ id: tokenization
 * placeholder
 {:toc}
 
-At the heart of Pheniqs is a transformation framework that relies on a familiar syntax that mimics Python array slicing and can arbitrarily manipulate and decode multiple barcodes anywhere in a sequence read. It extracts tokens from multiple read segments  by addressing either the 5’ end, 3’ end, or both (and optionally reverse complement) to construct the output template segments and the sample, cellular and molecular barcodes. This generic approach can accommodates any potential barcoding scheme and obviates the need for pre and post processing for most experimental designs.
+At the heart of Pheniqs is a transformation framework that relies on a familiar syntax that mimics Python array slicing and can arbitrarily manipulate read structure and decode multiple barcodes anywhere in a sequence read. It extracts tokens from multiple read segments  by addressing either the 5’ end, 3’ end, or both (and optionally reverse complement) to construct the output template segments and the sample, cellular and molecular barcodes. This generic approach can accommodates any potential barcoding scheme and obviates the need for pre and post processing for most experimental designs.
 
 # Experimental Design
 
@@ -31,11 +31,11 @@ The read segments for this standard design thus comprise two technical sequences
 
 ![read anatomy](/pheniqs/assets/img/diagram2.png)
 
-The four segments are then provided in the order: **R1**, **I1**, **I2**, **R2**. Together those for segments constitute a single read and all have the same identifier, whether in FASTQ format or SAM.
+The four segments are then provided in the order: **R1**, **I1**, **I2**, **R2**. Together those for segments constitute a single read and all share the same identifier, whether in FASTQ format or SAM. Whgen using SAM format, the segment index may be indicated in one of two ways: when the read has no more than 2 segments the **0x40** and **0x80** bits of the SAM flag mark the *first segment in the template* and the *last segment in the template*. When more than 2 segments are present the **FI** auxiliary tag provides the *index of segment in the template* and the **TC** auxiliary tag provides the *total number of segments in the template*. Encoding of the segment index in the FASTQ format is not standardized but in reads produced by the Illumina platform will often be present in the comment section, which appears on the same line as the identifier folowing a whitespace character.
 
 ## Read Classification
 
-The combination of the barcodes contained in the **I1** and **I2** index segments identifies the library. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
+The combination of the barcodes contained in the **I1** and **I2** index segments identifies the pooled library in the standard illumina protocol. With standard dual indexing, up to 96 distinct sample libraries can be pooled and run together in a single sequencing lane.
 
 To identify which biological sequences belong to which library, the sequences belonging each one need to be separated from each other. This process of deconvolving libraries is called demultiplexing and is done by classifying each of the sequences using the barcode indexes:
 
@@ -46,15 +46,13 @@ To identify which biological sequences belong to which library, the sequences be
 
 ## Tokenization
 
-Pheniqs uses [tokens](configuration#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and a length. It is important to note that Pheniqs uses [zero based](glossary#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
+Pheniqs uses [tokens](configuration#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and an end coordinate. It is important to note that Pheniqs uses [zero based](glossary#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
 ![read anatomy](/pheniqs/assets/img/diagram7.png)
-
 >For this design, the barcode tokens begin at position 0 in I1 and I2 and extend for 10 bases. The tokens for biological sequences begin at position 0 of Read 1 and Read 2 and extend for the full span of those read segments.
 {: .example}
 
-For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Because Illumina sequencing is calibrated in relation to the previously sequenced base, those segments are sometimes sequenced one nucleotide longer than necessary to ensure good quality on the last nucleotide. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
-
+For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Because Illumina sequencing is calibrated in relation to the previously sequenced base, sequencing centers sometimes sequence those segments one nucleotide longer than necessary to ensure good quality on the last nucleotide, so it is a good idea to explicitly provide an end coordinate when tokenizing the index segments. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
 
 ## Transform Patterns
 
