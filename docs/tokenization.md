@@ -17,7 +17,7 @@ At the heart of Pheniqs is a transformation framework that relies on a familiar 
 
 Some very common designs for Illumina platforms are illustrated in the following diagram.
 
-![experimental designs](/pheniqs/assets/img/diagram8.png){: .diagram}
+![experimental designs](/pheniqs/assets/img/diagram8.png)
 
 More complicated barcoding schemes for single-cell, CRISPR, and multi-modal sequencing are also appearing. Examples of how to configure Pheniqs for a variety of experimental designs, may be found in the [workflow section](workflow) of the documentation. Template configuration files with common barcode sets are also available in the [template section](template)
 
