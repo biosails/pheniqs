@@ -44,7 +44,7 @@ To identify which biological sequences belong to which library, the sequences be
 {: .example}
 
 
-## Tokenization
+# Tokenization
 
 Pheniqs uses [tokens](configuration#tokenization) to reference and extract information from different read segments by specifying where to look for different classes of sequence elements (i.e. barcodes, biological sequences). Each element of interest is defined by an offset relative to the beginning of a given read segment (in this example I1, I2, R1, R2) and an end coordinate. It is important to note that Pheniqs uses [zero based](glossary#zero_based_coordinate) indexing, so the first read to come off the machine will be referred to as Segment 0, and so on:
 
@@ -54,7 +54,7 @@ Pheniqs uses [tokens](configuration#tokenization) to reference and extract infor
 
 For a standard paired-end, dual indexed Illumina run, the sample barcodes usually comprise the full I1 and I2 read segments. Because Illumina sequencing is calibrated in relation to the previously sequenced base, sequencing centers sometimes sequence those segments one nucleotide longer than necessary to ensure good quality on the last nucleotide, so it is a good idea to explicitly provide an end coordinate when tokenizing the index segments. The biological sequences start at the first position of R1 and R2 and extend for the full number of cycles run (typically 75, 100, or 150 nucleotides).
 
-## Transform Patterns
+# Transform Patterns
 
 This example illustrates tokenization syntax and output for a 150nt dual-indexed paired-end sequencing run with sample, cellular, and molecular barcodes. This example contains the following features:
 
@@ -65,13 +65,12 @@ This example illustrates tokenization syntax and output for a 150nt dual-indexed
 
 ![transform patterns](/pheniqs/assets/img/transforms.png)
 
->_**Input files**_ contain sequence data to be analyzed. For Illumina data, these will usually be in fastq format and there will be one file for each read _**segment**_ that comes off the sequencing machine.
-The read _**segments**_ are catalogued for future reference and are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
+>_**Input files**_ contain sequence data to be analyzed. For Illumina data, these will usually be in [split](glossary#split_file_layout) fastq format and there will be one file for each read **segment** that comes off the sequencing machine. The read **segments** are catalogued for future reference and are indexed as an array, where 0=Read1, 1=Index1, 2=Index2, 3=Read2.
 Barcode _**tokens**_ define the type and location of the sequences of interest in each read segment. Barcodes may appear at any position and orientation in any read segment. Each type of barcode included in the experimental design is designated as a separate entity.
 The _**transform patterns**_ define how each sequence component to be extracted is to be handled. Each token comprises three colon separated components, ``segment:start:end``. Per Python array slicing syntax, the *start* coordinate (offset) is inclusive and the *end* coordinate is exclusive. Start and end coordinates default to 0 and the end of the segment, respectively.
 {: .example}
 
-## Output
+# Output
 
 After sequence classification, the tokenized sequences that have been extracted are written along with their associated metadata, including sequence quality and confidence scores, to specific [auxiliary tags](https://samtools.github.io/hts-specs/SAMtags.pdf) within the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format. (While Pheniqs can also produce FASTQ output, SAM is preferred since it preserves all associated metadata for each read group.)
 
