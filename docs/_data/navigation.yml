@@ -11,11 +11,6 @@ links:
   id: quickstart
   enabled: True
 
-- title: Background
-  url: /pheniqs/background
-  id: background
-  enabled: True
-
 - title: Configuration
   url: /pheniqs/configuration
   id: configuration

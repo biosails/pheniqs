@@ -16,7 +16,7 @@ See the [**workflow**](workflow) page for more information on common types of ex
 
 The [**Tokenization and Transform Patterns**](tokenization) page provides a high-level view of how transform patterns are constructed and the output they provide.
 
-To configure Pheniqs for any particular workflow, it helps to have some idea about next-gen sequencing technology, adapters and barcode sets, Illumina's bcl2fastq softare, FASTQ and SAM file formats, and some general terminology. Please see the [**Background**](background.html) page for some tips on these if you are not familiar with these.
+To configure Pheniqs for any particular workflow, it helps to have some idea about next-gen sequencing technology, adapters and barcode sets, Illumina's bcl2fastq softare, FASTQ and SAM file formats, and some general terminology. 
 
 
 # Vignettes
