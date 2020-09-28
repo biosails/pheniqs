@@ -5,9 +5,6 @@ permalink: /workflow
 id: workflow
 ---
 
-* placeholder
-{:toc}
-
 Examples of how to configure Pheniqs for a handful of published experimental designs are provided below to help users get started with their own applications.
 
 Different types of experiments use different barcoding schemes. The number, location, and type of barcodes to be extracted, which will vary depending on the specific experimental design. Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experiments. Different types of sequences are extracted using _tokens_ and handled using _transform patterns_.
@@ -31,6 +28,7 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 
 [Fluidigm with a sample and a cellular tag](fluidigm_vignette)
 : This vignette will walk you through a single index fluidigm sequencing run with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
+
 
 ## Those do not exist yet
 
