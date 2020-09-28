@@ -7,13 +7,13 @@ id: vignettes_illumina
 
 This tutorial demonstrates how to manually prepare configuration files for decoding sample barcodes for a standard Illumina sequencing run. Pheniqs includes a Python API that helps users create configuration files automatically. For a tutorial that uses the Python API to generate the configuration files for this example, see the [Standard Illumina sample decoding with the python API](illumina_python_api).
 
-In this example the run has paired-end dual-index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments: 2 biological sequences (cDNA, genomic DNA, etc.) read from both ends of the insert fragment, and 2 technical sequences containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the multiplex barcode and its quality scores are written to the [BC](glossary#bc_auxiliary_tag) and [QT](glossary#qt_auxiliary_tag) tags, and the decoding error probabilities are written to the [XB](glossary#xb_auxiliary_tag) tag.
+In this example the run has paired-end dual-index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments: 2 biological sequences (cDNA, genomic DNA, etc.) read from both ends of the insert fragment, and 2 technical sequences containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the sample barcode and its quality scores are written to the [BC](glossary#bc_auxiliary_tag) and [QT](glossary#qt_auxiliary_tag) tags, and the decoding error probability is written to the [XB](glossary#xb_auxiliary_tag) tag.
 
 ## Input Read Layout
 
 ![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/Illumina_paired-end_dual-index.png)
 
-Base calling with bc2fastq will produce 4 files per lane:
+Base calling with bcl2fastq will produce 4 files per lane:
 - `L001_R1_001.fastq.gz`: Read 1, starting from the beginning of the insert fragment ("top" strand).
 - `L001_I1_001.fastq.gz`: Index 1, the i7 index.
 - `L001_I2_001.fastq.gz`: Index 2, the i5 index.
@@ -27,19 +27,23 @@ Base calling with bc2fastq will produce 4 files per lane:
     "Lane1_S1_L001_R2_001.fastq.gz"
 ],
 ```
->**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 fastq files produced by bcl2fastq base calling.
+>**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 FASTQ files produced by bcl2fastq base calling.
 {: .example}
 
-To emit the two ends of the insert region as two segments of the output read, we declare the global transform directives
+To emit the two ends of the insert region as two segments of the output read, we declare the template transform
 >```json
-"transform": { "token": [ "0::", "3::" ] }
+{
+    "template": {
+        "transform": { "token": [ "0::", "3::" ] }
+    }
+}
 ```
 >**declaring output read segments** Only the segments coming from the first and the fourth file are biological sequences and should be included in the output.
 {: .example}
 
-To classify the reads by the i5 and i7 indices, we declare a `codec`, which is the list of possible barcode sequences, and a `transform` that tells Pheniqs which read segment(s) and coordinates correspond to the barcode sequence(s).
+To classify the reads by the i5 and i7 indices, we declare a decoder with a `codec` that lists the possible barcode sequences, and a `transform` that tells Pheniqs which read segment(s) and coordinates correspond to the barcode sequence(s).
 >```json
-"multiplex": {
+"sample": {
   "comment": "Sample barcodes are 96 unique combinations of i5 (10nt) + i7 (10nt) sequences.",
   "transform": { "token": [ "1::10", "2::10" ] },
   "codec": {
@@ -48,7 +52,7 @@ To classify the reads by the i5 and i7 indices, we declare a `codec`, which is t
   }
 }
 ```
->**declaring sample demultiplexing** The standard Illumina dual-index protocol allows up to 96 unique dual 10 base barcodes in the i5 and i7 region, but for the sake of brevity we only show 2 here. Comments are allowed within any dictionary element in the configuration file and are ignored by Pheniqs. Alternatively, a codec may also be inherited from a base decoder rather than being enumerated explicitly here (see **inheritance**).
+>**declaring sample demultiplexing** The standard Illumina dual-index protocol allows up to 96 unique dual 10 base barcodes in the i5 and i7 region, but for the sake of brevity we only show 2 here. Comments are allowed within any dictionary element in the configuration file and are ignored by Pheniqs. Alternatively, a codec may also be inherited from a base decoder rather than being enumerated explicitly here (see [configuration inheritance](configuration#inheritence)).
 {: .example}
 
 To discard reads that failed the internal Illumina sequencer noise filter, we instruct Pheniqs to filter incoming *qc fail* reads
@@ -74,7 +78,7 @@ Putting things together, we can generate a configuration for demultiplexing the 
         "Lane1_S1_L001_R2_001.fastq.gz"
     ],
     "transform": { "token": [ "0::", "3::" ] },
-    "multiplex": {
+    "sample": {
       "transform": { "token": [ "1::10", "2::10" ] },
       "algorithm": "pamld",
       "noise": 0.05,
@@ -295,7 +299,7 @@ pheniqs mux --config CBJLFACXX_l01_sample.json --output CBJLFACXX_lane1_sample_d
 If you want to split the libraries and their segments into separate fastq files you can specify the output on the individual barcode directives. Here are the [complete configuration](example/CBJLFACXX_l01_sample_split.json) and [compiled configuration](example/CBJLFACXX_l01_sample_split_compiled.json) for that scenario, but briefly those the changes:
 
 >```json
-"multiplex": {
+"sample": {
   "codec": {
       "@GAACTGAGCGCGCTCCACGA": {
           "barcode": [ "GAACTGAGCG", "CGCTCCACGA" ],
