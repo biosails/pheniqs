@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Standard Illumina sample decoding with the python API"
-permalink: /illumina_api_vignette
+permalink: /b
 id: illumina_api_vignette
 ---
 
