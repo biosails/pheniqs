@@ -71,7 +71,8 @@ To decode the column cellular barcode for the first lane you create a [configura
         "CBJLFACXX_S1_L001_I1_001.fastq.gz",
         "CBJLFACXX_S1_L001_R2_001.fastq.gz"
     ],
-    "multiplex": {
+    "cellular": {
+        "multiplexing classifier": true,
         "algorithm": "pamld",
         "base": "@CBJLFACXX_column",
         "confidence threshold": 0.95,
@@ -113,7 +114,8 @@ This will create the [CBJLFACXX_l01_column_split.json]({{ site.github.repository
         "CBJLFACXX_S1_L001_I1_001.fastq.gz",
         "CBJLFACXX_S1_L001_R2_001.fastq.gz"
     ],
-    "multiplex": {
+    "cellular": {
+        "multiplexing classifier": true,
         "algorithm": "pamld",
         "base": "@CBJLFACXX_column",
         "codec": {
@@ -174,7 +176,8 @@ Better estimation of the prior distribution improves accuracy. The `pheniqs-prio
     "input": [
         "CBJLFACXX_S1_L001_I1_001.fastq.gz"
     ],
-    "multiplex": {
+    "cellular": {
+        "multiplexing classifier": true,
         "algorithm": "pamld",
         "base": "@CBJLFACXX_column",
         "confidence threshold": 0.95,
@@ -238,7 +241,8 @@ First we write the [configuration]({{ site.github.repository_url }}/blob/master/
     "import": [
         "CBJLFACXX_core.json"
     ],
-    "multiplex": {
+    "cellular": {
+        "multiplexing classifier": true,
         "algorithm": "pamld",
         "base": "@CBJLFACXX_row",
         "confidence threshold": 0.95,
@@ -269,7 +273,8 @@ To estimate the row cellular barcode prior we have a similar reusable [configura
     "import": [
         "CBJLFACXX_core.json"
     ],
-    "multiplex": {
+    "cellular": {
+        "multiplexing classifier": true,
         "algorithm": "pamld",
         "base": "@CBJLFACXX_row",
         "confidence threshold": 0.95,
