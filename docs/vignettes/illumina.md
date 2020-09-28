@@ -52,7 +52,7 @@ To classify the reads by the i5 and i7 indices, we declare a decoder with a `cod
   }
 }
 ```
->**declaring sample demultiplexing** The standard Illumina dual-index protocol allows up to 96 unique dual 10 base barcodes in the i5 and i7 region, but for the sake of brevity we only show 2 here. Comments are allowed within any dictionary element in the configuration file and are ignored by Pheniqs. Alternatively, a codec may also be inherited from a base decoder rather than being enumerated explicitly here (see [configuration inheritance](configuration#inheritence)).
+>**declaring sample demultiplexing** The standard Illumina dual-index protocol allows up to 96 unique dual 10 base barcodes in the i5 and i7 region, but for the sake of brevity we only show 2 here. Comments are allowed within any dictionary element in the configuration file and are ignored by Pheniqs. Alternatively, a codec may also be [inherited](configuration#inheritence) from a base decoder rather than being enumerated explicitly here.
 {: .example}
 
 To discard reads that failed the internal Illumina sequencer noise filter, we instruct Pheniqs to filter incoming *qc fail* reads
