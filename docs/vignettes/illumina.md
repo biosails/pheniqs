@@ -32,10 +32,8 @@ Base calling with bcl2fastq will produce 4 files per lane:
 
 To emit the two ends of the insert region as two segments of the output read, we declare the template transform
 >```json
-{
-    "template": {
-        "transform": { "token": [ "0::", "3::" ] }
-    }
+"template": {
+    "transform": { "token": [ "0::", "3::" ] }
 }
 ```
 >**declaring output read segments** Only the segments coming from the first and the fourth file are biological sequences and should be included in the output.
@@ -60,7 +58,7 @@ To discard reads that failed the internal Illumina sequencer noise filter, we in
 "filter incoming qc fail": true
 ```
 
-Putting things together, we can generate a configuration for demultiplexing the reads into three output files using the *PAMLD* decoder. Here, we declare that we expect **5%** of reads to be foreign DNA, which should not classify to any of the barcodes (for instance spiked-in PhiX sequences). We specify the noise prior with the `"noise": 0.05` directive. To mark as *qc fail* those reads with a posterior probability of correct barcode decoding that is below **0.95**, we specify `"confidence threshold": 0.95`.
+Putting things together, we can generate a configuration for demultiplexing the reads using the *PAMLD* decoder. Here, we declare that we expect **5%** of reads to be foreign DNA (or noise), which should not classify to any of the barcodes (for instance spiked-in PhiX sequences). We specify the noise prior with the `"noise": 0.05` directive. To mark as *qc fail* those reads with a posterior probability of correct barcode decoding that is below **0.95**, we specify `"confidence threshold": 0.95`.
 
 >```json
 {
@@ -258,8 +256,7 @@ The output is a readable description of all the explicit and implicit parameters
             URL : /dev/stdout?format=sam&compression=none
 
 
-
-While not strictly necessary, You may examine the [compile configuration](example/CBJLFACXX_l01_sample_compiled.json), which is the actual configuration Pheniqs will execute will all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
+While not strictly necessary, You may examine the [compiled configuration](example/CBJLFACXX_l01_sample_compiled.json), which is the actual configuration Pheniqs will execute with all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
 
 >```shell
 pheniqs mux --config CBJLFACXX_l01_sample.json --compile
@@ -283,7 +280,7 @@ You can see Pheniqs will declare the annotated read groups and populate the [BC]
     SN7001341:427:CBJLFACXX:1:1108:2455:1970 77  * 0 0 * * 0 0 TCCCTCTCACTGGAAGTGGTTGATCTCCAGGGAATCCCCAAGGTTAGCCT FFFF<B<00<BFFBB00<BF0BB0BFBBFF<<BBFB<FFFBBF707<BB RG:Z:CBJLFACXX:TCAGAC BC:Z:GACGACATTAAGGATAATGT QT:Z:IFFFIIIFFFFFBBFFFBFF XB:f:0.000293472
     SN7001341:427:CBJLFACXX:1:1108:2455:1970 141 * 0 0 * * 0 0 TTGATATTGTAAATTATAGACCAGACTGTGTACCATACTATTAATTGTCA <<'07'B<'<0'''0B'<<7<00<'<7'7<'0B7''<70<0<<7'<<'< RG:Z:CBJLFACXX:TCAGAC BC:Z:GACGACATTAAGGATAATGT QT:Z:IFFFIIIFFFFFBBFFFBFF XB:f:0.000293472
 
-To write the from all multiplexed libraries into one BAM output file you can specify the `output` directive in the root of the configuration file
+To write all multiplexed libraries into one BAM output file you can specify the `output` directive in the root of the configuration file
 >```json
 "output": [
     "CBJLFACXX_lane1_sample_demultiplex.bam"
@@ -296,7 +293,7 @@ Or directly on the command line
 pheniqs mux --config CBJLFACXX_l01_sample.json --output CBJLFACXX_lane1_sample_demultiplex.bam
 ```
 
-If you want to split the libraries and their segments into separate fastq files you can specify the output on the individual barcode directives. Here are the [complete configuration](example/CBJLFACXX_l01_sample_split.json) and [compiled configuration](example/CBJLFACXX_l01_sample_split_compiled.json) for that scenario, but briefly those the changes:
+If you want to split the libraries and their segments into separate fastq files you can specify the output on the individual barcode directives. Here are the [complete configuration](example/CBJLFACXX_l01_sample_split.json) and [compiled configuration](example/CBJLFACXX_l01_sample_split_compiled.json) for that scenario, but briefly those are the necessery changes:
 
 >```json
 "sample": {
@@ -329,7 +326,7 @@ If you want to split the libraries and their segments into separate fastq files 
 
 ## Prior estimation
 
-Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run. The `pheniqs-prior-api.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
+Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a [simple estimation of the priors](configuration#prior-estimation) in the report from each run. A simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run is also included. The `pheniqs-prior-api.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
 
 >```shell
 pheniqs-prior-api.py --configuration CBJLFACXX_l01_sample.json
