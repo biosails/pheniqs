@@ -114,23 +114,23 @@ pheniqs-illumina-api.py core \
 >**H7LT2DSXX_l01_multiplex decoder** lists the possible barcode combinations and the library names associated with them in the [LB](glossary#lb_auxiliary_tag) tag extracted from [SampleSheet.csv]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX/SampleSheet.csv).
 {: .example}
 
-In the importing file, you can use the `base` property in a decoder to use those as a starting point in the `multiplex`, `cellular`, and `molecular`. Any directive you specify in your instantiation will override values provided by the referenced base. You will see an example of how it is used in the next section.
+In the importing file, you can use the `base` property in a decoder to use those as a starting point in the `sample`, `cellular`, and `molecular`. Any directive you specify in your instantiation will override values provided by the referenced base. You will see an example of how it is used in the next section.
 
 ## Sample barcode decoding
 
-The `multiplex` sub command will generate a basic sample demultiplexing configuration file for each lane.
+The `sample` sub command will generate a basic sample demultiplexing configuration file for each lane.
 
 >```shell
-pheniqs-illumina-api.py multiplex \
+pheniqs-illumina-api.py sample \
 --confidence 0.95 \
 --noise 0.05 \
 181014_A00534_0024_AH7LT2DSXX
 ```
->**pheniqs-illumina-api multiplex** will produce a basic sample demultiplexing configuration that we will adjust later with the prior estimates. Some pheniqs parameters can be forwarded like `--noise` and `--confidence` shown in this example.
+>**pheniqs-illumina-api sample** will produce a basic sample demultiplexing configuration that we will adjust later with the prior estimates. Some pheniqs parameters can be forwarded like `--noise` and `--confidence` shown in this example.
 {: .example}
 
 [H7LT2DSXX_l01_sample.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_sample.json)
-is a configuration for demuliplexing the first lane. It declares a `multiplex` directive that expands the `H7LT2DSXX_l01_multiplex` decoder we have seen defined in [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json).
+is a configuration for demuliplexing the first lane. It declares a `sample` directive that expands the `H7LT2DSXX_l01_multiplex` decoder we have seen defined in [H7LT2DSXX_core.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_core.json).
 
 >```json
 {
@@ -173,7 +173,7 @@ pheniqs-illumina-api.py estimate \
 
 Since it is not necessary to read the biological segments when estimating the priors, input is declared only for the two index segments.
 
-[H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) declares a `multiplex` directive that expands `H7LT2DSXX_l01_multiplex` and adjusts the tokenization for the modified input. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output.
+[H7LT2DSXX_l01_estimate.json]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/H7LT2DSXX_l01_estimate.json) declares a `sample` directive that expands `H7LT2DSXX_l01_multiplex` and adjusts the tokenization for the modified input. `output` is redirected to `/dev/null` to tell Pheniqs it should not bother with the output.
 
 >```json
 {
@@ -184,7 +184,7 @@ Since it is not necessary to read the biological segments when estimating the pr
         "H7LT2DSXX_S1_L001_I1_001.fastq.gz",
         "H7LT2DSXX_S1_L001_I2_001.fastq.gz"
     ],
-    "multiplex": {
+    "sample": {
         "algorithm": "pamld",
         "base": "H7LT2DSXX_l01_multiplex",
         "confidence threshold": 0.95,
@@ -250,7 +250,7 @@ pheniqs-io-api.py \
 
 >```json
 {
-    "multiplex": {
+    "sample": {
         "codec": {
             "@A10_PDAC81": {
                 "LB": "A10_PDAC81",
@@ -292,7 +292,7 @@ pheniqs-io-api.py \
 
 >```json
 {
-    "multiplex": {
+    "sample": {
         "codec": {
             "@A10_PDAC81": {
                 "LB": "A10_PDAC81",
