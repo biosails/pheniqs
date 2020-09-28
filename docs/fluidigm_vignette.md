@@ -14,7 +14,7 @@ This tutorial will walk you through demultiplexing a fluidigm sequencing run wit
     "CBJLFACXX_S1_L001_R1_001.fastq.gz",
     "CBJLFACXX_S1_L001_I1_001.fastq.gz",
     "CBJLFACXX_S1_L001_R2_001.fastq.gz"
-],
+]
 ```
 >**declaring input read segments** Base calling with bc2fastq produced 3 files per lane: `CBJLFACXX_S1_L001_R1_001.fastq.gz` containing a 6 base pair long row cellular barcode, `CBJLFACXX_S1_L001_I1_001.fastq.gz` containing the 8 base pair column cellular barcode and `CBJLFACXX_S1_L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 {: .example}
