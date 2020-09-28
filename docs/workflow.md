@@ -32,7 +32,7 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 ## [Fluidigm with a sample and a cellular tag](fluidigm_vignette)
 : This vignette will walk you through a single index fluidigm sequencing run with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
 
-
+## Those do not exist yet
 
 [Droplet Sequencing](vignettes/droplet.html)
 : A popular way to perform single-cell RNA-seq profiling is to use microfluidics to generate individual droplets that each contain an individual cell and a bead carrying a cellular barcode. This page provides barcoding scenarios for several different droplet sequencing methods.
