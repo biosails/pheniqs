@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Single index Fluidigm decoding"
-permalink: /c
+permalink: /fluidigm_vignette
 id: fluidigm_vignette
 ---
 
