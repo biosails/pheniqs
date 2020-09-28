@@ -20,11 +20,11 @@ To configure Pheniqs for any particular workflow, it helps to have some idea abo
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Follow the links below for descriptions of barcoding schemes for different experimental scenarios:
 
-[Prior estimation with the Illumina Python API](illumina_api_vignette)
-: This vignette will walk you through demultiplexing a dual indexed paired end NovaSeq 6000 run with the Pheniqs python API. It will show you how to generate configuration files from the Illumina run folder, estimate the sample barcode priors, and demultiplex the run. It loosely applies to almost every standard sample multiplex Illumina run.
-
 [Standard Illumina sample demultiplexing](illumina_vignette)
 : This vignette will walk you through writing configuration files for demultiplexing a standard Illumina high throughput sequencing run with paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
+
+[Prior estimation with the Illumina Python API](illumina_api_vignette)
+: This vignette will walk you through demultiplexing a dual indexed paired end NovaSeq 6000 run with the Pheniqs python API. It will show you how to generate configuration files from the Illumina run folder, estimate the sample barcode priors, and demultiplex the run. It loosely applies to almost every standard sample multiplex Illumina run.
 
 [Fluidigm with a sample and a cellular tag](fluidigm_vignette)
 : This vignette will walk you through a single index fluidigm sequencing run with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
