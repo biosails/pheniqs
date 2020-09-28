@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Standard Illumina sample decoding"
-permalink: /a
+permalink: /illumina_vignette
 id: illumina_vignette
 ---
 
