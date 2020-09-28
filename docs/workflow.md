@@ -23,7 +23,7 @@ To configure Pheniqs for any particular workflow, it helps to have some idea abo
 
 Pheniqs can accommodate virtually any experimental design due to its flexible syntax for parsing read segments. Follow the links below for descriptions of barcoding schemes for different experimental scenarios:
 
-[Prior estimation with the Illumina Python API](vignettes/illumina_python_api.html)
+[Prior estimation with the Illumina Python API](vignettes/illumina_python_api)
 : This vignette will walk you through demultiplexing a dual indexed paired end NovaSeq 6000 run with the Pheniqs python API. It will show you how to generate configuration files from the Illumina run folder, estimate the sample barcode priors, and demultiplex the run. It loosely applies to almost every standard sample multiplex Illumina run.
 
 [Standard Illumina sample demultiplexing](vignettes/illumina.html)
