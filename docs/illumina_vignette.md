@@ -284,7 +284,7 @@ To write all multiplexed libraries into one BAM output file you can specify the 
 >```json
 "output": [
     "CBJLFACXX_lane1_sample_demultiplex.bam"
-],
+]
 ```
 
 Or directly on the command line
