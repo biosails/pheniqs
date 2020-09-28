@@ -1,8 +1,8 @@
 ---
 layout: default
 title: "Standard Illumina sample decoding with the python API"
-permalink: /vignettes/illumina_python_api
-id: vignettes_illumina_python_api
+permalink: /illumina_api_vignette
+id: illumina_api_vignette
 ---
 
 This tutorial will walk you through prior estimation and demultiplexing of a standard Illumia sequencing run using `pheniqs-illumina-api.py`, `pheniqs-prior-api.py` and `pheniqs-io-api.py`. In this example we use the python API to generate configuration files for [PAMLD](glossary#phred_adjusted_maximum_likelihood_decoding) from metadata found in an output [Illumina run folder for flowcell H7LT2DSXX]({{ site.github.repository_url }}/blob/master/example/H7LT2DSXX/181014_A00534_0024_AH7LT2DSXX). For an overview of manually write such configuration files for a similar scenario see the [Standard Illumina sample decoding](illumina.html). This example also demonstrates using the `import` directive to cascade configuration files.
