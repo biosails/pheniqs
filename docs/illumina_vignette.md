@@ -25,7 +25,7 @@ Base calling with bcl2fastq will produce 4 files per lane:
     "Lane1_S1_L001_I1_001.fastq.gz",
     "Lane1_S1_L001_I2_001.fastq.gz",
     "Lane1_S1_L001_R2_001.fastq.gz"
-],
+]
 ```
 >**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 FASTQ files produced by bcl2fastq base calling.
 {: .example}
