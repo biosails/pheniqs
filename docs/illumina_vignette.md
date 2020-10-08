@@ -14,17 +14,17 @@ In this example the run has paired-end dual-index samples multiplexed using the 
 ![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/Illumina_paired-end_dual-index.png)
 
 Base calling with bcl2fastq will produce 4 files per lane:
-- `L001_R1_001.fastq.gz`: Read 1, starting from the beginning of the insert fragment ("top" strand).
-- `L001_I1_001.fastq.gz`: Index 1, the i7 index.
-- `L001_I2_001.fastq.gz`: Index 2, the i5 index.
-- `L001_R2_001.fastq.gz`: Read 2, starting from the other end of the insert fragment ("bottom" strand); note that this sequence is reverse complemented relative to the Read 1 sequence.
+- `H7LT2DSXX_S1_L001_R1_001.fastq.gz`: Read 1, starting from the beginning of the insert fragment ("top" strand).
+- `H7LT2DSXX_S1_L001_I1_001.fastq.gz`: Index 1, the i7 index.
+- `H7LT2DSXX_S1_L001_I2_001.fastq.gz`: Index 2, the i5 index.
+- `H7LT2DSXX_S1_L001_R2_001.fastq.gz`: Read 2, starting from the other end of the insert fragment ("bottom" strand); note that this sequence is reverse complemented relative to the Read 1 sequence.
 
 >```json
 "input": [
-    "Lane1_S1_L001_R1_001.fastq.gz",
-    "Lane1_S1_L001_I1_001.fastq.gz",
-    "Lane1_S1_L001_I2_001.fastq.gz",
-    "Lane1_S1_L001_R2_001.fastq.gz"
+    "H7LT2DSXX_S1_L001_R1_001.fastq.gz",
+    "H7LT2DSXX_S1_L001_I1_001.fastq.gz",
+    "H7LT2DSXX_S1_L001_I2_001.fastq.gz",
+    "H7LT2DSXX_S1_L001_R2_001.fastq.gz"
 ]
 ```
 >**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 FASTQ files produced by bcl2fastq base calling.
@@ -33,7 +33,9 @@ Base calling with bcl2fastq will produce 4 files per lane:
 To emit the two ends of the insert region as two segments of the output read, we declare the template transform
 >```json
 "template": {
-    "transform": { "token": [ "0::", "3::" ] }
+    "transform": {
+        "token": [ "0::", "3::" ]
+    }
 }
 ```
 >**declaring output read segments** Only the segments coming from the first and the fourth file are biological sequences and should be included in the output.
@@ -42,11 +44,18 @@ To emit the two ends of the insert region as two segments of the output read, we
 To classify the reads by the i5 and i7 indices, we declare a decoder with a `codec` that lists the possible barcode sequences, and a `transform` that tells Pheniqs which read segment(s) and coordinates correspond to the barcode sequence(s).
 >```json
 "sample": {
-  "comment": "Sample barcodes are 96 unique combinations of i5 (10nt) + i7 (10nt) sequences.",
-  "transform": { "token": [ "1::10", "2::10" ] },
+  "transform": {
+      "token": [ "1::8", "2::8" ]
+  },
   "codec": {
-    "@GAACTGAGCGCGCTCCACGA": { "barcode": [ "GAACTGAGCG", "CGCTCCACGA" ] },
-    "@GACGAGATTAAGGATAATGT": { "barcode": [ "GACGAGATTA", "AGGATAATGT" ] }
+      "@A10_PDAC81": {
+          "LB": "A10_PDAC81",
+          "barcode": [ "CGAGGCTG", "GTAAGGAG" ]
+      },
+      "@A11_PDAC490": {
+          "LB": "A11_PDAC490",
+          "barcode": [ "AAGAGGCA", "ACTGCATA" ]
+      }
   }
 }
 ```
@@ -62,55 +71,63 @@ Putting things together, we can generate a configuration for demultiplexing the 
 
 >```json
 {
-    "CN": "CGSB",
     "PL": "ILLUMINA",
-    "PM": "HiSeq",
-    "base input url": "~/CBJLFACXX/raw",
-    "base output url": "~/CBJLFACXX/sample",
+    "PM": "A00534",
     "filter incoming qc fail": true,
-    "flowcell id": "CBJLFACXX",
+    "flowcell id": "H7LT2DSXX",
+    "report url": "H7LT2DSXX_l01_sample_report.json",
     "input": [
-        "Lane1_S1_L001_R1_001.fastq.gz",
-        "Lane1_S1_L001_I1_001.fastq.gz",
-        "Lane1_S1_L001_I2_001.fastq.gz",
-        "Lane1_S1_L001_R2_001.fastq.gz"
+        "H7LT2DSXX_S1_L001_R1_001.fastq.gz",
+        "H7LT2DSXX_S1_L001_I1_001.fastq.gz",
+        "H7LT2DSXX_S1_L001_I2_001.fastq.gz",
+        "H7LT2DSXX_S1_L001_R2_001.fastq.gz"
     ],
-    "transform": { "token": [ "0::", "3::" ] },
+    "template": {
+        "transform": {
+            "token": [ "0::", "3::" ]
+        }
+    },
     "sample": {
-      "transform": { "token": [ "1::10", "2::10" ] },
-      "algorithm": "pamld",
-      "noise": 0.05,
-      "confidence threshold": 0.95,
-      "codec": {
-          "@GAACTGAGCGCGCTCCACGA": {
-              "SM": "c57bl6 mouse",
-              "LB": "c57bl6 fetal liver",
-              "barcode": [ "GAACTGAGCG", "CGCTCCACGA" ]
-          },
-          "@GACGAGATTAAGGATAATGT": {
-              "SM": "c57bl6 mouse",
-              "LB": "c57bl6 adult bone marrow",
-              "barcode": [ "GACGAGATTA", "AGGATAATGT" ]
-          }
-      }
+        "transform": {
+            "token": [ "1::8", "2::8" ]
+        },
+        "algorithm": "pamld",
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "codec": {
+            "@A10_PDAC81": {
+                "LB": "A10_PDAC81",
+                "barcode": [
+                    "CGAGGCTG",
+                    "GTAAGGAG"
+                ]
+            },
+            "@A11_PDAC490": {
+                "LB": "A11_PDAC490",
+                "barcode": [
+                    "AAGAGGCA",
+                    "ACTGCATA"
+                ]
+            }
+        }
     }
 }
 ```
->**Single index Paired end Illumina protocol** Classifying the 2 barcodes using the 4 fastq files produced by bcl2fastq.
+>**Single index Paired end Illumina protocol** Classifying the 2 barcodes using the 4 fastq files produced by bcl2fastq for the first lane. For brevity, this is only an excerpt of the [full configuration](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_static.json))
 {: .example}
 
 Before we proceed we validate the configuration with Pheniqs:
 
 >```shell
-pheniqs mux --config CBJLFACXX_l01_sample.json --validate
+pheniqs mux --config H7LT2DSXX_l01_sample.json --validate
 ```
 
-The output is a readable description of all the explicit and implicit parameters after applying defaults. You can check how Pheniqs detects the input format, compression and layout as well as the output you can expect. In The *Output transform* section is a verbal description of how the output read segments will be assembled from the input. similarly *Transform* in the *Mutliplex decoding* section desribes how the segment that will be matched against the barcodes is assembled. the You can also see how each of the read groups will be tagged and the prior probability PAMLD will assume for each barcode.
+The output is a readable description of all the explicit and implicit parameters after applying defaults. You can check how Pheniqs detects the input format, compression and layout as well as the output you can expect. In The *Output transform* section is a verbal description of how the output read segments will be assembled from the input. similarly *Transform* in the *Mutliplex decoding* section desribes how the segment that will be matched against the barcodes is assembled. the You can also see how each of the read groups will be tagged and the prior probability PAMLD will assume for each barcode. For brevity, the following is only an excerpt of the [full validation report](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_validate.txt)).
 
     Environment
 
-        Base input URL                              /home/lg/CBJLFACXX/raw
-        Base output URL                             /home/lg/CBJLFACXX/raw
+        Base input URL                              .
+        Base output URL                             .
         Platform                                    ILLUMINA
         Quality tracking                            disabled
         Filter incoming QC failed reads             enabled
@@ -119,53 +136,57 @@ The output is a readable description of all the explicit and implicit parameters
         Output Phred offset                         33
         Leading segment index                       0
         Default output format                       sam
-        Default output compression                  none
+        Default output compression                  unknown
         Default output compression level            5
         Feed buffer capacity                        2048
         Threads                                     8
-        Decoding threads                            1
+        Decoding threads                            8
         HTSLib threads                              8
 
     Input
 
         Input segment cardinality                   4
 
-        Input segment No.0 : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
-        Input segment No.1 : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
-        Input segment No.2 : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz
-        Input segment No.3 : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
+        Input segment No.0 : ./H7LT2DSXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
+        Input segment No.1 : ./H7LT2DSXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
+        Input segment No.2 : ./H7LT2DSXX_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz
+        Input segment No.3 : ./H7LT2DSXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
 
         Input feed No.0
             Type : fastq
+            Compression : gz
             Resolution : 1
             Phred offset : 33
             Platform : ILLUMINA
             Buffer capacity : 2048
-            URL : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
+            URL : ./H7LT2DSXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
 
         Input feed No.1
             Type : fastq
+            Compression : gz
             Resolution : 1
             Phred offset : 33
             Platform : ILLUMINA
             Buffer capacity : 2048
-            URL : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
+            URL : ./H7LT2DSXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
 
         Input feed No.2
             Type : fastq
+            Compression : gz
             Resolution : 1
             Phred offset : 33
             Platform : ILLUMINA
             Buffer capacity : 2048
-            URL : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz
+            URL : ./H7LT2DSXX_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz
 
         Input feed No.3
             Type : fastq
+            Compression : gz
             Resolution : 1
             Phred offset : 33
             Platform : ILLUMINA
             Buffer capacity : 2048
-            URL : /home/lg/CBJLFACXX/raw/Lane1_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
+            URL : ./H7LT2DSXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
 
     Output transform
 
@@ -185,27 +206,27 @@ The output is a readable description of all the explicit and implicit parameters
             Append token 0 of input segment 0 to output segment 0
             Append token 1 of input segment 3 to output segment 1
 
-    Mutliplex decoding
+    Sample decoding
 
         Decoding algorithm                          pamld
-        Shannon bound                               2 3
+        Shannon bound                               1 1
         Noise                                       0.05
         Confidence threshold                        0.95
         Segment cardinality                         2
-        Nucleotide cardinality                      20
-        Barcode segment length                      10 10
+        Nucleotide cardinality                      16
+        Barcode segment length                      8 8
 
         Transform
 
             Token No.0
-                Length        10
-                Pattern       1::10
-                Description   cycles 0 to 10 of input segment 1
+                Length        8
+                Pattern       1::8
+                Description   cycles 0 to 8 of input segment 1
 
             Token No.1
-                Length        10
-                Pattern       2::10
-                Description   cycles 0 to 10 of input segment 2
+                Length        8
+                Pattern       2::8
+                Description   cycles 0 to 8 of input segment 2
 
             Assembly instruction
                 Append token 0 of input segment 1 to output segment 0
@@ -213,54 +234,49 @@ The output is a readable description of all the explicit and implicit parameters
 
 
         Barcode undetermined
-            ID : CBJLFACXX:undetermined
-            PU : CBJLFACXX:undetermined
+            ID : H7LT2DSXX:undetermined
+            PU : H7LT2DSXX:undetermined
             PL : ILLUMINA
-            PM : HiSeq
-            CN : CGSB
-            Segment No.0  : /dev/stdout?format=sam&compression=none
-            Segment No.1  : /dev/stdout?format=sam&compression=none
+            PM : A00534
+            Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+            Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
 
-        Barcode @GAACTGAGCGCGCTCCACGA
-            ID : CBJLFACXX:GAACTGAGCGCGCTCCACGA
-            PU : CBJLFACXX:GAACTGAGCGCGCTCCACGA
-            LB : c57bl6 fetal liver
-            SM : c57bl6 mouse
+        Barcode @A10_PDAC81
+            ID : H7LT2DSXX:CGAGGCTGGTAAGGAG
+            PU : H7LT2DSXX:CGAGGCTGGTAAGGAG
+            LB : A10_PDAC81
             PL : ILLUMINA
-            PM : HiSeq
-            CN : CGSB
-            Concentration : 0.475
-            Barcode       : GAACTGAGCG-CGCTCCACGA
-            Segment No.0  : /dev/stdout?format=sam&compression=none
-            Segment No.1  : /dev/stdout?format=sam&compression=none
+            PM : A00534
+            Concentration : 0.0101063829787234
+            Barcode       : CGAGGCTG-GTAAGGAG
+            Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+            Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
 
-        Barcode @GACGAGATTAAGGATAATGT
-            ID : CBJLFACXX:GACGAGATTAAGGATAATGT
-            PU : CBJLFACXX:GACGAGATTAAGGATAATGT
-            LB : c57bl6 adult bone marrow
-            SM : c57bl6 mouse
+        Barcode @A11_PDAC490
+            ID : H7LT2DSXX:AAGAGGCAACTGCATA
+            PU : H7LT2DSXX:AAGAGGCAACTGCATA
+            LB : A11_PDAC490
             PL : ILLUMINA
-            PM : HiSeq
-            CN : CGSB
-            Concentration : 0.475
-            Barcode       : GACGAGATTA-AGGATAATGT
-            Segment No.0  : /dev/stdout?format=sam&compression=none
-            Segment No.1  : /dev/stdout?format=sam&compression=none
+            PM : A00534
+            Concentration : 0.0101063829787234
+            Barcode       : AAGAGGCA-ACTGCATA
+            Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+            Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
 
         Output feed No.0
-            Type : sam
+            Type : bam
+            Compression : unknown@5
             Resolution : 2
             Phred offset : 33
             Platform : ILLUMINA
             Buffer capacity : 4096
-            URL : /dev/stdout?format=sam&compression=none
-
-
-While not strictly necessary, You may examine the [compiled configuration](example/CBJLFACXX_l01_sample_compiled.json), which is the actual configuration Pheniqs will execute with all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
+            URL : ./H7LT2DSXX_l01.bam?format=bam&level=5
 
 >```shell
-pheniqs mux --config CBJLFACXX_l01_sample.json --compile
+pheniqs mux --config H7LT2DSXX_l01_sample.json --compile
 ```
+
+While not strictly necessary, You may also examine the [compiled configuration](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_compiled.json)), which is the actual configuration Pheniqs will execute with all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
 
 ## Output format
 
@@ -273,55 +289,62 @@ pheniqs mux --config CBJLFACXX_l01_sample.json|less
 You can see Pheniqs will declare the annotated read groups and populate the [BC](glossary#bc_auxiliary_tag), [QT](glossary#qt_auxiliary_tag) and [XB](glossary#xb_auxiliary_tag) tags.
 
     @HD     VN:1.0  SO:unknown      GO:query
-    @RG     ID:CBJLFACXX:1:undetermined CN:CGSB PL:ILLUMINA PM:HiSeq  PU:CBJLFACXX:1:undetermined
-    @RG     ID:CBJLFACXX:1:GAACTGAGCGCGCTCCACGA CN:CGSB PL:ILLUMINA PM:HiSeq PU:CBJLFACXX:1:GAACTGAGCGCGCTCCACGA SM:c57bl6 mouse LB:c57bl6 fetal liver
-    @RG     ID:CBJLFACXX:1:GACGAGATTAAGGATAATGT CN:CGSB PL:ILLUMINA PM:HiSeq PU:CBJLFACXX:1:GACGAGATTAAGGATAATGT SM:c57bl6 mouse LB:c57bl6 adult bone marrow
-    @PG     ID:pheniqs  PN:pheniqs  CL:pheniqs mux --config CBJLFACXX_l01_sample.json VN:2.0.6-70-g4093b3ab01c40c9093a4d95747a5a15518220e8a
-    SN7001341:427:CBJLFACXX:1:1108:2455:1970 77  * 0 0 * * 0 0 TCCCTCTCACTGGAAGTGGTTGATCTCCAGGGAATCCCCAAGGTTAGCCT FFFF<B<00<BFFBB00<BF0BB0BFBBFF<<BBFB<FFFBBF707<BB RG:Z:CBJLFACXX:TCAGAC BC:Z:GACGACATTAAGGATAATGT QT:Z:IFFFIIIFFFFFBBFFFBFF XB:f:0.000293472
-    SN7001341:427:CBJLFACXX:1:1108:2455:1970 141 * 0 0 * * 0 0 TTGATATTGTAAATTATAGACCAGACTGTGTACCATACTATTAATTGTCA <<'07'B<'<0'''0B'<<7<00<'<7'7<'0B7''<70<0<<7'<<'< RG:Z:CBJLFACXX:TCAGAC BC:Z:GACGACATTAAGGATAATGT QT:Z:IFFFIIIFFFFFBBFFFBFF XB:f:0.000293472
+    @RG     ID:H7LT2DSXX:undetermined       PL:ILLUMINA     PM:A00534       PU:H7LT2DSXX:undetermined
+    @RG     ID:H7LT2DSXX:CGAGGCTGGTAAGGAG   BC:CGAGGCTG-GTAAGGAG    LB:A10_PDAC81   PL:ILLUMINA     PM:A00534       PU:H7LT2DSXX:CGAGGCTGGTAAGGAG
+    @RG     ID:H7LT2DSXX:AAGAGGCAACTGCATA   BC:AAGAGGCA-ACTGCATA    LB:A11_PDAC490  PL:ILLUMINA     PM:A00534       PU:H7LT2DSXX:AAGAGGCAACTGCATA
+    @PG     ID:pheniqs      PN:pheniqs      CL:pheniqs mux --config H7LT2DSXX_l01_sample.json --output /dev/stdout --report /dev/stderr     VN:2.0.6-546-g1178d4f6b8d044cd862150f44a88b01476b0e07d
+    A00534:24:H7LT2DSXX:1:1101:1018:1000    77      *       0       0       *       *       0       0       ATATTTAAGAGGAGGCGTGGGGGCTGGCATAGGGCATCATTGAAGCCCTCTCCCTCTCCAATTAGTGGCCCCCTCTCCTCCCCTTTCCTTGGTTCAGCAGCAAGCAAAGAAAGAAAAAGAAATGTGGTCTCTTCCTCCTCCCTTCTTACTA ,FF,F:F,FFF,:FF::FF,:,:,F,F:,F:FF:FFF:FFFFF::,,,F:::::FFF,:FFFF,:F,:F:FF:,FFF,FFF,:,FFF,F,,:,::F,:,,F,,F:FFFFFFFF,:::,,,F,,,FFFFF:,,,F:,,FFFF:FF,,F,:,, RG:Z:H7LT2DSXX:TAGCGCTCGTAAGGAG BC:Z:TAGCGCTC-NTAAGGAG  QT:Z:FFFFFFFF #:,FF:::  XB:f:5.26752e-09
+    A00534:24:H7LT2DSXX:1:1101:1018:1000    141     *       0       0       *       *       0       0       GATGAAGAATATAAAAGCCCATGAAGCCTTATTTCTTTTCCCTGCGTTTGAATGAAGAAGGGATGAGTAAGATACCACCTTTATTTTTATTTCTTTTCTTTAGTCTTAAAAAAGGAAAGTGTAGGATAGTGGTAAACTAATTGGAGATTGA ,,,:,F:,F,:,,FF:FF,F,F,,F,F,FF,F:FFF,FF,,F,,F,FF,,::,:FFF:FF,,:,,FF,:F,:,:FF:F,:F,,:F,F:,:FFFFF,,,:,,,:,,,::F:FFF:::F:::,,:F::,,,,:F,,,:F,FF,F,,::,,,F: RG:Z:H7LT2DSXX:TAGCGCTCGTAAGGAG BC:Z:TAGCGCTC-NTAAGGAG  QT:Z:FFFFFFFF #:,FF:::  XB:f:5.26752e-09
 
 To write all multiplexed libraries into one BAM output file you can specify the `output` directive in the root of the configuration file
 >```json
-"output": [
-    "CBJLFACXX_lane1_sample_demultiplex.bam"
-]
+"output": [ "H7LT2DSXX_l01.bam" ]
 ```
 
 Or directly on the command line
 
 >```shell
-pheniqs mux --config CBJLFACXX_l01_sample.json --output CBJLFACXX_lane1_sample_demultiplex.bam
+pheniqs mux --config H7LT2DSXX_l01_sample.json --output H7LT2DSXX_l01.bam
 ```
 
-If you want to split the libraries and their segments into separate fastq files you can specify the output on the individual barcode directives. Here are the [complete configuration](example/CBJLFACXX_l01_sample_split.json) and [compiled configuration](example/CBJLFACXX_l01_sample_split_compiled.json) for that scenario, but briefly those are the necessery changes:
+If you want to split the libraries and their segments into separate fastq files you can specify the output on the individual barcode directives. The additional instructions can be manually added or generated with the `pheniqs-io-api.py` by executing:
+
+>```shell
+pheniqs-io-api.py -c H7LT2DSXX_l01_sample.json -LS -F fastq --compression gz > H7LT2DSXX_l01_sample_split.json
+```
+
+but briefly those are the necessery changes:
 
 >```json
 "sample": {
-  "codec": {
-      "@GAACTGAGCGCGCTCCACGA": {
-          "barcode": [ "GAACTGAGCG", "CGCTCCACGA" ],
-          "output": [
-              "CBJLFACXX_GAACTGAGCGCGCTCCACGA_l01s01.fastq.gz",
-              "CBJLFACXX_GAACTGAGCGCGCTCCACGA_l01s02.fastq.gz"
-          ]
-      },
-      "@GACGAGATTAAGGATAATGT": {
-          "barcode": [ "GACGAGATTA", "AGGATAATGT" ],
-          "output": [
-              "CBJLFACXX_GACGAGATTAAGGATAATGT_l01s01.fastq.gz",
-              "CBJLFACXX_GACGAGATTAAGGATAATGT_l01s02.fastq.gz"
-          ]
-      }
-  },
-  "undetermined": {
-      "output": [
-          "CBJLFACXX_undetermined_l01s01.fastq.gz",
-          "CBJLFACXX_undetermined_l01s02.fastq.gz"
-      ]
-  }
+    "algorithm": "pamld",
+    "codec": {
+        "@A10_PDAC81": {
+            "LB": "A10_PDAC81",
+            "barcode": [ "CGAGGCTG", "GTAAGGAG" ],
+            "output": [
+                "H7LT2DSXX_l01_A10_PDAC81_s01.fastq.gz",
+                "H7LT2DSXX_l01_A10_PDAC81_s02.fastq.gz"
+            ]
+        },
+        "@A11_PDAC490": {
+            "LB": "A11_PDAC490",
+            "barcode": [ "AAGAGGCA", "ACTGCATA" ],
+            "output": [
+                "H7LT2DSXX_l01_A11_PDAC490_s01.fastq.gz",
+                "H7LT2DSXX_l01_A11_PDAC490_s02.fastq.gz"
+            ]
+        }
+    },
+    "undetermined": {
+        "output": [
+            "H7LT2DSXX_l01_undetermined_s01.fastq.gz",
+            "H7LT2DSXX_l01_undetermined_s02.fastq.gz"
+        ]
+    }
 }
 ```
->**Splitting the reads from different libraries** To write the segments of the different libraries to fastq file specify the output on the individual barcode directives. Notice we explicitly declare where undetermined reads will be written, otherwise they will be written to the default output, which is SAM on stdout.
+>**Splitting the reads from different libraries** To write the segments of the different libraries to fastq file specify the output on the individual barcode directives. Notice we explicitly declare where undetermined reads will be written, otherwise they will be written to the default output, declared at the root of the instruction. For brevity, the following is only an excerpt of the [complete configuration](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_split.json)) for that scenario.
 {: .example}
 
 ## Prior estimation
@@ -329,5 +352,5 @@ If you want to split the libraries and their segments into separate fastq files 
 Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a [simple estimation of the priors](../configuration#prior-estimation) in the report from each run. A simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run is also included. The `pheniqs-prior-api.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
 
 >```shell
-pheniqs-prior-api.py --configuration CBJLFACXX_l01_sample.json
+pheniqs-prior-api.py --configuration H7LT2DSXX_l01_sample.json
 ```
