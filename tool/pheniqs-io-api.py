@@ -159,7 +159,10 @@ class PheniqsIoApi(Job):
             output_segment_cardinality = self.compiled['output segment cardinality']
 
             if multiplexing_classifier is not None and self.instruction['split_library']:
-                if 'undetermined' in multiplexing_classifier:
+                if 'undetermined' not in multiplexing_classifier:
+                    multiplexing_classifier['undetermined'] = {}
+
+                if 'output' not in multiplexing_classifier['undetermined']:
                     multiplexing_classifier['undetermined']['output'] = []
                     if self.instruction['split_segment']:
                         for segment_index in range(1, output_segment_cardinality + 1):
@@ -261,6 +264,10 @@ class PheniqsIoApi(Job):
                 prefix = self.compiled['flowcell id']
             else:
                 raise BadConfigurationError('must provide prefix if flowcell id is not defined')
+
+            if 'flowcell lane number' in self.compiled:
+                prefix = '{}_l{:0>2}'.format(prefix, self.compiled['flowcell lane number'])
+
         return prefix
 
     def make_library_name(self, barcode):
