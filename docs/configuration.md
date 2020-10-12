@@ -1,23 +1,11 @@
 ---
 layout: default
-title: "Documentation"
 permalink: /configuration
 id: configuration
 ---
 
 * placeholder
 {:toc}
-
-# Pipeline overview
-
-![overview](assets/img/pheniqs_overview_web2.png){: .diagram}
-
-+ **Input**: FASTQ or SAM formatted sequence files.
-+ **Configuration**: All runtime directives, including I/O, coordinate patterns identifying the location of sequence elements of interest, barcode sets, metadata, and any prior information about sample distributions. Trivial scenarios, such as format conversion or interleaving, can run with command line parameters only, but in most cases a configuration file will be required. Before execution begins the configuration file is compiled and validated. In the event of a validation failure  the run is aborted and an informative error message is displayed.
-+ **Tokenization**: Input read segments are parsed to extract sequence element of interest. Output read segments are assembled as well as the sequence segmentsa that will be compared to the expected barcode instances.
-+ **Decoding**: Each barcode declared in the configation is decoded and potentially error corrected. Pheniqs performs either probabilistic decoding (PAMLD, preferred) or a simple minimum distance decoding (MDD). SAM metadata tags are populated with decoding results.
-+ **Output**: Biological sequences, observed and inferred barcode sequences, quality scores, and decoding error probabilities are emitted as output. Sequence Alignment/Map (SAM) format is preferred, but FASTQ may also be emitted.
-+ **Run Report**: Summary statistics about the decoding run are computed and written in a machine-readable JSON format, which can be easily parsed for visual display.
 
 # Configuration syntax
 
