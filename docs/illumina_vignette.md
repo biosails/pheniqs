@@ -41,7 +41,7 @@ To emit the two ends of the insert region as two segments of the output read, we
 >**declaring output read segments** Only the segments coming from the first and the fourth file are biological sequences and should be included in the output.
 {: .example}
 
-To classify the reads by the i5 and i7 indices, we declare a decoder with a `codec` that lists the possible barcode sequences, and a `transform` that tells Pheniqs which read segment(s) and coordinates correspond to the barcode sequence(s).
+To classify the reads by the i5 and i7 indices, we declare a decoder with a `codec` that lists the possible barcode sequences, along with any related metadata, and a `transform` that tells Pheniqs which read segment(s) and coordinates correspond to the barcode sequence(s).
 >```json
 "sample": {
   "transform": {
