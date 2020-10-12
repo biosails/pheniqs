@@ -1,6 +1,5 @@
 ---
 layout: default
-title: "Quickstart"
 permalink: /quickstart
 id: quickstart
 ---
