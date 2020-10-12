@@ -1,12 +1,9 @@
 ---
 layout: default
-title: "Tokens and Transforms"
+title: "Read segment transformation in Pheniqs"
 permalink: /tokenization
 id: tokenization
 ---
-
-# Read segment transformation in Pheniqs
-{:.page-title}
 
 * placeholder
 {:toc}
