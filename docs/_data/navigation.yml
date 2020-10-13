@@ -21,9 +21,9 @@ links:
   id: tokenization
   enabled: True
 
-- title: Workflow
-  url: /pheniqs/workflow
-  id: workflow
+- title: Vignettes
+  url: /pheniqs/vignettes
+  id: vignettes
   enabled: True
 
 - title: Install

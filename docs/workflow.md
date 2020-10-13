@@ -1,15 +1,13 @@
 ---
 layout: default
-title: "Workflow"
-permalink: /workflow
-id: workflow
+title: "Vignettes"
+permalink: /vignettes
+id: vignettes
 ---
 
 Examples of how to configure Pheniqs for a handful of published experimental designs are provided below to help users get started with their own applications.
 
 Different types of experiments use different barcoding schemes. The number, location, and type of barcodes to be extracted, which will vary depending on the specific experimental design. Pheniqs can be configured to handle any arbitrary configuration of biological and technical sequences such as barcoded libraries, cellular indexes, and UMIs, for both bulk and single-cell experiments. Different types of sequences are extracted using _tokens_ and handled using _transform patterns_.
-
-See the [**workflow**](workflow) page for more information on common types of experimental designs, read layouts, tokenization, and transform patterns.
 
 The [**Tokenization and Transform Patterns**](tokenization) page provides a high-level view of how transform patterns are constructed and the output they provide.
 
