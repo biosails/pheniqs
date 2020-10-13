@@ -11,7 +11,7 @@ In this example the run has paired-end dual-index samples multiplexed using the 
 
 ## Input Read Layout
 
-![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/Illumina_paired-end_dual-index.png)
+![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/Illumina_paired-end_dual-index.png){: .diagram}
 
 Base calling with bcl2fastq will produce 4 files per lane:
 - `H7LT2DSXX_S1_L001_R1_001.fastq.gz`: Read 1, starting from the beginning of the insert fragment ("top" strand).

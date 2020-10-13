@@ -9,7 +9,7 @@ This tutorial will walk you through prior estimation and demultiplexing of a sta
 
 Sample barcode sequence and quality scores will be written to the [BC](glossary#bc_auxiliary_tag) and [QT](glossary#qt_auxiliary_tag) auxiliary tags. The decoding error probability will be stored in the [XB](glossary#xb_auxiliary_tag) tag.
 
-![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png)
+![paird end sequencing](/pheniqs/assets/img/paired_end_sequencing.png){: .diagram}
 
 The run has paired end dual index samples multiplexed using the standard Illumina i5 and i7 index protocol. Each read has 4 segments: two 151 base pairs long biological sequences from the DNA or RNA fragment and two 8 base pairs long technical sequences containing the i5 and i7 indices.
 
