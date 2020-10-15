@@ -63,10 +63,12 @@ Base calling with bcl2fastq will produce 4 files per lane:
 Specifying tokens for standard sequencing is very straight forward. We wish to extract the biological template sequences from Read 1 (R1) and Read 2 (R2) segments, the i7 index from the Index 1 (I1) read segment, and the i5 index from the Index 2 (I2) read segment. I1 and I2 may be 6, 8 or 10 nucleotides long, depending on the kit used. R1 and R2 may span as many bases as were sequenced, which will depend on the sequencing run configuration chosen (typically either 75 or 150nt for NextSeq and NovaSeq instruments), and may sometimes contain adapter sequences at their 3' ends due to read-through of shorter inserts.
 
 >| Token expression   | Segment index  | Start   | End   | Length | Description                           |
+>| :----------------- | :------------- | :------ | :---- | :----- | :------------------------------------ |
 >| `0::`              | `0`            | `0`     | *end* | *full* | R1: template (complete sequence)      |
 >| `3::`              | `3`            | `0`     | *end* | *full* | R2: template (complete sequence)      |
 >| `1::8`             | `1`            | `0`     | `7`   | `8`    | I1: i7 (8 nucleotides)                |
 >| `2::8`             | `2`            | `0`     | `7`   | `8`    | I2: i5 (8 nucleotides)                |
+>
 >**Tokenization** patterns for handling a standard Illumina paired-end dual indexed run with 8 nucleotide long indexes and variable length template segments.
 {: .example}
 
