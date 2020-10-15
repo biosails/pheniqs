@@ -74,7 +74,7 @@ To emit the two ends of the insert region as two segments of the output read, we
 >```json
 "template": {
     "transform": {
-        "comment": "This global transform directive specifies the segments that will be written to output as the biological sequences of interest (here this is all of R1 and R2).”,
+        "comment": "This global transform directive specifies the segments that will be written to output as the biological sequences of interest (here this is all of R1 and R2).",
         "token": [ "0::", "3::" ]
     }
 }
