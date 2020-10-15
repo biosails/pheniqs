@@ -5,13 +5,41 @@ permalink: /illumina_vignette
 id: illumina_vignette
 ---
 
+The system uses a combination of two index segments to disambiguate samples, increasing the scaling capacity of sample pooling. Dual-indexing also creates longer barcodes to increase the fidelity of barcode decoding. The theoretical number of samples that can be pooled for sequencing is on the order of the product of the number of barcodes available for each index, however specific pairings that maximize differences between barcodes are encouraged by the arrangement of primers in some kit layouts.
+
+## Protocols
+
+Library preparation kits that offer different barcode sets are available from multiple providers: *Nextera*, *TruSeq*, *NEB*, *SMART-Seq2*
+
+## Applications
+Many common sequencing applications use standard dual-indexed barcoding. Examples include:
+- **Transcriptomics:** bulk RNAseq, scRNA-seq
+- **Genome resequencing:** Whole genome (WGS), whole exon (WES)
+- **Chromatin mapping/Epigenetics:** ChIPseq, ATACseq, RIP-seq, CLiP-seq, PAR-CLIP
+- **Metagenomics and metatranscriptomics**
+- **De novo genomics / transcriptomics**
+- **Chromatin architecture:** 3C, HiC
+- **Spatial transcriptomics**
+
+## Read Anatomy
+The final PCR products submitted for sequencing are composed as follows:
+
+![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/Illumina_paired-end_dual-index.png){: .diagram}
+
+Per PCR product, there are two biological read segments (R1 and R2) and two index segments (I1 and I2). Read segments emerge from the sequencer in the following order: R1, I1, I2, R2.
+Notes:
+- Different manufacturers use different adaptors for ligation (Pheniqs does not perform adapter trimming), as well as their own sets of standard index sequences for multiplexing.
+- Pre-configured index libraries, or "codecs", for most standard Illumina indexes are provided [here](standrd_configuration). Any configuration file can refer to these to "inherit" the pre-defined codecs.
+- For dual-indexing, any i5-i7 pairings that are not used in the experiment should not be included in a fully specified configuration file.
+- Different instruments read I2 on opposite strands (Workflow B), so reverse complemented i5 sequences must be entered into sample sheets if filling them out manually; if using run management software packages, these take care of reverse complementation automatically.
+- The Pheniqs knit syntax can also reverse complement the extracted sequence before it is matched against the possible barcodes, so handling Workflow B instruments does not require users to manually reverse complement the sequences in the configuration file.
+- Demultiplexed barcodes for both setups can be reported in either orientation depending on the configuration syntax used for barcode decoding. Pheniqs allows fine-grained control over this behavior, based on the desired output specified by the user.
+
 This tutorial demonstrates how to manually prepare configuration files for decoding sample barcodes for a standard Illumina sequencing run. Pheniqs includes a Python API that helps users create configuration files automatically. For a tutorial that uses the Python API to generate the configuration files for this example, see the [Standard Illumina sample decoding with the python API](illumina_api_vignette).
 
 In this example the run has paired-end dual-index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments: 2 biological sequences (cDNA, genomic DNA, etc.) read from both ends of the insert fragment, and 2 technical sequences containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the sample barcode and its quality scores are written to the [BC](glossary#bc_auxiliary_tag) and [QT](glossary#qt_auxiliary_tag) tags, and the decoding error probability is written to the [XB](glossary#xb_auxiliary_tag) tag.
 
 ## Input Read Layout
-
-![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/Illumina_paired-end_dual-index.png){: .diagram}
 
 Base calling with bcl2fastq will produce 4 files per lane:
 - `H7LT2DSXX_S1_L001_R1_001.fastq.gz`: Read 1, starting from the beginning of the insert fragment ("top" strand).
@@ -30,15 +58,26 @@ Base calling with bcl2fastq will produce 4 files per lane:
 >**declaring input read segments** 2 biological and 2 technical sequences are often found in 4 FASTQ files produced by bcl2fastq base calling.
 {: .example}
 
+Specifying tokens for standard sequencing is very straight forward. We wish to extract the biological template sequences from Read 1 (R1) and Read 2 (R2) segments, the i7 index from the Index 1 (I1) read segment, and the i5 index from the Index 2 (I2) read segment. I1 and I2 may be 6, 8 or 10 nucleotides long, depending on the kit used. R1 and R2 may span as many bases as were sequenced, which will depend on the sequencing run configuration chosen (typically either 75 or 150nt for NextSeq and NovaSeq instruments), and may sometimes contain adapter sequences at their 3' ends due to read-through of shorter inserts.
+
+>| Token expression   | Segment index  | Start   | End   | Length | Description                           |
+>| `0::`              | `0`            | `0`     | *end* | *full* | R1: template (complete sequence)      |
+>| `3::`              | `3`            | `0`     | *end* | *full* | R2: template (complete sequence)      |
+>| `1::8`             | `1`            | `0`     | `7`   | `8`    | I1: i7 (8 nucleotides)                |
+>| `2::8`             | `2`            | `0`     | `7`   | `8`    | I2: i5 (8 nucleotides)                |
+>**Tokenization** patterns for handling a standard Illumina paired-end dual indexed run with 8 nucleotide long indexes and variable length template segments.
+{: .example}
+
 To emit the two ends of the insert region as two segments of the output read, we declare the template transform
 >```json
 "template": {
     "transform": {
+        "comment": "This global transform directive specifies the segments that will be written to output as the biological sequences of interest (here this is all of R1 and R2).”,
         "token": [ "0::", "3::" ]
     }
 }
 ```
->**declaring output read segments** Only the segments coming from the first and the fourth file are biological sequences and should be included in the output.
+>**declaring output read segments** Only the segments coming from the first and the fourth file are biological sequences and should be included in the output. It is important to keep in mind that token coordinates are specified using Python array slicing syntax **[start:end)**, with the start coordinate inclusive and the end coordinate exclusive. Notice that we specify the end coordinate on the tokens extracting the barcode segments. Some sequencing centers sequence I1 and I2 one nucleotide longer than necessary because that yields lower error rates on the last nucleotide. Explicitly specifying the end coordinates makes the configuration more robust to handle those cases and does not hurt otherwise.
 {: .example}
 
 To classify the reads by the i5 and i7 indices, we declare a decoder with a `codec` that lists the possible barcode sequences, along with any related metadata, and a `transform` that tells Pheniqs which read segment(s) and coordinates correspond to the barcode sequence(s).
