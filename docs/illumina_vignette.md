@@ -156,7 +156,7 @@ Putting things together, we can generate a configuration for demultiplexing the 
     }
 }
 ```
->**Single index Paired end Illumina protocol** Classifying the 2 barcodes using the 4 fastq files produced by bcl2fastq for the first lane. For brevity, this is only an excerpt of the [full configuration](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_static.json))
+>**Single index Paired end Illumina protocol** Classifying the 2 barcodes using the 4 fastq files produced by bcl2fastq for the first lane. For brevity, this is only an excerpt of the [full configuration]({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_static.json)
 {: .example}
 
 Before we proceed we validate the configuration with Pheniqs:
@@ -165,7 +165,7 @@ Before we proceed we validate the configuration with Pheniqs:
 pheniqs mux --config H7LT2DSXX_l01_sample.json --validate
 ```
 
-The output is a readable description of all the explicit and implicit parameters after applying defaults. You can check how Pheniqs detects the input format, compression and layout as well as the output you can expect. In The *Output transform* section is a verbal description of how the output read segments will be assembled from the input. similarly *Transform* in the *Mutliplex decoding* section desribes how the segment that will be matched against the barcodes is assembled. the You can also see how each of the read groups will be tagged and the prior probability PAMLD will assume for each barcode. For brevity, the following is only an excerpt of the [full validation report](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_validate.txt)).
+The output is a readable description of all the explicit and implicit parameters after applying defaults. You can check how Pheniqs detects the input format, compression and layout as well as the output you can expect. In The *Output transform* section is a verbal description of how the output read segments will be assembled from the input. similarly *Transform* in the *Mutliplex decoding* section desribes how the segment that will be matched against the barcodes is assembled. the You can also see how each of the read groups will be tagged and the prior probability PAMLD will assume for each barcode. For brevity, the following is only an excerpt of the [full validation report]({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_validate.txt).
 
     Environment
 
@@ -319,7 +319,7 @@ The output is a readable description of all the explicit and implicit parameters
 pheniqs mux --config H7LT2DSXX_l01_sample.json --compile
 ```
 
-While not strictly necessary, You may also examine the [compiled configuration](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_compiled.json)), which is the actual configuration Pheniqs will execute with all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
+While not strictly necessary, You may also examine the [compiled configuration]({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_compiled.json), which is the actual configuration Pheniqs will execute with all implicit and default parameters. This is an easy way to see exactly what Pheniqs will be doing and spotting any configuration errors.
 
 ## Output format
 
@@ -387,12 +387,12 @@ but briefly those are the necessery changes:
     }
 }
 ```
->**Splitting the reads from different libraries** To write the segments of the different libraries to fastq file specify the output on the individual barcode directives. Notice we explicitly declare where undetermined reads will be written, otherwise they will be written to the default output, declared at the root of the instruction. For brevity, the following is only an excerpt of the [complete configuration](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_split.json)) for that scenario.
+>**Splitting the reads from different libraries** To write the segments of the different libraries to fastq file specify the output on the individual barcode directives. Notice we explicitly declare where undetermined reads will be written, otherwise they will be written to the default output, declared at the root of the instruction. For brevity, the following is only an excerpt of the [complete configuration]({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_split.json) for that scenario.
 {: .example}
 
 ## Statistics report
 
-Once the run is complete, in addition to the output, a [report](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_report.json)) is provied with [statistics](configuration@#quality-control-and-statistics) about the run and estimates for the prior that can be used in consecutive runs.
+Once the run is complete, in addition to the output, a [report]({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_report.json) is provied with [statistics](configuration#quality-control-and-statistics) about the run and estimates for the prior that can be used in consecutive runs.
 
 >```json
 {
