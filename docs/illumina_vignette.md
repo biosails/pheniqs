@@ -390,10 +390,77 @@ but briefly those are the necessery changes:
 >**Splitting the reads from different libraries** To write the segments of the different libraries to fastq file specify the output on the individual barcode directives. Notice we explicitly declare where undetermined reads will be written, otherwise they will be written to the default output, declared at the root of the instruction. For brevity, the following is only an excerpt of the [complete configuration](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_split.json)) for that scenario.
 {: .example}
 
+## Statistics report
+
+Once the run is complete, in addition to the output, a [report](({{ site.github.repository_url }}/blob/master/example/illumina_vignette/H7LT2DSXX_l01_sample_report.json)) is provied with [statistics](configuration@#quality-control-and-statistics) about the run and estimates for the prior that can be used in consecutive runs.
+
+>```json
+{
+    "incoming": {
+        "count": 2894717093,
+        "pf count": 2894717093,
+        "pf fraction": 1.0
+    },
+    "sample": {
+        "average classified confidence": 0.995714080516491,
+        "average classified distance": 0.112188169938967,
+        "average pf classified confidence": 0.999924673977143,
+        "average pf classified distance": 0.093415423341184,
+        "classified": [
+            {
+                "average confidence": 0.993987748219644,
+                "average distance": 0.145161376249895,
+                "average pf confidence": 0.999873159581784,
+                "average pf distance": 0.122156144917824,
+                "barcode": [
+                    "CGAGGCTG",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "count": 33223879,
+                "estimated concentration": 0.01145732888663,
+                "index": 1,
+                "low conditional confidence count": 986031,
+                "low confidence count": 195561,
+                "pf count": 33028318,
+                "pf fraction": 0.994113842035121,
+                "pf pooled classified fraction": 0.011645743335744,
+                "pf pooled fraction": 0.011645743335744,
+                "pooled classified fraction": 0.011665368351921,
+                "pooled fraction": 0.011477418321929
+            }
+        ],
+        "classified count": 2848078003,
+        "classified fraction": 0.983888204442229,
+        "classified pf fraction": 0.995789089348196,
+        "count": 2894717093,
+        "estimated noise": 0.016178825488575,
+        "index": 0,
+        "low conditional confidence count": 46639090,
+        "low confidence count": 11993002,
+        "pf classified count": 2836085001,
+        "pf classified fraction": 1.0,
+        "pf count": 2836085001,
+        "pf fraction": 0.979745139121959,
+        "unclassified": {
+            "count": 46639090,
+            "index": 0,
+            "pf count": 0,
+            "pf fraction": 0.0,
+            "pf pooled fraction": 0.0,
+            "pooled classified fraction": 0.016375636464616,
+            "pooled fraction": 0.01611179555777
+        }
+    }
+}
+```
+>**Partial statistics report** `estimated concentration` and `estimated noise` are the [estimated priors](configuration#prior-estimation).
+{: .example}
+
 ## Prior estimation
 
-Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a [simple estimation of the priors](../configuration#prior-estimation) in the report from each run. A simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run is also included. The `pheniqs-prior-api.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
+Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a [simple estimation of the priors](configuration#prior-estimation) in the report from each run. A simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run is also included. The `pheniqs-prior-api.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
 
 >```shell
-pheniqs-prior-api.py --configuration H7LT2DSXX_l01_sample.json
+pheniqs-prior-api.py --configuration H7LT2DSXX_l01_sample.json --report H7LT2DSXX_l01_sample_report.json
 ```
