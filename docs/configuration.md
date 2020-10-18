@@ -504,8 +504,6 @@ The `decoder::` prefix in the table refers to the attribute in the parent decode
 | **low confidence count**             | count of reads that failed to classify due to low confidence.                                         |
 | **estimated concentration**          | estimated ratio of reads classified to the barcode.                                                   |
 
-
-
 ## Prior estimation
 When decoding with **PAMLD** the **low conditional confidence count** counter counts reads where the conditional probability of the maximum likelihood decoded barcode is lower than the probability of a observing a random sequence. Those reads are more likely to be noise than anything else. The **confident noise ratio**, computed as **low conditional confidence count** / ( **low conditional confidence count** + **pf classified count**), is a good initial candidate for the noise ratio. This estimation, however, does not account for reads counted by **low confidence count**: reads that have passed the noise filter but failed the confidence test because the posterior decoding probability of the maximum likelihood decoded barcode was too low. When sequencing quality is low the lower signal to noise ratio makes it more difficult to tell random sequences from errors. To correct for this we assume that a noise read is equally likely to be sequenced with low quality and so the same ratio applies to reads counted by **low confidence count**. So an estimate for the total number of noise reads is **low conditional confidence count** + (**low confidence count** * **confident noise ratio**), and the estimate for the noise prior, **estimated noise**, is computed by divding by the total **count**.
 
