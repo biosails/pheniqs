@@ -1,0 +1,1480 @@
+{
+    "decoder": {
+        "ligated_round_2": {
+            "codec": {
+                "round_2_01_well_A1": {
+                    "barcode": [
+                        "AACGTGAT"
+                    ]
+                },
+                "round_2_02_well_A2": {
+                    "barcode": [
+                        "AAACATCG"
+                    ]
+                },
+                "round_2_03_well_A3": {
+                    "barcode": [
+                        "ATGCCTAA"
+                    ]
+                },
+                "round_2_04_well_A4": {
+                    "barcode": [
+                        "AGTGGTCA"
+                    ]
+                },
+                "round_2_05_well_A5": {
+                    "barcode": [
+                        "ACCACTGT"
+                    ]
+                },
+                "round_2_06_well_A6": {
+                    "barcode": [
+                        "ACATTGGC"
+                    ]
+                },
+                "round_2_07_well_A7": {
+                    "barcode": [
+                        "CAGATCTG"
+                    ]
+                },
+                "round_2_08_well_A8": {
+                    "barcode": [
+                        "CATCAAGT"
+                    ]
+                },
+                "round_2_09_well_A9": {
+                    "barcode": [
+                        "CGCTGATC"
+                    ]
+                },
+                "round_2_10_well_A10": {
+                    "barcode": [
+                        "ACAAGCTA"
+                    ]
+                },
+                "round_2_11_well_A11": {
+                    "barcode": [
+                        "CTGTAGCC"
+                    ]
+                },
+                "round_2_12_well_A12": {
+                    "barcode": [
+                        "AGTACAAG"
+                    ]
+                },
+                "round_2_13_well_B1": {
+                    "barcode": [
+                        "AACAACCA"
+                    ]
+                },
+                "round_2_14_well_B2": {
+                    "barcode": [
+                        "AACCGAGA"
+                    ]
+                },
+                "round_2_15_well_B3": {
+                    "barcode": [
+                        "AACGCTTA"
+                    ]
+                },
+                "round_2_16_well_B4": {
+                    "barcode": [
+                        "AAGACGGA"
+                    ]
+                },
+                "round_2_17_well_B5": {
+                    "barcode": [
+                        "AAGGTACA"
+                    ]
+                },
+                "round_2_18_well_B6": {
+                    "barcode": [
+                        "ACACAGAA"
+                    ]
+                },
+                "round_2_19_well_B7": {
+                    "barcode": [
+                        "ACAGCAGA"
+                    ]
+                },
+                "round_2_20_well_B8": {
+                    "barcode": [
+                        "ACCTCCAA"
+                    ]
+                },
+                "round_2_21_well_B9": {
+                    "barcode": [
+                        "ACGCTCGA"
+                    ]
+                },
+                "round_2_22_well_B10": {
+                    "barcode": [
+                        "ACGTATCA"
+                    ]
+                },
+                "round_2_23_well_B11": {
+                    "barcode": [
+                        "ACTATGCA"
+                    ]
+                },
+                "round_2_24_well_B12": {
+                    "barcode": [
+                        "AGAGTCAA"
+                    ]
+                },
+                "round_2_25_well_C1": {
+                    "barcode": [
+                        "AGATCGCA"
+                    ]
+                },
+                "round_2_26_well_C2": {
+                    "barcode": [
+                        "AGCAGGAA"
+                    ]
+                },
+                "round_2_27_well_C3": {
+                    "barcode": [
+                        "AGTCACTA"
+                    ]
+                },
+                "round_2_28_well_C4": {
+                    "barcode": [
+                        "ATCCTGTA"
+                    ]
+                },
+                "round_2_29_well_C5": {
+                    "barcode": [
+                        "ATTGAGGA"
+                    ]
+                },
+                "round_2_30_well_C6": {
+                    "barcode": [
+                        "CAACCACA"
+                    ]
+                },
+                "round_2_31_well_C7": {
+                    "barcode": [
+                        "GACTAGTA"
+                    ]
+                },
+                "round_2_32_well_C8": {
+                    "barcode": [
+                        "CAATGGAA"
+                    ]
+                },
+                "round_2_33_well_C9": {
+                    "barcode": [
+                        "CACTTCGA"
+                    ]
+                },
+                "round_2_34_well_C10": {
+                    "barcode": [
+                        "CAGCGTTA"
+                    ]
+                },
+                "round_2_35_well_C11": {
+                    "barcode": [
+                        "CATACCAA"
+                    ]
+                },
+                "round_2_36_well_C12": {
+                    "barcode": [
+                        "CCAGTTCA"
+                    ]
+                },
+                "round_2_37_well_D1": {
+                    "barcode": [
+                        "CCGAAGTA"
+                    ]
+                },
+                "round_2_38_well_D2": {
+                    "barcode": [
+                        "CCGTGAGA"
+                    ]
+                },
+                "round_2_39_well_D3": {
+                    "barcode": [
+                        "CCTCCTGA"
+                    ]
+                },
+                "round_2_40_well_D4": {
+                    "barcode": [
+                        "CGAACTTA"
+                    ]
+                },
+                "round_2_41_well_D5": {
+                    "barcode": [
+                        "CGACTGGA"
+                    ]
+                },
+                "round_2_42_well_D6": {
+                    "barcode": [
+                        "CGCATACA"
+                    ]
+                },
+                "round_2_43_well_D7": {
+                    "barcode": [
+                        "CTCAATGA"
+                    ]
+                },
+                "round_2_44_well_D8": {
+                    "barcode": [
+                        "CTGAGCCA"
+                    ]
+                },
+                "round_2_45_well_D9": {
+                    "barcode": [
+                        "CTGGCATA"
+                    ]
+                },
+                "round_2_46_well_D10": {
+                    "barcode": [
+                        "GAATCTGA"
+                    ]
+                },
+                "round_2_47_well_D11": {
+                    "barcode": [
+                        "CAAGACTA"
+                    ]
+                },
+                "round_2_48_well_D12": {
+                    "barcode": [
+                        "GAGCTGAA"
+                    ]
+                },
+                "round_2_49_well_E1": {
+                    "barcode": [
+                        "GATAGACA"
+                    ]
+                },
+                "round_2_50_well_E2": {
+                    "barcode": [
+                        "GCCACATA"
+                    ]
+                },
+                "round_2_51_well_E3": {
+                    "barcode": [
+                        "GCGAGTAA"
+                    ]
+                },
+                "round_2_52_well_E4": {
+                    "barcode": [
+                        "GCTAACGA"
+                    ]
+                },
+                "round_2_53_well_E5": {
+                    "barcode": [
+                        "GCTCGGTA"
+                    ]
+                },
+                "round_2_54_well_E6": {
+                    "barcode": [
+                        "GGAGAACA"
+                    ]
+                },
+                "round_2_55_well_E7": {
+                    "barcode": [
+                        "GGTGCGAA"
+                    ]
+                },
+                "round_2_56_well_E8": {
+                    "barcode": [
+                        "GTACGCAA"
+                    ]
+                },
+                "round_2_57_well_E9": {
+                    "barcode": [
+                        "GTCGTAGA"
+                    ]
+                },
+                "round_2_58_well_E10": {
+                    "barcode": [
+                        "GTCTGTCA"
+                    ]
+                },
+                "round_2_59_well_E11": {
+                    "barcode": [
+                        "GTGTTCTA"
+                    ]
+                },
+                "round_2_60_well_E12": {
+                    "barcode": [
+                        "TAGGATGA"
+                    ]
+                },
+                "round_2_61_well_F1": {
+                    "barcode": [
+                        "TATCAGCA"
+                    ]
+                },
+                "round_2_62_well_F2": {
+                    "barcode": [
+                        "TCCGTCTA"
+                    ]
+                },
+                "round_2_63_well_F3": {
+                    "barcode": [
+                        "TCTTCACA"
+                    ]
+                },
+                "round_2_64_well_F4": {
+                    "barcode": [
+                        "TGAAGAGA"
+                    ]
+                },
+                "round_2_65_well_F5": {
+                    "barcode": [
+                        "TGGAACAA"
+                    ]
+                },
+                "round_2_66_well_F6": {
+                    "barcode": [
+                        "TGGCTTCA"
+                    ]
+                },
+                "round_2_67_well_F7": {
+                    "barcode": [
+                        "TGGTGGTA"
+                    ]
+                },
+                "round_2_68_well_F8": {
+                    "barcode": [
+                        "TTCACGCA"
+                    ]
+                },
+                "round_2_69_well_F9": {
+                    "barcode": [
+                        "AACTCACC"
+                    ]
+                },
+                "round_2_70_well_F10": {
+                    "barcode": [
+                        "AAGAGATC"
+                    ]
+                },
+                "round_2_71_well_F11": {
+                    "barcode": [
+                        "AAGGACAC"
+                    ]
+                },
+                "round_2_72_well_F12": {
+                    "barcode": [
+                        "AATCCGTC"
+                    ]
+                },
+                "round_2_73_well_G1": {
+                    "barcode": [
+                        "AATGTTGC"
+                    ]
+                },
+                "round_2_74_well_G2": {
+                    "barcode": [
+                        "ACACGACC"
+                    ]
+                },
+                "round_2_75_well_G3": {
+                    "barcode": [
+                        "ACAGATTC"
+                    ]
+                },
+                "round_2_76_well_G4": {
+                    "barcode": [
+                        "AGATGTAC"
+                    ]
+                },
+                "round_2_77_well_G5": {
+                    "barcode": [
+                        "AGCACCTC"
+                    ]
+                },
+                "round_2_78_well_G6": {
+                    "barcode": [
+                        "AGCCATGC"
+                    ]
+                },
+                "round_2_79_well_G7": {
+                    "barcode": [
+                        "AGGCTAAC"
+                    ]
+                },
+                "round_2_80_well_G8": {
+                    "barcode": [
+                        "ATAGCGAC"
+                    ]
+                },
+                "round_2_81_well_G9": {
+                    "barcode": [
+                        "ATCATTCC"
+                    ]
+                },
+                "round_2_82_well_G10": {
+                    "barcode": [
+                        "ATTGGCTC"
+                    ]
+                },
+                "round_2_83_well_G11": {
+                    "barcode": [
+                        "CAAGGAGC"
+                    ]
+                },
+                "round_2_84_well_G12": {
+                    "barcode": [
+                        "CACCTTAC"
+                    ]
+                },
+                "round_2_85_well_H1": {
+                    "barcode": [
+                        "CCATCCTC"
+                    ]
+                },
+                "round_2_86_well_H2": {
+                    "barcode": [
+                        "CCGACAAC"
+                    ]
+                },
+                "round_2_87_well_H3": {
+                    "barcode": [
+                        "CCTAATCC"
+                    ]
+                },
+                "round_2_88_well_H4": {
+                    "barcode": [
+                        "CCTCTATC"
+                    ]
+                },
+                "round_2_89_well_H5": {
+                    "barcode": [
+                        "CGACACAC"
+                    ]
+                },
+                "round_2_90_well_H6": {
+                    "barcode": [
+                        "CGGATTGC"
+                    ]
+                },
+                "round_2_91_well_H7": {
+                    "barcode": [
+                        "CTAAGGTC"
+                    ]
+                },
+                "round_2_92_well_H8": {
+                    "barcode": [
+                        "GAACAGGC"
+                    ]
+                },
+                "round_2_93_well_H9": {
+                    "barcode": [
+                        "GACAGTGC"
+                    ]
+                },
+                "round_2_94_well_H10": {
+                    "barcode": [
+                        "GAGTTAGC"
+                    ]
+                },
+                "round_2_95_well_H11": {
+                    "barcode": [
+                        "GATGAATC"
+                    ]
+                },
+                "round_2_96_well_H12": {
+                    "barcode": [
+                        "GCCAAGAC"
+                    ]
+                }
+            }
+        },
+        "ligated_round_3": {
+            "codec": {
+                "round_3_01_well_A1": {
+                    "barcode": [
+                        "AACGTGAT"
+                    ]
+                },
+                "round_3_02_well_A2": {
+                    "barcode": [
+                        "AAACATCG"
+                    ]
+                },
+                "round_3_03_well_A3": {
+                    "barcode": [
+                        "ATGCCTAA"
+                    ]
+                },
+                "round_3_04_well_A4": {
+                    "barcode": [
+                        "AGTGGTCA"
+                    ]
+                },
+                "round_3_05_well_A5": {
+                    "barcode": [
+                        "ACCACTGT"
+                    ]
+                },
+                "round_3_06_well_A6": {
+                    "barcode": [
+                        "ACATTGGC"
+                    ]
+                },
+                "round_3_07_well_A7": {
+                    "barcode": [
+                        "CAGATCTG"
+                    ]
+                },
+                "round_3_08_well_A8": {
+                    "barcode": [
+                        "CATCAAGT"
+                    ]
+                },
+                "round_3_09_well_A9": {
+                    "barcode": [
+                        "CGCTGATC"
+                    ]
+                },
+                "round_3_10_well_A10": {
+                    "barcode": [
+                        "ACAAGCTA"
+                    ]
+                },
+                "round_3_11_well_A11": {
+                    "barcode": [
+                        "CTGTAGCC"
+                    ]
+                },
+                "round_3_12_well_A12": {
+                    "barcode": [
+                        "AGTACAAG"
+                    ]
+                },
+                "round_3_13_well_B1": {
+                    "barcode": [
+                        "AACAACCA"
+                    ]
+                },
+                "round_3_14_well_B2": {
+                    "barcode": [
+                        "AACCGAGA"
+                    ]
+                },
+                "round_3_15_well_B3": {
+                    "barcode": [
+                        "AACGCTTA"
+                    ]
+                },
+                "round_3_16_well_B4": {
+                    "barcode": [
+                        "AAGACGGA"
+                    ]
+                },
+                "round_3_17_well_B5": {
+                    "barcode": [
+                        "AAGGTACA"
+                    ]
+                },
+                "round_3_18_well_B6": {
+                    "barcode": [
+                        "ACACAGAA"
+                    ]
+                },
+                "round_3_19_well_B7": {
+                    "barcode": [
+                        "ACAGCAGA"
+                    ]
+                },
+                "round_3_20_well_B8": {
+                    "barcode": [
+                        "ACCTCCAA"
+                    ]
+                },
+                "round_3_21_well_B9": {
+                    "barcode": [
+                        "ACGCTCGA"
+                    ]
+                },
+                "round_3_22_well_B10": {
+                    "barcode": [
+                        "ACGTATCA"
+                    ]
+                },
+                "round_3_23_well_B11": {
+                    "barcode": [
+                        "ACTATGCA"
+                    ]
+                },
+                "round_3_24_well_B12": {
+                    "barcode": [
+                        "AGAGTCAA"
+                    ]
+                },
+                "round_3_25_well_C1": {
+                    "barcode": [
+                        "AGATCGCA"
+                    ]
+                },
+                "round_3_26_well_C2": {
+                    "barcode": [
+                        "AGCAGGAA"
+                    ]
+                },
+                "round_3_27_well_C3": {
+                    "barcode": [
+                        "AGTCACTA"
+                    ]
+                },
+                "round_3_28_well_C4": {
+                    "barcode": [
+                        "ATCCTGTA"
+                    ]
+                },
+                "round_3_29_well_C5": {
+                    "barcode": [
+                        "ATTGAGGA"
+                    ]
+                },
+                "round_3_30_well_C6": {
+                    "barcode": [
+                        "CAACCACA"
+                    ]
+                },
+                "round_3_31_well_C7": {
+                    "barcode": [
+                        "GACTAGTA"
+                    ]
+                },
+                "round_3_32_well_C8": {
+                    "barcode": [
+                        "CAATGGAA"
+                    ]
+                },
+                "round_3_33_well_C9": {
+                    "barcode": [
+                        "CACTTCGA"
+                    ]
+                },
+                "round_3_34_well_C10": {
+                    "barcode": [
+                        "CAGCGTTA"
+                    ]
+                },
+                "round_3_35_well_C11": {
+                    "barcode": [
+                        "CATACCAA"
+                    ]
+                },
+                "round_3_36_well_C12": {
+                    "barcode": [
+                        "CCAGTTCA"
+                    ]
+                },
+                "round_3_37_well_D1": {
+                    "barcode": [
+                        "CCGAAGTA"
+                    ]
+                },
+                "round_3_38_well_D2": {
+                    "barcode": [
+                        "CCGTGAGA"
+                    ]
+                },
+                "round_3_39_well_D3": {
+                    "barcode": [
+                        "CCTCCTGA"
+                    ]
+                },
+                "round_3_40_well_D4": {
+                    "barcode": [
+                        "CGAACTTA"
+                    ]
+                },
+                "round_3_41_well_D5": {
+                    "barcode": [
+                        "CGACTGGA"
+                    ]
+                },
+                "round_3_42_well_D6": {
+                    "barcode": [
+                        "CGCATACA"
+                    ]
+                },
+                "round_3_43_well_D7": {
+                    "barcode": [
+                        "CTCAATGA"
+                    ]
+                },
+                "round_3_44_well_D8": {
+                    "barcode": [
+                        "CTGAGCCA"
+                    ]
+                },
+                "round_3_45_well_D9": {
+                    "barcode": [
+                        "CTGGCATA"
+                    ]
+                },
+                "round_3_46_well_D10": {
+                    "barcode": [
+                        "GAATCTGA"
+                    ]
+                },
+                "round_3_47_well_D11": {
+                    "barcode": [
+                        "CAAGACTA"
+                    ]
+                },
+                "round_3_48_well_D12": {
+                    "barcode": [
+                        "GAGCTGAA"
+                    ]
+                },
+                "round_3_49_well_E1": {
+                    "barcode": [
+                        "GATAGACA"
+                    ]
+                },
+                "round_3_50_well_E2": {
+                    "barcode": [
+                        "GCCACATA"
+                    ]
+                },
+                "round_3_51_well_E3": {
+                    "barcode": [
+                        "GCGAGTAA"
+                    ]
+                },
+                "round_3_52_well_E4": {
+                    "barcode": [
+                        "GCTAACGA"
+                    ]
+                },
+                "round_3_53_well_E5": {
+                    "barcode": [
+                        "GCTCGGTA"
+                    ]
+                },
+                "round_3_54_well_E6": {
+                    "barcode": [
+                        "GGAGAACA"
+                    ]
+                },
+                "round_3_55_well_E7": {
+                    "barcode": [
+                        "GGTGCGAA"
+                    ]
+                },
+                "round_3_56_well_E8": {
+                    "barcode": [
+                        "GTACGCAA"
+                    ]
+                },
+                "round_3_57_well_E9": {
+                    "barcode": [
+                        "GTCGTAGA"
+                    ]
+                },
+                "round_3_58_well_E10": {
+                    "barcode": [
+                        "GTCTGTCA"
+                    ]
+                },
+                "round_3_59_well_E11": {
+                    "barcode": [
+                        "GTGTTCTA"
+                    ]
+                },
+                "round_3_60_well_E12": {
+                    "barcode": [
+                        "TAGGATGA"
+                    ]
+                },
+                "round_3_61_well_F1": {
+                    "barcode": [
+                        "TATCAGCA"
+                    ]
+                },
+                "round_3_62_well_F2": {
+                    "barcode": [
+                        "TCCGTCTA"
+                    ]
+                },
+                "round_3_63_well_F3": {
+                    "barcode": [
+                        "TCTTCACA"
+                    ]
+                },
+                "round_3_64_well_F4": {
+                    "barcode": [
+                        "TGAAGAGA"
+                    ]
+                },
+                "round_3_65_well_F5": {
+                    "barcode": [
+                        "TGGAACAA"
+                    ]
+                },
+                "round_3_66_well_F6": {
+                    "barcode": [
+                        "TGGCTTCA"
+                    ]
+                },
+                "round_3_67_well_F7": {
+                    "barcode": [
+                        "TGGTGGTA"
+                    ]
+                },
+                "round_3_68_well_F8": {
+                    "barcode": [
+                        "TTCACGCA"
+                    ]
+                },
+                "round_3_69_well_F9": {
+                    "barcode": [
+                        "AACTCACC"
+                    ]
+                },
+                "round_3_70_well_F10": {
+                    "barcode": [
+                        "AAGAGATC"
+                    ]
+                },
+                "round_3_71_well_F11": {
+                    "barcode": [
+                        "AAGGACAC"
+                    ]
+                },
+                "round_3_72_well_F12": {
+                    "barcode": [
+                        "AATCCGTC"
+                    ]
+                },
+                "round_3_73_well_G1": {
+                    "barcode": [
+                        "AATGTTGC"
+                    ]
+                },
+                "round_3_74_well_G2": {
+                    "barcode": [
+                        "ACACGACC"
+                    ]
+                },
+                "round_3_75_well_G3": {
+                    "barcode": [
+                        "ACAGATTC"
+                    ]
+                },
+                "round_3_76_well_G4": {
+                    "barcode": [
+                        "AGATGTAC"
+                    ]
+                },
+                "round_3_77_well_G5": {
+                    "barcode": [
+                        "AGCACCTC"
+                    ]
+                },
+                "round_3_78_well_G6": {
+                    "barcode": [
+                        "AGCCATGC"
+                    ]
+                },
+                "round_3_79_well_G7": {
+                    "barcode": [
+                        "AGGCTAAC"
+                    ]
+                },
+                "round_3_80_well_G8": {
+                    "barcode": [
+                        "ATAGCGAC"
+                    ]
+                },
+                "round_3_81_well_G9": {
+                    "barcode": [
+                        "ATCATTCC"
+                    ]
+                },
+                "round_3_82_well_G10": {
+                    "barcode": [
+                        "ATTGGCTC"
+                    ]
+                },
+                "round_3_83_well_G11": {
+                    "barcode": [
+                        "CAAGGAGC"
+                    ]
+                },
+                "round_3_84_well_G12": {
+                    "barcode": [
+                        "CACCTTAC"
+                    ]
+                },
+                "round_3_85_well_H1": {
+                    "barcode": [
+                        "CCATCCTC"
+                    ]
+                },
+                "round_3_86_well_H2": {
+                    "barcode": [
+                        "CCGACAAC"
+                    ]
+                },
+                "round_3_87_well_H3": {
+                    "barcode": [
+                        "CCTAATCC"
+                    ]
+                },
+                "round_3_88_well_H4": {
+                    "barcode": [
+                        "CCTCTATC"
+                    ]
+                },
+                "round_3_89_well_H5": {
+                    "barcode": [
+                        "CGACACAC"
+                    ]
+                },
+                "round_3_90_well_H6": {
+                    "barcode": [
+                        "CGGATTGC"
+                    ]
+                },
+                "round_3_91_well_H7": {
+                    "barcode": [
+                        "CTAAGGTC"
+                    ]
+                },
+                "round_3_92_well_H8": {
+                    "barcode": [
+                        "GAACAGGC"
+                    ]
+                },
+                "round_3_93_well_H9": {
+                    "barcode": [
+                        "GACAGTGC"
+                    ]
+                },
+                "round_3_94_well_H10": {
+                    "barcode": [
+                        "GAGTTAGC"
+                    ]
+                },
+                "round_3_95_well_H11": {
+                    "barcode": [
+                        "GATGAATC"
+                    ]
+                },
+                "round_3_96_well_H12": {
+                    "barcode": [
+                        "GCCAAGAC"
+                    ]
+                }
+            }
+        },
+        "nextera_barcode": {
+            "codec": {
+                "RPI10": {
+                    "barcode": [
+                        "AAGCTA"
+                    ]
+                },
+                "RPI7": {
+                    "barcode": [
+                        "GATCTG"
+                    ]
+                },
+                "RPI8": {
+                    "barcode": [
+                        "TCAAGT"
+                    ]
+                },
+                "RPI9": {
+                    "barcode": [
+                        "CTGATC"
+                    ]
+                }
+            }
+        },
+        "rt_round_1": {
+            "codec": {
+                "round_1_01_well_A1": {
+                    "barcode": [
+                        "AACGTGAT"
+                    ]
+                },
+                "round_1_02_well_A2": {
+                    "barcode": [
+                        "AAACATCG"
+                    ]
+                },
+                "round_1_03_well_A3": {
+                    "barcode": [
+                        "ATGCCTAA"
+                    ]
+                },
+                "round_1_04_well_A4": {
+                    "barcode": [
+                        "AGTGGTCA"
+                    ]
+                },
+                "round_1_05_well_A5": {
+                    "barcode": [
+                        "ACCACTGT"
+                    ]
+                },
+                "round_1_06_well_A6": {
+                    "barcode": [
+                        "ACATTGGC"
+                    ]
+                },
+                "round_1_07_well_A7": {
+                    "barcode": [
+                        "CAGATCTG"
+                    ]
+                },
+                "round_1_08_well_A8": {
+                    "barcode": [
+                        "CATCAAGT"
+                    ]
+                },
+                "round_1_09_well_A9": {
+                    "barcode": [
+                        "CGCTGATC"
+                    ]
+                },
+                "round_1_10_well_A10": {
+                    "barcode": [
+                        "ACAAGCTA"
+                    ]
+                },
+                "round_1_11_well_A11": {
+                    "barcode": [
+                        "CTGTAGCC"
+                    ]
+                },
+                "round_1_12_well_A12": {
+                    "barcode": [
+                        "AGTACAAG"
+                    ]
+                },
+                "round_1_13_well_B1": {
+                    "barcode": [
+                        "AACAACCA"
+                    ]
+                },
+                "round_1_14_well_B2": {
+                    "barcode": [
+                        "AACCGAGA"
+                    ]
+                },
+                "round_1_15_well_B3": {
+                    "barcode": [
+                        "AACGCTTA"
+                    ]
+                },
+                "round_1_16_well_B4": {
+                    "barcode": [
+                        "AAGACGGA"
+                    ]
+                },
+                "round_1_17_well_B5": {
+                    "barcode": [
+                        "AAGGTACA"
+                    ]
+                },
+                "round_1_18_well_B6": {
+                    "barcode": [
+                        "ACACAGAA"
+                    ]
+                },
+                "round_1_19_well_B7": {
+                    "barcode": [
+                        "ACAGCAGA"
+                    ]
+                },
+                "round_1_20_well_B8": {
+                    "barcode": [
+                        "ACCTCCAA"
+                    ]
+                },
+                "round_1_21_well_B9": {
+                    "barcode": [
+                        "ACGCTCGA"
+                    ]
+                },
+                "round_1_22_well_B10": {
+                    "barcode": [
+                        "ACGTATCA"
+                    ]
+                },
+                "round_1_23_well_B11": {
+                    "barcode": [
+                        "ACTATGCA"
+                    ]
+                },
+                "round_1_24_well_B12": {
+                    "barcode": [
+                        "AGAGTCAA"
+                    ]
+                },
+                "round_1_25_well_C1": {
+                    "barcode": [
+                        "AGATCGCA"
+                    ]
+                },
+                "round_1_26_well_C2": {
+                    "barcode": [
+                        "AGCAGGAA"
+                    ]
+                },
+                "round_1_27_well_C3": {
+                    "barcode": [
+                        "AGTCACTA"
+                    ]
+                },
+                "round_1_28_well_C4": {
+                    "barcode": [
+                        "ATCCTGTA"
+                    ]
+                },
+                "round_1_29_well_C5": {
+                    "barcode": [
+                        "ATTGAGGA"
+                    ]
+                },
+                "round_1_30_well_C6": {
+                    "barcode": [
+                        "CAACCACA"
+                    ]
+                },
+                "round_1_31_well_C7": {
+                    "barcode": [
+                        "GACTAGTA"
+                    ]
+                },
+                "round_1_32_well_C8": {
+                    "barcode": [
+                        "CAATGGAA"
+                    ]
+                },
+                "round_1_33_well_C9": {
+                    "barcode": [
+                        "CACTTCGA"
+                    ]
+                },
+                "round_1_34_well_C10": {
+                    "barcode": [
+                        "CAGCGTTA"
+                    ]
+                },
+                "round_1_35_well_C11": {
+                    "barcode": [
+                        "CATACCAA"
+                    ]
+                },
+                "round_1_36_well_C12": {
+                    "barcode": [
+                        "CCAGTTCA"
+                    ]
+                },
+                "round_1_37_well_D1": {
+                    "barcode": [
+                        "CCGAAGTA"
+                    ]
+                },
+                "round_1_38_well_D2": {
+                    "barcode": [
+                        "CCGTGAGA"
+                    ]
+                },
+                "round_1_39_well_D3": {
+                    "barcode": [
+                        "CCTCCTGA"
+                    ]
+                },
+                "round_1_40_well_D4": {
+                    "barcode": [
+                        "CGAACTTA"
+                    ]
+                },
+                "round_1_41_well_D5": {
+                    "barcode": [
+                        "CGACTGGA"
+                    ]
+                },
+                "round_1_42_well_D6": {
+                    "barcode": [
+                        "CGCATACA"
+                    ]
+                },
+                "round_1_43_well_D7": {
+                    "barcode": [
+                        "CTCAATGA"
+                    ]
+                },
+                "round_1_44_well_D8": {
+                    "barcode": [
+                        "CTGAGCCA"
+                    ]
+                },
+                "round_1_45_well_D9": {
+                    "barcode": [
+                        "CTGGCATA"
+                    ]
+                },
+                "round_1_46_well_D10": {
+                    "barcode": [
+                        "GAATCTGA"
+                    ]
+                },
+                "round_1_47_well_D11": {
+                    "barcode": [
+                        "CAAGACTA"
+                    ]
+                },
+                "round_1_48_well_D12": {
+                    "barcode": [
+                        "GAGCTGAA"
+                    ]
+                },
+                "round_1_49_well_E1": {
+                    "barcode": [
+                        "GATAGACA"
+                    ]
+                },
+                "round_1_50_well_E2": {
+                    "barcode": [
+                        "GCCACATA"
+                    ]
+                },
+                "round_1_51_well_E3": {
+                    "barcode": [
+                        "GCGAGTAA"
+                    ]
+                },
+                "round_1_52_well_E4": {
+                    "barcode": [
+                        "GCTAACGA"
+                    ]
+                },
+                "round_1_53_well_E5": {
+                    "barcode": [
+                        "GCTCGGTA"
+                    ]
+                },
+                "round_1_54_well_E6": {
+                    "barcode": [
+                        "GGAGAACA"
+                    ]
+                },
+                "round_1_55_well_E7": {
+                    "barcode": [
+                        "GGTGCGAA"
+                    ]
+                },
+                "round_1_56_well_E8": {
+                    "barcode": [
+                        "GTACGCAA"
+                    ]
+                },
+                "round_1_57_well_E9": {
+                    "barcode": [
+                        "GTCGTAGA"
+                    ]
+                },
+                "round_1_58_well_E10": {
+                    "barcode": [
+                        "GTCTGTCA"
+                    ]
+                },
+                "round_1_59_well_E11": {
+                    "barcode": [
+                        "GTGTTCTA"
+                    ]
+                },
+                "round_1_60_well_E12": {
+                    "barcode": [
+                        "TAGGATGA"
+                    ]
+                },
+                "round_1_61_well_F1": {
+                    "barcode": [
+                        "TATCAGCA"
+                    ]
+                },
+                "round_1_62_well_F2": {
+                    "barcode": [
+                        "TCCGTCTA"
+                    ]
+                },
+                "round_1_63_well_F3": {
+                    "barcode": [
+                        "TCTTCACA"
+                    ]
+                },
+                "round_1_64_well_F4": {
+                    "barcode": [
+                        "TGAAGAGA"
+                    ]
+                },
+                "round_1_65_well_F5": {
+                    "barcode": [
+                        "TGGAACAA"
+                    ]
+                },
+                "round_1_66_well_F6": {
+                    "barcode": [
+                        "TGGCTTCA"
+                    ]
+                },
+                "round_1_67_well_F7": {
+                    "barcode": [
+                        "TGGTGGTA"
+                    ]
+                },
+                "round_1_68_well_F8": {
+                    "barcode": [
+                        "TTCACGCA"
+                    ]
+                },
+                "round_1_69_well_F9": {
+                    "barcode": [
+                        "AACTCACC"
+                    ]
+                },
+                "round_1_70_well_F10": {
+                    "barcode": [
+                        "AAGAGATC"
+                    ]
+                },
+                "round_1_71_well_F11": {
+                    "barcode": [
+                        "AAGGACAC"
+                    ]
+                },
+                "round_1_72_well_F12": {
+                    "barcode": [
+                        "AATCCGTC"
+                    ]
+                },
+                "round_1_73_well_G1": {
+                    "barcode": [
+                        "AATGTTGC"
+                    ]
+                },
+                "round_1_74_well_G2": {
+                    "barcode": [
+                        "ACACGACC"
+                    ]
+                },
+                "round_1_75_well_G3": {
+                    "barcode": [
+                        "ACAGATTC"
+                    ]
+                },
+                "round_1_76_well_G4": {
+                    "barcode": [
+                        "AGATGTAC"
+                    ]
+                },
+                "round_1_77_well_G5": {
+                    "barcode": [
+                        "AGCACCTC"
+                    ]
+                },
+                "round_1_78_well_G6": {
+                    "barcode": [
+                        "AGCCATGC"
+                    ]
+                },
+                "round_1_79_well_G7": {
+                    "barcode": [
+                        "AGGCTAAC"
+                    ]
+                },
+                "round_1_80_well_G8": {
+                    "barcode": [
+                        "ATAGCGAC"
+                    ]
+                },
+                "round_1_81_well_G9": {
+                    "barcode": [
+                        "ATCATTCC"
+                    ]
+                },
+                "round_1_82_well_G10": {
+                    "barcode": [
+                        "ATTGGCTC"
+                    ]
+                },
+                "round_1_83_well_G11": {
+                    "barcode": [
+                        "CAAGGAGC"
+                    ]
+                },
+                "round_1_84_well_G12": {
+                    "barcode": [
+                        "CACCTTAC"
+                    ]
+                },
+                "round_1_85_well_H1": {
+                    "barcode": [
+                        "CCATCCTC"
+                    ]
+                },
+                "round_1_86_well_H2": {
+                    "barcode": [
+                        "CCGACAAC"
+                    ]
+                },
+                "round_1_87_well_H3": {
+                    "barcode": [
+                        "CCTAATCC"
+                    ]
+                },
+                "round_1_88_well_H4": {
+                    "barcode": [
+                        "CCTCTATC"
+                    ]
+                },
+                "round_1_89_well_H5": {
+                    "barcode": [
+                        "CGACACAC"
+                    ]
+                },
+                "round_1_90_well_H6": {
+                    "barcode": [
+                        "CGGATTGC"
+                    ]
+                },
+                "round_1_91_well_H7": {
+                    "barcode": [
+                        "CTAAGGTC"
+                    ]
+                },
+                "round_1_92_well_H8": {
+                    "barcode": [
+                        "GAACAGGC"
+                    ]
+                },
+                "round_1_93_well_H9": {
+                    "barcode": [
+                        "GACAGTGC"
+                    ]
+                },
+                "round_1_94_well_H10": {
+                    "barcode": [
+                        "GAGTTAGC"
+                    ]
+                },
+                "round_1_95_well_H11": {
+                    "barcode": [
+                        "GATGAATC"
+                    ]
+                },
+                "round_1_96_well_H12": {
+                    "barcode": [
+                        "GCCAAGAC"
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,77 @@
+{
+    "cellular": [
+        {
+            "algorithm": "pamld",
+            "base": "rt_round_1",
+            "comment": "BC1: First round cellular barcode",
+            "confidence threshold": 0.99,
+            "noise": 0.05,
+            "transform": {
+                "token": [
+                    "2:86:94"
+                ]
+            }
+        },
+        {
+            "algorithm": "pamld",
+            "base": "ligated_round_2",
+            "comment": "BC2: Second round cellular barcode",
+            "confidence threshold": 0.99,
+            "noise": 0.05,
+            "transform": {
+                "token": [
+                    "2:48:56"
+                ]
+            }
+        },
+        {
+            "algorithm": "pamld",
+            "base": "ligated_round_3",
+            "comment": "BC3: Third round cellular barcode",
+            "confidence threshold": 0.99,
+            "noise": 0.05,
+            "transform": {
+                "token": [
+                    "2:10:18"
+                ]
+            }
+        },
+        {
+            "algorithm": "pamld",
+            "base": "nextera_barcode",
+            "comment": "BC4: Forth round cellular barcode on the i7 index segment",
+            "confidence threshold": 0.99,
+            "noise": 0.05,
+            "transform": {
+                "token": [
+                    "1:0:6"
+                ]
+            }
+        }
+    ],
+    "import": [
+        "splitseq_core.json"
+    ],
+    "input": [
+        "HGGKLBGX2_L001_R1_001.fastq.gz",
+        "HGGKLBGX2_L001_I1_001.fastq.gz",
+        "HGGKLBGX2_L001_R2_001.fastq.gz"
+    ],
+    "molecular": [
+        {
+            "comment": "The UMI is in the first 8 bases of Read 1",
+            "transform": {
+                "token": [
+                    "2::10"
+                ]
+            }
+        }
+    ],
+    "template": {
+        "transform": {
+            "token": [
+                "0::66"
+            ]
+        }
+    }
+}
