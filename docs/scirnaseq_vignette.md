@@ -10,7 +10,7 @@ This method was used to generate a transcriptome map of C. elegans L2 larvae at 
 ## Read Anatomy
 The final PCR products submitted for sequencing are composed as follows:
 
-![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/cao_scirna){: .diagram_small}
+![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/cao_scirna.png){: .diagram_small}
 
 ## Configuration file
 
