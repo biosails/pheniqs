@@ -9,7 +9,7 @@ This method was used to generate a transcriptome map of C. elegans L2 larvae at 
 
 If the results are written to SAM, BAM or CRAM the raw uncorrected cellular barcode sequence is written to the [CR](glossary#cr_auxiliary_tag) auxiliary tag, the corresponding quality scores are written to the [CY](glossary#cr_auxiliary_tag) auxiliary tag, the corrected cellular barcode sequence is written to the [CB](glossary#cb_auxiliary_tag) auxiliary tag and the probability that the Cellular barcode decoding is incorrect is written to the [XC](glossary#xc_auxiliary_tag) auxiliary tag.
 
-The uncorrected mollecular barcode (UMI) sequence is written to the ([RX](glossary#rx_auxiliary_tag) auxiliary tag and the corresponding  quality scores are written to the [QX](glossary#qx_auxiliary_tag) auxiliary tag.
+The uncorrected mollecular barcode (UMI) sequence is written to the [RX](glossary#rx_auxiliary_tag) auxiliary tag and the corresponding  quality scores are written to the [QX](glossary#qx_auxiliary_tag) auxiliary tag.
 
 ## Read Anatomy
 The final PCR products submitted for sequencing are composed as follows:
