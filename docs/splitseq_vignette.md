@@ -94,6 +94,9 @@ Read segments emerge from the sequencer in the same order as a simple dual-index
             "confidence threshold": 0.99,
             "noise": 0.05,
             "transform": {
+                "knit": [
+                    "~0"
+                ],
                 "token": [
                     "1:0:6"
                 ]
