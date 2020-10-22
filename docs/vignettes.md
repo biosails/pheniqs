@@ -30,6 +30,9 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 [sciRNA-seq decoding with](scirnaseq_vignette)
 : This vignette will walk you through a sciRNA-seq with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
 
+[SPLiT-seq decoding with](splitseq_vignette)
+: This vignette will walk you through a SPLiT-seq with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
+
 ## Those do not exist yet
 
 Droplet Sequencing
