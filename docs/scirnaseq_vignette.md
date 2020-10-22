@@ -7,16 +7,14 @@ id: scirnaseq_vignette
 
 This method was used to generate a transcriptome map of C. elegans L2 larvae at the single-cell level. Cells or nuclei are isolated from whole organisms, tissues, or cell culture. Individual cells/nuclei are pooled and distributed to 96- or 384-well dishes at around 10-100 cells per well. mRNAs are reverse transcribed in Plate 1 using barcoded primers (96 RT barcodes, one per well). Each barcoded primer also carries a unique molecular index (UMI). Cells are then repooled and split again into new plates and second-strand synthesis, tagmentation, and PCR are then performed. Plate 2 adds the standard i5 and i7 dual indexed (8 x 12) barcodes.
 
+If the results are written to SAM, BAM or CRAM the raw uncorrected cellular barcode sequence is written to the [CR](glossary#cr_auxiliary_tag) auxiliary tag, the corresponding quality scores are written to the [CY](glossary#cr_auxiliary_tag) auxiliary tag, the corrected cellular barcode sequence is written to the [CB](glossary#cb_auxiliary_tag) auxiliary tag and the probability that the Cellular barcode decoding is incorrect is written to the [XC](glossary#xc_auxiliary_tag) auxiliary tag.
+
+The uncorrected mollecular barcode (UMI) sequence is written to the ([RX](glossary#rx_auxiliary_tag) auxiliary tag and the corresponding  quality scores are written to the [QX](glossary#qx_auxiliary_tag) auxiliary tag.
+
 ## Read Anatomy
 The final PCR products submitted for sequencing are composed as follows:
 
 ![Illumina paired-end dual-index sequencing](/pheniqs/assets/img/cao_scirna.png){: .diagram_small}
-
-## Configuration file
-
-This tutorial demonstrates how to manually prepare configuration files for decoding sample barcodes for a standard Illumina sequencing run. Pheniqs includes a Python API that helps users create configuration files automatically. For a tutorial that uses the Python API to generate the configuration files for this example, see the [Standard Illumina sample decoding with the python API](illumina_api_vignette).
-
-In this example the run has paired-end dual-index samples multiplexed using the standard Illumina i5 and i7 index protocol. The read is made of 4 segments: 2 biological sequences (cDNA, genomic DNA, etc.) read from both ends of the insert fragment, and 2 technical sequences containing the i5 and i7 indices. If the results are written to SAM, BAM or CRAM the sample barcode and its quality scores are written to the [BC](glossary#bc_auxiliary_tag) and [QT](glossary#qt_auxiliary_tag) tags, and the decoding error probability is written to the [XB](glossary#xb_auxiliary_tag) tag.
 
 ## Input Read Layout
 
@@ -45,7 +43,7 @@ Read segments emerge from the sequencer in the same order as a simple dual-index
 >| `0:8:18`           | `0`            | `8`     | `17`  | `10`   | RT barcode on segment in R1           |
 >| `1::10`            | `1`            | `0`     | `9`   | `10`   | i7 barcode on segment in I1           |
 >| `2::10`            | `2`            | `0`     | `9`   | `10`   | i5 barcode on segment in I2           |
->| `3::50`            | `3`            | `0`     | `49`   | `50`  | template on segment in R2           |
+>| `3::50`            | `3`            | `0`     | `49`  | `50`  | template on segment in R2              |
 >**Tokenization** patterns for decoding tha various artifacts of a sciRNA-seq protocol.
 {: .example}
 
