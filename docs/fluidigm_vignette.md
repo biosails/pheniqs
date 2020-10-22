@@ -19,11 +19,20 @@ This tutorial will walk you through demultiplexing a fluidigm sequencing run wit
 >**declaring input read segments** Base calling with bc2fastq produced 3 files per lane: `CBJLFACXX_S1_L001_R1_001.fastq.gz` containing a 6 base pair long row cellular barcode, `CBJLFACXX_S1_L001_I1_001.fastq.gz` containing the 8 base pair column cellular barcode and `CBJLFACXX_S1_L001_R2_001.fastq.gz` containing the reverse complemented 5 prime suffix of the insert region, since it was read in reverse.
 {: .example}
 
-In this example our downstream pipeline expected reads for each cell, identified by the combination a row and a column tag, to be in a separate fastq file. Producing so many files makes processing verbose and inefficient, but is sometimes a real world constraint you have to live with to reuse existing code, and demonstrates some of Pheniq's flexibly. We estimate the prior for the row and column cellular barcodes in a conditional fashion. We will first estimate the prior for the column tag and split the reads matching each column to separate bam file. We then estimate the prior for the row tag independently for each column and further split reads matching each tag to a separate fastq file.
+In this example our downstream pipeline expected reads for each cell, identified by the combination a row and a column tag, to be in a separate fastq file. Producing so many files makes processing verbose and inefficient, but is sometimes a real world constraint you have to live with to reuse existing code, and demonstrates some of Pheniq's flexibly. We estimate the prior for the row and column cellular barcodes in a conditional fashion. We will first estimate the prior for the column tag and split the reads matching each column to separate bam file. We then estimate the prior for the row tag independently for each column and further split reads matching each tag to a separate fastq file. We end up with a fastq file for each cell in the table, to match the input for the downstream pipeline.
 
 # Column classification
 
-In the first step you classify the cellular barcode in the i7 segment and split the reads for each column to a separate bam file containing the two remaining segments: the row cellular barcode and the biological sequence. Since the sequences identifying the columns are the same in each lane, you declare a decoder in a [CBJLFACXX_core.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_core.json) that you will reuse in all other configuration files. This decoder lists the possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence.
+In the first step you classify the reads by the cellular barcode in the i7 segment and split the reads for each column to a separate bam file containing the two remaining segments: the row cellular barcode and the biological sequence. Since the sequences identifying the columns are the same in each lane, you declare a decoder in a [CBJLFACXX_core.json]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_core.json) that you will reuse in all other configuration files. This decoder lists the possible barcode sequences and a transform that tells Pheniqs where to find the barcode sequence.
+
+>| Token expression   | Segment index  | First   | Last  | Length | Description                              |
+>| :----------------- | :------------- | :------ | :---- | :----- | :--------------------------------------- |
+>| `0::6`             | `0`            | `0`     | `5`   | `6`    | Row cellular barcode. Used in phase 2    |
+>| `1::8`             | `1`            | `0`     | `7`   | `8`    | Column cellular barcode. Used in phase 1 |
+>| `2::`              | `2`            | `0`     | *end* | *full* | template sequence                        |
+>
+>**Tokenization** patterns for first phase of classification a fluidigm Row/Column assay. We classify and split the reads by the column barcode and preserve the row column in a segment for decoding in a second phase. The template sequence of biological interest in on the second segment in R2.
+{: .example}
 
 >```json
 {
