@@ -44,6 +44,7 @@ Read segments emerge from the sequencer in the same order as a simple dual-index
 >| `1::10`            | `1`            | `0`     | `9`   | `10`   | i7 barcode on segment in I1           |
 >| `2::10`            | `2`            | `0`     | `9`   | `10`   | i5 barcode on segment in I2           |
 >| `3::50`            | `3`            | `0`     | `49`  | `50`  | template on segment in R2              |
+>
 >**Tokenization** patterns for decoding tha various artifacts of a sciRNA-seq protocol.
 {: .example}
 
