@@ -7,9 +7,7 @@ id: fluidigm_vignette
 
 ## Protocol
 
-[From the Fluidigm manual](https://www.fluidigm.com/binaries/content/documents/fluidigm/resources/c1-system-for-mrna-seq-medium-cell-ht-pr-101-4964/c1-system-for-mrna-seq-medium-cell-ht-pr-101-4964/fluidigm%3Afile): *This protocol details the use of the C1TM system and C1 high-throughput integrated fluidics circuits (HT IFCs) to capture up to 800 cells, apply a cell-specific barcode to all polyA+ RNA, convert polyA+ RNA into cDNA, and perform universal amplification of the cDNA for 3 end-counting mRNA sequencing (mRNA Seq) on Illumina MiSeq, HiSeq, or NextSeq systems.
-
-Cell barcodes are applied across each row of the HT IFC, and cDNA is harvested (pooled) through each of the 20 columns. Each column harvest contains barcoded cDNA from 40 cells. During library preparation, the Nextera index provides a second cell identifier. Therefore, each cell is uniquely identified by a cell barcode applied on the HT IFC and a Nextera index during library preparation external to the HT IFC.*
+[From the Fluidigm manual](https://www.fluidigm.com/binaries/content/documents/fluidigm/resources/c1-system-for-mrna-seq-medium-cell-ht-pr-101-4964/c1-system-for-mrna-seq-medium-cell-ht-pr-101-4964/fluidigm%3Afile): *This protocol details the use of the C1TM system and C1 high-throughput integrated fluidics circuits (HT IFCs) to capture up to 800 cells, apply a cell-specific barcode to all polyA+ RNA, convert polyA+ RNA into cDNA, and perform universal amplification of the cDNA for 3 end-counting mRNA sequencing (mRNA Seq) on Illumina MiSeq, HiSeq, or NextSeq systems. Cell barcodes are applied across each row of the HT IFC, and cDNA is harvested (pooled) through each of the 20 columns. Each column harvest contains barcoded cDNA from 40 cells. During library preparation, the Nextera index provides a second cell identifier. Therefore, each cell is uniquely identified by a cell barcode applied on the HT IFC and a Nextera index during library preparation external to the HT IFC.*
 
 ## Read Anatomy
 
