@@ -1,0 +1,55 @@
+{
+    "cellular": [
+        {
+            "algorithm": "pamld",
+            "base": "rt_c_elegans",
+            "comment": "Plate 1 RT barcode",
+            "confidence threshold": 0.99,
+            "noise": 0.05,
+            "transform": {
+                "token": [
+                    "0:8:18"
+                ]
+            }
+        },
+        {
+            "algorithm": "pamld",
+            "base": "nextera_dual_barcode_set",
+            "comment": "Plate 2 PCR barcode (i5 + i7)",
+            "confidence threshold": 0.99,
+            "noise": 0.05,
+            "transform": {
+                "token": [
+                    "1:0:10",
+                    "2:0:10"
+                ]
+            }
+        }
+    ],
+    "import": [
+        "HGGKLBGX2_core.json"
+    ],
+    "input": [
+        "HGGKLBGX2_L001_R1_001.fastq.gz",
+        "HGGKLBGX2_L001_I1_001.fastq.gz",
+        "HGGKLBGX2_L001_I2_001.fastq.gz",
+        "HGGKLBGX2_L001_R2_001.fastq.gz"
+    ],
+    "molecular": [
+        {
+            "comment": "The UMI is in the first 8 bases of Read 1",
+            "transform": {
+                "token": [
+                    "0::8"
+                ]
+            }
+        }
+    ],
+    "template": {
+        "transform": {
+            "token": [
+                "3::50"
+            ]
+        }
+    }
+}
