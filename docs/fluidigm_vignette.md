@@ -1,9 +1,22 @@
 ---
 layout: default
-title: "Single index Fluidigm decoding"
+title: "Fluidigm single-cell RNA-seq decoding"
 permalink: /fluidigm_vignette
 id: fluidigm_vignette
 ---
+
+## Protocol
+
+[From the Fluidigm manual](https://www.fluidigm.com/binaries/content/documents/fluidigm/resources/c1-system-for-mrna-seq-medium-cell-ht-pr-101-4964/c1-system-for-mrna-seq-medium-cell-ht-pr-101-4964/fluidigm%3Afile): *This protocol details the use of the C1TM system and C1 high-throughput integrated fluidics circuits (HT IFCs) to capture up to 800 cells, apply a cell-specific barcode to all polyA+ RNA, convert polyA+ RNA into cDNA, and perform universal amplification of the cDNA for 3 end-counting mRNA sequencing (mRNA Seq) on Illumina MiSeq, HiSeq, or NextSeq systems.
+
+Cell barcodes are applied across each row of the HT IFC, and cDNA is harvested (pooled) through each of the 20 columns. Each column harvest contains barcoded cDNA from 40 cells. During library preparation, the Nextera index provides a second cell identifier. Therefore, each cell is uniquely identified by a cell barcode applied on the HT IFC and a Nextera index during library preparation external to the HT IFC.*
+
+## Read Anatomy
+
+The final PCR products submitted for sequencing are composed as follows:
+
+![Fluidigm single-cell RNA-seq sequencing](/pheniqs/assets/img/fluidigm.png){: .diagram}
+
 
 This tutorial will walk you through demultiplexing a fluidigm sequencing run with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding). The read has 3 segments, 1 biological from the DNA or RNA fragment and 2 technical containing a row cellular barcode in the first 6 cycles of the forward read segment and a column cellular barcode on the first 8 cycles of the i7 index segment.
 
@@ -29,9 +42,9 @@ In the first step you classify the reads by the cellular barcode in the i7 segme
 >| :----------------- | :------------- | :------ | :---- | :----- | :--------------------------------------- |
 >| `0::6`             | `0`            | `0`     | `5`   | `6`    | Row cellular barcode. Used in phase 2    |
 >| `1::8`             | `1`            | `0`     | `7`   | `8`    | Column cellular barcode. Used in phase 1 |
->| `2::`              | `2`            | `0`     | *end* | *full* | template sequence                        |
+>| `2::`              | `2`            | `0`     | *end* | *full* | cDNA template sequence                        |
 >
->**Tokenization** patterns for first phase of classification a fluidigm Row/Column assay. We classify and split the reads by the column barcode and preserve the row column in a segment for decoding in a second phase. The template sequence of biological interest in on the second segment in R2.
+>**Tokenization** patterns for first phase of classification a fluidigm Row/Column assay. This protocol uses the Nextera XT DNA Library Preparation Kit to apply the row barcodes and the Nextera XT Index Kit v2 to apply the column barcodes. The row barcodes are applied during the reverse transcription (RT) step and are common to all cells in each row. The column barcodes are applied during library preparation to pooled cells from each column and are thus shared by all cells in each column. The complete cellular index for an individual cell is defined by a unique combination of the row (RT) and column (I1) barcodes. The row barcode is in the first 8 bases of Read 1, and the column barcode is in the I1 read. We classify and split the reads by the column barcode and preserve the row column in a segment for decoding in a second phase. The template sequence of biological interest in on the second segment in R2.
 {: .example}
 
 >```json
@@ -241,6 +254,14 @@ pheniqs mux --config CBJLFACXX_l01_column_adjusted.json
 # Row classification
 
 In the first step you produced multiple bam files, one for each column. In this second phase you will estimate priors and decode the row cellular barcode on each of those bam files independently. Notice that this time you only have 2 input segments. The first is the 6 base pair row cellular barcode and the second is the DNA or RNA fragment. Since you want to reuse configuration files in this step for every one of the bam files you produced in the first step you intentionally leave out the `input` and `output` directive and will specify them on the command line.
+
+>| Token expression   | Segment index  | First   | Last  | Length | Description                              |
+>| :----------------- | :------------- | :------ | :---- | :----- | :--------------------------------------- |
+>| `0::6`             | `0`            | `0`     | `5`   | `6`    | Row cellular barcode.                    |
+>| `1::`              | `1`            | `0`     | *end* | *full* | cDNA template sequence                   |
+>
+>**Tokenization** patterns for second phase, splitting a single column into cells by the row barcode. The first phase produced 2 segments: first with the 6 nucleotides of the row barcode and the second with the cDNA template sequence. In this second phase we classify by the row barcode and discard it, emitting the cDNA template sequence.
+{: .example}
 
 First we write the [configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_row.json) file for decoding the row tag
 
