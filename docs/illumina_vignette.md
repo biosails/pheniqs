@@ -29,7 +29,7 @@ The final PCR products submitted for sequencing are composed as follows:
 Per PCR product, there are two biological read segments (R1 and R2) and two index segments (I1 and I2). Read segments emerge from the sequencer in the following order: R1, I1, I2, R2.
 Notes:
 - Different manufacturers use different adaptors for ligation (Pheniqs does not perform adapter trimming), as well as their own sets of standard index sequences for multiplexing.
-- Pre-configured index libraries, or "codecs", for most standard Illumina indexes are provided [here](standrd_configuration). Any configuration file can refer to these to "inherit" the pre-defined codecs.
+- Pre-configured index libraries, or "codecs", for most standard Illumina indexes are provided on the [recipe](recipe) page. Any configuration file can refer to these to "inherit" the pre-defined codecs.
 - For dual-indexing, any i5-i7 pairings that are not used in the experiment should not be included in a fully specified configuration file.
 - Different instruments read I2 on opposite strands (Workflow B), so reverse complemented i5 sequences must be entered into sample sheets if filling them out manually; if using run management software packages, these take care of reverse complementation automatically.
 - The Pheniqs knit syntax can also reverse complement the extracted sequence before it is matched against the possible barcodes, so handling Workflow B instruments does not require users to manually reverse complement the sequences in the configuration file.
