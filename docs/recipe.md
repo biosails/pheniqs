@@ -5,8 +5,6 @@ permalink: /recipe
 id: recipe
 ---
 
-[configuration]({{ site.github.repository_url }}/blob/master/example/CBJLFACXX/CBJLFACXX_l01_column.json)
-
 A library of common barcode sets that are commercially available. You can import those configuration files in your own and extend the decoder definitions. In many cases your expremint will not contain the entire barcode set so you should remove the barcodes that don't apply or alternatively set their `concentration` to `0`.
 
 [idt_for_ilumina_nextera_dna_ud.json]({{ site.github.repository_url }}/blob/master/example/illumina/idt_for_ilumina_nextera_dna_ud.json) Dual indexed with two 10 nucleotide long barcode seqeunces. Segment 0 is the i7 index and segement 1 is the i5 index. Workflow A is used by NovaSeq, MiSeq, HiSeq 2000, HiSeq 2500 i5 is as specified. Workflow B is used by iSeq, MiniSeq, NextSeq, HiSeq 3000,HiSeq 4000 where i5 is reverse complemented.
