@@ -36,6 +36,11 @@ links:
   id: cli
   enabled: True
 
+- title: Recipe
+  url: /pheniqs/recipe
+  id: recipe
+  enabled: True
+
 - title: Glossary
   url: /pheniqs/glossary
   id: glossary
