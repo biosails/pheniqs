@@ -27,19 +27,8 @@ Pheniqs can accommodate virtually any experimental design due to its flexible sy
 [Fluidigm with a sample and a cellular tag](fluidigm_vignette)
 : This vignette will walk you through a single index fluidigm sequencing run with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
 
-[sciRNA-seq decoding with](scirnaseq_vignette)
+[sciRNA-seq decoding](scirnaseq_vignette)
 : This vignette will walk you through a sciRNA-seq with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
 
-[SPLiT-seq decoding with](splitseq_vignette)
-: This vignette will walk you through a SPLiT-seq with the [PAMLD decoder](glossary#phred_adjusted_maximum_likelihood_decoding).
-
-## Those do not exist yet
-
-Droplet Sequencing
-: A popular way to perform single-cell RNA-seq profiling is to use microfluidics to generate individual droplets that each contain an individual cell and a bead carrying a cellular barcode. This page provides barcoding scenarios for several different droplet sequencing methods.
-
-Split-Pool Indexing
+[SPLiT-seq decoding](splitseq_vignette)
 : Another way to perform single-cell profiling is to perform a series of sequential cell pooling and splitting onto multi-well plates that are barcoded by row and column. Two or more rounds of barcoding in this manner will produce a unique cellular barcode for each cell that is composed of multiple independent elements. This page provides barcoding scenarios for published split-pool methods.
-
-Multimodal Profiling
-: Recently, methods have been developed to profile multiple layers of cellular information in the same experiment, such as mRNA abundance and protein levels for select cell-surface markers. This page provides barcoding scenarios for some of the multimodal profiling methods published so far.
