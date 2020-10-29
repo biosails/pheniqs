@@ -113,6 +113,19 @@
                     "type": "url"
                 },
                 {
+                    "extension": [
+                        "json"
+                    ],
+                    "handle": [
+                        "--prior"
+                    ],
+                    "help": "Path to adjusted prior job file",
+                    "inode": "file",
+                    "meta": "PATH",
+                    "name": "prior adjusted job url",
+                    "type": "url"
+                },
+                {
                     "handle": [
                         "-I",
                         "--base-input"

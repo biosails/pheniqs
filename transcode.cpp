@@ -1223,6 +1223,10 @@ void Transcode::compile_output() {
     standardize_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
     relocate_url_by_key("report url", ontology, ontology, base_output);
 
+    /* expand the prior adjusted job URL */
+    standardize_url_value_by_key("prior adjusted job url", ontology, ontology, IoDirection::OUT);
+    relocate_url_by_key("prior adjusted job url", ontology, ontology, base_output);
+
     /* load output template */
     compile_template();
     Rule rule(decode_value_by_key< Rule >("transform", ontology["template"]));
@@ -1762,6 +1766,7 @@ void Transcode::finalize() {
         collect(transcoding_thread);
     }
 
+    /* add the incoming statistics to report */
     if(count > 0) {
         pf_fraction = double(pf_count) / double(count);
         Value element(kObjectType);
@@ -1803,6 +1808,59 @@ void Transcode::apply_interactive_ontology(Document& document) const {
     }
     adjusted.RemoveMember("template token");
     overlay_json_object(document, adjusted);
+};
+void Transcode::write_result() const {
+    Job::write_result();
+
+    URL prior_adjusted_job_url(decode_value_by_key< URL >("prior adjusted job url", ontology));
+    if(!prior_adjusted_job_url.is_dev_null()) {
+        Document adjusted;
+        adjusted.CopyFrom(instruction, adjusted.GetAllocator());
+        apply_interactive_ontology(adjusted);
+        apply_prior_adjustment(adjusted);
+        sort_json_value(adjusted, adjusted);
+        clean_json_object(adjusted, adjusted);
+
+        if(prior_adjusted_job_url.is_stdout()) {
+            print_json(adjusted, cout, float_precision());
+
+        } else if(prior_adjusted_job_url.is_stderr()) {
+            print_json(adjusted, cerr, float_precision());
+
+        } else {
+            print_json(adjusted, prior_adjusted_job_url.path().c_str(), float_precision());
+
+        }
+    }
+};
+void Transcode::apply_prior_adjustment(Document& document) const {
+    if(transcoding_decoder != NULL) {
+        if(transcoding_decoder->sample_classifier != NULL) {
+            transcoding_decoder->sample_classifier->adjust_prior(document["sample"], document);
+        }
+
+        if(!transcoding_decoder->molecular_classifier_array.empty()) {
+            Value::MemberIterator reference = document.FindMember("molecular");
+            if(reference != document.MemberEnd()) {
+                size_t i(0);
+                for(auto& element : reference->value.GetArray()) {
+                    transcoding_decoder->molecular_classifier_array[i]->adjust_prior(element, document);
+                    i++;
+                }
+            }
+        }
+
+        if(!transcoding_decoder->cellular_classifier_array.empty()) {
+            Value::MemberIterator reference = document.FindMember("cellular");
+            if(reference != document.MemberEnd()) {
+                size_t i(0);
+                for(auto& element : reference->value.GetArray()) {
+                    transcoding_decoder->cellular_classifier_array[i]->adjust_prior(element, document);
+                    i++;
+                }
+            }
+        }
+    }
 };
 
 /* describe */

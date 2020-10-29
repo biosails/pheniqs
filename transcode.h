@@ -98,6 +98,7 @@ class Transcode : public Job {
         void collect(const TranscodingThread& transcoding_thread);
         void finalize() override;
         void apply_interactive_ontology(Document& document) const override;
+        void write_result() const override;
 
     private:
         bool end_of_input;
@@ -142,6 +143,7 @@ class Transcode : public Job {
         void load_input();
         void load_output();
 
+        void apply_prior_adjustment(Document& document) const;
         void print_global_instruction(ostream& o) const;
         void print_codec_group_instruction(const Value::Ch* key, const string& head, ostream& o) const;
         void print_codec_instruction(const Value& value, const bool& plural, ostream& o) const;

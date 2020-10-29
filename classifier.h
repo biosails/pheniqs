@@ -119,6 +119,42 @@ template < class T > class Classifier : public AccumulatingSelector {
             /* finalize the selector */
             AccumulatingSelector::finalize();
         };
+        void adjust_prior(Value& container, Document& document) {
+            /* adjust the noise prior */
+            encode_key_value("noise", estimated_noise_prior, container, document);
+
+            /* build a map of barcode sequence to prior */
+            unordered_map< string, double > concentration_prior_by_barcode(tag_array.size());
+            kstring_t buffer({ 0, 0, NULL });
+            for(auto& tag: tag_array) {
+                tag.encode_iupac_ambiguity(buffer);
+                concentration_prior_by_barcode.insert(make_pair<string, double>(string(buffer.s, buffer.l), double(tag.estimated_concentration_prior)));
+                ks_clear(buffer);
+            }
+            ks_free(buffer);
+
+            /* adjust the concentration prior on each barcode */
+            Value::MemberIterator reference = container.FindMember("codec");
+            if(reference != container.MemberEnd()) {
+                list< string > barcode_segment;
+                for(auto& record : reference->value.GetObject()) {
+                    if(decode_value_by_key< list< string > >("barcode", barcode_segment, record.value)) {
+                        string barcode_string;
+                        for(auto& segment : barcode_segment) {
+                            if(!barcode_string.empty()) {
+                                barcode_string.append("-");
+                            }
+                            barcode_string.append(segment);
+
+                            auto concentration_record = concentration_prior_by_barcode.find(barcode_string);
+                            if(concentration_record != concentration_prior_by_barcode.end()) {
+                                encode_key_value("concentration", concentration_record->second, record.value, document);
+                            }
+                        }
+                    }
+                }
+            }
+        };
         void encode(Value& container, Document& document) const override {
             AccumulatingSelector::encode(container, document);
 
