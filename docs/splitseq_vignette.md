@@ -90,7 +90,7 @@ Read segments emerge from the sequencer in the same order as a simple dual-index
         {
             "algorithm": "pamld",
             "base": "nextera_barcode",
-            "comment": "BC4: Forth round cellular barcode on the i7 index segment",
+            "comment": "BC4: Fourth round cellular barcode on the i7 index segment",
             "confidence threshold": 0.99,
             "noise": 0.05,
             "transform": {
@@ -130,5 +130,5 @@ Read segments emerge from the sequencer in the same order as a simple dual-index
     }
 }
 ```
->**decoding both combinatorial barcodes in one run** [splitseq_l01_cellular.json]({{ site.github.repository_url }}/blob/master/example/splitseq_vignette/splitseq_l01_cellular.json) will decode both the RT and nextera barcodes in one run and populate the cellular and molecular SAM auxiliary tags. It will emit a single segment with the first 50 nucleotides on the forth segment in R2. The list of possible values for the RT and nextera barcodes are defined in the imported [splitseq_core.json]({{ site.github.repository_url }}/blob/master/example/splitseq_vignette/splitseq_core.json) configuration file and are used in [splitseq_l01_cellular.json]({{ site.github.repository_url }}/blob/master/example/splitseq_vignette/splitseq_l01_cellular.json) by inheritence using `"base": "rt_round_1"`, `"base": "ligated_round_2"`, `"base": "ligated_round_3"` and `"base": "nextera_barcode"`.
+>**decoding both combinatorial barcodes in one run** [splitseq_l01_cellular.json]({{ site.github.repository_url }}/blob/master/example/splitseq_vignette/splitseq_l01_cellular.json) will decode both the RT and nextera barcodes in one run and populate the cellular and molecular SAM auxiliary tags. It will emit a single segment with the first 50 nucleotides on the fourth segment in R2. The list of possible values for the RT and nextera barcodes are defined in the imported [splitseq_core.json]({{ site.github.repository_url }}/blob/master/example/splitseq_vignette/splitseq_core.json) configuration file and are used in [splitseq_l01_cellular.json]({{ site.github.repository_url }}/blob/master/example/splitseq_vignette/splitseq_l01_cellular.json) by inheritence using `"base": "rt_round_1"`, `"base": "ligated_round_2"`, `"base": "ligated_round_3"` and `"base": "nextera_barcode"`.
 {: .example}
