@@ -19,7 +19,7 @@ PAMLD identifies a barcode from a list of options by maximizing the posterior pr
 
 ## Decoding parameters
 
-The dominant user configurable parameter is the `confidence threshold`, which is a lower bound on the decoding probability for the decoder to declare a successful classification. The value of `confidence threshold` controls the tradeoff between false positives and false negatives. Barcode frequencies are specified in the class `concentration` attribute while the expected decoding failure frequency is specified in the decoder `noise` attribute.
+The dominant user configurable parameter is the `confidence threshold`, which is a lower bound on the decoding probability to declare a successful classification. The value of `confidence threshold` controls the tradeoff between false positives and false negatives. Barcode frequencies are specified in the class `concentration` attribute while the expected decoding failure frequency is specified in the decoder `noise` attribute.
 
 Another interesting PAMLD parameter is the `random barcode probability` the probability of observing a particular indeterminate sequence. In the absence of any prior information about potential sequence composition (base distribution or GC bias), we can only assume indeterminate sequences occur with maximum entropy which gives rise to the default value of 1 over 4 to the power of of the length of the barcode. Realistically, however, not every sequence is chemically stable enough to appear in sequencing, indeterminate entropy is lower, and `random barcode probability` should be set to a higher value determined by Empirical studies. Pheniqs accommodates such refinements to the noise model by allowing advanced users to manually set `random barcode probability`.
 
