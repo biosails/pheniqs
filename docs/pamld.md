@@ -9,17 +9,19 @@ Phred Adjusted Maximum Likelihood Decoding, abbreviated PAMLD, is a novel [close
 
 When output is SAM encoded Pheniqs will write the decoding error probability to the [XB](glossary#dq_auxiliary_tag) auxiliary tag for a sample barcode, the [XM](glossary#xm_auxiliary_tag) tag for a molecular barcode and the [XC](glossary#xc_auxiliary_tag) tag for a cellular barcode. In the case of a decoding failure no error probability is reported.
 
+## Decoding overview
+
 PAMLD identifies a barcode from a list of options by maximizing the posterior probability that the selected barcode was sequenced given a potentially erroneous sequence reported by the instrument. The posterior probability is evaluated using a Bayesian equation that takes into account the conditional decoding probabilities for each possible barcode sequence, computed directly from the basecalling quality scores, and a set of prior probabilities. The prior probabilities, the expected fraction of reads identified by each barcode in the data as well as the fraction of indeterminate sequences (random noise), are either provided by the user using the `concentration` and `noise` configuration attributes or estimated from the data by a preliminary Pheniqs run that produces a prior adjusted configuration file.
+
+![PAMLD](/pheniqs/assets/img/pamld.png){: .diagram}
+>**Decoding a read with PAMLD**  Reads with a lower conditional probability than random sequences fail the noise filter and are classified as noise without further consideration. Reads with a posterior probability that does not meet the confidence threshold fail the confidence filter; these reads are classified, but they are marked as "qc fail" so the confidence threshold can be reconsidered at alater stage. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found in the [paper](link_to_paper). Pheniqs is designed to accommodate the addition of alternative decoders, which can be added as derived classes of a generic decoder object.
+{: .example}
 
 ## Decoding parameters
 
 The dominant user configurable parameter is the `confidence threshold`, which is a lower bound on the decoding probability for the decoder to declare a successful classification. The value of `confidence threshold` controls the tradeoff between false positives and false negatives. Barcode frequencies are specified in the class `concentration` attribute while the expected decoding failure frequency is specified in the decoder `noise` attribute.
 
 Another interesting PAMLD parameter is the `random barcode probability` the probability of observing a particular indeterminate sequence. In the absence of any prior information about potential sequence composition (base distribution or GC bias), we can only assume indeterminate sequences occur with maximum entropy which gives rise to the default value of 1 over 4 to the power of of the length of the barcode. Realistically, however, not every sequence is chemically stable enough to appear in sequencing, indeterminate entropy is lower, and `random barcode probability` should be set to a higher value determined by Empirical studies. Pheniqs accommodates such refinements to the noise model by allowing advanced users to manually set `random barcode probability`.
-
-![PAMLD](/pheniqs/assets/img/pamld.png){: .diagram}
->**Decoding a read with PAMLD**  Reads with a lower conditional probability than random sequences fail the noise filter and are classified as noise without further consideration. Reads with a posterior probability that does not meet the confidence threshold fail the confidence filter; these reads are classified, but they are marked as "qc fail" so the confidence threshold can be reconsidered at alater stage. A full description of the mathematics behind Pheniqs, as well as performance evaluations and comparisons with other decoding methods, may be found in the [paper](link_to_paper). Pheniqs is designed to accommodate the addition of alternative decoders, which can be added as derived classes of a generic decoder object.
-{: .example}
 
 ## Noise filtering
 
