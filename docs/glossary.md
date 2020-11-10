@@ -194,6 +194,9 @@ id: glossary
 <a name="feed_resolution" />Feed resolution
 : The number of consecutive read segments in the feed that have the same read identifier. In most interleaved files all segments of a read are adjacent and in the same segment order.
 
+<a name="closed_class_decoding" />Closed class decoding
+: Closed class decoding refers to a decoding regime when a discrete list of classes, nucleotide sequences in our case, is known in advance and so a prior distribution is available, unlike open class decoders, when the discrete list of classes is unknown and so the prior distribution is hidden.
+
 <!--
 <a name="" />
 TERM
