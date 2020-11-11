@@ -152,6 +152,7 @@ using rapidjson::kStringType;
 #endif
 
 #include <htslib/bgzf.h>
+#include <htslib/hts_endian.h>
 #include <htslib/hfile.h>
 #include <htslib/hts.h>
 #include <htslib/kseq.h>
