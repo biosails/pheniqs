@@ -21,22 +21,6 @@
 
 #include "auxiliary.h"
 
-/*
-    Ported internal functions from htslib/sam.c for iterating over all auxiliary tags
-    rather than using a random access search mechanism.
-
-    April 9 2018, htslib 1.8 be22a2a1082f6e570718439b9ace2db17a609eae
-*/
-static inline uint32_t le_to_u32(const uint8_t* buffer) {
-#if defined(HTS_LITTLE_ENDIAN) && HTS_ALLOW_UNALIGNED != 0
-    return *((uint32_u *)buffer);
-#else
-    return  (static_cast< uint32_t >(buffer[0])          |
-            (static_cast< uint32_t >(buffer[1]) << 0x8)  |
-            (static_cast< uint32_t >(buffer[2]) << 0x10) |
-            (static_cast< uint32_t >(buffer[3]) << 0x18));
-#endif
-};
 static inline uint8_t aux_type2size(uint8_t type) {
     switch(type) {
         case 'A':
