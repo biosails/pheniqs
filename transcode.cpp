@@ -1812,24 +1812,26 @@ void Transcode::apply_interactive_ontology(Document& document) const {
 void Transcode::write_result() const {
     Job::write_result();
 
-    URL prior_adjusted_job_url(decode_value_by_key< URL >("prior adjusted job url", ontology));
-    if(!prior_adjusted_job_url.is_dev_null()) {
-        Document adjusted;
-        adjusted.CopyFrom(instruction, adjusted.GetAllocator());
-        apply_interactive_ontology(adjusted);
-        apply_prior_adjustment(adjusted);
-        sort_json_value(adjusted, adjusted);
-        clean_json_object(adjusted, adjusted);
+    URL prior_adjusted_job_url;
+    if(decode_value_by_key< URL >("prior adjusted job url", prior_adjusted_job_url, ontology)) {
+        if(!prior_adjusted_job_url.is_dev_null()) {
+            Document adjusted;
+            adjusted.CopyFrom(instruction, adjusted.GetAllocator());
+            apply_interactive_ontology(adjusted);
+            apply_prior_adjustment(adjusted);
+            sort_json_value(adjusted, adjusted);
+            clean_json_object(adjusted, adjusted);
 
-        if(prior_adjusted_job_url.is_stdout()) {
-            print_json(adjusted, cout, float_precision());
+            if(prior_adjusted_job_url.is_stdout()) {
+                print_json(adjusted, cout, float_precision());
 
-        } else if(prior_adjusted_job_url.is_stderr()) {
-            print_json(adjusted, cerr, float_precision());
+            } else if(prior_adjusted_job_url.is_stderr()) {
+                print_json(adjusted, cerr, float_precision());
 
-        } else {
-            print_json(adjusted, prior_adjusted_job_url.path().c_str(), float_precision());
+            } else {
+                print_json(adjusted, prior_adjusted_job_url.path().c_str(), float_precision());
 
+            }
         }
     }
 };
