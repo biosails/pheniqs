@@ -20,8 +20,9 @@ stages:
 - name: deploy
   if: branch = master
 script:
-- "./tool/pheniqs-build-api.py -v error build test/build.json"
-- make all PREFIX=${HOME}/.pheniqs/travis/install 2> >(./test/filter_warning.py)
+# - "./tool/pheniqs-build-api.py -v error build test/build.json"
+# - make all PREFIX=${HOME}/.pheniqs/travis/install 2> >(./test/filter_warning.py)
+- make
 - "./pheniqs --version"
 - make test
 jobs:
@@ -86,7 +87,6 @@ jobs:
         - liblzma-dev
         - libdeflate-dev
         - libbz2-dev
-
     env:
     - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
   # - os: linux
