@@ -19,10 +19,10 @@ Pheniqs is distributed as precompiled binaries, which may be installed with pack
 
 ## Installing with conda
 
-### *One time setup - Install Miniconda*
+### One time setup - Install Miniconda
 The easiest way to do this is to head on over to [**Anaconda**](https://conda.io/miniconda.html) and select the correct distribution for Python3.
 
-### *One time setup - Configure your Conda channels*
+### One time setup - Configure your Conda channels
 Many groups contribute software to **Conda**. Each of these groups corresponds to a different channel. Bioconda is a well known channel for distributing bioinformatics software. It depends on **conda-forge**, another group for distributing more general software, including R and Python packages.
 
 >```shell
@@ -31,7 +31,7 @@ conda config --add channels conda-forge
 conda config --add channels bioconda
 ```
 
-### *Install Pheniqs*
+### Install Pheniqs
 Simply install pheniqs using the conda package manager.
 
 >```shell
@@ -51,13 +51,15 @@ conda install -c nyuad-cgsb pheniqs/latest
 
 # Build from Source
 
-## *Dependencies*
-Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson.org) and [zlib](https://zlib.net). HTSLib further depends on [bzip2](http://www.bzip.org), [LZMA](https://tukaani.org/xz) and optionally [libdeflate](https://github.com/ebiggers/libdeflate) for improved gzip compressed FASTQ manipulation. Pheniqs requires [HTSLib version 1.8](https://github.com/samtools/htslib/releases/tag/1.8) or later and [RapidJSON version 1.1.0](https://github.com/Tencent/rapidjson/releases/tag/v1.1.0) or later. The versions packaged in most linux distributions are very outdated and cannot be used to build Pheniqs.
+## Dependencies
 
-## *Building with `pheniqs-build-api.py`*
-Pheniqs comes bundled with a Python3 helper tool called `pheniqs-build-api.py`. To build an entire virtual root of all the dependencies and compile a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them simply execute `./tool/pheniqs-build-api.py build build/trunk_static.json` in the code root folder. The `build` folder contains several other configurations for official releases. Building with `pheniqs-build-api.py` does not require elevated permissions and is ideal for building an executable on cluster environments.
+Pheniqs depends on [HTSlib](http://www.htslib.org), [RapidJSON](http://rapidjson.org) and [zlib](https://zlib.net). HTSLib further depends on [bzip2](http://www.bzip.org), [LZMA](https://tukaani.org/xz) and optionally [libdeflate](https://github.com/ebiggers/libdeflate) for improved gzip compressed FASTQ manipulation. Pheniqs requires [HTSLib version 1.10.2](https://github.com/samtools/htslib/releases/tag/1.10.2) or later and [RapidJSON version 1.1.0](https://github.com/Tencent/rapidjson/releases/tag/v1.1.0) or later.
 
+## Building with `pheniqs-build-api.py`
 
+A basic package manager is maintained for building Pheniqs from source on environments that can not easily satisfy the dependencies. Maybe you are deploying it on a cluster with limited permissions? or you are testing a particular revision? [pheniqs-build-api.py](https://github.com/biosails/pheniqs-build-api) is here to help!
+
+`pheniqs-build-api.py` is a Python3 helper tool that builds an entire virtual root of all the dependencies and compiles a [statically linked](https://en.wikipedia.org/wiki/Static_library), portable, binary snapshot of the latest code against them. Simply execute `./pheniqs-build-api.py build`. `pheniqs-build-api.py` can check out and build any git revision of the code and it can build a dynamically linked version as well. Building with `pheniqs-build-api.py` does not require elevated permissions and is ideal for building an executable on cluster environments.
 
 >```shell
 % ./pheniqs-build-api.py build
