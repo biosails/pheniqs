@@ -79,7 +79,6 @@ jobs:
         - ubuntu-toolchain-r-test
         packages:
         - g++-7
-        - build-essential
         - rapidjson-dev
         - libhts-dev
         - liblzma-dev
