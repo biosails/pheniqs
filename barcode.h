@@ -24,9 +24,9 @@
 
 #include "include.h"
 #include "sequence.h"
-#include "accumulator.h"
+#include "selector.h"
 
-class Barcode : public SequenceArray< Sequence >, public AccumulatingTag {
+class Barcode : public SequenceArray< Sequence >, public AccumulatingOption {
     friend ostream& operator<<(ostream& o, const Barcode& barcode);
     friend bool encode_key_value(const string& key, const Barcode& value, Value& node, Document& document);
 
@@ -44,7 +44,8 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingTag {
             return index == 0;
         };
         operator string() const {
-            /* NOTICE this is in BAM encoding not iupac and will not look as expected when printed */
+            /*  NOTICE this is in BAM encoding not iupac and will not look as expected when printed
+                Used by MDD for exact match */
             string key;
             for(const auto& segment : segment_array) {
                 for(int32_t i(0); i < segment.length; ++i) {
@@ -156,7 +157,6 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingTag {
             quality = sigma_q;
         };
         void encode(Value& container, Document& document) const override;
-        Barcode& operator+=(const Barcode& rhs);
 };
 
 ostream& operator<<(ostream& o, const Barcode& barcode);

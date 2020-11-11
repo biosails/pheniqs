@@ -1,0 +1,6 @@
+{
+    "id": "{{ forloop.index }}",
+    "url": "{{ page.url }}",
+    "title": "{{ page.title }}",
+    "content": {{ page.content | strip_html | strip_newlines | remove:'"' | jsonify }},
+}

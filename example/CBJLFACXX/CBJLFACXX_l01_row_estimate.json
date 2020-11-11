@@ -3,7 +3,8 @@
     "import": [
         "CBJLFACXX_core.json"
     ],
-    "multiplex": {
+    "cellular": {
+        "multiplexing classifier": true,
         "algorithm": "pamld",
         "base": "@CBJLFACXX_row",
         "confidence threshold": 0.95,

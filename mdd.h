@@ -25,7 +25,7 @@
 #include "include.h"
 #include "decoder.h"
 
-template < class T > class MdDecoder : public ObservingDecoder< T > {
+template < class T > class MdDecoder : public Decoder< T > {
     protected:
         const uint8_t quality_masking_threshold;
         const vector< int32_t > distance_tolerance;
@@ -39,9 +39,10 @@ template < class T > class MdDecoder : public ObservingDecoder< T > {
         inline bool match(T& barcode);
 };
 
-class MdMultiplexDecoder : public MdDecoder< Channel > {
+class MdSampleDecoder : public MdDecoder< Barcode > {
     public:
-        MdMultiplexDecoder(const Value& ontology);
+        vector< string > rg_by_barcode_index;
+        MdSampleDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 
@@ -51,4 +52,9 @@ class MdCellularDecoder : public MdDecoder< Barcode > {
         inline void classify(const Read& input, Read& output) override;
 };
 
+class MdMolecularDecoder : public MdDecoder< Barcode > {
+    public:
+        MdMolecularDecoder(const Value& ontology);
+        inline void classify(const Read& input, Read& output) override;
+};
 #endif /* PHENIQS_MDD_H */

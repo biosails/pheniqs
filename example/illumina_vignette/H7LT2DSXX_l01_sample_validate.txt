@@ -1,0 +1,1160 @@
+Environment 
+
+    Base input URL                              .
+    Base output URL                             .
+    Platform                                    ILLUMINA
+    Quality tracking                            disabled
+    Filter incoming QC failed reads             enabled
+    Filter outgoing QC failed reads             disabled
+    Input Phred offset                          33
+    Output Phred offset                         33
+    Leading segment index                       0
+    Default output format                       sam
+    Default output compression                  unknown
+    Default output compression level            5
+    Feed buffer capacity                        2048
+    Threads                                     8
+    Decoding threads                            8
+    HTSLib threads                              8
+
+Input 
+
+    Input segment cardinality                   4
+
+    Input segment No.0 : ./H7LT2DSXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
+    Input segment No.1 : ./H7LT2DSXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
+    Input segment No.2 : ./H7LT2DSXX_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz
+    Input segment No.3 : ./H7LT2DSXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
+
+    Input feed No.0
+        Type : fastq
+        Compression : gz
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : ./H7LT2DSXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz
+
+    Input feed No.1
+        Type : fastq
+        Compression : gz
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : ./H7LT2DSXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz
+
+    Input feed No.2
+        Type : fastq
+        Compression : gz
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : ./H7LT2DSXX_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz
+
+    Input feed No.3
+        Type : fastq
+        Compression : gz
+        Resolution : 1
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 2048
+        URL : ./H7LT2DSXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz
+
+Output transform
+
+    Output segment cardinality                  2
+
+    Token No.0
+        Length        variable
+        Pattern       0::
+        Description   cycles 0 to end of input segment 0
+
+    Token No.1
+        Length        variable
+        Pattern       3::
+        Description   cycles 0 to end of input segment 3
+
+    Assembly instruction
+        Append token 0 of input segment 0 to output segment 0
+        Append token 1 of input segment 3 to output segment 1
+
+Sample decoding
+
+    Decoding algorithm                          pamld
+    Shannon bound                               1 1
+    Noise                                       0.05
+    Confidence threshold                        0.95
+    Segment cardinality                         2
+    Nucleotide cardinality                      16
+    Barcode segment length                      8 8 
+
+    Transform
+
+        Token No.0
+            Length        8
+            Pattern       1::8
+            Description   cycles 0 to 8 of input segment 1
+
+        Token No.1
+            Length        8
+            Pattern       2::8
+            Description   cycles 0 to 8 of input segment 2
+
+        Assembly instruction
+            Append token 0 of input segment 1 to output segment 0
+            Append token 1 of input segment 2 to output segment 1
+
+
+    Barcode undetermined
+        ID : H7LT2DSXX:undetermined
+        PU : H7LT2DSXX:undetermined
+        PL : ILLUMINA
+        PM : A00534
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A10_PDAC81
+        ID : H7LT2DSXX:CGAGGCTGGTAAGGAG
+        PU : H7LT2DSXX:CGAGGCTGGTAAGGAG
+        LB : A10_PDAC81
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A11_PDAC490
+        ID : H7LT2DSXX:AAGAGGCAACTGCATA
+        PU : H7LT2DSXX:AAGAGGCAACTGCATA
+        LB : A11_PDAC490
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A12_PDAC560
+        ID : H7LT2DSXX:GCTCATGAGCGTAAGA
+        PU : H7LT2DSXX:GCTCATGAGCGTAAGA
+        LB : A12_PDAC560
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A1_PDAC559
+        ID : H7LT2DSXX:TAAGGCGAGTAAGGAG
+        PU : H7LT2DSXX:TAAGGCGAGTAAGGAG
+        LB : A1_PDAC559
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAAGGCGA-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A2_PDAC609
+        ID : H7LT2DSXX:CGTACTAGACTGCATA
+        PU : H7LT2DSXX:CGTACTAGACTGCATA
+        LB : A2_PDAC609
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A3_PDAC483
+        ID : H7LT2DSXX:AGGCAGAAGCGTAAGA
+        PU : H7LT2DSXX:AGGCAGAAGCGTAAGA
+        LB : A3_PDAC483
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A4_PDAC494
+        ID : H7LT2DSXX:GGACTCCTGTAAGGAG
+        PU : H7LT2DSXX:GGACTCCTGTAAGGAG
+        LB : A4_PDAC494
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A5_PDAC510
+        ID : H7LT2DSXX:CTCTCTACACTGCATA
+        PU : H7LT2DSXX:CTCTCTACACTGCATA
+        LB : A5_PDAC510
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A6_PDAC511
+        ID : H7LT2DSXX:TAGCGCTCGCGTAAGA
+        PU : H7LT2DSXX:TAGCGCTCGCGTAAGA
+        LB : A6_PDAC511
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A7_PTHE43
+        ID : H7LT2DSXX:TAGGCATGGTAAGGAG
+        PU : H7LT2DSXX:TAGGCATGGTAAGGAG
+        LB : A7_PTHE43
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @A8_PDAC502
+        ID : H7LT2DSXX:GTAGAGGAACTGCATA
+        PU : H7LT2DSXX:GTAGAGGAACTGCATA
+        LB : A8_PDAC502
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B10_PDAC90
+        ID : H7LT2DSXX:AAGAGGCAGCGTAAGA
+        PU : H7LT2DSXX:AAGAGGCAGCGTAAGA
+        LB : B10_PDAC90
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B11_PDAC518
+        ID : H7LT2DSXX:GCTCATGAGTAAGGAG
+        PU : H7LT2DSXX:GCTCATGAGTAAGGAG
+        LB : B11_PDAC518
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B12_PDAC562
+        ID : H7LT2DSXX:CGAGGCTGACTGCATA
+        PU : H7LT2DSXX:CGAGGCTGACTGCATA
+        LB : B12_PDAC562
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B1_PTHE34
+        ID : H7LT2DSXX:CGTACTAGGCGTAAGA
+        PU : H7LT2DSXX:CGTACTAGGCGTAAGA
+        LB : B1_PTHE34
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B2_PDAC579
+        ID : H7LT2DSXX:AGGCAGAAGTAAGGAG
+        PU : H7LT2DSXX:AGGCAGAAGTAAGGAG
+        LB : B2_PDAC579
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B3_PDAC485
+        ID : H7LT2DSXX:TAAGGCGAACTGCATA
+        PU : H7LT2DSXX:TAAGGCGAACTGCATA
+        LB : B3_PDAC485
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAAGGCGA-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B4_PDAC553
+        ID : H7LT2DSXX:CTCTCTACGCGTAAGA
+        PU : H7LT2DSXX:CTCTCTACGCGTAAGA
+        LB : B4_PDAC553
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B5_PTHE47
+        ID : H7LT2DSXX:TAGCGCTCGTAAGGAG
+        PU : H7LT2DSXX:TAGCGCTCGTAAGGAG
+        LB : B5_PTHE47
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B6_PDAC542
+        ID : H7LT2DSXX:GGACTCCTACTGCATA
+        PU : H7LT2DSXX:GGACTCCTACTGCATA
+        LB : B6_PDAC542
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B7_PTHE37
+        ID : H7LT2DSXX:GTAGAGGAGCGTAAGA
+        PU : H7LT2DSXX:GTAGAGGAGCGTAAGA
+        LB : B7_PTHE37
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B8_PDAC84
+        ID : H7LT2DSXX:CGGAGCCTGTAAGGAG
+        PU : H7LT2DSXX:CGGAGCCTGTAAGGAG
+        LB : B8_PDAC84
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGGAGCCT-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @B9_PDAC505
+        ID : H7LT2DSXX:TAGGCATGACTGCATA
+        PU : H7LT2DSXX:TAGGCATGACTGCATA
+        LB : B9_PDAC505
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C10_PDAC491
+        ID : H7LT2DSXX:GCTCATGAACTGCATA
+        PU : H7LT2DSXX:GCTCATGAACTGCATA
+        LB : C10_PDAC491
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C11_PDAC564
+        ID : H7LT2DSXX:CGAGGCTGGCGTAAGA
+        PU : H7LT2DSXX:CGAGGCTGGCGTAAGA
+        LB : C11_PDAC564
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C12_PDAC610
+        ID : H7LT2DSXX:AAGAGGCAGTAAGGAG
+        PU : H7LT2DSXX:AAGAGGCAGTAAGGAG
+        LB : C12_PDAC610
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C1_PDAC582
+        ID : H7LT2DSXX:AGGCAGAAACTGCATA
+        PU : H7LT2DSXX:AGGCAGAAACTGCATA
+        LB : C1_PDAC582
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C2_PDAC603
+        ID : H7LT2DSXX:TAAGGCGAGCGTAAGA
+        PU : H7LT2DSXX:TAAGGCGAGCGTAAGA
+        LB : C2_PDAC603
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAAGGCGA-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C3_PTHE38
+        ID : H7LT2DSXX:CGTACTAGGTAAGGAG
+        PU : H7LT2DSXX:CGTACTAGGTAAGGAG
+        LB : C3_PTHE38
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C4_PDAC592
+        ID : H7LT2DSXX:TAGCGCTCACTGCATA
+        PU : H7LT2DSXX:TAGCGCTCACTGCATA
+        LB : C4_PDAC592
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C5_PDAC566
+        ID : H7LT2DSXX:GGACTCCTGCGTAAGA
+        PU : H7LT2DSXX:GGACTCCTGCGTAAGA
+        LB : C5_PDAC566
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C6_PDAC591
+        ID : H7LT2DSXX:CTCTCTACGTAAGGAG
+        PU : H7LT2DSXX:CTCTCTACGTAAGGAG
+        LB : C6_PDAC591
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C7_PDAC548
+        ID : H7LT2DSXX:CGGAGCCTACTGCATA
+        PU : H7LT2DSXX:CGGAGCCTACTGCATA
+        LB : C7_PDAC548
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGGAGCCT-ACTGCATA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C8_PTHE53
+        ID : H7LT2DSXX:TAGGCATGGCGTAAGA
+        PU : H7LT2DSXX:TAGGCATGGCGTAAGA
+        LB : C8_PTHE53
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-GCGTAAGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @C9_PDAC480
+        ID : H7LT2DSXX:GTAGAGGAGTAAGGAG
+        PU : H7LT2DSXX:GTAGAGGAGTAAGGAG
+        LB : C9_PDAC480
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-GTAAGGAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D10_PDAC509
+        ID : H7LT2DSXX:TAAGGCGATATCCTCT
+        PU : H7LT2DSXX:TAAGGCGATATCCTCT
+        LB : D10_PDAC509
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAAGGCGA-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D11_PDAC457
+        ID : H7LT2DSXX:CGTACTAGTATCCTCT
+        PU : H7LT2DSXX:CGTACTAGTATCCTCT
+        LB : D11_PDAC457
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D12_PDAC514
+        ID : H7LT2DSXX:AGGCAGAATATCCTCT
+        PU : H7LT2DSXX:AGGCAGAATATCCTCT
+        LB : D12_PDAC514
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D1_PDAC594
+        ID : H7LT2DSXX:GGACTCCTTATCCTCT
+        PU : H7LT2DSXX:GGACTCCTTATCCTCT
+        LB : D1_PDAC594
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D2_PDAC573
+        ID : H7LT2DSXX:CTCTCTACTATCCTCT
+        PU : H7LT2DSXX:CTCTCTACTATCCTCT
+        LB : D2_PDAC573
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D3_PDAC79
+        ID : H7LT2DSXX:TAGCGCTCTATCCTCT
+        PU : H7LT2DSXX:TAGCGCTCTATCCTCT
+        LB : D3_PDAC79
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D4_PDAC529
+        ID : H7LT2DSXX:TAGGCATGTATCCTCT
+        PU : H7LT2DSXX:TAGGCATGTATCCTCT
+        LB : D4_PDAC529
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D5_PDAC598
+        ID : H7LT2DSXX:GTAGAGGATATCCTCT
+        PU : H7LT2DSXX:GTAGAGGATATCCTCT
+        LB : D5_PDAC598
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D6_PDAC587
+        ID : H7LT2DSXX:CGGAGCCTTATCCTCT
+        PU : H7LT2DSXX:CGGAGCCTTATCCTCT
+        LB : D6_PDAC587
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGGAGCCT-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D7_PTHE45
+        ID : H7LT2DSXX:CGAGGCTGTATCCTCT
+        PU : H7LT2DSXX:CGAGGCTGTATCCTCT
+        LB : D7_PTHE45
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D8_PTHE55
+        ID : H7LT2DSXX:AAGAGGCATATCCTCT
+        PU : H7LT2DSXX:AAGAGGCATATCCTCT
+        LB : D8_PTHE55
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @D9_PTHE46
+        ID : H7LT2DSXX:GCTCATGATATCCTCT
+        PU : H7LT2DSXX:GCTCATGATATCCTCT
+        LB : D9_PTHE46
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-TATCCTCT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E10_PDAC593
+        ID : H7LT2DSXX:GGACTCCTCCTAGAGT
+        PU : H7LT2DSXX:GGACTCCTCCTAGAGT
+        LB : E10_PDAC593
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E11_PDAC477
+        ID : H7LT2DSXX:CTCTCTACCCTAGAGT
+        PU : H7LT2DSXX:CTCTCTACCCTAGAGT
+        LB : E11_PDAC477
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E12_PTHE56
+        ID : H7LT2DSXX:TAGCGCTCCCTAGAGT
+        PU : H7LT2DSXX:TAGCGCTCCCTAGAGT
+        LB : E12_PTHE56
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E1_PDAC503
+        ID : H7LT2DSXX:TAGGCATGCCTAGAGT
+        PU : H7LT2DSXX:TAGGCATGCCTAGAGT
+        LB : E1_PDAC503
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E2_PDAC551
+        ID : H7LT2DSXX:GTAGAGGACCTAGAGT
+        PU : H7LT2DSXX:GTAGAGGACCTAGAGT
+        LB : E2_PDAC551
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E3_PDAC578
+        ID : H7LT2DSXX:CGGAGCCTCCTAGAGT
+        PU : H7LT2DSXX:CGGAGCCTCCTAGAGT
+        LB : E3_PDAC578
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGGAGCCT-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E4_PDAC600
+        ID : H7LT2DSXX:CGAGGCTGCCTAGAGT
+        PU : H7LT2DSXX:CGAGGCTGCCTAGAGT
+        LB : E4_PDAC600
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E5_PDAC76
+        ID : H7LT2DSXX:AAGAGGCACCTAGAGT
+        PU : H7LT2DSXX:AAGAGGCACCTAGAGT
+        LB : E5_PDAC76
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E6_PDAC497
+        ID : H7LT2DSXX:GCTCATGACCTAGAGT
+        PU : H7LT2DSXX:GCTCATGACCTAGAGT
+        LB : E6_PDAC497
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E8_PDAC475
+        ID : H7LT2DSXX:CGTACTAGCCTAGAGT
+        PU : H7LT2DSXX:CGTACTAGCCTAGAGT
+        LB : E8_PDAC475
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @E9_PDAC580
+        ID : H7LT2DSXX:AGGCAGAACCTAGAGT
+        PU : H7LT2DSXX:AGGCAGAACCTAGAGT
+        LB : E9_PDAC580
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-CCTAGAGT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F10_PDAC500
+        ID : H7LT2DSXX:TAGGCATGTTATGCGA
+        PU : H7LT2DSXX:TAGGCATGTTATGCGA
+        LB : F10_PDAC500
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F11_PDAC86
+        ID : H7LT2DSXX:GTAGAGGACGTCTAAT
+        PU : H7LT2DSXX:GTAGAGGACGTCTAAT
+        LB : F11_PDAC86
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F12_PDAC541
+        ID : H7LT2DSXX:CGGAGCCTTCGACTAG
+        PU : H7LT2DSXX:CGGAGCCTTCGACTAG
+        LB : F12_PDAC541
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGGAGCCT-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F1_PDAC507
+        ID : H7LT2DSXX:CGAGGCTGTTATGCGA
+        PU : H7LT2DSXX:CGAGGCTGTTATGCGA
+        LB : F1_PDAC507
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F2_PDAC595
+        ID : H7LT2DSXX:AAGAGGCACGTCTAAT
+        PU : H7LT2DSXX:AAGAGGCACGTCTAAT
+        LB : F2_PDAC595
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F3_PDAC554
+        ID : H7LT2DSXX:GCTCATGATCGACTAG
+        PU : H7LT2DSXX:GCTCATGATCGACTAG
+        LB : F3_PDAC554
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F4_PDAC479
+        ID : H7LT2DSXX:TAAGGCGATTATGCGA
+        PU : H7LT2DSXX:TAAGGCGATTATGCGA
+        LB : F4_PDAC479
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAAGGCGA-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F5_PDAC577
+        ID : H7LT2DSXX:CGTACTAGCGTCTAAT
+        PU : H7LT2DSXX:CGTACTAGCGTCTAAT
+        LB : F5_PDAC577
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F6_PTHE36
+        ID : H7LT2DSXX:AGGCAGAATCGACTAG
+        PU : H7LT2DSXX:AGGCAGAATCGACTAG
+        LB : F6_PTHE36
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F7_PDAC98
+        ID : H7LT2DSXX:GGACTCCTTTATGCGA
+        PU : H7LT2DSXX:GGACTCCTTTATGCGA
+        LB : F7_PDAC98
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F8_PDAC73
+        ID : H7LT2DSXX:CTCTCTACCGTCTAAT
+        PU : H7LT2DSXX:CTCTCTACCGTCTAAT
+        LB : F8_PDAC73
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @F9_PDAC499
+        ID : H7LT2DSXX:TAGCGCTCTCGACTAG
+        PU : H7LT2DSXX:TAGCGCTCTCGACTAG
+        LB : F9_PDAC499
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G10_PDAC599
+        ID : H7LT2DSXX:GTAGAGGATCGACTAG
+        PU : H7LT2DSXX:GTAGAGGATCGACTAG
+        LB : G10_PDAC599
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G11_PDAC95
+        ID : H7LT2DSXX:CGGAGCCTTTATGCGA
+        PU : H7LT2DSXX:CGGAGCCTTTATGCGA
+        LB : G11_PDAC95
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGGAGCCT-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G12_PDAC520
+        ID : H7LT2DSXX:TAGGCATGCGTCTAAT
+        PU : H7LT2DSXX:TAGGCATGCGTCTAAT
+        LB : G12_PDAC520
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G1_PDAC543
+        ID : H7LT2DSXX:AAGAGGCATCGACTAG
+        PU : H7LT2DSXX:AAGAGGCATCGACTAG
+        LB : G1_PDAC543
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G2_PDAC533
+        ID : H7LT2DSXX:GCTCATGATTATGCGA
+        PU : H7LT2DSXX:GCTCATGATTATGCGA
+        LB : G2_PDAC533
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G3_PDAC590
+        ID : H7LT2DSXX:CGAGGCTGCGTCTAAT
+        PU : H7LT2DSXX:CGAGGCTGCGTCTAAT
+        LB : G3_PDAC590
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G4_PTHE39
+        ID : H7LT2DSXX:CGTACTAGTCGACTAG
+        PU : H7LT2DSXX:CGTACTAGTCGACTAG
+        LB : G4_PTHE39
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G5_PDAC88
+        ID : H7LT2DSXX:AGGCAGAATTATGCGA
+        PU : H7LT2DSXX:AGGCAGAATTATGCGA
+        LB : G5_PDAC88
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G6_PDAC521
+        ID : H7LT2DSXX:TAAGGCGACGTCTAAT
+        PU : H7LT2DSXX:TAAGGCGACGTCTAAT
+        LB : G6_PDAC521
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAAGGCGA-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G7_PDAC525
+        ID : H7LT2DSXX:CTCTCTACTCGACTAG
+        PU : H7LT2DSXX:CTCTCTACTCGACTAG
+        LB : G7_PDAC525
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G8_PDAC546
+        ID : H7LT2DSXX:TAGCGCTCTTATGCGA
+        PU : H7LT2DSXX:TAGCGCTCTTATGCGA
+        LB : G8_PDAC546
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @G9_PTHE44
+        ID : H7LT2DSXX:GGACTCCTCGTCTAAT
+        PU : H7LT2DSXX:GGACTCCTCGTCTAAT
+        LB : G9_PTHE44
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H10_PTHE48
+        ID : H7LT2DSXX:CGGAGCCTCGTCTAAT
+        PU : H7LT2DSXX:CGGAGCCTCGTCTAAT
+        LB : H10_PTHE48
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGGAGCCT-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H11_PDAC585
+        ID : H7LT2DSXX:TAGGCATGTCGACTAG
+        PU : H7LT2DSXX:TAGGCATGTCGACTAG
+        LB : H11_PDAC585
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGGCATG-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H12_PDAC547
+        ID : H7LT2DSXX:GTAGAGGATTATGCGA
+        PU : H7LT2DSXX:GTAGAGGATTATGCGA
+        LB : H12_PDAC547
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GTAGAGGA-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H1_PDAC517
+        ID : H7LT2DSXX:GCTCATGACGTCTAAT
+        PU : H7LT2DSXX:GCTCATGACGTCTAAT
+        LB : H1_PDAC517
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GCTCATGA-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H2_PDAC476
+        ID : H7LT2DSXX:CGAGGCTGTCGACTAG
+        PU : H7LT2DSXX:CGAGGCTGTCGACTAG
+        LB : H2_PDAC476
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGAGGCTG-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H3_PDAC535
+        ID : H7LT2DSXX:AAGAGGCATTATGCGA
+        PU : H7LT2DSXX:AAGAGGCATTATGCGA
+        LB : H3_PDAC535
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AAGAGGCA-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H4_PDAC498
+        ID : H7LT2DSXX:AGGCAGAACGTCTAAT
+        PU : H7LT2DSXX:AGGCAGAACGTCTAAT
+        LB : H4_PDAC498
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : AGGCAGAA-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H5_PDAC563
+        ID : H7LT2DSXX:TAAGGCGATCGACTAG
+        PU : H7LT2DSXX:TAAGGCGATCGACTAG
+        LB : H5_PDAC563
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAAGGCGA-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H6_PDAC581
+        ID : H7LT2DSXX:CGTACTAGTTATGCGA
+        PU : H7LT2DSXX:CGTACTAGTTATGCGA
+        LB : H6_PDAC581
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CGTACTAG-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H7_PDAC534
+        ID : H7LT2DSXX:TAGCGCTCCGTCTAAT
+        PU : H7LT2DSXX:TAGCGCTCCGTCTAAT
+        LB : H7_PDAC534
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : TAGCGCTC-CGTCTAAT
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H8_PDAC516
+        ID : H7LT2DSXX:GGACTCCTTCGACTAG
+        PU : H7LT2DSXX:GGACTCCTTCGACTAG
+        LB : H8_PDAC516
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : GGACTCCT-TCGACTAG
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Barcode @H9_PDAC481
+        ID : H7LT2DSXX:CTCTCTACTTATGCGA
+        PU : H7LT2DSXX:CTCTCTACTTATGCGA
+        LB : H9_PDAC481
+        PL : ILLUMINA
+        PM : A00534
+        Concentration : 0.0101063829787234
+        Barcode       : CTCTCTAC-TTATGCGA
+        Segment No.0  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+        Segment No.1  : ./H7LT2DSXX_l01.bam?format=bam&level=5
+
+    Output feed No.0
+        Type : bam
+        Compression : unknown@5
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : ./H7LT2DSXX_l01.bam?format=bam&level=5
+

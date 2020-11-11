@@ -26,6 +26,196 @@
 */
 #include "transcode.h"
 
+/* TranscodingDecoder */
+
+TranscodingDecoder::TranscodingDecoder(const Value& ontology) try :
+    sample_classifier(NULL) {
+
+    load_sample_decoding(ontology);
+    load_molecular_decoding(ontology);
+    load_cellular_decoding(ontology);
+
+    } catch(Error& error) {
+        error.push("TranscodingDecoder");
+        throw;
+};
+TranscodingDecoder::~TranscodingDecoder() {
+    if(sample_classifier != NULL) {
+        delete sample_classifier;
+    }
+    if(!molecular_classifier_array.empty()) {
+        for(auto& classifier : molecular_classifier_array) {
+            delete classifier;
+        }
+    }
+    if(!cellular_classifier_array.empty()) {
+        for(auto& classifier : cellular_classifier_array) {
+            delete classifier;
+        }
+    }
+};
+void TranscodingDecoder::load_sample_decoding(const Value& ontology) {
+    Value::ConstMemberIterator reference = ontology.FindMember("sample");
+    if(reference != ontology.MemberEnd()) {
+        load_sample_decoder(reference->value);
+    }
+};
+void TranscodingDecoder::load_sample_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::PAMLD: {
+            sample_classifier = new PamlSampleDecoder(value);
+            break;
+        };
+        case Algorithm::MDD: {
+            sample_classifier = new MdSampleDecoder(value);
+            break;
+        };
+        case Algorithm::PASSTHROUGH: {
+            sample_classifier = new Classifier< Barcode >(value);
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported sample decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
+void TranscodingDecoder::load_molecular_decoding(const Value& ontology) {
+    Value::ConstMemberIterator reference = ontology.FindMember("molecular");
+    if(reference != ontology.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            molecular_classifier_array.reserve(1);
+            load_molecular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            molecular_classifier_array.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_molecular_decoder(element);
+            }
+        }
+    }
+    molecular_classifier_array.shrink_to_fit();
+};
+void TranscodingDecoder::load_molecular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::PAMLD: {
+            molecular_classifier_array.emplace_back(new PamlMolecularDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            molecular_classifier_array.emplace_back(new MdMolecularDecoder(value));
+            break;
+        };
+        case Algorithm::PASSTHROUGH: {
+            molecular_classifier_array.emplace_back(new Classifier< Barcode >(value));
+            break;
+        };
+        case Algorithm::NAIVE: {
+            molecular_classifier_array.emplace_back(new NaiveMolecularDecoder(value));
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported molecular decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
+void TranscodingDecoder::load_cellular_decoding(const Value& ontology) {
+    Value::ConstMemberIterator reference = ontology.FindMember("cellular");
+    if(reference != ontology.MemberEnd()) {
+        if(reference->value.IsObject()) {
+            cellular_classifier_array.reserve(1);
+            load_cellular_decoder(reference->value);
+
+        } else if(reference->value.IsArray()) {
+            cellular_classifier_array.reserve(reference->value.Size());
+            for(const auto& element : reference->value.GetArray()) {
+                load_cellular_decoder(element);
+            }
+        }
+    }
+    cellular_classifier_array.shrink_to_fit();
+};
+void TranscodingDecoder::load_cellular_decoder(const Value& value) {
+    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
+    switch(algorithm) {
+        case Algorithm::PAMLD: {
+            cellular_classifier_array.emplace_back(new PamlCellularDecoder(value));
+            break;
+        };
+        case Algorithm::MDD: {
+            cellular_classifier_array.emplace_back(new MdCellularDecoder(value));
+            break;
+        };
+        case Algorithm::PASSTHROUGH: {
+            cellular_classifier_array.emplace_back(new Classifier< Barcode >(value));
+            break;
+        };
+        default:
+            throw ConfigurationError("unsupported cellular decoder algorithm " + to_string(algorithm));
+            break;
+    }
+};
+void TranscodingDecoder::collect(const TranscodingDecoder& other) {
+    if(sample_classifier != NULL) {
+        sample_classifier->collect(*other.sample_classifier);
+    }
+    if(!molecular_classifier_array.empty()) {
+        for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
+            molecular_classifier_array[index]->collect(*other.molecular_classifier_array[index]);
+        }
+    }
+    if(!cellular_classifier_array.empty()) {
+        for(size_t index(0); index < cellular_classifier_array.size(); ++index) {
+            cellular_classifier_array[index]->collect(*other.cellular_classifier_array[index]);
+        }
+    }
+};
+void TranscodingDecoder::finalize() {
+    if(sample_classifier != NULL) {
+        sample_classifier->finalize();
+    }
+    if(!molecular_classifier_array.empty()) {
+        for(auto& classifier : molecular_classifier_array) {
+            classifier->finalize();
+        }
+    }
+    if(!cellular_classifier_array.empty()) {
+        for(auto& classifier : cellular_classifier_array) {
+            classifier->finalize();
+        }
+    }
+};
+void TranscodingDecoder::encode(Value& container, Document& document) const {
+    if(sample_classifier != NULL) {
+        Value element(kObjectType);
+        sample_classifier->encode(element, document);
+        container.AddMember("sample", element.Move(), document.GetAllocator());
+    }
+
+    if(!molecular_classifier_array.empty()) {
+        Value array(kArrayType);
+        for(auto& classifier : molecular_classifier_array) {
+            Value element(kObjectType);
+            classifier->encode(element, document);
+            array.PushBack(element.Move(), document.GetAllocator());
+        }
+        container.AddMember("molecular", array.Move(), document.GetAllocator());
+    }
+
+    if(!cellular_classifier_array.empty()) {
+        Value array(kArrayType);
+        for(auto& classifier : cellular_classifier_array) {
+            Value element(kObjectType);
+            classifier->encode(element, document);
+            array.PushBack(element.Move(), document.GetAllocator());
+        }
+        container.AddMember("cellular", array.Move(), document.GetAllocator());
+    }
+};
+
+/* Transcode */
+
 static int32_t compute_inheritence_depth(const string& key, const unordered_map< string, Value* >& object_by_key, Document& document) {
     int32_t depth(0);
     auto record = object_by_key.find(key);
@@ -53,7 +243,9 @@ Transcode::Transcode(Document& operation) try :
     pf_fraction(0),
     end_of_input(false),
     decoded_nucleotide_cardinality(0),
-    thread_pool({NULL, 0}) {
+    thread_pool({NULL, 0}),
+    multiplexer(NULL),
+    transcoding_decoder(NULL) {
 
     } catch(Error& error) {
         error.push("Transcode");
@@ -72,6 +264,9 @@ Transcode::~Transcode() {
     input_feed_by_segment.clear();
     input_feed_by_index.clear();
     output_feed_by_index.clear();
+
+    delete multiplexer;
+    delete transcoding_decoder;
 };
 bool Transcode::pull(Read& read) {
     vector< unique_lock< mutex > > feed_locks;
@@ -82,7 +277,7 @@ bool Transcode::pull(Read& read) {
         feed_locks.push_back(feed->acquire_pull_lock());
     }
 
-    /* pull into pivot input segments from input feeds */
+    /* pull into input read from input feeds */
     for(size_t i(0); i < read.segment_cardinality(); ++i) {
         if(!input_feed_by_segment[i]->pull(read[i])) {
             end_of_input = true;
@@ -103,21 +298,9 @@ bool Transcode::pull(Read& read) {
     }
     return !end_of_input;
 };
-Transcode& Transcode::operator+=(const TranscodePivot& pivot) {
-    if(sample_classifier != NULL) {
-        *sample_classifier += *(pivot.sample_classifier);
-    }
-    if(!molecular_classifier_array.empty()) {
-        for(size_t index(0); index < molecular_classifier_array.size(); ++index) {
-            *(molecular_classifier_array[index]) += *(pivot.molecular_classifier_array[index]);
-        }
-    }
-    if(!cellular_classifier_array.empty()) {
-        for(size_t index(0); index < cellular_classifier_array.size(); ++index) {
-            *(cellular_classifier_array[index]) += *(pivot.cellular_classifier_array[index]);
-        }
-    }
-    return *this;
+void Transcode::collect(const TranscodingThread& transcoding_thread) {
+    transcoding_decoder->collect(transcoding_thread.transcoding_decoder);
+    multiplexer->collect(transcoding_thread.multiplexer);
 };
 
 /* assemble */
@@ -131,7 +314,7 @@ void Transcode::apply_inheritance() {
     apply_repository_inheritence("decoder", instruction, instruction);
 
     /* Apply inheritence in the indivitual classification categories */
-    apply_topic_inheritance("multiplex");
+    apply_topic_inheritance("sample");
     apply_topic_inheritance("molecular");
     apply_topic_inheritance("cellular");
 
@@ -249,6 +432,7 @@ void Transcode::compile() {
     remove_disabled_from_json_value(ontology, ontology);
     clean_json_object(ontology, ontology);
 
+    /* clear computed parameters */
     ontology.RemoveMember("feed");
     ontology.RemoveMember("input segment cardinality");
     ontology.RemoveMember("output segment cardinality");
@@ -266,6 +450,7 @@ void Transcode::compile() {
     ontology.AddMember("feed", Value(kObjectType).Move(), ontology.GetAllocator());
     compile_input();
     compile_barcode_decoding();
+    compile_multiplexing_decoder();
     compile_output();
 
     compile_thread_model();
@@ -414,7 +599,7 @@ void Transcode::compile_sensed_input() {
                 hts_feed->calibrate_resolution(resolution);
                 /*
                     const HtsHead& head = ((HtsFeed*)feed)->get_header();
-                    for(const auto& record : head.read_group_by_id) {}
+                    for(const auto& record : head.RG_by_id) {}
                 */
                 feed = hts_feed;
                 break;
@@ -547,7 +732,7 @@ void Transcode::compile_transformation(Value& value) {
     }
 };
 void Transcode::compile_barcode_decoding() {
-    compile_topic("multiplex");
+    compile_topic("sample");
     compile_topic("molecular");
     compile_topic("cellular");
 };
@@ -555,31 +740,32 @@ void Transcode::compile_topic(const Value::Ch* key) {
     Value::MemberIterator reference = ontology.FindMember(key);
     if(reference != ontology.MemberEnd()) {
         if(!reference->value.IsNull()) {
-            /* aseemble a default decoder */
-            string decoder_projection_uri(key);
+            ClassifierType classifier_type(ClassifierType::UNKNOWN);
+            Value decoder_template(kObjectType);
+            Value barcode_template(kObjectType);
+            from_string(key, classifier_type);
+
+            /* aseemble a decoder template */
+            string decoder_projection_uri(to_string(classifier_type));
             decoder_projection_uri.append(":decoder");
             const Value* decoder_projection(find_projection(decoder_projection_uri));
-
-            Value decoder_template(kObjectType);
             if(decoder_projection != NULL && !decoder_projection->IsNull()) {
-                decoder_template.CopyFrom(*decoder_projection, ontology.GetAllocator());
+                merge_json_value(*decoder_projection, decoder_template, ontology);
             }
 
-            /* project decoder attributes from the ontology root */
+            /* aseemble a default decoder by projecting decoder template from the ontology root */
             Value default_decoder(kObjectType);
             project_json_value(decoder_template, ontology, default_decoder, ontology);
 
-            /* aseemble a default barcode */
-            string barcode_projection_uri(key);
+            /* aseemble a barcode template */
+            string barcode_projection_uri(to_string(classifier_type));
             barcode_projection_uri.append(":barcode");
             const Value* barcode_projection(find_projection(barcode_projection_uri));
-
-            Value barcode_template(kObjectType);
             if(barcode_projection != NULL && !barcode_projection->IsNull()) {
-                barcode_template.CopyFrom(*barcode_projection, ontology.GetAllocator());
+                merge_json_value(*barcode_projection, barcode_template, ontology);
             }
 
-            /* project barcode attributes from the ontology root */
+            /* aseemble a default barcode by projecting barcode template from the ontology root */
             Value default_barcode(kObjectType);
             project_json_value(barcode_template, ontology, default_barcode, ontology);
 
@@ -604,131 +790,6 @@ void Transcode::compile_topic(const Value::Ch* key) {
             clean_json_value(reference->value, ontology);
         }
     }
-};
-void Transcode::compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode) {
-    if(value.IsObject()) {
-        encode_key_value("index", index, value, ontology);
-        compile_codec(value, default_decoder, default_barcode);
-        ++index;
-    }
-};
-void Transcode::compile_codec(Value& value, const Value& default_decoder, const Value& default_barcode) {
-    if(value.IsObject()) {
-        /* overlay on top of the default decoder */
-        merge_json_value(default_decoder, value, ontology);
-        clean_json_value(value, ontology);
-
-        /* compute default barcode induced by the codec */
-        Value default_codec_barcode(kObjectType);
-        project_json_value(default_barcode, value, default_codec_barcode, ontology);
-
-        /* apply barcode default on undetermined barcode or create it from the default if one was not explicitly specified */
-        Value::MemberIterator reference = value.FindMember("undetermined");
-        if(reference != value.MemberEnd()){
-            merge_json_value(default_codec_barcode, reference->value, ontology);
-        } else {
-            value.AddMember (
-                Value("undetermined", ontology.GetAllocator()).Move(),
-                Value(default_codec_barcode, ontology.GetAllocator()).Move(),
-                ontology.GetAllocator()
-            );
-        }
-
-        compile_decoder_transformation(value);
-
-        string buffer;
-        int32_t barcode_index(0);
-        double total_concentration(0);
-        set< string > unique_barcode_id;
-        double noise(decode_value_by_key< double >("noise", value));
-
-        reference = value.FindMember("undetermined");
-        if(reference != value.MemberEnd()){
-            encode_key_value("index", barcode_index, reference->value, ontology);
-            if(infer_ID("ID", buffer, reference->value, true)) {
-                unique_barcode_id.emplace(buffer);
-            }
-            encode_key_value("concentration", noise, reference->value, ontology);
-            ++barcode_index;
-        }
-
-        reference = value.FindMember("codec");
-        if(reference != value.MemberEnd()){
-            if(reference->value.IsObject()) {
-                Value& codec(reference->value);
-                for(auto& record : codec.GetObject()) {
-                    merge_json_value(default_codec_barcode, record.value, ontology);
-                    encode_key_value("index", barcode_index, record.value, ontology);
-                    if(infer_ID("ID", buffer, record.value)) {
-                        if(!unique_barcode_id.count(buffer)) {
-                            unique_barcode_id.emplace(buffer);
-                        } else {
-                            string duplicate(record.name.GetString(), record.name.GetStringLength());
-                            throw ConfigurationError("duplicate " + duplicate + " barcode");
-                        }
-                    }
-                    double concentration(decode_value_by_key< double >("concentration", record.value));
-                    if(concentration >= 0) {
-                        total_concentration += concentration;
-                    } else { throw ConfigurationError("barcode concentration must be a positive number");  }
-                    ++barcode_index;
-                }
-
-                int32_t nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", value));
-                encode_key_value("barcode cardinality", barcode_index, value, ontology);
-                decoded_nucleotide_cardinality += barcode_index * nucleotide_cardinality;
-
-                if(total_concentration > 0) {
-                    const double factor((1.0 - noise) / total_concentration);
-                    for(auto& record : codec.GetObject()) {
-                        double concentration(decode_value_by_key< double >("concentration", record.value));
-                        encode_key_value("concentration", concentration * factor, record.value, ontology);
-                    }
-                } else { throw ConfigurationError("total pool concentration is not a positive number"); }
-
-                CodecMetric metric(value);
-                metric.compile_barcode_tolerance(value, ontology);
-            } else { throw ConfigurationError("codec element must be a dictionary"); }
-        }
-
-    }
-};
-bool Transcode::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
-    buffer.clear();
-    if(!decode_value_by_key< string >(key, buffer, container)) {
-        if(infer_PU("PU", buffer, container, undetermined)) {
-            encode_key_value(key, buffer, container, ontology);
-            return true;
-        } else { return false; }
-    } else { return true; }
-};
-bool Transcode::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
-    buffer.clear();
-    string suffix;
-    if(!decode_value_by_key< string >(key, suffix, container)) {
-        if(!undetermined) {
-            list< string > barcode;
-            if(decode_value_by_key< list< string > >("barcode", barcode, container)) {
-                for(auto& segment : barcode) {
-                    suffix.append(segment);
-                }
-            }
-        } else { suffix.assign("undetermined"); }
-
-        if(!suffix.empty()) {
-            if(decode_value_by_key< string >("flowcell id", buffer, container)) {
-                buffer.push_back(':');
-                int32_t lane;
-                if(decode_value_by_key< int32_t >("flowcell lane number", lane, container)) {
-                    buffer.append(to_string(lane));
-                    buffer.push_back(':');
-                }
-            }
-            buffer.append(suffix);
-            encode_key_value(key, buffer, container, ontology);
-            return true;
-        } else { return false; }
-    } else { return true; }
 };
 void Transcode::compile_decoder_transformation(Value& value) {
     if(value.HasMember("transform")) {
@@ -760,6 +821,16 @@ void Transcode::compile_decoder_transformation(Value& value) {
         encode_key_value("segment cardinality", rule.output_segment_cardinality, value, ontology);
         encode_key_value("nucleotide cardinality", nucleotide_cardinality, value, ontology);
         encode_key_value("barcode length", barcode_length, value, ontology);
+
+        double random_barcode_probability(0);
+        double random_barcode_probability_lower_bound(1.0 / double(pow(4, (nucleotide_cardinality))));
+        if(decode_value_by_key("random barcode probability", random_barcode_probability, value)) {
+            if(random_barcode_probability < random_barcode_probability_lower_bound) {
+                throw ConfigurationError("random barcode probability is smaller than lower bound");
+            }
+        } else {
+            encode_key_value("random barcode probability", random_barcode_probability_lower_bound, value, ontology);
+        }
 
         /* verify nucleotide cardinality and uniqueness
            and annotate each barcode element with the barcode segment cardinality */
@@ -825,6 +896,324 @@ void Transcode::compile_decoder_transformation(Value& value) {
         unique_barcode_sequence.clear();
     }
 };
+void Transcode::compile_decoder(Value& value, int32_t& index, const Value& default_decoder, const Value& default_barcode) {
+    if(value.IsObject()) {
+        encode_key_value("index", index, value, ontology);
+
+        /* overlay on top of the default decoder */
+        merge_json_value(default_decoder, value, ontology);
+        clean_json_value(value, ontology);
+
+        /* compute default barcode induced by the codec */
+        Value default_codec_barcode(kObjectType);
+        project_json_value(default_barcode, value, default_codec_barcode, ontology);
+
+        /* apply barcode default on undetermined barcode or create it from the default if one was not explicitly specified */
+        Value::MemberIterator reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()){
+            merge_json_value(default_codec_barcode, reference->value, ontology);
+        } else {
+            value.AddMember (
+                Value("undetermined", ontology.GetAllocator()).Move(),
+                Value(default_codec_barcode, ontology.GetAllocator()).Move(),
+                ontology.GetAllocator()
+            );
+        }
+
+        compile_decoder_transformation(value);
+
+        string buffer;
+        int32_t barcode_index(0);
+        double total_concentration(0);
+        set< string > unique_barcode_id;
+        double noise(decode_value_by_key< double >("noise", value));
+
+        reference = value.FindMember("undetermined");
+        if(reference != value.MemberEnd()){
+            encode_key_value("index", barcode_index, reference->value, ontology);
+            if(infer_ID("ID", buffer, reference->value, true)) {
+                unique_barcode_id.emplace(buffer);
+            }
+            encode_key_value("concentration", noise, reference->value, ontology);
+            ++barcode_index;
+        }
+
+        reference = value.FindMember("codec");
+        if(reference != value.MemberEnd()){
+            if(reference->value.IsObject()) {
+                Value& codec(reference->value);
+                for(auto& record : codec.GetObject()) {
+                    merge_json_value(default_codec_barcode, record.value, ontology);
+                    encode_key_value("index", barcode_index, record.value, ontology);
+                    if(infer_ID("ID", buffer, record.value)) {
+                        if(!unique_barcode_id.count(buffer)) {
+                            unique_barcode_id.emplace(buffer);
+                        } else {
+                            string duplicate(record.name.GetString(), record.name.GetStringLength());
+                            throw ConfigurationError("duplicate " + duplicate + " barcode");
+                        }
+                    }
+                    double concentration(decode_value_by_key< double >("concentration", record.value));
+                    if(concentration >= 0) {
+                        total_concentration += concentration;
+                    } else { throw ConfigurationError("barcode concentration must be a positive number");  }
+                    ++barcode_index;
+
+                    /* encode the BC attribute */
+                    list< string > barcode_segment;
+                    if(decode_value_by_key< list< string > >("barcode", barcode_segment, record.value)) {
+                        string barcode_string;
+                        for(auto& segment : barcode_segment) {
+                            if(!barcode_string.empty()) {
+                                barcode_string.append("-");
+                            }
+                            barcode_string.append(segment);
+                        }
+                        encode_key_value("BC", barcode_string, record.value, ontology);
+                    }
+                }
+
+                int32_t nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", value));
+                encode_key_value("barcode cardinality", barcode_index, value, ontology);
+                decoded_nucleotide_cardinality += barcode_index * nucleotide_cardinality;
+
+                if(total_concentration > 0) {
+                    const double factor((1.0 - noise) / total_concentration);
+                    for(auto& record : codec.GetObject()) {
+                        double concentration(decode_value_by_key< double >("concentration", record.value));
+                        encode_key_value("concentration", concentration * factor, record.value, ontology);
+                    }
+                } else { throw ConfigurationError("total pool concentration is not a positive number"); }
+
+                CodecMetric metric(value);
+                metric.compile_barcode_tolerance(value, ontology);
+            } else { throw ConfigurationError("codec element must be a dictionary"); }
+        }
+
+        ++index;
+    }
+};
+void Transcode::compile_multiplexing_decoder() {
+    Value& decoder_value(find_multiplexing_decoder());
+
+    /* aseemble a default decoder */
+    Value multiplexing_decoder_template(kObjectType);
+    const Value* decoder_projection(find_projection("multiplex:decoder"));
+    if(decoder_projection != NULL && !decoder_projection->IsNull()) {
+        multiplexing_decoder_template.CopyFrom(*decoder_projection, ontology.GetAllocator());
+    }
+
+    /* aseemble a default barcode */
+    Value multiplexing_barcode_template(kObjectType);
+    const Value* barcode_projection(find_projection("multiplex:barcode"));
+    if(barcode_projection != NULL && !barcode_projection->IsNull()) {
+        multiplexing_barcode_template.CopyFrom(*barcode_projection, ontology.GetAllocator());
+    }
+
+    /* aseemble a default decoder by projecting decoder template from the ontology root */
+    Value default_multiplexing_decoder(kObjectType);
+    project_json_value(multiplexing_decoder_template, ontology, default_multiplexing_decoder, ontology);
+
+    /* aseemble a default barcode by projecting barcode template from the ontology root */
+    Value default_multiplexing_barcode(kObjectType);
+    project_json_value(multiplexing_barcode_template, ontology, default_multiplexing_barcode, ontology);
+
+    /* overlay on top of the default decoder */
+    merge_json_value(default_multiplexing_decoder, decoder_value, ontology);
+    clean_json_value(decoder_value, ontology);
+
+    /* compute default barcode induced by the codec */
+    Value default_codec_barcode(kObjectType);
+    project_json_value(default_multiplexing_barcode, decoder_value, default_codec_barcode, ontology);
+
+    /* apply barcode default on undetermined barcode */
+    Value::MemberIterator reference = decoder_value.FindMember("undetermined");
+    if(reference != decoder_value.MemberEnd()){
+        merge_json_value(default_codec_barcode, reference->value, ontology);
+    }
+
+    reference = decoder_value.FindMember("codec");
+    if(reference != decoder_value.MemberEnd()){
+        Value& codec(reference->value);
+        for(auto& record : codec.GetObject()) {
+            merge_json_value(default_codec_barcode, record.value, ontology);
+        }
+    }
+};
+Value& Transcode::find_multiplexing_decoder() {
+    /*
+        1. if exactly one classifier is marked as multiplexing classifier, select it and terminate.
+        2. if more than one decoder is marked with multiplexing classifier raise an error.
+        3. if no classifier is marked with multiplexing classifier search if any have an output directive.
+    */
+    list< Value* > candidate;
+
+    /* search for a decoder that explicitly declares it is the multiplexer */
+    Value::MemberIterator reference = ontology.FindMember("sample");
+    if(reference != ontology.MemberEnd()) {
+        if(decode_value_by_key< bool >("multiplexing classifier", reference->value)) {
+            candidate.push_back(&reference->value);
+        }
+    }
+    reference = ontology.FindMember("cellular");
+    if(reference != ontology.MemberEnd()) {
+        for(auto& element : reference->value.GetArray()) {
+            if(decode_value_by_key< bool >("multiplexing classifier", element)) {
+                candidate.push_back(&element);
+            }
+        }
+    }
+    reference = ontology.FindMember("molecular");
+    if(reference != ontology.MemberEnd()) {
+        for(auto& element : reference->value.GetArray()) {
+            if(decode_value_by_key< bool >("multiplexing classifier", element)) {
+                candidate.push_back(&element);
+            }
+        }
+    }
+
+    if(candidate.empty()) {
+        /* if no decoder was explicitly marked as the multiplexer search for a decoder that mentions output */
+        reference = ontology.FindMember("sample");
+        if(reference != ontology.MemberEnd()) {
+            Value& sample_value(reference->value);
+            if(sample_value.FindMember("output") != sample_value.MemberEnd()) {
+                candidate.push_back(&sample_value);
+            } else {
+                reference = sample_value.FindMember("undetermined");
+                if(reference != sample_value.MemberEnd() && reference->value.FindMember("output") !=  reference->value.MemberEnd()) {
+                    candidate.push_back(&sample_value);
+                } else {
+                    reference = sample_value.FindMember("codec");
+                    if(reference != sample_value.MemberEnd()) {
+                        Value& codec(reference->value);
+                        for(auto& record : codec.GetObject()) {
+                            if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
+                                candidate.push_back(&sample_value);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        reference = ontology.FindMember("cellular");
+        if(reference != ontology.MemberEnd()) {
+            Value& cellular_value(reference->value);
+            for(auto& element : cellular_value.GetArray()) {
+                if(element.FindMember("output") != element.MemberEnd()) {
+                    candidate.push_back(&element);
+                } else {
+                    reference = element.FindMember("undetermined");
+                    if(reference != element.MemberEnd() && reference->value.FindMember("output") !=  reference->value.MemberEnd()) {
+                        candidate.push_back(&element);
+                    } else {
+                        reference = element.FindMember("codec");
+                        if(reference != element.MemberEnd()) {
+                            Value& codec(reference->value);
+                            for(auto& record : codec.GetObject()) {
+                                if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
+                                    candidate.push_back(&element);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        reference = ontology.FindMember("molecular");
+        if(reference != ontology.MemberEnd()) {
+            Value& molecular_value(reference->value);
+            for(auto& element : molecular_value.GetArray()) {
+                if(element.FindMember("output") != element.MemberEnd()) {
+                    candidate.push_back(&element);
+                } else {
+                    reference = element.FindMember("undetermined");
+                    if(reference != element.MemberEnd() && reference->value.FindMember("output") !=  reference->value.MemberEnd()) {
+                        candidate.push_back(&element);
+                    } else {
+                        reference = element.FindMember("codec");
+                        if(reference != element.MemberEnd()) {
+                            Value& codec(reference->value);
+                            for(auto& record : codec.GetObject()) {
+                                if(record.value.FindMember("output") !=  record.value.MemberEnd()) {
+                                    candidate.push_back(&element);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if(candidate.empty()) {
+            /* if no decoder mentions output use the sample */
+            reference = ontology.FindMember("sample");
+            if(reference != ontology.MemberEnd()) {
+                encode_key_value("multiplexing classifier", true, reference->value, ontology);
+                return reference->value;
+            } else {
+                throw InternalError("sample decoder should always exist");
+            }
+        } else {
+            if(candidate.size() == 1) {
+                /* we found one candidate */
+                encode_key_value("multiplexing classifier", true, *candidate.front(), ontology);
+                return *candidate.front();
+            } else {
+                /* we found multiple candidate */
+                throw ConfigurationError("multiple multiplexing classifier candidates found");
+            }
+        }
+    } else {
+        if(candidate.size() == 1) {
+            return *candidate.front();
+            /* we found one candidate */
+        } else {
+            /* we found multiple candidate */
+            throw ConfigurationError("multiple multiplexing classifier candidates found");
+        }
+    }
+};
+bool Transcode::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+    buffer.clear();
+    if(!decode_value_by_key< string >(key, buffer, container)) {
+        if(infer_PU("PU", buffer, container, undetermined)) {
+            encode_key_value(key, buffer, container, ontology);
+            return true;
+        } else { return false; }
+    } else { return true; }
+};
+bool Transcode::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+    buffer.clear();
+    string suffix;
+    if(!decode_value_by_key< string >(key, suffix, container)) {
+        if(!undetermined) {
+            list< string > barcode;
+            if(decode_value_by_key< list< string > >("barcode", barcode, container)) {
+                for(auto& segment : barcode) {
+                    suffix.append(segment);
+                }
+            }
+        } else { suffix.assign("undetermined"); }
+
+        if(!suffix.empty()) {
+            if(decode_value_by_key< string >("flowcell id", buffer, container)) {
+                buffer.push_back(':');
+                int32_t lane;
+                if(decode_value_by_key< int32_t >("flowcell lane number", lane, container)) {
+                    buffer.append(to_string(lane));
+                    buffer.push_back(':');
+                }
+            }
+            buffer.append(suffix);
+            encode_key_value(key, buffer, container, ontology);
+            return true;
+        } else { return false; }
+    } else { return true; }
+};
 void Transcode::compile_output() {
     /* expand base output url path */
     standardize_url_value_by_key("base output url", ontology, ontology, IoDirection::OUT);
@@ -833,6 +1222,10 @@ void Transcode::compile_output() {
     /* expand the report URL */
     standardize_url_value_by_key("report url", ontology, ontology, IoDirection::OUT);
     relocate_url_by_key("report url", ontology, ontology, base_output);
+
+    /* expand the prior adjusted job URL */
+    standardize_url_value_by_key("prior adjusted job url", ontology, ontology, IoDirection::OUT);
+    relocate_url_by_key("prior adjusted job url", ontology, ontology, base_output);
 
     /* load output template */
     compile_template();
@@ -857,147 +1250,127 @@ void Transcode::compile_output() {
     FormatCompression default_output_compression(decode_value_by_key< FormatCompression >("default output compression", ontology));
     CompressionLevel default_output_compression_level(decode_value_by_key< CompressionLevel >("default output compression level", ontology));
 
-    Value::MemberIterator reference = ontology.FindMember("multiplex");
-    if(reference != ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            Value& decoder_element(reference->value);
+    Value& decoder_value(find_multiplexing_decoder());
 
-            /*  Collect channel references in a channel_reference_list
-                This is a convience for iterating over channels in the
-                codec element and the undetermined in once go */
-            list< Value* > channel_reference_list;
-            reference = decoder_element.FindMember("undetermined");
-            if(reference != decoder_element.MemberEnd()) {
-                channel_reference_list.push_back(&reference->value);
-            }
-            reference = decoder_element.FindMember("codec");
-            if(reference != decoder_element.MemberEnd()) {
-                for(auto& record : reference->value.GetObject()) {
-                    channel_reference_list.push_back(&record.value);
-                }
-            }
-
-            /* expand base output url path */
-            standardize_url_value_by_key("base output url", decoder_element, ontology, IoDirection::OUT);
-            URL base(decode_value_by_key< URL >("base output url", decoder_element));
-
-            /* Collect query parameters from all reoccurring references of the same path */
-            unordered_map< string, URL > canonical_url_by_path;
-            for(auto& element : channel_reference_list) {
-                standardize_url_array_by_key("output", *element, ontology, IoDirection::OUT);
-                relocate_url_array_by_key("output", *element, ontology, base);
-                list< URL > feed_url_array;
-                if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
-                    for(auto& url : feed_url_array) {
-                        auto record = canonical_url_by_path.find(url.path());
-                        if(record == canonical_url_by_path.end()) {
-                            canonical_url_by_path[url.path()] = url;
-                        } else {
-                            record->second.override_query(url);
-                        }
-                    }
-                }
-            }
-
-            /* Check for some obvious contradictions and set default type and compression */
-            for(auto& url_record : canonical_url_by_path) {
-                URL& url = url_record.second;
-                if(url.is_stdin()) {
-                    throw ConfigurationError("output stream can not be set to standard input");
-                }
-                if(url.is_stderr()) {
-                    throw ConfigurationError("output stream can not be set to standard error");
-                }
-                if(url.type() == FormatType::UNKNOWN) {
-                    url.set_type(default_output_format);
-                }
-                if(url.explicit_compression() == FormatCompression::UNKNOWN) {
-                    url.set_compression(default_output_compression);
-                }
-                if(url.compression_level() == CompressionLevel::UNKNOWN) {
-                    url.set_compression_level(default_output_compression_level);
-                }
-            }
-
-            /* Apply the consensus query to all reoccurring references of the same path */
-            for(auto& element : channel_reference_list) {
-                list< URL > feed_url_array;
-                if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
-                    for(auto& url : feed_url_array) {
-                        url = canonical_url_by_path[url.path()];
-                    }
-                }
-                encode_key_value("output", feed_url_array, *element, ontology);
-            }
-
-            /* Assemble a map with the resolution of each feed in each channel */
-            unordered_map< URL, unordered_map< int32_t, int > > feed_resolution;
-            for(auto& element : channel_reference_list) {
-                int32_t index(decode_value_by_key< int32_t >("index", *element));
-                encode_key_value("TC", output_segment_cardinality, *element, ontology);
-                pad_url_array_by_key("output", *element, output_segment_cardinality);
-                list< URL > feed_url_array;
-                if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
-                    for(auto& url : feed_url_array) {
-                        ++(feed_resolution[url][index]);
-                    }
-                }
-            }
-            if(feed_resolution.size() > 0) {
-                int32_t index(0);
-                unordered_map< URL, Value > feed_ontology_by_url;
-
-                for(const auto& url_record : feed_resolution) {
-                    const URL& url = url_record.first;
-
-                    /* verify each feed url has the same resolution in all channels */
-                    int resolution(0);
-                    for(const auto& record : url_record.second) {
-                        if(resolution == 0) {
-                            resolution = record.second;
-                        } else if(resolution != record.second) {
-                            throw ConfigurationError("inconsistent resolution for " + string(url.path()));
-                        }
-                    }
-
-                    /* make a proxy element for the feed */
-                    Value proxy(kObjectType);
-                    encode_key_value("index", index, proxy, ontology);
-                    encode_key_value("url", url, proxy, ontology);
-                    encode_key_value("direction", IoDirection::OUT, proxy, ontology);
-                    encode_key_value("platform", platform, proxy, ontology);
-                    encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
-                    encode_key_value("resolution", resolution, proxy, ontology);
-                    encode_key_value("phred offset", phred_offset, proxy, ontology);
-                    feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
-                    ++index;
-                }
-
-                /* add the output feed by segment element to each channel */
-                for(auto& element : channel_reference_list) {
-                    list< URL > feed_url_array;
-                    if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
-                        Value feed_by_segment(kArrayType);
-                        for(const auto& url : feed_url_array) {
-                            const Value& proxy(feed_ontology_by_url[url]);
-                            feed_by_segment.PushBack(Value(proxy, ontology.GetAllocator()).Move(), ontology.GetAllocator());
-                        }
-                        element->RemoveMember("feed");
-                        element->AddMember("feed", Value(kObjectType).Move(), ontology.GetAllocator());
-                        (*element)["feed"].AddMember("output feed by segment", feed_by_segment.Move(), ontology.GetAllocator());
-                    }
-                }
-
-                Value feed_array(kArrayType);
-                for(auto& record : feed_ontology_by_url) {
-                    feed_array.PushBack(record.second.Move(), ontology.GetAllocator());
-                }
-                ontology["feed"].RemoveMember("output feed");
-                ontology["feed"].AddMember("output feed", feed_array.Move(), ontology.GetAllocator());
-            }
-            cross_validate_io();
+    /*  Collect channel references in a channel_reference_list
+        This is a convience for iterating over channels in the
+        codec element and the undetermined in once go */
+    list< Value* > channel_reference_list;
+    Value::MemberIterator reference = decoder_value.FindMember("undetermined");
+    if(reference != decoder_value.MemberEnd()) {
+        channel_reference_list.push_back(&reference->value);
+    }
+    reference = decoder_value.FindMember("codec");
+    if(reference != decoder_value.MemberEnd()) {
+        for(auto& record : reference->value.GetObject()) {
+            channel_reference_list.push_back(&record.value);
         }
     }
+
+    /* expand base output url path */
+    standardize_url_value_by_key("base output url", decoder_value, ontology, IoDirection::OUT);
+    URL base(decode_value_by_key< URL >("base output url", decoder_value));
+
+    /* Collect query parameters from all reoccurring references of the same path */
+    unordered_map< string, URL > canonical_url_by_path;
+    for(auto& element : channel_reference_list) {
+        standardize_url_array_by_key("output", *element, ontology, IoDirection::OUT);
+        relocate_url_array_by_key("output", *element, ontology, base);
+        list< URL > feed_url_array;
+        if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+            for(auto& url : feed_url_array) {
+                auto record = canonical_url_by_path.find(url.path());
+                if(record == canonical_url_by_path.end()) {
+                    canonical_url_by_path[url.path()] = url;
+                } else {
+                    record->second.override_query(url);
+                }
+            }
+        }
+    }
+
+    /* Check for some obvious contradictions and set default type and compression */
+    for(auto& url_record : canonical_url_by_path) {
+        URL& url = url_record.second;
+        if(url.is_stdin()) {
+            throw ConfigurationError("output stream can not be set to standard input");
+        }
+        if(url.is_stderr()) {
+            throw ConfigurationError("output stream can not be set to standard error");
+        }
+        if(url.type() == FormatType::UNKNOWN) {
+            url.set_type(default_output_format);
+        }
+        if(url.explicit_compression() == FormatCompression::UNKNOWN) {
+            url.set_compression(default_output_compression);
+        }
+        if(url.compression_level() == CompressionLevel::UNKNOWN) {
+            url.set_compression_level(default_output_compression_level);
+        }
+    }
+
+    /* Apply the consensus query to all reoccurring references of the same path */
+    for(auto& element : channel_reference_list) {
+        list< URL > feed_url_array;
+        if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+            for(auto& url : feed_url_array) {
+                url = canonical_url_by_path[url.path()];
+            }
+        }
+        encode_key_value("output", feed_url_array, *element, ontology);
+    }
+
+    /* Assemble a map with the resolution of each feed in each channel */
+    unordered_map< URL, unordered_map< int32_t, int > > feed_resolution;
+    for(auto& element : channel_reference_list) {
+        int32_t index(decode_value_by_key< int32_t >("index", *element));
+        encode_key_value("TC", output_segment_cardinality, *element, ontology);
+        pad_url_array_by_key("output", *element, output_segment_cardinality);
+        list< URL > feed_url_array;
+        if(decode_value_by_key< list< URL > >("output", feed_url_array, *element)) {
+            for(auto& url : feed_url_array) {
+                ++(feed_resolution[url][index]);
+            }
+        }
+    }
+    if(feed_resolution.size() > 0) {
+        int32_t index(0);
+        unordered_map< URL, Value > feed_ontology_by_url;
+
+        for(const auto& url_record : feed_resolution) {
+            const URL& url = url_record.first;
+
+            /* verify each feed url has the same resolution in all channels */
+            int resolution(0);
+            for(const auto& record : url_record.second) {
+                if(resolution == 0) {
+                    resolution = record.second;
+                } else if(resolution != record.second) {
+                    throw ConfigurationError("inconsistent resolution for " + string(url.path()));
+                }
+            }
+
+            /* make a proxy element for the feed */
+            Value proxy(kObjectType);
+            encode_key_value("index", index, proxy, ontology);
+            encode_key_value("url", url, proxy, ontology);
+            encode_key_value("direction", IoDirection::OUT, proxy, ontology);
+            encode_key_value("platform", platform, proxy, ontology);
+            encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
+            encode_key_value("resolution", resolution, proxy, ontology);
+            encode_key_value("phred offset", phred_offset, proxy, ontology);
+            feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
+            ++index;
+        }
+
+        Value feed_array(kArrayType);
+        for(auto& record : feed_ontology_by_url) {
+            feed_array.PushBack(record.second.Move(), ontology.GetAllocator());
+        }
+        ontology["feed"].RemoveMember("output feed");
+        ontology["feed"].AddMember("output feed", feed_array.Move(), ontology.GetAllocator());
+    }
+    cross_validate_io();
 };
 void Transcode::compile_template() {
     if(!ontology.HasMember("template")) {
@@ -1100,7 +1473,7 @@ void Transcode::validate() {
         }
     }
 
-    validate_decoder_group("multiplex");
+    validate_decoder_group("sample");
     validate_decoder_group("molecular");
     validate_decoder_group("cellular");
 };
@@ -1147,7 +1520,6 @@ void Transcode::load() {
     load_input();
     load_output();
     load_decoding();
-    load_pivot();
 };
 void Transcode::validate_url_accessibility() {
     URL url;
@@ -1241,43 +1613,67 @@ void Transcode::load_output() {
         and contains only unique url references
     */
     list< FeedProxy > feed_proxy_array(decode_value_by_key< list< FeedProxy > >("output feed", ontology["feed"]));
-    HeadPGAtom program(decode_value_by_key< HeadPGAtom >("program", ontology));
 
-    /*  Register the read group elements on the feed proxy so it can be added to SAM header
-        if a URL is present in the channel output that means the channel writes output to that file
-        and the read group should be added to the header of that file.
-    */
-    map< URL, FeedProxy* > feed_proxy_by_url;
+    /*  Add a program element to each proxy so the PG element can be written to the output */
+    HeadPGAtom program(decode_value_by_key< HeadPGAtom >("program", ontology));
     for(auto& proxy : feed_proxy_array) {
         proxy.head.add_program(program);
-        feed_proxy_by_url.emplace(make_pair(proxy.url, &proxy));
     };
 
-    Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
-    if(reference != ontology.MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsObject()) {
-                const Value& classifier(reference->value);
+    Value& decoder_value(find_multiplexing_decoder());
+    const bool sample_classifier_exists(ontology.FindMember("sample") != ontology.MemberEnd());
+    ClassifierType classifier_type(decode_value_by_key< ClassifierType >("classifier type", decoder_value));
+    if(sample_classifier_exists) {
+        Value::ConstMemberIterator reference = ontology.FindMember("sample");
+        if(reference != ontology.MemberEnd()) {
+            const Value& sample_value(reference->value);
 
-                reference = classifier.FindMember("undetermined");
-                if(reference != classifier.MemberEnd()) {
-                    HeadRGAtom rg(reference->value);
-                    list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
+            reference = sample_value.FindMember("undetermined");
+            if(reference != sample_value.MemberEnd()) {
+                HeadRGAtom rg(reference->value);
+                for(auto& proxy : feed_proxy_array) {
+                    proxy.head.add_read_group(rg);
+                }
+            }
+            reference = sample_value.FindMember("codec");
+            if(reference != sample_value.MemberEnd()) {
+                for(auto& record : reference->value.GetObject()) {
+                    HeadRGAtom rg(record.value);
+                    for(auto& proxy : feed_proxy_array) {
+                        proxy.head.add_read_group(rg);
+                    }
+                }
+            }
+        }
+    } else {
+        if(classifier_type == ClassifierType::SAMPLE) {
+            /*  Register the read group elements on the feed proxy so it can be added to SAM header
+                if a URL is present in the channel output that means the channel writes output to that file
+                and the read group should be added to the header of that file.
+            */
+            map< URL, FeedProxy* > feed_proxy_by_url;
+            for(auto& proxy : feed_proxy_array) {
+                feed_proxy_by_url.emplace(make_pair(proxy.url, &proxy));
+            };
+
+            Value::ConstMemberIterator reference = decoder_value.FindMember("undetermined");
+            if(reference != decoder_value.MemberEnd()) {
+                HeadRGAtom rg(reference->value);
+                list< URL > output(decode_value_by_key< list< URL > >("output", reference->value));
+                for(auto& url : output) {
+                    feed_proxy_by_url[url]->head.add_read_group(rg);
+                }
+            }
+            reference = decoder_value.FindMember("codec");
+            if(reference != decoder_value.MemberEnd()) {
+                for(auto& record : reference->value.GetObject()) {
+                    HeadRGAtom rg(record.value);
+                    list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
                     for(auto& url : output) {
                         feed_proxy_by_url[url]->head.add_read_group(rg);
                     }
                 }
-                reference = classifier.FindMember("codec");
-                if(reference != classifier.MemberEnd()) {
-                    for(auto& record : reference->value.GetObject()) {
-                        HeadRGAtom rg(record.value);
-                        list< URL > output(decode_value_by_key< list< URL > >("output", record.value));
-                        for(auto& url : output) {
-                            feed_proxy_by_url[url]->head.add_read_group(rg);
-                        }
-                    }
-                }
-            } else { throw ConfigurationError("multiplex element must be a dictionary"); }
+            }
         }
     }
 
@@ -1286,8 +1682,10 @@ void Transcode::load_output() {
         proxy.open();
     };
 
-    /*  Load feed_by_url, a local map of output feeds by url, from the proxy.
-        Populate output_feed_by_index used to enumerate threaded access to the output feeds */
+    /*  Load a feed for each output URL from the proxy in output_feed_by_index.
+        output_feed_by_url is a local map of output feeds by url for populating the multiplexer.
+    */
+    unordered_map< URL, Feed* > output_feed_by_url;
     output_feed_by_url.reserve(feed_proxy_array.size());
     for(auto& proxy : feed_proxy_array) {
             Feed* feed(NULL);
@@ -1313,99 +1711,15 @@ void Transcode::load_output() {
             output_feed_by_index.push_back(feed);
             output_feed_by_url.emplace(make_pair(proxy.url, feed));
     }
+
+    multiplexer = new Multiplexer(decoder_value);
+    multiplexer->populate(output_feed_by_url);
 };
 void Transcode::load_decoding() {
-    load_multiplex_decoding();
-    load_molecular_decoding();
-    load_cellular_decoding();
-};
-void Transcode::load_multiplex_decoding() {
-    Value::ConstMemberIterator reference = ontology.FindMember("multiplex");
-    if(reference != ontology.MemberEnd()) {
-        Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
-        switch(algorithm) {
-            case Algorithm::PAMLD: {
-                sample_classifier = new PamlMultiplexDecoder(reference->value);
-                break;
-            };
-            case Algorithm::MDD: {
-                sample_classifier = new MdMultiplexDecoder(reference->value);
-                break;
-            };
-            case Algorithm::TRANSPARENT: {
-                sample_classifier = new RoutingClassifier< Channel >(reference->value);
-                break;
-            };
-            default:
-                throw ConfigurationError("unsupported multiplex decoder algorithm " + to_string(algorithm));
-                break;
-        }
-    }
-};
-void Transcode::load_molecular_decoding() {
-    Value::ConstMemberIterator reference = ontology.FindMember("molecular");
-    if(reference != ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            molecular_classifier_array.reserve(1);
-            load_molecular_decoder(reference->value);
-
-        } else if(reference->value.IsArray()) {
-            molecular_classifier_array.reserve(reference->value.Size());
-            for(const auto& element : reference->value.GetArray()) {
-                load_molecular_decoder(element);
-            }
-        }
-    }
-    molecular_classifier_array.shrink_to_fit();
-};
-void Transcode::load_molecular_decoder(const Value& value) {
-    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
-    switch(algorithm) {
-        case Algorithm::NAIVE: {
-            molecular_classifier_array.emplace_back(new NaiveMolecularDecoder(value));
-            break;
-        };
-        default:
-            throw ConfigurationError("unsupported molecular decoder algorithm " + to_string(algorithm));
-            break;
-    }
-};
-void Transcode::load_cellular_decoding() {
-    Value::ConstMemberIterator reference = ontology.FindMember("cellular");
-    if(reference != ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            cellular_classifier_array.reserve(1);
-            load_cellular_decoder(reference->value);
-
-        } else if(reference->value.IsArray()) {
-            cellular_classifier_array.reserve(reference->value.Size());
-            for(const auto& element : reference->value.GetArray()) {
-                load_cellular_decoder(element);
-            }
-        }
-    }
-    cellular_classifier_array.shrink_to_fit();
-};
-void Transcode::load_cellular_decoder(const Value& value) {
-    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
-    switch(algorithm) {
-        case Algorithm::PAMLD: {
-            cellular_classifier_array.emplace_back(new PamlCellularDecoder(value));
-            break;
-        };
-        case Algorithm::MDD: {
-            cellular_classifier_array.emplace_back(new MdCellularDecoder(value));
-            break;
-        };
-        default:
-            throw ConfigurationError("unsupported cellular decoder algorithm " + to_string(algorithm));
-            break;
-    }
-};
-void Transcode::load_pivot() {
+    transcoding_decoder = new TranscodingDecoder(ontology);
     int32_t decoding_threads(decode_value_by_key< int32_t >("decoding threads", ontology));
     for(int32_t index(0); index < decoding_threads; ++index) {
-        pivot_array.emplace_back(*this, index);
+        transcoding_thread_by_index.emplace_back(*this, index);
     }
 };
 void Transcode::start() {
@@ -1421,11 +1735,11 @@ void Transcode::start() {
     for(auto feed : output_feed_by_index) {
         feed->start();
     }
-    for(auto& pivot : pivot_array) {
-        pivot.start();
+    for(auto& transcoding_thread : transcoding_thread_by_index) {
+        transcoding_thread.start();
     }
-    for(auto& pivot : pivot_array) {
-        pivot.join();
+    for(auto& transcoding_thread : transcoding_thread_by_index) {
+        transcoding_thread.join();
     }
 };
 void Transcode::stop() {
@@ -1446,6 +1760,13 @@ void Transcode::stop() {
 };
 void Transcode::finalize() {
     Job::finalize();
+
+    /* collect statistics from all threads */
+    for(auto& transcoding_thread : transcoding_thread_by_index) {
+        collect(transcoding_thread);
+    }
+
+    /* add the incoming statistics to report */
     if(count > 0) {
         pf_fraction = double(pf_count) / double(count);
         Value element(kObjectType);
@@ -1455,38 +1776,14 @@ void Transcode::finalize() {
         report.AddMember("incoming", element.Move(), report.GetAllocator());
     }
 
-    /*  collect statistics from the accumulators on all pivot threads */
-    for(auto& pivot : pivot_array) {
-        *this += pivot;
+    if(multiplexer != NULL) {
+        multiplexer->finalize();
+        multiplexer->encode(report, report);
     }
 
-    if(sample_classifier != NULL) {
-        sample_classifier->finalize();
-        Value element(kObjectType);
-        sample_classifier->encode(element, report);
-        report.AddMember("multiplex", element.Move(), report.GetAllocator());
-    }
-
-    if(!molecular_classifier_array.empty()) {
-        Value array(kArrayType);
-        for(auto& classifier : molecular_classifier_array) {
-            classifier->finalize();
-            Value element(kObjectType);
-            classifier->encode(element, report);
-            array.PushBack(element.Move(), report.GetAllocator());
-        }
-        report.AddMember("molecular", array.Move(), report.GetAllocator());
-    }
-
-    if(!cellular_classifier_array.empty()) {
-        Value array(kArrayType);
-        for(auto& classifier : cellular_classifier_array) {
-            classifier->finalize();
-            Value element(kObjectType);
-            classifier->encode(element, report);
-            array.PushBack(element.Move(), report.GetAllocator());
-        }
-        report.AddMember("cellular", array.Move(), report.GetAllocator());
+    if(transcoding_decoder != NULL) {
+        transcoding_decoder->finalize();
+        transcoding_decoder->encode(report, report);
     }
 
     clean_json_value(report, report);
@@ -1512,6 +1809,59 @@ void Transcode::apply_interactive_ontology(Document& document) const {
     adjusted.RemoveMember("template token");
     overlay_json_object(document, adjusted);
 };
+void Transcode::write_result() const {
+    Job::write_result();
+
+    URL prior_adjusted_job_url(decode_value_by_key< URL >("prior adjusted job url", ontology));
+    if(!prior_adjusted_job_url.is_dev_null()) {
+        Document adjusted;
+        adjusted.CopyFrom(instruction, adjusted.GetAllocator());
+        apply_interactive_ontology(adjusted);
+        apply_prior_adjustment(adjusted);
+        sort_json_value(adjusted, adjusted);
+        clean_json_object(adjusted, adjusted);
+
+        if(prior_adjusted_job_url.is_stdout()) {
+            print_json(adjusted, cout, float_precision());
+
+        } else if(prior_adjusted_job_url.is_stderr()) {
+            print_json(adjusted, cerr, float_precision());
+
+        } else {
+            print_json(adjusted, prior_adjusted_job_url.path().c_str(), float_precision());
+
+        }
+    }
+};
+void Transcode::apply_prior_adjustment(Document& document) const {
+    if(transcoding_decoder != NULL) {
+        if(transcoding_decoder->sample_classifier != NULL) {
+            transcoding_decoder->sample_classifier->adjust_prior(document["sample"], document);
+        }
+
+        if(!transcoding_decoder->molecular_classifier_array.empty()) {
+            Value::MemberIterator reference = document.FindMember("molecular");
+            if(reference != document.MemberEnd()) {
+                size_t i(0);
+                for(auto& element : reference->value.GetArray()) {
+                    transcoding_decoder->molecular_classifier_array[i]->adjust_prior(element, document);
+                    i++;
+                }
+            }
+        }
+
+        if(!transcoding_decoder->cellular_classifier_array.empty()) {
+            Value::MemberIterator reference = document.FindMember("cellular");
+            if(reference != document.MemberEnd()) {
+                size_t i(0);
+                for(auto& element : reference->value.GetArray()) {
+                    transcoding_decoder->cellular_classifier_array[i]->adjust_prior(element, document);
+                    i++;
+                }
+            }
+        }
+    }
+};
 
 /* describe */
 void Transcode::describe() const {
@@ -1519,9 +1869,10 @@ void Transcode::describe() const {
     print_global_instruction(o);
     print_input_instruction(o);
     print_transform_instruction(o);
-    print_multiplex_instruction(o);
+    print_sample_instruction(o);
     print_molecular_instruction(o);
     print_cellular_instruction(o);
+    print_feed_instruction("output feed", o);
 };
 void Transcode::print_global_instruction(ostream& o) const {
     o << setprecision(float_precision());
@@ -1576,56 +1927,6 @@ void Transcode::print_global_instruction(ostream& o) const {
     int32_t htslib_threads(decode_value_by_key< int32_t >("htslib threads", ontology));
     o << "    HTSLib threads                              " << to_string(htslib_threads) << endl;
     o << endl;
-};
-void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {
-    Value::ConstMemberIterator reference = ontology["feed"].FindMember(key);
-    if(reference != ontology["feed"].MemberEnd()) {
-        if(!reference->value.IsNull()) {
-            if(reference->value.IsArray()) {
-                if(!reference->value.Empty()) {
-                    for(const auto& element : reference->value.GetArray()) {
-                        IoDirection direction(decode_value_by_key< IoDirection >("direction", element));
-                        int32_t index(decode_value_by_key< int32_t >("index", element));
-                        int32_t resolution(decode_value_by_key< int32_t >("resolution", element));
-                        int32_t capacity(decode_value_by_key< int32_t >("capacity", element));
-                        URL url(decode_value_by_key< URL >("url", element));
-                        Platform platform(decode_value_by_key< Platform >("platform", element));
-                        uint8_t phred_offset(decode_value_by_key< uint8_t >("phred offset", element));
-
-                        switch (direction) {
-                            case IoDirection::IN:
-                                o << "    Input feed No." << index << endl;
-                                o << "        Type : " << url.type() << endl;
-                                if (url.compression() != FormatCompression::NONE) {
-                                o << "        Compression : " << url.compression() << endl;
-                                }
-                                o << "        Resolution : " << resolution << endl;
-                                o << "        Phred offset : " << to_string(phred_offset) << endl;
-                                o << "        Platform : " << platform << endl;
-                                o << "        Buffer capacity : " << capacity << endl;
-                                o << "        URL : " << url << endl;
-                                break;
-                            case IoDirection::OUT:
-                                o << "    Output feed No." << index << endl;
-                                o << "        Type : " << url.type() << endl;
-                                if (url.compression() != FormatCompression::NONE) {
-                                o << "        Compression : " << url.compression() << "@" << url.compression_level() << endl;
-                                }
-                                o << "        Resolution : " << resolution << endl;
-                                o << "        Phred offset : " << to_string(phred_offset) << endl;
-                                o << "        Platform : " << platform << endl;
-                                o << "        Buffer capacity : " << capacity << endl;
-                                o << "        URL : " << url << endl;
-                                break;
-                            default:
-                                break;
-                        }
-                        o << endl;
-                    }
-                }
-            }
-        }
-    }
 };
 void Transcode::print_input_instruction(ostream& o) const {
     o << "Input " << endl << endl;
@@ -1837,9 +2138,8 @@ void Transcode::print_channel_instruction(const string& key, const Value& value,
         o << endl;
     }
 };
-void Transcode::print_multiplex_instruction(ostream& o) const {
-    print_codec_group_instruction("multiplex", "Mutliplex decoding", o);
-    print_feed_instruction("output feed", o);
+void Transcode::print_sample_instruction(ostream& o) const {
+    print_codec_group_instruction("sample", "Sample decoding", o);
 };
 void Transcode::print_molecular_instruction(ostream& o) const {
     print_codec_group_instruction("molecular", "Molecular decoding", o);
@@ -1847,8 +2147,60 @@ void Transcode::print_molecular_instruction(ostream& o) const {
 void Transcode::print_cellular_instruction(ostream& o) const {
     print_codec_group_instruction("cellular", "Cellular decoding", o);
 };
+void Transcode::print_feed_instruction(const Value::Ch* key, ostream& o) const {
+    Value::ConstMemberIterator reference = ontology["feed"].FindMember(key);
+    if(reference != ontology["feed"].MemberEnd()) {
+        if(!reference->value.IsNull()) {
+            if(reference->value.IsArray()) {
+                if(!reference->value.Empty()) {
+                    for(const auto& element : reference->value.GetArray()) {
+                        IoDirection direction(decode_value_by_key< IoDirection >("direction", element));
+                        int32_t index(decode_value_by_key< int32_t >("index", element));
+                        int32_t resolution(decode_value_by_key< int32_t >("resolution", element));
+                        int32_t capacity(decode_value_by_key< int32_t >("capacity", element));
+                        URL url(decode_value_by_key< URL >("url", element));
+                        Platform platform(decode_value_by_key< Platform >("platform", element));
+                        uint8_t phred_offset(decode_value_by_key< uint8_t >("phred offset", element));
 
-TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
+                        switch (direction) {
+                            case IoDirection::IN:
+                                o << "    Input feed No." << index << endl;
+                                o << "        Type : " << url.type() << endl;
+                                if (url.compression() != FormatCompression::NONE) {
+                                o << "        Compression : " << url.compression() << endl;
+                                }
+                                o << "        Resolution : " << resolution << endl;
+                                o << "        Phred offset : " << to_string(phred_offset) << endl;
+                                o << "        Platform : " << platform << endl;
+                                o << "        Buffer capacity : " << capacity << endl;
+                                o << "        URL : " << url << endl;
+                                break;
+                            case IoDirection::OUT:
+                                o << "    Output feed No." << index << endl;
+                                o << "        Type : " << url.type() << endl;
+                                if (url.compression() != FormatCompression::NONE) {
+                                o << "        Compression : " << url.compression() << "@" << url.compression_level() << endl;
+                                }
+                                o << "        Resolution : " << resolution << endl;
+                                o << "        Phred offset : " << to_string(phred_offset) << endl;
+                                o << "        Platform : " << platform << endl;
+                                o << "        Buffer capacity : " << capacity << endl;
+                                o << "        URL : " << url << endl;
+                                break;
+                            default:
+                                break;
+                        }
+                        o << endl;
+                    }
+                }
+            }
+        }
+    }
+};
+
+/* Transcode Pivot */
+
+TranscodingThread::TranscodingThread(Transcode& job, const int32_t& index) try :
     index(index),
     platform(decode_value_by_key< Platform >("platform", job.ontology)),
     leading_segment_index(decode_value_by_key< int32_t >("leading segment index", job.ontology)),
@@ -1856,118 +2208,21 @@ TranscodePivot::TranscodePivot(Transcode& job, const int32_t& index) try :
     output_segment_cardinality(decode_value_by_key< int32_t >("output segment cardinality", job.ontology)),
     input(input_segment_cardinality, platform, leading_segment_index),
     output(output_segment_cardinality, platform, leading_segment_index),
-    sample_classifier(NULL),
+    multiplexer(*job.multiplexer),
+    transcoding_decoder(job.ontology),
     job(job),
     filter_incoming_qc_fail(decode_value_by_key< bool >("filter incoming qc fail", job.ontology)),
-    enable_quality_control(decode_value_by_key< bool >("enable quality control", job.ontology)),
     template_rule(decode_value_by_key< Rule >("transform", job.ontology["template"])) {
 
-    load_decoding();
-
-    } catch(Error& error) {
-        error.push("TranscodePivot");
-        throw;
-};
-void TranscodePivot::load_decoding() {
-    load_multiplex_decoding();
-    load_molecular_decoding();
-    load_cellular_decoding();
     input.clear();
     output.clear();
-};
-void TranscodePivot::load_multiplex_decoding() {
-    Value::ConstMemberIterator reference = job.ontology.FindMember("multiplex");
-    if(reference != job.ontology.MemberEnd()) {
-        Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", reference->value));
-        switch (algorithm) {
-            case Algorithm::PAMLD: {
-                PamlMultiplexDecoder* pamld_decoder(new PamlMultiplexDecoder(reference->value));
-                pamld_decoder->unclassified.populate(job.output_feed_by_url);
-                for(auto& channel : pamld_decoder->tag_by_index) {
-                    channel.populate(job.output_feed_by_url);
-                }
-                sample_classifier = pamld_decoder;
-                break;
-            };
-            case Algorithm::MDD: {
-                MdMultiplexDecoder* mdd_decoder(new MdMultiplexDecoder(reference->value));
-                mdd_decoder->unclassified.populate(job.output_feed_by_url);
-                for(auto& channel : mdd_decoder->tag_by_index) {
-                    channel.populate(job.output_feed_by_url);
-                }
-                sample_classifier = mdd_decoder;
-                break;
-            };
-            case Algorithm::TRANSPARENT: {
-                RoutingClassifier< Channel >* transparent_decoder(new RoutingClassifier< Channel >(reference->value));
-                transparent_decoder->unclassified.populate(job.output_feed_by_url);
-                sample_classifier = transparent_decoder;
-                break;
-            };
-            default:
-                throw ConfigurationError("unknown multiplex decoder algorithm");
-                break;
-        }
-    }
-};
-void TranscodePivot::load_molecular_decoding() {
-    Value::ConstMemberIterator reference = job.ontology.FindMember("molecular");
-    if(reference != job.ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            molecular_classifier_array.reserve(1);
-            load_molecular_decoder(reference->value);
 
-        } else if(reference->value.IsArray()) {
-            molecular_classifier_array.reserve(reference->value.Size());
-            for(const auto& element : reference->value.GetArray()) {
-                load_molecular_decoder(element);
-            }
-        }
-    }
-    molecular_classifier_array.shrink_to_fit();
+    } catch(Error& error) {
+        error.push("TranscodingThread");
+        throw;
 };
-void TranscodePivot::load_molecular_decoder(const Value& value) {
-    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
-    switch (algorithm) {
-        case Algorithm::NAIVE: {
-            NaiveMolecularDecoder* naive_decoder(new NaiveMolecularDecoder(value));
-            molecular_classifier_array.emplace_back(naive_decoder);
-            break;
-        };
-        default:
-            break;
-    }
-};
-void TranscodePivot::load_cellular_decoding() {
-    Value::ConstMemberIterator reference = job.ontology.FindMember("cellular");
-    if(reference != job.ontology.MemberEnd()) {
-        if(reference->value.IsObject()) {
-            cellular_classifier_array.reserve(1);
-            load_cellular_decoder(reference->value);
 
-        } else if(reference->value.IsArray()) {
-            cellular_classifier_array.reserve(reference->value.Size());
-            for(const auto& element : reference->value.GetArray()) {
-                load_cellular_decoder(element);
-            }
-        }
-    }
-    cellular_classifier_array.shrink_to_fit();
-};
-void TranscodePivot::load_cellular_decoder(const Value& value) {
-    Algorithm algorithm(decode_value_by_key< Algorithm >("algorithm", value));
-    switch (algorithm) {
-        case Algorithm::PAMLD: {
-            PamlCellularDecoder* paml_decoder(new PamlCellularDecoder(value));
-            cellular_classifier_array.emplace_back(paml_decoder);
-            break;
-        };
-        case Algorithm::MDD: {
-            MdCellularDecoder* md_decoder(new MdCellularDecoder(value));
-            cellular_classifier_array.emplace_back(md_decoder);
-            break;
-        };
-        default:
-            break;
-    }
+void TranscodingThread::finalize() {
+    transcoding_decoder.finalize();
+    multiplexer.finalize();
 };

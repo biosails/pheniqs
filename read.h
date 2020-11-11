@@ -50,6 +50,7 @@
         uint64_t    id;
     } bam1_t;
 */
+
 class Segment : public ObservedSequence {
     friend ostream& operator<<(ostream& o, const Segment& segment);
 
@@ -174,8 +175,9 @@ class Read : public SequenceArray< Segment > {
         void operator=(Read const &) = delete;
         Read(Read const &) = delete;
         const Platform platform;
-        uint32_t multiplex_distance;
-        double multiplex_decoding_confidence;
+        int32_t channel_index;
+        uint32_t sample_distance;
+        double sample_decoding_confidence;
         uint32_t molecular_distance;
         double molecular_decoding_confidence;
         uint32_t cellular_distance;
@@ -186,8 +188,8 @@ class Read : public SequenceArray< Segment > {
             for(auto& segment : segment_array) {
                 segment.clear();
             }
-            multiplex_distance = 0;
-            multiplex_decoding_confidence = 1;
+            sample_distance = 0;
+            sample_decoding_confidence = 1;
             molecular_distance = 0;
             molecular_decoding_confidence = 1;
             cellular_distance = 0;
@@ -195,9 +197,9 @@ class Read : public SequenceArray< Segment > {
             barcode_decoding_confidence = 1;
         };
         inline void flush() {
-            if(multiplex_decoding_confidence > 0 && multiplex_decoding_confidence < 1) {
-                leader->auxiliary.XB = static_cast< float >(1.0 - multiplex_decoding_confidence);
-                // barcode_decoding_confidence *= multiplex_decoding_confidence;
+            if(sample_decoding_confidence > 0 && sample_decoding_confidence < 1) {
+                leader->auxiliary.XB = static_cast< float >(1.0 - sample_decoding_confidence);
+                // barcode_decoding_confidence *= sample_decoding_confidence;
             }
             if(molecular_decoding_confidence > 0 && molecular_decoding_confidence < 1) {
                 leader->auxiliary.XM = static_cast< float >(1.0 - molecular_decoding_confidence);
@@ -262,28 +264,28 @@ class Read : public SequenceArray< Segment > {
                 }
             }
         };
-        inline void assign_RG(const HeadRGAtom& rg) {
+        inline void set_RG(const string& rg) {
             leader->auxiliary.set_RG(rg);
         };
 
-        inline void update_multiplex_barcode(const Observation& observation) {
-            leader->auxiliary.update_multiplex_barcode(observation);
+        inline void update_sample_barcode(const Observation& observation) {
+            leader->auxiliary.update_sample_barcode(observation);
         };
-        inline void update_multiplex_decoding_confidence(const double& confidence) {
-            if(multiplex_decoding_confidence == 1) {
-                multiplex_decoding_confidence = confidence;
+        inline void update_sample_decoding_confidence(const double& confidence) {
+            if(sample_decoding_confidence == 1) {
+                sample_decoding_confidence = confidence;
             } else {
-                multiplex_decoding_confidence *= confidence;
+                sample_decoding_confidence *= confidence;
             }
         };
-        inline void set_multiplex_decoding_confidence(const double& confidence) {
-            multiplex_decoding_confidence = confidence;
+        inline void set_sample_decoding_confidence(const double& confidence) {
+            sample_decoding_confidence = confidence;
         };
-        inline void update_multiplex_distance(const uint32_t& distance) {
-            multiplex_distance += distance;
+        inline void update_sample_distance(const uint32_t& distance) {
+            sample_distance += distance;
         };
-        inline void set_multiplex_distance(const uint32_t& distance) {
-            multiplex_distance = distance;
+        inline void set_sample_distance(const uint32_t& distance) {
+            sample_distance = distance;
         };
 
         inline void update_molecular_barcode(const Barcode& barcode) {
@@ -341,7 +343,8 @@ class Read : public SequenceArray< Segment > {
         Read(const int32_t& cardinality, const Platform& platform, int32_t leading_segment_index) :
             SequenceArray< Segment >(cardinality),
             leader(&segment_array[leading_segment_index]),
-            platform(platform) {
+            platform(platform),
+            channel_index(0) {
 
             int32_t segment_index(0);
             for(auto& segment : segment_array) {

@@ -25,11 +25,13 @@ INCLUDE_PREFIX  = $(PREFIX)/include
 LIB_PREFIX      = $(PREFIX)/lib
 ZSH_PREFIX      = $(PREFIX)/share/zsh
 
-CPPFLAGS        += -Wall -Wsign-compare
+# CC              = clang
+# CXX             = clang++
+CPPFLAGS        += -Wall -Wsign-compare -Wdeprecated
 CXXFLAGS        += -std=c++11 -O3
 # LDFLAGS       +=
-LIBS            += -lhts -lz -lbz2 -llzma
-STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a
+LIBS            += -lhts -lz -lbz2 -llzma -ldeflate
+STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/libbz2.a $(LIB_PREFIX)/liblzma.a $(LIB_PREFIX)/libdeflate.a
 
 # PHENIQS_VERSION, written into version.h and reported when executing `pheniqs --version`,
 # is taken from the git describe if present. Otherwise it falls back to $(MAJOR_REVISON).$(MINOR_REVISON).
@@ -45,7 +47,9 @@ STATIC_LIBS     += $(LIB_PREFIX)/libhts.a $(LIB_PREFIX)/libz.a $(LIB_PREFIX)/lib
 # PHENIQS_LIBDEFLATE_VERSION
 # PHENIQS_RAPIDJSON_VERSION
 # PHENIQS_HTSLIB_VERSION
-PHENIQS_VERSION := $(shell [ -d .git ] && git describe --abbrev=40 --tags 2> /dev/null)
+ifndef PHENIQS_VERSION
+    PHENIQS_VERSION := $(shell [ -d .git ] && git describe --abbrev=40 --tags 2> /dev/null)
+endif
 ifndef PHENIQS_VERSION
     PHENIQS_VERSION := $(MAJOR_REVISON).$(MINOR_REVISON)
 endif
@@ -53,13 +57,14 @@ endif
 PLATFORM := $(shell uname -s)
 
 PHENIQS_SOURCES = \
-	accumulator.cpp \
+	selector.cpp \
 	atom.cpp \
 	auxiliary.cpp \
 	barcode.cpp \
-	channel.cpp \
+	multiplex.cpp \
 	decoder.cpp \
 	classifier.cpp \
+	naive.cpp \
 	mdd.cpp \
 	pamld.cpp \
 	pipeline.cpp \
@@ -79,13 +84,14 @@ PHENIQS_SOURCES = \
 	url.cpp
 
 PHENIQS_OBJECTS = \
-	accumulator.o \
+	selector.o \
 	atom.o \
 	auxiliary.o \
 	barcode.o \
-	channel.o \
+	multiplex.o \
 	decoder.o \
 	classifier.o \
+	naive.o \
 	mdd.o \
 	pamld.o \
 	pipeline.o \
@@ -112,22 +118,6 @@ ifdef PREFIX
 endif
 
 with-static = 0
-with-libdeflate = 0
-ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.a)','')
-    ifeq ($(PLATFORM), Darwin)
-        with-libdeflate = 1
-    else ifeq ($(PLATFORM), Linux)
-        ifneq ('$(wildcard $(LIB_PREFIX)/libdeflate.so)','')
-            with-libdeflate = 1
-        endif
-    endif
-endif
-
-ifeq ($(with-libdeflate), 1)
-    LIBS += -ldeflate
-    STATIC_LIBS += $(LIB_PREFIX)/libdeflate.a
-endif
-
 ifeq ($(with-static), 1)
     LIBS = $(STATIC_LIBS)
 endif
@@ -160,8 +150,8 @@ help:
 	\trapidjson  : http://rapidjson.org\n\
 	\n\
 	libdeflate is a heavily optimized implementation of the DEFLATE algorithm.\n\
-	Although pheniqs does not directly link to libdeflate, htslib can be optionaly linked to it when built,\n\
-	which can significantly speed up reading and writing gzip compressed fastq files.\n\
+	Although pheniqs does not directly link to libdeflate, htslib links to it when built,\n\
+	which significantly speed up reading and writing gzip compressed fastq files.\n\
 	\n\
 	To build pheniqs with a specific PREFIX, set the PREFIX variable when executing make.\n\
 	Notice that you will need to specify it each time you execute make, not just when building.\n\
@@ -171,7 +161,7 @@ help:
 	For instance: `make CXX=/usr/local/bin/g++-7`.\n\
 	\n\
 	To build a statically linked binary set the `with-static` variable to 1.\n\
-	This requires libhts.so, libz.so, libbz2.so, liblzma.so and optionally libdeflate.so \n\
+	This requires libhts.so, libz.so, libbz2.so, liblzma.so and libdeflate.so \n\
 	(libhts.a, libz.a, libbz2.a, liblzma.a and libdeflate.a on MacOS) to be available in LIB_PREFIX.\n\
 	For instance: `make with-static=1`.\n\n'
 
@@ -190,7 +180,6 @@ config:
 	$(if $(CXXFLAGS),                    $(info CXXFLAGS                    :  $(CXXFLAGS)))
 	$(if $(LDFLAGS),                     $(info LDFLAGS                     :  $(LDFLAGS)))
 	$(if $(LIBS),                        $(info LIBS                        :  $(LIBS)))
-	$(if $(with-libdeflate),             $(info with-libdeflate             :  $(with-libdeflate)))
 	$(if $(with-static),                 $(info with-static                 :  $(with-static)))
 	$(if $(PHENIQS_ZLIB_VERSION),        $(info PHENIQS_ZLIB_VERSION        :  $(PHENIQS_ZLIB_VERSION)))
 	$(if $(PHENIQS_BZIP2_VERSION),       $(info PHENIQS_BZIP2_VERSION       :  $(PHENIQS_BZIP2_VERSION)))
@@ -225,13 +214,13 @@ clean.version:
 
 # Regenerate interface configuration.h from configuration.json
 configuration.h: configuration.json
-	$(and !$(shell ./tool/serialize_configuration.py > configuration.h), \
+	$(and !$(shell ./tool/pheniqs-configuration-api.py header configuration.json > configuration.h), \
     $(info generating configuration.h) \
   )
 
 # Regenerate zsh completion from configuration.json
 _pheniqs: configuration.json
-	$(and !$(shell ./tool/shell.py zsh configuration.json > _pheniqs), \
+	$(and !$(shell ./tool/pheniqs-configuration-api.py zsh configuration.json > _pheniqs), \
     $(info zsh completion _pheniqs generated) \
   )
 
@@ -252,7 +241,7 @@ clean.object:
 	-@rm -f $(PHENIQS_OBJECTS)
 
 .PHONY: clean
-clean: clean.generated clean.object clean.bin
+clean: clean.generated clean.object clean.bin clean.test
 	-@rm -f $(PHENIQS_EXECUTABLE)
 
 .PHONY: install
@@ -274,9 +263,57 @@ uninstall.zsh_completion:
 uninstall: uninstall.zsh_completion
 	-@rm -f $(BIN_PREFIX)/pheniqs
 
-.PHONY: test
-test: all
+.PHONY: test.api.configuration
+test.api.configuration: all
+	./test/api/configuration/run.sh
+
+.PHONY: clean.test.api.configuration
+clean.test.api.configuration:
+	-@rm -rf test/api/configuration/result
+
+.PHONY: test.api.illumina
+test.api.illumina: all
+	./test/api/illumina/run.sh
+
+.PHONY: clean.test.api.illumina
+clean.test.api.illumina:
+	-@rm -rf test/api/illumina/result
+
+.PHONY: test.api.io
+test.api.io: all
+	./test/api/io/run.sh
+
+.PHONY: clean.test.api.io
+clean.test.api.io:
+	-@rm -rf test/api/io/result
+
+.PHONY: test.api.prior
+test.api.prior: all
+	./test/api/prior/run.sh
+
+.PHONY: clean.test.api.prior
+clean.test.api.prior:
+	-@rm -rf test/api/prior/result
+
+.PHONY: test.pheniqs.BDGGG
+test.pheniqs.BDGGG: all
 	./test/BDGGG/run.sh
+
+.PHONY: clean.test.pheniqs.BDGGG
+clean.test.pheniqs.BDGGG:
+	-@rm -rf test/BDGGG/result
+
+.PHONY: test
+test: test.pheniqs.BDGGG
+
+.PHONY: clean.test
+clean.test: clean.test.pheniqs.BDGGG
+
+# .PHONY: test
+# test: test.api.configuration test.api.illumina test.api.io test.api.prior test.pheniqs.BDGGG
+#
+# .PHONY: clean.test
+# clean.test: clean.test.api.configuration clean.test.api.illumina clean.test.api.io clean.test.api.prior clean.test.pheniqs.BDGGG
 
 # Dependencies
 
@@ -306,7 +343,7 @@ sequence.o: \
 
 barcode.o: \
 	sequence.o \
-	accumulator.o \
+	selector.o \
 	barcode.h
 
 auxiliary.o: \
@@ -318,9 +355,9 @@ read.o: \
 	auxiliary.o \
 	read.h
 
-accumulator.o: \
+selector.o: \
 	json.o \
-	accumulator.h
+	selector.h
 
 phred.o: \
 	iupac.h \
@@ -349,21 +386,25 @@ transform.o: \
 	read.o \
 	transform.h
 
-channel.o: \
+multiplex.o: \
 	feed.o \
-	accumulator.o \
-	channel.h
+	selector.o \
+	multiplex.h
 
 classifier.o: \
-	accumulator.o \
+	selector.o \
 	read.o \
 	classifier.h
 
 decoder.o: \
 	classifier.o \
 	transform.o \
-	channel.o \
+	multiplex.o \
 	decoder.h
+
+naive.o: \
+	decoder.o \
+	naive.h
 
 mdd.o: \
 	decoder.o \
@@ -379,10 +420,11 @@ job.o: \
 	job.h
 
 transcode.o: \
-	accumulator.o \
+	selector.o \
 	fastq.o \
 	hts.o \
 	decoder.o \
+	naive.o \
 	mdd.o \
 	pamld.o \
 	metric.h \

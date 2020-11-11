@@ -36,35 +36,24 @@ from core import Job
 from core import merge
 from core import to_json
 
-def estimate_decoder_voodoo_prior(decoder, report):
-    if 'average classified confidence' in report:
+def apply_prior(decoder, report):
+    if 'estimated noise' in report:
+        decoder['noise'] = report['estimated noise']
 
-        # estimate noise prior
-        noise_count = 0
-        if 'low conditional confidence count' in report:
-            noise_count += report['low conditional confidence count']
+    if 'codec' in decoder and 'classified' in report:
+        barcode_report_by_hash = {}
+        for barcode_report in report['classified']:
+            hash = ''.join(barcode_report['barcode'])
+            barcode_report_by_hash[hash] = barcode_report
 
-        if 'low confidence count' in report:
-            noise_count += (report['low confidence count'] * (1.0 - report['average classified confidence']))
-
-        decoder['noise'] = noise_count / report['count']
-        not_noise = 1.0 - decoder['noise']
-
-        if 'codec' in decoder and 'classified' in report:
-            # estimate each barcode prior
-            barcode_report_by_hash = {}
-            for barcode_report in report['classified']:
-                hash = ''.join(barcode_report['barcode'])
-                barcode_report_by_hash[hash] = barcode_report
-
-            for barcode_model in decoder['codec'].values():
-                hash = ''.join(barcode_model['barcode'])
-                if hash in barcode_report_by_hash:
-                    barcode_report = barcode_report_by_hash[hash]
-                    if 'pf pooled classified fraction' in barcode_report and barcode_report['pf pooled classified fraction'] > 0:
-                        barcode_model['concentration'] = not_noise * barcode_report['pf pooled classified fraction']
-                    else:
-                        barcode_model['concentration'] = 0
+        for barcode_model in decoder['codec'].values():
+            hash = ''.join(barcode_model['barcode'])
+            if hash in barcode_report_by_hash:
+                barcode_report = barcode_report_by_hash[hash]
+                if 'estimated concentration' in barcode_report:
+                    barcode_model['concentration'] = barcode_report['estimated concentration']
+                else:
+                    barcode_model['concentration'] = 0
 
 class PheniqsPriorApi(Job):
     def __init__(self, ontology):
@@ -93,7 +82,7 @@ class PheniqsPriorApi(Job):
                 with io.open(self.location['original'], 'rb') as file:
                     self.ontology['original'] = json.loads(file.read().decode('utf8'))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
         return self.ontology['original']
 
     @property
@@ -136,52 +125,9 @@ class PheniqsPriorApi(Job):
                     for line in error.decode('utf8').splitlines():
                         print(error.decode('utf8'))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
 
         return self.ontology['static']
-
-    @property
-    def estimating(self):
-        if self.ontology['estimating'] is None:
-            self.ontology['estimating'] = deepcopy(self.static)
-            self.strip_output_directive(self.ontology['estimating'])
-            self.ontology['estimating']['output'] = [ '/dev/null' ]
-            self.ontology['estimating']['report url'] = '/dev/stdout'
-            if 'base_input' in self.instruction:
-                self.ontology['estimating']['base input url'] = self.instruction['base_input']
-            if 'base_output' in self.instruction:
-                self.ontology['estimating']['base output url'] = self.instruction['base_output']
-            if 'input' in self.instruction:
-                self.ontology['estimating']['input'] = []
-                for value in self.instruction['input']:
-                    self.ontology['estimating']['input'].append(value)
-        return self.ontology['estimating']
-
-    @property
-    def adjusted(self):
-        if self.ontology['adjusted'] is None:
-            self.ontology['adjusted'] = deepcopy(self.static)
-            for classifier_type in [ 'multiplex', 'cellular', 'molecular' ]:
-                if classifier_type in self.report and classifier_type in self.adjusted:
-                    m = self.adjusted[classifier_type]
-                    r = self.report[classifier_type]
-
-                    if isinstance(m, dict):
-                        estimate_decoder_voodoo_prior(m, r)
-
-                    elif isinstance(m, list):
-                        index = 0
-                        model_by_index = {}
-                        for item in m:
-                            item['index'] = index
-                            model_by_index[index] = item
-                            index += 1
-
-                        for report_item in r:
-                            model_item = model_by_index[report_item['index']]
-                            estimate_decoder_voodoo_prior(model_item, report_item)
-
-        return self.ontology['adjusted']
 
     @property
     def report(self):
@@ -218,6 +164,49 @@ class PheniqsPriorApi(Job):
                         for line in error.decode('utf8').splitlines():
                             print(error.decode('utf8'))
         return self.ontology['report']
+
+    @property
+    def estimating(self):
+        if self.ontology['estimating'] is None:
+            self.ontology['estimating'] = deepcopy(self.static)
+            self.strip_output_directive(self.ontology['estimating'])
+            self.ontology['estimating']['output'] = [ '/dev/null' ]
+            self.ontology['estimating']['report url'] = '/dev/stdout'
+            if 'base_input' in self.instruction:
+                self.ontology['estimating']['base input url'] = self.instruction['base_input']
+            if 'base_output' in self.instruction:
+                self.ontology['estimating']['base output url'] = self.instruction['base_output']
+            if 'input' in self.instruction:
+                self.ontology['estimating']['input'] = []
+                for value in self.instruction['input']:
+                    self.ontology['estimating']['input'].append(value)
+        return self.ontology['estimating']
+
+    @property
+    def adjusted(self):
+        if self.ontology['adjusted'] is None:
+            self.ontology['adjusted'] = deepcopy(self.static)
+            for classifier_type in [ 'sample', 'cellular', 'molecular' ]:
+                if classifier_type in self.report and classifier_type in self.adjusted:
+                    m = self.adjusted[classifier_type]
+                    r = self.report[classifier_type]
+
+                    if isinstance(m, dict):
+                        apply_prior(m, r)
+
+                    elif isinstance(m, list):
+                        index = 0
+                        model_by_index = {}
+                        for item in m:
+                            item['index'] = index
+                            model_by_index[index] = item
+                            index += 1
+
+                        for report_item in r:
+                            model_item = model_by_index[report_item['index']]
+                            apply_prior(model_item, report_item)
+
+        return self.ontology['adjusted']
 
     def execute(self):
         print(to_json(self.adjusted))

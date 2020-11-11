@@ -70,11 +70,11 @@ Output transform
         Append token 0 of input segment 0 to output segment 0
         Append token 1 of input segment 2 to output segment 1
 
-Mutliplex decoding
+Sample decoding
 
     Decoding algorithm                          pamld
     Shannon bound                               2
-    Noise                                       0.0152
+    Noise                                       0.015
     Confidence threshold                        0.99
     Segment cardinality                         1
     Nucleotide cardinality                      8
@@ -121,7 +121,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.183498128559805
+        Concentration : 0.1773
         Barcode       : AGGCAGAA
         Segment No.0  : /dev/stdout?format=sam&compression=none
         Segment No.1  : /dev/stdout?format=sam&compression=none
@@ -136,7 +136,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.199524165988608
+        Concentration : 0.197
         Barcode       : CGTACTAG
         Segment No.0  : /dev/stdout?format=sam&compression=none
         Segment No.1  : /dev/stdout?format=sam&compression=none
@@ -151,7 +151,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.211944344995932
+        Concentration : 0.2167
         Barcode       : GGACTCCT
         Segment No.0  : /dev/stdout?format=sam&compression=none
         Segment No.1  : /dev/stdout?format=sam&compression=none
@@ -166,7 +166,7 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.222761920260375
+        Concentration : 0.22655
         Barcode       : TAAGGCGA
         Segment No.0  : /dev/stdout?format=sam&compression=none
         Segment No.1  : /dev/stdout?format=sam&compression=none
@@ -181,18 +181,10 @@ Mutliplex decoding
         PM : miseq
         CN : CGSB
         PI : 300
-        Concentration : 0.167071440195281
+        Concentration : 0.16745
         Barcode       : TCCTGAGC
         Segment No.0  : /dev/stdout?format=sam&compression=none
         Segment No.1  : /dev/stdout?format=sam&compression=none
-
-    Output feed No.0
-        Type : sam
-        Resolution : 2
-        Phred offset : 33
-        Platform : ILLUMINA
-        Buffer capacity : 4096
-        URL : /dev/stdout?format=sam&compression=none
 
 Molecular decoding
 
@@ -214,4 +206,12 @@ Molecular decoding
     Barcode undetermined
         ID : undetermined
         PU : undetermined
+
+    Output feed No.0
+        Type : sam
+        Resolution : 2
+        Phred offset : 33
+        Platform : ILLUMINA
+        Buffer capacity : 4096
+        URL : /dev/stdout?format=sam&compression=none
 

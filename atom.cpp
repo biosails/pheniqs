@@ -334,7 +334,7 @@ string to_string(const Algorithm& value) {
         case Algorithm::MDD:          result.assign("mdd");         break;
         case Algorithm::PAMLD:        result.assign("pamld");       break;
         case Algorithm::NAIVE:        result.assign("naive");       break;
-        case Algorithm::TRANSPARENT:  result.assign("transparent"); break;
+        case Algorithm::PASSTHROUGH:  result.assign("passthrough"); break;
         case Algorithm::BENCHMARK:    result.assign("benchmark");   break;
         default:                                                    break;
     }
@@ -345,7 +345,7 @@ bool from_string(const char* value, Algorithm& result) {
     else if(!strcmp(value, "mdd"))          result = Algorithm::MDD;
     else if(!strcmp(value, "pamld"))        result = Algorithm::PAMLD;
     else if(!strcmp(value, "naive"))        result = Algorithm::NAIVE;
-    else if(!strcmp(value, "transparent"))  result = Algorithm::TRANSPARENT;
+    else if(!strcmp(value, "passthrough"))  result = Algorithm::PASSTHROUGH;
     else if(!strcmp(value, "benchmark"))    result = Algorithm::BENCHMARK;
     else                                    result = Algorithm::UNKNOWN;
 
@@ -1369,10 +1369,6 @@ static inline char* skip_to_linebreak(char* source, const char* end) {
     return position;
 };
 
-HtsHead::HtsHead() {
-};
-HtsHead::~HtsHead() {
-};
 void HtsHead::decode(const bam_hdr_t* hdr) {
     if(hdr != NULL) {
         /*  read in @SQ element
@@ -1435,24 +1431,24 @@ void HtsHead::encode(bam_hdr_t* hdr) const {
     kstring_t buffer = { 0, 0, NULL };
     hd.encode(buffer);
 
-    vector< const HeadSQAtom* > reference_by_index(reference_by_id.size());
-    for(const auto& record : reference_by_id) {
+    vector< const HeadSQAtom* > reference_by_index(SQ_by_id.size());
+    for(const auto& record : SQ_by_id) {
         reference_by_index[record.second.index] = &record.second;
     }
     for(const auto& record : reference_by_index) {
         record->encode(buffer);
     }
 
-    vector< const HeadRGAtom* > read_group_by_index(read_group_by_id.size());
-    for(const auto& record : read_group_by_id) {
+    vector< const HeadRGAtom* > read_group_by_index(RG_by_id.size());
+    for(const auto& record : RG_by_id) {
         read_group_by_index[record.second.index] = &record.second;
     }
     for(const auto& record : read_group_by_index) {
         record->encode(buffer);
     }
 
-    vector< const HeadPGAtom* > program_by_index(program_by_id.size());
-    for(const auto& record : program_by_id) {
+    vector< const HeadPGAtom* > program_by_index(PG_by_id.size());
+    for(const auto& record : PG_by_id) {
         program_by_index[record.second.index] = &record.second;
     }
     for(const auto& record : program_by_index) {
@@ -1475,35 +1471,35 @@ void HtsHead::encode(bam_hdr_t* hdr) const {
 };
 void HtsHead::add_reference(const HeadSQAtom& atom) {
     string key(atom);
-    auto record = reference_by_id.find(key);
-    if(record != reference_by_id.end()) {
+    auto record = SQ_by_id.find(key);
+    if(record != SQ_by_id.end()) {
         record->second.update(atom);
     } else {
         HeadSQAtom o(atom);
-        o.index = reference_by_id.size();
-        reference_by_id.insert(make_pair(key, o));
+        o.index = SQ_by_id.size();
+        SQ_by_id.insert(make_pair(key, o));
     }
 };
 void HtsHead::add_read_group(const HeadRGAtom& atom) {
     string key(atom);
-    auto record = read_group_by_id.find(key);
-    if(record != read_group_by_id.end()) {
+    auto record = RG_by_id.find(key);
+    if(record != RG_by_id.end()) {
         record->second.update(atom);
     } else {
         HeadRGAtom o(atom);
-        o.index = read_group_by_id.size();
-        read_group_by_id.insert(make_pair(key, o));
+        o.index = RG_by_id.size();
+        RG_by_id.insert(make_pair(key, o));
     }
 };
 void HtsHead::add_program(const HeadPGAtom& atom) {
     string key(atom);
-    auto record = program_by_id.find(key);
-    if(record != program_by_id.end()) {
+    auto record = PG_by_id.find(key);
+    if(record != PG_by_id.end()) {
         record->second.update(atom);
     } else {
         HeadPGAtom o(atom);
-        o.index = program_by_id.size();
-        program_by_id.insert(make_pair(key, o));
+        o.index = PG_by_id.size();
+        PG_by_id.insert(make_pair(key, o));
     }
 };
 void HtsHead::add_comment(const HeadCOAtom& atom) {
@@ -1511,13 +1507,13 @@ void HtsHead::add_comment(const HeadCOAtom& atom) {
 };
 ostream& operator<<(ostream& o, const HtsHead& head) {
     o << head.hd;
-    for(const auto& record : head.reference_by_id) {
+    for(const auto& record : head.SQ_by_id) {
         o << record.second;
     }
-    for(const auto& record : head.read_group_by_id) {
+    for(const auto& record : head.RG_by_id) {
         o << record.second;
     }
-    for(const auto& record : head.program_by_id) {
+    for(const auto& record : head.PG_by_id) {
         o << record.second;
     }
     for(const auto& co : head.comment_by_index) {

@@ -46,7 +46,7 @@ class Job {
             } else {
                 compile();
                 execute();
-                write_report();
+                write_result();
             }
         };
 
@@ -77,7 +77,7 @@ class Job {
         virtual void compile();
         virtual void describe() const;
         virtual void execute();
-        virtual void write_report() const;
+        virtual void write_result() const;
         virtual void write_static_instruction() const;
         virtual void write_compiled_instruction() const;
         virtual void validate();

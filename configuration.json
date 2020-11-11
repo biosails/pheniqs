@@ -10,13 +10,13 @@
                 "input": [
                     "/dev/stdin"
                 ],
-                "multiplex": {
-                    "algorithm": "transparent"
-                },
                 "output": [
                     "/dev/stdout"
                 ],
-                "report url": "/dev/stderr"
+                "report url": "/dev/stderr",
+                "sample": {
+                    "algorithm": "passthrough"
+                }
             },
             "description": "Multiplex and Demultiplex annotated DNA sequence reads",
             "epilog": [
@@ -110,6 +110,19 @@
                     "inode": "file",
                     "meta": "PATH",
                     "name": "report url",
+                    "type": "url"
+                },
+                {
+                    "extension": [
+                        "json"
+                    ],
+                    "handle": [
+                        "--prior"
+                    ],
+                    "help": "Path to adjusted prior job file",
+                    "inode": "file",
+                    "meta": "PATH",
+                    "name": "prior adjusted job url",
                     "type": "url"
                 },
                 {
@@ -400,36 +413,45 @@
         "cellular:barcode": {
             "algorithm": null,
             "concentration": 1,
-            "enable quality control": null,
             "segment cardinality": null
         },
         "cellular:decoder": {
             "algorithm": "pamld",
             "codec": null,
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "distance tolerance": null,
-            "enable quality control": null,
             "noise": 0.01,
             "quality masking threshold": 0,
+            "segment cardinality": 0,
             "undetermined": null
         },
         "molecular:barcode": {
             "algorithm": null,
             "concentration": 1,
-            "enable quality control": null,
             "segment cardinality": null
         },
         "molecular:decoder": {
             "algorithm": "naive",
             "codec": null,
-            "confidence threshold": 0.99,
+            "confidence threshold": 0.95,
             "distance tolerance": null,
-            "enable quality control": null,
             "noise": 0.01,
             "quality masking threshold": 0,
+            "segment cardinality": 0,
             "undetermined": null
         },
         "multiplex:barcode": {
+            "enable quality control": null,
+            "filter outgoing qc fail": false,
+            "output": null
+        },
+        "multiplex:decoder": {
+            "base output url": null,
+            "enable quality control": null,
+            "filter outgoing qc fail": false,
+            "output": null
+        },
+        "sample:barcode": {
             "CN": null,
             "DT": null,
             "LB": null,
@@ -440,14 +462,11 @@
             "SM": null,
             "algorithm": null,
             "concentration": 1,
-            "enable quality control": null,
-            "filter outgoing qc fail": false,
             "flowcell id": null,
             "flowcell lane number": null,
-            "output": null,
             "segment cardinality": null
         },
-        "multiplex:decoder": {
+        "sample:decoder": {
             "CN": null,
             "DT": null,
             "LB": null,
@@ -457,16 +476,12 @@
             "PM": null,
             "SM": null,
             "algorithm": "pamld",
-            "base output url": null,
             "codec": null,
             "confidence threshold": 0.95,
             "distance tolerance": null,
-            "enable quality control": null,
-            "filter outgoing qc fail": false,
             "flowcell id": null,
             "flowcell lane number": null,
             "noise": 0.01,
-            "output": null,
             "quality masking threshold": 0,
             "segment cardinality": 0,
             "undetermined": null
@@ -540,6 +555,16 @@
                     "title": "Feed buffer resolution",
                     "type": "integer"
                 },
+                "classifier_type": {
+                    "description": "The type of tag the classifier is decoding: sample, cellular or molecular. ",
+                    "enum": [
+                        "sample",
+                        "cellular",
+                        "molecular"
+                    ],
+                    "title": "Classifier type",
+                    "type": "string"
+                },
                 "compile_only": {
                     "description": "Compile instructions and emit as JSON without executing.",
                     "title": "Compile instruction",
@@ -610,6 +635,9 @@
                         "base output url": {
                             "$ref": "#/definitions/url"
                         },
+                        "classifier type": {
+                            "$ref": "#/definitions/classifier_type"
+                        },
                         "codec": {
                             "additionalProperties": {
                                 "$ref": "#/definitions/decoder_class"
@@ -639,6 +667,9 @@
                         },
                         "quality masking threshold": {
                             "$ref": "#/definitions/quality_masking_threshold"
+                        },
+                        "random barcode probability": {
+                            "$ref": "#/definitions/random_barcode_probability"
                         },
                         "segment cardinality": {
                             "$ref": "#/definitions/segment_cardinality"
@@ -742,12 +773,12 @@
                     "type": "object"
                 },
                 "decoding_algorithm": {
-                    "description": "The decoding algorithm used by the decoder. MDD is the miniumum distance decoder, PAMLD is the Phred-Adjusted Maximum Likelihood decoder. The Naive decoder will populate SAM auxiliary tags without attempting error correction and the transparent simply route all read to the default output.",
+                    "description": "The decoding algorithm used by the decoder. MDD is the miniumum distance decoder, PAMLD is the Phred-Adjusted Maximum Likelihood decoder. The Naive decoder will populate SAM auxiliary tags without attempting error correction and the passthrough simply route all read to the default output.",
                     "enum": [
                         "mdd",
                         "pamld",
                         "naive",
-                        "transparent"
+                        "passthrough"
                     ],
                     "title": "Decoding algorithm",
                     "type": "string"
@@ -1010,10 +1041,6 @@
                             "title": "Molecular barcode decoder array",
                             "type": "array"
                         },
-                        "multiplex": {
-                            "$ref": "#/definitions/decoder",
-                            "title": "Multiplex barcode decoder"
-                        },
                         "output": {
                             "$ref": "#/definitions/url_array"
                         },
@@ -1028,6 +1055,10 @@
                         },
                         "program": {
                             "$ref": "#/definitions/pg"
+                        },
+                        "sample": {
+                            "$ref": "#/definitions/decoder",
+                            "title": "Sample barcode decoder"
                         },
                         "threads": {
                             "$ref": "#/definitions/threads"
@@ -1046,6 +1077,13 @@
                         "in",
                         "out"
                     ],
+                    "type": "string"
+                },
+                "knit": {
+                    "Description": "Pattern made of token references to assemble a segment",
+                    "format": "regex",
+                    "pattern": "^(~)?[0-9]+(:(~)?[0-9]+)*$",
+                    "title": "Knit",
                     "type": "string"
                 },
                 "leading_segment_index": {
@@ -1144,6 +1182,18 @@
                     "minimum": 0,
                     "title": "Quality masking threshold",
                     "type": "integer"
+                },
+                "random_barcode_probability": {
+                    "description": "The probability of observing a particular sequence given it is not one of the expected barcodes. The lower bound on the value is one over 4 to the power of the nucleotide cardinality of the codec.",
+                    "examples": [
+                        1e-10
+                    ],
+                    "exclusiveMaximum": true,
+                    "exclusiveMinimum": true,
+                    "maximum": 0.25,
+                    "minimum": 0,
+                    "title": "Random barcode probability",
+                    "type": "number"
                 },
                 "rg": {
                     "properties": {
@@ -1292,13 +1342,6 @@
                     "minimum": 0,
                     "title": "Segment cardinality",
                     "type": "integer"
-                },
-                "knit": {
-                    "Description": "Pattern made of token references to assemble a segment",
-                    "format": "regex",
-                    "pattern": "^(~)?[0-9]+(:(~)?[0-9]+)*$",
-                    "title": "Segment pattern",
-                    "type": "string"
                 },
                 "segment_token": {
                     "Description": "Token to extract from a segment",

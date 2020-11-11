@@ -28,7 +28,7 @@ cd $PWD
 LD_LIBRARY_PATH="\${HOME}/.pheniqs/travis/install/lib"
 export PATH=/tmp/miniconda3/bin/:\$PATH
 
-./tool/ppkg.py -v info build test/build.json
+./tool/pheniqs-build-api.py -v info build test/build.json
 make all PREFIX="\${HOME}/.pheniqs/travis/install"
 make test PREFIX="\${HOME}/.pheniqs/travis/install"
 

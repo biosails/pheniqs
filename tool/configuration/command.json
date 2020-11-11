@@ -1,9 +1,8 @@
 {
     "implementation": {
-        "benchmark": {
+        "configuration api": {
             "interface": {
                 "argument": [
-                    "home",
                     "version",
                     "verbosity"
                 ],
@@ -11,90 +10,6 @@
                     "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
                 },
                 "prototype": {
-                    "bsid": {
-                        "flag": [
-                            "--bsid"
-                        ],
-                        "parameter": {
-                            "help": "Barcode simulation id"
-                        }
-                    },
-                    "capacity": {
-                        "flag": [
-                            "-C",
-                            "--capacity"
-                        ],
-                        "parameter": {
-                            "default": 256,
-                            "help": "IO buffer capacity.",
-                            "metavar": "INT",
-                            "type": "int"
-                        }
-                    },
-                    "configuration": {
-                        "flag": [
-                            "-c",
-                            "--configuration"
-                        ],
-                        "parameter": {
-                            "help": "Path to configuration file.",
-                            "metavar": "PATH"
-                        }
-                    },
-                    "error": {
-                        "flag": [
-                            "-e",
-                            "--error"
-                        ],
-                        "parameter": {
-                            "default": null,
-                            "help": "Desired error rate per nucloetide.",
-                            "metavar": "FLOAT",
-                            "type": "float"
-                        }
-                    },
-                    "home": {
-                        "flag": [
-                            "-H",
-                            "--home"
-                        ],
-                        "parameter": {
-                            "help": "Path to home directory.",
-                            "metavar": "PATH"
-                        }
-                    },
-                    "input": {
-                        "flag": [
-                            "-i",
-                            "--input"
-                        ],
-                        "parameter": {
-                            "default": "/dev/stdin",
-                            "help": "Path to SAM encoded input file. default: stdin.",
-                            "metavar": "PATH"
-                        }
-                    },
-                    "model": {
-                        "flag": [
-                            "-m",
-                            "--model"
-                        ],
-                        "parameter": {
-                            "help": "Path to simulation model file.",
-                            "metavar": "PATH"
-                        }
-                    },
-                    "output": {
-                        "flag": [
-                            "-o",
-                            "--output"
-                        ],
-                        "parameter": {
-                            "default": "/dev/stdout",
-                            "help": "Path to SAM encoded output file. default: stdout.",
-                            "metavar": "PATH"
-                        }
-                    },
                     "path": {
                         "flag": [
                             "path"
@@ -103,302 +18,28 @@
                             "help": "path",
                             "metavar": "PATH"
                         }
-                    },
-                    "preset": {
-                        "flag": [
-                            "-p",
-                            "--preset"
-                        ],
-                        "parameter": {
-                            "default": "A5KVK",
-                            "help": "Simulation preset.",
-                            "metavar": "NAME"
-                        }
-                    },
-                    "report": {
-                        "flag": [
-                            "-r",
-                            "--report"
-                        ],
-                        "parameter": {
-                            "default": "/dev/stderr",
-                            "help": "Path to report file.",
-                            "metavar": "PATH"
-                        }
-                    },
-                    "sid": {
-                        "flag": [
-                            "-s",
-                            "--session"
-                        ],
-                        "parameter": {
-                            "help": "Persistence session id",
-                            "metavar": "ID"
-                        }
-                    },
-                    "ssid": {
-                        "flag": [
-                            "--ssid"
-                        ],
-                        "parameter": {
-                            "help": "Substitution simulation id"
-                        }
                     }
                 },
                 "section": {
                     "action": [
                         {
                             "argument": [
-                                "path",
-                                "preset",
-                                "capacity",
-                                "sid"
+                                "path"
                             ],
-                            "implementation": "plan",
+                            "implementation": "zsh_completion",
                             "instruction": {
-                                "description": "Execute simmulation plan.",
-                                "help": "Execute simmulation plan.",
-                                "name": "plan"
-                            },
-                            "prototype": {
-                                "path": {
-                                    "parameter": {
-                                        "help": "path to simlation plan JSON file"
-                                    }
-                                }
+                                "help": "generate zsh completion script",
+                                "name": "zsh"
                             }
                         },
                         {
                             "argument": [
-                                "bsid"
+                                "path"
                             ],
-                            "implementation": "rebuild",
+                            "implementation": "serialize_header",
                             "instruction": {
-                                "description": "rebuild db.",
-                                "help": "Rebuild db.",
-                                "name": "rebuild"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "error",
-                                "capacity",
-                                "sid"
-                            ],
-                            "implementation": "benchmark_substitution",
-                            "instruction": {
-                                "description": "Simulate barcode errors based on the quality scores and benchmark against resulting file.",
-                                "help": "Benchmakr simulate barcode errors.",
-                                "name": "benchmark_substitution"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "preset",
-                                "refresh",
-                                "sid"
-                            ],
-                            "implementation": "summarize",
-                            "instruction": {
-                                "description": "Summarize benchmark results.",
-                                "help": "Summarize benchmark results.",
-                                "name": "summarize"
-                            },
-                            "prototype": {
-                                "bsid": {
-                                    "flag": [
-                                        "--bsid"
-                                    ],
-                                    "parameter": {
-                                        "help": "Barcode simulation id",
-                                        "required": true
-                                    }
-                                },
-                                "preset": {
-                                    "flag": [
-                                        "-p",
-                                        "--preset"
-                                    ],
-                                    "parameter": {
-                                        "choices": [
-                                            "json",
-                                            "bin_model",
-                                            "decoder_summary_R",
-                                            "decoder_summary",
-                                            "barcode_summary_R",
-                                            "barcode_summary",
-                                            "barcode_prior",
-                                            "binned_barcode_prior",
-                                            "noise_summary_R",
-                                            "noise_summary",
-                                            "classified_summary_R",
-                                            "classified_summary",
-                                            "classifiable_summary_R",
-                                            "classifiable_summary",
-                                            "binned_decoder_summary_R",
-                                            "binned_decoder_summary",
-                                            "quality_distribution",
-                                            "barcode_distribution"
-                                        ],
-                                        "default": "json",
-                                        "help": "Summary preset.",
-                                        "metavar": "NAME"
-                                    }
-                                },
-                                "refresh": {
-                                    "flag": [
-                                        "-R",
-                                        "--refresh"
-                                    ],
-                                    "parameter": {
-                                        "action": "store_true",
-                                        "help": "Refresh summary model"
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "preset",
-                                "input",
-                                "capacity",
-                                "sid"
-                            ],
-                            "implementation": "simulate_barcode",
-                            "instruction": {
-                                "description": "Simulate barcode indices using the priors with perfect barcodes, keeping the existing quality scores. Global error rate on the cycles containing the barcode indice is reported to allow calibrtation when simulating errors. The correct barcode index is encoded in the read id.",
-                                "help": "Simulate perfect barcode indices.",
-                                "name": "simulate_barcode"
-                            },
-                            "prototype": {
-                                "input": {
-                                    "parameter": {
-                                        "help": "Original input data to simulate barcode indices."
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "error",
-                                "capacity",
-                                "sid"
-                            ],
-                            "implementation": "simulate_substitution",
-                            "instruction": {
-                                "description": "Simulate barcode errors based on the quality scores. If -e/--error is specified quality scores are first recalibrated to produce the requested global rate.",
-                                "help": "Simulate barcode errors.",
-                                "name": "simulate_substitution"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "capacity",
-                                "sid"
-                            ],
-                            "implementation": "todeml",
-                            "instruction": {
-                                "description": "Transcoded reads to a deML consumable format.",
-                                "help": "Transcoded to deML syntax",
-                                "name": "todeml"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "sid"
-                            ],
-                            "implementation": "estimate_prior",
-                            "instruction": {
-                                "description": "Exectue pheniqs with a flat configuration and no output to estimste priors.",
-                                "help": "Estimate distrbution prior from data.",
-                                "name": "estimate_prior"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "sid"
-                            ],
-                            "implementation": "adjust_prior",
-                            "instruction": {
-                                "description": "Create a new pheniqs mux configuration file with adjusted priors based on the initial report.",
-                                "help": "Adjuste configuration priors",
-                                "name": "adjust_prior"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "sid"
-                            ],
-                            "implementation": "demux_pamld",
-                            "instruction": {
-                                "help": "Demultiplex with pamld.",
-                                "name": "demux_pamld"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "sid"
-                            ],
-                            "implementation": "demux_mdd",
-                            "instruction": {
-                                "help": "Demultiplex with mdd.",
-                                "name": "demux_mdd"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "sid"
-                            ],
-                            "implementation": "demux_deml",
-                            "instruction": {
-                                "help": "Demultiplex with deML.",
-                                "name": "demux_deml"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "capacity",
-                                "sid"
-                            ],
-                            "implementation": "analyze_pamld",
-                            "instruction": {
-                                "description": "Collect FP/FN/TP/TN statistics from pamld demultiplexing.",
-                                "help": "Analyze pamld demultiplexing results.",
-                                "name": "analyze_pamld"
-                            }
-                        },
-                        {
-                            "argument": [
-                                "bsid",
-                                "ssid",
-                                "capacity",
-                                "sid"
-                            ],
-                            "implementation": "analyze_deml",
-                            "instruction": {
-                                "description": "Collect FP/FN/TP/TN statistics from deML demultiplexing.",
-                                "help": "Analyze deML demultiplexing results.",
-                                "name": "analyze_deml"
+                                "help": "generate a serialized configuration.h file",
+                                "name": "header"
                             }
                         }
                     ],
@@ -519,8 +160,8 @@
                                 "noise"
                             ],
                             "instruction": {
-                                "help": "Multiplex job file for each lane",
-                                "name": "multiplex"
+                                "help": "Sample barcode decoding job for each lane",
+                                "name": "sample"
                             }
                         },
                         {
@@ -838,31 +479,31 @@
             },
             "package implementation": {
                 "bcl2fastq": {
-                    "job implementation": "ppkg.Bcl2Fastq"
+                    "job implementation": "pheniqs-build-api.Bcl2Fastq"
                 },
                 "bz2": {
-                    "job implementation": "ppkg.BZip2"
+                    "job implementation": "pheniqs-build-api.BZip2"
                 },
                 "htslib": {
-                    "job implementation": "ppkg.Make"
+                    "job implementation": "pheniqs-build-api.Make"
                 },
                 "libdeflate": {
-                    "job implementation": "ppkg.LibDeflate"
+                    "job implementation": "pheniqs-build-api.LibDeflate"
                 },
                 "pheniqs": {
-                    "job implementation": "ppkg.Make"
+                    "job implementation": "pheniqs-build-api.Make"
                 },
                 "rapidjson": {
-                    "job implementation": "ppkg.RapidJSON"
+                    "job implementation": "pheniqs-build-api.RapidJSON"
                 },
                 "samtools": {
-                    "job implementation": "ppkg.SAMTools"
+                    "job implementation": "pheniqs-build-api.SAMTools"
                 },
                 "xz": {
-                    "job implementation": "ppkg.Make"
+                    "job implementation": "pheniqs-build-api.Make"
                 },
                 "zlib": {
-                    "job implementation": "ppkg.Make"
+                    "job implementation": "pheniqs-build-api.Make"
                 }
             }
         },
@@ -881,7 +522,7 @@
                 ],
                 "instruction": {
                     "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology",
-                    "epilog": "Adjust priors in a pheniqs configuration file using a statistics report from a prelimanry pheniqs run. If a report is not provided pheniqs will be executed to produce the prior and than apply it to the provided configurtion. If you choose not to provide a prior, the parameters forwarded to pheniqs allow you adjust relevent IO parameters to make the configurtion more portable."
+                    "epilog": "Adjust priors in a pheniqs configuration file using a statistics report from a prelimanry pheniqs run. If a report is not provided pheniqs will be executed to produce the prior and than apply it to the provided configuration. If you choose not to provide a prior, the parameters forwarded to pheniqs allow you adjust relevent IO parameters to make the configuration more portable."
                 },
                 "prototype": {
                     "configuration": {
@@ -935,49 +576,6 @@
                             "default": false,
                             "help": "Forwarded to pheniqs -s/--sense-input parameter."
                         }
-                    }
-                }
-            }
-        },
-        "shell": {
-            "interface": {
-                "argument": [
-                    "version",
-                    "verbosity"
-                ],
-                "instruction": {
-                    "description": "Lior Galanti lior.galanti@nyu.edu NYU Center for Genomics & Systems Biology"
-                },
-                "prototype": {
-                    "path": {
-                        "flag": [
-                            "path"
-                        ],
-                        "parameter": {
-                            "help": "path",
-                            "metavar": "PATH"
-                        }
-                    }
-                },
-                "section": {
-                    "action": [
-                        {
-                            "argument": [
-                                "path"
-                            ],
-                            "implementation": "zsh_completion",
-                            "instruction": {
-                                "help": "generate zsh completion script",
-                                "name": "zsh"
-                            }
-                        }
-                    ],
-                    "instruction": {
-                        "description": "",
-                        "dest": "action",
-                        "help": null,
-                        "metavar": "ACTION",
-                        "title": "pipeline operations"
                     }
                 }
             }

@@ -21,6 +21,8 @@
 
 #include "read.h"
 
+/*  Segment */
+
 ostream& operator<<(ostream& o, const Segment& segment) {
     o << segment.name.s << '\t';
     o << segment.index << '\t';
@@ -34,6 +36,8 @@ ostream& operator<<(ostream& o, const Segment& segment) {
     ks_free(buffer);
     return o;
 };
+
+/*  Read */
 
 ostream& operator<<(ostream& o, const Read& read) {
     for(auto& segment : read) {

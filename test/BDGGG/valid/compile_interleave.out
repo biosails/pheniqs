@@ -96,18 +96,26 @@
     "input phred offset": 33,
     "input segment cardinality": 3,
     "leading segment index": 0,
-    "multiplex": {
+    "output": [
+        "/dev/stdout"
+    ],
+    "output phred offset": 33,
+    "output segment cardinality": 3,
+    "platform": "ILLUMINA",
+    "report url": "/dev/stderr",
+    "sample": {
         "CN": "CGSB",
         "DT": "2018-02-25T07:00:00+00:00",
         "PI": "300",
         "PL": "ILLUMINA",
         "PM": "miseq",
         "SM": "trinidad",
-        "algorithm": "transparent",
+        "algorithm": "passthrough",
         "base output url": "test/BDGGG",
         "confidence threshold": 0.95,
         "flowcell id": "BDGGG",
         "index": 0,
+        "multiplexing classifier": true,
         "noise": 0.01,
         "output": [
             "/dev/stdout"
@@ -124,39 +132,8 @@
             "PU": "BDGGG:undetermined",
             "SM": "trinidad",
             "TC": 3,
-            "algorithm": "transparent",
+            "algorithm": "passthrough",
             "concentration": 0.01,
-            "feed": {
-                "output feed by segment": [
-                    {
-                        "capacity": 6144,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 3,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    },
-                    {
-                        "capacity": 6144,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 3,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    },
-                    {
-                        "capacity": 6144,
-                        "direction": "out",
-                        "index": 0,
-                        "phred offset": 33,
-                        "platform": "ILLUMINA",
-                        "resolution": 3,
-                        "url": "/dev/stdout?format=sam&compression=none"
-                    }
-                ]
-            },
             "flowcell id": "BDGGG",
             "index": 0,
             "output": [
@@ -167,13 +144,6 @@
             "segment cardinality": 0
         }
     },
-    "output": [
-        "/dev/stdout"
-    ],
-    "output phred offset": 33,
-    "output segment cardinality": 3,
-    "platform": "ILLUMINA",
-    "report url": "/dev/stderr",
     "template": {
         "transform": {
             "knit": [

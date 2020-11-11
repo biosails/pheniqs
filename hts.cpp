@@ -65,7 +65,7 @@ ostream& operator<<(ostream& o, const bam1_t& record) {
     o << "core.qual         " << int32_t(record.core.qual) << endl;          // mapping quality
     o << "core.l_qname      " << int32_t(record.core.l_qname) << endl;       // length of the query name
     o << "core.flag         " << int32_t(record.core.flag) << endl;          // bitwise flag
-    o << "core.unused1      " << int32_t(record.core.unused1) << endl;
+    // o << "core.unused1      " << int32_t(record.core.unused1) << endl;
     o << "core.l_extranul   " << int32_t(record.core.l_extranul) << endl;    // length of extra NULs between qname & cigar (for alignment)
     o << "core.n_cigar      " << record.core.n_cigar << endl;       // number of CIGAR operations
     o << "core.l_qseq       " << record.core.l_qseq << endl;        // length of the query sequence (read)

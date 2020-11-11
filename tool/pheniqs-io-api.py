@@ -49,7 +49,7 @@ class PheniqsIoApi(Job):
         }
         self.ontology = merge(default, self.ontology)
         self.location['original'] = os.path.realpath(os.path.abspath(os.path.expanduser(os.path.expandvars(self.instruction['configuration']))))
-        print(to_json(self.instruction))
+
     @property
     def original(self):
         if self.ontology['original'] is None:
@@ -57,7 +57,7 @@ class PheniqsIoApi(Job):
                 with io.open(self.location['original'], 'rb') as file:
                     self.ontology['original'] = json.loads(file.read().decode('utf8'))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
         return self.ontology['original']
 
     @property
@@ -101,7 +101,7 @@ class PheniqsIoApi(Job):
                         print(error.decode('utf8'))
                     raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
         return self.ontology['static']
 
     @property
@@ -145,58 +145,105 @@ class PheniqsIoApi(Job):
                         print(error.decode('utf8'))
                     raise BadConfigurationError('pheniqs returned {} when creating a static configuration'.format(return_code))
             else:
-                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configurtion']))
+                raise BadConfigurationError('could not find configuration file {}'.format(self.instruction['configuration']))
         return self.ontology['compiled']
 
     @property
     def adjusted(self):
         if self.ontology['adjusted'] is None:
+            self.ontology['adjusted'] = deepcopy(self.static)
             prefix = self.make_format_prefix()
             suffix = self.make_format_suffix()
+            multiplexing_classifier = self.find_multiplexing_classifier(self.ontology['adjusted'])
+            compiled_multiplexing_classifier = self.find_multiplexing_classifier(self.compiled)
+            output_segment_cardinality = self.compiled['output segment cardinality']
 
-            overlay = {}
-            if 'multiplex' in self.compiled and self.instruction['split_library']:
-                overlay['multiplex'] = {}
-                segment_cardinality = self.compiled['multiplex']['segment cardinality']
-                if 'undetermined' in self.compiled['multiplex']:
-                    overlay['multiplex']['undetermined'] = { 'output': [] }
+            if multiplexing_classifier is not None and self.instruction['split_library']:
+                if 'undetermined' not in multiplexing_classifier:
+                    multiplexing_classifier['undetermined'] = {}
+
+                if 'output' not in multiplexing_classifier['undetermined']:
+                    multiplexing_classifier['undetermined']['output'] = []
                     if self.instruction['split_segment']:
-                        for segment_index in range(1,segment_cardinality + 1):
-                            overlay['multiplex']['undetermined']['output'].append('{}_undetermined_s{:0>2}.{}'.format(prefix, segment_index, suffix))
+                        for segment_index in range(1, output_segment_cardinality + 1):
+                            multiplexing_classifier['undetermined']['output'].append('{}_undetermined_s{:0>2}.{}'.format(prefix, segment_index, suffix))
                     else:
-                        overlay['multiplex']['undetermined']['output'].append('{}_undetermined.{}'.format(prefix, suffix))
+                        multiplexing_classifier['undetermined']['output'].append('{}_undetermined.{}'.format(prefix, suffix))
 
-                if 'codec' in self.compiled['multiplex']:
-                    overlay['multiplex']['codec'] = {}
-                    for barcode_key, barcode in self.compiled['multiplex']['codec'].items():
+                if 'codec' in multiplexing_classifier:
+                    for barcode_key, barcode in multiplexing_classifier['codec'].items():
+                        barcode['output'] = []
                         name = self.make_library_name(barcode)
-                        overlay['multiplex']['codec'][barcode_key] = { 'output': [] }
                         if self.instruction['split_segment']:
-                            for segment_index in range(1,segment_cardinality + 1):
-                                overlay['multiplex']['codec'][barcode_key]['output'].append('{}_{}_s{:0>2}.{}'.format(prefix, name, segment_index, suffix))
+                            for segment_index in range(1, output_segment_cardinality + 1):
+                                barcode['output'].append('{}_{}_s{:0>2}.{}'.format(prefix, name, segment_index, suffix))
                         else:
-                            overlay['multiplex']['codec'][barcode_key]['output'].append('{}_{}.{}'.format(prefix, name, suffix))
+                            barcode['output'].append('{}_{}.{}'.format(prefix, name, suffix))
             else:
-                overlay['output'] = []
+                self.ontology['adjusted']['output'] = []
                 if self.instruction['split_segment']:
-                    segment_cardinality = self.compiled['multiplex']['segment cardinality']
-                    for segment_index in range(1,segment_cardinality + 1):
-                        overlay['output'].append('{}_s{:0>2}.{}'.format(prefix, segment_index, suffix))
+                    for segment_index in range(1, output_segment_cardinality + 1):
+                        self.ontology['adjusted']['output'].append('{}_s{:0>2}.{}'.format(prefix, segment_index, suffix))
                 else:
-                    overlay['output'].append('{}.{}'.format(prefix, suffix))
-
-            if self.instruction['static']:
-                self.ontology['adjusted'] = deepcopy(self.static)
-            else:
-                self.ontology['adjusted'] = deepcopy(self.original)
-
-            self.strip_output_directive(self.ontology['adjusted'])
-            self.ontology['adjusted'] = merge(self.ontology['adjusted'], overlay)
+                    self.ontology['adjusted']['output'].append('{}.{}'.format(prefix, suffix))
 
         return self.ontology['adjusted']
 
     def execute(self):
         print(to_json(self.adjusted))
+
+    def find_multiplexing_classifier(self, instruction):
+        candidate = []
+
+        # search for multiplexing classifier tag
+        if 'sample' in instruction:
+            if 'multiplexing classifier' in instruction['sample'] and instruction['sample']['multiplexing classifier']:
+                candidate.append(instruction['sample'])
+        if 'cellular' in instruction:
+            for decoder in instruction['cellular']:
+                if 'multiplexing classifier' in decoder and decoder['multiplexing classifier']:
+                    candidate.append(decoder)
+        if 'molecular' in instruction:
+            for decoder in instruction['molecular']:
+                if 'multiplexing classifier' in decoder and decoder['multiplexing classifier']:
+                    candidate.append(decoder)
+
+        if not candidate:
+            # search for and output tag
+            if 'sample' in instruction and self.decoder_has_output(instruction['sample']):
+                candidate.append(instruction['sample'])
+            if 'cellular' in instruction:
+                for decoder in instruction['cellular']:
+                    if self.decoder_has_output(decoder):
+                        candidate.append(decoder)
+            if 'molecular' in instruction:
+                for decoder in instruction['molecular']:
+                    if self.decoder_has_output(decoder):
+                        candidate.append(decoder)
+            if not candidate:
+                if 'sample' in instruction:
+                    return instruction['sample']
+                else:
+                    return None
+            elif len(candidate) == 1:
+                return candidate[0];
+            else:
+                raise BadConfigurationError('multiple decoders declare output')
+        elif len(candidate) == 1:
+            return candidate[0];
+        else:
+            raise BadConfigurationError('multiple multiplexing classifier candidates found')
+
+    def decoder_has_output(self, decoder):
+        result = False
+        if decoder is not None:
+            if 'output' in decoder:
+                result = True
+            elif 'undetermined' in decoder and 'output' in decoder['undetermined']:
+                result = True
+            elif 'codec' in decoder and any(('output' in v for v in decoder['codec'].values())):
+                result = True
+        return result
 
     def make_format_suffix(self):
         suffix = self.instruction['format']
@@ -217,12 +264,16 @@ class PheniqsIoApi(Job):
                 prefix = self.compiled['flowcell id']
             else:
                 raise BadConfigurationError('must provide prefix if flowcell id is not defined')
+
+            if 'flowcell lane number' in self.compiled:
+                prefix = '{}_l{:0>2}'.format(prefix, self.compiled['flowcell lane number'])
+
         return prefix
 
     def make_library_name(self, barcode):
         value = None
         if 'LB' in barcode:
-            value = barcode['LB']
+            value = barcode['LB'].replace(' ', '_')
         elif 'barcode' in barcode:
             value = ''.join(barcode['barcode'])
         return value
@@ -231,13 +282,13 @@ class PheniqsIoApi(Job):
         if 'output' in instruction:
             del instruction['output']
 
-        if 'multiplex' in instruction:
-            if 'undetermined' in instruction['multiplex']:
-                if 'output' in instruction['multiplex']['undetermined']:
-                    del instruction['multiplex']['undetermined']['output']
+        if 'sample' in instruction:
+            if 'undetermined' in instruction['sample']:
+                if 'output' in instruction['sample']['undetermined']:
+                    del instruction['sample']['undetermined']['output']
 
-            if 'codec' in instruction['multiplex']:
-                for barcode in instruction['multiplex']['codec'].values():
+            if 'codec' in instruction['sample']:
+                for barcode in instruction['sample']['codec'].values():
                     if 'output' in barcode:
                         del barcode['output']
 

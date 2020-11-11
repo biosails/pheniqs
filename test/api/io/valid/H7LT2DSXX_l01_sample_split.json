@@ -1,0 +1,1070 @@
+{
+    "PL": "ILLUMINA",
+    "PM": "A00534",
+    "flowcell id": "H7LT2DSXX",
+    "input": [
+        "H7LT2DSXX_S1_L001_R1_001.fastq.gz",
+        "H7LT2DSXX_S1_L001_I1_001.fastq.gz",
+        "H7LT2DSXX_S1_L001_I2_001.fastq.gz",
+        "H7LT2DSXX_S1_L001_R2_001.fastq.gz"
+    ],
+    "output": [
+        "H7LT2DSXX_l01.bam"
+    ],
+    "report url": "H7LT2DSXX_l01_sample_report.json",
+    "sample": {
+        "algorithm": "pamld",
+        "codec": {
+            "@A10_PDAC81": {
+                "LB": "A10_PDAC81",
+                "barcode": [
+                    "CGAGGCTG",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_A10_PDAC81_s01.fastq.gz",
+                    "H7LT2DSXX_A10_PDAC81_s02.fastq.gz"
+                ]
+            },
+            "@A11_PDAC490": {
+                "LB": "A11_PDAC490",
+                "barcode": [
+                    "AAGAGGCA",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_A11_PDAC490_s01.fastq.gz",
+                    "H7LT2DSXX_A11_PDAC490_s02.fastq.gz"
+                ]
+            },
+            "@A12_PDAC560": {
+                "LB": "A12_PDAC560",
+                "barcode": [
+                    "GCTCATGA",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_A12_PDAC560_s01.fastq.gz",
+                    "H7LT2DSXX_A12_PDAC560_s02.fastq.gz"
+                ]
+            },
+            "@A1_PDAC559": {
+                "LB": "A1_PDAC559",
+                "barcode": [
+                    "TAAGGCGA",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_A1_PDAC559_s01.fastq.gz",
+                    "H7LT2DSXX_A1_PDAC559_s02.fastq.gz"
+                ]
+            },
+            "@A2_PDAC609": {
+                "LB": "A2_PDAC609",
+                "barcode": [
+                    "CGTACTAG",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_A2_PDAC609_s01.fastq.gz",
+                    "H7LT2DSXX_A2_PDAC609_s02.fastq.gz"
+                ]
+            },
+            "@A3_PDAC483": {
+                "LB": "A3_PDAC483",
+                "barcode": [
+                    "AGGCAGAA",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_A3_PDAC483_s01.fastq.gz",
+                    "H7LT2DSXX_A3_PDAC483_s02.fastq.gz"
+                ]
+            },
+            "@A4_PDAC494": {
+                "LB": "A4_PDAC494",
+                "barcode": [
+                    "GGACTCCT",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_A4_PDAC494_s01.fastq.gz",
+                    "H7LT2DSXX_A4_PDAC494_s02.fastq.gz"
+                ]
+            },
+            "@A5_PDAC510": {
+                "LB": "A5_PDAC510",
+                "barcode": [
+                    "CTCTCTAC",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_A5_PDAC510_s01.fastq.gz",
+                    "H7LT2DSXX_A5_PDAC510_s02.fastq.gz"
+                ]
+            },
+            "@A6_PDAC511": {
+                "LB": "A6_PDAC511",
+                "barcode": [
+                    "TAGCGCTC",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_A6_PDAC511_s01.fastq.gz",
+                    "H7LT2DSXX_A6_PDAC511_s02.fastq.gz"
+                ]
+            },
+            "@A7_PTHE43": {
+                "LB": "A7_PTHE43",
+                "barcode": [
+                    "TAGGCATG",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_A7_PTHE43_s01.fastq.gz",
+                    "H7LT2DSXX_A7_PTHE43_s02.fastq.gz"
+                ]
+            },
+            "@A8_PDAC502": {
+                "LB": "A8_PDAC502",
+                "barcode": [
+                    "GTAGAGGA",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_A8_PDAC502_s01.fastq.gz",
+                    "H7LT2DSXX_A8_PDAC502_s02.fastq.gz"
+                ]
+            },
+            "@B10_PDAC90": {
+                "LB": "B10_PDAC90",
+                "barcode": [
+                    "AAGAGGCA",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B10_PDAC90_s01.fastq.gz",
+                    "H7LT2DSXX_B10_PDAC90_s02.fastq.gz"
+                ]
+            },
+            "@B11_PDAC518": {
+                "LB": "B11_PDAC518",
+                "barcode": [
+                    "GCTCATGA",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_B11_PDAC518_s01.fastq.gz",
+                    "H7LT2DSXX_B11_PDAC518_s02.fastq.gz"
+                ]
+            },
+            "@B12_PDAC562": {
+                "LB": "B12_PDAC562",
+                "barcode": [
+                    "CGAGGCTG",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B12_PDAC562_s01.fastq.gz",
+                    "H7LT2DSXX_B12_PDAC562_s02.fastq.gz"
+                ]
+            },
+            "@B1_PTHE34": {
+                "LB": "B1_PTHE34",
+                "barcode": [
+                    "CGTACTAG",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B1_PTHE34_s01.fastq.gz",
+                    "H7LT2DSXX_B1_PTHE34_s02.fastq.gz"
+                ]
+            },
+            "@B2_PDAC579": {
+                "LB": "B2_PDAC579",
+                "barcode": [
+                    "AGGCAGAA",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_B2_PDAC579_s01.fastq.gz",
+                    "H7LT2DSXX_B2_PDAC579_s02.fastq.gz"
+                ]
+            },
+            "@B3_PDAC485": {
+                "LB": "B3_PDAC485",
+                "barcode": [
+                    "TAAGGCGA",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B3_PDAC485_s01.fastq.gz",
+                    "H7LT2DSXX_B3_PDAC485_s02.fastq.gz"
+                ]
+            },
+            "@B4_PDAC553": {
+                "LB": "B4_PDAC553",
+                "barcode": [
+                    "CTCTCTAC",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B4_PDAC553_s01.fastq.gz",
+                    "H7LT2DSXX_B4_PDAC553_s02.fastq.gz"
+                ]
+            },
+            "@B5_PTHE47": {
+                "LB": "B5_PTHE47",
+                "barcode": [
+                    "TAGCGCTC",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_B5_PTHE47_s01.fastq.gz",
+                    "H7LT2DSXX_B5_PTHE47_s02.fastq.gz"
+                ]
+            },
+            "@B6_PDAC542": {
+                "LB": "B6_PDAC542",
+                "barcode": [
+                    "GGACTCCT",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B6_PDAC542_s01.fastq.gz",
+                    "H7LT2DSXX_B6_PDAC542_s02.fastq.gz"
+                ]
+            },
+            "@B7_PTHE37": {
+                "LB": "B7_PTHE37",
+                "barcode": [
+                    "GTAGAGGA",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B7_PTHE37_s01.fastq.gz",
+                    "H7LT2DSXX_B7_PTHE37_s02.fastq.gz"
+                ]
+            },
+            "@B8_PDAC84": {
+                "LB": "B8_PDAC84",
+                "barcode": [
+                    "CGGAGCCT",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_B8_PDAC84_s01.fastq.gz",
+                    "H7LT2DSXX_B8_PDAC84_s02.fastq.gz"
+                ]
+            },
+            "@B9_PDAC505": {
+                "LB": "B9_PDAC505",
+                "barcode": [
+                    "TAGGCATG",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_B9_PDAC505_s01.fastq.gz",
+                    "H7LT2DSXX_B9_PDAC505_s02.fastq.gz"
+                ]
+            },
+            "@C10_PDAC491": {
+                "LB": "C10_PDAC491",
+                "barcode": [
+                    "GCTCATGA",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C10_PDAC491_s01.fastq.gz",
+                    "H7LT2DSXX_C10_PDAC491_s02.fastq.gz"
+                ]
+            },
+            "@C11_PDAC564": {
+                "LB": "C11_PDAC564",
+                "barcode": [
+                    "CGAGGCTG",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C11_PDAC564_s01.fastq.gz",
+                    "H7LT2DSXX_C11_PDAC564_s02.fastq.gz"
+                ]
+            },
+            "@C12_PDAC610": {
+                "LB": "C12_PDAC610",
+                "barcode": [
+                    "AAGAGGCA",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_C12_PDAC610_s01.fastq.gz",
+                    "H7LT2DSXX_C12_PDAC610_s02.fastq.gz"
+                ]
+            },
+            "@C1_PDAC582": {
+                "LB": "C1_PDAC582",
+                "barcode": [
+                    "AGGCAGAA",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C1_PDAC582_s01.fastq.gz",
+                    "H7LT2DSXX_C1_PDAC582_s02.fastq.gz"
+                ]
+            },
+            "@C2_PDAC603": {
+                "LB": "C2_PDAC603",
+                "barcode": [
+                    "TAAGGCGA",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C2_PDAC603_s01.fastq.gz",
+                    "H7LT2DSXX_C2_PDAC603_s02.fastq.gz"
+                ]
+            },
+            "@C3_PTHE38": {
+                "LB": "C3_PTHE38",
+                "barcode": [
+                    "CGTACTAG",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_C3_PTHE38_s01.fastq.gz",
+                    "H7LT2DSXX_C3_PTHE38_s02.fastq.gz"
+                ]
+            },
+            "@C4_PDAC592": {
+                "LB": "C4_PDAC592",
+                "barcode": [
+                    "TAGCGCTC",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C4_PDAC592_s01.fastq.gz",
+                    "H7LT2DSXX_C4_PDAC592_s02.fastq.gz"
+                ]
+            },
+            "@C5_PDAC566": {
+                "LB": "C5_PDAC566",
+                "barcode": [
+                    "GGACTCCT",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C5_PDAC566_s01.fastq.gz",
+                    "H7LT2DSXX_C5_PDAC566_s02.fastq.gz"
+                ]
+            },
+            "@C6_PDAC591": {
+                "LB": "C6_PDAC591",
+                "barcode": [
+                    "CTCTCTAC",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_C6_PDAC591_s01.fastq.gz",
+                    "H7LT2DSXX_C6_PDAC591_s02.fastq.gz"
+                ]
+            },
+            "@C7_PDAC548": {
+                "LB": "C7_PDAC548",
+                "barcode": [
+                    "CGGAGCCT",
+                    "ACTGCATA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C7_PDAC548_s01.fastq.gz",
+                    "H7LT2DSXX_C7_PDAC548_s02.fastq.gz"
+                ]
+            },
+            "@C8_PTHE53": {
+                "LB": "C8_PTHE53",
+                "barcode": [
+                    "TAGGCATG",
+                    "GCGTAAGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_C8_PTHE53_s01.fastq.gz",
+                    "H7LT2DSXX_C8_PTHE53_s02.fastq.gz"
+                ]
+            },
+            "@C9_PDAC480": {
+                "LB": "C9_PDAC480",
+                "barcode": [
+                    "GTAGAGGA",
+                    "GTAAGGAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_C9_PDAC480_s01.fastq.gz",
+                    "H7LT2DSXX_C9_PDAC480_s02.fastq.gz"
+                ]
+            },
+            "@D10_PDAC509": {
+                "LB": "D10_PDAC509",
+                "barcode": [
+                    "TAAGGCGA",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D10_PDAC509_s01.fastq.gz",
+                    "H7LT2DSXX_D10_PDAC509_s02.fastq.gz"
+                ]
+            },
+            "@D11_PDAC457": {
+                "LB": "D11_PDAC457",
+                "barcode": [
+                    "CGTACTAG",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D11_PDAC457_s01.fastq.gz",
+                    "H7LT2DSXX_D11_PDAC457_s02.fastq.gz"
+                ]
+            },
+            "@D12_PDAC514": {
+                "LB": "D12_PDAC514",
+                "barcode": [
+                    "AGGCAGAA",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D12_PDAC514_s01.fastq.gz",
+                    "H7LT2DSXX_D12_PDAC514_s02.fastq.gz"
+                ]
+            },
+            "@D1_PDAC594": {
+                "LB": "D1_PDAC594",
+                "barcode": [
+                    "GGACTCCT",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D1_PDAC594_s01.fastq.gz",
+                    "H7LT2DSXX_D1_PDAC594_s02.fastq.gz"
+                ]
+            },
+            "@D2_PDAC573": {
+                "LB": "D2_PDAC573",
+                "barcode": [
+                    "CTCTCTAC",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D2_PDAC573_s01.fastq.gz",
+                    "H7LT2DSXX_D2_PDAC573_s02.fastq.gz"
+                ]
+            },
+            "@D3_PDAC79": {
+                "LB": "D3_PDAC79",
+                "barcode": [
+                    "TAGCGCTC",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D3_PDAC79_s01.fastq.gz",
+                    "H7LT2DSXX_D3_PDAC79_s02.fastq.gz"
+                ]
+            },
+            "@D4_PDAC529": {
+                "LB": "D4_PDAC529",
+                "barcode": [
+                    "TAGGCATG",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D4_PDAC529_s01.fastq.gz",
+                    "H7LT2DSXX_D4_PDAC529_s02.fastq.gz"
+                ]
+            },
+            "@D5_PDAC598": {
+                "LB": "D5_PDAC598",
+                "barcode": [
+                    "GTAGAGGA",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D5_PDAC598_s01.fastq.gz",
+                    "H7LT2DSXX_D5_PDAC598_s02.fastq.gz"
+                ]
+            },
+            "@D6_PDAC587": {
+                "LB": "D6_PDAC587",
+                "barcode": [
+                    "CGGAGCCT",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D6_PDAC587_s01.fastq.gz",
+                    "H7LT2DSXX_D6_PDAC587_s02.fastq.gz"
+                ]
+            },
+            "@D7_PTHE45": {
+                "LB": "D7_PTHE45",
+                "barcode": [
+                    "CGAGGCTG",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D7_PTHE45_s01.fastq.gz",
+                    "H7LT2DSXX_D7_PTHE45_s02.fastq.gz"
+                ]
+            },
+            "@D8_PTHE55": {
+                "LB": "D8_PTHE55",
+                "barcode": [
+                    "AAGAGGCA",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D8_PTHE55_s01.fastq.gz",
+                    "H7LT2DSXX_D8_PTHE55_s02.fastq.gz"
+                ]
+            },
+            "@D9_PTHE46": {
+                "LB": "D9_PTHE46",
+                "barcode": [
+                    "GCTCATGA",
+                    "TATCCTCT"
+                ],
+                "output": [
+                    "H7LT2DSXX_D9_PTHE46_s01.fastq.gz",
+                    "H7LT2DSXX_D9_PTHE46_s02.fastq.gz"
+                ]
+            },
+            "@E10_PDAC593": {
+                "LB": "E10_PDAC593",
+                "barcode": [
+                    "GGACTCCT",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E10_PDAC593_s01.fastq.gz",
+                    "H7LT2DSXX_E10_PDAC593_s02.fastq.gz"
+                ]
+            },
+            "@E11_PDAC477": {
+                "LB": "E11_PDAC477",
+                "barcode": [
+                    "CTCTCTAC",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E11_PDAC477_s01.fastq.gz",
+                    "H7LT2DSXX_E11_PDAC477_s02.fastq.gz"
+                ]
+            },
+            "@E12_PTHE56": {
+                "LB": "E12_PTHE56",
+                "barcode": [
+                    "TAGCGCTC",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E12_PTHE56_s01.fastq.gz",
+                    "H7LT2DSXX_E12_PTHE56_s02.fastq.gz"
+                ]
+            },
+            "@E1_PDAC503": {
+                "LB": "E1_PDAC503",
+                "barcode": [
+                    "TAGGCATG",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E1_PDAC503_s01.fastq.gz",
+                    "H7LT2DSXX_E1_PDAC503_s02.fastq.gz"
+                ]
+            },
+            "@E2_PDAC551": {
+                "LB": "E2_PDAC551",
+                "barcode": [
+                    "GTAGAGGA",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E2_PDAC551_s01.fastq.gz",
+                    "H7LT2DSXX_E2_PDAC551_s02.fastq.gz"
+                ]
+            },
+            "@E3_PDAC578": {
+                "LB": "E3_PDAC578",
+                "barcode": [
+                    "CGGAGCCT",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E3_PDAC578_s01.fastq.gz",
+                    "H7LT2DSXX_E3_PDAC578_s02.fastq.gz"
+                ]
+            },
+            "@E4_PDAC600": {
+                "LB": "E4_PDAC600",
+                "barcode": [
+                    "CGAGGCTG",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E4_PDAC600_s01.fastq.gz",
+                    "H7LT2DSXX_E4_PDAC600_s02.fastq.gz"
+                ]
+            },
+            "@E5_PDAC76": {
+                "LB": "E5_PDAC76",
+                "barcode": [
+                    "AAGAGGCA",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E5_PDAC76_s01.fastq.gz",
+                    "H7LT2DSXX_E5_PDAC76_s02.fastq.gz"
+                ]
+            },
+            "@E6_PDAC497": {
+                "LB": "E6_PDAC497",
+                "barcode": [
+                    "GCTCATGA",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E6_PDAC497_s01.fastq.gz",
+                    "H7LT2DSXX_E6_PDAC497_s02.fastq.gz"
+                ]
+            },
+            "@E8_PDAC475": {
+                "LB": "E8_PDAC475",
+                "barcode": [
+                    "CGTACTAG",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E8_PDAC475_s01.fastq.gz",
+                    "H7LT2DSXX_E8_PDAC475_s02.fastq.gz"
+                ]
+            },
+            "@E9_PDAC580": {
+                "LB": "E9_PDAC580",
+                "barcode": [
+                    "AGGCAGAA",
+                    "CCTAGAGT"
+                ],
+                "output": [
+                    "H7LT2DSXX_E9_PDAC580_s01.fastq.gz",
+                    "H7LT2DSXX_E9_PDAC580_s02.fastq.gz"
+                ]
+            },
+            "@F10_PDAC500": {
+                "LB": "F10_PDAC500",
+                "barcode": [
+                    "TAGGCATG",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_F10_PDAC500_s01.fastq.gz",
+                    "H7LT2DSXX_F10_PDAC500_s02.fastq.gz"
+                ]
+            },
+            "@F11_PDAC86": {
+                "LB": "F11_PDAC86",
+                "barcode": [
+                    "GTAGAGGA",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_F11_PDAC86_s01.fastq.gz",
+                    "H7LT2DSXX_F11_PDAC86_s02.fastq.gz"
+                ]
+            },
+            "@F12_PDAC541": {
+                "LB": "F12_PDAC541",
+                "barcode": [
+                    "CGGAGCCT",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_F12_PDAC541_s01.fastq.gz",
+                    "H7LT2DSXX_F12_PDAC541_s02.fastq.gz"
+                ]
+            },
+            "@F1_PDAC507": {
+                "LB": "F1_PDAC507",
+                "barcode": [
+                    "CGAGGCTG",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_F1_PDAC507_s01.fastq.gz",
+                    "H7LT2DSXX_F1_PDAC507_s02.fastq.gz"
+                ]
+            },
+            "@F2_PDAC595": {
+                "LB": "F2_PDAC595",
+                "barcode": [
+                    "AAGAGGCA",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_F2_PDAC595_s01.fastq.gz",
+                    "H7LT2DSXX_F2_PDAC595_s02.fastq.gz"
+                ]
+            },
+            "@F3_PDAC554": {
+                "LB": "F3_PDAC554",
+                "barcode": [
+                    "GCTCATGA",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_F3_PDAC554_s01.fastq.gz",
+                    "H7LT2DSXX_F3_PDAC554_s02.fastq.gz"
+                ]
+            },
+            "@F4_PDAC479": {
+                "LB": "F4_PDAC479",
+                "barcode": [
+                    "TAAGGCGA",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_F4_PDAC479_s01.fastq.gz",
+                    "H7LT2DSXX_F4_PDAC479_s02.fastq.gz"
+                ]
+            },
+            "@F5_PDAC577": {
+                "LB": "F5_PDAC577",
+                "barcode": [
+                    "CGTACTAG",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_F5_PDAC577_s01.fastq.gz",
+                    "H7LT2DSXX_F5_PDAC577_s02.fastq.gz"
+                ]
+            },
+            "@F6_PTHE36": {
+                "LB": "F6_PTHE36",
+                "barcode": [
+                    "AGGCAGAA",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_F6_PTHE36_s01.fastq.gz",
+                    "H7LT2DSXX_F6_PTHE36_s02.fastq.gz"
+                ]
+            },
+            "@F7_PDAC98": {
+                "LB": "F7_PDAC98",
+                "barcode": [
+                    "GGACTCCT",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_F7_PDAC98_s01.fastq.gz",
+                    "H7LT2DSXX_F7_PDAC98_s02.fastq.gz"
+                ]
+            },
+            "@F8_PDAC73": {
+                "LB": "F8_PDAC73",
+                "barcode": [
+                    "CTCTCTAC",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_F8_PDAC73_s01.fastq.gz",
+                    "H7LT2DSXX_F8_PDAC73_s02.fastq.gz"
+                ]
+            },
+            "@F9_PDAC499": {
+                "LB": "F9_PDAC499",
+                "barcode": [
+                    "TAGCGCTC",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_F9_PDAC499_s01.fastq.gz",
+                    "H7LT2DSXX_F9_PDAC499_s02.fastq.gz"
+                ]
+            },
+            "@G10_PDAC599": {
+                "LB": "G10_PDAC599",
+                "barcode": [
+                    "GTAGAGGA",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_G10_PDAC599_s01.fastq.gz",
+                    "H7LT2DSXX_G10_PDAC599_s02.fastq.gz"
+                ]
+            },
+            "@G11_PDAC95": {
+                "LB": "G11_PDAC95",
+                "barcode": [
+                    "CGGAGCCT",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_G11_PDAC95_s01.fastq.gz",
+                    "H7LT2DSXX_G11_PDAC95_s02.fastq.gz"
+                ]
+            },
+            "@G12_PDAC520": {
+                "LB": "G12_PDAC520",
+                "barcode": [
+                    "TAGGCATG",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_G12_PDAC520_s01.fastq.gz",
+                    "H7LT2DSXX_G12_PDAC520_s02.fastq.gz"
+                ]
+            },
+            "@G1_PDAC543": {
+                "LB": "G1_PDAC543",
+                "barcode": [
+                    "AAGAGGCA",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_G1_PDAC543_s01.fastq.gz",
+                    "H7LT2DSXX_G1_PDAC543_s02.fastq.gz"
+                ]
+            },
+            "@G2_PDAC533": {
+                "LB": "G2_PDAC533",
+                "barcode": [
+                    "GCTCATGA",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_G2_PDAC533_s01.fastq.gz",
+                    "H7LT2DSXX_G2_PDAC533_s02.fastq.gz"
+                ]
+            },
+            "@G3_PDAC590": {
+                "LB": "G3_PDAC590",
+                "barcode": [
+                    "CGAGGCTG",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_G3_PDAC590_s01.fastq.gz",
+                    "H7LT2DSXX_G3_PDAC590_s02.fastq.gz"
+                ]
+            },
+            "@G4_PTHE39": {
+                "LB": "G4_PTHE39",
+                "barcode": [
+                    "CGTACTAG",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_G4_PTHE39_s01.fastq.gz",
+                    "H7LT2DSXX_G4_PTHE39_s02.fastq.gz"
+                ]
+            },
+            "@G5_PDAC88": {
+                "LB": "G5_PDAC88",
+                "barcode": [
+                    "AGGCAGAA",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_G5_PDAC88_s01.fastq.gz",
+                    "H7LT2DSXX_G5_PDAC88_s02.fastq.gz"
+                ]
+            },
+            "@G6_PDAC521": {
+                "LB": "G6_PDAC521",
+                "barcode": [
+                    "TAAGGCGA",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_G6_PDAC521_s01.fastq.gz",
+                    "H7LT2DSXX_G6_PDAC521_s02.fastq.gz"
+                ]
+            },
+            "@G7_PDAC525": {
+                "LB": "G7_PDAC525",
+                "barcode": [
+                    "CTCTCTAC",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_G7_PDAC525_s01.fastq.gz",
+                    "H7LT2DSXX_G7_PDAC525_s02.fastq.gz"
+                ]
+            },
+            "@G8_PDAC546": {
+                "LB": "G8_PDAC546",
+                "barcode": [
+                    "TAGCGCTC",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_G8_PDAC546_s01.fastq.gz",
+                    "H7LT2DSXX_G8_PDAC546_s02.fastq.gz"
+                ]
+            },
+            "@G9_PTHE44": {
+                "LB": "G9_PTHE44",
+                "barcode": [
+                    "GGACTCCT",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_G9_PTHE44_s01.fastq.gz",
+                    "H7LT2DSXX_G9_PTHE44_s02.fastq.gz"
+                ]
+            },
+            "@H10_PTHE48": {
+                "LB": "H10_PTHE48",
+                "barcode": [
+                    "CGGAGCCT",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_H10_PTHE48_s01.fastq.gz",
+                    "H7LT2DSXX_H10_PTHE48_s02.fastq.gz"
+                ]
+            },
+            "@H11_PDAC585": {
+                "LB": "H11_PDAC585",
+                "barcode": [
+                    "TAGGCATG",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_H11_PDAC585_s01.fastq.gz",
+                    "H7LT2DSXX_H11_PDAC585_s02.fastq.gz"
+                ]
+            },
+            "@H12_PDAC547": {
+                "LB": "H12_PDAC547",
+                "barcode": [
+                    "GTAGAGGA",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_H12_PDAC547_s01.fastq.gz",
+                    "H7LT2DSXX_H12_PDAC547_s02.fastq.gz"
+                ]
+            },
+            "@H1_PDAC517": {
+                "LB": "H1_PDAC517",
+                "barcode": [
+                    "GCTCATGA",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_H1_PDAC517_s01.fastq.gz",
+                    "H7LT2DSXX_H1_PDAC517_s02.fastq.gz"
+                ]
+            },
+            "@H2_PDAC476": {
+                "LB": "H2_PDAC476",
+                "barcode": [
+                    "CGAGGCTG",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_H2_PDAC476_s01.fastq.gz",
+                    "H7LT2DSXX_H2_PDAC476_s02.fastq.gz"
+                ]
+            },
+            "@H3_PDAC535": {
+                "LB": "H3_PDAC535",
+                "barcode": [
+                    "AAGAGGCA",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_H3_PDAC535_s01.fastq.gz",
+                    "H7LT2DSXX_H3_PDAC535_s02.fastq.gz"
+                ]
+            },
+            "@H4_PDAC498": {
+                "LB": "H4_PDAC498",
+                "barcode": [
+                    "AGGCAGAA",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_H4_PDAC498_s01.fastq.gz",
+                    "H7LT2DSXX_H4_PDAC498_s02.fastq.gz"
+                ]
+            },
+            "@H5_PDAC563": {
+                "LB": "H5_PDAC563",
+                "barcode": [
+                    "TAAGGCGA",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_H5_PDAC563_s01.fastq.gz",
+                    "H7LT2DSXX_H5_PDAC563_s02.fastq.gz"
+                ]
+            },
+            "@H6_PDAC581": {
+                "LB": "H6_PDAC581",
+                "barcode": [
+                    "CGTACTAG",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_H6_PDAC581_s01.fastq.gz",
+                    "H7LT2DSXX_H6_PDAC581_s02.fastq.gz"
+                ]
+            },
+            "@H7_PDAC534": {
+                "LB": "H7_PDAC534",
+                "barcode": [
+                    "TAGCGCTC",
+                    "CGTCTAAT"
+                ],
+                "output": [
+                    "H7LT2DSXX_H7_PDAC534_s01.fastq.gz",
+                    "H7LT2DSXX_H7_PDAC534_s02.fastq.gz"
+                ]
+            },
+            "@H8_PDAC516": {
+                "LB": "H8_PDAC516",
+                "barcode": [
+                    "GGACTCCT",
+                    "TCGACTAG"
+                ],
+                "output": [
+                    "H7LT2DSXX_H8_PDAC516_s01.fastq.gz",
+                    "H7LT2DSXX_H8_PDAC516_s02.fastq.gz"
+                ]
+            },
+            "@H9_PDAC481": {
+                "LB": "H9_PDAC481",
+                "barcode": [
+                    "CTCTCTAC",
+                    "TTATGCGA"
+                ],
+                "output": [
+                    "H7LT2DSXX_H9_PDAC481_s01.fastq.gz",
+                    "H7LT2DSXX_H9_PDAC481_s02.fastq.gz"
+                ]
+            }
+        },
+        "confidence threshold": 0.95,
+        "noise": 0.05,
+        "transform": {
+            "token": [
+                "1::8",
+                "2::8"
+            ]
+        }
+    },
+    "template": {
+        "transform": {
+            "token": [
+                "0::",
+                "3::"
+            ]
+        }
+    }
+}

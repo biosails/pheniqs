@@ -25,7 +25,7 @@
 #include "include.h"
 #include "decoder.h"
 
-template < class T > class PamlDecoder : public ObservingDecoder< T > {
+template < class T > class PamlDecoder : public Decoder< T > {
     protected:
         const double noise;
         const double confidence_threshold;
@@ -38,25 +38,32 @@ template < class T > class PamlDecoder : public ObservingDecoder< T > {
         PamlDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
         inline void finalize() override {
-            for(auto& element : this->tag_by_index) {
+            for(auto& element : this->tag_array) {
                 this->accumulated_classified_confidence += element.accumulated_confidence;
                 this->accumulated_pf_classified_confidence += element.accumulated_pf_confidence;
                 this->low_conditional_confidence_count += element.low_conditional_confidence_count;
                 this->low_confidence_count += element.low_confidence_count;
             }
-            ObservingDecoder< T >::finalize();
+            Decoder< T >::finalize();
         };
 };
 
-class PamlMultiplexDecoder : public PamlDecoder< Channel > {
+class PamlSampleDecoder : public PamlDecoder< Barcode > {
     public:
-        PamlMultiplexDecoder(const Value& ontology);
+        vector< string > rg_by_barcode_index;
+        PamlSampleDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 
 class PamlCellularDecoder : public PamlDecoder< Barcode > {
     public:
         PamlCellularDecoder(const Value& ontology);
+        inline void classify(const Read& input, Read& output) override;
+};
+
+class PamlMolecularDecoder : public PamlDecoder< Barcode > {
+    public:
+        PamlMolecularDecoder(const Value& ontology);
         inline void classify(const Read& input, Read& output) override;
 };
 

@@ -23,7 +23,7 @@
 
 <html lang="en-us">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>{{ page.title | default: site.title }}</title>
     <meta name="description" content="{{ page.description | default: site.description | default: site.github.project_tagline }}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,25 +45,24 @@
     </section>
 
     <section class="main-content">
+      <section id="navigation">
+        <ul>
+          {% for item in site.data.navigation.links %}
+              {% if item.enabled %}
+                <li><a href="{{ item.url }}" {% if page.id == item.id %}class="active"{% endif %} >{{ item.title }}</a></li>
+              {% endif%}
+          {% endfor %}
+        </ul>
+        <div class="clear" />
+      </section>
+
+      {% if page.title %}
+      <h1 class=".page-title" >{{ page.title }}</h1>
+      {% endif %}
+
       {{ content }}
 
       <footer class="site-footer">
-          <section id="footer-navigation">
-              <ul>
-                  <li><a href="/pheniqs/2.0/">Home</a></li>
-                  <li><a href="/pheniqs/2.0/tutorial.html">Tutorial</a></li>
-                  <li><a href="/pheniqs/2.0/install.html">Install</a></li>
-                  <li><a href="/pheniqs/2.0/build.html">Build</a></li>
-                  <li><a href="/pheniqs/2.0/workflow.html">Workflow</a></li>
-                  <li><a href="/pheniqs/2.0/best_practices.html">Best Practice</a></li>
-                  <li><a href="/pheniqs/2.0/glossary.html">Glossary</a></li>
-                  <li><a href="/pheniqs/2.0/manual.html">Manual</a></li>
-                  <li><a href="/pheniqs/2.0/cli.html">CLI</a></li>
-                  <li><a href="http://github.com/biosails/pheniqs">GitHub</a></li>
-              </ul>
-              <div class="clear" />
-          </section>
-
         <span class="lab-footer">
           <a class="pheniqs" href="http://github.com/biosails/pheniqs">Pheniqs</a>
           is maintained at the

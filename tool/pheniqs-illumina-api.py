@@ -72,7 +72,6 @@ class IlluminaApi(Job):
                 else: break
         return value
 
-
     def load(self):
         self.load_illumina()
         self.location['core instruction'] = '{}_core.json'.format(self.illumina['flowcell id'])
@@ -317,7 +316,7 @@ class IlluminaApi(Job):
                 raise BadConfigurationError('Incoherent sample sheet, some rows define a lane and others dont')
 
             for lane in self.illumina['lane']:
-                # compile multiplex decoder name
+                # compile sample decoder name
                 value = ''
                 if 'flowcell id' in self.illumina:
                     value = self.illumina['flowcell id']
@@ -326,10 +325,10 @@ class IlluminaApi(Job):
                     if len(value) > 0: value += '_'
                     value += 'l{:02d}'.format(lane['lane number'])
 
-                value += '_multiplex'
-                lane['multiplex decoder name'] = value
+                value += '_sample'
+                lane['sample decoder name'] = value
 
-                # compile multiplex transform
+                # compile sample transform
                 try:
                     if all(lane['row'][0]['barcode length'] == b['barcode length'] for b in lane['row']):
                         lane['barcode length'] = lane['row'][0]['barcode length']
@@ -338,9 +337,9 @@ class IlluminaApi(Job):
                             # check index segments have enough cycles for barcode
                             for index,length,segment in zip(range(len(lane['barcode length'])), lane['barcode length'], self.illumina['index segment']):
                                 if segment['cycle cardinality'] >= length:
-                                    lane['multiplex transform'] = { 'token': [] }
+                                    lane['sample transform'] = { 'token': [] }
                                     for length,segment in zip(lane['barcode length'], self.illumina['index segment']):
-                                        lane['multiplex transform']['token'].append('{}::{}'.format(segment['index'], length))
+                                        lane['sample transform']['token'].append('{}::{}'.format(segment['index'], length))
                                 else:
                                     raise BadConfigurationError('read segment ' + segment['index'] + 'has insufficient cycles for barcode segment ' + index)
                         else:
@@ -360,8 +359,8 @@ class IlluminaApi(Job):
         elif self.action == 'core':
             self.write_core_instruction()
 
-        elif self.action == 'multiplex':
-            self.write_multiplex_instruction_per_lane()
+        elif self.action == 'sample':
+            self.write_sample_instruction_per_lane()
 
         elif self.action == 'estimate':
             self.write_prior_estimate_instruction_per_lane()
@@ -461,18 +460,18 @@ class IlluminaApi(Job):
         if 'lane' in self.illumina and self.illumina['lane']:
             job['decoder'] = {}
             for lane in self.illumina['lane']:
-                job['decoder'][lane['multiplex decoder name']] = self.make_lane_multiplex_decoder(lane)
+                job['decoder'][lane['sample decoder name']] = self.make_lane_sample_decoder(lane)
 
         with io.open(self.location['core instruction'], 'wb') as file:
             file.write(to_json(job).encode('utf8'))
 
         self.log.info('core instruction written to %s', self.location['core instruction'])
 
-    def make_lane_multiplex_decoder(self, lane):
+    def make_lane_sample_decoder(self, lane):
         preset = self.selected_preset['sample sheet record']
         decoder = { 'codec': {} }
-        if 'multiplex transform' in lane:
-            decoder['transform'] = lane['multiplex transform']
+        if 'sample transform' in lane:
+            decoder['transform'] = lane['sample transform']
 
         for record in lane['row']:
             # add inherited global instructions to the barcode record
@@ -500,7 +499,7 @@ class IlluminaApi(Job):
 
         return decoder
 
-    def write_multiplex_instruction_per_lane(self):
+    def write_sample_instruction_per_lane(self):
         if 'lane' in self.illumina and self.illumina['lane']:
             queue = []
             for lane in self.illumina['lane']:
@@ -509,8 +508,8 @@ class IlluminaApi(Job):
                     'input': [],
                     'output': [],
                     'report url': None,
-                    'multiplex': {
-                        'base': lane['multiplex decoder name'],
+                    'sample': {
+                        'base': lane['sample decoder name'],
                         'algorithm': 'pamld',
                         'noise': self.instruction['noise'],
                         'confidence threshold': self.instruction['confidence'],
@@ -525,7 +524,7 @@ class IlluminaApi(Job):
                 with io.open(path, 'wb') as file:
                     file.write(to_json(job).encode('utf8'))
 
-                self.log.info('multiplex instruction written to %s', path)
+                self.log.info('sample instruction written to %s', path)
                 queue.append(job)
 
     def write_prior_estimate_instruction_per_lane(self):
@@ -539,8 +538,8 @@ class IlluminaApi(Job):
                     'output': [ '/dev/null' ],
                     'report url': None,
                     'template': { 'transform': { 'token': [] } },
-                    'multiplex': {
-                        'base': lane['multiplex decoder name'],
+                    'sample': {
+                        'base': lane['sample decoder name'],
                         'algorithm': 'pamld',
                         'noise': self.instruction['noise'],
                         'confidence threshold': self.instruction['confidence'],
@@ -551,7 +550,7 @@ class IlluminaApi(Job):
                     job['input'].append(self.make_bcl2fastq_file_name(self.illumina['flowcell id'], lane['lane number'], segment['illumina segment name']))
                     token = '{}::{}'.format(segment_index, segment_length)
                     job['template']['transform']['token'].append(token)
-                    job['multiplex']['transform']['token'].append(token)
+                    job['sample']['transform']['token'].append(token)
                 job['report url'] = '{}_l{:02d}_estimate_report.json'.format(self.illumina['flowcell id'], lane['lane number'])
 
                 path = '{}_l{:02d}_estimate.json'.format(self.illumina['flowcell id'], lane['lane number'])

@@ -21,6 +21,21 @@
 
 #include "phred.h"
 
+void PhredScale::assemble_false_positive_probability() {
+    for(uint8_t q(1); q < 0x80; ++q) {
+        false_positive_probability[q] = pow(PHRED_PROBABILITY_BASE, q);
+    }
+};
+void PhredScale::assemble_true_positive_probability() {
+    for(uint8_t q(1); q < 0x80; ++q) {
+        true_positive_probability[q] = 1.0 - false_positive_probability[q];
+    }
+};
+void PhredScale::assemble_true_positive_quality() {
+    for(uint8_t q(1); q < 0x80; ++q) {
+        true_positive_quality[q] = -10.0 * log10(true_positive_probability[q]);
+    }
+};
 void PhredScale::assemble_substitution_lookup() {
     for(uint8_t q(1); q < 0x80; ++q) {
         for(uint8_t e(0); e < 0x10; ++e) {
@@ -53,22 +68,6 @@ void PhredScale::assemble_substitution_lookup() {
                 }
             }
         }
-    }
-};
-
-void PhredScale::assemble_false_positive_probability() {
-    for(uint8_t q(1); q < 0x80; ++q) {
-        false_positive_probability[q] = pow(PHRED_PROBABILITY_BASE, q);
-    }
-};
-void PhredScale::assemble_true_positive_probability() {
-    for(uint8_t q(1); q < 0x80; ++q) {
-        true_positive_probability[q] = 1.0 - false_positive_probability[q];
-    }
-};
-void PhredScale::assemble_true_positive_quality() {
-    for(uint8_t q(1); q < 0x80; ++q) {
-        true_positive_quality[q] = -10.0 * log10(true_positive_probability[q]);
     }
 };
 PhredScale::PhredScale() {

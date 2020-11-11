@@ -1,0 +1,2266 @@
+{
+    "PL": "ILLUMINA",
+    "PM": "A00534",
+    "application name": "pheniqs",
+    "base input url": ".",
+    "base output url": ".",
+    "buffer capacity": 2048,
+    "decoding threads": 8,
+    "default output compression": "unknown",
+    "default output compression level": "5",
+    "default output format": "sam",
+    "feed": {
+        "input feed": [
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 1,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 2,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 3,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz"
+            }
+        ],
+        "input feed by segment": [
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 1,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 2,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz"
+            },
+            {
+                "capacity": 2048,
+                "direction": "in",
+                "index": 3,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 1,
+                "url": "./H7LT2DSXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz"
+            }
+        ],
+        "output feed": [
+            {
+                "capacity": 4096,
+                "direction": "out",
+                "index": 0,
+                "phred offset": 33,
+                "platform": "ILLUMINA",
+                "resolution": 2,
+                "url": "./H7LT2DSXX_l01.bam?format=bam&level=5"
+            }
+        ]
+    },
+    "filter incoming qc fail": true,
+    "float precision": 15,
+    "flowcell id": "H7LT2DSXX",
+    "full command": "pheniqs mux --config H7LT2DSXX_l01_sample.json --compile",
+    "htslib threads": 8,
+    "input": [
+        "./H7LT2DSXX_S1_L001_R1_001.fastq.gz?format=fastq&compression=gz",
+        "./H7LT2DSXX_S1_L001_I1_001.fastq.gz?format=fastq&compression=gz",
+        "./H7LT2DSXX_S1_L001_I2_001.fastq.gz?format=fastq&compression=gz",
+        "./H7LT2DSXX_S1_L001_R2_001.fastq.gz?format=fastq&compression=gz"
+    ],
+    "input phred offset": 33,
+    "input segment cardinality": 4,
+    "leading segment index": 0,
+    "output": [
+        "H7LT2DSXX_l01.bam"
+    ],
+    "output phred offset": 33,
+    "output segment cardinality": 2,
+    "platform": "ILLUMINA",
+    "report url": "./H7LT2DSXX_l01_sample_report.json?format=json",
+    "sample": {
+        "PL": "ILLUMINA",
+        "PM": "A00534",
+        "algorithm": "pamld",
+        "barcode cardinality": 95,
+        "barcode length": [
+            8,
+            8
+        ],
+        "base output url": ".",
+        "codec": {
+            "@A10_PDAC81": {
+                "BC": "CGAGGCTG-GTAAGGAG",
+                "ID": "H7LT2DSXX:CGAGGCTGGTAAGGAG",
+                "LB": "A10_PDAC81",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 1,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A11_PDAC490": {
+                "BC": "AAGAGGCA-ACTGCATA",
+                "ID": "H7LT2DSXX:AAGAGGCAACTGCATA",
+                "LB": "A11_PDAC490",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCAACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 2,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A12_PDAC560": {
+                "BC": "GCTCATGA-GCGTAAGA",
+                "ID": "H7LT2DSXX:GCTCATGAGCGTAAGA",
+                "LB": "A12_PDAC560",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGAGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 3,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A1_PDAC559": {
+                "BC": "TAAGGCGA-GTAAGGAG",
+                "ID": "H7LT2DSXX:TAAGGCGAGTAAGGAG",
+                "LB": "A1_PDAC559",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAAGGCGAGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 4,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A2_PDAC609": {
+                "BC": "CGTACTAG-ACTGCATA",
+                "ID": "H7LT2DSXX:CGTACTAGACTGCATA",
+                "LB": "A2_PDAC609",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 5,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A3_PDAC483": {
+                "BC": "AGGCAGAA-GCGTAAGA",
+                "ID": "H7LT2DSXX:AGGCAGAAGCGTAAGA",
+                "LB": "A3_PDAC483",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAAGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 6,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A4_PDAC494": {
+                "BC": "GGACTCCT-GTAAGGAG",
+                "ID": "H7LT2DSXX:GGACTCCTGTAAGGAG",
+                "LB": "A4_PDAC494",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 7,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A5_PDAC510": {
+                "BC": "CTCTCTAC-ACTGCATA",
+                "ID": "H7LT2DSXX:CTCTCTACACTGCATA",
+                "LB": "A5_PDAC510",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 8,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A6_PDAC511": {
+                "BC": "TAGCGCTC-GCGTAAGA",
+                "ID": "H7LT2DSXX:TAGCGCTCGCGTAAGA",
+                "LB": "A6_PDAC511",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 9,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A7_PTHE43": {
+                "BC": "TAGGCATG-GTAAGGAG",
+                "ID": "H7LT2DSXX:TAGGCATGGTAAGGAG",
+                "LB": "A7_PTHE43",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 10,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@A8_PDAC502": {
+                "BC": "GTAGAGGA-ACTGCATA",
+                "ID": "H7LT2DSXX:GTAGAGGAACTGCATA",
+                "LB": "A8_PDAC502",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGAACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 11,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B10_PDAC90": {
+                "BC": "AAGAGGCA-GCGTAAGA",
+                "ID": "H7LT2DSXX:AAGAGGCAGCGTAAGA",
+                "LB": "B10_PDAC90",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCAGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 12,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B11_PDAC518": {
+                "BC": "GCTCATGA-GTAAGGAG",
+                "ID": "H7LT2DSXX:GCTCATGAGTAAGGAG",
+                "LB": "B11_PDAC518",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGAGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 13,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B12_PDAC562": {
+                "BC": "CGAGGCTG-ACTGCATA",
+                "ID": "H7LT2DSXX:CGAGGCTGACTGCATA",
+                "LB": "B12_PDAC562",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 14,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B1_PTHE34": {
+                "BC": "CGTACTAG-GCGTAAGA",
+                "ID": "H7LT2DSXX:CGTACTAGGCGTAAGA",
+                "LB": "B1_PTHE34",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 15,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B2_PDAC579": {
+                "BC": "AGGCAGAA-GTAAGGAG",
+                "ID": "H7LT2DSXX:AGGCAGAAGTAAGGAG",
+                "LB": "B2_PDAC579",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAAGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 16,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B3_PDAC485": {
+                "BC": "TAAGGCGA-ACTGCATA",
+                "ID": "H7LT2DSXX:TAAGGCGAACTGCATA",
+                "LB": "B3_PDAC485",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAAGGCGAACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 17,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B4_PDAC553": {
+                "BC": "CTCTCTAC-GCGTAAGA",
+                "ID": "H7LT2DSXX:CTCTCTACGCGTAAGA",
+                "LB": "B4_PDAC553",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 18,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B5_PTHE47": {
+                "BC": "TAGCGCTC-GTAAGGAG",
+                "ID": "H7LT2DSXX:TAGCGCTCGTAAGGAG",
+                "LB": "B5_PTHE47",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 19,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B6_PDAC542": {
+                "BC": "GGACTCCT-ACTGCATA",
+                "ID": "H7LT2DSXX:GGACTCCTACTGCATA",
+                "LB": "B6_PDAC542",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 20,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B7_PTHE37": {
+                "BC": "GTAGAGGA-GCGTAAGA",
+                "ID": "H7LT2DSXX:GTAGAGGAGCGTAAGA",
+                "LB": "B7_PTHE37",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGAGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 21,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B8_PDAC84": {
+                "BC": "CGGAGCCT-GTAAGGAG",
+                "ID": "H7LT2DSXX:CGGAGCCTGTAAGGAG",
+                "LB": "B8_PDAC84",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGGAGCCTGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 22,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@B9_PDAC505": {
+                "BC": "TAGGCATG-ACTGCATA",
+                "ID": "H7LT2DSXX:TAGGCATGACTGCATA",
+                "LB": "B9_PDAC505",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 23,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C10_PDAC491": {
+                "BC": "GCTCATGA-ACTGCATA",
+                "ID": "H7LT2DSXX:GCTCATGAACTGCATA",
+                "LB": "C10_PDAC491",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGAACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 24,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C11_PDAC564": {
+                "BC": "CGAGGCTG-GCGTAAGA",
+                "ID": "H7LT2DSXX:CGAGGCTGGCGTAAGA",
+                "LB": "C11_PDAC564",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 25,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C12_PDAC610": {
+                "BC": "AAGAGGCA-GTAAGGAG",
+                "ID": "H7LT2DSXX:AAGAGGCAGTAAGGAG",
+                "LB": "C12_PDAC610",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCAGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 26,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C1_PDAC582": {
+                "BC": "AGGCAGAA-ACTGCATA",
+                "ID": "H7LT2DSXX:AGGCAGAAACTGCATA",
+                "LB": "C1_PDAC582",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAAACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 27,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C2_PDAC603": {
+                "BC": "TAAGGCGA-GCGTAAGA",
+                "ID": "H7LT2DSXX:TAAGGCGAGCGTAAGA",
+                "LB": "C2_PDAC603",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAAGGCGAGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 28,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C3_PTHE38": {
+                "BC": "CGTACTAG-GTAAGGAG",
+                "ID": "H7LT2DSXX:CGTACTAGGTAAGGAG",
+                "LB": "C3_PTHE38",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 29,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C4_PDAC592": {
+                "BC": "TAGCGCTC-ACTGCATA",
+                "ID": "H7LT2DSXX:TAGCGCTCACTGCATA",
+                "LB": "C4_PDAC592",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 30,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C5_PDAC566": {
+                "BC": "GGACTCCT-GCGTAAGA",
+                "ID": "H7LT2DSXX:GGACTCCTGCGTAAGA",
+                "LB": "C5_PDAC566",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 31,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C6_PDAC591": {
+                "BC": "CTCTCTAC-GTAAGGAG",
+                "ID": "H7LT2DSXX:CTCTCTACGTAAGGAG",
+                "LB": "C6_PDAC591",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 32,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C7_PDAC548": {
+                "BC": "CGGAGCCT-ACTGCATA",
+                "ID": "H7LT2DSXX:CGGAGCCTACTGCATA",
+                "LB": "C7_PDAC548",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGGAGCCTACTGCATA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT",
+                    "ACTGCATA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 33,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C8_PTHE53": {
+                "BC": "TAGGCATG-GCGTAAGA",
+                "ID": "H7LT2DSXX:TAGGCATGGCGTAAGA",
+                "LB": "C8_PTHE53",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGGCGTAAGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "GCGTAAGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 34,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@C9_PDAC480": {
+                "BC": "GTAGAGGA-GTAAGGAG",
+                "ID": "H7LT2DSXX:GTAGAGGAGTAAGGAG",
+                "LB": "C9_PDAC480",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGAGTAAGGAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "GTAAGGAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 35,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D10_PDAC509": {
+                "BC": "TAAGGCGA-TATCCTCT",
+                "ID": "H7LT2DSXX:TAAGGCGATATCCTCT",
+                "LB": "D10_PDAC509",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAAGGCGATATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 36,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D11_PDAC457": {
+                "BC": "CGTACTAG-TATCCTCT",
+                "ID": "H7LT2DSXX:CGTACTAGTATCCTCT",
+                "LB": "D11_PDAC457",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGTATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 37,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D12_PDAC514": {
+                "BC": "AGGCAGAA-TATCCTCT",
+                "ID": "H7LT2DSXX:AGGCAGAATATCCTCT",
+                "LB": "D12_PDAC514",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAATATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 38,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D1_PDAC594": {
+                "BC": "GGACTCCT-TATCCTCT",
+                "ID": "H7LT2DSXX:GGACTCCTTATCCTCT",
+                "LB": "D1_PDAC594",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTTATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 39,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D2_PDAC573": {
+                "BC": "CTCTCTAC-TATCCTCT",
+                "ID": "H7LT2DSXX:CTCTCTACTATCCTCT",
+                "LB": "D2_PDAC573",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACTATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 40,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D3_PDAC79": {
+                "BC": "TAGCGCTC-TATCCTCT",
+                "ID": "H7LT2DSXX:TAGCGCTCTATCCTCT",
+                "LB": "D3_PDAC79",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCTATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 41,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D4_PDAC529": {
+                "BC": "TAGGCATG-TATCCTCT",
+                "ID": "H7LT2DSXX:TAGGCATGTATCCTCT",
+                "LB": "D4_PDAC529",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGTATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 42,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D5_PDAC598": {
+                "BC": "GTAGAGGA-TATCCTCT",
+                "ID": "H7LT2DSXX:GTAGAGGATATCCTCT",
+                "LB": "D5_PDAC598",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGATATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 43,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D6_PDAC587": {
+                "BC": "CGGAGCCT-TATCCTCT",
+                "ID": "H7LT2DSXX:CGGAGCCTTATCCTCT",
+                "LB": "D6_PDAC587",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGGAGCCTTATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 44,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D7_PTHE45": {
+                "BC": "CGAGGCTG-TATCCTCT",
+                "ID": "H7LT2DSXX:CGAGGCTGTATCCTCT",
+                "LB": "D7_PTHE45",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGTATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 45,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D8_PTHE55": {
+                "BC": "AAGAGGCA-TATCCTCT",
+                "ID": "H7LT2DSXX:AAGAGGCATATCCTCT",
+                "LB": "D8_PTHE55",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCATATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 46,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@D9_PTHE46": {
+                "BC": "GCTCATGA-TATCCTCT",
+                "ID": "H7LT2DSXX:GCTCATGATATCCTCT",
+                "LB": "D9_PTHE46",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGATATCCTCT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "TATCCTCT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 47,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E10_PDAC593": {
+                "BC": "GGACTCCT-CCTAGAGT",
+                "ID": "H7LT2DSXX:GGACTCCTCCTAGAGT",
+                "LB": "E10_PDAC593",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTCCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 48,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E11_PDAC477": {
+                "BC": "CTCTCTAC-CCTAGAGT",
+                "ID": "H7LT2DSXX:CTCTCTACCCTAGAGT",
+                "LB": "E11_PDAC477",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACCCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 49,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E12_PTHE56": {
+                "BC": "TAGCGCTC-CCTAGAGT",
+                "ID": "H7LT2DSXX:TAGCGCTCCCTAGAGT",
+                "LB": "E12_PTHE56",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCCCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 50,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E1_PDAC503": {
+                "BC": "TAGGCATG-CCTAGAGT",
+                "ID": "H7LT2DSXX:TAGGCATGCCTAGAGT",
+                "LB": "E1_PDAC503",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGCCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 51,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E2_PDAC551": {
+                "BC": "GTAGAGGA-CCTAGAGT",
+                "ID": "H7LT2DSXX:GTAGAGGACCTAGAGT",
+                "LB": "E2_PDAC551",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGACCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 52,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E3_PDAC578": {
+                "BC": "CGGAGCCT-CCTAGAGT",
+                "ID": "H7LT2DSXX:CGGAGCCTCCTAGAGT",
+                "LB": "E3_PDAC578",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGGAGCCTCCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 53,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E4_PDAC600": {
+                "BC": "CGAGGCTG-CCTAGAGT",
+                "ID": "H7LT2DSXX:CGAGGCTGCCTAGAGT",
+                "LB": "E4_PDAC600",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGCCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 54,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E5_PDAC76": {
+                "BC": "AAGAGGCA-CCTAGAGT",
+                "ID": "H7LT2DSXX:AAGAGGCACCTAGAGT",
+                "LB": "E5_PDAC76",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCACCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 55,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E6_PDAC497": {
+                "BC": "GCTCATGA-CCTAGAGT",
+                "ID": "H7LT2DSXX:GCTCATGACCTAGAGT",
+                "LB": "E6_PDAC497",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGACCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 56,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E8_PDAC475": {
+                "BC": "CGTACTAG-CCTAGAGT",
+                "ID": "H7LT2DSXX:CGTACTAGCCTAGAGT",
+                "LB": "E8_PDAC475",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGCCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 57,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@E9_PDAC580": {
+                "BC": "AGGCAGAA-CCTAGAGT",
+                "ID": "H7LT2DSXX:AGGCAGAACCTAGAGT",
+                "LB": "E9_PDAC580",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAACCTAGAGT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "CCTAGAGT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 58,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F10_PDAC500": {
+                "BC": "TAGGCATG-TTATGCGA",
+                "ID": "H7LT2DSXX:TAGGCATGTTATGCGA",
+                "LB": "F10_PDAC500",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGTTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 59,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F11_PDAC86": {
+                "BC": "GTAGAGGA-CGTCTAAT",
+                "ID": "H7LT2DSXX:GTAGAGGACGTCTAAT",
+                "LB": "F11_PDAC86",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGACGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 60,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F12_PDAC541": {
+                "BC": "CGGAGCCT-TCGACTAG",
+                "ID": "H7LT2DSXX:CGGAGCCTTCGACTAG",
+                "LB": "F12_PDAC541",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGGAGCCTTCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 61,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F1_PDAC507": {
+                "BC": "CGAGGCTG-TTATGCGA",
+                "ID": "H7LT2DSXX:CGAGGCTGTTATGCGA",
+                "LB": "F1_PDAC507",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGTTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 62,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F2_PDAC595": {
+                "BC": "AAGAGGCA-CGTCTAAT",
+                "ID": "H7LT2DSXX:AAGAGGCACGTCTAAT",
+                "LB": "F2_PDAC595",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCACGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 63,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F3_PDAC554": {
+                "BC": "GCTCATGA-TCGACTAG",
+                "ID": "H7LT2DSXX:GCTCATGATCGACTAG",
+                "LB": "F3_PDAC554",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGATCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 64,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F4_PDAC479": {
+                "BC": "TAAGGCGA-TTATGCGA",
+                "ID": "H7LT2DSXX:TAAGGCGATTATGCGA",
+                "LB": "F4_PDAC479",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAAGGCGATTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 65,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F5_PDAC577": {
+                "BC": "CGTACTAG-CGTCTAAT",
+                "ID": "H7LT2DSXX:CGTACTAGCGTCTAAT",
+                "LB": "F5_PDAC577",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGCGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 66,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F6_PTHE36": {
+                "BC": "AGGCAGAA-TCGACTAG",
+                "ID": "H7LT2DSXX:AGGCAGAATCGACTAG",
+                "LB": "F6_PTHE36",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAATCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 67,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F7_PDAC98": {
+                "BC": "GGACTCCT-TTATGCGA",
+                "ID": "H7LT2DSXX:GGACTCCTTTATGCGA",
+                "LB": "F7_PDAC98",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTTTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 68,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F8_PDAC73": {
+                "BC": "CTCTCTAC-CGTCTAAT",
+                "ID": "H7LT2DSXX:CTCTCTACCGTCTAAT",
+                "LB": "F8_PDAC73",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACCGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 69,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@F9_PDAC499": {
+                "BC": "TAGCGCTC-TCGACTAG",
+                "ID": "H7LT2DSXX:TAGCGCTCTCGACTAG",
+                "LB": "F9_PDAC499",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCTCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 70,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G10_PDAC599": {
+                "BC": "GTAGAGGA-TCGACTAG",
+                "ID": "H7LT2DSXX:GTAGAGGATCGACTAG",
+                "LB": "G10_PDAC599",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGATCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 71,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G11_PDAC95": {
+                "BC": "CGGAGCCT-TTATGCGA",
+                "ID": "H7LT2DSXX:CGGAGCCTTTATGCGA",
+                "LB": "G11_PDAC95",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGGAGCCTTTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 72,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G12_PDAC520": {
+                "BC": "TAGGCATG-CGTCTAAT",
+                "ID": "H7LT2DSXX:TAGGCATGCGTCTAAT",
+                "LB": "G12_PDAC520",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGCGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 73,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G1_PDAC543": {
+                "BC": "AAGAGGCA-TCGACTAG",
+                "ID": "H7LT2DSXX:AAGAGGCATCGACTAG",
+                "LB": "G1_PDAC543",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCATCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 74,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G2_PDAC533": {
+                "BC": "GCTCATGA-TTATGCGA",
+                "ID": "H7LT2DSXX:GCTCATGATTATGCGA",
+                "LB": "G2_PDAC533",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGATTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 75,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G3_PDAC590": {
+                "BC": "CGAGGCTG-CGTCTAAT",
+                "ID": "H7LT2DSXX:CGAGGCTGCGTCTAAT",
+                "LB": "G3_PDAC590",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGCGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 76,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G4_PTHE39": {
+                "BC": "CGTACTAG-TCGACTAG",
+                "ID": "H7LT2DSXX:CGTACTAGTCGACTAG",
+                "LB": "G4_PTHE39",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGTCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 77,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G5_PDAC88": {
+                "BC": "AGGCAGAA-TTATGCGA",
+                "ID": "H7LT2DSXX:AGGCAGAATTATGCGA",
+                "LB": "G5_PDAC88",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAATTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 78,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G6_PDAC521": {
+                "BC": "TAAGGCGA-CGTCTAAT",
+                "ID": "H7LT2DSXX:TAAGGCGACGTCTAAT",
+                "LB": "G6_PDAC521",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAAGGCGACGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 79,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G7_PDAC525": {
+                "BC": "CTCTCTAC-TCGACTAG",
+                "ID": "H7LT2DSXX:CTCTCTACTCGACTAG",
+                "LB": "G7_PDAC525",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACTCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 80,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G8_PDAC546": {
+                "BC": "TAGCGCTC-TTATGCGA",
+                "ID": "H7LT2DSXX:TAGCGCTCTTATGCGA",
+                "LB": "G8_PDAC546",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCTTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 81,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@G9_PTHE44": {
+                "BC": "GGACTCCT-CGTCTAAT",
+                "ID": "H7LT2DSXX:GGACTCCTCGTCTAAT",
+                "LB": "G9_PTHE44",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTCGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 82,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H10_PTHE48": {
+                "BC": "CGGAGCCT-CGTCTAAT",
+                "ID": "H7LT2DSXX:CGGAGCCTCGTCTAAT",
+                "LB": "H10_PTHE48",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGGAGCCTCGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGGAGCCT",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 83,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H11_PDAC585": {
+                "BC": "TAGGCATG-TCGACTAG",
+                "ID": "H7LT2DSXX:TAGGCATGTCGACTAG",
+                "LB": "H11_PDAC585",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGGCATGTCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGGCATG",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 84,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H12_PDAC547": {
+                "BC": "GTAGAGGA-TTATGCGA",
+                "ID": "H7LT2DSXX:GTAGAGGATTATGCGA",
+                "LB": "H12_PDAC547",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GTAGAGGATTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GTAGAGGA",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 85,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H1_PDAC517": {
+                "BC": "GCTCATGA-CGTCTAAT",
+                "ID": "H7LT2DSXX:GCTCATGACGTCTAAT",
+                "LB": "H1_PDAC517",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GCTCATGACGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GCTCATGA",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 86,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H2_PDAC476": {
+                "BC": "CGAGGCTG-TCGACTAG",
+                "ID": "H7LT2DSXX:CGAGGCTGTCGACTAG",
+                "LB": "H2_PDAC476",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGAGGCTGTCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGAGGCTG",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 87,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H3_PDAC535": {
+                "BC": "AAGAGGCA-TTATGCGA",
+                "ID": "H7LT2DSXX:AAGAGGCATTATGCGA",
+                "LB": "H3_PDAC535",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AAGAGGCATTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AAGAGGCA",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 88,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H4_PDAC498": {
+                "BC": "AGGCAGAA-CGTCTAAT",
+                "ID": "H7LT2DSXX:AGGCAGAACGTCTAAT",
+                "LB": "H4_PDAC498",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:AGGCAGAACGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "AGGCAGAA",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 89,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H5_PDAC563": {
+                "BC": "TAAGGCGA-TCGACTAG",
+                "ID": "H7LT2DSXX:TAAGGCGATCGACTAG",
+                "LB": "H5_PDAC563",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAAGGCGATCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAAGGCGA",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 90,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H6_PDAC581": {
+                "BC": "CGTACTAG-TTATGCGA",
+                "ID": "H7LT2DSXX:CGTACTAGTTATGCGA",
+                "LB": "H6_PDAC581",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CGTACTAGTTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CGTACTAG",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 91,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H7_PDAC534": {
+                "BC": "TAGCGCTC-CGTCTAAT",
+                "ID": "H7LT2DSXX:TAGCGCTCCGTCTAAT",
+                "LB": "H7_PDAC534",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:TAGCGCTCCGTCTAAT",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "TAGCGCTC",
+                    "CGTCTAAT"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 92,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H8_PDAC516": {
+                "BC": "GGACTCCT-TCGACTAG",
+                "ID": "H7LT2DSXX:GGACTCCTTCGACTAG",
+                "LB": "H8_PDAC516",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:GGACTCCTTCGACTAG",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "GGACTCCT",
+                    "TCGACTAG"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 93,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            },
+            "@H9_PDAC481": {
+                "BC": "CTCTCTAC-TTATGCGA",
+                "ID": "H7LT2DSXX:CTCTCTACTTATGCGA",
+                "LB": "H9_PDAC481",
+                "PL": "ILLUMINA",
+                "PM": "A00534",
+                "PU": "H7LT2DSXX:CTCTCTACTTATGCGA",
+                "TC": 2,
+                "algorithm": "pamld",
+                "barcode": [
+                    "CTCTCTAC",
+                    "TTATGCGA"
+                ],
+                "concentration": 0.010106382978723,
+                "flowcell id": "H7LT2DSXX",
+                "index": 94,
+                "output": [
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                    "./H7LT2DSXX_l01.bam?format=bam&level=5"
+                ],
+                "segment cardinality": 2
+            }
+        },
+        "confidence threshold": 0.95,
+        "distance tolerance": [
+            1,
+            1
+        ],
+        "flowcell id": "H7LT2DSXX",
+        "index": 0,
+        "multiplexing classifier": true,
+        "noise": 0.05,
+        "nucleotide cardinality": 16,
+        "output": [
+            "H7LT2DSXX_l01.bam"
+        ],
+        "quality masking threshold": 0,
+        "random barcode probability": 2.3283064365386965e-10,
+        "segment cardinality": 2,
+        "shannon bound": [
+            1,
+            1
+        ],
+        "transform": {
+            "knit": [
+                "0",
+                "1"
+            ],
+            "token": [
+                "1::8",
+                "2::8"
+            ]
+        },
+        "undetermined": {
+            "ID": "H7LT2DSXX:undetermined",
+            "PL": "ILLUMINA",
+            "PM": "A00534",
+            "PU": "H7LT2DSXX:undetermined",
+            "TC": 2,
+            "algorithm": "pamld",
+            "barcode": [
+                "========",
+                "========"
+            ],
+            "concentration": 0.05,
+            "flowcell id": "H7LT2DSXX",
+            "index": 0,
+            "output": [
+                "./H7LT2DSXX_l01.bam?format=bam&level=5",
+                "./H7LT2DSXX_l01.bam?format=bam&level=5"
+            ],
+            "segment cardinality": 2
+        }
+    },
+    "template": {
+        "transform": {
+            "knit": [
+                "0",
+                "1"
+            ],
+            "token": [
+                "0::",
+                "3::"
+            ]
+        }
+    },
+    "threads": 8
+}

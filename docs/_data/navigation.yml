@@ -1,0 +1,57 @@
+navigation_title: Navigation
+links:
+
+- title: Home
+  url: /pheniqs
+  id: home
+  enabled: True
+
+- title: Quickstart
+  url: /pheniqs/quickstart
+  id: quickstart
+  enabled: True
+
+- title: Configuration
+  url: /pheniqs/configuration
+  id: configuration
+  enabled: True
+
+- title: Tokenization
+  url: /pheniqs/tokenization
+  id: tokenization
+  enabled: True
+
+- title: Vignettes
+  url: /pheniqs/vignettes
+  id: vignettes
+  enabled: True
+
+- title: Install
+  url: /pheniqs/install
+  id: install
+  enabled: True
+
+- title: Cli
+  url: /pheniqs/cli
+  id: cli
+  enabled: True
+
+- title: Pamld
+  url: /pheniqs/pamld
+  id: pamld
+  enabled: True
+
+- title: Recipe
+  url: /pheniqs/recipe
+  id: recipe
+  enabled: True
+
+- title: Glossary
+  url: /pheniqs/glossary
+  id: glossary
+  enabled: False
+
+- title: View on GitHub
+  url: http://github.com/biosails/pheniqs
+  id: github
+  enabled: False

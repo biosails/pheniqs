@@ -22,10 +22,10 @@
 #include "pamld.h"
 
 template < class T > PamlDecoder< T >::PamlDecoder(const Value& ontology) try :
-    ObservingDecoder< T >(ontology),
+    Decoder< T >(ontology),
     noise(decode_value_by_key< double >("noise", ontology)),
     confidence_threshold(decode_value_by_key< double >("confidence threshold", ontology)),
-    random_barcode_probability(1.0 / double(pow(4, (this->nucleotide_cardinality)))),
+    random_barcode_probability(decode_value_by_key< double >("random barcode probability", ontology)),
     adjusted_noise_probability(noise * random_barcode_probability),
     conditional_decoding_probability(0),
     decoding_confidence(0) {
@@ -57,7 +57,7 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
     double conditional_probability(0);
     double adjusted_conditional_decoding_probability(0);
 
-    for(auto& barcode : this->tag_by_index) {
+    for(auto& barcode : this->tag_array) {
         /*  The conditional probability, P(r|b), is the probability of the observation r
             given b was expected.
             P(b), barcode.concentration, is the prior probability of observing b
@@ -113,22 +113,23 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
         this->decoding_hamming_distance = 0;
         decoding_confidence = 0;
     }
-    ObservingDecoder< T >::classify(input, output);
+    Decoder< T >::classify(input, output);
 };
 
-PamlMultiplexDecoder::PamlMultiplexDecoder(const Value& ontology) try :
-    PamlDecoder< Channel >(ontology) {
+PamlSampleDecoder::PamlSampleDecoder(const Value& ontology) try :
+    PamlDecoder< Barcode >(ontology),
+    rg_by_barcode_index(decode_tag_id_by_index(ontology)) {
 
     } catch(Error& error) {
-        error.push("PamlMultiplexDecoder");
+        error.push("PamlSampleDecoder");
         throw;
 };
-void PamlMultiplexDecoder::classify(const Read& input, Read& output) {
-    PamlDecoder< Channel >::classify(input, output);
-    output.assign_RG(this->decoded->rg);
-    output.update_multiplex_barcode(this->observation);
-    output.update_multiplex_distance(this->decoding_hamming_distance);
-    output.update_multiplex_decoding_confidence(this->decoding_confidence);
+void PamlSampleDecoder::classify(const Read& input, Read& output) {
+    PamlDecoder< Barcode >::classify(input, output);
+    output.update_sample_barcode(this->observation);
+    output.update_sample_distance(this->decoding_hamming_distance);
+    output.update_sample_decoding_confidence(this->decoding_confidence);
+    output.set_RG(this->rg_by_barcode_index[this->decoded->index]);
 };
 
 PamlCellularDecoder::PamlCellularDecoder(const Value& ontology) try :
@@ -148,5 +149,25 @@ void PamlCellularDecoder::classify(const Read& input, Read& output) {
     } else {
         output.set_cellular_decoding_confidence(0);
         output.set_cellular_distance(0);
+    }
+};
+
+PamlMolecularDecoder::PamlMolecularDecoder(const Value& ontology) try :
+    PamlDecoder< Barcode >(ontology) {
+
+    } catch(Error& error) {
+        error.push("PamlMolecularDecoder");
+        throw;
+};
+void PamlMolecularDecoder::classify(const Read& input, Read& output) {
+    PamlDecoder< Barcode >::classify(input, output);
+    output.update_raw_molecular_barcode(this->observation);
+    output.update_molecular_barcode(*this->decoded);
+    if(this->decoded->is_classified()) {
+        output.update_molecular_decoding_confidence(this->decoding_confidence);
+        output.update_molecular_distance(this->decoding_hamming_distance);
+    } else {
+        output.set_molecular_decoding_confidence(0);
+        output.set_molecular_distance(0);
     }
 };

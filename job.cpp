@@ -65,7 +65,7 @@ void Job::execute() {
     stop();
     finalize();
 };
-void Job::write_report() const {
+void Job::write_result() const {
     URL report_url(decode_value_by_key< URL >("report url", ontology));
     if(!report_url.is_dev_null()) {
         if(report_url.is_stdout()) {

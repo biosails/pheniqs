@@ -362,7 +362,7 @@ enum class Algorithm : uint8_t {
     MDD,
     PAMLD,
     NAIVE,
-    TRANSPARENT,
+    PASSTHROUGH,
     BENCHMARK,
 };
 string to_string(const Algorithm& value);
@@ -496,9 +496,6 @@ class HtsHead {
     friend ostream& operator<<(ostream& o, const HtsHead& head);
 
     public:
-        void operator=(HtsHead const &) = delete;
-        HtsHead();
-        ~HtsHead();
         void decode(const bam_hdr_t* hdr);
         void encode(bam_hdr_t* hdr) const;
         void add_reference(const HeadSQAtom& sq);
@@ -511,9 +508,9 @@ class HtsHead {
 
     private:
         HeadHDAtom hd;
-        unordered_map< string, HeadSQAtom > reference_by_id;
-        unordered_map< string, HeadRGAtom > read_group_by_id;
-        unordered_map< string, HeadPGAtom > program_by_id;
+        unordered_map< string, HeadSQAtom > SQ_by_id;
+        unordered_map< string, HeadRGAtom > RG_by_id;
+        unordered_map< string, HeadPGAtom > PG_by_id;
         list< HeadCOAtom > comment_by_index;
 };
 ostream& operator<<(ostream& o, const HtsHead& head);

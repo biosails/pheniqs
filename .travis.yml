@@ -20,7 +20,7 @@ stages:
 - name: deploy
   if: branch = master
 script:
-- "./tool/ppkg.py -v error build test/build.json"
+- "./tool/pheniqs-build-api.py -v error build test/build.json"
 - make all PREFIX=${HOME}/.pheniqs/travis/install 2> >(./test/filter_warning.py)
 - "./pheniqs --version"
 - make test

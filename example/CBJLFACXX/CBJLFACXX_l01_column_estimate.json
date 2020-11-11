@@ -6,7 +6,8 @@
     "input": [
         "CBJLFACXX_S1_L001_I1_001.fastq.gz"
     ],
-    "multiplex": {
+    "cellular": {
+        "multiplexing classifier": true,
         "algorithm": "pamld",
         "base": "@CBJLFACXX_column",
         "confidence threshold": 0.95,

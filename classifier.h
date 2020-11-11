@@ -23,65 +23,148 @@
 #define PHENIQS_CLASSIFY_H
 
 #include "include.h"
-#include "accumulator.h"
+#include "selector.h"
 #include "read.h"
 
-template < class T > class RoutingClassifier : public AccumulatingClassifier {
-    public:
+enum class ClassifierType : int8_t {
+    UNKNOWN     = -1,
+    SAMPLE      =  0,
+    CELLULAR    =  1,
+    MOLECULAR   =  2,
+};
+string to_string(const ClassifierType& value);
+bool from_string(const char* value, ClassifierType& result);
+void to_kstring(const ClassifierType& value, kstring_t& result);
+bool from_string(const string& value, ClassifierType& result);
+ostream& operator<<(ostream& o, const ClassifierType& value);
+template<> bool decode_value_by_key< ClassifierType >(const Value::Ch* key, ClassifierType& value, const Value& container);
+template<> ClassifierType decode_value_by_key< ClassifierType >(const Value::Ch* key, const Value& container);
+
+vector< string > decode_tag_id_by_index(const Value& ontology);
+
+template < class T > class Classifier : public AccumulatingSelector {
+    protected:
         T* decoded;
         T unclassified;
-        vector< T > tag_by_index;
+        vector< T > tag_array;
+        const bool multiplexing_classifier;
 
-        RoutingClassifier(const Value& ontology) try :
-            AccumulatingClassifier(decode_value_by_key< int32_t >("index", ontology)),
+    public:
+        Classifier(const Value& ontology) try :
+            AccumulatingSelector(decode_value_by_key< int32_t >("index", ontology)),
             decoded(NULL),
-            unclassified(find_value_by_key("undetermined", ontology)),
-            tag_by_index(decode_value_by_key< vector< T > >("codec", ontology)) {
+            unclassified(ontology["undetermined"]),
+            tag_array(decode_value_by_key< vector< T > >("codec", ontology)),
+            multiplexing_classifier(decode_value_by_key< bool >("multiplexing classifier", ontology)) {
 
             decoded = &unclassified;
 
             } catch(Error& error) {
-                error.push("RoutingClassifier");
+                error.push("Classifier");
                 throw;
+        };
+        Classifier(const Classifier< T >& other) :
+            AccumulatingSelector(other),
+            decoded(NULL),
+            unclassified(other.unclassified),
+            tag_array(other.tag_array),
+            multiplexing_classifier(other.multiplexing_classifier) {
+
+            decoded = &unclassified;
         };
         virtual inline void classify(const Read& input, Read& output) {
             ++(decoded->count);
             if(!output.qcfail()) {
                 ++(decoded->pf_count);
             }
+            if(multiplexing_classifier) {
+                output.channel_index = decoded->index;
+            }
+        };
+        virtual inline void collect(const Classifier& other) {
+            AccumulatingSelector::collect(other);
+            unclassified.collect(other.unclassified);
+            for(size_t index(0); index < tag_array.size(); ++index) {
+                tag_array[index].collect(other.tag_array[index]);
+            }
         };
         inline void finalize() override {
-            for(auto& element : tag_by_index) {
+            /* collect the counts from the tags to get the total */
+            for(auto& element : tag_array) {
                 this->classified_count += element.count;
                 this->pf_classified_count += element.pf_count;
             }
             this->count = this->classified_count + unclassified.count;
             this->pf_count = this->pf_classified_count + unclassified.pf_count;
 
-            for(auto& element : tag_by_index) {
+            /*  compute noise prior estimate
+                first get the portion of reads that failed the noise filter from high confidence classified. */
+            double estimated_noise_count(this->low_conditional_confidence_count);
+            double confident_noise_ratio(estimated_noise_count / (estimated_noise_count + this->pf_classified_count));
+
+            /* than assume that the same ratio applies to low confidnce reads */
+            if(this->low_confidence_count > 0) {
+                estimated_noise_count += double(this->low_confidence_count) * confident_noise_ratio;
+            }
+            this->estimated_noise_prior = estimated_noise_count / double(this->count);
+
+            /* finalize the tags */
+            double estimated_not_noise_prior(1.0 - this->estimated_noise_prior);
+            for(auto& element : tag_array) {
                 element.finalize(*this);
+                element.estimated_concentration_prior = estimated_not_noise_prior * element.pf_pooled_classified_fraction;
             }
             unclassified.finalize(*this);
-            AccumulatingClassifier::finalize();
+
+            /* finalize the selector */
+            AccumulatingSelector::finalize();
         };
-        RoutingClassifier< T >& operator+=(const RoutingClassifier< T >& rhs) {
-            AccumulatingClassifier::operator+=(rhs);
-            unclassified += rhs.unclassified;
-            for(size_t index(0); index < tag_by_index.size(); ++index) {
-                tag_by_index[index] += rhs.tag_by_index[index];
+        void adjust_prior(Value& container, Document& document) {
+            /* adjust the noise prior */
+            encode_key_value("noise", estimated_noise_prior, container, document);
+
+            /* build a map of barcode sequence to prior */
+            unordered_map< string, double > concentration_prior_by_barcode(tag_array.size());
+            kstring_t buffer({ 0, 0, NULL });
+            for(auto& tag: tag_array) {
+                tag.encode_iupac_ambiguity(buffer);
+                concentration_prior_by_barcode.insert(make_pair<string, double>(string(buffer.s, buffer.l), double(tag.estimated_concentration_prior)));
+                ks_clear(buffer);
             }
-            return *this;
+            ks_free(buffer);
+
+            /* adjust the concentration prior on each barcode */
+            Value::MemberIterator reference = container.FindMember("codec");
+            if(reference != container.MemberEnd()) {
+                list< string > barcode_segment;
+                for(auto& record : reference->value.GetObject()) {
+                    if(decode_value_by_key< list< string > >("barcode", barcode_segment, record.value)) {
+                        string barcode_string;
+                        for(auto& segment : barcode_segment) {
+                            if(!barcode_string.empty()) {
+                                barcode_string.append("-");
+                            }
+                            barcode_string.append(segment);
+
+                            auto concentration_record = concentration_prior_by_barcode.find(barcode_string);
+                            if(concentration_record != concentration_prior_by_barcode.end()) {
+                                encode_key_value("concentration", concentration_record->second, record.value, document);
+                            }
+                        }
+                    }
+                }
+            }
         };
         void encode(Value& container, Document& document) const override {
-            AccumulatingClassifier::encode(container, document);
+            AccumulatingSelector::encode(container, document);
 
             Value unclassified_report(kObjectType);
             unclassified.encode(unclassified_report, document);
             container.AddMember("unclassified", unclassified_report.Move(), document.GetAllocator());
 
-            if(!tag_by_index.empty()) {
+            if(!tag_array.empty()) {
                 Value element_report_array(kArrayType);
-                for(auto& element : tag_by_index) {
+                for(auto& element : tag_array) {
                     Value element_report(kObjectType);
                     element.encode(element_report, document);
                     element_report_array.PushBack(element_report.Move(), document.GetAllocator());
@@ -89,39 +172,6 @@ template < class T > class RoutingClassifier : public AccumulatingClassifier {
                 container.AddMember("classified", element_report_array.Move(), document.GetAllocator());
             }
         };
-};
-
-template < class T > class ReadGroupClassifier : public RoutingClassifier< T > {
-    public:
-        ReadGroupClassifier(const Value& ontology) try :
-            RoutingClassifier< T >(ontology) {
-
-            element_by_rg.reserve(this->tag_by_index.size());
-            for(auto& element : this->tag_by_index) {
-                element_by_rg.emplace(make_pair(string(element.rg.ID.s, element.rg.ID.l), &element));
-            }
-
-            } catch(Error& error) {
-                error.push("ReadGroupClassifier");
-                throw;
-        };
-        inline void classify(const Read& input, Read& output) override {
-            this->decoded = &this->unclassified;
-            if(ks_not_empty(input.RG())) {
-                rg_id_buffer.assign(input.RG().s, input.RG().l);
-                auto record = element_by_rg.find(rg_id_buffer);
-                if(record != element_by_rg.end()) {
-                    this->decoded = record->second;
-                }
-            }
-        };
-
-    protected:
-        unordered_map< string, T* > element_by_rg;
-
-    private:
-        string rg_id_buffer;
-
 };
 
 #endif /* PHENIQS_CLASSIFY_H */
