@@ -38,7 +38,75 @@ jobs:
     addons:
       apt:
         sources:
-        - ubuntu-toolchain-r-test
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - g++-4.8
+        - build-essential
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
+  - os: linux
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - g++-4.9
+        - build-essential
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: linux
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - g++-5
+        - build-essential
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+  - os: linux
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - g++-6
+        - build-essential
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+  - os: linux
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
         - g++-7
         - build-essential
@@ -55,10 +123,10 @@ jobs:
     addons:
       apt:
         sources:
-        - ubuntu-toolchain-r-test
-        - llvm-toolchain-precise-6
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        - sourceline": 'deb http://apt.llvm.org/precise/ llvm-toolchain-precise-3.6 main'
         packages:
-        - clang-6
+        - clang-3.6
         - build-essential
         - rapidjson-dev
         - libhts-dev
@@ -66,17 +134,17 @@ jobs:
         - libdeflate-dev
         - libbz2-dev
     env:
-    - MATRIX_EVAL="CC=clang-6 && CXX=clang++-6"
+    - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
   - os: linux
     stage: test
     dist: focal
     addons:
       apt:
         sources:
-        - ubuntu-toolchain-r-test
-        - llvm-toolchain-precise-7
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        - llvm-toolchain-precise-3.7
         packages:
-        - clang-7
+        - clang-3.7
         - build-essential
         - rapidjson-dev
         - libhts-dev
@@ -84,17 +152,17 @@ jobs:
         - libdeflate-dev
         - libbz2-dev
     env:
-    - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
+    - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
   - os: linux
     stage: test
     dist: focal
     addons:
       apt:
         sources:
-        - ubuntu-toolchain-r-test
-        - llvm-toolchain-precise-8
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        - llvm-toolchain-precise-3.8
         packages:
-        - clang-8
+        - clang-3.8
         - build-essential
         - rapidjson-dev
         - libhts-dev
@@ -102,16 +170,16 @@ jobs:
         - libdeflate-dev
         - libbz2-dev
     env:
-    - MATRIX_EVAL="CC=clang-8 && CXX=clang++-8"
+    - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
   - os: linux
     stage: test
     dist: focal
     addons:
       apt:
         sources:
-        - llvm-toolchain-trusty-9
+        - llvm-toolchain-trusty-3.9
         packages:
-        - clang-9
+        - clang-3.9
         - build-essential
         - rapidjson-dev
         - libhts-dev
@@ -119,16 +187,16 @@ jobs:
         - libdeflate-dev
         - libbz2-dev
     env:
-    - MATRIX_EVAL="CC=clang-9 && CXX=clang++-9"
+    - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
   - os: linux
     stage: test
     dist: focal
     addons:
       apt:
         sources:
-        - llvm-toolchain-trusty-10
+        - llvm-toolchain-trusty-4.0
         packages:
-        - clang-10
+        - clang-4.0
         - build-essential
         - rapidjson-dev
         - libhts-dev
@@ -136,7 +204,7 @@ jobs:
         - libdeflate-dev
         - libbz2-dev
     env:
-    - MATRIX_EVAL="CC=clang-10 && CXX=clang++-10"
+    - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
   - os: osx
     stage: test
     osx_image: xcode8.3
