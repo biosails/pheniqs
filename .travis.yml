@@ -33,6 +33,7 @@ jobs:
       CXX=g++-7"
   include:
   - os: linux
+    name: gcc 4.8 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -50,6 +51,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
   - os: linux
+    name: gcc 4.9 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -58,7 +60,6 @@ jobs:
         - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
         - g++-4.9
-        - build-essential
         - rapidjson-dev
         - libhts-dev
         - liblzma-dev
@@ -67,6 +68,25 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
   - os: linux
+    name: gcc 4.9 manually on Ubuntu
+    stage: test
+    dist: focal
+    before_install:
+        - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+        - sudo apt-get -q update
+        - sudo apt-get -y install gcc-4.9
+    addons:
+      apt:
+        packages:
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: linux
+    name: gcc 5 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -84,6 +104,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
   - os: linux
+    name: gcc 6 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -101,6 +122,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
   - os: linux
+    name: gcc 7 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -118,6 +140,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
   - os: linux
+    name: clang 3.6 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -136,6 +159,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
   - os: linux
+    name: clang 3.7 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -154,6 +178,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
   - os: linux
+    name: clang 3.8 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -172,6 +197,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
   - os: linux
+    name: clang 3.9 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -189,6 +215,7 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
   - os: linux
+    name: clang 4.0 on Ubuntu
     stage: test
     dist: focal
     addons:
@@ -206,35 +233,62 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
   - os: osx
+    name: clang on MacOS
+    osx_image: xcode12
+    compiler: clang
     stage: test
-    osx_image: xcode8.3
+    addons:
+        homebrew:
+            packages:
+                - zlib
+                - bzip2
+                - rapidjson
+                - xz
+                - htslib
+                - libdeflate
+            update: true
     env:
     - MATRIX_EVAL="CC=clang && CXX=clang++"
   - os: osx
+    name: gcc 9 on MacOS
+    osx_image: xcode12
     stage: test
-    osx_image: xcode8.3
+    addons:
+        homebrew:
+            packages:
+                - gcc@9
+                - zlib
+                - bzip2
+                - rapidjson
+                - xz
+                - htslib
+                - libdeflate
+            update: true
     env:
-    - MATRIX_EVAL="brew install gcc@4.9; brew link --overwrite gcc@4.9; CC=gcc-4.9
-      && CXX=g++-4.9"
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
   - os: osx
+    name: gcc 8 on MacOS
+    osx_image: xcode12
     stage: test
-    osx_image: xcode8.3
     env:
-    - MATRIX_EVAL="brew install gcc@5; brew link --overwrite gcc@5; CC=gcc-5 && CXX=g++-5"
+    - MATRIX_EVAL="brew update; brew install gcc@8; brew link --overwrite gcc@8; CC=gcc-8 && CXX=g++-8;
+      brew install zlib bzip2 rapidjson xz htslib libdeflate"
   - os: osx
+    name: gcc 7 on MacOS
+    osx_image: xcode12
     stage: test
-    osx_image: xcode8.3
+    addons:
+        homebrew:
+            packages:
+                - zlib
+                - bzip2
+                - rapidjson
+                - xz
+                - htslib
+                - libdeflate
+            update: true
     env:
-    - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools
-      (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@6; brew link
-      --overwrite gcc@6; CC=gcc-6 && CXX=g++-6"
-  - os: osx
-    stage: test
-    osx_image: xcode8.3
-    env:
-    - MATRIX_EVAL="sudo softwareupdate -l;sudo softwareupdate -i 'Command Line Tools
-      (macOS High Sierra version 10.13) for Xcode-9.4'; brew install gcc@7; brew link
-      --overwrite gcc@7; CC=gcc-7 && CXX=g++-7"
+    - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7; CC=gcc-6 && CXX=g++-7;"
   - os: osx
     stage: test
     osx_image: xcode8.3
