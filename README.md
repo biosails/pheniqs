@@ -1,6 +1,6 @@
 # Pheniqs
 
-Documentation and workflows can be found on the **[Pheniqs website](http://biosails.github.io/pheniqs)**.
+For documentation check out the **[Pheniqs website](http://biosails.github.io/pheniqs)**.
 
 Pheniqs is a generic DNA sequence multiplexer, demultiplexer and quality analyzer that caters to a wide variety of experimental designs. It is written in multi threaded [C++11](https://en.wikipedia.org/wiki/C%2B%2B11) and is can easily be to extend with new decoding algorithms. A python API for generating configuration files for common experimental designs is also available and actively maintained. Pheniqs is pronounced ***phoe·nix*** and stands for **PH**ilology **EN**coder w**I**th **Q**uality **S**tatistics.
 
@@ -30,6 +30,6 @@ Barcode decoding error probabilities are encoded in tags reserved for local use 
 You can [install](https://biosails.github.io/pheniqs/2.0/install.html) Pheniqs from many common package managers or [build](https://biosails.github.io/pheniqs/2.0/build.html) it from source. The [quick tutorial](https://biosails.github.io/pheniqs/2.0/tutorial.html) will walk you though a very basic scenario of using Pheniqs. In the [manual](https://biosails.github.io/pheniqs/2.0/manual.html) you will find a more detailed discussion of each of the configuration parameters. In the [workflow](https://biosails.github.io/pheniqs/2.0/workflow.html) page you can find vignettes that will walk you through some standard protocols. **Please request specific protocols you wish to be included.**
 
 ## Getting started
-Head over to the [Pheniqs web site](https://biosails.github.io/pheniqs/2.0) for more details.
+Head over to the [Pheniqs web site](https://biosails.github.io/pheniqs) for more details.
 
 [![Build Status](https://travis-ci.org/biosails/pheniqs.svg?branch=master)](https://travis-ci.org/biosails/pheniqs)

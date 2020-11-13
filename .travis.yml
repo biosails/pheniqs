@@ -250,6 +250,22 @@ jobs:
     env:
     - MATRIX_EVAL="CC=clang && CXX=clang++"
   - os: osx
+    name: clang on MacOS no update
+    osx_image: xcode12
+    compiler: clang
+    stage: test
+    addons:
+        homebrew:
+            packages:
+                - zlib
+                - bzip2
+                - rapidjson
+                - xz
+                - htslib
+                - libdeflate
+    env:
+    - MATRIX_EVAL="CC=clang && CXX=clang++"
+  - os: osx
     name: gcc 9 on MacOS
     osx_image: xcode12
     stage: test
