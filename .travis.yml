@@ -29,25 +29,6 @@ jobs:
   fast_finish: true
   include:
   - os: linux
-    name: gcc 4.9 manually on Ubuntu
-    stage: test
-    dist: focal
-    before_install:
-        - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-        - sudo apt-get -q update
-        - apt search clang
-        - apt search gcc
-    addons:
-      apt:
-        packages:
-        - rapidjson-dev
-        - libhts-dev
-        - liblzma-dev
-        - libdeflate-dev
-        - libbz2-dev
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: linux
     name: gcc on Ubuntu
     stage: test
     dist: focal
@@ -63,7 +44,76 @@ jobs:
         - libdeflate-dev
         - libbz2-dev
     env:
+    - MATRIX_EVAL="CC=gcc && CXX=g++"
+  - os: linux
+    name: gcc-7 on Ubuntu
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - gcc-7
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
     - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+  - os: linux
+    name: gcc-8 on Ubuntu
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - gcc-8
+        - build-essential
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+  - os: linux
+    name: gcc-9 on Ubuntu
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - gcc-9
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+  - os: linux
+    name: gcc-10 on Ubuntu
+    stage: test
+    dist: focal
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+        - gcc-10
+        - rapidjson-dev
+        - libhts-dev
+        - liblzma-dev
+        - libdeflate-dev
+        - libbz2-dev
+    env:
+    - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
   - os: linux
     name: clang on Ubuntu
     stage: test
@@ -74,7 +124,6 @@ jobs:
         - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
         - clang
-        - build-essential
         - rapidjson-dev
         - libhts-dev
         - liblzma-dev
