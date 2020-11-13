@@ -240,6 +240,7 @@ jobs:
     addons:
         homebrew:
             packages:
+                - python
                 - zlib
                 - bzip2
                 - rapidjson
@@ -257,6 +258,7 @@ jobs:
     addons:
         homebrew:
             packages:
+                - python
                 - zlib
                 - bzip2
                 - rapidjson
@@ -272,6 +274,7 @@ jobs:
     addons:
         homebrew:
             packages:
+                - python
                 - gcc@9
                 - zlib
                 - bzip2
@@ -296,6 +299,7 @@ jobs:
     addons:
         homebrew:
             packages:
+                - python
                 - zlib
                 - bzip2
                 - rapidjson
