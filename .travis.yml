@@ -134,14 +134,14 @@ jobs:
                 - libdeflate
             update: true
     env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
   - os: osx
     name: gcc 8 on MacOS
     osx_image: xcode12
     stage: test
     env:
     - MATRIX_EVAL="brew update; brew install gcc@8; brew link --overwrite gcc@8; CC=gcc-8 && CXX=g++-8;
-      brew install zlib bzip2 rapidjson xz htslib libdeflate"
+      brew install python zlib bzip2 rapidjson xz htslib libdeflate"
   - os: osx
     name: gcc 7 on MacOS
     osx_image: xcode12
@@ -158,7 +158,7 @@ jobs:
                 - libdeflate
             update: true
     env:
-    - MATRIX_EVAL="brew install gcc@7; brew link --overwrite gcc@7; CC=gcc-6 && CXX=g++-7;"
+    - MATRIX_EVAL="brew install python gcc@7; brew link --overwrite gcc@7; CC=gcc-6 && CXX=g++-7;"
   - os: osx
     stage: test
     osx_image: xcode12
