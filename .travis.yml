@@ -46,75 +46,6 @@ jobs:
     env:
     - MATRIX_EVAL="CC=gcc && CXX=g++"
   - os: linux
-    name: gcc-7 on Ubuntu
-    stage: test
-    dist: focal
-    addons:
-      apt:
-        sources:
-        - sourceline: 'ppa:ubuntu-toolchain-r/test'
-        packages:
-        - gcc-7
-        - rapidjson-dev
-        - libhts-dev
-        - liblzma-dev
-        - libdeflate-dev
-        - libbz2-dev
-    env:
-    - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-  - os: linux
-    name: gcc-8 on Ubuntu
-    stage: test
-    dist: focal
-    addons:
-      apt:
-        sources:
-        - sourceline: 'ppa:ubuntu-toolchain-r/test'
-        packages:
-        - gcc-8
-        - build-essential
-        - rapidjson-dev
-        - libhts-dev
-        - liblzma-dev
-        - libdeflate-dev
-        - libbz2-dev
-    env:
-    - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-  - os: linux
-    name: gcc-9 on Ubuntu
-    stage: test
-    dist: focal
-    addons:
-      apt:
-        sources:
-        - sourceline: 'ppa:ubuntu-toolchain-r/test'
-        packages:
-        - gcc-9
-        - rapidjson-dev
-        - libhts-dev
-        - liblzma-dev
-        - libdeflate-dev
-        - libbz2-dev
-    env:
-    - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
-  - os: linux
-    name: gcc-10 on Ubuntu
-    stage: test
-    dist: focal
-    addons:
-      apt:
-        sources:
-        - sourceline: 'ppa:ubuntu-toolchain-r/test'
-        packages:
-        - gcc-10
-        - rapidjson-dev
-        - libhts-dev
-        - liblzma-dev
-        - libdeflate-dev
-        - libbz2-dev
-    env:
-    - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
-  - os: linux
     name: clang on Ubuntu
     stage: test
     dist: focal
@@ -133,24 +64,6 @@ jobs:
     - MATRIX_EVAL="CC=clang && CXX=clang++"
   - os: osx
     name: clang on MacOS
-    osx_image: xcode12
-    compiler: clang
-    stage: test
-    addons:
-        homebrew:
-            packages:
-                - python
-                - zlib
-                - bzip2
-                - rapidjson
-                - xz
-                - htslib
-                - libdeflate
-            update: true
-    env:
-    - MATRIX_EVAL="CC=clang && CXX=clang++"
-  - os: osx
-    name: clang on MacOS no update
     osx_image: xcode12
     compiler: clang
     stage: test
@@ -188,17 +101,11 @@ jobs:
     name: gcc 8 on MacOS
     osx_image: xcode12
     stage: test
-    env:
-    - MATRIX_EVAL="brew update; brew install gcc@8; brew link --overwrite gcc@8; CC=gcc-8 && CXX=g++-8;
-      brew install python zlib bzip2 rapidjson xz htslib libdeflate"
-  - os: osx
-    name: gcc 7 on MacOS
-    osx_image: xcode12
-    stage: test
     addons:
         homebrew:
             packages:
                 - python
+                - gcc@8
                 - zlib
                 - bzip2
                 - rapidjson
@@ -207,12 +114,33 @@ jobs:
                 - libdeflate
             update: true
     env:
-    - MATRIX_EVAL="brew install python gcc@7; brew link --overwrite gcc@7; CC=gcc-6 && CXX=g++-7;"
+    - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
   - os: osx
-    stage: test
+    name: gcc 7 on MacOS
     osx_image: xcode12
+    stage: test
+    addons:
+        homebrew:
+            packages:
+                - python
+                - gcc@7
+                - zlib
+                - bzip2
+                - rapidjson
+                - xz
+                - htslib
+                - libdeflate
+            update: true
+    env:
+    - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+  - os: osx
+    name: Conda on MacOS
+    osx_image: xcode12
+    stage: test
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/osx_build.sh
   - os: linux
+    name: Conda on Ubuntu
+    dist: focal
     stage: test
     script: bash $TRAVIS_BUILD_DIR/conda_recipe/linux_build.sh
 

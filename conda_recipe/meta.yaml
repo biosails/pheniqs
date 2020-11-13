@@ -25,6 +25,7 @@ requirements:
     - rapidjson
     - samtools
     - htslib
+    - python
     - zlib
 
 test:
