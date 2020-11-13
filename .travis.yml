@@ -11,8 +11,8 @@ env:
   matrix:
     secure: YxnJfyr2pyPqNSWPrsbWSnO9cvlw9rmt5NDoT/WafwfKJy+NSE1GEWXZy9b5dJcfajCcDeGlfZMTX19wnrL8jdX1pW8UO5sDdB2YOFLOBYX7vZLT2Gw//5mTEj46RqDWvb83ydwgg0hhXBJXs7ozzE7yNsqAjBJx6vp8QEGCVhiLJLmmMijkIq5AdxA6OJP/7oQwk3Wd8oOy7VXRd5FBIhvyFrNjd+S47Y/7wAZ+LaYa/4f3zmfDpKeEr1AOcZfTknL6T8YHaYa0dHArOa4tLJp13aH1g3KxTXDEsc4Hmn/RfkW2oi9YffbAF+03UGMhr1qBSoHqNRIM8OrW11JRke+fG3I32i81gxJBEYLs2EAqaJ8wPFMeivX5uqOMROnykSh0DrspvTltEYYbnwJ9wUNtz6Cflk9sUbPfq1Xxprm/Y/96igMp3Ahxw8WcwvhEvGMOONlOuX2W2VgfoUtW0/B+ih8mJ7g0t4j04V7y5tUryUyRY2NI1llAgx2uiOutWeRS+AMjOqvnq3oGgri/bQTAsCK7+IaUkuQCSW0E/EpcaLRxaCDbiU1UeJYbmvvUoL8NO1Y+LFnuJLr9P1d42Cf0JnTjo6hMnRg7CqHMnrbQFsh7NyZF3oe/xgLZCiz3Sdx4j4oSU+v6q0Jz1qyS4mkqqMZAC1ZyYXWVfqYCJQk=
 before_install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update > /dev/null 2>&1; brew upgrade
-  python > /dev/null 2>&1; fi
+# - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update > /dev/null 2>&1; brew upgrade
+#   python > /dev/null 2>&1; fi
 - eval "${MATRIX_EVAL}"
 install: true
 stages:
