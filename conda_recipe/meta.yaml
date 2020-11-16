@@ -19,12 +19,14 @@ requirements:
     - rapidjson
     - samtools
     - htslib
+    - libdeflate
     - python
     - zlib
   run:
     - rapidjson
     - samtools
     - htslib
+    - libdeflate
     - python
     - zlib
 
