@@ -10,16 +10,15 @@ id: home
 Pheniqs is a flexible generic barcode classifier for high-throughput next-gen sequencing that caters to a wide variety of experimental designs and has been designed for efficient data processing. Features include:
 
 ### Powerful and intuitive syntax
-- Addresses index tags in arbitrary locations along reads
-- Easily handles any number of combinatorial barcode tags
 - Classifies standard barcode types: Sample, Cellular, and Molecular Index
-- Easily accommodates custom barcode types
 - Directly writes barcodes to standard or custom BAM fields
-- Eliminates need for pre- or post-processing of barcode tags
+- Addresses index tags in arbitrary locations along reads
+- Easily accommodates custom barcode types, eliminating the need for pre- or post-processing
+- Easily handles any number of combinatorial barcode tags
 
 ### Noise and quality aware probabilistic classifier
-- Increases accuracy over standard edit distance methods
-- Reports classification error probabilities in standard SAM auxiliary tags
+- [Increased accuracy](pamld) over standard edit distance methods
+- Reports classification error probabilities in SAM auxiliary tags
 - Modular design allows addition of new classifiers
 
 ### Robust engineering
@@ -29,26 +28,26 @@ Pheniqs is a flexible generic barcode classifier for high-throughput next-gen se
 - Performance scales linearly with the number of available processing cores
 
 ### Easy to install or build
-- Built-in package manager can build dependencies and binaries from scratch
 - Stable releases available from Bioconda
-- Available in a Docker container
-- Portable compiled binaries available
+- [Custom package manager](https://github.com/biosails/pheniqs-build-api) can build dependencies and binaries from scratch
 - Easily installed on clusters or cloud without elevated permissions
+- Portable compiled binaries available
+- Available in a Docker container
 
 ### Easy to use
 - Simple command line syntax with autocomplete
-- Reusable configuration templates
-- Preconfigured barcode library sets
+- Reusable, inheritence enabled, JSON encoded configuration
+- Preconfigured barcode [library sets](recipe)
 - Reads and writes multiple file formats: FASTQ, SAM/BAM/CRAM
 - Fast standalone file format interconversion
-- Helper scripts assist in configuration file bootstraping
+- Helper scripts to assist in configuration file bootstraping
 - Facilitates more robust and reproducible downstream analysis
 
 On this website, you will find everything you need to get started with Pheniqs: Installation and configuration, classifying reads, vignettes that will walk you through processing popular experimental designs, and information about how to leverage standardized SAM auxiliary tags to improve the reproducibility of your published data.
 
 Pheniqs runs on all modern POSIX systems and provides an easy to learn command line interface with autocomplete and an extensible reusable configuration syntax. Pheniqs is an ideal utility to pre- and post-process sequence reads for other bioinformatics tools, and it may also be used simply to rapidly and efficiently interconvert a variety of standard sequence file formats without invoking any of its barcode processing features.
 
-For more advanced users and sequencing core managers, we provide detailed build instructions and a built-in package manager to easily build portable, [statically linked](glossary#static_linking), Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
+For more advanced users and sequencing core managers, we provide detailed [build instructions](install) and a [custom package manager](https://github.com/biosails/pheniqs-build-api) to easily build portable, [statically linked](glossary#static_linking), Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
 
 ## Installing Pheniqs
 
