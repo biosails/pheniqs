@@ -459,8 +459,4 @@ Once the run is complete, in addition to the output, a [report]({{ site.github.r
 
 ## Prior estimation
 
-Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a [simple estimation of the priors](configuration#prior-estimation) in the report from each run. A simple python script for adjusting your configuration to include priors estimated from the report emitted by a preliminary Pheniqs run is also included. The `pheniqs-prior-api.py` script distributed with Pheniqs will execute Pheniqs with your given configuration and a special optimized mode that refrains from writing the output reads to save time and then emit a modified configuration file with adjusted priors. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether.
-
->```shell
-pheniqs-prior-api.py --configuration H7LT2DSXX_l01_sample.json --report H7LT2DSXX_l01_sample_report.json
-```
+Better estimation of the prior distribution of the samples can improve accuracy. Pheniqs provides a [simple estimation of the priors](pamld#estimating-the-prior-distribution) in the report from each run. Providing a file path with the`--prior` command line parameter in a prelimenary run will write new adjusted configuration file with `concentration` and `noise` values evaluated from the statistics collected from the run. The priors you specify in your initial configuration can be your best guess for the priors but you can simply leave them out altogether. Discarding output by specifying `--output /dev/null` on the prelimenary run can accelerate prior estimation.
