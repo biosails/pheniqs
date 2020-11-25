@@ -506,7 +506,7 @@ The `decoder::` prefix in the table refers to the attribute in the parent decode
 
 ## Prior estimation
 
-The statistical report Pheniqs produces when decoding with PAMLD can be used to estimate `concentration` and `noise` from the data. The mathematical procedure itself, as well as the parameters involved, are described in the [PAMLD](pamld#estimating-the-prior-distribution") page. The `--prior` command line parameter, if specified, is a path where a new JSON encoded configuration file will be written that contains the same decoding job executed but with `concentration` and `noise` values adjusted based on the statistics collected from the run. To use it, simply execute Pheniqs again with the new configuration file. The initial priors can be either left blank, suggesting a uniform prior, or your best guess.
+The statistical report Pheniqs produces when decoding with PAMLD can be used to estimate `concentration` and `noise` from the data. The mathematical procedure itself, as well as the parameters involved, are described in the [PAMLD](pamld#estimating-the-prior-distribution) page. The `--prior` command line parameter, if specified, is a path where a new JSON encoded configuration file will be written that contains the same decoding job executed but with `concentration` and `noise` values adjusted based on the statistics collected from the run. To use it, simply execute Pheniqs again with the new configuration file. The initial priors can be either left blank, suggesting a uniform prior, or your best guess.
 
 >```json
 {
