@@ -275,7 +275,7 @@
     "input phred offset": 33,
     "input segment cardinality": 3,
     "leading segment index": 0,
-    "multiplex": {
+    "sample": {
         "CN": "CGSB AD",
         "PL": "ILLUMINA",
         "PM": "HiSeq",

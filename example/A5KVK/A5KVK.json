@@ -9,7 +9,7 @@
         "A5KVK.cram",
         "A5KVK.cram"
     ],
-    "multiplex": {
+    "sample": {
         "algorithm": "pamld",
         "codec": {
             "@RG01": {

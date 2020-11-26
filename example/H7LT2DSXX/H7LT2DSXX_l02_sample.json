@@ -8,7 +8,7 @@
         "H7LT2DSXX_S1_L002_I2_001.fastq.gz",
         "H7LT2DSXX_S1_L002_R2_001.fastq.gz"
     ],
-    "multiplex": {
+    "sample": {
         "algorithm": "pamld",
         "base": "H7LT2DSXX_l02_multiplex",
         "confidence threshold": 0.95,
