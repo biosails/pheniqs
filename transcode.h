@@ -129,8 +129,8 @@ class Transcode : public Job {
         void compile_output();
         void compile_template();
         void compile_transformation(Value& value);
-        bool infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
-        bool infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined=false);
+        bool infer_PU(string& buffer, Value& container, const bool& undetermined=false);
+        bool infer_ID(string& buffer, Value& container);
         void pad_url_array_by_key(const Value::Ch* key, Value& container, const int32_t& cardinality);
         void cross_validate_io();
         void compile_thread_model();

@@ -931,7 +931,8 @@ void Transcode::compile_decoder(Value& value, int32_t& index, const Value& defau
         reference = value.FindMember("undetermined");
         if(reference != value.MemberEnd()){
             encode_key_value("index", barcode_index, reference->value, ontology);
-            if(infer_ID("ID", buffer, reference->value, true)) {
+            infer_PU(buffer, reference->value, true);
+            if(infer_ID(buffer, reference->value)) {
                 unique_barcode_id.emplace(buffer);
             }
             encode_key_value("concentration", noise, reference->value, ontology);
@@ -945,7 +946,8 @@ void Transcode::compile_decoder(Value& value, int32_t& index, const Value& defau
                 for(auto& record : codec.GetObject()) {
                     merge_json_value(default_codec_barcode, record.value, ontology);
                     encode_key_value("index", barcode_index, record.value, ontology);
-                    if(infer_ID("ID", buffer, record.value)) {
+                    infer_PU(buffer, record.value);
+                    if(infer_ID(buffer, record.value)) {
                         if(!unique_barcode_id.count(buffer)) {
                             unique_barcode_id.emplace(buffer);
                         } else {
@@ -1177,19 +1179,19 @@ Value& Transcode::find_multiplexing_decoder() {
         }
     }
 };
-bool Transcode::infer_ID(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+bool Transcode::infer_ID(string& buffer, Value& container) {
     buffer.clear();
-    if(!decode_value_by_key< string >(key, buffer, container)) {
-        if(infer_PU("PU", buffer, container, undetermined)) {
-            encode_key_value(key, buffer, container, ontology);
+    if(!decode_value_by_key< string >("ID", buffer, container)) {
+        if(decode_value_by_key< string >("PU", buffer, container)) {
+            encode_key_value("ID", buffer, container, ontology);
             return true;
         } else { return false; }
     } else { return true; }
 };
-bool Transcode::infer_PU(const Value::Ch* key, string& buffer, Value& container, const bool& undetermined) {
+bool Transcode::infer_PU(string& buffer, Value& container, const bool& undetermined) {
     buffer.clear();
     string suffix;
-    if(!decode_value_by_key< string >(key, suffix, container)) {
+    if(!decode_value_by_key< string >("PU", buffer, container)) {
         if(!undetermined) {
             list< string > barcode;
             if(decode_value_by_key< list< string > >("barcode", barcode, container)) {
@@ -1209,7 +1211,7 @@ bool Transcode::infer_PU(const Value::Ch* key, string& buffer, Value& container,
                 }
             }
             buffer.append(suffix);
-            encode_key_value(key, buffer, container, ontology);
+            encode_key_value("PU", buffer, container, ontology);
             return true;
         } else { return false; }
     } else { return true; }
