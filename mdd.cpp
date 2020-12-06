@@ -79,6 +79,9 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
             }
         }
     }
+    if(this->decoded == &this->unclassified) {
+        output.set_qcfail(true);
+    }
     Decoder< T >::classify(input, output);
 };
 
