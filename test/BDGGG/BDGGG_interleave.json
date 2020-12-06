@@ -48,6 +48,7 @@
     },
     "filter incoming qc fail": false,
     "flowcell id": "BDGGG",
+    "flowcell lane number": 1,
     "input": [
         "BDGGG_s01.fastq.gz",
         "BDGGG_s02.fastq.gz",

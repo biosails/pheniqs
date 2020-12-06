@@ -100,8 +100,8 @@ Sample decoding
     3 3 3 2 0 TCCTGAGC
 
     Barcode undetermined
-        ID : BDGGG:undetermined
-        PU : BDGGG:undetermined
+        ID : BDGGG:1:undetermined
+        PU : BDGGG:1:undetermined
         SM : trinidad
         DT : 2018-02-25T07:00:00+00:00
         PL : ILLUMINA
@@ -112,8 +112,8 @@ Sample decoding
         Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @AGGCAGAA
-        ID : BDGGG:AGGCAGAA
-        PU : BDGGG:AGGCAGAA
+        ID : BDGGG:1:AGGCAGAA
+        PU : BDGGG:1:AGGCAGAA
         LB : trinidad 5
         SM : trinidad
         DT : 2018-02-25T07:00:00+00:00
@@ -127,8 +127,8 @@ Sample decoding
         Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @CGTACTAG
-        ID : BDGGG:CGTACTAG
-        PU : BDGGG:CGTACTAG
+        ID : BDGGG:1:CGTACTAG
+        PU : BDGGG:1:CGTACTAG
         LB : trinidad 4
         SM : trinidad
         DT : 2018-02-25T07:00:00+00:00
@@ -142,8 +142,8 @@ Sample decoding
         Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @GGACTCCT
-        ID : BDGGG:GGACTCCT
-        PU : BDGGG:GGACTCCT
+        ID : BDGGG:1:GGACTCCT
+        PU : BDGGG:1:GGACTCCT
         LB : trinidad 9
         SM : trinidad
         DT : 2018-02-25T07:00:00+00:00
@@ -157,8 +157,8 @@ Sample decoding
         Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @TAAGGCGA
-        ID : BDGGG:TAAGGCGA
-        PU : BDGGG:TAAGGCGA
+        ID : BDGGG:1:TAAGGCGA
+        PU : BDGGG:1:TAAGGCGA
         LB : trinidad 1
         SM : trinidad
         DT : 2018-02-25T07:00:00+00:00
@@ -172,8 +172,8 @@ Sample decoding
         Segment No.1  : /dev/stdout?format=sam&compression=none
 
     Barcode @TCCTGAGC
-        ID : BDGGG:TCCTGAGC
-        PU : BDGGG:TCCTGAGC
+        ID : BDGGG:1:TCCTGAGC
+        PU : BDGGG:1:TCCTGAGC
         LB : trinidad 8
         SM : trinidad
         DT : 2018-02-25T07:00:00+00:00

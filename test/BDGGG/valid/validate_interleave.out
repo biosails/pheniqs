@@ -81,8 +81,8 @@ Sample decoding
     Decoding algorithm                          passthrough
 
     Barcode undetermined
-        ID : BDGGG:undetermined
-        PU : BDGGG:undetermined
+        ID : BDGGG:1:undetermined
+        PU : BDGGG:1:undetermined
         SM : trinidad
         DT : 2018-02-25T07:00:00+00:00
         PL : ILLUMINA
