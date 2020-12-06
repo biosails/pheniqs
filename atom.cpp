@@ -1064,42 +1064,35 @@ ostream& operator<<(ostream& o, const HeadRGAtom& rg) {
     if(ks_not_empty(rg.SM)) o << "SM : " << rg.SM.s << endl;
     return o;
 };
-template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container) {
+template<> bool decode_value_by_key< vector< HeadRGAtom > >(const Value::Ch* key, vector< HeadRGAtom >& value, const Value& container) {
+    bool result(false);
     if(container.IsObject()) {
-        if( decode_value_by_key< kstring_t >("ID", value.ID, container)) {
-            decode_value_by_key< kstring_t >("BC", value.BC, container);
-            decode_value_by_key< kstring_t >("CN", value.CN, container);
-            decode_value_by_key< kstring_t >("DS", value.DS, container);
-            decode_value_by_key< kstring_t >("DT", value.DT, container);
-            decode_value_by_key< kstring_t >("FO", value.FO, container);
-            decode_value_by_key< kstring_t >("KS", value.KS, container);
-            decode_value_by_key< kstring_t >("LB", value.LB, container);
-            decode_value_by_key< kstring_t >("PG", value.PG, container);
-            decode_value_by_key< kstring_t >("PI", value.PI, container);
-            decode_value_by_key< kstring_t >("PL", value.PL, container);
-            decode_value_by_key< kstring_t >("PM", value.PM, container);
-            decode_value_by_key< kstring_t >("PU", value.PU, container);
-            decode_value_by_key< kstring_t >("SM", value.SM, container);
-            return true;
-        } else { return false; }
-    } else { throw ConfigurationError("Read Group element must be a dictionary"); }
-};
-template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, list< HeadRGAtom >& value, const Value& container) {
-    Value::ConstMemberIterator reference = container.FindMember(key);
-    if(reference != container.MemberEnd() && !reference->value.IsNull()) {
-        if(reference->value.IsArray()) {
-            if(!reference->value.Empty()) {
-                HeadRGAtom v;
-                for(const auto& e : reference->value.GetArray()) {
-                    if(decode_value< HeadRGAtom >(v, e)) {
-                        value.emplace_back(v);
+        Value::ConstMemberIterator reference = container.FindMember(key);
+        if(reference != container.MemberEnd() && !reference->value.IsNull()) {
+            if(reference->value.IsObject()) {
+                value.clear();
+                Value::ConstMemberIterator undetermined_reference = reference->value.FindMember("undetermined");
+                if(undetermined_reference != reference->value.MemberEnd()) {
+                    result = true;
+                    Value::ConstMemberIterator codec_reference = reference->value.FindMember("codec");
+                    if(codec_reference != reference->value.MemberEnd()) {
+                        value.reserve(codec_reference->value.MemberCount() + 1);
+                        HeadRGAtom undetermined_rg(undetermined_reference->value);
+                        value.emplace_back(undetermined_rg);
+                        for(auto& record : codec_reference->value.GetObject()) {
+                            HeadRGAtom rg(record.value);
+                            value.emplace_back(rg);
+                        }
+                    } else {
+                        value.reserve(1);
+                        HeadRGAtom undetermined_rg(undetermined_reference->value);
+                        value.emplace_back(undetermined_rg);
                     }
-                }
-                return !value.empty();
+                } else { throw ConfigurationError("classifier must declare an undetermined element"); }
             }
-        } else { throw ConfigurationError(string(key) + " element must be an array"); }
-    }
-    return false;
+        }
+    } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
+    return result;
 };
 bool encode_value(const HeadRGAtom& value, Value& container, Document& document) {
     if(container.IsObject()) {
@@ -1369,7 +1362,7 @@ static inline char* skip_to_linebreak(char* source, const char* end) {
     return position;
 };
 
-void HtsHead::decode(const bam_hdr_t* hdr) {
+void HtsHead::decode(const sam_hdr_t* hdr) {
     if(hdr != NULL) {
         /*  read in @SQ element
             Seems like if only the SN and LN atoms are present
@@ -1427,7 +1420,7 @@ void HtsHead::decode(const bam_hdr_t* hdr) {
         }
     }
 };
-void HtsHead::encode(bam_hdr_t* hdr) const {
+void HtsHead::encode(sam_hdr_t* hdr) const {
     kstring_t buffer = { 0, 0, NULL };
     hd.encode(buffer);
 

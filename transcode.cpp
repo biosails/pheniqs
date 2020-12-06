@@ -1788,6 +1788,27 @@ void Transcode::finalize() {
         transcoding_decoder->encode(report, report);
     }
 
+    if(true) {
+        /* add read group metadata to report */
+        vector< HeadRGAtom > rg_by_index;
+        if(decode_value_by_key< vector< HeadRGAtom > >("sample", rg_by_index, ontology)) {
+            Value::MemberIterator sample_reference = report.FindMember("sample");
+            if(sample_reference != report.MemberEnd()) {
+                Value::MemberIterator unclassified_reference = sample_reference->value.FindMember("unclassified");
+                if(unclassified_reference != sample_reference->value.MemberEnd()) {
+                    encode_value(rg_by_index[0], unclassified_reference->value, report);
+                    Value::MemberIterator classified_reference = sample_reference->value.FindMember("classified");
+                    if(classified_reference != sample_reference->value.MemberEnd()) {
+                        for(auto& element : classified_reference->value.GetArray()) {
+                            int32_t position(decode_value_by_key< int32_t >("index", element));
+                            encode_value(rg_by_index[position], element, report);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     clean_json_value(report, report);
     sort_json_value(report, report);
 };

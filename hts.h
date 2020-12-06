@@ -25,44 +25,6 @@
 #include "include.h"
 #include "feed.h"
 
-/*
-    typedef struct {
-        int32_t     tid;            chromosome ID, defined by bam_hdr_t
-        int32_t     pos;            0-based leftmost coordinate
-        uint16_t    bin;            bin calculated by bam_reg2bin()
-        uint8_t     qual;           mapping quality
-        uint8_t     l_qname;        length of the query name
-        uint16_t    flag;           bitwise flag
-        uint8_t     unused1;
-        uint8_t     l_extranul;     length of extra NULs between qname & cigar (for alignment)
-        uint32_t    n_cigar;        number of CIGAR operations
-        int32_t     l_qseq;         length of the query sequence (read)
-        int32_t     mtid;           chromosome ID of next read in template, defined by bam_hdr_t
-        int32_t     mpos;           0-based leftmost coordinate of next read in template
-        int32_t     isize;
-    } bam1_core_t;
-
-    typedef struct {
-        bam1_core_t core;
-        int         l_data;
-        uint32_t    m_data;
-        uint8_t*    data;
-        uint64_t    id;
-    } bam1_t;
-
-    typedef struct {
-        int32_t n_targets;          number of reference sequences
-        int32_t ignore_sam_err;
-        uint32_t l_text;            length of the plain text in the header
-        uint32_t *target_len;       lengths of the reference sequences
-        int8_t *cigar_tab;
-        char **target_name;         names of the reference sequences
-        char *text;                 plain text
-        void *sdict;                header dictionary
-        uint32_t ref_count;
-    } bam_hdr_t;
-*/
-
 #define bam1_seq_set_i(s, i, c) ((s)[(i)>>0x1] = ((s)[(i)>>0x1]&0xf<<(((i)&0x1)<<0x2))|(c)<<((~(i)&0x1)<<0x2))
 
 ostream& operator<<(ostream& o, const bam1_t& record);
@@ -203,7 +165,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
     protected:
         HtsHead head;
         htsFile* hts_file;
-        bam_hdr_t* hdr;
+        sam_hdr_t* hdr;
         inline void encode(bam1_t* record, const Segment& segment) const override {
             /*
                 The total size of a bam1_t record is an int32_t
@@ -214,11 +176,12 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                 (bam1_t.core.n_cigar << 2) +        // 32 bit per cigar operation
                 bam1_t.l_aux                        // auxiliary tags added later
             */
-            int32_t i;
-            uint32_t l_data;
-            int32_t qname_nuls(4 - segment.name.l % 4);
-            record->core.l_qname = segment.name.l + qname_nuls;
-            if(record->core.l_qname <= numeric_limits< uint8_t >::max()) {
+            if(segment.name.l < 255) {
+                int32_t i;
+                uint32_t l_data;
+                int32_t qname_nuls(4 - segment.name.l % 4);
+
+                record->core.l_qname = segment.name.l + qname_nuls;
                 record->core.flag = segment.flag;
                 record->core.l_extranul = static_cast< uint8_t >(qname_nuls - 1);
                 record->core.l_qseq = static_cast< int32_t >(segment.length);
@@ -272,7 +235,7 @@ class HtsFeed : public BufferedFeed< bam1_t > {
                     segment.auxiliary.encode(record);
 
                 } else { throw OverflowError("BAM record must not exceed " + to_string(numeric_limits< int32_t >::max()) + " bytes"); }
-            } else { throw OverflowError("qname must not exceed 255 characters"); }
+            } else { throw OverflowError("qname must not exceed 254 characters"); }
         };
         inline void decode(const bam1_t* record, Segment& segment) override {
             /*  copy the identifier to the segment

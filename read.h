@@ -25,32 +25,6 @@
 #include "include.h"
 #include "auxiliary.h"
 
-/*
-    typedef struct {
-        int32_t     tid;            chromosome ID, defined by bam_hdr_t
-        int32_t     pos;            0-based leftmost coordinate
-        uint16_t    bin;            bin calculated by bam_reg2bin()
-        uint8_t     qual;           mapping quality
-        uint8_t     l_qname;        length of the query name
-        uint16_t    flag;           bitwise flag
-        uint8_t     unused1;
-        uint8_t     l_extranul;     length of extra NULs between qname & cigar (for alignment)
-        uint32_t    n_cigar;        number of CIGAR operations
-        int32_t     l_qseq;         length of the query sequence (read)
-        int32_t     mtid;           chromosome ID of next read in template, defined by bam_hdr_t
-        int32_t     mpos;           0-based leftmost coordinate of next read in template
-        int32_t     isize;
-    } bam1_core_t;
-
-    typedef struct {
-        bam1_core_t core;
-        int         l_data;
-        uint32_t    m_data;
-        uint8_t*    data;
-        uint64_t    id;
-    } bam1_t;
-*/
-
 class Segment : public ObservedSequence {
     friend ostream& operator<<(ostream& o, const Segment& segment);
 
@@ -64,13 +38,13 @@ class Segment : public ObservedSequence {
         Auxiliary auxiliary;
 
         #if defined(PHENIQS_SAM_ALIGNMENT)
+        hts_pos_t   pos;
         int32_t     tid;
-        int32_t     pos;
         uint16_t    bin;
         uint8_t     qual;
         uint32_t    n_cigar;
         int32_t     mtid;
-        int32_t     mpos;
+        hts_pos_t   mpos;
         #endif
 
         inline void clear() override {
@@ -81,10 +55,10 @@ class Segment : public ObservedSequence {
         };
         inline uint32_t segment_index() const {
             if(!auxiliary.FI) {
-                if(flag & uint16_t(HtsFlag::PAIRED)) {
-                    if(flag & uint16_t(HtsFlag::READ1)) {
+                if(flag & BAM_FPAIRED) {
+                    if(flag & BAM_FREAD1) {
                         return 1;
-                    } else if(flag & uint16_t(HtsFlag::READ2)) {
+                    } else if(flag & BAM_FREAD2) {
                         return 2;
                     } else {
                         throw SequenceError("inconsistent SAM flags");
@@ -98,7 +72,7 @@ class Segment : public ObservedSequence {
         };
         inline uint32_t total_segments() const {
             if(!auxiliary.TC) {
-                if(flag & uint16_t(HtsFlag::PAIRED)) {
+                if(flag & BAM_FPAIRED) {
                     return 2;
                 } else {
                     return 1;
@@ -108,43 +82,43 @@ class Segment : public ObservedSequence {
             }
         };
         inline bool paired() const {
-            return flag & uint16_t(HtsFlag::PAIRED);
+            return flag & BAM_FPAIRED;
         };
         inline void set_paired(const bool value) {
             if(value) {
-                flag |= uint16_t(HtsFlag::PAIRED);
+                flag |= BAM_FPAIRED;
             } else {
-                flag &= ~uint16_t(HtsFlag::PAIRED);
+                flag &= ~BAM_FPAIRED;
             }
         };
         inline bool qcfail() const {
-            return flag & uint16_t(HtsFlag::QCFAIL);
+            return flag & BAM_FQCFAIL;
         };
         inline void set_qcfail(const bool value) {
             if(value) {
-                flag |= uint16_t(HtsFlag::QCFAIL);
+                flag |= BAM_FQCFAIL;
             } else {
-                flag &= ~uint16_t(HtsFlag::QCFAIL);
+                flag &= ~BAM_FQCFAIL;
             }
         };
         inline bool first_segment() const {
-            return flag & uint16_t(HtsFlag::READ1);
+            return flag & BAM_FREAD1;
         };
         inline void set_first_segment(const bool value) {
             if(value) {
-                flag |= uint16_t(HtsFlag::READ1);
+                flag |= BAM_FREAD1;
             } else {
-                flag &= ~uint16_t(HtsFlag::READ1);
+                flag &= ~BAM_FREAD1;
             }
         };
         inline bool last_segment() const {
-            return flag & uint16_t(HtsFlag::READ2);
+            return flag & BAM_FREAD2;
         };
         inline void set_last_segment(const bool value) {
             if(value) {
-                flag |= uint16_t(HtsFlag::READ2);
+                flag |= BAM_FREAD2;
             } else {
-                flag &= ~uint16_t(HtsFlag::READ2);
+                flag &= ~BAM_FREAD2;
             }
         };
         Segment() :
@@ -156,8 +130,8 @@ class Segment : public ObservedSequence {
             auxiliary() {
 
             ks_terminate(name);
-            flag |= uint16_t(HtsFlag::UNMAP);
-            flag |= uint16_t(HtsFlag::MUNMAP);
+            flag |= BAM_FUNMAP;
+            flag |= BAM_FMUNMAP;
         };
         ~Segment() override {
             ks_free(name);

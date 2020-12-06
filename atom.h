@@ -25,12 +25,27 @@
 #include "include.h"
 #include "json.h"
 
-enum class HtsFlag : uint16_t;
 enum class HtsSortOrder : int8_t;
 enum class HtsGrouping : int8_t;
 enum class Platform : uint8_t;
 enum class Algorithm : uint8_t;
 enum class HtsTagCode : uint16_t;
+
+/*  SAM format flags
+
+    0x1     PAIRED          read is paired in sequencing, no matter whether it is mapped in a pair
+    0x2     PROPER_PAIR     read is mapped in a proper pair
+    0x4     UNMAP           read itself is unmapped; conflictive with PROPER_PAIR
+    0x8     MUNMAP          mate is unmapped
+    0x10    REVERSE         read is mapped to the reverse strand
+    0x20    MREVERSE        mate is mapped to the reverse strand
+    0x40    READ1           the first segment in the template
+    0x80    READ2           the last segment in the template
+    0x100   SECONDARY       not primary alignment
+    0x200   QCFAIL          QC failure
+    0x400   DUP             optical or PCR duplicate
+    0x800   SUPPLEMENTARY   supplementary alignment
+*/
 
 /*  @HD The header line
 
@@ -217,8 +232,7 @@ class HeadRGAtom {
         void update(const HeadRGAtom& other);
 };
 ostream& operator<<(ostream& o, const HeadRGAtom& rg);
-template<> bool decode_value< HeadRGAtom >(HeadRGAtom& value, const Value& container);
-template<> bool decode_value_by_key< list< HeadRGAtom > >(const Value::Ch* key, list< HeadRGAtom >& value, const Value& container);
+template<> bool decode_value_by_key< vector< HeadRGAtom > >(const Value::Ch* key, vector< HeadRGAtom >& value, const Value& container);
 bool encode_value(const HeadRGAtom& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const HeadRGAtom& value, Value& container, Document& document);
 bool encode_key_value(const string& key, const list< HeadRGAtom >& value, Value& container, Document& document);
@@ -282,36 +296,6 @@ class HeadCOAtom {
         char* decode(char* position, const char* end);
 };
 ostream& operator<<(ostream& o, const HeadCOAtom& co);
-
-/*  SAM format flags
-
-    PAIRED          read is paired in sequencing, no matter whether it is mapped in a pair
-    PROPER_PAIR     read is mapped in a proper pair
-    UNMAP           read itself is unmapped; conflictive with PROPER_PAIR
-    MUNMAP          mate is unmapped
-    REVERSE         read is mapped to the reverse strand
-    MREVERSE        mate is mapped to the reverse strand
-    READ1           the first segment in the template
-    READ2           the last segment in the template
-    SECONDARY       not primary alignment
-    QCFAIL          QC failure
-    DUP             optical or PCR duplicate
-    SUPPLEMENTARY   supplementary alignment
-*/
-enum class HtsFlag : uint16_t {
-    PAIRED         = 0x1,
-    PROPER_PAIR    = 0x2,
-    UNMAP          = 0x4,
-    MUNMAP         = 0x8,
-    REVERSE        = 0x10,
-    MREVERSE       = 0x20,
-    READ1          = 0x40,
-    READ2          = 0x80,
-    SECONDARY      = 0x100,
-    QCFAIL         = 0x200,
-    DUP            = 0x400,
-    SUPPLEMENTARY  = 0x800,
-};
 
 enum class HtsSortOrder : int8_t {
     UNKNOWN    = -1,
@@ -496,8 +480,8 @@ class HtsHead {
     friend ostream& operator<<(ostream& o, const HtsHead& head);
 
     public:
-        void decode(const bam_hdr_t* hdr);
-        void encode(bam_hdr_t* hdr) const;
+        void decode(const sam_hdr_t* hdr);
+        void encode(sam_hdr_t* hdr) const;
         void add_reference(const HeadSQAtom& sq);
         void add_read_group(const HeadRGAtom& rg);
         void add_program(const HeadPGAtom& pg);
