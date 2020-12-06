@@ -888,8 +888,8 @@ template<> bool decode_value_by_key< list< URL > >(const Value::Ch* key, list< U
                 value.clear();
                 for(const auto& element : reference->value.GetArray()) {
                     value.emplace_back(decode_value< URL >(element));
-                    result = true;
                 }
+                result = !value.empty();
             } else { throw ConfigurationError(string(key) + " element is not an array"); }
         }
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }

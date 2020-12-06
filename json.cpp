@@ -357,10 +357,10 @@ template<> bool decode_value_by_key< vector< uint8_t > >(const Value::Ch* key, v
                     if(element.IsUint() && (buffer = element.GetUint()) <= numeric_limits< uint8_t >::max()) {
                         value[index] = static_cast < uint8_t >(buffer);
                         ++index;
-                        result = true;
                     } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not an 8 bit unsigned integer"); }
                 }
                 value.shrink_to_fit();
+                result = !value.empty();
             } else { throw ConfigurationError(string(key) + " element is not an array"); }
         }
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
@@ -390,9 +390,9 @@ template<> bool decode_value_by_key< vector< int32_t > >(const Value::Ch* key, v
                     if(element.IsInt()) {
                         value[index] = static_cast < uint8_t >(element.GetInt());
                         ++index;
-                        result = true;
                     } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a 32 bit integer"); }
                 }
+                result = !value.empty();
                 value.shrink_to_fit();
             } else { throw ConfigurationError(string(key) + " element is not an array"); }
         }
@@ -447,9 +447,9 @@ template<> bool decode_value_by_key< vector< uint64_t > >(const Value::Ch* key, 
                     if(element.IsUint64()) {
                         value[index] = element.GetUint64();
                         ++index;
-                        result = true;
                     } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not an unsigned 64 bit integer"); }
                 }
+                result = !value.empty();
                 value.shrink_to_fit();
             } else { throw ConfigurationError(string(key) + " element is not an array"); }
         }
@@ -480,9 +480,9 @@ template<> bool decode_value_by_key< vector< double > >(const Value::Ch* key, ve
                     if(element.IsNumber()) {
                         value[index] = element.GetDouble();
                         ++index;
-                        result = true;
                     } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not numeric"); }
                 }
+                result = !value.empty();
                 value.shrink_to_fit();
             } else { throw ConfigurationError(string(key) + " element is not an array"); }
         }
@@ -513,9 +513,9 @@ template<> bool decode_value_by_key< list< string > >(const Value::Ch* key, list
                     if(element.IsString()) {
                         value.emplace_back(element.GetString(), element.GetStringLength());
                         ++index;
-                        result = true;
                     } else { throw ConfigurationError(string(key) + " element at position " + to_string(index) + " is not a string"); }
                 }
+                result = !value.empty();
             } else { throw ConfigurationError(string(key) + " element is not an array"); }
         }
     } else { throw ConfigurationError(string(key) + " container is not a dictionary"); }
