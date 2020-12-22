@@ -17,14 +17,12 @@ requirements:
     - {{ compiler('c') }}
   host:
     - rapidjson
-    - samtools
     - htslib
     - libdeflate
     - python
     - zlib
   run:
     - rapidjson
-    - samtools
     - htslib
     - libdeflate
     - python

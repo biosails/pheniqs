@@ -1,5 +1,5 @@
 {% set name = "pheniqs" %}
-{% set version = "201807261425" %}
+{% set version = "2.1-202012221305" %}
 
 package:
   name: {{ name|lower }}
@@ -17,14 +17,15 @@ requirements:
     - {{ compiler('c') }}
   host:
     - rapidjson
-    - samtools
     - htslib
+    - libdeflate
     - python
     - zlib
   run:
     - rapidjson
-    - samtools
     - htslib
+    - libdeflate
+    - python
     - zlib
 
 test:
