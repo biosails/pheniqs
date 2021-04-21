@@ -27,9 +27,6 @@
 
 #define bam1_seq_set_i(s, i, c) ((s)[(i)>>0x1] = ((s)[(i)>>0x1]&0xf<<(((i)&0x1)<<0x2))|(c)<<((~(i)&0x1)<<0x2))
 
-/* this should allow pheniqs to build against earlier htslib */
-typedef bam_hdr_t sam_hdr_t;
-
 ostream& operator<<(ostream& o, const bam1_t& record);
 
 class HtsFeed : public BufferedFeed< bam1_t > {

@@ -166,4 +166,7 @@ using rapidjson::kStringType;
 
 #define PHENIQS_FLOAT_PRECISION 15
 
+/* this should allow pheniqs to build against earlier htslib */
+typedef bam_hdr_t sam_hdr_t;
+
 #endif /* PHENIQS_INCLUDE_H */
