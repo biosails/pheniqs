@@ -1,3 +1,6 @@
+Release 2.1.1
+	- Make validation of barcode segment array more robust. If the number of elements of the barcode array did not match the expected number of elements, an incorrect error was sometime displayed, due to the order the tests where conducted.
+
 Release 2.0.2-beta
 	- Ok NOW adding support for custom PREFIX in the makefile
 
