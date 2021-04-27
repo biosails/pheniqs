@@ -192,13 +192,14 @@ class CodecMetric {
                         }
 
                     } else {
+                        string key(record.name.GetString(), record.name.GetStringLength());
                         string message;
-                        message += " expected ";
-                        message += to_string(segment_cardinality);
-                        message += " in barcode ";
-                        message += to_string(barcode_index);
-                        message += " but found ";
-                        message += to_string(sequence_array.size());
+                        message.append("expected ");
+                        message.append(to_string(segment_cardinality));
+                        message.append(" segments but found ");
+                        message.append(to_string(sequence_array.size()));
+                        message.append(" in barcode ");
+                        message.append(key);
                         throw ConfigurationError(message);
                     }
                 }

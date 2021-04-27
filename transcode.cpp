@@ -862,31 +862,43 @@ void Transcode::compile_decoder_transformation(Value& value) {
                 for(auto& record : codec.GetObject()) {
                     reference = record.value.FindMember("barcode");
                     if(reference !=  record.value.MemberEnd()) {
-                        barcode_sequence.clear();
-                        segment_index = 0;
-                        for(const auto& element : reference->value.GetArray()) {
-                            barcode_segment.assign(element.GetString(), element.GetStringLength());
-                            if(static_cast< int32_t >(barcode_segment.size()) == barcode_length[segment_index]) {
-                                barcode_sequence.append(barcode_segment);
-                                ++segment_index;
-                            } else {
-                                string key(record.name.GetString(), record.name.GetStringLength());
-                                string message;
-                                message.append("expected ");
-                                message.append(to_string(barcode_length[segment_index]));
-                                message.append(" but found ");
-                                message.append(to_string(barcode_segment.size()));
-                                message.append(" nucleotides in segment ");
-                                message.append(to_string(segment_index));
-                                message.append(" of barcode ");
-                                message.append(key);
-                                throw ConfigurationError(message);
+                        if(reference->value.Size() == barcode_length.size()) {
+                            barcode_sequence.clear();
+                            segment_index = 0;
+                            for(const auto& element : reference->value.GetArray()) {
+                                barcode_segment.assign(element.GetString(), element.GetStringLength());
+                                if(static_cast< int32_t >(barcode_segment.size()) == barcode_length[segment_index]) {
+                                    barcode_sequence.append(barcode_segment);
+                                    ++segment_index;
+                                } else {
+                                    string key(record.name.GetString(), record.name.GetStringLength());
+                                    string message;
+                                    message.append("expected ");
+                                    message.append(to_string(barcode_length[segment_index]));
+                                    message.append(" but found ");
+                                    message.append(to_string(barcode_segment.size()));
+                                    message.append(" nucleotides in segment ");
+                                    message.append(to_string(segment_index));
+                                    message.append(" of barcode ");
+                                    message.append(key);
+                                    throw ConfigurationError(message);
+                                }
                             }
-                        }
-                        if(!unique_barcode_sequence.count(barcode_sequence)) {
-                            unique_barcode_sequence.emplace(barcode_sequence);
+                            if(!unique_barcode_sequence.count(barcode_sequence)) {
+                                unique_barcode_sequence.emplace(barcode_sequence);
+                            } else {
+                                throw ConfigurationError("duplicate barcode sequence " + barcode_sequence);
+                            }
                         } else {
-                            throw ConfigurationError("duplicate barcode sequence " + barcode_sequence);
+                            string key(record.name.GetString(), record.name.GetStringLength());
+                            string message;
+                            message.append("expected ");
+                            message.append(to_string(barcode_length.size()));
+                            message.append(" segments but found ");
+                            message.append(to_string(reference->value.Size()));
+                            message.append(" in barcode ");
+                            message.append(key);
+                            throw ConfigurationError(message);
                         }
                     }
                     encode_key_value("segment cardinality", rule.output_segment_cardinality, record.value, ontology);
