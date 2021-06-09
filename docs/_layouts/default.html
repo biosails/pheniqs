@@ -52,7 +52,7 @@
         <ul>
           {% for item in site.data.navigation.links %}
               {% if item.enabled %}
-                <li><a href="{{ item.url }}" {% if page.id == item.id %}class="active"{% endif %} >{{ item.title }}</a></li>
+                <li><a id="{{ item.id }}" href="{{ item.url }}" {% if page.id == item.id %}class="active"{% endif %} >{{ item.title }}</a></li>
               {% endif%}
           {% endfor %}
         </ul>
