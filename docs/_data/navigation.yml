@@ -54,4 +54,4 @@ links:
 - title: View on GitHub
   url: http://github.com/biosails/pheniqs
   id: github
-  enabled: False
+  enabled: True
