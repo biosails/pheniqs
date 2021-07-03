@@ -1,5 +1,9 @@
 # Pheniqs
 
+Qestions? *lior [dot] galanti [ at sign ] nyu.edu* or just open a ticket.
+
+Citing Pheniqs: [Pheniqs 2.0: accurate, high-performance Bayesian decoding and confidence estimation for combinatorial barcode indexing](https://doi.org/10.1186/s12859-021-04267-5)
+
 Pheniqs is a flexible generic barcode classifier for high-throughput next-gen sequencing that caters to a wide variety of experimental designs and has been designed for efficient data processing.
 
 Please visit the [Pheniqs website](http://biosails.github.io/pheniqs) for more information.
@@ -42,6 +46,6 @@ Pheniqs runs on all modern POSIX systems and provides an easy to learn command l
 
 For more advanced users and sequencing core managers, we provide detailed [build instructions](https://biosails.github.io/pheniqs/install) and a [custom package manager](https://github.com/biosails/pheniqs-build-api) to easily build portable, statically linked, Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
 
-Pheniqs is open sourced and released under the terms of the [AGPL 3.0 license agreement](http://opensource.org/licenses/AGPL-3.0).
+Pheniqs is open sourced and free for academic use under the terms of the [NYU license agreement](https://github.com/biosails/pheniqs/blob/master/LICENSE).
 
 [![Build Status](https://travis-ci.org/biosails/pheniqs.svg?branch=master)](https://travis-ci.org/biosails/pheniqs)
