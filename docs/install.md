@@ -19,6 +19,8 @@ Pheniqs is distributed as precompiled binaries, which may be installed with pack
 
 ## Installing with conda
 
+Stable realeases of Pheniqs are [available on bioconda](https://anaconda.org/bioconda/pheniqs). 
+
 ### *One time setup - Install Miniconda*
 The easiest way to do this is to head on over to [**Anaconda**](https://conda.io/miniconda.html) and select the correct distribution for Python3.
 
