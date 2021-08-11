@@ -9,6 +9,10 @@ id: home
 
 Pheniqs is a flexible generic barcode classifier for high-throughput next-gen sequencing that caters to a wide variety of experimental designs and has been designed for efficient data processing. Features include:
 
+Citing Pheniqs: [Pheniqs 2.0: accurate, high-performance Bayesian decoding and confidence estimation for combinatorial barcode indexing](https://doi.org/10.1186/s12859-021-04267-5) on BMC Bioinformatics.
+
+Please check out the [intro talk given by Lior Galanti on April 29, 2021](https://learn.gencore.bio.nyu.edu/pheniqs/) for the NYU CGSB core lab.
+
 ### Powerful and intuitive syntax
 - Classifies standard barcode types: Sample, Cellular, and Molecular Index
 - Directly writes barcodes to standard or custom BAM fields
