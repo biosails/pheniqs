@@ -1873,7 +1873,10 @@ void Transcode::write_result() const {
 void Transcode::apply_prior_adjustment(Document& document) const {
     if(transcoding_decoder != NULL) {
         if(transcoding_decoder->sample_classifier != NULL) {
-            transcoding_decoder->sample_classifier->adjust_prior(document["sample"], document);
+            Value::MemberIterator reference = document.FindMember("sample");
+            if(reference != document.MemberEnd()) {
+                transcoding_decoder->sample_classifier->adjust_prior(reference->value, document);
+            }
         }
 
         if(!transcoding_decoder->molecular_classifier_array.empty()) {
