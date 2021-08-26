@@ -41,6 +41,10 @@ class TranscodingDecoder {
     public:
         TranscodingDecoder(const Value& ontology);
         ~TranscodingDecoder();
+
+        uint64_t count;
+        uint64_t pf_count;
+        double pf_fraction;                         /*  pf_count / count */
         Classifier< Barcode >* sample_classifier;
         vector< Classifier< Barcode >* > molecular_classifier_array;
         vector< Classifier< Barcode >* > cellular_classifier_array;
@@ -53,6 +57,10 @@ class TranscodingDecoder {
             }
             for(auto& classifier : cellular_classifier_array) {
                 classifier->classify(input, output);
+            }
+            ++count;
+            if(!output.qcfail()) {
+                ++pf_count;
             }
         };
         void collect(const TranscodingDecoder& other);

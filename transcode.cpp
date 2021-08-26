@@ -29,6 +29,9 @@
 /* TranscodingDecoder */
 
 TranscodingDecoder::TranscodingDecoder(const Value& ontology) try :
+    count(0),
+    pf_count(0),
+    pf_fraction(0),
     sample_classifier(NULL) {
 
     load_sample_decoding(ontology);
@@ -157,6 +160,9 @@ void TranscodingDecoder::load_cellular_decoder(const Value& value) {
     }
 };
 void TranscodingDecoder::collect(const TranscodingDecoder& other) {
+    count += other.count;
+    pf_count += other.pf_count;
+
     if(sample_classifier != NULL) {
         sample_classifier->collect(*other.sample_classifier);
     }
@@ -172,6 +178,7 @@ void TranscodingDecoder::collect(const TranscodingDecoder& other) {
     }
 };
 void TranscodingDecoder::finalize() {
+    pf_fraction = double(pf_count) / double(count);
     if(sample_classifier != NULL) {
         sample_classifier->finalize();
     }
@@ -187,6 +194,15 @@ void TranscodingDecoder::finalize() {
     }
 };
 void TranscodingDecoder::encode(Value& container, Document& document) const {
+    /* add the outgoing statistics to report */
+    if(count > 0) {
+        Value element(kObjectType);
+        encode_key_value("count", count, element, document);
+        encode_key_value("pf count", pf_count, element, document);
+        encode_key_value("pf fraction", pf_fraction, element, document);
+        container.AddMember("outgoing", element.Move(), document.GetAllocator());
+    }
+
     if(sample_classifier != NULL) {
         Value element(kObjectType);
         sample_classifier->encode(element, document);
