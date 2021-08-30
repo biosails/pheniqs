@@ -65,8 +65,6 @@ a {
     margin: 0rem auto 1rem auto;
     max-width: 10rem;
     display: none;
-    background-image: url("/pheniqs/assets/img/pheniqs_logo_128.png");
-    background-repeat: no-repeat;
 }
 
 .page-header .project-name {
@@ -96,6 +94,8 @@ a {
     padding: 0rem 0rem 1rem 0rem;
     background-color: #993830;
     background-image: none;
+    background-image: url("/pheniqs/assets/img/pheniqs_logo_128.png");
+    background-repeat: no-repeat;
 }
 
 .site-footer {
