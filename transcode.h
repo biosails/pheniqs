@@ -193,8 +193,19 @@ class TranscodingThread {
             while(job.pull(input)) {
                 input.validate();
                 if(!filter_incoming_qc_fail || !input.qcfail()) {
-                    template_rule.apply(input, output);
+                    /* populate output qc_fail and qname flag from the input */
+                    const bool qcfail = input.qcfail();
+                    for(auto& segment : output) {
+                        ks_put_string(input.name(), segment.name);
+                        segment.set_qcfail(qcfail);
+
+                        #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
+                        segment.auxiliary.illumina_control_number = source.auxiliary().illumina_control_number;
+                        #endif
+                    }
+
                     transcoding_decoder.classify(input, output);
+                    template_rule.apply(input, output);
                     output.flush();
                     multiplexer.push(output);
                 }

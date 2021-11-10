@@ -196,6 +196,11 @@ template < class T > class SequenceArray {
                 segment_array[i].encode_iupac_ambiguity(buffer);
             }
         };
+        inline void encode_flat_iupac_ambiguity(kstring_t& buffer) const {
+            for(const auto& segment : segment_array) {
+                segment.encode_iupac_ambiguity(buffer);
+            }
+        };
         inline void encode_bam(string& value) const {
             for(const auto& segment : segment_array) {
                 for(int32_t i(0); i < segment.length; ++i) {
@@ -364,6 +369,16 @@ class ObservedSequence : public Sequence {
                 this->quality[length] = '\0';
             }
         };
+        inline void append_corrected(const Sequence& corrected, const ObservedSequence& other, const int32_t& start, const int32_t& size) {
+            if(size > 0 && start < other.length) {
+                increase_to_size(length + size);
+                memcpy(code + length, corrected.code + start, size);
+                memcpy(quality + length, other.quality + start, size);
+                /*TODO quality of corrected bases needs adjustment */
+                length += size;
+                terminate();
+            }
+        };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
             if(length > 0) {
                 ks_increase_by_size(buffer, length + 2);
@@ -397,6 +412,11 @@ class Observation : public SequenceArray< ObservedSequence > {
             for(size_t i(0); i < segment_array.size(); ++i) {
                 if(i) { ks_put_character(' ', buffer); }
                 segment_array[i].encode_phred_quality(buffer, phred_offset);
+            }
+        };
+        inline void encode_flat_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
+            for(const auto& segment : segment_array) {
+                segment.encode_phred_quality(buffer, phred_offset);
             }
         };
         inline double compensated_expected_error() const {

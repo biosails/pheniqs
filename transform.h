@@ -189,23 +189,32 @@ class TemplateRule : public Rule {
         };
         inline void apply(const Read& source, Read& target) const {
             for(auto& transform : transform_array ) {
-                const Segment& from = source[transform.input_segment_index];
+                const ObservedSequence* from;
+                if(transform.input_segment_index == -1) {
+                    from = &target.corrected_sample_barcode;
+                } else if(transform.input_segment_index == -2) {
+                    from = &target.corrected_cellular_barcode;
+                } else if(transform.input_segment_index == -3) {
+                    from = &target.corrected_molecular_barcode;                    
+                } else {
+                    from = &source[transform.input_segment_index];
+                }
                 Segment& to = target[transform.output_segment_index];
-                const int32_t start(transform.absolute_start(from.length));
-                const int32_t end(transform.absolute_end(from.length));
+                const int32_t start(transform.absolute_start(from->length));
+                const int32_t end(transform.absolute_end(from->length));
                 const int32_t size(end - start);
                 if(size > 0) {
                     to.increase_by_size(size);
                     switch (transform.left) {
                         case LeftTokenOperator::NONE: {
-                            memcpy(to.code + to.length, from.code + start, size);
-                            memcpy(to.quality + to.length, from.quality + start, size);
+                            memcpy(to.code + to.length, from->code + start, size);
+                            memcpy(to.quality + to.length, from->quality + start, size);
                             break;
                         };
                         case LeftTokenOperator::REVERSE_COMPLEMENT: {
                             for(int32_t i(0); i < size; ++i) {
-                                to.code[to.length + i] = BamToReverseComplementBam[from.code[end - i - 1]];
-                                to.quality[to.length + i] = from.quality[end - i - 1];
+                                to.code[to.length + i] = BamToReverseComplementBam[from->code[end - i - 1]];
+                                to.quality[to.length + i] = from->quality[end - i - 1];
                             }
                             break;
                         };
@@ -214,18 +223,6 @@ class TemplateRule : public Rule {
                     to.terminate();
                 }
             }
-
-            /* assign the pivot qc_fail flag from the leader */
-            bool qcfail = source.qcfail();
-            for(auto& segment : target) {
-                ks_put_string(source.name(), segment.name);
-                segment.set_qcfail(qcfail);
-
-                #if defined(PHENIQS_ILLUMINA_CONTROL_NUMBER)
-                segment.auxiliary.illumina_control_number = source.auxiliary().illumina_control_number;
-                #endif
-            }
-
         };
 };
 

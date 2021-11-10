@@ -28,8 +28,15 @@ ostream& operator<<(ostream& o, const LeftTokenOperator& value) {
     }
     return o;
 };
+static const regex template_token_regex = regex("^(s|c|m|[0-9]+):(-?[0-9]+)?:(-?[0-9]+)?$");
 
-/*  Token   */
+/*  Token   
+    input_segment_index can be a positive integer to reference an input segment index
+    the following negative integers have a special meaning:
+    -1 error corrected sample barcode
+    -2 error corrected cellular barcode
+    -3 error corrected molecular barcode
+*/
 Token::Token(
     const int32_t& index,
     const int32_t& input_segment_index,
@@ -55,13 +62,35 @@ string Token::description() const {
     o.append(to_string(start));
     o.append(" to ");
     o.append(end_terminated ? to_string(end) : "end");
-    o.append(" of input segment ");
-    o.append(to_string(input_segment_index));
+    if(input_segment_index < 0) {
+        o.append(" of decoded ");
+        if(input_segment_index == -1) {
+            o.append("sample");
+        } else if(input_segment_index == -2) {
+            o.append("cellular");
+        } else if(input_segment_index == -3) {            
+            o.append("molecular");
+        }
+        o.append(" barcode");
+    } else {
+        o.append(" of input segment ");
+        o.append(to_string(input_segment_index));
+    }
     return o;
 };
 Token::operator string() const {
     string o;
-    o.append(to_string(input_segment_index));
+    if(input_segment_index < 0) {
+        if(input_segment_index == -1) {
+            o.push_back('s');
+        } else if(input_segment_index == -2) {
+            o.push_back('c');
+        } else if(input_segment_index == -3) {            
+            o.push_back('m');
+        }
+    } else {
+        o.append(to_string(input_segment_index));
+    }
     o.push_back(':');
     if(start) o.append(to_string(start));
     o.push_back(':');
@@ -69,7 +98,17 @@ Token::operator string() const {
     return o;
 };
 ostream& operator<<(ostream& o, const Token& token) {
-    o << token.input_segment_index;
+    if(token.input_segment_index < 0) {
+        if(token.input_segment_index == -1) {
+            o << "s";
+        } else if(token.input_segment_index == -2) {
+            o << "c";
+        } else if(token.input_segment_index == -3) {            
+            o << "m";
+        }
+    } else {
+        o << token.input_segment_index;
+    }
     o << ":";
     if(token.start) o << token.start;
     o << ":";
@@ -89,80 +128,39 @@ template<> vector< Token > decode_value_by_key(const Value::Ch* key, const Value
                         if(element.IsString()) {
                             string pattern(element.GetString(), element.GetStringLength());
                             int32_t input_segment_index(numeric_limits< int32_t >::max());
-                            int32_t start(numeric_limits< int32_t >::max());
-                            int32_t end(numeric_limits< int32_t >::max());
+                            int32_t start(0);
+                            int32_t end(0);
                             bool end_terminated(true);
-                            int32_t literal_value(numeric_limits< int32_t >::max());
-                            size_t literal_position(0);
-                            size_t position(0);
-                            bool sign(true);
-                            while(true) {
-                                const char& c = pattern[position];
-                                switch(c) {
-                                    case ':':
-                                    case '\0':
-                                        switch(literal_position) {
-                                            case 0: {
-                                                if(literal_value == numeric_limits< int32_t >::max()) {
-                                                    throw ConfigurationError("token must explicitly specify an input segment reference");
-                                                } else if(literal_value < 0) {
-                                                    throw ConfigurationError("input segment reference must be a positive number");
-                                                } else {
-                                                    input_segment_index = literal_value;
-                                                }
-                                                break;
-                                            };
-                                            case 1:{
-                                                if(literal_value == numeric_limits< int32_t >::max()) {
-                                                    start = 0;
-                                                } else {
-                                                    start = sign ? literal_value : -literal_value;
-                                                }
-                                                break;
-                                            };
-                                            case 2: {
-                                                if(literal_value == numeric_limits< int32_t >::max()) {
-                                                    end = 0;
-                                                    end_terminated = false;
-                                                } else {
-                                                    end = sign ? literal_value : -literal_value;
-                                                }
-                                                break;
-                                            };
-                                            default:
-                                                throw ConfigurationError("illegal token syntax " + pattern);
-                                                break;
-                                        }
-                                        literal_value = numeric_limits< int32_t >::max();
-                                        sign = true;
-                                        ++literal_position;
-                                        break;
-                                    case '-':
-                                        sign = false;
-                                        break;
-                                    case '0':
-                                    case '1':
-                                    case '2':
-                                    case '3':
-                                    case '4':
-                                    case '5':
-                                    case '6':
-                                    case '7':
-                                    case '8':
-                                    case '9': {
-                                        if(literal_value == numeric_limits< int32_t >::max()) {
-                                            literal_value = c - '0';
-                                        } else {
-                                            literal_value = literal_value * 10 + (c - '0');
-                                        }
-                                        break;
-                                    };
-                                    default:
-                                        throw ConfigurationError("illegal character " + to_string(c) + " in token");
-                                        break;
+
+                            smatch match;
+                            if(regex_match(pattern, match, template_token_regex)) {
+                                if(match[1] == "s") {
+                                    /* corrected sample barcode sequence */
+                                    input_segment_index = -1;
+
+                                } else if(match[1] == "c") {
+                                    /* corrected cellular barcode sequence */
+                                    input_segment_index = -2;
+
+                                } else if(match[1] == "m") {
+                                    /* corrected molecular barcode sequence */
+                                    input_segment_index = -3;
+
+                                } else {
+                                    input_segment_index = stoi(match[1]);
                                 }
-                                if(c == '\0') { break; }
-                                ++position;
+
+                                if(match[2].length()) {
+                                    start = stoi(match[2]);
+                                }
+
+                                if(match[3].length()) {
+                                    end = stoi(match[3]);
+                                } else {
+                                    end_terminated = false;
+                                }
+                            } else {
+                                throw ConfigurationError("illegal token syntax " + pattern);
                             }
                             value.emplace_back(token_index, input_segment_index, start, end, end_terminated);
                             ++token_index;
@@ -192,8 +190,20 @@ string Transform::description() const {
             break;
     }
     o.append(to_string(index));
-    o.append(" of input segment ");
-    o.append(to_string(input_segment_index));
+    if(input_segment_index < 0) {
+        o.append(" of decoded ");
+        if(input_segment_index == -1) {
+            o.append("sample");
+        } else if(input_segment_index == -2) {
+            o.append("cellular");
+        } else if(input_segment_index == -3) {            
+            o.append("molecular");
+        }
+        o.append(" barcode");
+    } else {
+        o.append(" of input segment ");
+        o.append(to_string(input_segment_index));
+    }
     o.append(" to output segment ");
     o.append(to_string(output_segment_index));
     return o;

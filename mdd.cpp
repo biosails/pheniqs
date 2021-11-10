@@ -95,7 +95,8 @@ MdSampleDecoder::MdSampleDecoder(const Value& ontology) try :
 };
 void MdSampleDecoder::classify(const Read& input, Read& output) {
     MdDecoder< Barcode >::classify(input, output);
-    output.update_sample_barcode(this->observation);
+    output.append_to_corrected_sample_barcode_sequence(*this->decoded, this->observation);
+    output.update_raw_sample_barcode(this->observation);
     output.update_sample_distance(this->decoding_hamming_distance);
     output.set_RG(this->rg_by_barcode_index[this->decoded->index]);
 };
@@ -109,8 +110,9 @@ MdCellularDecoder::MdCellularDecoder(const Value& ontology) try :
 };
 void MdCellularDecoder::classify(const Read& input, Read& output) {
     MdDecoder< Barcode >::classify(input, output);
+    output.append_to_corrected_cellular_barcode_sequence(*this->decoded, this->observation);
     output.update_raw_cellular_barcode(this->observation);
-    output.update_cellular_barcode(*this->decoded);
+    output.update_corrected_cellular_barcode(*this->decoded);
     if(this->decoded->is_classified()) {
         output.update_cellular_distance(this->decoding_hamming_distance);
     } else {
@@ -127,8 +129,9 @@ MdMolecularDecoder::MdMolecularDecoder(const Value& ontology) try :
 };
 void MdMolecularDecoder::classify(const Read& input, Read& output) {
     MdDecoder< Barcode >::classify(input, output);
+    output.append_to_corrected_molecular_barcode_sequence(*this->decoded, this->observation);
     output.update_raw_molecular_barcode(this->observation);
-    output.update_molecular_barcode(*this->decoded);
+    output.update_corrected_molecular_barcode(*this->decoded);
     if(this->decoded->is_classified()) {
         output.update_molecular_distance(this->decoding_hamming_distance);
     } else {

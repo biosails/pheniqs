@@ -1060,11 +1060,11 @@
                             "$ref": "#/definitions/decoder",
                             "title": "Sample barcode decoder"
                         },
+                        "template": {
+                            "$ref": "#/definitions/template"
+                        },
                         "threads": {
                             "$ref": "#/definitions/threads"
-                        },
-                        "transform": {
-                            "$ref": "#/definitions/transform"
                         },
                         "working directory": {
                             "$ref": "#/definitions/url"
@@ -1373,9 +1373,49 @@
                     "Tile": "Template",
                     "properties": {
                         "transform": {
-                            "$ref": "#/definitions/transform"
+                            "$ref": "#/definitions/template_transform"
                         }
                     },
+                    "type": "object"
+                },
+                "template_segment_token": {
+                    "Description": "Token to extract from a segment for template composition",
+                    "examples": [
+                        "0:0:3",
+                        "s:0:10",
+                        "c:10:20",
+                        "m::",
+                        "0:0:",
+                        "0:-4:",
+                        "1:-5:-1",
+                        "1:3:-2"
+                    ],
+                    "format": "regex",
+                    "pattern": "^(s|c|m|[0-9]+):(-?[0-9]+)?:(-?[0-9]+)?$",
+                    "title": "Template segment token",
+                    "type": "string"
+                },
+                "template_transform": {
+                    "Tile": "Template transform",
+                    "properties": {
+                        "knit": {
+                            "items": {
+                                "$ref": "#/definitions/knit"
+                            },
+                            "minItems": 1,
+                            "type": "array"
+                        },
+                        "token": {
+                            "items": {
+                                "$ref": "#/definitions/template_segment_token"
+                            },
+                            "minItems": 1,
+                            "type": "array"
+                        }
+                    },
+                    "required": [
+                        "token"
+                    ],
                     "type": "object"
                 },
                 "threads": {

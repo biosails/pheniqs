@@ -157,11 +157,19 @@ class Read : public SequenceArray< Segment > {
         uint32_t cellular_distance;
         double cellular_decoding_confidence;
         double barcode_decoding_confidence;
+        ObservedSequence corrected_sample_barcode;
+        ObservedSequence corrected_cellular_barcode;
+        ObservedSequence corrected_molecular_barcode;
 
         inline void clear() override {
             for(auto& segment : segment_array) {
                 segment.clear();
             }
+
+            corrected_sample_barcode.clear();
+            corrected_cellular_barcode.clear();
+            corrected_molecular_barcode.clear();
+            
             sample_distance = 0;
             sample_decoding_confidence = 1;
             molecular_distance = 0;
@@ -242,8 +250,13 @@ class Read : public SequenceArray< Segment > {
             leader->auxiliary.set_RG(rg);
         };
 
-        inline void update_sample_barcode(const Observation& observation) {
-            leader->auxiliary.update_sample_barcode(observation);
+        inline void append_to_corrected_sample_barcode_sequence(const Barcode& barcode, const Observation& observation) {
+            for(size_t i(0); i < observation.segment_cardinality(); ++i) {
+                corrected_sample_barcode.append_corrected(barcode[i], observation[i], 0, observation[i].length);
+            }
+        };
+        inline void update_raw_sample_barcode(const Observation& observation) {
+            leader->auxiliary.update_raw_sample_barcode(observation);
         };
         inline void update_sample_decoding_confidence(const double& confidence) {
             if(sample_decoding_confidence == 1) {
@@ -262,11 +275,19 @@ class Read : public SequenceArray< Segment > {
             sample_distance = distance;
         };
 
-        inline void update_molecular_barcode(const Barcode& barcode) {
-            leader->auxiliary.update_molecular_barcode(barcode);
+        inline void append_to_corrected_molecular_barcode_sequence(const Barcode& barcode, const Observation& observation) {
+            for(size_t i(0); i < observation.segment_cardinality(); ++i) {
+                corrected_molecular_barcode.append_corrected(barcode[i], observation[i], 0, observation[i].length);
+            }
         };
-        inline void update_molecular_barcode(const Observation& observation) {
-            leader->auxiliary.update_molecular_barcode(observation);
+        inline void update_raw_molecular_barcode(const Observation& observation) {
+            leader->auxiliary.update_raw_molecular_barcode(observation);
+        };
+        inline void update_corrected_molecular_barcode(const Barcode& barcode) {
+            leader->auxiliary.update_corrected_molecular_barcode(barcode);
+        };
+        inline void update_corrected_molecular_barcode(const Observation& observation) {
+            leader->auxiliary.update_corrected_molecular_barcode(observation);
         };
         inline void update_molecular_decoding_confidence(const double& confidence) {
             if(molecular_decoding_confidence == 1) {
@@ -284,15 +305,17 @@ class Read : public SequenceArray< Segment > {
         inline void set_molecular_distance(const uint32_t& distance) {
             molecular_distance += distance;
         };
-        inline void update_raw_molecular_barcode(const Observation& observation) {
-            leader->auxiliary.update_raw_molecular_barcode(observation);
-        };
 
-        inline void update_cellular_barcode(const Barcode& barcode) {
-            leader->auxiliary.update_cellular_barcode(barcode);
+        inline void append_to_corrected_cellular_barcode_sequence(const Barcode& barcode, const Observation& observation) {
+            for(size_t i(0); i < observation.segment_cardinality(); ++i) {
+                corrected_cellular_barcode.append_corrected(barcode[i], observation[i], 0, observation[i].length);
+            }
         };
-        inline void update_cellular_barcode(const Observation& observation) {
-            leader->auxiliary.update_cellular_barcode(observation);
+        inline void update_raw_cellular_barcode(const Observation& observation) {
+            leader->auxiliary.update_raw_cellular_barcode(observation);
+        };
+        inline void update_corrected_cellular_barcode(const Barcode& barcode) {
+            leader->auxiliary.update_corrected_cellular_barcode(barcode);
         };
         inline void update_cellular_decoding_confidence(const double& confidence) {
             if(cellular_decoding_confidence == 1) {
@@ -309,9 +332,6 @@ class Read : public SequenceArray< Segment > {
         };
         inline void set_cellular_distance(const uint32_t& distance) {
             cellular_distance = distance;
-        };
-        inline void update_raw_cellular_barcode(const Observation& observation) {
-            leader->auxiliary.update_raw_cellular_barcode(observation);
         };
 
         Read(const int32_t& cardinality, const Platform& platform, int32_t leading_segment_index) :

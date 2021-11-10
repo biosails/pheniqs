@@ -25,6 +25,11 @@
             }
         }
     ],
+    "outgoing": {
+        "count": 2500,
+        "pf count": 2390,
+        "pf fraction": 0.956
+    },
     "sample": {
         "average classified confidence": 0.997941827740009,
         "average classified distance": 0.028838342810722,

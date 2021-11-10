@@ -249,13 +249,7 @@ class Auxiliary {
         inline void set_RG(const string& rg) {
             if(!rg.empty()) ks_put_string(rg, RG);
         };
-        inline void update_sample_barcode(const Barcode& barcode) {
-            if(ks_not_empty(BC)) {
-                ks_put_character('-', BC);
-            }
-            barcode.encode_iupac_ambiguity(BC);
-        };
-        inline void update_sample_barcode(const Observation& observation) {
+        inline void update_raw_sample_barcode(const Observation& observation) {
             if(ks_not_empty(BC)) {
                 ks_put_character('-', BC);
                 ks_put_character(' ', QT);
@@ -264,18 +258,6 @@ class Auxiliary {
             observation.encode_phred_quality(QT, SAM_PHRED_DECODING_OFFSET);
         };
 
-        inline void update_cellular_barcode(const Barcode& barcode) {
-            if(ks_not_empty(CB)) {
-                ks_put_character('-', CB);
-            }
-            barcode.encode_iupac_ambiguity(CB);
-        };
-        inline void update_cellular_barcode(const Observation& observation) {
-            if(ks_not_empty(CB)) {
-                ks_put_character('-', CB);
-            }
-            observation.encode_iupac_ambiguity(CB);
-        };
         inline void update_raw_cellular_barcode(const Observation& observation) {
             if(ks_not_empty(CR)) {
                 ks_put_character('-', CR);
@@ -284,21 +266,19 @@ class Auxiliary {
             observation.encode_iupac_ambiguity(CR);
             observation.encode_phred_quality(CY, SAM_PHRED_DECODING_OFFSET);
         };
+        inline void update_corrected_cellular_barcode(const Barcode& barcode) {
+            if(ks_not_empty(CB)) {
+                ks_put_character('-', CB);
+            }
+            barcode.encode_iupac_ambiguity(CB);
+        };
+        inline void update_corrected_cellular_barcode(const Observation& observation) {
+            if(ks_not_empty(CB)) {
+                ks_put_character('-', CB);
+            }
+            observation.encode_iupac_ambiguity(CB);
+        };
 
-        inline void update_molecular_barcode(const Barcode& barcode) {
-            if(ks_not_empty(RX)) {
-                ks_put_character('-', RX);
-            }
-            barcode.encode_iupac_ambiguity(RX);
-        };
-        inline void update_molecular_barcode(const Observation& observation) {
-            if(ks_not_empty(RX)) {
-                ks_put_character('-', RX);
-                ks_put_character(' ', QX);
-            }
-            observation.encode_iupac_ambiguity(RX);
-            observation.encode_phred_quality(QX, SAM_PHRED_DECODING_OFFSET);
-        };
         inline void update_raw_molecular_barcode(const Observation& observation) {
             if(ks_not_empty(OX)) {
                 ks_put_character('-', OX);
@@ -306,6 +286,20 @@ class Auxiliary {
             }
             observation.encode_iupac_ambiguity(OX);
             observation.encode_phred_quality(BZ, SAM_PHRED_DECODING_OFFSET);
+        };
+        inline void update_corrected_molecular_barcode(const Barcode& barcode) {
+            if(ks_not_empty(RX)) {
+                ks_put_character('-', RX);
+            }
+            barcode.encode_iupac_ambiguity(RX);
+        };
+        inline void update_corrected_molecular_barcode(const Observation& observation) {
+            if(ks_not_empty(RX)) {
+                ks_put_character('-', RX);
+                ks_put_character(' ', QX);
+            }
+            observation.encode_iupac_ambiguity(RX);
+            observation.encode_phred_quality(QX, SAM_PHRED_DECODING_OFFSET);
         };
 
         inline void clear() {

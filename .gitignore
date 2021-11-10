@@ -15,3 +15,4 @@
 install.sh
 /test/*/result
 /test/*/*/result
+/.vscode/**

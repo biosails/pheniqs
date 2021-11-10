@@ -63,6 +63,7 @@
 #include <unordered_map>
 #include <vector>
 #include <stddef.h>
+#include <regex>
 
 using std::cerr;
 using std::condition_variable;
@@ -112,6 +113,9 @@ using std::uint8_t;
 using std::unique_lock;
 using std::unordered_map;
 using std::vector;
+using std::regex;
+using std::smatch;
+using std::regex_match;
 
 /*  zlib dependencies
     Used for probing gzip compressed files */
