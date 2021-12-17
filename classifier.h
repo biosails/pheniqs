@@ -48,6 +48,7 @@ template < class T > class Classifier : public AccumulatingSelector {
         T unclassified;
         vector< T > tag_array;
         const bool multiplexing_classifier;
+        const uint8_t corrected_quality;
 
     public:
         Classifier(const Value& ontology) try :
@@ -55,7 +56,8 @@ template < class T > class Classifier : public AccumulatingSelector {
             decoded(NULL),
             unclassified(ontology["undetermined"]),
             tag_array(decode_value_by_key< vector< T > >("codec", ontology)),
-            multiplexing_classifier(decode_value_by_key< bool >("multiplexing classifier", ontology)) {
+            multiplexing_classifier(decode_value_by_key< bool >("multiplexing classifier", ontology)),
+            corrected_quality(decode_value_by_key< uint8_t >("corrected quality", ontology)) {
 
             decoded = &unclassified;
 
@@ -68,7 +70,8 @@ template < class T > class Classifier : public AccumulatingSelector {
             decoded(NULL),
             unclassified(other.unclassified),
             tag_array(other.tag_array),
-            multiplexing_classifier(other.multiplexing_classifier) {
+            multiplexing_classifier(other.multiplexing_classifier),
+            corrected_quality(other.corrected_quality) {
 
             decoded = &unclassified;
         };

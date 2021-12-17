@@ -1539,6 +1539,13 @@ void Transcode::validate_decoder(Value& value) {
                     throw ConfigurationError("noise value " + to_string(noise) + " not between 0 and 1");
                 }
             }
+
+            uint8_t corrected_quality;
+            if(decode_value_by_key< uint8_t >("corrected quality", corrected_quality, value)) {
+                if(corrected_quality < MIN_PHRED_VALUE || corrected_quality > MAX_PHRED_VALUE) {
+                    throw ConfigurationError("corrected quality value " + to_string(corrected_quality) + " not between " + to_string(MIN_PHRED_VALUE) + " and " + to_string(MAX_PHRED_VALUE));
+                }
+            }
         }
     }
 };

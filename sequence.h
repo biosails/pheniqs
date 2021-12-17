@@ -379,6 +379,43 @@ class ObservedSequence : public Sequence {
                 terminate();
             }
         };
+        inline void append_corrected(const Sequence& corrected, const ObservedSequence& original, const int32_t& start, const int32_t& size, const uint8_t& corrected_quality) {
+            if(size > 0 && start < original.length) {
+                increase_to_size(length + size);
+                memcpy(code + length, corrected.code + start, size);
+
+                /* for corrected bases change the quality to corrected_quality. Others remain unchanged. */
+                for(int32_t i(0); i < size; ++i) {
+                    if((original.code[length + i] == corrected.code[start + i]) || (corrected.code[start + i] == 0)) {
+                        quality[length + i] = original.quality[start + i];
+                    } else {
+                        quality[length + i] = corrected_quality;
+                    }
+                }
+                length += size;
+                terminate();
+            }
+        };
+        inline void append_corrected_2(const Sequence& corrected, const ObservedSequence& original, const int32_t& start, const int32_t& size, const uint8_t& corrected_quality) {
+            if(size > 0 && start < original.length) {
+                increase_to_size(length + size);
+                for(int32_t i(0); i < size; ++i) {
+                    if(corrected.code[start + i] == 0) {
+                        code[length + i] = original.code[start + i];
+                        quality[length + i] = original.quality[start + i];
+                    } else {
+                        code[length + i] = corrected.code[start + i];
+                        if(original.code[length + i] == corrected.code[start + i]) {
+                            quality[length + i] = original.quality[start + i];
+                        } else {
+                            quality[length + i] = corrected_quality;
+                        }
+                    }
+                }
+                length += size;
+                terminate();
+            }
+        };
         inline void encode_phred_quality(kstring_t& buffer, const uint8_t phred_offset) const {
             if(length > 0) {
                 ks_increase_by_size(buffer, length + 2);
