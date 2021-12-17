@@ -440,6 +440,17 @@
             "segment cardinality": 0,
             "undetermined": null
         },
+        "multiplex:barcode": {
+            "enable quality control": null,
+            "filter outgoing qc fail": false,
+            "output": null
+        },
+        "multiplex:decoder": {
+            "base output url": null,
+            "enable quality control": null,
+            "filter outgoing qc fail": false,
+            "output": null
+        },
         "sample:barcode": {
             "CN": null,
             "DT": null,
