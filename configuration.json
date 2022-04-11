@@ -592,6 +592,16 @@
                     "title": "Confidence threshold",
                     "type": "number"
                 },
+                "corrected_quality": {
+                    "description": "Phred quality to assign to error corrected nucletides when interating them into the output read sequnce.",
+                    "examples": [
+                        30
+                    ],
+                    "maximum": 104,
+                    "minimum": 2,
+                    "title": "Corrected quality",
+                    "type": "integer"
+                },
                 "decoder": {
                     "properties": {
                         "CN": {
@@ -650,6 +660,9 @@
                         },
                         "confidence threshold": {
                             "$ref": "#/definitions/confidence_threshold"
+                        },
+                        "corrected quality": {
+                            "$ref": "#/definitions/corrected_quality"
                         },
                         "distance tolerance": {
                             "$ref": "#/definitions/distance_tolerance"
