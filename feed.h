@@ -353,8 +353,12 @@ template < class T > class BufferedFeed : public Feed {
             unique_lock< mutex > buffer_lock(buffer_mutex);
             flush_buffer();
 
+            /* buffer is now definitly empty */
+
             unique_lock< mutex > queue_lock(queue_mutex);
             flushable.wait(queue_lock, [this](){ return is_ready_to_flush(); });
+
+            /* wait for is_ready_to_flush: queue is_full or feed is exhausted */
 
             if(queue->is_not_empty()) {
                 switch_buffer_and_queue();
