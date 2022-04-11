@@ -249,59 +249,6 @@ class Auxiliary {
         inline void set_RG(const string& rg) {
             if(!rg.empty()) ks_put_string(rg, RG);
         };
-        inline void update_raw_sample_barcode(const Observation& observation) {
-            if(ks_not_empty(BC)) {
-                ks_put_character('-', BC);
-                ks_put_character(' ', QT);
-            }
-            observation.encode_iupac_ambiguity(BC);
-            observation.encode_phred_quality(QT, SAM_PHRED_DECODING_OFFSET);
-        };
-
-        inline void update_raw_cellular_barcode(const Observation& observation) {
-            if(ks_not_empty(CR)) {
-                ks_put_character('-', CR);
-                ks_put_character(' ', CY);
-            }
-            observation.encode_iupac_ambiguity(CR);
-            observation.encode_phred_quality(CY, SAM_PHRED_DECODING_OFFSET);
-        };
-        inline void update_corrected_cellular_barcode(const Barcode& barcode) {
-            if(ks_not_empty(CB)) {
-                ks_put_character('-', CB);
-            }
-            barcode.encode_iupac_ambiguity(CB);
-        };
-        inline void update_corrected_cellular_barcode(const Observation& observation) {
-            if(ks_not_empty(CB)) {
-                ks_put_character('-', CB);
-            }
-            observation.encode_iupac_ambiguity(CB);
-        };
-
-        inline void update_raw_molecular_barcode(const Observation& observation) {
-            if(ks_not_empty(OX)) {
-                ks_put_character('-', OX);
-                ks_put_character(' ', BZ);
-            }
-            observation.encode_iupac_ambiguity(OX);
-            observation.encode_phred_quality(BZ, SAM_PHRED_DECODING_OFFSET);
-        };
-        inline void update_corrected_molecular_barcode(const Barcode& barcode) {
-            if(ks_not_empty(RX)) {
-                ks_put_character('-', RX);
-            }
-            barcode.encode_iupac_ambiguity(RX);
-        };
-        inline void update_corrected_molecular_barcode(const Observation& observation) {
-            if(ks_not_empty(RX)) {
-                ks_put_character('-', RX);
-                ks_put_character(' ', QX);
-            }
-            observation.encode_iupac_ambiguity(RX);
-            observation.encode_phred_quality(QX, SAM_PHRED_DECODING_OFFSET);
-        };
-
         inline void clear() {
             /* FI and TC don't change during demultiplexing */
             ks_clear(FS);
@@ -339,63 +286,6 @@ class Auxiliary {
             #endif
 
             EE = 0;
-        };
-        void imitate(const Auxiliary& other) {
-            ks_clear(FS);
-            ks_clear(RG);
-            ks_clear(PU);
-            ks_clear(LB);
-            ks_clear(PG);
-            ks_clear(CO);
-
-            ks_clear(BC);
-            ks_clear(QT);
-
-            ks_clear(RX);
-            ks_clear(QX);
-            ks_clear(OX);
-            ks_clear(BZ);
-            ks_clear(MI);
-
-            ks_clear(CB);
-            ks_clear(CR);
-            ks_clear(CY);
-
-            #if defined(PHENIQS_EXTENDED_SAM_TAG)
-            for(auto& record : extended) {
-                record.second.clear();
-            }
-            #endif
-
-            if(ks_not_empty(other.FS)) ks_put_string(other.FS, FS);
-            if(ks_not_empty(other.RG)) ks_put_string(other.RG, RG);
-            if(ks_not_empty(other.PU)) ks_put_string(other.PU, PU);
-            if(ks_not_empty(other.LB)) ks_put_string(other.LB, LB);
-            if(ks_not_empty(other.PG)) ks_put_string(other.PG, PG);
-            if(ks_not_empty(other.CO)) ks_put_string(other.CO, CO);
-
-            if(ks_not_empty(other.BC)) ks_put_string(other.BC, BC);
-            if(ks_not_empty(other.QT)) ks_put_string(other.QT, QT);
-            XB = other.XB;
-
-            if(ks_not_empty(other.RX)) ks_put_string(other.RX, RX);
-            if(ks_not_empty(other.QX)) ks_put_string(other.QX, QX);
-            if(ks_not_empty(other.OX)) ks_put_string(other.OX, OX);
-            if(ks_not_empty(other.BZ)) ks_put_string(other.BZ, BZ);
-            if(ks_not_empty(other.MI)) ks_put_string(other.MI, MI);
-            XM = other.XM;
-
-            if(ks_not_empty(other.CB)) ks_put_string(other.CB, CB);
-            if(ks_not_empty(other.CR)) ks_put_string(other.CR, CR);
-            if(ks_not_empty(other.CY)) ks_put_string(other.CY, CY);
-            XC = other.XC;
-            XO = other.XO;
-
-            #if defined(PHENIQS_EXTENDED_SAM_TAG)
-            for(auto& record : other.extended) {
-                extended[record.first] = record.second;
-            }
-            #endif
         };
 };
 ostream& operator<<(ostream& o, const Auxiliary& auxiliary);

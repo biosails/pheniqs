@@ -157,8 +157,11 @@ class Read : public SequenceArray< Segment > {
         uint32_t cellular_distance;
         double cellular_decoding_confidence;
         double barcode_decoding_confidence;
+        ObservedSequence raw_sample_barcode;
         ObservedSequence corrected_sample_barcode;
+        ObservedSequence raw_cellular_barcode;
         ObservedSequence corrected_cellular_barcode;
+        ObservedSequence raw_molecular_barcode;
         ObservedSequence corrected_molecular_barcode;
 
         inline void clear() override {
@@ -166,10 +169,13 @@ class Read : public SequenceArray< Segment > {
                 segment.clear();
             }
 
+            raw_sample_barcode.clear();
             corrected_sample_barcode.clear();
+            raw_cellular_barcode.clear();
             corrected_cellular_barcode.clear();
+            raw_molecular_barcode.clear();
             corrected_molecular_barcode.clear();
-            
+
             sample_distance = 0;
             sample_decoding_confidence = 1;
             molecular_distance = 0;
@@ -196,25 +202,34 @@ class Read : public SequenceArray< Segment > {
             // }
             if(segment_cardinality() > 1) {
                 for(auto& segment : this->segment_array) {
+                    if(!raw_sample_barcode.empty()) {
+                        raw_sample_barcode.encode_iupac_ambiguity(segment.auxiliary.BC);
+                        raw_sample_barcode.encode_phred_quality(segment.auxiliary.QT, SAM_PHRED_DECODING_OFFSET);
+                    }
+                    if(!raw_cellular_barcode.empty()) {
+                        raw_cellular_barcode.encode_iupac_ambiguity(segment.auxiliary.CR);
+                        raw_cellular_barcode.encode_phred_quality(segment.auxiliary.CY, SAM_PHRED_DECODING_OFFSET);
+                    }
+                    if(!corrected_cellular_barcode.empty()) {
+                        corrected_cellular_barcode.encode_iupac_ambiguity(segment.auxiliary.CB);
+                    }
+                    if(!raw_molecular_barcode.empty()) {
+                        raw_molecular_barcode.encode_iupac_ambiguity(segment.auxiliary.OX);
+                        raw_molecular_barcode.encode_phred_quality(segment.auxiliary.BZ, SAM_PHRED_DECODING_OFFSET);
+                    }
+                    if(!corrected_molecular_barcode.empty()) {
+                        corrected_molecular_barcode.encode_iupac_ambiguity(segment.auxiliary.RX);
+                        corrected_molecular_barcode.encode_phred_quality(segment.auxiliary.QX, SAM_PHRED_DECODING_OFFSET);
+                    }
+
                     if(leader != &segment) {
                         segment.set_qcfail(leader->qcfail());
-                        if(ks_not_empty(leader->auxiliary.RG)) ks_put_string(leader->auxiliary.RG, segment.auxiliary.RG);
-                        if(ks_not_empty(leader->auxiliary.BC)) ks_put_string(leader->auxiliary.BC, segment.auxiliary.BC);
-                        if(ks_not_empty(leader->auxiliary.QT)) ks_put_string(leader->auxiliary.QT, segment.auxiliary.QT);
                         if(leader->auxiliary.XB > 0)           segment.auxiliary.XB = leader->auxiliary.XB;
-
-                        if(ks_not_empty(leader->auxiliary.RX)) ks_put_string(leader->auxiliary.RX, segment.auxiliary.RX);
-                        if(ks_not_empty(leader->auxiliary.QX)) ks_put_string(leader->auxiliary.QX, segment.auxiliary.QX);
-                        if(ks_not_empty(leader->auxiliary.OX)) ks_put_string(leader->auxiliary.OX, segment.auxiliary.OX);
-                        if(ks_not_empty(leader->auxiliary.BZ)) ks_put_string(leader->auxiliary.BZ, segment.auxiliary.BZ);
-                        if(ks_not_empty(leader->auxiliary.MI)) ks_put_string(leader->auxiliary.MI, segment.auxiliary.MI);
                         if(leader->auxiliary.XM > 0)           segment.auxiliary.XM = leader->auxiliary.XM;
-
-                        if(ks_not_empty(leader->auxiliary.CB)) ks_put_string(leader->auxiliary.CB, segment.auxiliary.CB);
-                        if(ks_not_empty(leader->auxiliary.CR)) ks_put_string(leader->auxiliary.CR, segment.auxiliary.CR);
-                        if(ks_not_empty(leader->auxiliary.CY)) ks_put_string(leader->auxiliary.CY, segment.auxiliary.CY);
                         if(leader->auxiliary.XC > 0)           segment.auxiliary.XC = leader->auxiliary.XC;
                         if(leader->auxiliary.XO > 0)           segment.auxiliary.XO = leader->auxiliary.XO;
+                        if(ks_not_empty(leader->auxiliary.RG)) ks_put_string(leader->auxiliary.RG, segment.auxiliary.RG);
+                        if(ks_not_empty(leader->auxiliary.MI)) ks_put_string(leader->auxiliary.MI, segment.auxiliary.MI);
                     }
                 }
             }
@@ -255,8 +270,10 @@ class Read : public SequenceArray< Segment > {
                 corrected_sample_barcode.append_corrected(barcode[i], observation[i], 0, observation[i].length, corrected_quality);
             }
         };
-        inline void update_raw_sample_barcode(const Observation& observation) {
-            leader->auxiliary.update_raw_sample_barcode(observation);
+        inline void append_to_raw_sample_barcode(const Observation& observation) {
+            for(size_t i(0); i < observation.segment_cardinality(); ++i) {
+                raw_sample_barcode.append(observation[i], 0, observation[i].length);
+            }
         };
         inline void update_sample_decoding_confidence(const double& confidence) {
             if(sample_decoding_confidence == 1) {
@@ -280,14 +297,10 @@ class Read : public SequenceArray< Segment > {
                 corrected_molecular_barcode.append_corrected(barcode[i], observation[i], 0, observation[i].length, corrected_quality);
             }
         };
-        inline void update_raw_molecular_barcode(const Observation& observation) {
-            leader->auxiliary.update_raw_molecular_barcode(observation);
-        };
-        inline void update_corrected_molecular_barcode(const Barcode& barcode) {
-            leader->auxiliary.update_corrected_molecular_barcode(barcode);
-        };
-        inline void update_corrected_molecular_barcode(const Observation& observation) {
-            leader->auxiliary.update_corrected_molecular_barcode(observation);
+        inline void append_to_raw_molecular_barcode(const Observation& observation) {
+            for(size_t i(0); i < observation.segment_cardinality(); ++i) {
+                raw_molecular_barcode.append(observation[i], 0, observation[i].length);
+            }
         };
         inline void update_molecular_decoding_confidence(const double& confidence) {
             if(molecular_decoding_confidence == 1) {
@@ -311,11 +324,10 @@ class Read : public SequenceArray< Segment > {
                 corrected_cellular_barcode.append_corrected(barcode[i], observation[i], 0, observation[i].length, corrected_quality);
             }
         };
-        inline void update_raw_cellular_barcode(const Observation& observation) {
-            leader->auxiliary.update_raw_cellular_barcode(observation);
-        };
-        inline void update_corrected_cellular_barcode(const Barcode& barcode) {
-            leader->auxiliary.update_corrected_cellular_barcode(barcode);
+        inline void append_to_raw_cellular_barcode(const Observation& observation) {
+            for(size_t i(0); i < observation.segment_cardinality(); ++i) {
+                raw_cellular_barcode.append(observation[i], 0, observation[i].length);
+            }
         };
         inline void update_cellular_decoding_confidence(const double& confidence) {
             if(cellular_decoding_confidence == 1) {

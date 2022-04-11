@@ -9,6 +9,7 @@
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
+    "corrected quality": 30,
     "decoding threads": 1,
     "default output compression": "unknown",
     "default output compression level": "5",
@@ -104,6 +105,7 @@
                 8
             ],
             "confidence threshold": 0.95,
+            "corrected quality": 30,
             "index": 0,
             "noise": 0.01,
             "nucleotide cardinality": 8,
@@ -284,6 +286,7 @@
             }
         },
         "confidence threshold": 0.99,
+        "corrected quality": 30,
         "distance tolerance": [
             2
         ],

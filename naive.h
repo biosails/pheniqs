@@ -40,8 +40,7 @@ class NaiveMolecularDecoder : public Decoder< Barcode > {
         inline void classify(const Read& input, Read& output) override {
             this->observation.clear();
             this->rule.apply(input, this->observation);
-            output.append_to_corrected_molecular_barcode_sequence(*this->decoded, this->observation, corrected_quality);
-            output.update_raw_molecular_barcode(observation);
+            output.append_to_raw_molecular_barcode(this->observation);
             Decoder< Barcode >::classify(input, output);
         };
 };
