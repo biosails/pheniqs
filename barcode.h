@@ -128,6 +128,34 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingOption {
             }
             probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
         };
+        inline void compensated_decoding_probability(const Observation& observation, const uint8_t& quality_threshold, double& probability, int32_t& distance) const {
+            /*  This version of the function only counts in distance mismatches where quality is strictly greater than quality_threshold.
+
+                use the Kahan summation algorithm to minimize floating point drift
+                see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+
+                sigma_q accumulates double precision floats from inversed quality scores and UNIFORM_BASE_QUALITY
+            */
+            double y(0);
+            double t(0);
+            distance = 0;
+            double sigma_q(0);
+            double compensation(0);
+            for(size_t i(0); i < segment_array.size(); ++i) {
+                const Sequence& expected = segment_array[i];
+                const ObservedSequence& observed = observation[i];
+                for(int32_t j(0); j < expected.length; ++j) {
+                    y = scale.substitution_quality(expected.code[j], observed.code[j], observed.quality[j]) - compensation;
+                    t = sigma_q + y;
+                    compensation = (t - sigma_q) - y;
+                    sigma_q = t;
+                    if(observed.quality[j] > quality_threshold && observed.code[j] != expected.code[j]) {
+                        ++distance;
+                    }
+                }
+            }
+            probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
+        };
         inline void compensated_decoding_quality(const Observation& observation, double& quality, int32_t& distance) const {
             /*  use the Kahan summation algorithm to minimize floating point drift
                 see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
