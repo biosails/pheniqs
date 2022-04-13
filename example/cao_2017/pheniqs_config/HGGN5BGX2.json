@@ -15,7 +15,7 @@
     },
     "molecular": [
         {
-            "transform": { "token": [ "0::8" ] },
+            "transform": { "token": [ "0::8" ] }
         }
     ],
     "cellular": [
@@ -25,6 +25,9 @@
             "confidence threshold": 0.95,
             "noise": 0.05,
             "transform": { "token": [ "1::10", "2::10" ] },
+            "undetermined": {
+                "output": [ "HGGN5BGX2_undetermined.bam" ]
+            },
             "codec": {
                 "293Tcele-005-001": {
                     "LB": "293Tcele-005-001",
