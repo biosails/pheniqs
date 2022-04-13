@@ -1,0 +1,22 @@
+Table S1. Summary of experiments,,,,,
+Experiment ID,Technique version,# of first round barcodes,Cell populations barcoded,# of second round barcodes,cells sorted per well
+,,,(# of wells during first round of barcoding),,
+1,Initial protocol,384,Pure HEK293T cells (32),384,"75% of all wells: 50 cells per well, 12.5% of all wells: 25 cells per well, 12.5% of all wells: 100 cells per well."
+,,,Pure HeLa S3 cells (32),,
+,,,Pure NIH/3T3 cells (32),,
+,,,HEK293T & NIH/3T3 cells (96),,
+,,,HeLa S3 & NIH/3T3 cells (96),,
+,,,HEK293T & HeLa S3 cells (96),,
+2,Optimized Protocol ,96,Pure HEK293T cells (8),96,12
+,,,Pure HeLa S3 cells (8),,
+,,,HEK293T & NIH/3T3 cells (24),,
+,,,HEK293T & HeLa S3 cells (24) HEK293T & NIH/3T3 nuclei (24),,
+3,Optimized Protocol ,576,C. elegans & HEK293T cells (576),960,96% of wells: 140 C. elegans cells.
+,,,,,4% of wells: 140 C. elegans cells + 10 HEK293T cells.
+,,,,,
+4,Optimized protocol,16,HEK293T & NIH/3T3 cells,84,5
+5,Optimized protocol,16,"HEK293T & NIH/3T3 cells (after methanol fixation, the cells are preserved in -80 degree for 4 days)",80,5
+6,Optimized protocol,384,C. elegans & HEK293T cells,144,92 wells: 100 C. elegans cells including polyploid cells.
+,,,,,4 wells: 1040 C. elegans cells + 10 HEK293T cells.
+,,,,, 48 wells: enriched .C. elegans polyploid cells based on DAPI signal.
+7,Optimized protocol (with 3 levels indexing of 6 indexed Tn5),16,HEK293T & NIH/3T3 cells,16,12

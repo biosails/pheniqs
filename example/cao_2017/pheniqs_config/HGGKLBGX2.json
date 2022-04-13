@@ -1,0 +1,828 @@
+{
+    "DT": "2017-01-15",
+    "PL": "ILLUMINA",
+    "PM": "NextSeq NS500488 2.1.0.31",
+    "flowcell id": "HGGKLBGX2",
+    "import": [ "cao_rt.json" ],
+    "input": [
+        "HGGKLBGX2_R1.fastq.gz",
+        "HGGKLBGX2_I1.fastq.gz",
+        "HGGKLBGX2_I2.fastq.gz",
+        "HGGKLBGX2_R2.fastq.gz"
+    ],
+    "template": {
+        "transform": { "token": [ "3::" ] }
+    },
+    "molecular": [
+        {
+            "transform": { "token": [ "0::8" ] },
+        }
+    ],
+    "cellular": [
+        {   "base": "cao_rt_c_elegans"  },
+        {
+            "algorithm": "pamld",
+            "confidence threshold": 0.95,
+            "noise": 0.05,
+            "transform": { "token": [ "1::10", "2::10" ] },
+            "codec": {
+                "@293Tcele-001-001": {
+                    "LB": "293Tcele-001-001",
+                    "barcode": [ "TCGGATTCGG", "GACCGTAGCA" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-001-002": {
+                    "LB": "293Tcele-001-002",
+                    "barcode": [ "TCCGGCTTAT", "GACCGTAGCA" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-001-003": {
+                    "LB": "293Tcele-001-003",
+                    "barcode": [ "TCGCCGCCGG", "GACCGTAGCA" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-001-004": {
+                    "LB": "293Tcele-001-004",
+                    "barcode": [ "TTGGCAAGCC", "GACCGTAGCA" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-002-001": {
+                    "LB": "293Tcele-002-001",
+                    "barcode": [ "TCGGATTCGG", "AACTACCGAC" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-002-002": {
+                    "LB": "293Tcele-002-002",
+                    "barcode": [ "TCCGGCTTAT", "AACTACCGAC" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-002-003": {
+                    "LB": "293Tcele-002-003",
+                    "barcode": [ "TCGCCGCCGG", "AACTACCGAC" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-002-004": {
+                    "LB": "293Tcele-002-004",
+                    "barcode": [ "TTGGCAAGCC", "AACTACCGAC" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-003-001": {
+                    "LB": "293Tcele-003-001",
+                    "barcode": [ "TCGGATTCGG", "GCTCTCGCCT" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-003-002": {
+                    "LB": "293Tcele-003-002",
+                    "barcode": [ "TCCGGCTTAT", "GCTCTCGCCT" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-003-003": {
+                    "LB": "293Tcele-003-003",
+                    "barcode": [ "TCGCCGCCGG", "GCTCTCGCCT" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@293Tcele-003-004": {
+                    "LB": "293Tcele-003-004",
+                    "barcode": [ "TTGGCAAGCC", "GCTCTCGCCT" ],
+                    "output": [ "HGGKLBGX2_293Tcele.bam" ]
+                },
+                "@cele-001-001": {
+                    "LB": "cele-001-001",
+                    "barcode": [ "CAGCTAGCGG", "GACCGTAGCA" ]
+                },
+                "@cele-001-002": {
+                    "LB": "cele-001-002",
+                    "barcode": [ "GTAGGATAAG", "GACCGTAGCA" ]
+                },
+                "@cele-001-003": {
+                    "LB": "cele-001-003",
+                    "barcode": [ "AAGTAGCTCA", "GACCGTAGCA" ]
+                },
+                "@cele-001-004": {
+                    "LB": "cele-001-004",
+                    "barcode": [ "TAAGTCCTGA", "GACCGTAGCA" ]
+                },
+                "@cele-001-005": {
+                    "LB": "cele-001-005",
+                    "barcode": [ "GCGGCTGCGG", "GTCATTGCGC" ]
+                },
+                "@cele-001-006": {
+                    "LB": "cele-001-006",
+                    "barcode": [ "ACCAGGCGCA", "GTCATTGCGC" ]
+                },
+                "@cele-001-007": {
+                    "LB": "cele-001-007",
+                    "barcode": [ "CCGTATGATT", "GTCATTGCGC" ]
+                },
+                "@cele-001-008": {
+                    "LB": "cele-001-008",
+                    "barcode": [ "TTGATTGGCG", "GTCATTGCGC" ]
+                },
+                "@cele-001-009": {
+                    "LB": "cele-001-009",
+                    "barcode": [ "CTAAGCCTTG", "GTCATTGCGC" ]
+                },
+                "@cele-001-010": {
+                    "LB": "cele-001-010",
+                    "barcode": [ "CGTCGAGCGC", "GTCATTGCGC" ]
+                },
+                "@cele-001-011": {
+                    "LB": "cele-001-011",
+                    "barcode": [ "TATTGCTGGA", "GTCATTGCGC" ]
+                },
+                "@cele-001-012": {
+                    "LB": "cele-001-012",
+                    "barcode": [ "AGTTCTCATG", "GTCATTGCGC" ]
+                },
+                "@cele-001-013": {
+                    "LB": "cele-001-013",
+                    "barcode": [ "AGATTACGTT", "CAAGATTAAG" ]
+                },
+                "@cele-001-014": {
+                    "LB": "cele-001-014",
+                    "barcode": [ "AGAGGAGAAT", "CAAGATTAAG" ]
+                },
+                "@cele-001-015": {
+                    "LB": "cele-001-015",
+                    "barcode": [ "AACGCGCAGA", "CAAGATTAAG" ]
+                },
+                "@cele-001-016": {
+                    "LB": "cele-001-016",
+                    "barcode": [ "GCATATGAGC", "CAAGATTAAG" ]
+                },
+                "@cele-001-017": {
+                    "LB": "cele-001-017",
+                    "barcode": [ "CGTTACCGCT", "CAAGATTAAG" ]
+                },
+                "@cele-001-018": {
+                    "LB": "cele-001-018",
+                    "barcode": [ "ACTATTCATT", "CAAGATTAAG" ]
+                },
+                "@cele-001-019": {
+                    "LB": "cele-001-019",
+                    "barcode": [ "CCAGATACGG", "CAAGATTAAG" ]
+                },
+                "@cele-001-020": {
+                    "LB": "cele-001-020",
+                    "barcode": [ "CAGACTAAGG", "CAAGATTAAG" ]
+                },
+                "@cele-001-021": {
+                    "LB": "cele-001-021",
+                    "barcode": [ "CTAACTAGGT", "ACGCAACTCC" ]
+                },
+                "@cele-001-022": {
+                    "LB": "cele-001-022",
+                    "barcode": [ "GTACTCCTAT", "ACGCAACTCC" ]
+                },
+                "@cele-001-023": {
+                    "LB": "cele-001-023",
+                    "barcode": [ "CTCGTCGTAG", "ACGCAACTCC" ]
+                },
+                "@cele-001-024": {
+                    "LB": "cele-001-024",
+                    "barcode": [ "GAACTCGACT", "ACGCAACTCC" ]
+                },
+                "@cele-001-025": {
+                    "LB": "cele-001-025",
+                    "barcode": [ "GACTGGACCA", "ACGCAACTCC" ]
+                },
+                "@cele-001-026": {
+                    "LB": "cele-001-026",
+                    "barcode": [ "TTGCTTAGAT", "ACGCAACTCC" ]
+                },
+                "@cele-001-027": {
+                    "LB": "cele-001-027",
+                    "barcode": [ "AACGAATTCG", "ACGCAACTCC" ]
+                },
+                "@cele-001-028": {
+                    "LB": "cele-001-028",
+                    "barcode": [ "TCTATCGCTG", "ACGCAACTCC" ]
+                },
+                "@cele-001-029": {
+                    "LB": "cele-001-029",
+                    "barcode": [ "CATAGCGACC", "TGATACGAGT" ]
+                },
+                "@cele-001-030": {
+                    "LB": "cele-001-030",
+                    "barcode": [ "GCTAACGGAT", "TGATACGAGT" ]
+                },
+                "@cele-001-031": {
+                    "LB": "cele-001-031",
+                    "barcode": [ "CTAATTGCGA", "TGATACGAGT" ]
+                },
+                "@cele-001-032": {
+                    "LB": "cele-001-032",
+                    "barcode": [ "CTAGCCAGCC", "TGATACGAGT" ]
+                },
+                "@cele-001-033": {
+                    "LB": "cele-001-033",
+                    "barcode": [ "GCAAGACCGT", "TGATACGAGT" ]
+                },
+                "@cele-001-034": {
+                    "LB": "cele-001-034",
+                    "barcode": [ "CGAATGGAGC", "TGATACGAGT" ]
+                },
+                "@cele-001-035": {
+                    "LB": "cele-001-035",
+                    "barcode": [ "CGCTTATCGT", "TGATACGAGT" ]
+                },
+                "@cele-001-036": {
+                    "LB": "cele-001-036",
+                    "barcode": [ "GCGCTATGGT", "TGATACGAGT" ]
+                },
+                "@cele-001-037": {
+                    "LB": "cele-001-037",
+                    "barcode": [ "CCGCTAAGAG", "CATTATTACC" ]
+                },
+                "@cele-001-038": {
+                    "LB": "cele-001-038",
+                    "barcode": [ "AGTTGAATCA", "CATTATTACC" ]
+                },
+                "@cele-001-039": {
+                    "LB": "cele-001-039",
+                    "barcode": [ "CGCGGCCATA", "CATTATTACC" ]
+                },
+                "@cele-001-040": {
+                    "LB": "cele-001-040",
+                    "barcode": [ "TGCGACCTCT", "CATTATTACC" ]
+                },
+                "@cele-001-041": {
+                    "LB": "cele-001-041",
+                    "barcode": [ "TCAATCTCCT", "CATTATTACC" ]
+                },
+                "@cele-001-042": {
+                    "LB": "cele-001-042",
+                    "barcode": [ "CTATATAGCC", "CATTATTACC" ]
+                },
+                "@cele-001-043": {
+                    "LB": "cele-001-043",
+                    "barcode": [ "AAGTACGCGA", "CATTATTACC" ]
+                },
+                "@cele-001-044": {
+                    "LB": "cele-001-044",
+                    "barcode": [ "CATTATTATT", "CATTATTACC" ]
+                },
+                "@cele-001-045": {
+                    "LB": "cele-001-045",
+                    "barcode": [ "ATGGAACGAA", "TCTATAAGGA" ]
+                },
+                "@cele-001-046": {
+                    "LB": "cele-001-046",
+                    "barcode": [ "TGATTAGGTA", "TCTATAAGGA" ]
+                },
+                "@cele-001-047": {
+                    "LB": "cele-001-047",
+                    "barcode": [ "AATATTACTT", "TCTATAAGGA" ]
+                },
+                "@cele-001-048": {
+                    "LB": "cele-001-048",
+                    "barcode": [ "ATTCTTAGCT", "TCTATAAGGA" ]
+                },
+                "@cele-001-049": {
+                    "LB": "cele-001-049",
+                    "barcode": [ "ATACCTCGAC", "TCTATAAGGA" ]
+                },
+                "@cele-001-050": {
+                    "LB": "cele-001-050",
+                    "barcode": [ "CTACTAATAA", "TCTATAAGGA" ]
+                },
+                "@cele-001-051": {
+                    "LB": "cele-001-051",
+                    "barcode": [ "GATCTTCGCA", "TCTATAAGGA" ]
+                },
+                "@cele-001-052": {
+                    "LB": "cele-001-052",
+                    "barcode": [ "AGCCGTAGTT", "TCTATAAGGA" ]
+                },
+                "@cele-001-053": {
+                    "LB": "cele-001-053",
+                    "barcode": [ "GCGTTCCGTT", "TTGGAGTCGG" ]
+                },
+                "@cele-001-054": {
+                    "LB": "cele-001-054",
+                    "barcode": [ "TCGTAGCATC", "TTGGAGTCGG" ]
+                },
+                "@cele-001-055": {
+                    "LB": "cele-001-055",
+                    "barcode": [ "ATTGGCAGAT", "TTGGAGTCGG" ]
+                },
+                "@cele-001-056": {
+                    "LB": "cele-001-056",
+                    "barcode": [ "TTGATACGAT", "TTGGAGTCGG" ]
+                },
+                "@cele-001-057": {
+                    "LB": "cele-001-057",
+                    "barcode": [ "TAGAGGCGTT", "TTGGAGTCGG" ]
+                },
+                "@cele-001-058": {
+                    "LB": "cele-001-058",
+                    "barcode": [ "TGGTTGCCGT", "TTGGAGTCGG" ]
+                },
+                "@cele-001-059": {
+                    "LB": "cele-001-059",
+                    "barcode": [ "TCTTAGCCTG", "TTGGAGTCGG" ]
+                },
+                "@cele-001-060": {
+                    "LB": "cele-001-060",
+                    "barcode": [ "TGATATTGCG", "TTGGAGTCGG" ]
+                },
+                "@cele-001-061": {
+                    "LB": "cele-001-061",
+                    "barcode": [ "GGTTATCGAA", "CAAGCTTGGC" ]
+                },
+                "@cele-001-062": {
+                    "LB": "cele-001-062",
+                    "barcode": [ "TCTTGAGGTT", "CAAGCTTGGC" ]
+                },
+                "@cele-001-063": {
+                    "LB": "cele-001-063",
+                    "barcode": [ "ATGGCGCCTG", "CAAGCTTGGC" ]
+                },
+                "@cele-001-064": {
+                    "LB": "cele-001-064",
+                    "barcode": [ "TATAATAGTT", "CAAGCTTGGC" ]
+                },
+                "@cele-001-065": {
+                    "LB": "cele-001-065",
+                    "barcode": [ "TAGGTAACTT", "CAAGCTTGGC" ]
+                },
+                "@cele-001-066": {
+                    "LB": "cele-001-066",
+                    "barcode": [ "TCCTCTGCCG", "CAAGCTTGGC" ]
+                },
+                "@cele-001-067": {
+                    "LB": "cele-001-067",
+                    "barcode": [ "TTATTGAGGC", "CAAGCTTGGC" ]
+                },
+                "@cele-001-068": {
+                    "LB": "cele-001-068",
+                    "barcode": [ "ACGGCGTTAA", "CAAGCTTGGC" ]
+                },
+                "@cele-001-069": {
+                    "LB": "cele-001-069",
+                    "barcode": [ "GCATCGTATG", "ATAGGATATG" ]
+                },
+                "@cele-001-070": {
+                    "LB": "cele-001-070",
+                    "barcode": [ "AGGTCAGCTT", "ATAGGATATG" ]
+                },
+                "@cele-001-071": {
+                    "LB": "cele-001-071",
+                    "barcode": [ "ATAAGGACTC", "ATAGGATATG" ]
+                },
+                "@cele-001-072": {
+                    "LB": "cele-001-072",
+                    "barcode": [ "TTGCCGTAGG", "ATAGGATATG" ]
+                },
+                "@cele-001-073": {
+                    "LB": "cele-001-073",
+                    "barcode": [ "TTCGAATATT", "ATAGGATATG" ]
+                },
+                "@cele-001-074": {
+                    "LB": "cele-001-074",
+                    "barcode": [ "GATTCTTGAA", "ATAGGATATG" ]
+                },
+                "@cele-001-075": {
+                    "LB": "cele-001-075",
+                    "barcode": [ "TTGCGAGCAT", "ATAGGATATG" ]
+                },
+                "@cele-001-076": {
+                    "LB": "cele-001-076",
+                    "barcode": [ "GGCTTACTCC", "ATAGGATATG" ]
+                },
+                "@cele-001-077": {
+                    "LB": "cele-001-077",
+                    "barcode": [ "AATACGATAA", "TGGCGTAGGT" ]
+                },
+                "@cele-001-078": {
+                    "LB": "cele-001-078",
+                    "barcode": [ "TATTAGACTT", "TGGCGTAGGT" ]
+                },
+                "@cele-001-079": {
+                    "LB": "cele-001-079",
+                    "barcode": [ "TAGTAAGCCG", "TGGCGTAGGT" ]
+                },
+                "@cele-001-080": {
+                    "LB": "cele-001-080",
+                    "barcode": [ "AGACCATATC", "TGGCGTAGGT" ]
+                },
+                "@cele-001-081": {
+                    "LB": "cele-001-081",
+                    "barcode": [ "TGGACGACTA", "TGGCGTAGGT" ]
+                },
+                "@cele-001-082": {
+                    "LB": "cele-001-082",
+                    "barcode": [ "GTAGCAGCTA", "TGGCGTAGGT" ]
+                },
+                "@cele-001-083": {
+                    "LB": "cele-001-083",
+                    "barcode": [ "GCTTGAAGAG", "TGGCGTAGGT" ]
+                },
+                "@cele-001-084": {
+                    "LB": "cele-001-084",
+                    "barcode": [ "GCGCGTTCAT", "TGGCGTAGGT" ]
+                },
+                "@cele-001-085": {
+                    "LB": "cele-001-085",
+                    "barcode": [ "TTCCGTCGAC", "ACTGAATTCC" ]
+                },
+                "@cele-001-086": {
+                    "LB": "cele-001-086",
+                    "barcode": [ "CTCAATTAGT", "ACTGAATTCC" ]
+                },
+                "@cele-001-087": {
+                    "LB": "cele-001-087",
+                    "barcode": [ "ATTATGCAAG", "ACTGAATTCC" ]
+                },
+                "@cele-001-088": {
+                    "LB": "cele-001-088",
+                    "barcode": [ "TTGGTAAGGA", "ACTGAATTCC" ]
+                },
+                "@cele-001-089": {
+                    "LB": "cele-001-089",
+                    "barcode": [ "GTAGGCTGCA", "ACTGAATTCC" ]
+                },
+                "@cele-001-090": {
+                    "LB": "cele-001-090",
+                    "barcode": [ "CCTCAGCTCC", "ACTGAATTCC" ]
+                },
+                "@cele-001-091": {
+                    "LB": "cele-001-091",
+                    "barcode": [ "AGTCCGCTGC", "ACTGAATTCC" ]
+                },
+                "@cele-001-092": {
+                    "LB": "cele-001-092",
+                    "barcode": [ "GAGCGCGATG", "ACTGAATTCC" ]
+                },
+                "@cele-002-001": {
+                    "LB": "cele-002-001",
+                    "barcode": [ "CAGCTAGCGG", "AACTACCGAC" ]
+                },
+                "@cele-002-002": {
+                    "LB": "cele-002-002",
+                    "barcode": [ "GTAGGATAAG", "AACTACCGAC" ]
+                },
+                "@cele-002-003": {
+                    "LB": "cele-002-003",
+                    "barcode": [ "AAGTAGCTCA", "AACTACCGAC" ]
+                },
+                "@cele-002-004": {
+                    "LB": "cele-002-004",
+                    "barcode": [ "TAAGTCCTGA", "AACTACCGAC" ]
+                },
+                "@cele-002-005": {
+                    "LB": "cele-002-005",
+                    "barcode": [ "GCGGCTGCGG", "CGTCCGTCCT" ]
+                },
+                "@cele-002-006": {
+                    "LB": "cele-002-006",
+                    "barcode": [ "ACCAGGCGCA", "CGTCCGTCCT" ]
+                },
+                "@cele-002-007": {
+                    "LB": "cele-002-007",
+                    "barcode": [ "CCGTATGATT", "CGTCCGTCCT" ]
+                },
+                "@cele-002-008": {
+                    "LB": "cele-002-008",
+                    "barcode": [ "TTGATTGGCG", "CGTCCGTCCT" ]
+                },
+                "@cele-002-009": {
+                    "LB": "cele-002-009",
+                    "barcode": [ "CTAAGCCTTG", "CGTCCGTCCT" ]
+                },
+                "@cele-002-010": {
+                    "LB": "cele-002-010",
+                    "barcode": [ "CGTCGAGCGC", "CGTCCGTCCT" ]
+                },
+                "@cele-002-011": {
+                    "LB": "cele-002-011",
+                    "barcode": [ "TATTGCTGGA", "CGTCCGTCCT" ]
+                },
+                "@cele-002-012": {
+                    "LB": "cele-002-012",
+                    "barcode": [ "AGTTCTCATG", "CGTCCGTCCT" ]
+                },
+                "@cele-002-013": {
+                    "LB": "cele-002-013",
+                    "barcode": [ "AGATTACGTT", "GGTCCAGGAG" ]
+                },
+                "@cele-002-014": {
+                    "LB": "cele-002-014",
+                    "barcode": [ "AGAGGAGAAT", "GGTCCAGGAG" ]
+                },
+                "@cele-002-015": {
+                    "LB": "cele-002-015",
+                    "barcode": [ "AACGCGCAGA", "GGTCCAGGAG" ]
+                },
+                "@cele-002-016": {
+                    "LB": "cele-002-016",
+                    "barcode": [ "GCATATGAGC", "GGTCCAGGAG" ]
+                },
+                "@cele-002-017": {
+                    "LB": "cele-002-017",
+                    "barcode": [ "CGTTACCGCT", "GGTCCAGGAG" ]
+                },
+                "@cele-002-018": {
+                    "LB": "cele-002-018",
+                    "barcode": [ "ACTATTCATT", "GGTCCAGGAG" ]
+                },
+                "@cele-002-019": {
+                    "LB": "cele-002-019",
+                    "barcode": [ "CCAGATACGG", "GGTCCAGGAG" ]
+                },
+                "@cele-002-020": {
+                    "LB": "cele-002-020",
+                    "barcode": [ "CAGACTAAGG", "GGTCCAGGAG" ]
+                },
+                "@cele-002-021": {
+                    "LB": "cele-002-021",
+                    "barcode": [ "CTAACTAGGT", "AACGAGGCTA" ]
+                },
+                "@cele-002-022": {
+                    "LB": "cele-002-022",
+                    "barcode": [ "GTACTCCTAT", "AACGAGGCTA" ]
+                },
+                "@cele-002-023": {
+                    "LB": "cele-002-023",
+                    "barcode": [ "CTCGTCGTAG", "AACGAGGCTA" ]
+                },
+                "@cele-002-024": {
+                    "LB": "cele-002-024",
+                    "barcode": [ "GAACTCGACT", "AACGAGGCTA" ]
+                },
+                "@cele-002-025": {
+                    "LB": "cele-002-025",
+                    "barcode": [ "GACTGGACCA", "AACGAGGCTA" ]
+                },
+                "@cele-002-026": {
+                    "LB": "cele-002-026",
+                    "barcode": [ "TTGCTTAGAT", "AACGAGGCTA" ]
+                },
+                "@cele-002-027": {
+                    "LB": "cele-002-027",
+                    "barcode": [ "AACGAATTCG", "AACGAGGCTA" ]
+                },
+                "@cele-002-028": {
+                    "LB": "cele-002-028",
+                    "barcode": [ "TCTATCGCTG", "AACGAGGCTA" ]
+                },
+                "@cele-002-029": {
+                    "LB": "cele-002-029",
+                    "barcode": [ "CATAGCGACC", "ACGTTCAACC" ]
+                },
+                "@cele-002-030": {
+                    "LB": "cele-002-030",
+                    "barcode": [ "GCTAACGGAT", "ACGTTCAACC" ]
+                },
+                "@cele-002-031": {
+                    "LB": "cele-002-031",
+                    "barcode": [ "CTAATTGCGA", "ACGTTCAACC" ]
+                },
+                "@cele-002-032": {
+                    "LB": "cele-002-032",
+                    "barcode": [ "CTAGCCAGCC", "ACGTTCAACC" ]
+                },
+                "@cele-002-033": {
+                    "LB": "cele-002-033",
+                    "barcode": [ "GCAAGACCGT", "ACGTTCAACC" ]
+                },
+                "@cele-002-034": {
+                    "LB": "cele-002-034",
+                    "barcode": [ "CGAATGGAGC", "ACGTTCAACC" ]
+                },
+                "@cele-002-035": {
+                    "LB": "cele-002-035",
+                    "barcode": [ "CGCTTATCGT", "ACGTTCAACC" ]
+                },
+                "@cele-002-036": {
+                    "LB": "cele-002-036",
+                    "barcode": [ "GCGCTATGGT", "ACGTTCAACC" ]
+                },
+                "@cele-002-037": {
+                    "LB": "cele-002-037",
+                    "barcode": [ "CCGCTAAGAG", "ACGAGGACCT" ]
+                },
+                "@cele-002-038": {
+                    "LB": "cele-002-038",
+                    "barcode": [ "AGTTGAATCA", "ACGAGGACCT" ]
+                },
+                "@cele-002-039": {
+                    "LB": "cele-002-039",
+                    "barcode": [ "CGCGGCCATA", "ACGAGGACCT" ]
+                },
+                "@cele-002-040": {
+                    "LB": "cele-002-040",
+                    "barcode": [ "TGCGACCTCT", "ACGAGGACCT" ]
+                },
+                "@cele-002-041": {
+                    "LB": "cele-002-041",
+                    "barcode": [ "TCAATCTCCT", "ACGAGGACCT" ]
+                },
+                "@cele-002-042": {
+                    "LB": "cele-002-042",
+                    "barcode": [ "CTATATAGCC", "ACGAGGACCT" ]
+                },
+                "@cele-002-043": {
+                    "LB": "cele-002-043",
+                    "barcode": [ "AAGTACGCGA", "ACGAGGACCT" ]
+                },
+                "@cele-002-044": {
+                    "LB": "cele-002-044",
+                    "barcode": [ "CATTATTATT", "ACGAGGACCT" ]
+                },
+                "@cele-002-045": {
+                    "LB": "cele-002-045",
+                    "barcode": [ "ATGGAACGAA", "TATAACTTCC" ]
+                },
+                "@cele-002-046": {
+                    "LB": "cele-002-046",
+                    "barcode": [ "TGATTAGGTA", "TATAACTTCC" ]
+                },
+                "@cele-002-047": {
+                    "LB": "cele-002-047",
+                    "barcode": [ "AATATTACTT", "TATAACTTCC" ]
+                },
+                "@cele-002-048": {
+                    "LB": "cele-002-048",
+                    "barcode": [ "ATTCTTAGCT", "TATAACTTCC" ]
+                },
+                "@cele-002-049": {
+                    "LB": "cele-002-049",
+                    "barcode": [ "ATACCTCGAC", "TATAACTTCC" ]
+                },
+                "@cele-002-050": {
+                    "LB": "cele-002-050",
+                    "barcode": [ "CTACTAATAA", "TATAACTTCC" ]
+                },
+                "@cele-002-051": {
+                    "LB": "cele-002-051",
+                    "barcode": [ "GATCTTCGCA", "TATAACTTCC" ]
+                },
+                "@cele-002-052": {
+                    "LB": "cele-002-052",
+                    "barcode": [ "AGCCGTAGTT", "TATAACTTCC" ]
+                },
+                "@cele-002-053": {
+                    "LB": "cele-002-053",
+                    "barcode": [ "GCGTTCCGTT", "AGGATTACCA" ]
+                },
+                "@cele-002-054": {
+                    "LB": "cele-002-054",
+                    "barcode": [ "TCGTAGCATC", "AGGATTACCA" ]
+                },
+                "@cele-002-055": {
+                    "LB": "cele-002-055",
+                    "barcode": [ "ATTGGCAGAT", "AGGATTACCA" ]
+                },
+                "@cele-002-056": {
+                    "LB": "cele-002-056",
+                    "barcode": [ "TTGATACGAT", "AGGATTACCA" ]
+                },
+                "@cele-002-057": {
+                    "LB": "cele-002-057",
+                    "barcode": [ "TAGAGGCGTT", "AGGATTACCA" ]
+                },
+                "@cele-002-058": {
+                    "LB": "cele-002-058",
+                    "barcode": [ "TGGTTGCCGT", "AGGATTACCA" ]
+                },
+                "@cele-002-059": {
+                    "LB": "cele-002-059",
+                    "barcode": [ "TCTTAGCCTG", "AGGATTACCA" ]
+                },
+                "@cele-002-060": {
+                    "LB": "cele-002-060",
+                    "barcode": [ "TGATATTGCG", "AGGATTACCA" ]
+                },
+                "@cele-002-061": {
+                    "LB": "cele-002-061",
+                    "barcode": [ "GGTTATCGAA", "AACCTAGCTT" ]
+                },
+                "@cele-002-062": {
+                    "LB": "cele-002-062",
+                    "barcode": [ "TCTTGAGGTT", "AACCTAGCTT" ]
+                },
+                "@cele-002-063": {
+                    "LB": "cele-002-063",
+                    "barcode": [ "ATGGCGCCTG", "AACCTAGCTT" ]
+                },
+                "@cele-002-064": {
+                    "LB": "cele-002-064",
+                    "barcode": [ "TATAATAGTT", "AACCTAGCTT" ]
+                },
+                "@cele-002-065": {
+                    "LB": "cele-002-065",
+                    "barcode": [ "TAGGTAACTT", "AACCTAGCTT" ]
+                },
+                "@cele-002-066": {
+                    "LB": "cele-002-066",
+                    "barcode": [ "TCCTCTGCCG", "AACCTAGCTT" ]
+                },
+                "@cele-002-067": {
+                    "LB": "cele-002-067",
+                    "barcode": [ "TTATTGAGGC", "AACCTAGCTT" ]
+                },
+                "@cele-002-068": {
+                    "LB": "cele-002-068",
+                    "barcode": [ "ACGGCGTTAA", "AACCTAGCTT" ]
+                },
+                "@cele-002-069": {
+                    "LB": "cele-002-069",
+                    "barcode": [ "GCATCGTATG", "AGTCCGCGGA" ]
+                },
+                "@cele-002-070": {
+                    "LB": "cele-002-070",
+                    "barcode": [ "AGGTCAGCTT", "AGTCCGCGGA" ]
+                },
+                "@cele-002-071": {
+                    "LB": "cele-002-071",
+                    "barcode": [ "ATAAGGACTC", "AGTCCGCGGA" ]
+                },
+                "@cele-002-072": {
+                    "LB": "cele-002-072",
+                    "barcode": [ "TTGCCGTAGG", "AGTCCGCGGA" ]
+                },
+                "@cele-002-073": {
+                    "LB": "cele-002-073",
+                    "barcode": [ "TTCGAATATT", "AGTCCGCGGA" ]
+                },
+                "@cele-002-074": {
+                    "LB": "cele-002-074",
+                    "barcode": [ "GATTCTTGAA", "AGTCCGCGGA" ]
+                },
+                "@cele-002-075": {
+                    "LB": "cele-002-075",
+                    "barcode": [ "TTGCGAGCAT", "AGTCCGCGGA" ]
+                },
+                "@cele-002-076": {
+                    "LB": "cele-002-076",
+                    "barcode": [ "GGCTTACTCC", "AGTCCGCGGA" ]
+                },
+                "@cele-002-077": {
+                    "LB": "cele-002-077",
+                    "barcode": [ "AATACGATAA", "ACTATCCGCA" ]
+                },
+                "@cele-002-078": {
+                    "LB": "cele-002-078",
+                    "barcode": [ "TATTAGACTT", "ACTATCCGCA" ]
+                },
+                "@cele-002-079": {
+                    "LB": "cele-002-079",
+                    "barcode": [ "TAGTAAGCCG", "ACTATCCGCA" ]
+                },
+                "@cele-002-080": {
+                    "LB": "cele-002-080",
+                    "barcode": [ "AGACCATATC", "ACTATCCGCA" ]
+                },
+                "@cele-002-081": {
+                    "LB": "cele-002-081",
+                    "barcode": [ "TGGACGACTA", "ACTATCCGCA" ]
+                },
+                "@cele-002-082": {
+                    "LB": "cele-002-082",
+                    "barcode": [ "GTAGCAGCTA", "ACTATCCGCA" ]
+                },
+                "@cele-002-083": {
+                    "LB": "cele-002-083",
+                    "barcode": [ "GCTTGAAGAG", "ACTATCCGCA" ]
+                },
+                "@cele-002-084": {
+                    "LB": "cele-002-084",
+                    "barcode": [ "GCGCGTTCAT", "ACTATCCGCA" ]
+                },
+                "@cele-002-085": {
+                    "LB": "cele-002-085",
+                    "barcode": [ "TTCCGTCGAC", "CGAGCTGCCA" ]
+                },
+                "@cele-002-086": {
+                    "LB": "cele-002-086",
+                    "barcode": [ "CTCAATTAGT", "CGAGCTGCCA" ]
+                },
+                "@cele-002-087": {
+                    "LB": "cele-002-087",
+                    "barcode": [ "ATTATGCAAG", "CGAGCTGCCA" ]
+                },
+                "@cele-002-088": {
+                    "LB": "cele-002-088",
+                    "barcode": [ "TTGGTAAGGA", "CGAGCTGCCA" ]
+                },
+                "@cele-002-089": {
+                    "LB": "cele-002-089",
+                    "barcode": [ "GTAGGCTGCA", "CGAGCTGCCA" ]
+                },
+                "@cele-002-090": {
+                    "LB": "cele-002-090",
+                    "barcode": [ "CCTCAGCTCC", "CGAGCTGCCA" ]
+                },
+                "@cele-002-091": {
+                    "LB": "cele-002-091",
+                    "barcode": [ "AGTCCGCTGC", "CGAGCTGCCA" ]
+                },
+                "@cele-002-092": {
+                    "LB": "cele-002-092",
+                    "barcode": [ "GAGCGCGATG", "CGAGCTGCCA" ]
+                }
+            }
+        }
+    ],
+}

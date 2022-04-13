@@ -1,0 +1,57 @@
+Table S2: Summary statistics for cell type consensus expression profiles constructed in this study. ,,,,,
+Cell type,# of cells,"Median # of
+UMIs per cell","Proportion of cells
+with < 25% of the
+median # UMIs per cell","Number of cells
+in consensus
+expression profile","Total number of
+UMIs in consensus
+expression profile"
+Body wall muscle,10508,1354.0,7.5%,9722," 	19,390,434 "
+Germline,5144,1607.0,6.6%,4804," 	10,140,434 "
+Seam cells,3523,919.0,7.1%,3273," 	4,469,300 "
+Intestine,,,,491," 	1,230,975 "
+Non-seam hypodermis,1268,553.5,5.7%,1196," 	1,059,546 "
+Somatic gonad precursors,355,2041.0,2.8%,345," 	823,856 "
+Vulval precursors,488,931.5,3.1%,473," 	569,719 "
+Coelomocytes,1358,313.5,0.0%,1358," 	544,263 "
+Amphid/phasmid sheath cells,421,839.0,13.3%,365," 	507,152 "
+Intestinal/rectal muscle,338,958.5,8.9%,308," 	439,170 "
+Pharyngeal epithelia,747,387.0,0.0%,747," 	405,019 "
+Sex myoblasts,302,1013.5,3.6%,291," 	377,288 "
+Cholinergic neurons,1015,271.0,0.0%,1015," 	359,605 "
+Pharyngeal muscle,332,422.5,0.6%,330," 	297,590 "
+Ciliated sensory neurons,842,249.5,0.0%,842," 	276,100 "
+Pharyngeal gland,271,594.0,3.7%,261," 	226,609 "
+Distal tip cells,129,1437.0,6.2%,121," 	202,581 "
+Socket cells,358,372.0,0.0%,358," 	184,774 "
+Other interneurons,443,286.0,0.0%,443," 	172,852 "
+Rectum,121,947.0,5.8%,114," 	163,396 "
+Excretory cells,155,637.0,1.9%,152," 	136,134 "
+Touch receptor neurons,334,229.0,0.0%,334," 	103,343 "
+flp-1(+) interneurons,224,310.5,0.0%,224," 	96,267 "
+GABAergic neurons,400,200.0,0.0%,400," 	95,965 "
+Oxygen sensory neurons,305,234.0,0.0%,305," 	90,374 "
+Pharyngeal neurons,314,215.5,0.0%,314," 	85,381 "
+Canal associated neurons,239,238.0,0.0%,239," 	76,643 "
+,,,,,
+Dopaminergic neurons,70,239.5,0.0%,70," 	19,611 "
+Unclassified neurons,2639,206.0,0.0%,2639," 	712,612 "
+Total neurons,6825,227.0,0.0%,6825," 	2,088,753 "
+Unclassified glia,208,332.5,0.0%,208," 	95,634 "
+Total glia,987,492.0,5.7%,931," 	787,560 "
+,,,,,
+SDQ/ALN/PLN O2-sensory neurons,160,217.0,0.0%,160," 	44,951 "
+ASI/ASJ sensory neurons,117,283.0,0.0%,117," 	40,396 "
+RIA interneurons,108,225.0,0.0%,108," 	29,795 "
+ASG sensory neurons,86,236.0,0.0%,86," 	26,295 "
+ASK sensory neurons,72,256.0,0.0%,72," 	24,157 "
+AWB/AWC sensory neurons,84,213.0,0.0%,84," 	23,186 "
+BAG O2-sensory neurons,67,267.0,0.0%,67," 	22,805 "
+URX/AQR/PQR O2-sensory neurons,78,230.0,0.0%,78," 	22,618 "
+DVA interneuron,68,269.5,0.0%,68," 	22,499 "
+AWA olfactory neurons,54,290.5,0.0%,54," 	17,758 "
+ASER gustatory neuron,35,265.0,0.0%,35," 	15,324 "
+RIC interneurons,49,199.0,0.0%,49," 	11,702 "
+ASEL gustatory neuron,37,225.0,0.0%,37," 	11,042 "
+AFD thermosensory neurons,29,214.0,0.0%,29," 	6,173 "
