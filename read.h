@@ -200,28 +200,29 @@ class Read : public SequenceArray< Segment > {
             // if(barcode_decoding_confidence > 0 && barcode_decoding_confidence < 1) {
             //     leader->auxiliary.XO = static_cast< float >(1 - barcode_decoding_confidence);
             // }
+            for(auto& segment : this->segment_array) {
+                if(!raw_sample_barcode.empty()) {
+                    raw_sample_barcode.encode_iupac_ambiguity(segment.auxiliary.BC);
+                    raw_sample_barcode.encode_phred_quality(segment.auxiliary.QT, SAM_PHRED_DECODING_OFFSET);
+                }
+                if(!raw_cellular_barcode.empty()) {
+                    raw_cellular_barcode.encode_iupac_ambiguity(segment.auxiliary.CR);
+                    raw_cellular_barcode.encode_phred_quality(segment.auxiliary.CY, SAM_PHRED_DECODING_OFFSET);
+                }
+                if(!corrected_cellular_barcode.empty()) {
+                    corrected_cellular_barcode.encode_iupac_ambiguity(segment.auxiliary.CB);
+                }
+                if(!raw_molecular_barcode.empty()) {
+                    raw_molecular_barcode.encode_iupac_ambiguity(segment.auxiliary.OX);
+                    raw_molecular_barcode.encode_phred_quality(segment.auxiliary.BZ, SAM_PHRED_DECODING_OFFSET);
+                }
+                if(!corrected_molecular_barcode.empty()) {
+                    corrected_molecular_barcode.encode_iupac_ambiguity(segment.auxiliary.RX);
+                    corrected_molecular_barcode.encode_phred_quality(segment.auxiliary.QX, SAM_PHRED_DECODING_OFFSET);
+                }
+            }
             if(segment_cardinality() > 1) {
                 for(auto& segment : this->segment_array) {
-                    if(!raw_sample_barcode.empty()) {
-                        raw_sample_barcode.encode_iupac_ambiguity(segment.auxiliary.BC);
-                        raw_sample_barcode.encode_phred_quality(segment.auxiliary.QT, SAM_PHRED_DECODING_OFFSET);
-                    }
-                    if(!raw_cellular_barcode.empty()) {
-                        raw_cellular_barcode.encode_iupac_ambiguity(segment.auxiliary.CR);
-                        raw_cellular_barcode.encode_phred_quality(segment.auxiliary.CY, SAM_PHRED_DECODING_OFFSET);
-                    }
-                    if(!corrected_cellular_barcode.empty()) {
-                        corrected_cellular_barcode.encode_iupac_ambiguity(segment.auxiliary.CB);
-                    }
-                    if(!raw_molecular_barcode.empty()) {
-                        raw_molecular_barcode.encode_iupac_ambiguity(segment.auxiliary.OX);
-                        raw_molecular_barcode.encode_phred_quality(segment.auxiliary.BZ, SAM_PHRED_DECODING_OFFSET);
-                    }
-                    if(!corrected_molecular_barcode.empty()) {
-                        corrected_molecular_barcode.encode_iupac_ambiguity(segment.auxiliary.RX);
-                        corrected_molecular_barcode.encode_phred_quality(segment.auxiliary.QX, SAM_PHRED_DECODING_OFFSET);
-                    }
-
                     if(leader != &segment) {
                         segment.set_qcfail(leader->qcfail());
                         if(leader->auxiliary.XB > 0)           segment.auxiliary.XB = leader->auxiliary.XB;
