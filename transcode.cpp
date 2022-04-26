@@ -541,6 +541,20 @@ void Transcode::compile_input() {
     if(leading_segment_index >= input_segment_cardinality) {
         throw ConfigurationError("leading segment index " + to_string(leading_segment_index) + " references non existing input segment");
     }
+
+    vector< int32_t > min_input_length(input_segment_cardinality,0);
+    if(decode_value_by_key< vector< int32_t > >("min input length", min_input_length, ontology)) {
+        if(static_cast< int32_t >(min_input_length.size()) != input_segment_cardinality) {
+            throw ConfigurationError (
+                "min input length has " +
+                to_string(min_input_length.size()) +
+                " elements. must have " +
+                to_string(input_segment_cardinality) +
+                " elements, same as the number of input segments. Use a value of 0 to skip filtering a segment by length.");
+        }
+    } else {
+        encode_key_value("min input length", min_input_length, ontology, ontology);
+    }
 };
 void Transcode::compile_sensed_input() {
     int32_t feed_index(0);
@@ -1954,6 +1968,13 @@ void Transcode::print_global_instruction(ostream& o) const {
     bool enable_quality_control(decode_value_by_key< bool >("enable quality control", ontology));
     o << "    Quality tracking                            " << (enable_quality_control ? "enabled" : "disabled") << endl;
 
+    vector< int32_t > min_input_length;
+    if(decode_value_by_key< vector< int32_t > >("min input length", min_input_length, ontology)) {
+    o << "    Min input length                           ";
+        for(auto& element : min_input_length) { o << " " << element; }
+        o << endl;
+    }
+
     bool filter_incoming_qc_fail(decode_value_by_key< bool >("filter incoming qc fail", ontology));
     o << "    Filter incoming QC failed reads             " << (filter_incoming_qc_fail ? "enabled" : "disabled") << endl;
 
@@ -2275,6 +2296,7 @@ TranscodingThread::TranscodingThread(Transcode& job, const int32_t& index) try :
     transcoding_decoder(job.ontology),
     job(job),
     filter_incoming_qc_fail(decode_value_by_key< bool >("filter incoming qc fail", job.ontology)),
+    min_input_length(decode_value_by_key< vector < int32_t > >("min input length", job.ontology)),
     template_rule(decode_value_by_key< Rule >("transform", job.ontology["template"])) {
 
     input.clear();

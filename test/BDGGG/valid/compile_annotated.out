@@ -9,6 +9,115 @@
     "base input url": "test/BDGGG",
     "base output url": "test/BDGGG",
     "buffer capacity": 2048,
+    "cellular": [
+        {
+            "algorithm": "pamld",
+            "barcode cardinality": 6,
+            "barcode length": [
+                8
+            ],
+            "codec": {
+                "@AGGCAGAA": {
+                    "BC": "AGGCAGAA",
+                    "ID": "AGGCAGAA",
+                    "LB": "trinidad 5",
+                    "PU": "AGGCAGAA",
+                    "algorithm": "pamld",
+                    "barcode": [
+                        "AGGCAGAA"
+                    ],
+                    "concentration": 0.177299999999999,
+                    "index": 1,
+                    "segment cardinality": 1
+                },
+                "@CGTACTAG": {
+                    "BC": "CGTACTAG",
+                    "ID": "CGTACTAG",
+                    "LB": "trinidad 4",
+                    "PU": "CGTACTAG",
+                    "algorithm": "pamld",
+                    "barcode": [
+                        "CGTACTAG"
+                    ],
+                    "concentration": 0.197,
+                    "index": 2,
+                    "segment cardinality": 1
+                },
+                "@GGACTCCT": {
+                    "BC": "GGACTCCT",
+                    "ID": "GGACTCCT",
+                    "LB": "trinidad 9",
+                    "PU": "GGACTCCT",
+                    "algorithm": "pamld",
+                    "barcode": [
+                        "GGACTCCT"
+                    ],
+                    "concentration": 0.2167,
+                    "index": 3,
+                    "segment cardinality": 1
+                },
+                "@TAAGGCGA": {
+                    "BC": "TAAGGCGA",
+                    "ID": "TAAGGCGA",
+                    "LB": "trinidad 1",
+                    "PU": "TAAGGCGA",
+                    "algorithm": "pamld",
+                    "barcode": [
+                        "TAAGGCGA"
+                    ],
+                    "concentration": 0.22655,
+                    "index": 4,
+                    "segment cardinality": 1
+                },
+                "@TCCTGAGC": {
+                    "BC": "TCCTGAGC",
+                    "ID": "TCCTGAGC",
+                    "LB": "trinidad 8",
+                    "PU": "TCCTGAGC",
+                    "algorithm": "pamld",
+                    "barcode": [
+                        "TCCTGAGC"
+                    ],
+                    "concentration": 0.16745,
+                    "index": 5,
+                    "segment cardinality": 1
+                }
+            },
+            "confidence threshold": 0.99,
+            "corrected quality": 30,
+            "distance tolerance": [
+                2
+            ],
+            "index": 0,
+            "noise": 0.015,
+            "nucleotide cardinality": 8,
+            "quality masking threshold": 0,
+            "random barcode probability": 0.000015258789062,
+            "segment cardinality": 1,
+            "shannon bound": [
+                2
+            ],
+            "transform": {
+                "knit": [
+                    "0"
+                ],
+                "token": [
+                    "1::8"
+                ]
+            },
+            "undetermined": {
+                "ID": "undetermined",
+                "PU": "undetermined",
+                "algorithm": "pamld",
+                "barcode": [
+                    "========"
+                ],
+                "concentration": 0.015,
+                "index": 0,
+                "segment cardinality": 1
+            }
+        }
+    ],
     "corrected quality": 30,
     "decoding threads": 1,
     "default output compression": "unknown",
@@ -23,7 +132,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s01.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -32,7 +141,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s02.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -41,7 +150,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s03.fastq?format=fastq"
             }
         ],
         "input feed by segment": [
@@ -52,7 +161,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s01.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -61,7 +170,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s02.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -70,7 +179,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s03.fastq?format=fastq"
             }
         ],
         "output feed": [
@@ -91,13 +200,18 @@
     "full command": "./pheniqs mux --config test/BDGGG/BDGGG_annotated.json --precision 15 --compile",
     "htslib threads": 1,
     "input": [
-        "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz",
-        "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz",
-        "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
+        "test/BDGGG/BDGGG_s01.fastq?format=fastq",
+        "test/BDGGG/BDGGG_s02.fastq?format=fastq",
+        "test/BDGGG/BDGGG_s03.fastq?format=fastq"
     ],
     "input phred offset": 33,
     "input segment cardinality": 3,
     "leading segment index": 0,
+    "min input length": [
+        0,
+        0,
+        22
+    ],
     "molecular": [
         {
             "algorithm": "naive",

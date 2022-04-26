@@ -4,6 +4,7 @@ Environment
     Base output URL                             test/BDGGG
     Platform                                    ILLUMINA
     Quality tracking                            disabled
+    Min input length                            0 0 22
     Filter incoming QC failed reads             disabled
     Filter outgoing QC failed reads             disabled
     Input Phred offset                          33
@@ -21,36 +22,36 @@ Input
 
     Input segment cardinality                   3
 
-    Input segment No.0 : test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz
-    Input segment No.1 : test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz
-    Input segment No.2 : test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz
+    Input segment No.0 : test/BDGGG/BDGGG_s01.fastq?format=fastq
+    Input segment No.1 : test/BDGGG/BDGGG_s02.fastq?format=fastq
+    Input segment No.2 : test/BDGGG/BDGGG_s03.fastq?format=fastq
 
     Input feed No.0
         Type : fastq
-        Compression : gz
+        Compression : unknown
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz
+        URL : test/BDGGG/BDGGG_s01.fastq?format=fastq
 
     Input feed No.1
         Type : fastq
-        Compression : gz
+        Compression : unknown
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz
+        URL : test/BDGGG/BDGGG_s02.fastq?format=fastq
 
     Input feed No.2
         Type : fastq
-        Compression : gz
+        Compression : unknown
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz
+        URL : test/BDGGG/BDGGG_s03.fastq?format=fastq
 
 Output transform
 
@@ -206,6 +207,74 @@ Molecular decoding
     Barcode undetermined
         ID : undetermined
         PU : undetermined
+
+Cellular decoding
+
+    Decoding algorithm                          pamld
+    Shannon bound                               2
+    Noise                                       0.015
+    Confidence threshold                        0.99
+    Segment cardinality                         1
+    Nucleotide cardinality                      8
+
+    Transform
+
+        Token No.0
+            Length        8
+            Pattern       1::8
+            Description   cycles 0 to 8 of input segment 1
+
+        Assembly instruction
+            Append token 0 of input segment 1 to output segment 0
+
+    Hamming distance distribution
+
+    Segment No.0
+
+    0 6 6 7 8 AGGCAGAA
+    2 0 7 8 8 CGTACTAG
+    2 3 0 6 8 GGACTCCT
+    3 3 2 0 5 TAAGGCGA
+    3 3 3 2 0 TCCTGAGC
+
+    Barcode undetermined
+        ID : undetermined
+        PU : undetermined
+
+    Barcode @AGGCAGAA
+        ID : AGGCAGAA
+        PU : AGGCAGAA
+        LB : trinidad 5
+        Concentration : 0.1773
+        Barcode       : AGGCAGAA
+
+    Barcode @CGTACTAG
+        ID : CGTACTAG
+        PU : CGTACTAG
+        LB : trinidad 4
+        Concentration : 0.197
+        Barcode       : CGTACTAG
+
+    Barcode @GGACTCCT
+        ID : GGACTCCT
+        PU : GGACTCCT
+        LB : trinidad 9
+        Concentration : 0.2167
+        Barcode       : GGACTCCT
+
+    Barcode @TAAGGCGA
+        ID : TAAGGCGA
+        PU : TAAGGCGA
+        LB : trinidad 1
+        Concentration : 0.22655
+        Barcode       : TAAGGCGA
+
+    Barcode @TCCTGAGC
+        ID : TCCTGAGC
+        PU : TCCTGAGC
+        LB : trinidad 8
+        Concentration : 0.16745
+        Barcode       : TCCTGAGC
 
     Output feed No.0
         Type : sam

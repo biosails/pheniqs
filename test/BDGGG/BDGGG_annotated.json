@@ -12,6 +12,7 @@
             }
         }
     ],
+    "min input length": [0, 0, 22],
     "sample": {
         "algorithm": "pamld",
         "base": "BDGGG_sample",
@@ -40,6 +41,36 @@
         "confidence threshold": 0.99,
         "noise": 0.015
     },
+    "cellular": [
+        {
+            "algorithm": "pamld",
+            "base": "BDGGG_sample",
+            "codec": {
+                "@AGGCAGAA": {
+                    "LB": "trinidad 5",
+                    "concentration": 0.18
+                },
+                "@CGTACTAG": {
+                    "LB": "trinidad 4",
+                    "concentration": 0.20
+                },
+                "@GGACTCCT": {
+                    "LB": "trinidad 9",
+                    "concentration": 0.22
+                },
+                "@TAAGGCGA": {
+                    "LB": "trinidad 1",
+                    "concentration": 0.23
+                },
+                "@TCCTGAGC": {
+                    "LB": "trinidad 8",
+                    "concentration": 0.17
+                }
+            },
+            "confidence threshold": 0.99,
+            "noise": 0.015
+        }
+    ],
     "template": {
         "transform": {
             "token": [

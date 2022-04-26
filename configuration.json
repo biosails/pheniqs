@@ -1050,6 +1050,9 @@
                         "leading segment index": {
                             "$ref": "#/definitions/leading_segment_index"
                         },
+                        "min input length": {
+                            "$ref": "#/definitions/min_input_length"
+                        },
                         "molecular": {
                             "items": {
                                 "$ref": "#/definitions/decoder"
@@ -1108,6 +1111,18 @@
                     "minimum": 0,
                     "title": "Leading segment index",
                     "type": "integer"
+                },
+                "min_input_length": {
+                    "description": "The minimum length for a read segment to be considered valid. A value of 0 effectively disables filtering on the segment. Number of values must be identical to the number of inout segments.",
+                    "items": {
+                        "description": "The minimum length for the read segment to be considered valid.",
+                        "minimum": 0,
+                        "title": "Segment minimum length",
+                        "type": "integer"
+                    },
+                    "minItems": 1,
+                    "title": "Min input length array",
+                    "type": "array"
                 },
                 "noise": {
                     "description": "The prior on the expected probability that a read did not originate from any of the classes defined in the decoder. This is a probability value used by PAMLD decoders when computing the Baysian decoding probability.",

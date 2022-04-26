@@ -23,7 +23,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s01.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -32,7 +32,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s02.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -41,7 +41,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s03.fastq?format=fastq"
             }
         ],
         "input feed by segment": [
@@ -52,7 +52,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s01.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -61,7 +61,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s02.fastq?format=fastq"
             },
             {
                 "capacity": 2048,
@@ -70,7 +70,7 @@
                 "phred offset": 33,
                 "platform": "ILLUMINA",
                 "resolution": 1,
-                "url": "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
+                "url": "test/BDGGG/BDGGG_s03.fastq?format=fastq"
             }
         ],
         "output feed": [
@@ -91,13 +91,18 @@
     "full command": "./pheniqs mux --config test/BDGGG/BDGGG_interleave.json --precision 15 --compile",
     "htslib threads": 1,
     "input": [
-        "test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz",
-        "test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz",
-        "test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz"
+        "test/BDGGG/BDGGG_s01.fastq?format=fastq",
+        "test/BDGGG/BDGGG_s02.fastq?format=fastq",
+        "test/BDGGG/BDGGG_s03.fastq?format=fastq"
     ],
     "input phred offset": 33,
     "input segment cardinality": 3,
     "leading segment index": 0,
+    "min input length": [
+        0,
+        0,
+        0
+    ],
     "output": [
         "/dev/stdout"
     ],

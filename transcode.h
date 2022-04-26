@@ -189,10 +189,20 @@ class TranscodingThread {
         void finalize();
 
     protected:
+        /* returning true means read should be discarded */
+        inline bool filter_input(Read& read) const {
+            for(size_t i(1); i < read.segment_cardinality(); ++i) {
+                if(read[i].length < min_input_length[i]) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
         void run() {
             while(job.pull(input)) {
                 input.validate();
-                if(!filter_incoming_qc_fail || !input.qcfail()) {
+                if((!filter_incoming_qc_fail || !input.qcfail()) && !filter_input(input)) {
                     /* populate output qc_fail and qname flag from the input */
                     const bool qcfail = input.qcfail();
                     for(auto& segment : output) {
@@ -218,6 +228,7 @@ class TranscodingThread {
         Transcode& job;
         thread thread_instance;
         const bool filter_incoming_qc_fail;
+        const vector< int32_t > min_input_length;
         const TemplateRule template_rule;
 };
 

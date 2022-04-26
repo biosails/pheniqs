@@ -50,9 +50,9 @@
     "flowcell id": "BDGGG",
     "flowcell lane number": 1,
     "input": [
-        "BDGGG_s01.fastq.gz",
-        "BDGGG_s02.fastq.gz",
-        "BDGGG_s03.fastq.gz"
+        "BDGGG_s01.fastq",
+        "BDGGG_s02.fastq",
+        "BDGGG_s03.fastq"
     ],
     "threads": 1
 }

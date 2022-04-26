@@ -4,6 +4,7 @@ Environment
     Base output URL                             test/BDGGG
     Platform                                    ILLUMINA
     Quality tracking                            disabled
+    Min input length                            0 0 0
     Filter incoming QC failed reads             disabled
     Filter outgoing QC failed reads             disabled
     Input Phred offset                          33
@@ -21,36 +22,36 @@ Input
 
     Input segment cardinality                   3
 
-    Input segment No.0 : test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz
-    Input segment No.1 : test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz
-    Input segment No.2 : test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz
+    Input segment No.0 : test/BDGGG/BDGGG_s01.fastq?format=fastq
+    Input segment No.1 : test/BDGGG/BDGGG_s02.fastq?format=fastq
+    Input segment No.2 : test/BDGGG/BDGGG_s03.fastq?format=fastq
 
     Input feed No.0
         Type : fastq
-        Compression : gz
+        Compression : unknown
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s01.fastq.gz?format=fastq&compression=gz
+        URL : test/BDGGG/BDGGG_s01.fastq?format=fastq
 
     Input feed No.1
         Type : fastq
-        Compression : gz
+        Compression : unknown
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s02.fastq.gz?format=fastq&compression=gz
+        URL : test/BDGGG/BDGGG_s02.fastq?format=fastq
 
     Input feed No.2
         Type : fastq
-        Compression : gz
+        Compression : unknown
         Resolution : 1
         Phred offset : 33
         Platform : ILLUMINA
         Buffer capacity : 2048
-        URL : test/BDGGG/BDGGG_s03.fastq.gz?format=fastq&compression=gz
+        URL : test/BDGGG/BDGGG_s03.fastq?format=fastq
 
 Output transform
 
