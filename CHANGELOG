@@ -1,0 +1,20 @@
+2.0.2
+
+* Filter by input segment length
+    https://github.com/biosails/pheniqs/commit/ab9eba583c2bee85e45b9d3ae4c2a4dcc4f06e15
+
+    Added an option to filter incoming reads by segment length. A length is specified for each segment independently. This facilitates using trimmers like [cutadapt](https://github.com/marcelm/cutadapt) to trim the biological sequence without interfering with the technical segments that contain barcodes.
+
+* Filter by high quality mismatches
+    https://github.com/biosails/pheniqs/commit/979098ce0d20fa20068fdbd71db0b27adc5a29dc
+
+    Add an option to filter when `high quality distance threshold` or more mismatches occur on bases with quality `high quality threshold` or higher to PAMLD.
+
+* Addressing barcode sequences in output template
+    https://github.com/biosails/pheniqs/commit/35966b808b659b11c5350e61198fa306ece1d5e9
+    https://github.com/biosails/pheniqs/commit/684f02b7b3bfaec7040337884b7f13ed6eb3fd58
+
+    Added support for s,c,m in the first literal of a token to address the decoded sample, cellular and molecular sequence. the decoded sequence is addressed as one, concatenated, sequence and not as a segmented sequence. for instance `s::` will be the entire sample barcode sequence. corrected nucleotide get the `corrected quality` quality score.
+
+* Fixed a bug in schema validation where template element was not validated.
+* Molecular barcodes that have no been error corrected are now written to OX/BZ instead of RX/QX
