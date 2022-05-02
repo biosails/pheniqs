@@ -128,8 +128,10 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingOption {
             }
             probability = pow(PHRED_PROBABILITY_BASE, sigma_q);
         };
-        inline void compensated_decoding_probability(const Observation& observation, const uint8_t& quality_threshold, double& probability, int32_t& distance) const {
-            /*  This version of the function only counts in distance mismatches where quality is strictly greater than quality_threshold.
+        inline void compensated_decoding_probability(const Observation& observation, const uint8_t& high_quality_threshold,
+            double& probability, int32_t& distance, int32_t& high_quality_distance) const {
+            /*  This version of the function also counts in high_quality_distance mismatches
+                with quality strictly greater high_quality_threshold.
 
                 use the Kahan summation algorithm to minimize floating point drift
                 see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
@@ -139,6 +141,7 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingOption {
             double y(0);
             double t(0);
             distance = 0;
+            high_quality_distance = 0;
             double sigma_q(0);
             double compensation(0);
             for(size_t i(0); i < segment_array.size(); ++i) {
@@ -149,8 +152,11 @@ class Barcode : public SequenceArray< Sequence >, public AccumulatingOption {
                     t = sigma_q + y;
                     compensation = (t - sigma_q) - y;
                     sigma_q = t;
-                    if(observed.quality[j] > quality_threshold && observed.code[j] != expected.code[j]) {
+                    if(observed.code[j] != expected.code[j]) {
                         ++distance;
+                        if(observed.quality[j] >= high_quality_threshold) {
+                            ++high_quality_distance;
+                        }
                     }
                 }
             }

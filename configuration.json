@@ -422,6 +422,8 @@
             "confidence threshold": 0.95,
             "corrected quality": null,
             "distance tolerance": null,
+            "high quality distance threshold": 0,
+            "high quality threshold": 30,
             "noise": 0.01,
             "quality masking threshold": 0,
             "segment cardinality": 0,
@@ -438,6 +440,8 @@
             "confidence threshold": 0.95,
             "corrected quality": null,
             "distance tolerance": null,
+            "high quality distance threshold": 0,
+            "high quality threshold": 30,
             "noise": 0.01,
             "quality masking threshold": 0,
             "segment cardinality": 0,
@@ -485,6 +489,8 @@
             "distance tolerance": null,
             "flowcell id": null,
             "flowcell lane number": null,
+            "high quality distance threshold": 0,
+            "high quality threshold": 30,
             "noise": 0.01,
             "quality masking threshold": 0,
             "segment cardinality": 0,
@@ -672,6 +678,12 @@
                         },
                         "flowcell lane number": {
                             "$ref": "#/definitions/flowcell_lane_number"
+                        },
+                        "high quality distance threshold": {
+                            "$ref": "#/definitions/high_quality_distance_threshold"
+                        },
+                        "high quality threshold": {
+                            "$ref": "#/definitions/high_quality_threshold"
                         },
                         "index": {
                             "$ref": "#/definitions/index"
@@ -932,6 +944,25 @@
                     "pattern": "^[0-9]+\\.[0-9]+$",
                     "title": "Format version",
                     "type": "string"
+                },
+                "high_quality_distance_threshold": {
+                    "description": "High quality mismatch threshold above which classification fails. Match must have a number of mismatches greater or equal the threshold for classification to fail.",
+                    "examples": [
+                        3
+                    ],
+                    "minimum": 0,
+                    "title": "High quality distance threshold",
+                    "type": "integer"
+                },
+                "high_quality_threshold": {
+                    "description": "Phred quality threshold obove which a mismatch is considered a high quality mismatch. The quality of the sequenced nucloetide must be greater or equal the threshold to be considered a high quality mismatch.",
+                    "examples": [
+                        30
+                    ],
+                    "maximum": 104,
+                    "minimum": 2,
+                    "title": "High quality threshold",
+                    "type": "integer"
                 },
                 "index": {
                     "minimum": 0,

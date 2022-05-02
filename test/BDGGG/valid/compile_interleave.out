@@ -123,6 +123,8 @@
         "corrected quality": 30,
         "flowcell id": "BDGGG",
         "flowcell lane number": 1,
+        "high quality distance threshold": 0,
+        "high quality threshold": 30,
         "index": 0,
         "multiplexing classifier": true,
         "noise": 0.01,

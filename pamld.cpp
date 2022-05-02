@@ -52,6 +52,7 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
     double y(0);
     double t(0);
     int32_t d(0);
+    int32_t hqd(0);
     double sigma_p(0);
     double compensation(0);
     double conditional_probability(0);
@@ -63,8 +64,7 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
             P(b), barcode.concentration, is the prior probability of observing b
             p is the prior adjusted conditional probability, P(b) * P(r|b),
             sigma_p is the sum of p over b  */
-
-        barcode.compensated_decoding_probability(this->observation, conditional_probability, d);
+        barcode.compensated_decoding_probability(this->observation, this->high_quality_threshold, conditional_probability, d, hqd);
         p = conditional_probability * barcode.concentration;
         y = p - compensation;
         t = sigma_p + y;
@@ -72,7 +72,8 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
         sigma_p = t;
         if(p > adjusted_conditional_decoding_probability) {
             this->decoded = &barcode;
-            this->decoding_hamming_distance = d;
+            this->edit_distance = d;
+            this->high_quality_edit_distance = hqd;
             adjusted_conditional_decoding_probability = p;
             conditional_decoding_probability = conditional_probability;
         }
@@ -97,6 +98,10 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
         /*  if the posterior probability is higher than the confidence_threshold */
         if(decoding_confidence > confidence_threshold) {
             this->decoded->accumulated_confidence += decoding_confidence;
+            /* if high_quality_distance_threshold is 0 the entire filter is disabled */
+            if(this->high_quality_distance_threshold > 0 && this->high_quality_edit_distance >= this->high_quality_distance_threshold) {
+                output.set_qcfail(true);
+            }
             if(!output.qcfail()) {
                 this->decoded->accumulated_pf_confidence += decoding_confidence;
             }
@@ -110,7 +115,8 @@ template < class T > void PamlDecoder< T >::classify(const Read& input, Read& ou
         ++this->decoded->low_conditional_confidence_count;
         output.set_qcfail(true);
         this->decoded = &this->unclassified;
-        this->decoding_hamming_distance = 0;
+        this->edit_distance = 0;
+        this->high_quality_edit_distance = 0;
         decoding_confidence = 0;
     }
     Decoder< T >::classify(input, output);
@@ -128,7 +134,7 @@ void PamlSampleDecoder::classify(const Read& input, Read& output) {
     PamlDecoder< Barcode >::classify(input, output);
     output.append_to_raw_sample_barcode(this->observation);
     output.append_to_corrected_sample_barcode_sequence(*this->decoded, this->observation, corrected_quality);
-    output.update_sample_distance(this->decoding_hamming_distance);
+    output.update_sample_distance(this->edit_distance);
     output.update_sample_decoding_confidence(this->decoding_confidence);
     output.set_RG(this->rg_by_barcode_index[this->decoded->index]);
 };
@@ -146,7 +152,7 @@ void PamlCellularDecoder::classify(const Read& input, Read& output) {
     output.append_to_corrected_cellular_barcode_sequence(*this->decoded, this->observation, corrected_quality);
     if(this->decoded->is_classified()) {
         output.update_cellular_decoding_confidence(this->decoding_confidence);
-        output.update_cellular_distance(this->decoding_hamming_distance);
+        output.update_cellular_distance(this->edit_distance);
     } else {
         output.set_cellular_decoding_confidence(0);
         output.set_cellular_distance(0);
@@ -166,7 +172,7 @@ void PamlMolecularDecoder::classify(const Read& input, Read& output) {
     output.append_to_corrected_molecular_barcode_sequence(*this->decoded, this->observation, corrected_quality);
     if(this->decoded->is_classified()) {
         output.update_molecular_decoding_confidence(this->decoding_confidence);
-        output.update_molecular_distance(this->decoding_hamming_distance);
+        output.update_molecular_distance(this->edit_distance);
     } else {
         output.set_molecular_decoding_confidence(0);
         output.set_molecular_distance(0);

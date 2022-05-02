@@ -39,6 +39,8 @@
             }
         },
         "confidence threshold": 0.99,
+        "high quality distance threshold": 1,
+        "high quality threshold": 20,
         "noise": 0.015
     },
     "cellular": [

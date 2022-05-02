@@ -88,6 +88,8 @@
             "distance tolerance": [
                 2
             ],
+            "high quality distance threshold": 0,
+            "high quality threshold": 30,
             "index": 0,
             "noise": 0.015,
             "nucleotide cardinality": 8,
@@ -220,6 +222,8 @@
             ],
             "confidence threshold": 0.95,
             "corrected quality": 30,
+            "high quality distance threshold": 0,
+            "high quality threshold": 30,
             "index": 0,
             "noise": 0.01,
             "nucleotide cardinality": 8,
@@ -406,6 +410,8 @@
         ],
         "flowcell id": "BDGGG",
         "flowcell lane number": 1,
+        "high quality distance threshold": 1,
+        "high quality threshold": 20,
         "index": 0,
         "multiplexing classifier": true,
         "noise": 0.015,

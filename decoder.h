@@ -30,8 +30,12 @@ template < class T > class Decoder : public Classifier< T > {
     protected:
         const Rule rule;
         const int32_t nucleotide_cardinality;
+        const uint8_t high_quality_threshold;
+        const int32_t high_quality_distance_threshold;
         Observation observation;
-        int32_t decoding_hamming_distance;
+        int32_t edit_distance;
+        int32_t high_quality_edit_distance;
+
 
     public:
         inline const int32_t segment_cardinality() const {
@@ -41,8 +45,11 @@ template < class T > class Decoder : public Classifier< T > {
             Classifier< T >(ontology),
             rule(decode_value_by_key< Rule >("transform", ontology)),
             nucleotide_cardinality(decode_value_by_key< int32_t >("nucleotide cardinality", ontology)),
+            high_quality_threshold(decode_value_by_key< uint8_t >("high quality threshold", ontology)),
+            high_quality_distance_threshold(decode_value_by_key< int32_t >("high quality distance threshold", ontology)),
             observation(decode_value_by_key< int32_t >("segment cardinality", ontology)),
-            decoding_hamming_distance(0) {
+            edit_distance(0),
+            high_quality_edit_distance(0) {
 
             } catch(Error& error) {
                 error.push("Decoder");
@@ -52,14 +59,17 @@ template < class T > class Decoder : public Classifier< T > {
             Classifier< T >(other),
             rule(other.rule),
             nucleotide_cardinality(other.nucleotide_cardinality),
+            high_quality_threshold(other.high_quality_threshold),
+            high_quality_distance_threshold(other.high_quality_distance_threshold),
             observation(other.observation.segment_cardinality()),
-            decoding_hamming_distance(0) {
+            edit_distance(0),
+            high_quality_edit_distance(0) {
         };
         inline void classify(const Read& input, Read& output) override {
-            if(this->decoded->is_classified() && decoding_hamming_distance) {
-                this->decoded->accumulated_distance += static_cast< uint64_t >(decoding_hamming_distance);
+            if(this->decoded->is_classified() && edit_distance) {
+                this->decoded->accumulated_distance += static_cast< uint64_t >(edit_distance);
                 if(!output.qcfail()) {
-                    this->decoded->accumulated_pf_distance += static_cast< uint64_t >(decoding_hamming_distance);
+                    this->decoded->accumulated_pf_distance += static_cast< uint64_t >(edit_distance);
                 }
             }
             Classifier< T >::classify(input, output);

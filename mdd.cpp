@@ -38,7 +38,7 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
     this->observation.clear();
     this->rule.apply(input, this->observation);
     this->decoded = &this->unclassified;
-    this->decoding_hamming_distance = 0;
+    this->edit_distance = 0;
 
     /* First try a perfect match to the full barcode sequence */
     auto record = element_by_sequence.find(this->observation);
@@ -73,7 +73,7 @@ template < class T > void MdDecoder< T >::classify(const Read& input, Read& outp
             }
 
             if(successful) {
-                this->decoding_hamming_distance = distance;
+                this->edit_distance = distance;
                 this->decoded = &barcode;
                 break;
             }
@@ -97,7 +97,7 @@ void MdSampleDecoder::classify(const Read& input, Read& output) {
     MdDecoder< Barcode >::classify(input, output);
     output.append_to_raw_sample_barcode(this->observation);
     output.append_to_corrected_sample_barcode_sequence(*this->decoded, this->observation, corrected_quality);
-    output.update_sample_distance(this->decoding_hamming_distance);
+    output.update_sample_distance(this->edit_distance);
     output.set_RG(this->rg_by_barcode_index[this->decoded->index]);
 };
 
@@ -113,7 +113,7 @@ void MdCellularDecoder::classify(const Read& input, Read& output) {
     output.append_to_raw_cellular_barcode(this->observation);
     output.append_to_corrected_cellular_barcode_sequence(*this->decoded, this->observation, corrected_quality);
     if(this->decoded->is_classified()) {
-        output.update_cellular_distance(this->decoding_hamming_distance);
+        output.update_cellular_distance(this->edit_distance);
     } else {
         output.set_cellular_distance(0);
     }
@@ -131,7 +131,7 @@ void MdMolecularDecoder::classify(const Read& input, Read& output) {
     output.append_to_raw_molecular_barcode(this->observation);
     output.append_to_corrected_molecular_barcode_sequence(*this->decoded, this->observation, corrected_quality);
     if(this->decoded->is_classified()) {
-        output.update_molecular_distance(this->decoding_hamming_distance);
+        output.update_molecular_distance(this->edit_distance);
     } else {
         output.set_cellular_distance(0);
     }

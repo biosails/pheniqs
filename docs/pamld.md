@@ -31,6 +31,10 @@ Reads that pass the *noise filter* are evaluated by the *confidence filter*, whi
 
 Directly estimating the posterior decoding probability allows Pheniqs to report intuitive classification confidence scores for every read. Deriving a confidence score for a combinatorial barcode, made up of several independent components, requires to simply multiply the confidence scores of the individual components. `confidence threshold` allows researchers to choose between assignment confidence and yield of classified reads.
 
+## filtering high quality mismatches
+
+Occasionally it might be desirable to filter when a mismatch occurs on a nucleotide with high basecalling quality. For instance when the barcode being decoded is actually a protein coding sequence. A high quality mismatch likely means that the protein is non functional and thus not interesting for further analysis. PAMLD, by nature, penalized high quality mismatches more than low quality ones since it hurts the posterior probability more and so the match is more likely to not clear the confidence threshold. But if you wish to explicitly address such a condition you may specify in the decoder the parameters `high quality distance threshold` and `high quality threshold`. If a `high quality distance threshold` or more number of mismatches are observed in nucleotides with quality `high quality threshold` or more, the **QC fail** flag will be set to true. `high quality threshold` defaults to **30**, and `high quality distance threshold` defaults to **0**, which disables the filter.
+
 ## Estimating the prior distribution
 
 Every Pheniqs decoding run produces, in addition to the output, a JSON encoded statistical report. Statistics from a preliminary PAMLD decoding run can be used to estimate `concentration` and `noise` from the data. The *high confidence estimator* bundled with Pheniqs estimates the relative proportions from the *high confidence* reads alone, assuming that *low confidence* reads (those that passed the *noise filter* but failed the *confidence filter*) and *high confidence* reads (those that passed both filters) come from the same distribution.
