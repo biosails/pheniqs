@@ -31,7 +31,7 @@ class ValidationError : public Error {
         Document ontology;
         ValidationError(Document& ontology) :
             Error("JSON directive validation error", ErrorCode::JSON_VALIDATION_ERROR),
-            ontology(move(ontology)) {
+            ontology(std::move(ontology)) {
             compile();
         };
         ValidationError(const ValidationError& other) :

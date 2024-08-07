@@ -711,7 +711,7 @@ void Transcode::compile_explicit_input() {
         encode_key_value("capacity", buffer_capacity, element, ontology);
         encode_key_value("resolution", resolution, element, ontology);
         encode_key_value("phred offset", input_phred_offset, element, ontology);
-        feed_ontology_by_url.emplace(make_pair(url, move(element)));
+        feed_ontology_by_url.emplace(make_pair(url, std::move(element)));
         ++feed_index;
     }
 
@@ -1403,7 +1403,7 @@ void Transcode::compile_output() {
             encode_key_value("capacity", buffer_capacity * resolution, proxy, ontology);
             encode_key_value("resolution", resolution, proxy, ontology);
             encode_key_value("phred offset", phred_offset, proxy, ontology);
-            feed_ontology_by_url.emplace(make_pair(url, move(proxy)));
+            feed_ontology_by_url.emplace(make_pair(url, std::move(proxy)));
             ++index;
         }
 
