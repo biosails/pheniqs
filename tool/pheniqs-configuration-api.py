@@ -132,7 +132,7 @@ class ConfigurationApi(Job):
                     if self.is_option_optional(option):
                         optspec = [ '    ' ]
                         if self.is_option_plural(option):
-                            optspec.append('\*')
+                            optspec.append('*')
                         else:
                             optspec.append('\'({})\''.format(' '.join(option['handle'])))
 
@@ -146,7 +146,7 @@ class ConfigurationApi(Job):
 
                         if 'choice' in option:
                             if 'choice description' in option:
-                                optspec.append('\':{}:(({}))\''.format(option['name'], ' '.join(['{}\:\"{}\"'.format(c[0], c[1]) for c in zip(option['choice'], option['choice description'])])))
+                                optspec.append('\':{}:(({}))\''.format(option['name'], ' '.join([f'{c[0]}:\"{c[1]}\"' for c in zip(option['choice'], option['choice description'])])))
                             else:
                                 optspec.append('\':{}:({})\''.format(option['name'], ' '.join(option['choice'])))
                         else:

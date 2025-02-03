@@ -22,7 +22,7 @@
 #include "job.h"
 
 Job::Job(Document& operation) try :
-    operation(move(operation)),
+    operation(std::move(operation)),
     interactive(this->operation["interactive"]),
     schema_repository(this->operation["schema"]),
     projection_repository(this->operation["projection"]),

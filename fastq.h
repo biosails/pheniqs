@@ -122,14 +122,19 @@ class FastqRecord {
                     parse_illumina_control(segment, offset);
                     parse_illumina_barcode(segment, offset);
                     break;
-                }
+                };
+                case Platform::UNKNOWN:
                 case Platform::CAPILLARY:
-                case Platform::LS454:
+                case Platform::DNBSEQ:
+                case Platform::ELEMENT:
                 case Platform::HELICOS:
+                case Platform::IONTORRENT:
+                case Platform::LS454:
                 case Platform::ONT:
                 case Platform::PACBIO:
+                case Platform::SINGULAR:
                 case Platform::SOLID:
-                case Platform::IONTORRENT:
+                case Platform::ULTIMA:
                     break;
                 default:
                     break;
@@ -173,11 +178,6 @@ class FastqRecord {
         };
         inline void decode_comment(const Segment& segment) {
             switch (segment.platform) {
-                case Platform::CAPILLARY:
-                    // Sanger sequencing
-                    break;
-                case Platform::LS454:
-                    break;
                 case Platform::ILLUMINA: {
                     ks_put_uint32(segment.auxiliary.FI, comment);
                     ks_put_character(':', comment);
@@ -194,15 +194,29 @@ class FastqRecord {
                     ks_put_string(segment.auxiliary.BC, comment);
                     break;
                 };
-                case Platform::SOLID:
+                case Platform::UNKNOWN:
+                    break;
+                case Platform::CAPILLARY:
+                    break;
+                case Platform::DNBSEQ:
+                    break;
+                case Platform::ELEMENT:
                     break;
                 case Platform::HELICOS:
                     break;
                 case Platform::IONTORRENT:
                     break;
+                case Platform::LS454:
+                    break;
                 case Platform::ONT:
                     break;
                 case Platform::PACBIO:
+                    break;
+                case Platform::SINGULAR:
+                    break;
+                case Platform::SOLID:
+                    break;
+                case Platform::ULTIMA:
                     break;
                 default:
                     break;

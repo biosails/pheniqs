@@ -268,13 +268,17 @@ string to_string(const Platform& value) {
     string result;
     switch(value) {
         case Platform::CAPILLARY:   result.assign("CAPILLARY");  break;
-        case Platform::LS454:       result.assign("LS454");      break;
-        case Platform::ILLUMINA:    result.assign("ILLUMINA");   break;
-        case Platform::SOLID:       result.assign("SOLID");      break;
+        case Platform::DNBSEQ:      result.assign("DNBSEQ");     break;
+        case Platform::ELEMENT:     result.assign("ELEMENT");    break;
         case Platform::HELICOS:     result.assign("HELICOS");    break;
+        case Platform::ILLUMINA:    result.assign("ILLUMINA");   break;
         case Platform::IONTORRENT:  result.assign("IONTORRENT"); break;
+        case Platform::LS454:       result.assign("LS454");      break;
         case Platform::ONT:         result.assign("ONT");        break;
         case Platform::PACBIO:      result.assign("PACBIO");     break;
+        case Platform::SINGULAR:    result.assign("SINGULAR");   break;
+        case Platform::SOLID:       result.assign("SOLID");      break;
+        case Platform::ULTIMA:      result.assign("ULTIMA");     break;
         default:                    result.assign("UNKNOWN");    break;
     }
     return result;
@@ -282,15 +286,18 @@ string to_string(const Platform& value) {
 bool from_string(const char* value, Platform& result) {
          if(value == NULL)                  result = Platform::UNKNOWN;
     else if(!strcmp(value, "CAPILLARY"))    result = Platform::CAPILLARY;
-    else if(!strcmp(value, "LS454"))        result = Platform::LS454;
-    else if(!strcmp(value, "ILLUMINA"))     result = Platform::ILLUMINA;
-    else if(!strcmp(value, "SOLID"))        result = Platform::SOLID;
+    else if(!strcmp(value, "DNBSEQ"))       result = Platform::DNBSEQ;
+    else if(!strcmp(value, "ELEMENT"))      result = Platform::ELEMENT;
     else if(!strcmp(value, "HELICOS"))      result = Platform::HELICOS;
+    else if(!strcmp(value, "ILLUMINA"))     result = Platform::ILLUMINA;
     else if(!strcmp(value, "IONTORRENT"))   result = Platform::IONTORRENT;
+    else if(!strcmp(value, "LS454"))        result = Platform::LS454;
     else if(!strcmp(value, "ONT"))          result = Platform::ONT;
     else if(!strcmp(value, "PACBIO"))       result = Platform::PACBIO;
+    else if(!strcmp(value, "SINGULAR"))     result = Platform::SINGULAR;
+    else if(!strcmp(value, "SOLID"))        result = Platform::SOLID;
+    else if(!strcmp(value, "ULTIMA"))       result = Platform::ULTIMA;
     else                                    result = Platform::UNKNOWN;
-
     return (result == Platform::UNKNOWN ? false : true);
 };
 void to_kstring(const Platform& value, kstring_t& result) {

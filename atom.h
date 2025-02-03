@@ -161,7 +161,7 @@ ostream& operator<<(ostream& o, const HeadSQAtom& sq);
     DT  Date the run was produced ISO8601 date or datetime.
     PI  Predicted median insert size.
     PL  Platform or technology used to produce the reads.
-            CAPILLARY, LS454, ILLUMINA, SOLID, HELICOS, IONTORRENT, ONT, PACBIO
+        UNKNOWN, CAPILLARY, DNBSEQ, ELEMENT, HELICOS, ILLUMINA, IONTORRENT, LS454, ONT, PACBIO, SINGULAR, SOLID, ULTIMA
     PM  Platform model
     PG  Programs used for processing the read group
     FO  Flow order.
@@ -326,13 +326,17 @@ void encode_key_value(const string& key, const HtsGrouping& value, Value& contai
 enum class Platform : uint8_t {
     UNKNOWN,
     CAPILLARY,
-    LS454,
-    ILLUMINA,
-    SOLID,
+    DNBSEQ,
+    ELEMENT,
     HELICOS,
+    ILLUMINA,
     IONTORRENT,
+    LS454,
     ONT,
     PACBIO,
+    SINGULAR,
+    SOLID,
+    ULTIMA
 };
 string to_string(const Platform& value);
 bool from_string(const char* value, Platform& result);

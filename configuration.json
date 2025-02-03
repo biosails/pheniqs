@@ -1371,13 +1371,17 @@
                     "enum": [
                         "UNKNOWN",
                         "CAPILLARY",
-                        "LS454",
-                        "ILLUMINA",
-                        "SOLID",
+                        "DNBSEQ",
+                        "ELEMENT",
                         "HELICOS",
+                        "ILLUMINA",
                         "IONTORRENT",
+                        "LS454",
                         "ONT",
-                        "PACBIO"
+                        "PACBIO",
+                        "SINGULAR",
+                        "SOLID",
+                        "ULTIMA"
                     ],
                     "title": "Read group platform",
                     "type": "string"
