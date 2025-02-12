@@ -99,6 +99,8 @@ class FastqRecord {
             #endif
 
             switch (segment.platform) {
+                case Platform::ELEMENT:
+                    /* The ELEMENT comment follows the same pattern as ILLUMINA */
                 case Platform::ILLUMINA: {
                     /*  @HWI-ST911:232:HABDFADXX:1:1101:1224:1932 1:N:0:CGATGT
                         name    0:1:2:3:4:5:6
@@ -126,7 +128,6 @@ class FastqRecord {
                 case Platform::UNKNOWN:
                 case Platform::CAPILLARY:
                 case Platform::DNBSEQ:
-                case Platform::ELEMENT:
                 case Platform::HELICOS:
                 case Platform::IONTORRENT:
                 case Platform::LS454:
@@ -178,6 +179,7 @@ class FastqRecord {
         };
         inline void decode_comment(const Segment& segment) {
             switch (segment.platform) {
+                case Platform::ELEMENT:
                 case Platform::ILLUMINA: {
                     ks_put_uint32(segment.auxiliary.FI, comment);
                     ks_put_character(':', comment);
@@ -199,8 +201,6 @@ class FastqRecord {
                 case Platform::CAPILLARY:
                     break;
                 case Platform::DNBSEQ:
-                    break;
-                case Platform::ELEMENT:
                     break;
                 case Platform::HELICOS:
                     break;
