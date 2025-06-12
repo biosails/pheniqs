@@ -47,12 +47,14 @@ class Error : public exception {
     protected:
         Error(const string& name, const ErrorCode& code) :
             name(name),
-            code(code) {
+            code(code),
+            message_buffer(name) {
         };
         Error(const string& name, const ErrorCode& code, const string& message) :
             name(name),
             code(code),
-            message(message) {
+            message(message),
+            message_buffer(name + " : " + message) {
         };
 
     public:
@@ -64,15 +66,15 @@ class Error : public exception {
             stack.emplace_back(where);
         };
         const char* what() const noexcept override {
-            return name.c_str();
+            return message_buffer.c_str();
         };
         virtual ostream& describe(ostream& o) const {
-            o << name;
-            o << " : ";
-            o << message;
+            o << message_buffer;
             o << endl;
             return o;
         };
+    private:
+        string message_buffer;
 };
 
 class OutOfMemoryError : public Error {
