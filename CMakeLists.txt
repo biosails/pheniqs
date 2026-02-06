@@ -83,15 +83,18 @@ include(FetchContent)
 set(EXTERNAL_INSTALL_DIR ${CMAKE_BINARY_DIR}/external/install)
 
 # Find htslib (no official CMake config in older versions, so we'll find it manually)
-find_library(HTSLIB_LIBRARY NAMES hts)
-find_path(HTSLIB_INCLUDE_DIR NAMES htslib/hts.h)
-
-# If system htslib is found, report it; otherwise we'll configure a vendored
-# htslib later in the file (so there's a single ExternalProject_Add for it).
-if(HTSLIB_LIBRARY)
-    message(STATUS "Found htslib: ${HTSLIB_LIBRARY}")
+# Only search for system htslib if we're not vendoring it
+if(NOT VENDOR_HTSLIB)
+    find_library(HTSLIB_LIBRARY NAMES hts)
+    find_path(HTSLIB_INCLUDE_DIR NAMES htslib/hts.h)
+    
+    if(HTSLIB_LIBRARY)
+        message(STATUS "Found htslib: ${HTSLIB_LIBRARY}")
+    else()
+        message(STATUS "htslib not found; vendored build will be configured if requested")
+    endif()
 else()
-    message(STATUS "htslib not found; vendored build will be configured later if requested")
+    message(STATUS "VENDOR_HTSLIB is ON; will build htslib locally")
 endif()
 
 # Find zlib
@@ -171,6 +174,14 @@ endif()
 find_library(CURL_LIBRARY NAMES curl)
 find_path(CURL_INCLUDE_DIR NAMES curl/curl.h)
 
+# Find libhtscodecs (required for static htslib with codec support)
+find_library(HTSCODECS_LIBRARY NAMES htscodecs)
+if(HTSCODECS_LIBRARY)
+    message(STATUS "Found libhtscodecs: ${HTSCODECS_LIBRARY}")
+else()
+    message(STATUS "libhtscodecs not found - static htslib linking may fail")
+endif()
+
 # Find libdeflate (optional)
 find_library(DEFLATE_LIBRARY NAMES deflate)
 find_path(DEFLATE_INCLUDE_DIR NAMES libdeflate.h)
@@ -205,17 +216,46 @@ endif()
 set(HTSLIB_URL "https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2" CACHE STRING "URL to htslib tarball")
 if(NOT HTSLIB_LIBRARY OR VENDOR_HTSLIB)
     message(STATUS "Configuring vendored htslib")
+    # When vendoring htslib, point it to our vendored dependencies if they're being built
+    set(_HTSLIB_CONFIGURE_OPTIONS --prefix=${EXTERNAL_INSTALL_DIR})
+    if(VENDOR_ZLIB)
+        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-zlib=${EXTERNAL_INSTALL_DIR})
+    endif()
+    if(VENDOR_BZIP2)
+        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-bz2=${EXTERNAL_INSTALL_DIR})
+    endif()
+    if(VENDOR_LZMA)
+        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-lzma=${EXTERNAL_INSTALL_DIR})
+    endif()
+    if(VENDOR_LIBDEFLATE)
+        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-libdeflate=${EXTERNAL_INSTALL_DIR})
+    endif()
+    
     ExternalProject_Add(htslib_ext
         URL ${HTSLIB_URL}
         PREFIX ${CMAKE_BINARY_DIR}/external/htslib
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./configure --prefix=${EXTERNAL_INSTALL_DIR}
+        CONFIGURE_COMMAND ./configure ${_HTSLIB_CONFIGURE_OPTIONS}
         BUILD_COMMAND make -j4
         INSTALL_COMMAND make install
     )
     set(HTSLIB_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
     set(HTSLIB_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libhts.a)
+    
+    # If vendoring htslib, ensure its dependencies are built first
+    if(TARGET zlib_ext)
+        add_dependencies(htslib_ext zlib_ext)
+    endif()
+    if(TARGET bzip2_ext)
+        add_dependencies(htslib_ext bzip2_ext)
+    endif()
+    if(TARGET xz_ext)
+        add_dependencies(htslib_ext xz_ext)
+    endif()
+    if(TARGET libdeflate_ext)
+        add_dependencies(htslib_ext libdeflate_ext)
+    endif()
 endif()
 
 # RapidJSON (header-only)
@@ -256,14 +296,23 @@ set(PHENIQS_LIBRARIES
     ${CURL_LIBRARY}
 )
 
-# Handle static linking
-if(BUILD_STATIC)
-    # Find static versions
+# Add htscodecs if found (required for htslib with CRAM codec support)
+# htscodecs may only be available as a shared library even if using BUILD_STATIC
+if(HTSCODECS_LIBRARY)
+    list(APPEND PHENIQS_LIBRARIES ${HTSCODECS_LIBRARY})
+endif()
+
+# Handle static linking (only for system libraries; vendored builds are already static in EXTERNAL_INSTALL_DIR)
+# Skip this override if any vendoring is enabled, since vendored libs are already in PHENIQS_LIBRARIES
+if(BUILD_STATIC AND NOT VENDOR_ZLIB AND NOT VENDOR_BZIP2 AND NOT VENDOR_LZMA AND NOT VENDOR_HTSLIB AND NOT VENDOR_LIBDEFLATE)
+    # Try to find and use system static libraries
     find_library(HTSLIB_STATIC NAMES libhts.a PATHS ${LIB_PREFIX})
     find_library(ZLIB_STATIC NAMES libz.a PATHS ${LIB_PREFIX})
     find_library(BZIP2_STATIC NAMES libbz2.a PATHS ${LIB_PREFIX})
     find_library(LZMA_STATIC NAMES liblzma.a PATHS ${LIB_PREFIX})
     find_library(DEFLATE_STATIC NAMES libdeflate.a PATHS ${LIB_PREFIX})
+    # htscodecs might only have a shared library, so don't require it
+    find_library(HTSCODECS_STATIC NAMES libhtscodecs.a PATHS ${LIB_PREFIX})
     
     if(HTSLIB_STATIC AND ZLIB_STATIC AND BZIP2_STATIC AND LZMA_STATIC AND DEFLATE_STATIC)
         set(PHENIQS_LIBRARIES 
@@ -273,9 +322,13 @@ if(BUILD_STATIC)
             ${LZMA_STATIC}
             ${DEFLATE_STATIC}
         )
-        message(STATUS "Using static libraries")
+        # Add htscodecs static if available
+        if(HTSCODECS_STATIC)
+            list(APPEND PHENIQS_LIBRARIES ${HTSCODECS_STATIC})
+        endif()
+        message(STATUS "Using static system libraries")
     else()
-        message(WARNING "Not all static libraries found, falling back to shared")
+        message(WARNING "Not all static system libraries found, falling back to shared system libraries")
     endif()
 endif()
 
