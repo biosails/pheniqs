@@ -67,31 +67,76 @@ option(BUILD_STATIC "Build with static libraries" OFF)
 # Find required packages
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+# Options to allow building vendored (local) copies of dependencies when system
+# copies are not available. Set these to ON to force building locally.
+option(VENDOR_ZLIB "Build and use a vendored zlib" OFF)
+option(VENDOR_BZIP2 "Build and use a vendored bzip2" OFF)
+option(VENDOR_LZMA "Build and use a vendored xz/liblzma" OFF)
+option(VENDOR_LIBDEFLATE "Build and use a vendored libdeflate" OFF)
+option(VENDOR_HTSLIB "Build and use a vendored htslib" OFF)
+option(VENDOR_RAPIDJSON "Build and use a vendored rapidjson (header-only)" OFF)
+
+include(ExternalProject)
+include(FetchContent)
+
+# Directory where external projects will be installed when vendored builds are used
+set(EXTERNAL_INSTALL_DIR ${CMAKE_BINARY_DIR}/external/install)
+
 # Find htslib (no official CMake config in older versions, so we'll find it manually)
 find_library(HTSLIB_LIBRARY NAMES hts PATHS ${LIB_PREFIX} NO_DEFAULT_PATH)
 find_path(HTSLIB_INCLUDE_DIR NAMES htslib/hts.h PATHS ${INCLUDE_PREFIX} NO_DEFAULT_PATH)
 
-if(HTSLIB_LIBRARY AND HTSLIB_INCLUDE_DIR)
+# If system htslib is found, report it; otherwise we'll configure a vendored
+# htslib later in the file (so there's a single ExternalProject_Add for it).
+if(HTSLIB_LIBRARY)
     message(STATUS "Found htslib: ${HTSLIB_LIBRARY}")
 else()
-    # Try system paths as fallback
-    find_library(HTSLIB_LIBRARY NAMES hts)
-    find_path(HTSLIB_INCLUDE_DIR NAMES htslib/hts.h)
-    if(HTSLIB_LIBRARY AND HTSLIB_INCLUDE_DIR)
-        message(STATUS "Found htslib (system): ${HTSLIB_LIBRARY}")
-    else()
-        message(FATAL_ERROR "htslib not found. Please install htslib development files.")
-    endif()
+    message(STATUS "htslib not found; vendored build will be configured later if requested")
 endif()
 
 # Find zlib
-find_package(ZLIB REQUIRED)
+find_package(ZLIB)
+set(ZLIB_URL "https://github.com/madler/zlib/releases/download/v1.2.13/zlib-1.2.13.tar.gz" CACHE STRING "URL to zlib tarball")
+if(NOT ZLIB_FOUND OR VENDOR_ZLIB)
+    message(STATUS "Zlib not found or vendoring requested; configuring vendored zlib")
+    ExternalProject_Add(zlib_ext
+        URL ${ZLIB_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/zlib
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND ./configure --static --prefix=${EXTERNAL_INSTALL_DIR}
+        BUILD_COMMAND make -j4
+        INSTALL_COMMAND make install
+    )
+    set(ZLIB_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    find_library(ZLIB_LIBRARY NAMES z PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+else()
+    message(STATUS "Found ZLIB: ${ZLIB_LIBRARIES}")
+    if(TARGET ZLIB::ZLIB)
+        # CMake target exists
+    else()
+        set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
+    endif()
+endif()
 
 # Find bzip2
 find_library(BZIP2_LIBRARY NAMES bz2 PATHS ${LIB_PREFIX} NO_DEFAULT_PATH)
 find_path(BZIP2_INCLUDE_DIR NAMES bzlib.h PATHS ${INCLUDE_PREFIX} NO_DEFAULT_PATH)
 
-if(NOT BZIP2_LIBRARY)
+if(NOT BZIP2_LIBRARY OR VENDOR_BZIP2)
+    message(STATUS "bzip2 not found or vendoring requested; configuring vendored bzip2")
+    # Prefer upstream release tarball to avoid large git clones and connectivity issues.
+    set(BZIP2_URL "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz" CACHE STRING "URL to bzip2 tarball")
+    ExternalProject_Add(bzip2_ext
+        URL ${BZIP2_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/bzip2
+        CONFIGURE_COMMAND ""
+        BUILD_IN_SOURCE 1
+        BUILD_COMMAND make -f Makefile-libbz2_so || true && make -j4
+        INSTALL_COMMAND make PREFIX=${EXTERNAL_INSTALL_DIR} install
+    )
+    set(BZIP2_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(BZIP2_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libbz2.a)
+else()
     find_package(BZip2 REQUIRED)
     set(BZIP2_LIBRARY BZip2::BZip2)
 endif()
@@ -100,34 +145,111 @@ endif()
 find_library(LZMA_LIBRARY NAMES lzma PATHS ${LIB_PREFIX} NO_DEFAULT_PATH)
 find_path(LZMA_INCLUDE_DIR NAMES lzma.h PATHS ${INCLUDE_PREFIX} NO_DEFAULT_PATH)
 
-if(NOT LZMA_LIBRARY)
+if(NOT LZMA_LIBRARY OR VENDOR_LZMA)
+    message(STATUS "liblzma (xz) not found or vendoring requested; configuring vendored xz")
+    # Use upstream release tarball for xz (liblzma). For tarballs configure should be present.
+    set(XZ_URL "https://github.com/tukaani-project/xz/releases/download/v5.8.2/xz-5.8.2.tar.gz" CACHE STRING "URL to xz (liblzma) tarball")
+    ExternalProject_Add(xz_ext
+        URL ${XZ_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/xz
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND ./configure --prefix=${EXTERNAL_INSTALL_DIR}
+        BUILD_COMMAND make -j4
+        INSTALL_COMMAND make install
+    )
+    set(LZMA_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(LZMA_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/liblzma.a)
+else()
     find_package(LibLZMA REQUIRED)
     set(LZMA_LIBRARY LibLZMA::LibLZMA)
 endif()
 
+# Find libcurl (optional, but needed if htslib was compiled with curl support)
+find_library(CURL_LIBRARY NAMES curl)
+find_path(CURL_INCLUDE_DIR NAMES curl/curl.h)
+
 # Find libdeflate (optional)
-find_library(DEFLATE_LIBRARY NAMES deflate PATHS ${LIB_PREFIX} NO_DEFAULT_PATH)
-find_path(DEFLATE_INCLUDE_DIR NAMES libdeflate.h PATHS ${INCLUDE_PREFIX} NO_DEFAULT_PATH)
+find_library(DEFLATE_LIBRARY NAMES deflate)
+find_path(DEFLATE_INCLUDE_DIR NAMES libdeflate.h)
 
 if(DEFLATE_LIBRARY)
     message(STATUS "Found libdeflate: ${DEFLATE_LIBRARY}")
+elseif(NOT VENDOR_LIBDEFLATE)
+    message(WARNING "libdeflate not found and vendoring is disabled - build may fail")
 else()
-    find_library(DEFLATE_LIBRARY NAMES deflate)
-    if(DEFLATE_LIBRARY)
-        message(STATUS "Found libdeflate (system): ${DEFLATE_LIBRARY}")
-    else()
-        message(STATUS "libdeflate not found (optional)")
-        set(DEFLATE_LIBRARY "")
+    message(STATUS "libdeflate not found; configuring vendored libdeflate")
+    FetchContent_Declare(
+        libdeflate
+        GIT_REPOSITORY https://github.com/ebiggers/libdeflate.git
+        GIT_TAG v1.15
+    )
+    FetchContent_GetProperties(libdeflate)
+    if(NOT libdeflate_POPULATED)
+        FetchContent_Populate(libdeflate)
     endif()
+    ExternalProject_Add(libdeflate_ext
+        SOURCE_DIR ${libdeflate_SOURCE_DIR}
+        PREFIX ${CMAKE_BINARY_DIR}/external/libdeflate
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_DIR}
+        BUILD_COMMAND ${CMAKE_COMMAND} --build . -- -j4
+        INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install
+    )
+    set(DEFLATE_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(DEFLATE_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libdeflate.a)
+endif()
+
+# Vendored htslib (if requested)
+set(HTSLIB_URL "https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2" CACHE STRING "URL to htslib tarball")
+if(NOT HTSLIB_LIBRARY OR VENDOR_HTSLIB)
+    message(STATUS "Configuring vendored htslib")
+    ExternalProject_Add(htslib_ext
+        URL ${HTSLIB_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/htslib
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND ./configure --prefix=${EXTERNAL_INSTALL_DIR}
+        BUILD_COMMAND make -j4
+        INSTALL_COMMAND make install
+    )
+    set(HTSLIB_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(HTSLIB_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libhts.a)
+endif()
+
+# RapidJSON (header-only)
+if(VENDOR_RAPIDJSON)
+    message(STATUS "Vendoring rapidjson (header-only)")
+    FetchContent_Declare(
+        rapidjson
+        GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+        GIT_TAG v1.1.0
+    )
+    # Disable tests, examples, and documentation for RapidJSON
+    set(RAPIDJSON_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(RAPIDJSON_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(RAPIDJSON_BUILD_DOC OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(rapidjson)
+    set(RAPIDJSON_INCLUDE_DIR ${rapidjson_SOURCE_DIR}/include)
+else()
+    set(RAPIDJSON_INCLUDE_DIR "")
 endif()
 
 # Collect libraries
+if(TARGET ZLIB::ZLIB)
+    set(ZLIB_LINK ZLIB::ZLIB)
+elseif(DEFINED ZLIB_LIBRARY)
+    set(ZLIB_LINK ${ZLIB_LIBRARY})
+elseif(DEFINED ZLIB_LIBRARIES)
+    set(ZLIB_LINK ${ZLIB_LIBRARIES})
+else()
+    set(ZLIB_LINK "")
+endif()
+
 set(PHENIQS_LIBRARIES 
     ${HTSLIB_LIBRARY}
-    ZLIB::ZLIB
+    ${ZLIB_LINK}
     ${BZIP2_LIBRARY}
     ${LZMA_LIBRARY}
     ${DEFLATE_LIBRARY}
+    ${CURL_LIBRARY}
 )
 
 # Handle static linking
@@ -157,6 +279,21 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${INCLUDE_PREFIX})
 include_directories(${HTSLIB_INCLUDE_DIR})
+if(ZLIB_INCLUDE_DIR AND EXISTS "${ZLIB_INCLUDE_DIR}")
+    include_directories(${ZLIB_INCLUDE_DIR})
+endif()
+if(BZIP2_INCLUDE_DIR AND EXISTS "${BZIP2_INCLUDE_DIR}")
+    include_directories(${BZIP2_INCLUDE_DIR})
+endif()
+if(LZMA_INCLUDE_DIR AND EXISTS "${LZMA_INCLUDE_DIR}")
+    include_directories(${LZMA_INCLUDE_DIR})
+endif()
+if(DEFLATE_INCLUDE_DIR AND EXISTS "${DEFLATE_INCLUDE_DIR}")
+    include_directories(${DEFLATE_INCLUDE_DIR})
+endif()
+if(RAPIDJSON_INCLUDE_DIR AND EXISTS "${RAPIDJSON_INCLUDE_DIR}")
+    include_directories(${RAPIDJSON_INCLUDE_DIR})
+endif()
 
 # Pheniqs source files
 set(PHENIQS_SOURCES
@@ -236,6 +373,25 @@ add_executable(pheniqs
     "${VERSION_HEADER}"
     "${CONFIG_HEADER}"
 )
+
+target_link_libraries(pheniqs PRIVATE ${PHENIQS_LIBRARIES} pthread)
+target_include_directories(pheniqs PRIVATE ${HTSLIB_INCLUDE_DIR})
+# Ensure vendored external projects are built before linking
+if(TARGET htslib_ext)
+    add_dependencies(pheniqs htslib_ext)
+endif()
+if(TARGET zlib_ext)
+    add_dependencies(pheniqs zlib_ext)
+endif()
+if(TARGET bzip2_ext)
+    add_dependencies(pheniqs bzip2_ext)
+endif()
+if(TARGET xz_ext)
+    add_dependencies(pheniqs xz_ext)
+endif()
+if(TARGET libdeflate_ext)
+    add_dependencies(pheniqs libdeflate_ext)
+endif()
 
 # Link libraries and set properties
 target_link_libraries(pheniqs PRIVATE ${PHENIQS_LIBRARIES} pthread)
