@@ -36,14 +36,25 @@ cmake --version
 mkdir build
 cd build
 
-# Configure the build
-cmake ..
+# Configure the build (Release build is recommended for production)
+cmake -DCMAKE_BUILD_TYPE=Release ..
 
 # Build the project
 cmake --build . -j4
 ```
 
 The compiled executable will be in `build/pheniqs`.
+
+### Quick Build with Default Settings
+
+If system libraries are available, the simplest command is:
+
+```bash
+mkdir build && cd build
+cmake .. && cmake --build . -j$(nproc)
+```
+
+This will automatically use system-installed libraries for zlib, bzip2, xz, htslib, and libdeflate if available.
 
 ### Installation
 
@@ -57,6 +68,30 @@ Or manually:
 make install
 ```
 
+### Uninstall
+
+An `uninstall` target is provided to remove files that were installed by `cmake --install`.
+
+The build configures a small uninstall script at configure time which removes the files listed in the `install_manifest.txt` produced during install. The uninstaller looks for the manifest in the build directory first, and falls back to `${CMAKE_INSTALL_PREFIX}/install_manifest.txt`.
+
+To run the uninstaller from your build directory:
+
+```bash
+cmake --build . --target uninstall
+```
+
+If you installed to a system prefix (for example `/usr/local`) as root, run the uninstall with `sudo`:
+
+```bash
+sudo cmake --build . --target uninstall
+```
+
+Files added to the source tree to support this:
+
+- `cmake/cmake_uninstall.cmake.in` — uninstall script template configured into the build tree
+- `CMakeLists.txt` — now configures the uninstall script and exposes the `uninstall` custom target
+
+
 ## Configuration Options
 
 You can pass options to cmake during configuration:
@@ -68,11 +103,41 @@ cmake -DCMAKE_INSTALL_PREFIX=/opt/pheniqs ..
 # Build with static libraries
 cmake -DBUILD_STATIC=ON ..
 
+# Release build with optimizations (recommended for production)
+cmake -DCMAKE_BUILD_TYPE=Release ..
+
 # Specify a different compiler
 cmake -DCMAKE_CXX_COMPILER=/usr/bin/g++-11 ..
+```
 
-# Release build with optimizations
-cmake -DCMAKE_BUILD_TYPE=Release ..
+### Vendoring Options
+
+Pheniqs supports optional vendored (locally-built) versions of dependencies. All are disabled by default, so the build will use system-installed libraries when available:
+
+```bash
+# Force building zlib locally
+cmake -DVENDOR_ZLIB=ON ..
+
+# Force building bzip2 locally
+cmake -DVENDOR_BZIP2=ON ..
+
+# Force building xz/liblzma locally
+cmake -DVENDOR_LZMA=ON ..
+
+# Force building htslib locally
+cmake -DVENDOR_HTSLIB=ON ..
+
+# Force building libdeflate locally
+cmake -DVENDOR_LIBDEFLATE=ON ..
+
+# Force building RapidJSON locally (header-only)
+cmake -DVENDOR_RAPIDJSON=ON ..
+```
+
+**Note**: Building vendored dependencies requires `autoconf`, `automake`, and `libtool`:
+```bash
+sudo apt-get install autoconf automake libtool  # Ubuntu/Debian
+brew install autoconf automake libtool          # macOS
 ```
 
 ## Common Tasks
@@ -118,6 +183,53 @@ CMake will automatically:
 5. Generate `configuration.h` from `configuration.json`
 6. Generate zsh completion script `_pheniqs`
 
+### Library Detection Priority
+
+CMake searches for libraries in the following order:
+1. System default paths (`/usr/lib`, `/usr/local/lib`, etc.)
+2. Paths specified by `CMAKE_PREFIX_PATH`
+3. If not found, and vendoring is enabled, build locally
+
+## Build Recommendations
+
+### For Production/Release
+
+```bash
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . -j$(nproc)
+cmake --install . --prefix /usr/local
+```
+
+This uses system libraries when available and applies optimization flags.
+
+### For Development
+
+```bash
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake --build . -j$(nproc)
+```
+
+This includes debugging symbols but may be slower.
+
+### For Distribution/All Features
+
+If you want to include all dependencies in the build:
+
+```bash
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DVENDOR_ZLIB=ON \
+      -DVENDOR_BZIP2=ON \
+      -DVENDOR_LZMA=ON \
+      -DVENDOR_HTSLIB=ON \
+      -DBUILD_STATIC=ON ..
+cmake --build . -j$(nproc)
+```
+
+This produces a self-contained, portable binary.
+
 ## Differences from the Makefile
 
 | Feature | Makefile | CMake |
@@ -138,6 +250,34 @@ sudo apt-get install cmake  # Ubuntu/Debian
 brew install cmake          # macOS
 ```
 
+### Build downloads dependencies despite system libraries being available
+
+This typically means the CMake cache is stale. Clean and reconfigure:
+```bash
+rm -rf build
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . -j4
+```
+
+If libraries are still not found, verify they're installed:
+```bash
+# Check for zlib
+pkg-config --cflags --libs zlib
+# Check for bzip2
+dpkg -l | grep bzip2-dev  # or rpm -qa | grep bzip2-devel
+# Check for xz
+dpkg -l | grep liblzma-dev  # or rpm -qa | grep xz-devel
+```
+
+### Vendored build fails with "configure: not found"
+
+If building vendored dependencies, ensure autotools are installed:
+```bash
+sudo apt-get install autoconf automake libtool  # Ubuntu/Debian
+brew install autoconf automake libtool          # macOS
+```
+
 ### Library not found
 If CMake can't find a required library, specify its location:
 ```bash
@@ -155,6 +295,13 @@ Ensure Python 3 is installed and accessible:
 ```bash
 which python3
 ```
+
+### RapidJSON compilation errors
+
+If you encounter RapidJSON-related compilation errors like `memcpy` warnings or API mismatches:
+- The recommended solution is to use the system or default RapidJSON (header-only)
+- Do not use `-DVENDOR_RAPIDJSON=ON` unless necessary
+- If vendoring is required, ensure compiler warnings are compatible with v1.1.0
 
 ## For Developers
 

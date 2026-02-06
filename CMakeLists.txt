@@ -83,8 +83,8 @@ include(FetchContent)
 set(EXTERNAL_INSTALL_DIR ${CMAKE_BINARY_DIR}/external/install)
 
 # Find htslib (no official CMake config in older versions, so we'll find it manually)
-find_library(HTSLIB_LIBRARY NAMES hts PATHS ${LIB_PREFIX} NO_DEFAULT_PATH)
-find_path(HTSLIB_INCLUDE_DIR NAMES htslib/hts.h PATHS ${INCLUDE_PREFIX} NO_DEFAULT_PATH)
+find_library(HTSLIB_LIBRARY NAMES hts)
+find_path(HTSLIB_INCLUDE_DIR NAMES htslib/hts.h)
 
 # If system htslib is found, report it; otherwise we'll configure a vendored
 # htslib later in the file (so there's a single ExternalProject_Add for it).
@@ -102,6 +102,7 @@ if(NOT ZLIB_FOUND OR VENDOR_ZLIB)
     ExternalProject_Add(zlib_ext
         URL ${ZLIB_URL}
         PREFIX ${CMAKE_BINARY_DIR}/external/zlib
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ./configure --static --prefix=${EXTERNAL_INSTALL_DIR}
         BUILD_COMMAND make -j4
@@ -119,8 +120,8 @@ else()
 endif()
 
 # Find bzip2
-find_library(BZIP2_LIBRARY NAMES bz2 PATHS ${LIB_PREFIX} NO_DEFAULT_PATH)
-find_path(BZIP2_INCLUDE_DIR NAMES bzlib.h PATHS ${INCLUDE_PREFIX} NO_DEFAULT_PATH)
+find_library(BZIP2_LIBRARY NAMES bz2)
+find_path(BZIP2_INCLUDE_DIR NAMES bzlib.h)
 
 if(NOT BZIP2_LIBRARY OR VENDOR_BZIP2)
     message(STATUS "bzip2 not found or vendoring requested; configuring vendored bzip2")
@@ -129,6 +130,7 @@ if(NOT BZIP2_LIBRARY OR VENDOR_BZIP2)
     ExternalProject_Add(bzip2_ext
         URL ${BZIP2_URL}
         PREFIX ${CMAKE_BINARY_DIR}/external/bzip2
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         CONFIGURE_COMMAND ""
         BUILD_IN_SOURCE 1
         BUILD_COMMAND make -f Makefile-libbz2_so || true && make -j4
@@ -142,8 +144,8 @@ else()
 endif()
 
 # Find liblzma
-find_library(LZMA_LIBRARY NAMES lzma PATHS ${LIB_PREFIX} NO_DEFAULT_PATH)
-find_path(LZMA_INCLUDE_DIR NAMES lzma.h PATHS ${INCLUDE_PREFIX} NO_DEFAULT_PATH)
+find_library(LZMA_LIBRARY NAMES lzma)
+find_path(LZMA_INCLUDE_DIR NAMES lzma.h)
 
 if(NOT LZMA_LIBRARY OR VENDOR_LZMA)
     message(STATUS "liblzma (xz) not found or vendoring requested; configuring vendored xz")
@@ -152,6 +154,7 @@ if(NOT LZMA_LIBRARY OR VENDOR_LZMA)
     ExternalProject_Add(xz_ext
         URL ${XZ_URL}
         PREFIX ${CMAKE_BINARY_DIR}/external/xz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ./configure --prefix=${EXTERNAL_INSTALL_DIR}
         BUILD_COMMAND make -j4
@@ -205,6 +208,7 @@ if(NOT HTSLIB_LIBRARY OR VENDOR_HTSLIB)
     ExternalProject_Add(htslib_ext
         URL ${HTSLIB_URL}
         PREFIX ${CMAKE_BINARY_DIR}/external/htslib
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ./configure --prefix=${EXTERNAL_INSTALL_DIR}
         BUILD_COMMAND make -j4
@@ -364,6 +368,9 @@ add_custom_command(
     BYPRODUCTS "${ZSH_COMPLETION}"
 )
 
+# Create a custom target for zsh completion to ensure it's built
+add_custom_target(zsh_completion DEPENDS "${ZSH_COMPLETION}")
+
 # Add binary directory to include path for generated files
 include_directories(${CMAKE_BINARY_DIR})
 
@@ -373,6 +380,9 @@ add_executable(pheniqs
     "${VERSION_HEADER}"
     "${CONFIG_HEADER}"
 )
+
+# Ensure zsh completion is generated before pheniqs is installed
+add_dependencies(pheniqs zsh_completion)
 
 target_link_libraries(pheniqs PRIVATE ${PHENIQS_LIBRARIES} pthread)
 target_include_directories(pheniqs PRIVATE ${HTSLIB_INCLUDE_DIR})
@@ -393,10 +403,6 @@ if(TARGET libdeflate_ext)
     add_dependencies(pheniqs libdeflate_ext)
 endif()
 
-# Link libraries and set properties
-target_link_libraries(pheniqs PRIVATE ${PHENIQS_LIBRARIES} pthread)
-target_include_directories(pheniqs PRIVATE ${HTSLIB_INCLUDE_DIR})
-
 # Installation rules
 install(TARGETS pheniqs DESTINATION ${BIN_PREFIX})
 
@@ -404,6 +410,20 @@ install(TARGETS pheniqs DESTINATION ${BIN_PREFIX})
 install(FILES "${ZSH_COMPLETION}" 
         DESTINATION "${ZSH_PREFIX}/site-functions" 
         PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+
+# Add an uninstall target that removes files listed in install_manifest.txt
+if(NOT TARGET uninstall)
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in
+        ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake
+        @ONLY
+    )
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake
+        COMMENT "Uninstall files from \"${CMAKE_INSTALL_PREFIX}\" using install_manifest.txt"
+    )
+endif()
 
 # Add custom test targets
 add_custom_target(test.api.configuration
