@@ -95,6 +95,8 @@ if(NOT VENDOR_HTSLIB)
     endif()
 else()
     message(STATUS "VENDOR_HTSLIB is ON; will build htslib locally")
+    # Clear HTSLIB_LIBRARY to force vendored build
+    unset(HTSLIB_LIBRARY CACHE)
 endif()
 
 # Find zlib
@@ -123,7 +125,7 @@ else()
 endif()
 
 # Find bzip2
-find_library(BZIP2_LIBRARY NAMES bz2)
+find_library(BZIP2_LIBRARY NAMES bz2 PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 find_path(BZIP2_INCLUDE_DIR NAMES bzlib.h)
 
 if(NOT BZIP2_LIBRARY OR VENDOR_BZIP2)
@@ -147,7 +149,7 @@ else()
 endif()
 
 # Find liblzma
-find_library(LZMA_LIBRARY NAMES lzma)
+find_library(LZMA_LIBRARY NAMES lzma PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 find_path(LZMA_INCLUDE_DIR NAMES lzma.h)
 
 if(NOT LZMA_LIBRARY OR VENDOR_LZMA)
@@ -171,11 +173,11 @@ else()
 endif()
 
 # Find libcurl (optional, but needed if htslib was compiled with curl support)
-find_library(CURL_LIBRARY NAMES curl)
+find_library(CURL_LIBRARY NAMES curl PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 find_path(CURL_INCLUDE_DIR NAMES curl/curl.h)
 
 # Find libhtscodecs (required for static htslib with codec support)
-find_library(HTSCODECS_LIBRARY NAMES htscodecs)
+find_library(HTSCODECS_LIBRARY NAMES htscodecs PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 if(HTSCODECS_LIBRARY)
     message(STATUS "Found libhtscodecs: ${HTSCODECS_LIBRARY}")
 else()
@@ -183,7 +185,7 @@ else()
 endif()
 
 # Find libdeflate (optional)
-find_library(DEFLATE_LIBRARY NAMES deflate)
+find_library(DEFLATE_LIBRARY NAMES deflate PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 find_path(DEFLATE_INCLUDE_DIR NAMES libdeflate.h)
 
 if(DEFLATE_LIBRARY)
@@ -213,7 +215,7 @@ else()
 endif()
 
 # Vendored htslib (if requested)
-set(HTSLIB_URL "https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2" CACHE STRING "URL to htslib tarball")
+set(HTSLIB_URL "https://github.com/samtools/htslib/releases/download/1.23/htslib-1.23.tar.bz2" CACHE STRING "URL to htslib tarball")
 if(NOT HTSLIB_LIBRARY OR VENDOR_HTSLIB)
     message(STATUS "Configuring vendored htslib")
     # When vendoring htslib, point it to our vendored dependencies if they're being built
@@ -287,6 +289,89 @@ else()
     set(ZLIB_LINK "")
 endif()
 
+# Add htscodecs if found (required for htslib with CRAM codec support)
+# htscodecs may only be available as a shared library even if using BUILD_STATIC
+if(HTSCODECS_LIBRARY)
+    set(_HTSCODECS_LIB ${HTSCODECS_LIBRARY})
+else()
+    set(_HTSCODECS_LIB "")
+endif()
+
+# Handle static linking: for each non-vendored library, upgrade to static if BUILD_STATIC is ON
+if(BUILD_STATIC)
+    # For libraries that were NOT vendored, try to find and use their static versions
+    # 1. Try in multilib X86_64 path
+    # 2. Try in standard paths
+    # 3. Try default locations
+    
+    # Upgrade ZLIB to static if not vendored
+    if(NOT VENDOR_ZLIB)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libz.a)
+            set(ZLIB_LINK /usr/lib/x86_64-linux-gnu/libz.a)
+            message(STATUS "Using static ZLIB: ${ZLIB_LINK}")
+        elseif(EXISTS /usr/lib/libz.a)
+            set(ZLIB_LINK /usr/lib/libz.a)
+            message(STATUS "Using static ZLIB: ${ZLIB_LINK}")
+        elseif(EXISTS /lib/libz.a)
+            set(ZLIB_LINK /lib/libz.a)
+            message(STATUS "Using static ZLIB: ${ZLIB_LINK}")
+        endif()
+    endif()
+    
+    # Upgrade BZIP2 to static if not vendored
+    if(NOT VENDOR_BZIP2)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libbz2.a)
+            set(BZIP2_LIBRARY /usr/lib/x86_64-linux-gnu/libbz2.a)
+            message(STATUS "Using static BZIP2: ${BZIP2_LIBRARY}")
+        elseif(EXISTS /usr/lib/libbz2.a)
+            set(BZIP2_LIBRARY /usr/lib/libbz2.a)
+            message(STATUS "Using static BZIP2: ${BZIP2_LIBRARY}")
+        endif()
+    endif()
+    
+    # Upgrade LZMA to static if not vendored
+    if(NOT VENDOR_LZMA)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/liblzma.a)
+            set(LZMA_LIBRARY /usr/lib/x86_64-linux-gnu/liblzma.a)
+            message(STATUS "Using static LZMA: ${LZMA_LIBRARY}")
+        elseif(EXISTS /usr/lib/liblzma.a)
+            set(LZMA_LIBRARY /usr/lib/liblzma.a)
+            message(STATUS "Using static LZMA: ${LZMA_LIBRARY}")
+        endif()
+    endif()
+    
+    # Upgrade HTSLIB to static if not vendored
+    # But only if htscodecs is also available (either static or dynamic)
+    if(NOT VENDOR_HTSLIB)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libhts.a OR EXISTS /usr/lib/libhts.a)
+            # Check if htscodecs is available (required for modern htslib with CRAM codec support)
+            if(HTSCODECS_LIBRARY)
+                if(EXISTS /usr/lib/x86_64-linux-gnu/libhts.a)
+                    set(HTSLIB_LIBRARY /usr/lib/x86_64-linux-gnu/libhts.a)
+                elseif(EXISTS /usr/lib/libhts.a)
+                    set(HTSLIB_LIBRARY /usr/lib/libhts.a)
+                endif()
+                message(STATUS "Using static HTSLIB: ${HTSLIB_LIBRARY} (with dynamic htscodecs)")
+            else()
+                message(STATUS "HTSLIB.a exists but htscodecs is not available; using dynamic htslib.so to avoid linking errors")
+            endif()
+        endif()
+    endif()
+    
+    # Upgrade DEFLATE to static if not vendored
+    if(NOT VENDOR_LIBDEFLATE)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libdeflate.a)
+            set(DEFLATE_LIBRARY /usr/lib/x86_64-linux-gnu/libdeflate.a)
+            message(STATUS "Using static DEFLATE: ${DEFLATE_LIBRARY}")
+        elseif(EXISTS /usr/lib/libdeflate.a)
+            set(DEFLATE_LIBRARY /usr/lib/libdeflate.a)
+            message(STATUS "Using static DEFLATE: ${DEFLATE_LIBRARY}")
+        endif()
+    endif()
+endif()
+
+# Rebuild PHENIQS_LIBRARIES with any upgraded library versions
+# (the ZLIB_LINK, BZIP2_LIBRARY, LZMA_LIBRARY, HTSLIB_LIBRARY, DEFLATE_LIBRARY may have been upgraded to static versions above)
 set(PHENIQS_LIBRARIES 
     ${HTSLIB_LIBRARY}
     ${ZLIB_LINK}
@@ -296,39 +381,21 @@ set(PHENIQS_LIBRARIES
     ${CURL_LIBRARY}
 )
 
-# Add htscodecs if found (required for htslib with CRAM codec support)
-# htscodecs may only be available as a shared library even if using BUILD_STATIC
-if(HTSCODECS_LIBRARY)
-    list(APPEND PHENIQS_LIBRARIES ${HTSCODECS_LIBRARY})
+# Add htscodecs if it was found
+if(_HTSCODECS_LIB)
+    list(APPEND PHENIQS_LIBRARIES ${_HTSCODECS_LIB})
 endif()
 
-# Handle static linking (only for system libraries; vendored builds are already static in EXTERNAL_INSTALL_DIR)
-# Skip this override if any vendoring is enabled, since vendored libs are already in PHENIQS_LIBRARIES
-if(BUILD_STATIC AND NOT VENDOR_ZLIB AND NOT VENDOR_BZIP2 AND NOT VENDOR_LZMA AND NOT VENDOR_HTSLIB AND NOT VENDOR_LIBDEFLATE)
-    # Try to find and use system static libraries
-    find_library(HTSLIB_STATIC NAMES libhts.a PATHS ${LIB_PREFIX})
-    find_library(ZLIB_STATIC NAMES libz.a PATHS ${LIB_PREFIX})
-    find_library(BZIP2_STATIC NAMES libbz2.a PATHS ${LIB_PREFIX})
-    find_library(LZMA_STATIC NAMES liblzma.a PATHS ${LIB_PREFIX})
-    find_library(DEFLATE_STATIC NAMES libdeflate.a PATHS ${LIB_PREFIX})
-    # htscodecs might only have a shared library, so don't require it
-    find_library(HTSCODECS_STATIC NAMES libhtscodecs.a PATHS ${LIB_PREFIX})
-    
-    if(HTSLIB_STATIC AND ZLIB_STATIC AND BZIP2_STATIC AND LZMA_STATIC AND DEFLATE_STATIC)
-        set(PHENIQS_LIBRARIES 
-            ${HTSLIB_STATIC}
-            ${ZLIB_STATIC}
-            ${BZIP2_STATIC}
-            ${LZMA_STATIC}
-            ${DEFLATE_STATIC}
-        )
-        # Add htscodecs static if available
-        if(HTSCODECS_STATIC)
-            list(APPEND PHENIQS_LIBRARIES ${HTSCODECS_STATIC})
-        endif()
-        message(STATUS "Using static system libraries")
-    else()
-        message(WARNING "Not all static system libraries found, falling back to shared system libraries")
+# Enforce that htslib dependencies cannot be vendored without vendoring htslib itself
+# (especially important with BUILD_STATIC, since htslib's runtime dependencies take precedence)
+if(BUILD_STATIC)
+    if((VENDOR_LZMA OR VENDOR_BZIP2 OR VENDOR_ZLIB OR VENDOR_LIBDEFLATE) AND NOT VENDOR_HTSLIB)
+        message(FATAL_ERROR
+            "When using BUILD_STATIC=ON, htslib (VENDOR_HTSLIB) must be vendored if any of its "
+            "dependencies (zlib, bzip2, lzma, libdeflate) are being vendored. Otherwise, the system's "
+            "dynamic htslib.so will have unmet runtime dependencies.\n"
+            "Solution: Add -DVENDOR_HTSLIB=ON to your cmake command.\n"
+            "For example: cmake -DBUILD_STATIC=ON -DVENDOR_LZMA=ON -DVENDOR_HTSLIB=ON ..")
     endif()
 endif()
 

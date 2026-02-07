@@ -230,6 +230,34 @@ cmake --build . -j$(nproc)
 
 This produces a self-contained, portable binary.
 
+### For Partial Vendoring with Static Build
+
+When using `BUILD_STATIC=ON`, **htslib must be vendored if any of its dependencies (zlib, bzip2, lzma, libdeflate) are vendored**. This is because most of these libraries are dependencies of htslib, not direct dependencies of pheniqs. If you vendor a dependency but not htslib itself, the system's dynamic htslib.so will still have unmet runtime dependencies on the system's dynamic versions of those libraries, defeating the purpose of static building.
+
+The build will prevent incompatible configurations:
+
+```bash
+# This will ERROR because LZMA is vendored but HTSLIB is not:
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DVENDOR_LZMA=ON \
+      -DBUILD_STATIC=ON ..
+# CMake Error: When using BUILD_STATIC=ON, htslib must be vendored...
+```
+
+**Correct approach**: Vendor htslib along with its dependencies:
+
+```bash
+# Vendor LZMA with HTSLIB, both go static
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DVENDOR_LZMA=ON \
+      -DVENDOR_HTSLIB=ON \
+      -DBUILD_STATIC=ON ..
+cmake --build . -j$(nproc)
+```
+
+This ensures all dependencies are statically linked and bundled into the binary.
+
 ## Differences from the Makefile
 
 | Feature | Makefile | CMake |
