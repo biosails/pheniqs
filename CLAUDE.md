@@ -60,7 +60,6 @@ Test files:
 - `test_sequence.cpp` — `Sequence`, `ObservedSequence`, `Observation`
 - `test_demux.cpp` — full demultiplexing pipeline (calls `Pipeline` in-process with BDGGG test data, checks SAM output at `test/BDGGG/result/demux_test_output.sam`)
 
-**Known failing test:** `test_append_corrected_nonempty_dest` exposes a bug in `ObservedSequence::append_corrected` (`sequence.h:389`): when the destination already has content (`length > 0`), quality assignment uses `original.code[dest_length + i]` instead of `original.code[start + i]`, corrupting quality scores for uncorrected bases.
 
 ## Architecture
 

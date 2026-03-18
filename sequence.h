@@ -386,7 +386,7 @@ class ObservedSequence : public Sequence {
 
                 /* for corrected bases change the quality to corrected_quality. Others remain unchanged. */
                 for(int32_t i(0); i < size; ++i) {
-                    if((original.code[length + i] == corrected.code[start + i]) || (corrected.code[start + i] == 0)) {
+                    if((original.code[start + i] == corrected.code[start + i]) || (corrected.code[start + i] == 0)) {
                         quality[length + i] = original.quality[start + i];
                     } else {
                         quality[length + i] = corrected_quality;
