@@ -134,7 +134,7 @@ cmake -DVENDOR_LIBDEFLATE=ON ..
 cmake -DVENDOR_RAPIDJSON=ON ..
 ```
 
-**Note**: Building vendored dependencies requires `autoconf`, `automake`, and `libtool`:
+**Note**: Vendoring htslib, zlib, bzip2, or xz requires `autoconf`, `automake`, and `libtool` (they use autoconf-based builds). Vendoring libdeflate and RapidJSON requires only CMake (no autotools needed).
 ```bash
 sudo apt-get install autoconf automake libtool  # Ubuntu/Debian
 brew install autoconf automake libtool          # macOS
@@ -164,7 +164,7 @@ rm -rf build
 
 Or to clean specific test results:
 ```bash
-cmake --build . --target clean.test.pheniqs.BDGGG
+cmake --build . --target clean.test.demux
 ```
 
 ### Install without using user directories
@@ -220,15 +220,17 @@ If you want to include all dependencies in the build:
 ```bash
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_STATIC=ON \
       -DVENDOR_ZLIB=ON \
       -DVENDOR_BZIP2=ON \
       -DVENDOR_LZMA=ON \
+      -DVENDOR_LIBDEFLATE=ON \
       -DVENDOR_HTSLIB=ON \
-      -DBUILD_STATIC=ON ..
+      -DVENDOR_RAPIDJSON=ON ..
 cmake --build . -j$(nproc)
 ```
 
-This produces a self-contained, portable binary.
+This produces a self-contained, portable binary. All dependencies are downloaded and built from source at build time.
 
 ### For Partial Vendoring with Static Build
 
@@ -337,11 +339,11 @@ If you encounter RapidJSON-related compilation errors like `memcpy` warnings or 
 
 The main CMake configuration is in `CMakeLists.txt`. Key sections:
 
-- **Project setup**: Lines 1-70 (versions, compiler setup)
-- **Dependencies**: Lines 72-140 (finding libraries)
-- **Source files**: Lines 165-195 (list of sources)
-- **Custom generation**: Lines 197-255 (version.h, configuration.h, _pheniqs)
-- **Install rules**: Lines 285-290
+- **Project setup**: versions, compiler flags, install prefix options
+- **Vendored dependencies**: `VENDOR_*` options; each uses `ExternalProject_Add` with a tarball URL
+- **Source files**: `PHENIQS_CORE_SOURCES` and `PHENIQS_SOURCES` lists
+- **Generated files**: `version.h`, `configuration.h`, `_pheniqs` via `add_custom_command`
+- **Targets**: `pheniqs`, `pheniqs_unit_tests`, `test`, `test.unit`, `uninstall`
 
 To add new source files, simply add them to the `PHENIQS_SOURCES` list in CMakeLists.txt.
 

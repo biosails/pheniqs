@@ -29,9 +29,9 @@ You might also want to check the [intro talk given by Lior Galanti on April 29, 
 
 ### Easy to install or build
 - Stable releases available from Bioconda
-- [Custom package manager](https://github.com/biosails/pheniqs-build-api) can build dependencies and binaries from scratch
+- CMake build system with optional vendored dependencies — no system libraries required
+- Portable, statically linked binaries buildable from source with a single command
 - Easily installed on clusters or cloud without elevated permissions
-- Portable compiled binaries available
 - Available in a Docker container
 
 ### Easy to use
@@ -45,8 +45,7 @@ You might also want to check the [intro talk given by Lior Galanti on April 29, 
 
 Pheniqs runs on all modern POSIX systems and provides an easy to learn command line interface with autocomplete and an extensible reusable configuration syntax. Pheniqs is an ideal utility to pre- and post-process sequence reads for other bioinformatics tools, and it may also be used simply to rapidly and efficiently interconvert a variety of standard sequence file formats without invoking any of its barcode processing features.
 
-For more advanced users and sequencing core managers, we provide detailed [build instructions](https://biosails.github.io/pheniqs/install) and a [custom package manager](https://github.com/biosails/pheniqs-build-api) to easily build portable, statically linked, Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documention that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
+For more advanced users and sequencing core managers, we provide detailed [build instructions](https://biosails.github.io/pheniqs/install) to easily build portable, statically linked, Pheniqs binaries for deployment on computing clusters. Developers can find code examples and API documentation that enable them to expand Pheniqs with new classification algorithms and take advantage of the optimized multithreaded pipeline.
 
 Pheniqs is open sourced and free for academic use under the terms of the [NYU license agreement](https://github.com/biosails/pheniqs/blob/master/LICENSE).
 
-[![Build Status](https://travis-ci.org/biosails/pheniqs.svg?branch=master)](https://travis-ci.org/biosails/pheniqs)

@@ -1,0 +1,6 @@
+{
+    "import": ["BDGGG_annotated.json"],
+    "base output url": ".",
+    "output": ["test/BDGGG/result/demux_test_output.sam?format=sam&compression=none"],
+    "report url": "/dev/null"
+}

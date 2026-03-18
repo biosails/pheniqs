@@ -101,7 +101,7 @@ endif()
 
 # Find zlib
 find_package(ZLIB)
-set(ZLIB_URL "https://github.com/madler/zlib/releases/download/v1.2.13/zlib-1.2.13.tar.gz" CACHE STRING "URL to zlib tarball")
+set(ZLIB_URL "https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz" CACHE STRING "URL to zlib tarball")
 if(NOT ZLIB_FOUND OR VENDOR_ZLIB)
     message(STATUS "Zlib not found or vendoring requested; configuring vendored zlib")
     ExternalProject_Add(zlib_ext
@@ -188,57 +188,65 @@ endif()
 find_library(DEFLATE_LIBRARY NAMES deflate PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 find_path(DEFLATE_INCLUDE_DIR NAMES libdeflate.h)
 
-if(DEFLATE_LIBRARY)
+if(DEFLATE_LIBRARY AND NOT VENDOR_LIBDEFLATE)
     message(STATUS "Found libdeflate: ${DEFLATE_LIBRARY}")
-elseif(NOT VENDOR_LIBDEFLATE)
-    message(WARNING "libdeflate not found and vendoring is disabled - build may fail")
-else()
-    message(STATUS "libdeflate not found; configuring vendored libdeflate")
-    FetchContent_Declare(
-        libdeflate
-        GIT_REPOSITORY https://github.com/ebiggers/libdeflate.git
-        GIT_TAG v1.15
-    )
-    FetchContent_GetProperties(libdeflate)
-    if(NOT libdeflate_POPULATED)
-        FetchContent_Populate(libdeflate)
-    endif()
+elseif(VENDOR_LIBDEFLATE)
+    message(STATUS "VENDOR_LIBDEFLATE is ON; configuring vendored libdeflate")
+    unset(DEFLATE_LIBRARY CACHE)
+    set(LIBDEFLATE_URL "https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.15.tar.gz" CACHE STRING "URL to libdeflate tarball")
     ExternalProject_Add(libdeflate_ext
-        SOURCE_DIR ${libdeflate_SOURCE_DIR}
+        URL ${LIBDEFLATE_URL}
         PREFIX ${CMAKE_BINARY_DIR}/external/libdeflate
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_DIR}
-        BUILD_COMMAND ${CMAKE_COMMAND} --build . -- -j4
-        INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        CMAKE_ARGS
+            -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_DIR}
+            -DLIBDEFLATE_BUILD_SHARED_LIB=OFF
     )
     set(DEFLATE_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
     set(DEFLATE_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libdeflate.a)
+else()
+    message(WARNING "libdeflate not found and vendoring is disabled - build may fail")
 endif()
 
 # Vendored htslib (if requested)
 set(HTSLIB_URL "https://github.com/samtools/htslib/releases/download/1.23/htslib-1.23.tar.bz2" CACHE STRING "URL to htslib tarball")
 if(NOT HTSLIB_LIBRARY OR VENDOR_HTSLIB)
     message(STATUS "Configuring vendored htslib")
-    # When vendoring htslib, point it to our vendored dependencies if they're being built
+    # When vendoring htslib, point it to our vendored dependencies if they're being built.
+    # htslib's autoconf configure uses CPPFLAGS/LDFLAGS to locate library headers and archives.
+    # The --with-X options are boolean flags that enable a feature; the paths come from env vars.
     set(_HTSLIB_CONFIGURE_OPTIONS --prefix=${EXTERNAL_INSTALL_DIR})
+    set(_HTSLIB_EXTRA_CPPFLAGS "")
+    set(_HTSLIB_EXTRA_LDFLAGS "")
     if(VENDOR_ZLIB)
-        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-zlib=${EXTERNAL_INSTALL_DIR})
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
     endif()
     if(VENDOR_BZIP2)
-        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-bz2=${EXTERNAL_INSTALL_DIR})
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
     endif()
     if(VENDOR_LZMA)
-        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-lzma=${EXTERNAL_INSTALL_DIR})
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
     endif()
     if(VENDOR_LIBDEFLATE)
-        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-libdeflate=${EXTERNAL_INSTALL_DIR})
+        # --with-libdeflate is a boolean flag in htslib 1.x configure; paths go via CPPFLAGS/LDFLAGS
+        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-libdeflate)
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
     endif()
-    
+
     ExternalProject_Add(htslib_ext
         URL ${HTSLIB_URL}
         PREFIX ${CMAKE_BINARY_DIR}/external/htslib
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./configure ${_HTSLIB_CONFIGURE_OPTIONS}
+        CONFIGURE_COMMAND
+            ${CMAKE_COMMAND} -E env
+                "CPPFLAGS=${_HTSLIB_EXTRA_CPPFLAGS}"
+                "LDFLAGS=${_HTSLIB_EXTRA_LDFLAGS}"
+            ./configure ${_HTSLIB_CONFIGURE_OPTIONS}
         BUILD_COMMAND make -j4
         INSTALL_COMMAND make install
     )
@@ -268,11 +276,13 @@ if(VENDOR_RAPIDJSON)
         GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
         GIT_TAG v1.1.0
     )
-    # Disable tests, examples, and documentation for RapidJSON
-    set(RAPIDJSON_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(RAPIDJSON_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(RAPIDJSON_BUILD_DOC OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(rapidjson)
+    # RapidJSON is header-only; we only need the sources, not its CMakeLists.txt.
+    # FetchContent_MakeAvailable would fail on CMake 3.28+ because RapidJSON v1.1.0
+    # declares cmake_minimum_required(VERSION 2.8) which is no longer accepted.
+    FetchContent_GetProperties(rapidjson)
+    if(NOT rapidjson_POPULATED)
+        FetchContent_Populate(rapidjson)
+    endif()
     set(RAPIDJSON_INCLUDE_DIR ${rapidjson_SOURCE_DIR}/include)
 else()
     set(RAPIDJSON_INCLUDE_DIR "")
@@ -419,8 +429,8 @@ if(RAPIDJSON_INCLUDE_DIR AND EXISTS "${RAPIDJSON_INCLUDE_DIR}")
     include_directories(${RAPIDJSON_INCLUDE_DIR})
 endif()
 
-# Pheniqs source files
-set(PHENIQS_SOURCES
+# Pheniqs source files (excluding the main entry point)
+set(PHENIQS_CORE_SOURCES
     selector.cpp
     atom.cpp
     auxiliary.cpp
@@ -437,7 +447,6 @@ set(PHENIQS_SOURCES
     hts.cpp
     interface.cpp
     json.cpp
-    pheniqs.cpp
     job.cpp
     transcode.cpp
     phred.cpp
@@ -446,6 +455,11 @@ set(PHENIQS_SOURCES
     sequence.cpp
     transform.cpp
     url.cpp
+)
+
+set(PHENIQS_SOURCES
+    ${PHENIQS_CORE_SOURCES}
+    pheniqs.cpp
 )
 
 # Generate version.h
@@ -546,57 +560,55 @@ if(NOT TARGET uninstall)
 endif()
 
 # Add custom test targets
-add_custom_target(test.api.configuration
-    COMMAND ./test/api/configuration/run.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    DEPENDS pheniqs
-)
 
-add_custom_target(test.api.illumina
-    COMMAND ./test/api/illumina/run.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    DEPENDS pheniqs
-)
-
-add_custom_target(test.api.io
-    COMMAND ./test/api/io/run.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    DEPENDS pheniqs
-)
-
-add_custom_target(test.api.prior
-    COMMAND ./test/api/prior/run.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    DEPENDS pheniqs
-)
-
-add_custom_target(test.pheniqs.BDGGG
-    COMMAND ./test/BDGGG/run.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    DEPENDS pheniqs
-)
-
-add_custom_target(test DEPENDS test.pheniqs.BDGGG)
-
-# Clean targets for test results
-add_custom_target(clean.test.api.configuration
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/test/api/configuration/result
-)
-
-add_custom_target(clean.test.api.illumina
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/test/api/illumina/result
-)
-
-add_custom_target(clean.test.api.io
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/test/api/io/result
-)
-
-add_custom_target(clean.test.api.prior
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/test/api/prior/result
-)
-
-add_custom_target(clean.test.pheniqs.BDGGG
+add_custom_target(clean.test.demux
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/test/BDGGG/result
+)
+
+# Unit test executable
+add_executable(pheniqs_unit_tests
+    ${PHENIQS_CORE_SOURCES}
+    "${VERSION_HEADER}"
+    "${CONFIG_HEADER}"
+    test/unit/test_main.cpp
+    test/unit/test_phred.cpp
+    test/unit/test_sequence.cpp
+    test/unit/test_demux.cpp
+)
+target_link_libraries(pheniqs_unit_tests PRIVATE ${PHENIQS_LIBRARIES} pthread)
+target_include_directories(pheniqs_unit_tests PRIVATE
+    ${HTSLIB_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/test/unit
+)
+if(TARGET htslib_ext)
+    add_dependencies(pheniqs_unit_tests htslib_ext)
+endif()
+if(TARGET zlib_ext)
+    add_dependencies(pheniqs_unit_tests zlib_ext)
+endif()
+if(TARGET bzip2_ext)
+    add_dependencies(pheniqs_unit_tests bzip2_ext)
+endif()
+if(TARGET xz_ext)
+    add_dependencies(pheniqs_unit_tests xz_ext)
+endif()
+if(TARGET libdeflate_ext)
+    add_dependencies(pheniqs_unit_tests libdeflate_ext)
+endif()
+
+add_custom_target(test
+    COMMAND ${CMAKE_BINARY_DIR}/pheniqs_unit_tests
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS pheniqs_unit_tests pheniqs
+    COMMENT "Running all tests"
+)
+
+add_custom_target(test.unit
+    COMMAND ${CMAKE_BINARY_DIR}/pheniqs_unit_tests
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS pheniqs_unit_tests pheniqs
+    COMMENT "Running unit tests"
 )
 
 # Help target
