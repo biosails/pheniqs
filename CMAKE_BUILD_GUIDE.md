@@ -13,16 +13,18 @@ Before building Pheniqs, ensure you have the following libraries installed:
 - **xz/lzma**: https://tukaani.org/xz
 - **htslib**: http://www.htslib.org
 - **libdeflate** (optional): https://github.com/ebiggers/libdeflate
+- **libcrypto** (OpenSSL): required on Linux because htslib's S3/HTTPS signing code links against it; provided automatically by the system on macOS via CommonCrypto
 
 On Ubuntu/Debian:
 ```bash
-sudo apt-get install zlib1g-dev libbz2-dev liblzma-dev libhts-dev libdeflate-dev
+sudo apt-get install zlib1g-dev libbz2-dev liblzma-dev libhts-dev libdeflate-dev libssl-dev
 ```
 
 On macOS with Homebrew:
 ```bash
 brew install zlib bzip2 xz htslib libdeflate
 ```
+(libcrypto is not needed on macOS — CommonCrypto is part of the system.)
 
 Also ensure you have CMake 3.10+ installed:
 ```bash

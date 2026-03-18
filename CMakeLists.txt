@@ -109,7 +109,7 @@ if(NOT ZLIB_FOUND OR VENDOR_ZLIB)
         PREFIX ${CMAKE_BINARY_DIR}/external/zlib
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./configure --static --prefix=${EXTERNAL_INSTALL_DIR}
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-fPIC" ./configure --static --prefix=${EXTERNAL_INSTALL_DIR}
         BUILD_COMMAND make -j4
         INSTALL_COMMAND make install
     )
@@ -138,7 +138,7 @@ if(NOT BZIP2_LIBRARY OR VENDOR_BZIP2)
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         CONFIGURE_COMMAND ""
         BUILD_IN_SOURCE 1
-        BUILD_COMMAND make -f Makefile-libbz2_so || true && make -j4
+        BUILD_COMMAND make -j4 "CFLAGS=-O2 -fPIC -D_FILE_OFFSET_BITS=64"
         INSTALL_COMMAND make PREFIX=${EXTERNAL_INSTALL_DIR} install
     )
     set(BZIP2_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
@@ -161,7 +161,7 @@ if(NOT LZMA_LIBRARY OR VENDOR_LZMA)
         PREFIX ${CMAKE_BINARY_DIR}/external/xz
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./configure --prefix=${EXTERNAL_INSTALL_DIR}
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-fPIC" ./configure --prefix=${EXTERNAL_INSTALL_DIR}
         BUILD_COMMAND make -j4
         INSTALL_COMMAND make install
     )
@@ -175,6 +175,14 @@ endif()
 # Find libcurl (optional, but needed if htslib was compiled with curl support)
 find_library(CURL_LIBRARY NAMES curl PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 find_path(CURL_INCLUDE_DIR NAMES curl/curl.h)
+
+# Find libcrypto (OpenSSL): htslib's S3/HTTPS support uses HMAC signing via
+# EVP_sha256 on Linux. On macOS this is provided by CommonCrypto (CCHmac) in
+# the system libraries and does not need explicit linking.
+find_library(CRYPTO_LIBRARY NAMES crypto PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+if(CRYPTO_LIBRARY)
+    message(STATUS "Found libcrypto: ${CRYPTO_LIBRARY}")
+endif()
 
 # Find libhtscodecs (required for static htslib with codec support)
 find_library(HTSCODECS_LIBRARY NAMES htscodecs PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
@@ -201,6 +209,7 @@ elseif(VENDOR_LIBDEFLATE)
         CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_DIR}
             -DLIBDEFLATE_BUILD_SHARED_LIB=OFF
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
     )
     set(DEFLATE_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
     set(DEFLATE_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libdeflate.a)
@@ -396,6 +405,12 @@ if(_HTSCODECS_LIB)
     list(APPEND PHENIQS_LIBRARIES ${_HTSCODECS_LIB})
 endif()
 
+# Add libcrypto if found: needed on Linux when htslib is vendored because its
+# built-in S3 signing code references EVP_sha256 from OpenSSL.
+if(CRYPTO_LIBRARY)
+    list(APPEND PHENIQS_LIBRARIES ${CRYPTO_LIBRARY})
+endif()
+
 # Enforce that htslib dependencies cannot be vendored without vendoring htslib itself
 # (especially important with BUILD_STATIC, since htslib's runtime dependencies take precedence)
 if(BUILD_STATIC)
@@ -477,7 +492,6 @@ add_custom_command(
         -DPHENIQS_HTSLIB_VERSION="${PHENIQS_HTSLIB_VERSION}"
         -P "${CMAKE_SOURCE_DIR}/cmake/GenerateVersionHeader.cmake"
     COMMENT "Generating version.h with version ${PHENIQS_VERSION}"
-    BYPRODUCTS "${VERSION_HEADER}"
 )
 
 # Generate configuration.h from configuration.json
@@ -488,7 +502,6 @@ add_custom_command(
             ${CMAKE_SOURCE_DIR}/configuration.json > "${CONFIG_HEADER}"
     DEPENDS ${CMAKE_SOURCE_DIR}/configuration.json
     COMMENT "Generating configuration.h from configuration.json"
-    BYPRODUCTS "${CONFIG_HEADER}"
 )
 
 # Generate zsh completion
@@ -499,24 +512,24 @@ add_custom_command(
             ${CMAKE_SOURCE_DIR}/configuration.json > "${ZSH_COMPLETION}"
     DEPENDS ${CMAKE_SOURCE_DIR}/configuration.json
     COMMENT "Generating zsh completion _pheniqs"
-    BYPRODUCTS "${ZSH_COMPLETION}"
 )
 
-# Create a custom target for zsh completion to ensure it's built
-add_custom_target(zsh_completion DEPENDS "${ZSH_COMPLETION}")
+# Wrap each generated header in its own custom target so there is a single
+# serialization point regardless of how many targets need the file. Listing
+# the generated file directly in multiple add_executable() calls causes CMake
+# to run the generation command independently for each target in a parallel
+# build, producing a corrupted file.
+add_custom_target(pheniqs_version_h  DEPENDS "${VERSION_HEADER}")
+add_custom_target(pheniqs_config_h   DEPENDS "${CONFIG_HEADER}")
+add_custom_target(zsh_completion     DEPENDS "${ZSH_COMPLETION}")
 
 # Add binary directory to include path for generated files
 include_directories(${CMAKE_BINARY_DIR})
 
 # Create the executable
-add_executable(pheniqs 
-    ${PHENIQS_SOURCES}
-    "${VERSION_HEADER}"
-    "${CONFIG_HEADER}"
-)
+add_executable(pheniqs ${PHENIQS_SOURCES})
 
-# Ensure zsh completion is generated before pheniqs is installed
-add_dependencies(pheniqs zsh_completion)
+add_dependencies(pheniqs pheniqs_version_h pheniqs_config_h zsh_completion)
 
 target_link_libraries(pheniqs PRIVATE ${PHENIQS_LIBRARIES} pthread)
 target_include_directories(pheniqs PRIVATE ${HTSLIB_INCLUDE_DIR})
@@ -568,8 +581,6 @@ add_custom_target(clean.test.demux
 # Unit test executable
 add_executable(pheniqs_unit_tests
     ${PHENIQS_CORE_SOURCES}
-    "${VERSION_HEADER}"
-    "${CONFIG_HEADER}"
     test/unit/test_main.cpp
     test/unit/test_phred.cpp
     test/unit/test_sequence.cpp
@@ -581,6 +592,7 @@ target_include_directories(pheniqs_unit_tests PRIVATE
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/test/unit
 )
+add_dependencies(pheniqs_unit_tests pheniqs_version_h pheniqs_config_h)
 if(TARGET htslib_ext)
     add_dependencies(pheniqs_unit_tests htslib_ext)
 endif()

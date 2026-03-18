@@ -74,7 +74,8 @@ rapidjson-dev \
 libhts-dev \
 liblzma-dev \
 libdeflate-dev \
-libbz2-dev
+libbz2-dev \
+libssl-dev
 ```
 
 On macOS with Homebrew:
@@ -82,6 +83,7 @@ On macOS with Homebrew:
 >```shell
 brew install cmake zlib bzip2 rapidjson xz htslib libdeflate
 ```
+(libcrypto is not needed on macOS — CommonCrypto is part of the system.)
 
 Then build:
 
@@ -126,7 +128,8 @@ rapidjson-dev \
 libhts-dev \
 liblzma-dev \
 libdeflate-dev \
-libbz2-dev
+libbz2-dev \
+libssl-dev
 ```
 
 ### *Dependencies on MacOS*
