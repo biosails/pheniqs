@@ -1,0 +1,37 @@
+# Generate version.h header file
+# This script is called by CMake during the build process
+
+file(WRITE "${OUTPUT_FILE}" "#ifndef PHENIQS_VERSION_H\n")
+file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_VERSION_H\n\n")
+
+if(PHENIQS_VERSION)
+    file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_VERSION \"${PHENIQS_VERSION}\"\n")
+endif()
+
+if(PHENIQS_ZLIB_VERSION)
+    file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_ZLIB_VERSION \"${PHENIQS_ZLIB_VERSION}\"\n")
+endif()
+
+if(PHENIQS_BZIP2_VERSION)
+    file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_BZIP2_VERSION \"${PHENIQS_BZIP2_VERSION}\"\n")
+endif()
+
+if(PHENIQS_XZ_VERSION)
+    file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_XZ_VERSION \"${PHENIQS_XZ_VERSION}\"\n")
+endif()
+
+if(PHENIQS_LIBDEFLATE_VERSION)
+    file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_LIBDEFLATE_VERSION \"${PHENIQS_LIBDEFLATE_VERSION}\"\n")
+endif()
+
+if(PHENIQS_RAPIDJSON_VERSION)
+    file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_RAPIDJSON_VERSION \"${PHENIQS_RAPIDJSON_VERSION}\"\n")
+endif()
+
+if(PHENIQS_HTSLIB_VERSION)
+    file(APPEND "${OUTPUT_FILE}" "#define PHENIQS_HTSLIB_VERSION \"${PHENIQS_HTSLIB_VERSION}\"\n")
+endif()
+
+file(APPEND "${OUTPUT_FILE}" "\n#endif /* PHENIQS_VERSION_H */\n")
+
+message(STATUS "Generated ${OUTPUT_FILE} with PHENIQS_VERSION ${PHENIQS_VERSION}")

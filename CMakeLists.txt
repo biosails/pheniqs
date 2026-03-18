@@ -1,0 +1,659 @@
+# Pheniqs : PHilology ENcoder wIth Quality Statistics
+# Copyright (C) 2018  Lior Galanti
+# NYU Center for Genetics and System Biology
+#
+# Author: Lior Galanti <lior.galanti@nyu.edu>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+cmake_minimum_required(VERSION 3.10)
+
+# Project configuration
+set(PHENIQS_MAJOR_REVISION 2)
+set(PHENIQS_MINOR_REVISION 1.0)
+set(PHENIQS_VERSION "${PHENIQS_MAJOR_REVISION}.${PHENIQS_MINOR_REVISION}")
+
+project(pheniqs VERSION ${PHENIQS_VERSION} LANGUAGES CXX)
+
+# Try to get version from git if available
+find_package(Git QUIET)
+if(Git_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --abbrev=40 --tags
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE PHENIQS_GIT_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if(PHENIQS_GIT_VERSION)
+        set(PHENIQS_VERSION ${PHENIQS_GIT_VERSION})
+    endif()
+endif()
+
+# Installation directories
+set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix")
+set(BIN_PREFIX "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Binary installation directory")
+set(INCLUDE_PREFIX "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Include installation directory")
+set(LIB_PREFIX "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Library installation directory")
+set(ZSH_PREFIX "${CMAKE_INSTALL_PREFIX}/share/zsh" CACHE PATH "Zsh completion installation directory")
+
+# Compiler settings
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wsign-compare -Wdeprecated -O3")
+
+# Use clang if available (matching Makefile default)
+if(NOT CMAKE_CXX_COMPILER)
+    find_program(CLANGXX_COMPILER clang++)
+    if(CLANGXX_COMPILER)
+        set(CMAKE_CXX_COMPILER ${CLANGXX_COMPILER})
+    endif()
+endif()
+
+# Static build option
+option(BUILD_STATIC "Build with static libraries" OFF)
+
+# Find required packages
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+# Options to allow building vendored (local) copies of dependencies when system
+# copies are not available. Set these to ON to force building locally.
+option(VENDOR_ZLIB "Build and use a vendored zlib" OFF)
+option(VENDOR_BZIP2 "Build and use a vendored bzip2" OFF)
+option(VENDOR_LZMA "Build and use a vendored xz/liblzma" OFF)
+option(VENDOR_LIBDEFLATE "Build and use a vendored libdeflate" OFF)
+option(VENDOR_HTSLIB "Build and use a vendored htslib" OFF)
+option(VENDOR_RAPIDJSON "Build and use a vendored rapidjson (header-only)" OFF)
+
+include(ExternalProject)
+include(FetchContent)
+
+# Directory where external projects will be installed when vendored builds are used
+set(EXTERNAL_INSTALL_DIR ${CMAKE_BINARY_DIR}/external/install)
+
+# Find htslib (no official CMake config in older versions, so we'll find it manually)
+# Only search for system htslib if we're not vendoring it
+if(NOT VENDOR_HTSLIB)
+    find_library(HTSLIB_LIBRARY NAMES hts)
+    find_path(HTSLIB_INCLUDE_DIR NAMES htslib/hts.h)
+    
+    if(HTSLIB_LIBRARY)
+        message(STATUS "Found htslib: ${HTSLIB_LIBRARY}")
+    else()
+        message(STATUS "htslib not found; vendored build will be configured if requested")
+    endif()
+else()
+    message(STATUS "VENDOR_HTSLIB is ON; will build htslib locally")
+    # Clear HTSLIB_LIBRARY to force vendored build
+    unset(HTSLIB_LIBRARY CACHE)
+endif()
+
+# Find zlib
+find_package(ZLIB)
+set(ZLIB_URL "https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz" CACHE STRING "URL to zlib tarball")
+if(NOT ZLIB_FOUND OR VENDOR_ZLIB)
+    message(STATUS "Zlib not found or vendoring requested; configuring vendored zlib")
+    ExternalProject_Add(zlib_ext
+        URL ${ZLIB_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/zlib
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-fPIC" ./configure --static --prefix=${EXTERNAL_INSTALL_DIR}
+        BUILD_COMMAND make -j4
+        INSTALL_COMMAND make install
+    )
+    set(ZLIB_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    find_library(ZLIB_LIBRARY NAMES z PATHS ${EXTERNAL_INSTALL_DIR}/lib)
+else()
+    message(STATUS "Found ZLIB: ${ZLIB_LIBRARIES}")
+    if(TARGET ZLIB::ZLIB)
+        # CMake target exists
+    else()
+        set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
+    endif()
+endif()
+
+# Find bzip2
+find_library(BZIP2_LIBRARY NAMES bz2 PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+find_path(BZIP2_INCLUDE_DIR NAMES bzlib.h)
+
+if(NOT BZIP2_LIBRARY OR VENDOR_BZIP2)
+    message(STATUS "bzip2 not found or vendoring requested; configuring vendored bzip2")
+    # Prefer upstream release tarball to avoid large git clones and connectivity issues.
+    set(BZIP2_URL "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz" CACHE STRING "URL to bzip2 tarball")
+    ExternalProject_Add(bzip2_ext
+        URL ${BZIP2_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/bzip2
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        CONFIGURE_COMMAND ""
+        BUILD_IN_SOURCE 1
+        BUILD_COMMAND make -j4 "CFLAGS=-O2 -fPIC -D_FILE_OFFSET_BITS=64"
+        INSTALL_COMMAND make PREFIX=${EXTERNAL_INSTALL_DIR} install
+    )
+    set(BZIP2_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(BZIP2_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libbz2.a)
+else()
+    find_package(BZip2 REQUIRED)
+    set(BZIP2_LIBRARY BZip2::BZip2)
+endif()
+
+# Find liblzma
+find_library(LZMA_LIBRARY NAMES lzma PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+find_path(LZMA_INCLUDE_DIR NAMES lzma.h)
+
+if(NOT LZMA_LIBRARY OR VENDOR_LZMA)
+    message(STATUS "liblzma (xz) not found or vendoring requested; configuring vendored xz")
+    # Use upstream release tarball for xz (liblzma). For tarballs configure should be present.
+    set(XZ_URL "https://github.com/tukaani-project/xz/releases/download/v5.8.2/xz-5.8.2.tar.gz" CACHE STRING "URL to xz (liblzma) tarball")
+    ExternalProject_Add(xz_ext
+        URL ${XZ_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/xz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-fPIC" ./configure --prefix=${EXTERNAL_INSTALL_DIR}
+        BUILD_COMMAND make -j4
+        INSTALL_COMMAND make install
+    )
+    set(LZMA_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(LZMA_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/liblzma.a)
+else()
+    find_package(LibLZMA REQUIRED)
+    set(LZMA_LIBRARY LibLZMA::LibLZMA)
+endif()
+
+# Find libcurl (optional, but needed if htslib was compiled with curl support)
+find_library(CURL_LIBRARY NAMES curl PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+find_path(CURL_INCLUDE_DIR NAMES curl/curl.h)
+
+# Find libcrypto (OpenSSL): htslib's S3/HTTPS support uses HMAC signing via
+# EVP_sha256 on Linux. On macOS this is provided by CommonCrypto (CCHmac) in
+# the system libraries and does not need explicit linking.
+find_library(CRYPTO_LIBRARY NAMES crypto PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+if(CRYPTO_LIBRARY)
+    message(STATUS "Found libcrypto: ${CRYPTO_LIBRARY}")
+endif()
+
+# Find libhtscodecs (required for static htslib with codec support)
+find_library(HTSCODECS_LIBRARY NAMES htscodecs PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+if(HTSCODECS_LIBRARY)
+    message(STATUS "Found libhtscodecs: ${HTSCODECS_LIBRARY}")
+else()
+    message(STATUS "libhtscodecs not found - static htslib linking may fail")
+endif()
+
+# Find libdeflate (optional)
+find_library(DEFLATE_LIBRARY NAMES deflate PATHS /usr/lib /usr/local/lib /lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+find_path(DEFLATE_INCLUDE_DIR NAMES libdeflate.h)
+
+if(DEFLATE_LIBRARY AND NOT VENDOR_LIBDEFLATE)
+    message(STATUS "Found libdeflate: ${DEFLATE_LIBRARY}")
+elseif(VENDOR_LIBDEFLATE)
+    message(STATUS "VENDOR_LIBDEFLATE is ON; configuring vendored libdeflate")
+    unset(DEFLATE_LIBRARY CACHE)
+    set(LIBDEFLATE_URL "https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.15.tar.gz" CACHE STRING "URL to libdeflate tarball")
+    ExternalProject_Add(libdeflate_ext
+        URL ${LIBDEFLATE_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/libdeflate
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        CMAKE_ARGS
+            -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_DIR}
+            -DLIBDEFLATE_BUILD_SHARED_LIB=OFF
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    )
+    set(DEFLATE_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(DEFLATE_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libdeflate.a)
+else()
+    message(WARNING "libdeflate not found and vendoring is disabled - build may fail")
+endif()
+
+# Vendored htslib (if requested)
+set(HTSLIB_URL "https://github.com/samtools/htslib/releases/download/1.23/htslib-1.23.tar.bz2" CACHE STRING "URL to htslib tarball")
+if(NOT HTSLIB_LIBRARY OR VENDOR_HTSLIB)
+    message(STATUS "Configuring vendored htslib")
+    # When vendoring htslib, point it to our vendored dependencies if they're being built.
+    # htslib's autoconf configure uses CPPFLAGS/LDFLAGS to locate library headers and archives.
+    # The --with-X options are boolean flags that enable a feature; the paths come from env vars.
+    set(_HTSLIB_CONFIGURE_OPTIONS --prefix=${EXTERNAL_INSTALL_DIR})
+    set(_HTSLIB_EXTRA_CPPFLAGS "")
+    set(_HTSLIB_EXTRA_LDFLAGS "")
+    if(VENDOR_ZLIB)
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
+    endif()
+    if(VENDOR_BZIP2)
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
+    endif()
+    if(VENDOR_LZMA)
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
+    endif()
+    if(VENDOR_LIBDEFLATE)
+        # --with-libdeflate is a boolean flag in htslib 1.x configure; paths go via CPPFLAGS/LDFLAGS
+        list(APPEND _HTSLIB_CONFIGURE_OPTIONS --with-libdeflate)
+        set(_HTSLIB_EXTRA_CPPFLAGS "${_HTSLIB_EXTRA_CPPFLAGS} -I${EXTERNAL_INSTALL_DIR}/include")
+        set(_HTSLIB_EXTRA_LDFLAGS  "${_HTSLIB_EXTRA_LDFLAGS}  -L${EXTERNAL_INSTALL_DIR}/lib")
+    endif()
+
+    ExternalProject_Add(htslib_ext
+        URL ${HTSLIB_URL}
+        PREFIX ${CMAKE_BINARY_DIR}/external/htslib
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND
+            ${CMAKE_COMMAND} -E env
+                "CPPFLAGS=${_HTSLIB_EXTRA_CPPFLAGS}"
+                "LDFLAGS=${_HTSLIB_EXTRA_LDFLAGS}"
+            ./configure ${_HTSLIB_CONFIGURE_OPTIONS}
+        BUILD_COMMAND make -j4
+        INSTALL_COMMAND make install
+    )
+    set(HTSLIB_INCLUDE_DIR ${EXTERNAL_INSTALL_DIR}/include)
+    set(HTSLIB_LIBRARY ${EXTERNAL_INSTALL_DIR}/lib/libhts.a)
+    
+    # If vendoring htslib, ensure its dependencies are built first
+    if(TARGET zlib_ext)
+        add_dependencies(htslib_ext zlib_ext)
+    endif()
+    if(TARGET bzip2_ext)
+        add_dependencies(htslib_ext bzip2_ext)
+    endif()
+    if(TARGET xz_ext)
+        add_dependencies(htslib_ext xz_ext)
+    endif()
+    if(TARGET libdeflate_ext)
+        add_dependencies(htslib_ext libdeflate_ext)
+    endif()
+endif()
+
+# RapidJSON (header-only)
+if(VENDOR_RAPIDJSON)
+    message(STATUS "Vendoring rapidjson (header-only)")
+    FetchContent_Declare(
+        rapidjson
+        GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+        GIT_TAG v1.1.0
+    )
+    # RapidJSON is header-only; we only need the sources, not its CMakeLists.txt.
+    # FetchContent_MakeAvailable would fail on CMake 3.28+ because RapidJSON v1.1.0
+    # declares cmake_minimum_required(VERSION 2.8) which is no longer accepted.
+    FetchContent_GetProperties(rapidjson)
+    if(NOT rapidjson_POPULATED)
+        FetchContent_Populate(rapidjson)
+    endif()
+    set(RAPIDJSON_INCLUDE_DIR ${rapidjson_SOURCE_DIR}/include)
+else()
+    set(RAPIDJSON_INCLUDE_DIR "")
+endif()
+
+# Collect libraries
+if(TARGET ZLIB::ZLIB)
+    set(ZLIB_LINK ZLIB::ZLIB)
+elseif(DEFINED ZLIB_LIBRARY)
+    set(ZLIB_LINK ${ZLIB_LIBRARY})
+elseif(DEFINED ZLIB_LIBRARIES)
+    set(ZLIB_LINK ${ZLIB_LIBRARIES})
+else()
+    set(ZLIB_LINK "")
+endif()
+
+# Add htscodecs if found (required for htslib with CRAM codec support)
+# htscodecs may only be available as a shared library even if using BUILD_STATIC
+if(HTSCODECS_LIBRARY)
+    set(_HTSCODECS_LIB ${HTSCODECS_LIBRARY})
+else()
+    set(_HTSCODECS_LIB "")
+endif()
+
+# Handle static linking: for each non-vendored library, upgrade to static if BUILD_STATIC is ON
+if(BUILD_STATIC)
+    # For libraries that were NOT vendored, try to find and use their static versions
+    # 1. Try in multilib X86_64 path
+    # 2. Try in standard paths
+    # 3. Try default locations
+    
+    # Upgrade ZLIB to static if not vendored
+    if(NOT VENDOR_ZLIB)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libz.a)
+            set(ZLIB_LINK /usr/lib/x86_64-linux-gnu/libz.a)
+            message(STATUS "Using static ZLIB: ${ZLIB_LINK}")
+        elseif(EXISTS /usr/lib/libz.a)
+            set(ZLIB_LINK /usr/lib/libz.a)
+            message(STATUS "Using static ZLIB: ${ZLIB_LINK}")
+        elseif(EXISTS /lib/libz.a)
+            set(ZLIB_LINK /lib/libz.a)
+            message(STATUS "Using static ZLIB: ${ZLIB_LINK}")
+        endif()
+    endif()
+    
+    # Upgrade BZIP2 to static if not vendored
+    if(NOT VENDOR_BZIP2)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libbz2.a)
+            set(BZIP2_LIBRARY /usr/lib/x86_64-linux-gnu/libbz2.a)
+            message(STATUS "Using static BZIP2: ${BZIP2_LIBRARY}")
+        elseif(EXISTS /usr/lib/libbz2.a)
+            set(BZIP2_LIBRARY /usr/lib/libbz2.a)
+            message(STATUS "Using static BZIP2: ${BZIP2_LIBRARY}")
+        endif()
+    endif()
+    
+    # Upgrade LZMA to static if not vendored
+    if(NOT VENDOR_LZMA)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/liblzma.a)
+            set(LZMA_LIBRARY /usr/lib/x86_64-linux-gnu/liblzma.a)
+            message(STATUS "Using static LZMA: ${LZMA_LIBRARY}")
+        elseif(EXISTS /usr/lib/liblzma.a)
+            set(LZMA_LIBRARY /usr/lib/liblzma.a)
+            message(STATUS "Using static LZMA: ${LZMA_LIBRARY}")
+        endif()
+    endif()
+    
+    # Upgrade HTSLIB to static if not vendored
+    # But only if htscodecs is also available (either static or dynamic)
+    if(NOT VENDOR_HTSLIB)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libhts.a OR EXISTS /usr/lib/libhts.a)
+            # Check if htscodecs is available (required for modern htslib with CRAM codec support)
+            if(HTSCODECS_LIBRARY)
+                if(EXISTS /usr/lib/x86_64-linux-gnu/libhts.a)
+                    set(HTSLIB_LIBRARY /usr/lib/x86_64-linux-gnu/libhts.a)
+                elseif(EXISTS /usr/lib/libhts.a)
+                    set(HTSLIB_LIBRARY /usr/lib/libhts.a)
+                endif()
+                message(STATUS "Using static HTSLIB: ${HTSLIB_LIBRARY} (with dynamic htscodecs)")
+            else()
+                message(STATUS "HTSLIB.a exists but htscodecs is not available; using dynamic htslib.so to avoid linking errors")
+            endif()
+        endif()
+    endif()
+    
+    # Upgrade DEFLATE to static if not vendored
+    if(NOT VENDOR_LIBDEFLATE)
+        if(EXISTS /usr/lib/x86_64-linux-gnu/libdeflate.a)
+            set(DEFLATE_LIBRARY /usr/lib/x86_64-linux-gnu/libdeflate.a)
+            message(STATUS "Using static DEFLATE: ${DEFLATE_LIBRARY}")
+        elseif(EXISTS /usr/lib/libdeflate.a)
+            set(DEFLATE_LIBRARY /usr/lib/libdeflate.a)
+            message(STATUS "Using static DEFLATE: ${DEFLATE_LIBRARY}")
+        endif()
+    endif()
+endif()
+
+# Rebuild PHENIQS_LIBRARIES with any upgraded library versions
+# (the ZLIB_LINK, BZIP2_LIBRARY, LZMA_LIBRARY, HTSLIB_LIBRARY, DEFLATE_LIBRARY may have been upgraded to static versions above)
+set(PHENIQS_LIBRARIES 
+    ${HTSLIB_LIBRARY}
+    ${ZLIB_LINK}
+    ${BZIP2_LIBRARY}
+    ${LZMA_LIBRARY}
+    ${DEFLATE_LIBRARY}
+    ${CURL_LIBRARY}
+)
+
+# Add htscodecs if it was found
+if(_HTSCODECS_LIB)
+    list(APPEND PHENIQS_LIBRARIES ${_HTSCODECS_LIB})
+endif()
+
+# Add libcrypto if found: needed on Linux when htslib is vendored because its
+# built-in S3 signing code references EVP_sha256 from OpenSSL.
+if(CRYPTO_LIBRARY)
+    list(APPEND PHENIQS_LIBRARIES ${CRYPTO_LIBRARY})
+endif()
+
+# Enforce that htslib dependencies cannot be vendored without vendoring htslib itself
+# (especially important with BUILD_STATIC, since htslib's runtime dependencies take precedence)
+if(BUILD_STATIC)
+    if((VENDOR_LZMA OR VENDOR_BZIP2 OR VENDOR_ZLIB OR VENDOR_LIBDEFLATE) AND NOT VENDOR_HTSLIB)
+        message(FATAL_ERROR
+            "When using BUILD_STATIC=ON, htslib (VENDOR_HTSLIB) must be vendored if any of its "
+            "dependencies (zlib, bzip2, lzma, libdeflate) are being vendored. Otherwise, the system's "
+            "dynamic htslib.so will have unmet runtime dependencies.\n"
+            "Solution: Add -DVENDOR_HTSLIB=ON to your cmake command.\n"
+            "For example: cmake -DBUILD_STATIC=ON -DVENDOR_LZMA=ON -DVENDOR_HTSLIB=ON ..")
+    endif()
+endif()
+
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${INCLUDE_PREFIX})
+include_directories(${HTSLIB_INCLUDE_DIR})
+if(ZLIB_INCLUDE_DIR AND EXISTS "${ZLIB_INCLUDE_DIR}")
+    include_directories(${ZLIB_INCLUDE_DIR})
+endif()
+if(BZIP2_INCLUDE_DIR AND EXISTS "${BZIP2_INCLUDE_DIR}")
+    include_directories(${BZIP2_INCLUDE_DIR})
+endif()
+if(LZMA_INCLUDE_DIR AND EXISTS "${LZMA_INCLUDE_DIR}")
+    include_directories(${LZMA_INCLUDE_DIR})
+endif()
+if(DEFLATE_INCLUDE_DIR AND EXISTS "${DEFLATE_INCLUDE_DIR}")
+    include_directories(${DEFLATE_INCLUDE_DIR})
+endif()
+if(RAPIDJSON_INCLUDE_DIR AND EXISTS "${RAPIDJSON_INCLUDE_DIR}")
+    include_directories(${RAPIDJSON_INCLUDE_DIR})
+endif()
+
+# Pheniqs source files (excluding the main entry point)
+set(PHENIQS_CORE_SOURCES
+    selector.cpp
+    atom.cpp
+    auxiliary.cpp
+    barcode.cpp
+    multiplex.cpp
+    decoder.cpp
+    classifier.cpp
+    naive.cpp
+    mdd.cpp
+    pamld.cpp
+    pipeline.cpp
+    fastq.cpp
+    feed.cpp
+    hts.cpp
+    interface.cpp
+    json.cpp
+    job.cpp
+    transcode.cpp
+    phred.cpp
+    proxy.cpp
+    read.cpp
+    sequence.cpp
+    transform.cpp
+    url.cpp
+)
+
+set(PHENIQS_SOURCES
+    ${PHENIQS_CORE_SOURCES}
+    pheniqs.cpp
+)
+
+# Generate version.h
+set(VERSION_HEADER "${CMAKE_BINARY_DIR}/version.h")
+add_custom_command(
+    OUTPUT "${VERSION_HEADER}"
+    COMMAND ${CMAKE_COMMAND}
+        -DPHENIQS_VERSION="${PHENIQS_VERSION}"
+        -DOUTPUT_FILE="${VERSION_HEADER}"
+        -DPHENIQS_ZLIB_VERSION="${PHENIQS_ZLIB_VERSION}"
+        -DPHENIQS_BZIP2_VERSION="${PHENIQS_BZIP2_VERSION}"
+        -DPHENIQS_XZ_VERSION="${PHENIQS_XZ_VERSION}"
+        -DPHENIQS_LIBDEFLATE_VERSION="${PHENIQS_LIBDEFLATE_VERSION}"
+        -DPHENIQS_RAPIDJSON_VERSION="${PHENIQS_RAPIDJSON_VERSION}"
+        -DPHENIQS_HTSLIB_VERSION="${PHENIQS_HTSLIB_VERSION}"
+        -P "${CMAKE_SOURCE_DIR}/cmake/GenerateVersionHeader.cmake"
+    COMMENT "Generating version.h with version ${PHENIQS_VERSION}"
+)
+
+# Generate configuration.h from configuration.json
+set(CONFIG_HEADER "${CMAKE_BINARY_DIR}/configuration.h")
+add_custom_command(
+    OUTPUT "${CONFIG_HEADER}"
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/tool/pheniqs-configuration-api.py header 
+            ${CMAKE_SOURCE_DIR}/configuration.json > "${CONFIG_HEADER}"
+    DEPENDS ${CMAKE_SOURCE_DIR}/configuration.json
+    COMMENT "Generating configuration.h from configuration.json"
+)
+
+# Generate zsh completion
+set(ZSH_COMPLETION "${CMAKE_BINARY_DIR}/_pheniqs")
+add_custom_command(
+    OUTPUT "${ZSH_COMPLETION}"
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/tool/pheniqs-configuration-api.py zsh 
+            ${CMAKE_SOURCE_DIR}/configuration.json > "${ZSH_COMPLETION}"
+    DEPENDS ${CMAKE_SOURCE_DIR}/configuration.json
+    COMMENT "Generating zsh completion _pheniqs"
+)
+
+# Wrap each generated header in its own custom target so there is a single
+# serialization point regardless of how many targets need the file. Listing
+# the generated file directly in multiple add_executable() calls causes CMake
+# to run the generation command independently for each target in a parallel
+# build, producing a corrupted file.
+add_custom_target(pheniqs_version_h  DEPENDS "${VERSION_HEADER}")
+add_custom_target(pheniqs_config_h   DEPENDS "${CONFIG_HEADER}")
+add_custom_target(zsh_completion     DEPENDS "${ZSH_COMPLETION}")
+
+# Add binary directory to include path for generated files
+include_directories(${CMAKE_BINARY_DIR})
+
+# Create the executable
+add_executable(pheniqs ${PHENIQS_SOURCES})
+
+add_dependencies(pheniqs pheniqs_version_h pheniqs_config_h zsh_completion)
+
+target_link_libraries(pheniqs PRIVATE ${PHENIQS_LIBRARIES} pthread)
+target_include_directories(pheniqs PRIVATE ${HTSLIB_INCLUDE_DIR})
+# Ensure vendored external projects are built before linking
+if(TARGET htslib_ext)
+    add_dependencies(pheniqs htslib_ext)
+endif()
+if(TARGET zlib_ext)
+    add_dependencies(pheniqs zlib_ext)
+endif()
+if(TARGET bzip2_ext)
+    add_dependencies(pheniqs bzip2_ext)
+endif()
+if(TARGET xz_ext)
+    add_dependencies(pheniqs xz_ext)
+endif()
+if(TARGET libdeflate_ext)
+    add_dependencies(pheniqs libdeflate_ext)
+endif()
+
+# Installation rules
+install(TARGETS pheniqs DESTINATION ${BIN_PREFIX})
+
+# Install zsh completion
+install(FILES "${ZSH_COMPLETION}" 
+        DESTINATION "${ZSH_PREFIX}/site-functions" 
+        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+
+# Add an uninstall target that removes files listed in install_manifest.txt
+if(NOT TARGET uninstall)
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in
+        ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake
+        @ONLY
+    )
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake
+        COMMENT "Uninstall files from \"${CMAKE_INSTALL_PREFIX}\" using install_manifest.txt"
+    )
+endif()
+
+# Add custom test targets
+
+add_custom_target(clean.test.demux
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/test/BDGGG/result
+)
+
+# Unit test executable
+add_executable(pheniqs_unit_tests
+    ${PHENIQS_CORE_SOURCES}
+    test/unit/test_main.cpp
+    test/unit/test_phred.cpp
+    test/unit/test_sequence.cpp
+    test/unit/test_demux.cpp
+)
+target_link_libraries(pheniqs_unit_tests PRIVATE ${PHENIQS_LIBRARIES} pthread)
+target_include_directories(pheniqs_unit_tests PRIVATE
+    ${HTSLIB_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/test/unit
+)
+add_dependencies(pheniqs_unit_tests pheniqs_version_h pheniqs_config_h)
+if(TARGET htslib_ext)
+    add_dependencies(pheniqs_unit_tests htslib_ext)
+endif()
+if(TARGET zlib_ext)
+    add_dependencies(pheniqs_unit_tests zlib_ext)
+endif()
+if(TARGET bzip2_ext)
+    add_dependencies(pheniqs_unit_tests bzip2_ext)
+endif()
+if(TARGET xz_ext)
+    add_dependencies(pheniqs_unit_tests xz_ext)
+endif()
+if(TARGET libdeflate_ext)
+    add_dependencies(pheniqs_unit_tests libdeflate_ext)
+endif()
+
+add_custom_target(test
+    COMMAND ${CMAKE_BINARY_DIR}/pheniqs_unit_tests
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS pheniqs_unit_tests pheniqs
+    COMMENT "Running all tests"
+)
+
+add_custom_target(test.unit
+    COMMAND ${CMAKE_BINARY_DIR}/pheniqs_unit_tests
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS pheniqs_unit_tests pheniqs
+    COMMENT "Running unit tests"
+)
+
+# Help target
+add_custom_target(pheniqs-help
+    COMMAND ${CMAKE_COMMAND} -E echo "Building Pheniqs"
+    COMMAND ${CMAKE_COMMAND} -E echo ""
+    COMMAND ${CMAKE_COMMAND} -E echo "CMake Targets:"
+    COMMAND ${CMAKE_COMMAND} -E echo "  pheniqs              - Build the pheniqs executable (default)"
+    COMMAND ${CMAKE_COMMAND} -E echo "  install              - Install pheniqs to CMAKE_INSTALL_PREFIX"
+    COMMAND ${CMAKE_COMMAND} -E echo "  test                 - Run test suite"
+    COMMAND ${CMAKE_COMMAND} -E echo "  clean                - Clean build artifacts"
+    COMMAND ${CMAKE_COMMAND} -E echo ""
+    COMMAND ${CMAKE_COMMAND} -E echo "Configuration Variables:"
+    COMMAND ${CMAKE_COMMAND} -E echo "  CMAKE_INSTALL_PREFIX - Installation prefix (default: /usr/local)"
+    COMMAND ${CMAKE_COMMAND} -E echo "  CMAKE_CXX_COMPILER   - C++ compiler to use"
+    COMMAND ${CMAKE_COMMAND} -E echo "  BUILD_STATIC         - Build with static libraries (ON/OFF)"
+    COMMAND ${CMAKE_COMMAND} -E echo ""
+    COMMAND ${CMAKE_COMMAND} -E echo "Pheniqs depends on:"
+    COMMAND ${CMAKE_COMMAND} -E echo "  zlib       - https://zlib.net"
+    COMMAND ${CMAKE_COMMAND} -E echo "  bz2        - http://www.bzip.org"
+    COMMAND ${CMAKE_COMMAND} -E echo "  xz/lzma    - https://tukaani.org/xz"
+    COMMAND ${CMAKE_COMMAND} -E echo "  libdeflate - https://github.com/ebiggers/libdeflate (optional)"
+    COMMAND ${CMAKE_COMMAND} -E echo "  htslib     - http://www.htslib.org"
+    COMMAND ${CMAKE_COMMAND} -E echo "  rapidjson  - http://rapidjson.org"
+)
+
+# Print configuration
+message(STATUS "")
+message(STATUS "Pheniqs Configuration:")
+message(STATUS "  Version:              ${PHENIQS_VERSION}")
+message(STATUS "  Compiler:             ${CMAKE_CXX_COMPILER}")
+message(STATUS "  C++ Standard:         ${CMAKE_CXX_STANDARD}")
+message(STATUS "  Build Type:           ${CMAKE_BUILD_TYPE}")
+message(STATUS "  Install Prefix:       ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "  Static Build:         ${BUILD_STATIC}")
+message(STATUS "")

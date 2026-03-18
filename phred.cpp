@@ -42,12 +42,14 @@ void PhredScale::assemble_substitution_lookup() {
             for(uint8_t o(0); o < 0x10; ++o) {
                 uint8_t key(e<<0x4|o);
                 switch(key) {
+                    /* True positive, the observed base matches the expected base */
                     case 0x11:
                     case 0x22:
                     case 0x44:
                     case 0x88:
                         substitution_lookup[q<<0x8|key] = true_positive_quality[q];
                         break;
+                    /* False positive, the observed base does not match the expected base */
                     case 0x12:
                     case 0x14:
                     case 0x18:
@@ -62,6 +64,10 @@ void PhredScale::assemble_substitution_lookup() {
                     case 0x84:
                         substitution_lookup[q<<0x8|key] = q;
                         break;
+                    /* 
+                        This deals with the Ns and ambiguity codes.
+                        Since Pheniqs currently does not allow ambiguity codes this is only for Ns.
+                    */
                     default:
                         substitution_lookup[q<<0x8|key] = UNIFORM_BASE_QUALITY;
                         break;

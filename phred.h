@@ -56,6 +56,28 @@ class PhredScale {
         void operator=(PhredScale const&) = delete;
         PhredScale();
         inline double substitution_quality(const uint8_t& expected, const uint8_t& observed, const uint8_t& quality) const {
+            /*  use the substitution lookup table to resolve the probability of a correct or incorrect base call
+                given the expected and observed bases and the quality score.
+
+                a cache line is 64 bytes, and since each record is a double (8 bytes) there are 8 records per cache line.
+                0b0000 
+                0b0001 A
+                0b0010 C
+                0b0011
+                0b0100 G
+                0b0101
+                0b0110
+                0b0111
+
+                0b1000 T
+                0b1001
+                0b1010
+                0b1011
+                0b1100
+                0b1101
+                0b1110
+                0b1111 N
+            */
             return substitution_lookup[quality << 0x8 | expected << 0x4 | observed];
         };
         inline double probability_of_quality(const uint8_t& quality) const {
